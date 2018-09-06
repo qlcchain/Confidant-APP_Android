@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.test
 
 import android.os.Bundle
+import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -15,7 +16,7 @@ import javax.inject.Inject;
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.test
  * @Description: $description
- * @date 2018/09/05 09:35:42
+ * @date 2018/09/05 11:10:38
  */
 
 class TestActivity : BaseActivity(), TestContract.View {
@@ -28,7 +29,8 @@ class TestActivity : BaseActivity(), TestContract.View {
     }
 
     override fun initView() {
-//        setContentView(R.layout.activity_test)
+        setContentView(R.layout.activity_test)
+        setTitle("TestActivity")
     }
     override fun initData() {
 

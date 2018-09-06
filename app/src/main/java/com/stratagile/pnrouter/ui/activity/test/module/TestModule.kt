@@ -13,7 +13,7 @@ import dagger.Provides;
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.test
  * @Description: The moduele of TestActivity, provide field for TestActivity
- * @date 2018/09/05 09:35:42
+ * @date 2018/09/05 11:10:38
  */
 @Module
 class TestModule (private val mView: TestContract.View) {

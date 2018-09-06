@@ -13,7 +13,7 @@ import io.reactivex.functions.Consumer
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.test
  * @Description: presenter of TestActivity
- * @date 2018/09/05 09:35:42
+ * @date 2018/09/05 11:10:38
  */
 class TestPresenter @Inject
 constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: TestContract.View, private val mActivity: TestActivity) : TestContract.TestContractPresenter {

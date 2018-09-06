@@ -6,7 +6,7 @@ import com.stratagile.pnrouter.ui.activity.base.BaseView
  * @author hzp
  * @Package The contract for TestActivity
  * @Description: $description
- * @date 2018/09/05 09:35:42
+ * @date 2018/09/05 11:10:38
  */
 interface TestContract {
     interface View : BaseView<TestContractPresenter> {

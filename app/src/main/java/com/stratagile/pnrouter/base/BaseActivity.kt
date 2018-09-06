@@ -13,6 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.utils.UIUtils
+import com.stratagile.pnrouter.utils.swipeback.swipeback.SwipeBackHelper
 import com.stratagile.pnrouter.view.FitRelativeLayout
 import com.stratagile.pnrouter.view.RxDialogLoading
 import java.util.*
@@ -32,6 +33,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     lateinit var view: View
     lateinit var progressDialog : RxDialogLoading
     lateinit var title: TextView
+    lateinit var swipeBackHelper: SwipeBackHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -183,6 +185,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
                 toolbar!!.visibility = View.GONE
             }
         }
+    }
+
+    override fun onBackPressed() {
+
+        super.onBackPressed()
     }
 
 }

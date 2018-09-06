@@ -21,8 +21,7 @@ import okhttp3.RequestBody
  * @desc 对Request实体(不执行)在执行时所调度的线程，以及得到ResponseBody后根据retCode对Result进行进一步处理
  * @date 2017/5/31 16:56
  */
-class HttpAPIWrapper @Inject
-constructor(private val mHttpAPI: HttpApi) {
+class HttpAPIWrapper @Inject constructor(private val mHttpAPI: HttpApi) {
 
 
     /**

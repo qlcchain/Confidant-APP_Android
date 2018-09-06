@@ -11,7 +11,7 @@ import dagger.Component
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.test
  * @Description: The component for TestActivity
- * @date 2018/09/05 09:35:42
+ * @date 2018/09/05 11:10:38
  */
 @ActivityScope
 @Component(dependencies = arrayOf(AppComponent::class), modules = arrayOf(TestModule::class))
