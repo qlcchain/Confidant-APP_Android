@@ -8,19 +8,19 @@ import java.util.*
 import javax.inject.Inject
 
 
-class SignalServiceMessageReceiver
+class PNRouterServiceMessageReceiver
 /**
- * Construct a SignalServiceMessageReceiver.
+ * Construct a PNRouterServiceMessageReceiver.
  *
  * @param urls The URL of the Signal Service.
  * @param credentials The Signal Service user's credentials.
  */
-@Inject constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) {
+constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) {
 
 //    private val socket: PushServiceSocket
 
     /**
-     * Construct a SignalServiceMessageReceiver.
+     * Construct a PNRouterServiceMessageReceiver.
      *
      * @param urls The URL of the Signal Service.
      * @param user The Signal Service username (eg. phone number).

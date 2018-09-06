@@ -3,8 +3,6 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.core.net.toUri
-import com.pawegio.kandroid.startActivity
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
@@ -13,11 +11,12 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.data.web.SignalServiceMessageReceiver
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
 import com.stratagile.pnrouter.ui.activity.test.TestActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
-import javax.net.ssl.SSLContext
 
 
 /**
@@ -34,8 +33,8 @@ class MainActivity : BaseActivity(), MainContract.View {
     @Inject
     internal lateinit var mPresenter: MainPresenter
 
-    internal lateinit var signalServiceMessageReceiver: SignalServiceMessageReceiver
-
+    lateinit var  messageSender :PNRouterServiceMessageSender
+    lateinit var signalServiceMessageReceiver: PNRouterServiceMessageReceiver
     override fun setPresenter(presenter: MainContract.MainContractPresenter) {
         mPresenter = presenter as MainPresenter
     }
@@ -49,18 +48,21 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun initData() {
+        MessageRetrievalService.registerActivityStarted(this)
         tv_hello.text = "hahhaha"
         tv_hello.setOnClickListener {
             mPresenter.showToast()
             startActivity(Intent(this, TestActivity::class.java))
         }
         tv_hello.typeface.style
-        signalServiceMessageReceiver = AppConfig.instance!!.messageReceiver!!
-        var signalServiceMessagePipe = signalServiceMessageReceiver.createMessagePipe()
+        signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
+//        messageSender = AppConfig.instance.messageSender!!
         send.setOnClickListener {
             Log.i("", "点击")
-            signalServiceMessagePipe.webSocketConnection().send(edittext.text.toString())
+//            mPresenter.sendMessage(edittext.text.toString())
+//            messageSender.send(edittext.text.toString())
         }
+
     }
 
     override fun initView() {

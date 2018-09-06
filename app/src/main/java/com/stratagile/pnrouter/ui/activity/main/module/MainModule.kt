@@ -21,8 +21,8 @@ class MainModule(private val mView: MainContract.View) {
 
     @Provides
     @ActivityScope
-    fun provideMainPresenter(httpAPIWrapper: HttpAPIWrapper, mActivity: MainActivity): MainPresenter {
-        return MainPresenter(httpAPIWrapper, mView, mActivity)
+    fun provideMainPresenter(httpAPIWrapper: HttpAPIWrapper): MainPresenter {
+        return MainPresenter(httpAPIWrapper, mView)
     }
 
     @Provides

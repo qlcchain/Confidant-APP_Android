@@ -11,7 +11,7 @@ import com.stratagile.pnrouter.data.api.HttpInfoInterceptor
 import com.stratagile.pnrouter.data.api.RequestBodyInterceptor
 import com.stratagile.pnrouter.data.qualifier.Remote
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import com.stratagile.pnrouter.BuildConfig
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.entity.events.ReminderUpdateEvent
 
@@ -34,9 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory
  * @date 2017/5/31 10:04
  */
 @Module
-class APIModule(private val application: Application, private val signalServiceNetworkAccess: SignalServiceNetworkAccess) {
+class APIModule(private val application: Application) {
     val TAG = APIModule::class.java.simpleName
-    var messageReceiver: SignalServiceMessageReceiver? = null
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
@@ -71,19 +70,6 @@ class APIModule(private val application: Application, private val signalServiceN
     @Remote
     fun provideHttpAPIWrapper(httpAPI: HttpApi): HttpAPIWrapper {
         return HttpAPIWrapper(httpAPI)
-    }
-
-    @Provides
-    @Singleton
-    @Remote
-    fun provideSignalServiceMessageReceiver(): SignalServiceMessageReceiver {
-        if (this.messageReceiver == null) {
-            this.messageReceiver = SignalServiceMessageReceiver(signalServiceNetworkAccess.getConfiguration(application)!!,
-                    DynamicCredentialsProvider(application),
-                    BuildConfig.USER_AGENT,
-                    PipeConnectivityListener())
-        }
-        return this.messageReceiver!!
     }
 
     open class PipeConnectivityListener : ConnectivityListener {

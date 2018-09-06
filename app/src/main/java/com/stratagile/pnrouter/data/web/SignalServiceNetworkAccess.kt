@@ -72,7 +72,7 @@ class SignalServiceNetworkAccess @Inject constructor(context: Context) {
 
         private val SERVICE_REFLECTOR_HOST = "textsecure-service-reflected.whispersystems.org"
 
-        private val SOUQ_CONNECTION_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+        open val SOUQ_CONNECTION_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                 .tlsVersions(TlsVersion.TLS_1_2)
                 .cipherSuites(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                         CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,

@@ -45,7 +45,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         this.connected = false
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://")
-        this.wsUri = "https://47.96.76.184:18000"
+        this.wsUri = "wss://47.96.76.184:18000"
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://") + "/v1/websocket/?login=%s&password=%s"
     }
@@ -74,7 +74,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             if (userAgent != null) {
 //                requestBuilder.addHeader("X-Signal-Agent", userAgent)
-                requestBuilder.addHeader("lws-minimal", userAgent)
+                requestBuilder.addHeader("Sec-WebSocket-Protocol", userAgent)
             }
 
             listener?.onConnecting()
@@ -225,6 +225,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     }
 
+    override fun onMessage(webSocket: WebSocket?, text: String?) {
+        Log.w(TAG, "onMessage(text)! " + text!!)
+    }
+
+
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
         Log.w(TAG, "onClose()...")
@@ -271,10 +276,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         if (client != null) {
             onClosed(webSocket, 1000, "OK")
         }
-    }
-
-    override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.w(TAG, "onMessage(text)! " + text!!)
     }
 
     @Synchronized

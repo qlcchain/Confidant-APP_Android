@@ -2,8 +2,8 @@ package com.stratagile.pnrouter.application
 
 import android.support.multidex.MultiDexApplication
 import com.stratagile.pnrouter.BuildConfig
-import com.stratagile.pnrouter.data.web.SignalServiceMessageReceiver
-import com.stratagile.pnrouter.data.web.SignalServiceNetworkAccess
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
+import com.stratagile.pnrouter.data.web.*
 
 /**
  * 作者：Android on 2017/8/1
@@ -18,33 +18,49 @@ import com.stratagile.pnrouter.data.web.SignalServiceNetworkAccess
 
 class AppConfig : MultiDexApplication() {
     var applicationComponent: AppComponent? = null
-        private set
-    open var messageReceiver: SignalServiceMessageReceiver? = null
+
+    var messageReceiver: PNRouterServiceMessageReceiver? = null
+
+    var messageSender: PNRouterServiceMessageSender? = null
+
     override fun onCreate() {
         super.onCreate()
         instance = this
         setupApplicationComponent()
-        if (this.messageReceiver == null) {
-            this.messageReceiver = SignalServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this)!!,
+        if (messageReceiver == null) {
+            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
         }
+
+//        if (messageSender == null) {
+//            messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+//        }
     }
+
+//    fun getSignalServiceMessageReceiver() : PNRouterServiceMessageReceiver{
+//        if (messageReceiver == null) {
+//            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+//                    APIModule.DynamicCredentialsProvider(this),
+//                    BuildConfig.USER_AGENT,
+//                    APIModule.PipeConnectivityListener())
+//        }
+//        return messageReceiver!!
+//    }
 
 
     protected fun setupApplicationComponent() {
-        var signalServiceNetworkAccess = SignalServiceNetworkAccess(this)
         applicationComponent = DaggerAppComponent
                 .builder()
                 .appModule(AppModule(this))
-                .aPIModule(APIModule(this, signalServiceNetworkAccess))
+                .aPIModule(APIModule(this))
                 .build()
         applicationComponent!!.inject(this)
     }
 
     companion object {
-        var instance: AppConfig? = null
+        lateinit var instance: AppConfig
     }
 
     @Synchronized
