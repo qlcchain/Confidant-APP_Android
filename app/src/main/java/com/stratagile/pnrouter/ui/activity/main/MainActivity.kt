@@ -14,7 +14,10 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.LoginReq
 import com.stratagile.pnrouter.ui.activity.test.TestActivity
+import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -33,7 +36,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     @Inject
     internal lateinit var mPresenter: MainPresenter
 
-    lateinit var  messageSender :PNRouterServiceMessageSender
+    var  messageSender :PNRouterServiceMessageSender? = null
     lateinit var signalServiceMessageReceiver: PNRouterServiceMessageReceiver
     override fun setPresenter(presenter: MainContract.MainContractPresenter) {
         mPresenter = presenter as MainPresenter
@@ -56,11 +59,17 @@ class MainActivity : BaseActivity(), MainContract.View {
         }
         tv_hello.typeface.style
         signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
-//        messageSender = AppConfig.instance.messageSender!!
         send.setOnClickListener {
-            Log.i("", "点击")
-//            mPresenter.sendMessage(edittext.text.toString())
-//            messageSender.send(edittext.text.toString())
+            if (messageSender == null) {
+                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
+            }
+            var login = LoginReq("login", "routerid", "WOZIJI", 1)
+            Log.i("MainActivity", login.Action)
+            var jsonStr = BaseData("123343434", "MIFI", login).baseDataToJson()
+            Log.i("MainActivity", jsonStr)
+            if (messageSender!!.send(jsonStr)) {
+                edittext.text.clear()
+            }
         }
 
     }

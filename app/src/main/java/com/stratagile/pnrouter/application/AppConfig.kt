@@ -33,10 +33,13 @@ class AppConfig : MultiDexApplication() {
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
         }
+    }
 
-//        if (messageSender == null) {
-//            messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
-//        }
+    fun getPNRouterServiceMessageSender() :  PNRouterServiceMessageSender{
+        if (messageSender == null) {
+            messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+        }
+        return messageSender!!
     }
 
 //    fun getSignalServiceMessageReceiver() : PNRouterServiceMessageReceiver{

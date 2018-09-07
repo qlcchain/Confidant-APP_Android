@@ -17,9 +17,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     init {
         this.pipe = AtomicReference(pipe)
     }
-    fun send(message : String) {
-        pipe.get().get().webSocketConnection().send(message)
+    fun send(message : String) : Boolean{
         Log.i("dddd", "test....")
+        return pipe.get().get().webSocketConnection().send(message)
     }
     /**
      * Send a read receipt for a received message.

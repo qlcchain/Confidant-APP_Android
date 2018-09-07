@@ -1,6 +1,9 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
+import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos
 import okhttp3.*
 import java.util.*
@@ -22,6 +25,9 @@ import okio.ByteString
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.log.L
+import java.lang.Exception
 import java.nio.ByteBuffer
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
@@ -30,7 +36,7 @@ import javax.net.ssl.*
 
 class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val credentialsProvider: CredentialsProvider, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
 
-    private val incomingRequests = LinkedList<WebSocketRequestMessage>()
+    private val incomingRequests = LinkedList<BaseData<*>>()
     private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
 
     private val wsUri: String
@@ -45,7 +51,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         this.connected = false
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://")
-        this.wsUri = "wss://47.96.76.184:18000"
+//        this.wsUri = "wss://47.96.76.184:18000"
+        this.wsUri = "wss://47.96.76.184:18001/"
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://") + "/v1/websocket/?login=%s&password=%s"
     }
@@ -102,7 +109,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)
-    fun readRequest(timeoutMillis: Long): WebSocketRequestMessage {
+    fun readRequest(timeoutMillis: Long): BaseData<*> {
         if (client == null) {
             throw IOException("Connection closed!")
         }
@@ -139,13 +146,15 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         return future
     }
-    fun send(message : String?) {
+    fun send(message : String?) : Boolean{
         Log.i("websocketConnection", message)
         if (client == null || !connected) throw IOException("No connection!")
         if (!client!!.send(message!!)) {
-            throw IOException("Write failed!")
+//            throw IOException("Write failed!")
+            return false
         } else {
             Log. i("WenSocketConnetion", "发送成功")
+            return true
         }
     }
 
@@ -173,18 +182,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Throws(IOException::class)
     private fun sendKeepAlive() {
         if (keepAliveSender != null && client != null) {
-            val message = WebSocketMessage.newBuilder()
-                    .setType(WebSocketMessage.Type.REQUEST)
-                    .setRequest(WebSocketRequestMessage.newBuilder()
-                            .setId(System.currentTimeMillis())
-                            .setPath("/v1/keepalive")
-                            .setVerb("GET")
-                            .build()).build()
-                    .toByteArray()
-
-            if (!client!!.send(ByteString.of(*message))) {
-                throw IOException("Write failed!")
-            }
+            //todo keepalive message
         }
     }
 
@@ -227,6 +225,21 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.w(TAG, "onMessage(text)! " + text!!)
+        try {
+            val gson = Gson()
+            var baseData = gson.fromJson(text, BaseData::class.java)
+            Log.i(TAG, "解析消息")
+            Log.i(TAG, baseData.toString())
+            Log.i(TAG, baseData.timestamp)
+            Log.i(TAG, baseData.appid)
+            Log.i(TAG, baseData.params.toString())
+            var jsonObject  = JSONObject.parseObject(text)
+            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
+            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
+            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
     }
 
 

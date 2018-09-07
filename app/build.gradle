@@ -23,8 +23,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        buildConfigField "String", "USER_AGENT", "\"OWA\""
         buildConfigField "String", "USER_AGENT", "\"lws-minimal\""
-        buildConfigField "String", "SIGNAL_URL", "\"https://47.96.76.184:18000\""
-        buildConfigField "String", "SIGNAL_CDN_URL", "\"https://47.96.76.184:18000\""
+        buildConfigField "String", "SIGNAL_URL", "\"https://47.96.76.184:18001/\""
+        buildConfigField "String", "SIGNAL_CDN_URL", "\"https://47.96.76.184:18001/\""
     }
     buildTypes {
         release {

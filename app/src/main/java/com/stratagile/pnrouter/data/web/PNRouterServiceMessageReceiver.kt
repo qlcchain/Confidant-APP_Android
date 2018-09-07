@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.data.web
 
+import com.stratagile.pnrouter.entity.BaseData
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -106,13 +107,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 //    }
 
 
-//    interface MessageReceivedCallback {
-//        fun onMessage(envelope: SignalServiceEnvelope)
-//    }
-//
-//    class NullMessageReceivedCallback : MessageReceivedCallback {
-//        override fun onMessage(envelope: SignalServiceEnvelope) {}
-//    }
+    interface MessageReceivedCallback {
+        fun onMessage(baseData : BaseData<*>)
+    }
+
+    class NullMessageReceivedCallback : MessageReceivedCallback {
+        override fun onMessage(envelope: BaseData<*>) {}
+    }
 
 }
 /**
