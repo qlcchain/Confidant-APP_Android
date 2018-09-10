@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/nickName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/x30"
+        android:layout_marginTop="@dimen/x40"
+        android:text="@string/my"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x16"
+        android:src="@mipmap/icon_qr_code"
+        app:layout_constraintStart_toStartOf="@+id/nickName"
+        app:layout_constraintTop_toBottomOf="@+id/nickName" />
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:src="@mipmap/icon_twitter"
+        android:layout_width="@dimen/x124"
+        android:layout_height="@dimen/x124"
+        android:layout_marginEnd="@dimen/x30"
+        android:layout_marginTop="@dimen/x46"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        style="@style/divide_line"
+        android:layout_marginTop="@dimen/x44"
+        app:layout_constraintTop_toBottomOf="@+id/avatar" />
+</android.support.constraint.ConstraintLayout>

@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.view.RxDialogLoading;
+
 
 /**
  * @ClassName: BaseFragment 
@@ -24,6 +27,11 @@ public abstract class BaseFragment extends Fragment {
 	 * 根布局
 	 */
 	protected View rootView;
+
+	/**
+	 * 进度条加载
+	 */
+	protected RxDialogLoading progressDialog;
 
 
 	@Override
@@ -61,6 +69,10 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		progressDialog = new RxDialogLoading(activity);
+		progressDialog.setmDialogColor(getResources().getColor(R.color.mainColor));
+		progressDialog.setDialogText(getResources().getString(R.string.apploading));
+//		progressDialog.setMyCancelListener(this);
 	}
 
 
