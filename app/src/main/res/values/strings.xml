@@ -7,5 +7,7 @@
     <string name="contacts">Contacts</string>
     <string name="my">My</string>
     <string name="loginScanTips">Click here to scan the router’s QR code.</string>
-    <string name="Loading">Loading</string>
+    <string name="Login">Login</string>
+    <string name="Username">Username</string>
+    <string name="Please_type_your_username_here">Please type your username here</string>
 </resources>

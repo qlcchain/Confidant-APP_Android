@@ -1,112 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
     android:layout_height="match_parent"
-    tools:context="com.stratagile.pnrouter.ui.activity.main.MainActivity">
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    android:background="@drawable/main_bg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:background="@drawable/main_bg"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_flag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/img_bg"
-                />
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/icon_scan"
-                android:layout_marginTop="@dimen/x485"
-                android:layout_marginLeft="@dimen/x258"
-                android:layout_marginRight="@dimen/x38"
-                />
-
-            <ImageView
-                android:layout_width="@dimen/x268"
-                android:layout_height="@dimen/x268"
-                android:layout_marginLeft="@dimen/x168"
-                android:layout_marginRight="@dimen/x38"
-                android:layout_marginTop="@dimen/x405"
-                android:src="@mipmap/icon_headportrai" />
-
-        </FrameLayout>
-
-
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x28"
-            android:layout_marginRight="@dimen/x28"
-            android:layout_marginTop="@dimen/x50"
-            android:background="@color/white"
-            android:minHeight="@dimen/x656"
-            app:cardCornerRadius="@dimen/dp_10"
-            app:cardElevation="@dimen/dp_10">
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/img_bg" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/x56"
-                android:orientation="vertical">
-                <ImageView
-                    android:id="@+id/iv_picture"
-                    android:layout_width="match_parent"
-                    android:transitionName="avater"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:layout_margin="@dimen/x90"
-                    />
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="@dimen/x268"
+            android:layout_height="@dimen/x268"
+            android:layout_marginTop="@dimen/x440"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:srcCompat="@mipmap/icon_headportrai" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="@dimen/x8"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+            app:layout_constraintEnd_toEndOf="@+id/imageView3"
+            app:layout_constraintStart_toStartOf="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="@+id/imageView3"
+            app:srcCompat="@mipmap/icon_scan" />
 
         <TextView
-            android:letterSpacing="0.1"
-            android:id="@+id/tv_title"
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/loginScanTips"
-            android:textSize="16sp"
-            android:includeFontPadding="false"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/x40"
+            android:text="@string/loginScanTips"
             android:textColor="@color/white"
-            android:fontFamily="@font/vagroun_q"
-            />
-        <LinearLayout
+            android:textSize="@dimen/x30"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x70"
+            android:text="@string/Username"
+            android:textSize="@dimen/x23"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="300dp"
+            android:layout_height="51dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/x14"
+            android:ems="10"
+            android:hint="@string/Please_type_your_username_here"
+            android:inputType="text"
+            android:paddingBottom="@dimen/x35"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/color_808080"
+            android:textSize="@dimen/x31"
+            android:theme="@style/MyEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/LoginBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/x53"
-            android:layout_marginLeft="@dimen/x28"
-            android:layout_marginRight="@dimen/x28"
-            android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/x40"
-            >
-           <!-- <Button
-                android:id="@+id/bt_skip"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="@string/Loading"
-                android:fontFamily="@font/vagroun_q"
-                android:background="@drawable/cancal_button_bg"
-                android:textColor="@color/white"
-                android:layout_height="@dimen/dp_43" />-->
-        </LinearLayout>
+            android:layout_marginBottom="@dimen/x92"
+            android:layout_marginEnd="@dimen/x52"
+            android:layout_marginStart="@dimen/x52"
+            android:layout_marginTop="@dimen/x84"
+            android:background="@drawable/textview_border"
+            android:gravity="center"
+            android:paddingBottom="@dimen/x36"
+            android:paddingTop="@dimen/x36"
+            android:text="@string/Login"
+            android:textColor="@color/white"
+            android:textSize="@dimen/x40"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editText" />
 
-    </LinearLayout>
 
-</LinearLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v4.widget.NestedScrollView>
