@@ -28,13 +28,6 @@
 
 
             <ImageView
-                android:layout_width="@dimen/x268"
-                android:layout_height="@dimen/x268"
-                android:layout_marginLeft="@dimen/x168"
-                android:layout_marginRight="@dimen/x38"
-                android:layout_marginTop="@dimen/x405"
-                android:src="@mipmap/icon_headportrai" />
-            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/icon_scan"
@@ -42,6 +35,14 @@
                 android:layout_marginLeft="@dimen/x258"
                 android:layout_marginRight="@dimen/x38"
                 />
+
+            <ImageView
+                android:layout_width="@dimen/x268"
+                android:layout_height="@dimen/x268"
+                android:layout_marginLeft="@dimen/x168"
+                android:layout_marginRight="@dimen/x38"
+                android:layout_marginTop="@dimen/x405"
+                android:src="@mipmap/icon_headportrai" />
 
         </FrameLayout>
 
