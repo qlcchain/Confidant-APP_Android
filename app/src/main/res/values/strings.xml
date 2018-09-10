@@ -2,4 +2,6 @@
     <string name="app_name">pnRouter</string>
     <string name="loading">loading...</string>
     <string name="apploading">loading...</string>
+    <string name="loginScanTips">Click here to scan the router’s QR code.</string>
+    <string name="Loading">Loading</string>
 </resources>
