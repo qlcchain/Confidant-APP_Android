@@ -10,4 +10,13 @@
     <string name="Login">Login</string>
     <string name="Username">Username</string>
     <string name="Please_type_your_username_here">Please type your username here</string>
+    <string name="Cancel">Cancel</string>
+    <string name="fingerprint_success">Fingerprint recognized.</string>
+    <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again.</string>
+    <string name="choose_finger_dialog_title">Use the fingerprint continue</string>
+    <string name="unlock_wallet">UNLOCK WALLET</string>
+    <string name="back_btn">BACK</string>
+    <string name="cancel_btn_dialog">CANCEL</string>
+    <string name="ErrorHwUnavailable_warning">The number of mistakes is too much, and try again later.</string>
+    <string name="AcquiredToSlow_warning">try again</string>
 </resources>
