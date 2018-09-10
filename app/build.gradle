@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:support-dynamic-animation:27.1.1'
     implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:cardview-v7:$supportVersion"
     kapt 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'

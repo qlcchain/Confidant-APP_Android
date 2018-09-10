@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
+import android.widget.Toast
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -44,13 +45,18 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     private var client: WebSocket? = null
     private var keepAliveSender: KeepAliveSender? = null
+    private var reConnectThread: ReConnectThread? = null
     private var attempts: Int = 0
     private var connected: Boolean = false
+    private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
+    private var retryTime = 0
+    private var retryInterval = arrayListOf<Int>(1000, 5000, 10000, 30000, 60000)
 
     init {
         this.attempts = 0
         this.connected = false
+        reConnectThread = ReConnectThread()
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://")
 //        this.wsUri = "wss://47.96.76.184:18000"
@@ -150,7 +156,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
     fun send(message : String?) : Boolean{
 //        Log.i("websocketConnection", message)
-        if (client == null || !connected) throw IOException("No connection!")
+        if (client == null || !connected) {
+            Log.i("websocket", "No connection!")
+            return false
+        }
         if (!client!!.send(message!!)) {
 //            throw IOException("Write failed!")
             return false
@@ -194,6 +203,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             Log.w(TAG, "onConnected()")
             attempts = 0
             connected = true
+            retryTime = 0
+            reConnectThread!!.shutdown()
             keepAliveSender = KeepAliveSender()
             keepAliveSender!!.start()
 
@@ -225,7 +236,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-//        Log.w(TAG, "onMessage(text)! " + text!!)
+        Log.w(TAG, "onMessage(text)! " + text!!)
         try {
             val gson = Gson()
             var baseData = gson.fromJson(text, BaseData::class.java)
@@ -264,9 +275,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             keepAliveSender = null
         }
 
-        if (listener != null) {
-            listener!!.onDisconnected()
-        }
+        listener?.onDisconnected()
 
 //        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
@@ -274,10 +283,45 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             client!!.close(1000, "OK")
             client = null
             connected = false
-            connect()
+        }
+        if (reConnectThread != null) {
+            reConnectThread?.reStart()
         }
 
 //        notifyAll()
+    }
+
+    fun reConnect() {
+        Log.w(TAG, "WSC reConnect()...")
+
+        if (client == null) {
+//            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
+            val filledUri = wsUri
+            val socketFactory = createTlsSocketFactory(trustStore)
+
+            val okHttpClient = OkHttpClient.Builder()
+                    .sslSocketFactory(socketFactory.first)
+                    .hostnameVerifier(object : HostnameVerifier {
+                        override fun verify(hostname: String, session: SSLSession): Boolean {
+                            return true
+                        }
+                    })
+//                    .sslSocketFactory(socketFactory.first, socketFactory.second)
+                    .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                    .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                    .build()
+            val requestBuilder = Request.Builder().url(filledUri)
+
+            if (userAgent != null) {
+//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
+                requestBuilder.addHeader("Sec-WebSocket-Protocol", userAgent)
+            }
+
+            listener?.onConnecting()
+
+            this.connected = false
+            this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
+        }
     }
 
     @Synchronized
@@ -359,6 +403,47 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         fun shutdown() {
             stop.set(true)
+        }
+    }
+    private inner class ReConnectThread : Thread() {
+
+        private val stop = AtomicBoolean(false)
+
+        override fun run() {
+            while (!stop.get() &&! reConnectTimeOut) {
+                try {
+                    if (retryTime > retryInterval.size) {
+                        reConnectTimeOut = true
+                        return
+                    }
+                    Log.w(TAG, "reConnect1..." + retryInterval[retryTime])
+                    Thread.sleep(retryInterval[retryTime].toLong())
+                    retryTime++
+                    Log.w(TAG, "reConnect2...")
+                    if (connected) {
+                        shutdown()
+                        return
+                    }
+                    if (client != null) {
+                        client!!.close(1000, "OK")
+                        client = null
+                        connected = false
+                    }
+                    reConnect()
+                } catch (e: Throwable) {
+                    Log.w(TAG, e)
+                }
+
+            }
+        }
+
+        fun shutdown() {
+            stop.set(true)
+        }
+        fun reStart() {
+            stop.set(false)
+            reConnectTimeOut = false
+            run()
         }
     }
 

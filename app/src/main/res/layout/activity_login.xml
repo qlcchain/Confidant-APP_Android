@@ -70,7 +70,6 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:layout_margin="@dimen/x90"
-                    android:src="@mipmap/img_camera"
                     />
             </LinearLayout>
         </android.support.v7.widget.CardView>

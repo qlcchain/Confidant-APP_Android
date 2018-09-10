@@ -44,7 +44,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             val localLayoutParams = window.attributes
             localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
         }
-
+        initToolbar()
         setupActivityComponent()
         initView()
         initData()
