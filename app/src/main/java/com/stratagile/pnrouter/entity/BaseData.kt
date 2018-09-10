@@ -1,16 +1,20 @@
 package com.stratagile.pnrouter.entity
 
+import com.stratagile.pnrouter.BuildConfig
+
 /**
  * 数据基类
  */
 open class BaseData<T>() {
     var timestamp : String? = null
     var appid : String? = null
+    var apiversion :Int ? = null
     var params : T? = null
 
     constructor(timestamp : String, appid : String, params : T) : this() {
         this.timestamp = timestamp
         this.appid = appid
+        this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
     }
 }
