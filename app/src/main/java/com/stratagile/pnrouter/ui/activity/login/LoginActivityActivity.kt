@@ -28,6 +28,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
     internal lateinit var mPresenter: LoginActivityPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 

@@ -2,10 +2,15 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/color_f2f2f2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/status" />
     <TextView
         android:id="@+id/nickName"
         android:layout_width="wrap_content"
@@ -36,7 +41,80 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:id="@+id/view2"
         style="@style/divide_line"
         android:layout_marginTop="@dimen/x44"
         app:layout_constraintTop_toBottomOf="@+id/avatar" />
+
+    <com.stratagile.pnrouter.view.DrawableTextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x70"
+        app:text="Add recent status"
+        app:showNext="false"
+        app:layout_constraintTop_toBottomOf="@+id/view2">
+
+    </com.stratagile.pnrouter.view.DrawableTextView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x30"
+        android:background="@color/white"
+
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/status">
+
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/routerManagement"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="Router management">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+
+        <View
+            android:id="@+id/view3"
+            style="@style/divide_line" />
+
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/collection"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:layout_constraintTop_toBottomOf="@+id/view3"
+            app:text="Collection">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+
+        <View style="@style/divide_line" />
+
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/shareApp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="Share App">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+
+        <View style="@style/divide_line" />
+
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/help"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="Help">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+    </LinearLayout>
+
+    <com.stratagile.pnrouter.view.DrawableTextView
+        android:id="@+id/Version"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        android:layout_marginTop="@dimen/x30"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:text="V">
+
+    </com.stratagile.pnrouter.view.DrawableTextView>
 </android.support.constraint.ConstraintLayout>
