@@ -4,22 +4,37 @@ import android.util.Log
 import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 import com.stratagile.pnrouter.data.service.MessageRetrievalService.pipe
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.utils.baseDataToJson
 import io.reactivex.annotations.SchedulerSupport.CUSTOM
 import java.io.IOException
 import java.security.InvalidKeyException
 import java.security.SecureRandom
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
+    var javaObject = Object()
+    var toSendMessage: Queue<BaseData<*>> = LinkedList()
+    lateinit var thread: Thread
+
     init {
         this.pipe = AtomicReference(pipe)
+        initThread()
     }
-    fun send(message : String) : Boolean{
-        Log.i("dddd", "test....")
-        return pipe.get().get().webSocketConnection().send(message)
+
+    fun send(message: BaseData<*>){
+        toSendMessage.offer(message)
+        Log.i("sender", "添加")
+        if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }
+//        javaObject.notifyAll()
+//        return sendMessage()
     }
     /**
      * Send a read receipt for a received message.
@@ -46,6 +61,25 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 //        sendMessage(recipient, System.currentTimeMillis(), content, true)
 //    }
 
+    @Synchronized
+    fun  initThread() {
+       thread =  thread {
+           while (true) {
+               sendMessage()
+//               Log.i("sender", "线程运行中。。。")
+           }
+        }
+    }
+
+    fun sendMessage() {
+        if (toSendMessage.isNotEmpty()) {
+            var message = toSendMessage.poll()
+            Log.i("ServiceMessageSender", message.baseDataToJson())
+            pipe.get().get().webSocketConnection().send(message.baseDataToJson())
+        } else {
+
+        }
+    }
 
 
     interface EventListener {

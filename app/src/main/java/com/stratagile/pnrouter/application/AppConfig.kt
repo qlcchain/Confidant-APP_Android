@@ -42,17 +42,6 @@ class AppConfig : MultiDexApplication() {
         return messageSender!!
     }
 
-//    fun getSignalServiceMessageReceiver() : PNRouterServiceMessageReceiver{
-//        if (messageReceiver == null) {
-//            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
-//                    APIModule.DynamicCredentialsProvider(this),
-//                    BuildConfig.USER_AGENT,
-//                    APIModule.PipeConnectivityListener())
-//        }
-//        return messageReceiver!!
-//    }
-
-
     protected fun setupApplicationComponent() {
         applicationComponent = DaggerAppComponent
                 .builder()

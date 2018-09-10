@@ -1,11 +1,14 @@
 package com.stratagile.pnrouter.data.web
 
+import android.util.Log
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -16,9 +19,15 @@ class PNRouterServiceMessageReceiver
  * @param urls The URL of the Signal Service.
  * @param credentials The Signal Service user's credentials.
  */
-constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) {
+constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
+    override fun onMessage(baseData: BaseData<*>) {
+        Log.i("ServiceMessageReceiver", baseData.baseDataToJson())
+    }
 
 //    private val socket: PushServiceSocket
+
+    var  pipe : SignalServiceMessagePipe? = null
+    var messageListner : MessageReceivedCallback? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -36,6 +45,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     init {
 //        this.socket = PushServiceSocket(urls, credentialsProvider, userAgent)
+        createMessagePipe()
+//        pipe!!.read(object : SignalServiceMessagePipe.NullMessagePipeCallback() {
+//            override fun onMessage(envelope: BaseData<*>) {
+//                Log.i("receiver", envelope.baseDataToJson())
+//            }
+//        })
     }
 
 //    @Throws(IOException::class)
@@ -78,11 +93,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * @return A SignalServiceMessagePipe for receiving Signal Service messages.
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
-        val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url,
-                urls.signalServiceUrls[0].trustStore,
-                credentialsProvider, userAgent, connectivityListener)
-
-        return SignalServiceMessagePipe(webSocket, credentialsProvider)
+        if (pipe == null) {
+            val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url,
+                    urls.signalServiceUrls[0].trustStore,
+                    credentialsProvider, userAgent, connectivityListener)
+            pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
+            pipe!!.messagePipeCallback = this
+            return pipe!!
+        } else {
+            return pipe!!
+        }
     }
 
 //    @Throws(IOException::class)
@@ -107,6 +127,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 //    }
 
 
+    /**
+     * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息
+     */
     interface MessageReceivedCallback {
         fun onMessage(baseData : BaseData<*>)
     }

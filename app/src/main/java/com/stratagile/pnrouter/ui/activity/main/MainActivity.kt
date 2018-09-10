@@ -64,12 +64,11 @@ class MainActivity : BaseActivity(), MainContract.View {
                 messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
             }
             var login = LoginReq("login", "routerid", "WOZIJI", 1)
-            Log.i("MainActivity", login.Action)
-            var jsonStr = BaseData("123343434", "MIFI", login).baseDataToJson()
-            Log.i("MainActivity", jsonStr)
-            if (messageSender!!.send(jsonStr)) {
-                edittext.text.clear()
-            }
+//            Log.i("MainActivity", login.Action)
+            var jsonStr = BaseData("123343434", "MIFI", login)
+//            Log.i("MainActivity", jsonStr.baseDataToJson())
+            messageSender!!.send(jsonStr)
+            edittext.text.clear()
         }
 
     }

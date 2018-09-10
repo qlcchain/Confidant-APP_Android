@@ -1,7 +1,10 @@
 package com.stratagile.pnrouter.data.web
 
+import android.util.Log
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.utils.baseDataToJson
 import okhttp3.internal.Util
 import okio.ByteString
 import java.io.IOException
@@ -11,11 +14,16 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) {
+class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) : WebSocketConnection.OnMessageReceiveListener {
+
+    open var messagePipeCallback : MessagePipeCallback? = null
+    override fun onMessage(message: BaseData<*>) {
+        messagePipeCallback?.onMessage(message)
+    }
 
     init {
-
         this.websocket.connect()
+        this.websocket.onMessageReceiveListener = this
     }
 
     /**
@@ -35,13 +43,14 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
      * @throws IOException
      * @throws InvalidVersionException
      */
-//    @Throws(TimeoutException::class, IOException::class, InvalidVersionException::class)
-//    @JvmOverloads
-//    fun read(timeout: Long, unit: TimeUnit, callback: MessagePipeCallback = NullMessagePipeCallback()): SignalServiceEnvelope {
-//        while (true) {
-//            val request = websocket.readRequest(unit.toMillis(timeout))
+    @Throws(TimeoutException::class, IOException::class, InvalidVersionException::class)
+    @JvmOverloads
+    fun read(messageCallBack : NullMessagePipeCallback){
+        while (true) {
+            val request = websocket.readRequest(2000)
 //            val response = createWebSocketResponse(request)
-//
+            messageCallBack.onMessage(request)
+//            return request
 //            try {
 //                if (isSignalServiceEnvelope(request)) {
 //                    val envelope = SignalServiceEnvelope(request.getBody().toByteArray(),
@@ -51,10 +60,10 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
 //                    return envelope
 //                }
 //            } finally {
-//                websocket.sendResponse(response)
+////                websocket.sendResponse(response)
 //            }
-//        }
-//    }
+        }
+    }
 
 //    @Throws(IOException::class)
 //    fun send(list: OutgoingPushMessageList): SendMessageResponse {
@@ -152,13 +161,13 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
      * For receiving a callback when a new message has been
      * received.
      */
-//    interface MessagePipeCallback {
-//        fun onMessage(envelope: SignalServiceEnvelope)
-//    }
-//
-//    private class NullMessagePipeCallback : MessagePipeCallback {
-//        override fun onMessage(envelope: SignalServiceEnvelope) {}
-//    }
+    interface MessagePipeCallback {
+        fun onMessage(baseData : BaseData<*>)
+    }
+
+    open class NullMessagePipeCallback : MessagePipeCallback {
+        override fun onMessage(baseData : BaseData<*>) {}
+    }
 
     companion object {
 

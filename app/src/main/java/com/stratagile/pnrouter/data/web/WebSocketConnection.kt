@@ -4,6 +4,7 @@ import android.util.Log
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.protobuf.InvalidProtocolBufferException
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos
 import okhttp3.*
 import java.util.*
@@ -45,6 +46,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var keepAliveSender: KeepAliveSender? = null
     private var attempts: Int = 0
     private var connected: Boolean = false
+    open var onMessageReceiveListener : OnMessageReceiveListener? = null
 
     init {
         this.attempts = 0
@@ -117,7 +119,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         val startTime = System.currentTimeMillis()
 
         while (client != null && incomingRequests.isEmpty() && elapsedTime(startTime) < timeoutMillis) {
-            Util.wait(Object(), Math.max(1, timeoutMillis - elapsedTime(startTime)))
+//            Util.wait(Object(), Math.max(1, timeoutMillis - elapsedTime(startTime)))
         }
 
         return if (incomingRequests.isEmpty() && client == null)
@@ -147,7 +149,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         return future
     }
     fun send(message : String?) : Boolean{
-        Log.i("websocketConnection", message)
+//        Log.i("websocketConnection", message)
         if (client == null || !connected) throw IOException("No connection!")
         if (!client!!.send(message!!)) {
 //            throw IOException("Write failed!")
@@ -202,7 +204,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
         Log.w(TAG, "WSC onMessage()")
-//        try {
+        //        try {
 //            val message = WebSocketMessage.parseFrom(payload!!.toByteArray())
 //
 //            Log.w(TAG, "Message Type: " + message.getType().getNumber())
@@ -220,23 +222,24 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //        } catch (e: InvalidProtocolBufferException) {
 //            Log.w(TAG, e)
 //        }
-
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.w(TAG, "onMessage(text)! " + text!!)
+//        Log.w(TAG, "onMessage(text)! " + text!!)
         try {
             val gson = Gson()
             var baseData = gson.fromJson(text, BaseData::class.java)
-            Log.i(TAG, "解析消息")
-            Log.i(TAG, baseData.toString())
-            Log.i(TAG, baseData.timestamp)
-            Log.i(TAG, baseData.appid)
-            Log.i(TAG, baseData.params.toString())
-            var jsonObject  = JSONObject.parseObject(text)
-            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
-            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
-            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
+//            Log.i(TAG, "解析消息")
+//            Log.i(TAG, baseData.toString())
+//            Log.i(TAG, baseData.timestamp)
+//            Log.i(TAG, baseData.appid)
+//            Log.i(TAG, baseData.params.toString())
+//            var jsonObject  = JSONObject.parseObject(text)
+//            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
+//            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
+//            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
+//            incomingRequests.add(baseData)
+            onMessageReceiveListener!!.onMessage(baseData)
         } catch (e : Exception) {
             e.printStackTrace()
         }
@@ -363,6 +366,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         private val TAG = WebSocketConnection::class.java.simpleName
         private val KEEPALIVE_TIMEOUT_SECONDS = 55
+    }
+
+    interface OnMessageReceiveListener {
+        fun onMessage(message : BaseData<*>)
     }
 
 }
