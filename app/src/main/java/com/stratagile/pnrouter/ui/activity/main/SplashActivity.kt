@@ -26,16 +26,19 @@ import javax.inject.Inject;
 
 class SplashActivity : BaseActivity(), SplashContract.View {
     override fun loginSuccees() {
+        finish()
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 
     override fun jumpToLogin() {
+        finish()
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 
     override fun jumpToGuest() {
+        finish()
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
 import android.os.*
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Button
@@ -25,10 +26,9 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.finger_dialog_layout.*
-import java.util.*
 
 import javax.inject.Inject;
+
 
 /**
  * @author zl
@@ -60,7 +60,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         setContentView(R.layout.activity_login)
     }
     override fun initData() {
-        LoginBtn.setOnClickListener {
+        loginBtn.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
         handler = object : Handler() {
@@ -80,6 +80,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
                 }
             }
         }
+        hasRouterParent.visibility = View.INVISIBLE
+        miniScanParent.visibility = View.INVISIBLE
+        scanParent.visibility = View.VISIBLE
+        noRoutergroup.visibility = View.VISIBLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
             // init fingerprint.
             try {
@@ -101,16 +105,19 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
                         builder.setCancelable(false)
                         val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
 
-                        val btn_comfirm = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
+                        val btn_cancel = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
 
-                        btn_comfirm.visibility = View.VISIBLE
+                        btn_cancel.visibility = View.VISIBLE
                         builder.setCancelable(true)
-                        btn_comfirm.setOnClickListener {
+                        btn_cancel.setOnClickListener {
                             builderTips?.dismiss()
                             if (cancellationSignal != null) {
                                 cancellationSignal?.cancel()
                                 cancellationSignal = null
                             }
+                            finish();
+                            android.os.Process.killProcess(android.os.Process.myPid())
+                            System.exit(0)
                         }
                         finger = view.findViewById<View>(R.id.finger) as ImageView
                         tvContent.setText(R.string.choose_finger_dialog_title)
@@ -149,10 +156,27 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
 
                 } else {
                     SpUtil.putString(this, ConstantValue.fingerPassWord, "")
+                    val dialog = AlertDialog.Builder(this)
+                    dialog.setMessage(R.string.No_fingerprints_do_you_want_to_set_them_up)
+                    dialog.setCancelable(false)
+
+                    dialog.setPositiveButton(android.R.string.ok
+                    ) { dialog, which ->
+                        val intent = Intent(Settings.ACTION_SETTINGS)
+                        startActivity(intent)
+                        finish();
+                        android.os.Process.killProcess(android.os.Process.myPid())
+                        System.exit(0)
+                    }
+                    dialog.setNegativeButton(android.R.string.cancel
+                    ) { dialog, which ->
+                        finish();
+                        android.os.Process.killProcess(android.os.Process.myPid())
+                        System.exit(0)
+                    }
+                    dialog.create().show()
                 }
-                /*}else{
-                    etPassword.requestFocus();
-                }*/
+
             } catch (e: NoClassDefFoundError) {
                 SpUtil.putString(this, ConstantValue.fingerPassWord, "")
             }
@@ -166,7 +190,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         when (code) {
         //case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
             FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE, FingerprintManager.FINGERPRINT_ERROR_LOCKOUT, FingerprintManager.FINGERPRINT_ERROR_NO_SPACE, FingerprintManager.FINGERPRINT_ERROR_TIMEOUT, FingerprintManager.FINGERPRINT_ERROR_UNABLE_TO_PROCESS -> {
-                builderTips?.dismiss()
                 setResultInfo(R.string.ErrorHwUnavailable_warning)
             }
         }
