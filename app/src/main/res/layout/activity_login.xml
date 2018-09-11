@@ -60,11 +60,11 @@
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="13dp"
             android:layout_marginTop="@dimen/x70"
             android:text="@string/Username"
-            android:textSize="@dimen/x23"
             android:textColor="@color/white"
+            android:textSize="@dimen/x23"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
