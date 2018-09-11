@@ -60,7 +60,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         setContentView(R.layout.activity_login)
     }
     override fun initData() {
-        LoginBtn.setOnClickListener {
+        loginBtn.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
         handler = object : Handler() {
@@ -80,6 +80,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
                 }
             }
         }
+        hasRouterParent.visibility = View.INVISIBLE
+        miniScanParent.visibility = View.INVISIBLE
+        scanParent.visibility = View.VISIBLE
+        noRoutergroup.visibility = View.VISIBLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
             // init fingerprint.
             try {
@@ -186,7 +190,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         when (code) {
         //case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
             FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE, FingerprintManager.FINGERPRINT_ERROR_LOCKOUT, FingerprintManager.FINGERPRINT_ERROR_NO_SPACE, FingerprintManager.FINGERPRINT_ERROR_TIMEOUT, FingerprintManager.FINGERPRINT_ERROR_UNABLE_TO_PROCESS -> {
-                builderTips?.dismiss()
                 setResultInfo(R.string.ErrorHwUnavailable_warning)
             }
         }

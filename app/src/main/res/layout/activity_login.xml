@@ -5,14 +5,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/main_bg"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/pepolebg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
@@ -21,27 +22,117 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/img_bg" />
 
+        <android.support.constraint.Group
+            android:id="@+id/hasRouterParent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:constraint_referenced_ids="routerbg,routerName"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/routerbg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="255dp"
+            android:adjustViewBounds="true"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pepolebg"
+            app:srcCompat="@mipmap/img_wifi" />
+
+        <TextView
+            android:id="@+id/routerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/x282"
+            android:text="Router 1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/x40"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/routerbg" />
+
+        <android.support.constraint.Group
+            android:id="@+id/miniScanParent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:constraint_referenced_ids="miniScanBg,miniScanIcon" />
+
+        <ImageView
+            android:id="@+id/miniScanBg"
+            android:layout_width="48dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="@dimen/x29"
+            android:layout_marginTop="@dimen/x29"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/icon_base" />
+
+        <ImageView
+            android:id="@+id/miniScanIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/miniScanBg"
+            app:layout_constraintEnd_toEndOf="@+id/miniScanBg"
+            app:layout_constraintStart_toStartOf="@+id/miniScanBg"
+            app:layout_constraintTop_toTopOf="@+id/miniScanBg"
+            app:srcCompat="@mipmap/icon_little_scan" />
+
+        <android.support.constraint.Group
+            android:id="@+id/scanParent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="scanBg,scanIcon"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/scanBg"
             android:layout_width="@dimen/x268"
             android:layout_height="@dimen/x268"
             android:layout_marginTop="@dimen/x440"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="@+id/pepolebg"
             app:srcCompat="@mipmap/icon_headportrai" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/scanIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="@dimen/x8"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-            app:layout_constraintEnd_toEndOf="@+id/imageView3"
-            app:layout_constraintStart_toStartOf="@+id/imageView3"
-            app:layout_constraintTop_toTopOf="@+id/imageView3"
+            app:layout_constraintBottom_toBottomOf="@+id/scanBg"
+            app:layout_constraintEnd_toEndOf="@+id/scanBg"
+            app:layout_constraintStart_toStartOf="@+id/scanBg"
+            app:layout_constraintTop_toTopOf="@+id/scanBg"
             app:srcCompat="@mipmap/icon_scan" />
+
+        <android.support.constraint.Group
+            android:id="@+id/noRoutergroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="textView2"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView2"
@@ -55,7 +146,7 @@
             android:textSize="@dimen/x30"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+            app:layout_constraintTop_toBottomOf="@+id/scanBg" />
 
         <TextView
             android:id="@+id/textView3"
@@ -70,7 +161,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/userName"
             android:layout_width="300dp"
             android:layout_height="51dp"
             android:layout_marginEnd="8dp"
@@ -90,10 +181,10 @@
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
         <TextView
-            android:id="@+id/LoginBtn"
+            android:id="@+id/loginBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/x92"
+            android:layout_marginBottom="@dimen/x52"
             android:layout_marginEnd="@dimen/x52"
             android:layout_marginStart="@dimen/x52"
             android:layout_marginTop="@dimen/x84"
@@ -108,9 +199,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
 
     </android.support.constraint.ConstraintLayout>
