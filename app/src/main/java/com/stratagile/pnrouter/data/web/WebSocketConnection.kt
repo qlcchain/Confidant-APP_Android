@@ -28,7 +28,6 @@ import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequest
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage
 import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.log.L
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.security.SecureRandom

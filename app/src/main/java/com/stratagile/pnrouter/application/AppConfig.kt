@@ -10,11 +10,7 @@ import com.stratagile.pnrouter.data.web.*
  * 邮箱：365941593@qq.com
  * 描述：
  */
-/**
- * 当前vpn的使用类型
- * 0， 为不收费，
- * 1， 收费
- */
+
 
 class AppConfig : MultiDexApplication() {
     var applicationComponent: AppComponent? = null

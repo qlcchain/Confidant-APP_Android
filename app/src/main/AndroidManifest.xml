@@ -16,8 +16,6 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
-    <permission android:name="com.stratagile.winq.dapp.permission.MIPUSH_RECEIVE" android:protectionLevel="signature" />
-    <uses-permission android:name="com.stratagile.winq.dapp.permission.MIPUSH_RECEIVE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,14 +25,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base">
         <activity android:name=".ui.activity.login.LoginActivityActivity">
+
+        </activity>
+        <activity android:name=".ui.activity.main.MainActivity" />
+        <activity android:name=".ui.activity.test.TestActivity" />
+        <activity android:name=".ui.activity.main.SplashActivity"
+            android:theme="@style/SplashTheme"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.main.MainActivity" />
-        <activity android:name=".ui.activity.test.TestActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

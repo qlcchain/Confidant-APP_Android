@@ -1,11 +1,14 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.content.Intent
 import android.os.Bundle
+import com.pawegio.kandroid.startActivity
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
@@ -22,11 +25,23 @@ import javax.inject.Inject;
  */
 
 class SplashActivity : BaseActivity(), SplashContract.View {
+    override fun loginSuccees() {
+        startActivity(Intent(this, LoginActivityActivity::class.java))
+    }
+
+    override fun jumpToLogin() {
+        startActivity(Intent(this, LoginActivityActivity::class.java))
+    }
+
+    override fun jumpToGuest() {
+        startActivity(Intent(this, LoginActivityActivity::class.java))
+    }
 
     @Inject
     internal lateinit var mPresenter: SplashPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
@@ -35,6 +50,9 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
         SpUtil.putString(this, ConstantValue.testValue, "test")
+        mPresenter.getLastVersion()
+        mPresenter.getPermission()
+        mPresenter.observeJump()
     }
 
     override fun setupActivityComponent() {

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
