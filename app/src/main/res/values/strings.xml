@@ -20,5 +20,5 @@
     <string name="ErrorHwUnavailable_warning">The number of mistakes is too much, and try again later.</string>
     <string name="AcquiredToSlow_warning">try again</string>
     <string name="Fingerprint_init_failed_Try_again">Fingerprint init failed! Try again!</string>
-
+    <string name="No_fingerprints_do_you_want_to_set_them_up">No fingerprints, do you want to set them up?</string>
 </resources>
