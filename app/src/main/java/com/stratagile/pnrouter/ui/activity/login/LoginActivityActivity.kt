@@ -1,8 +1,10 @@
 package com.stratagile.pnrouter.ui.activity.login
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
+import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
@@ -11,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -27,6 +30,7 @@ import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_login.*
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -238,4 +242,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         progressDialog.hide()
     }
 
+   override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            hasRouterParent.visibility = View.VISIBLE
+            miniScanParent.visibility = View.VISIBLE
+            scanParent.visibility = View.INVISIBLE
+            noRoutergroup.visibility = View.INVISIBLE
+            routerName?.setText(data!!.getStringExtra("result"))
+            return
+        }
+    }
 }

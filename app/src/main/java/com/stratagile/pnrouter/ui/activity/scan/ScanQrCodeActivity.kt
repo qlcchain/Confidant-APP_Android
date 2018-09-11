@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.view.View
 import android.widget.*
 import com.google.zxing.Result
@@ -58,24 +59,33 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
     private var hasSurface: Boolean = false//是否有预览
     private val vibrate = true//扫描成功后是否震动
     private var mFlashing = true//闪光灯开启状态
-    private var mLlScanHelp: LinearLayout? = null//生成二维码 & 条形码 布局
     private var mIvLight: ImageView? = null//闪光灯 按钮
     private val rxDialogSure: RxDialogSure? = null//扫描结果显示框
 
+    fun setScanerListener(scanerListener: OnRxScanerListener) {
+        mScanerListener = scanerListener
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
         setContentView(R.layout.activity_scan_qr_code)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        mIvLight = findViewById(R.id.top_mask) as ImageView
+        mContainer = findViewById(R.id.capture_containter) as RelativeLayout
+        mCropLayout = findViewById(R.id.capture_crop_layout) as RelativeLayout
         //请求Camera权限 与 文件读写 权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
         }
     }
     override fun initData() {
-
+        initScanerAnimation()//扫描动画初始化
+        CameraManager.init(this)//初始化 CameraManager
+        hasSurface = false
+        inactivityTimer = InactivityTimer(this)
     }
 
     override fun setupActivityComponent() {
@@ -85,6 +95,49 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
                 .scanQrCodeModule(ScanQrCodeModule(this))
                 .build()
                 .inject(this)
+    }
+
+   override protected fun onResume() {
+        super.onResume()
+        val surfaceView = findViewById(com.vondear.rxtools.R.id.capture_preview) as SurfaceView
+        val surfaceHolder = surfaceView.holder
+        if (hasSurface) {
+            initCamera(surfaceHolder)//Camera初始化
+        } else {
+            surfaceHolder.addCallback(object : SurfaceHolder.Callback {
+                override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+
+                }
+
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    if (!hasSurface) {
+                        hasSurface = true
+                        initCamera(holder)
+                    }
+                }
+
+                override fun surfaceDestroyed(holder: SurfaceHolder) {
+                    hasSurface = false
+
+                }
+            })
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
+        }
+    }
+
+    override protected fun onPause() {
+        super.onPause()
+        if (handler != null) {
+            handler?.quitSynchronously()
+            handler = null
+        }
+        CameraManager.get().closeDriver()
+    }
+
+    override protected fun onDestroy() {
+        inactivityTimer?.shutdown()
+        mScanerListener = null
+        super.onDestroy()
     }
     override fun setPresenter(presenter: ScanQrCodeContract.ScanQrCodeContractPresenter) {
         mPresenter = presenter as ScanQrCodePresenter
