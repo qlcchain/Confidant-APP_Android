@@ -27,14 +27,6 @@
 
         </android.support.v7.widget.RecyclerView>
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/x40"
-            android:text="send" />
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

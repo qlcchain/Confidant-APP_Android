@@ -1,7 +1,11 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
+import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
+import com.socks.library.KLog
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.LoginRsp
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.File
 import java.io.FileInputStream
@@ -20,14 +24,25 @@ class PNRouterServiceMessageReceiver
  * @param credentials The Signal Service user's credentials.
  */
 constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
+
     override fun onMessage(baseData: BaseData<*>) {
-        Log.i("ServiceMessageReceiver", baseData.baseDataToJson())
+        KLog.i(baseData.baseDataToJson())
+        var gson = Gson()
+        var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
+        when (JSONObject.parseObject((JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()).getString("Action")) {
+            "Login" -> {
+                var loginRsp  = gson.fromJson<LoginRsp>(paramsStr, LoginRsp::class.java)
+                loginBackListener?.loginBack(loginRsp)
+            }
+        }
+        messageListner?.onMessage(baseData)
     }
 
 //    private val socket: PushServiceSocket
 
     var  pipe : SignalServiceMessagePipe? = null
     var messageListner : MessageReceivedCallback? = null
+    var loginBackListener : LoginMessageCallback? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -138,15 +153,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         override fun onMessage(envelope: BaseData<*>) {}
     }
 
+    interface LoginMessageCallback {
+        fun loginBack(loginRsp : LoginRsp)
+    }
+
 }
-/**
- * Retrieves a SignalServiceAttachment.
- *
- * @param pointer The [SignalServiceAttachmentPointer]
- * received in a [SignalServiceDataMessage].
- * @param destination The download destination for this attachment.
- *
- * @return An InputStream that streams the plaintext attachment contents.
- * @throws IOException
- * @throws InvalidMessageException
- */
+

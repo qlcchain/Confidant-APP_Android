@@ -1,13 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.main
 
-import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.util.Log
 import android.widget.RelativeLayout
-import com.pawegio.kandroid.e
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
@@ -16,25 +12,12 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.data.service.MessageRetrievalService
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LoginReq
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
-import com.stratagile.pnrouter.ui.activity.test.TestActivity
 import com.stratagile.pnrouter.utils.UIUtils
-import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
-import android.support.annotation.NonNull
 import android.support.design.widget.BottomNavigationView
-import android.view.MenuItem
-import com.stratagile.pnrouter.R.id.statusBar
-import com.stratagile.pnrouter.R.id.tvTitle
-import kotlinx.android.synthetic.main.fragment_conversation_list.*
 
 
 /**
@@ -49,8 +32,6 @@ class MainActivity : BaseActivity(), MainContract.View {
     @Inject
     internal lateinit var mPresenter: MainPresenter
 
-    var  messageSender :PNRouterServiceMessageSender? = null
-    lateinit var signalServiceMessageReceiver: PNRouterServiceMessageReceiver
     override fun setPresenter(presenter: MainContract.MainContractPresenter) {
         mPresenter = presenter as MainPresenter
     }
@@ -65,7 +46,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
-        MessageRetrievalService.registerActivityStarted(this)
+//        SpUtil.putString(this, ConstantValue.userId, "271D61D2976D9A06A7F07274D5198EB511C8A334ACC07844868A9C260233F15E80D50696CC76")
         bottomNavigation.enableAnimation(false)
         bottomNavigation.enableShiftingMode(false)
         bottomNavigation.enableItemShiftingMode(false)
@@ -127,7 +108,6 @@ class MainActivity : BaseActivity(), MainContract.View {
 //            startActivity(Intent(this, TestActivity::class.java))
 //        }
 //        tv_hello.typeface.style
-        signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
         viewPager.offscreenPageLimit = 4
 
     }

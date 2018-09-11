@@ -45,15 +45,15 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        send.setOnClickListener {
-            if (messageSender == null) {
-                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
-            }
-            var login = LoginReq("Login", "F574DB6D9136090C75C8CD4132E70CA9938568A6308AD5B2AE00CA86C5E7CA3FF8345E8AE31F", "", 0)
-            var jsonStr = BaseData( login)
-            Log.i("MainActivity", jsonStr.baseDataToJson())
-            messageSender!!.send(jsonStr)
-        }
+//        send.setOnClickListener {
+//            if (messageSender == null) {
+//                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
+//            }
+//            var login = LoginReq("Login", "F574DB6D9136090C75C8CD4132E70CA9938568A6308AD5B2AE00CA86C5E7CA3FF8345E8AE31F", "", 0)
+//            var jsonStr = BaseData( login)
+//            Log.i("MainActivity", jsonStr.baseDataToJson())
+//            messageSender!!.send(jsonStr)
+//        }
     }
 
     override fun setupFragmentComponent() {

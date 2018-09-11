@@ -24,7 +24,7 @@ open class BaseData<T>() {
  * 1.	APP登录（包含新用户注册）
  * (1)	请求（APP-->Router）
  */
-data class LoginReq(var Action : String = "login", var RouteId : String, var UserId : String, var UserDataVersion :Int) : BaseData<LoginReq>()
+data class LoginReq(var Action : String = "Login", var RouteId : String, var UserId : String, var UserDataVersion :Int) : BaseData<LoginReq>()
 
 /**
  * 1.	APP登录（包含新用户注册）

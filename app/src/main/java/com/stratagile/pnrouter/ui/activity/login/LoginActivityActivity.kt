@@ -19,6 +19,14 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
+import com.stratagile.pnrouter.constant.ConstantValue.Companion.userId
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
+import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.entity.LoginRsp
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -33,6 +41,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
 import javax.inject.Inject;
+import kotlin.math.log
 
 
 /**
@@ -42,7 +51,42 @@ import javax.inject.Inject;
  * @date 2018/09/10 15:05:29
  */
 
-class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
+class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
+    override fun loginBack(loginRsp: LoginRsp) {
+        KLog.i(loginRsp.toString())
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if ("".equals(loginRsp.UserId)) {
+            runOnUiThread {
+                toast("Too many users")
+            }
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
+            SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
+            SpUtil.putString(this, ConstantValue.username, userName.text.toString())
+            SpUtil.putString(this, ConstantValue.routerId, routerId)
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            newRouterEntity.routerId = routerId
+            newRouterEntity.routerName = "Router " + (routerList.size + 1)
+            newRouterEntity.username = userName.text.toString()
+            newRouterEntity.userId = loginRsp.UserId
+            var contains = false
+            for (i in routerList) {
+                if (i.routerId.equals(routerId)) {
+                    contains = true
+                    break
+                }
+            }
+            if (contains) {
+                KLog.i("数据局中已经包含了这个routerId")
+            } else {
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            }
+            finish()
+        }
+    }
+
 
     @Inject
     internal lateinit var mPresenter: LoginActivityPresenter
@@ -56,6 +100,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
 
     internal var finger: ImageView? = null
 
+    var newRouterEntity = RouterEntity()
+
+    var routerId = ""
+    var userId = ""
+    var username = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -64,9 +114,26 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
     override fun initView() {
         setContentView(R.layout.activity_login)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AppConfig.instance.messageReceiver!!.loginBackListener = null
+    }
+
     override fun initData() {
+        swipeBackLayout.isEnabled = false
+        AppConfig.instance.messageReceiver!!.loginBackListener = this
         loginBtn.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            if (userName.text.toString().equals("")) {
+                toast("please type your username")
+                return@setOnClickListener
+            }
+            if (routerId.equals("")) {
+                return@setOnClickListener
+            }
+            var login = LoginReq("Login", routerId, userId!!, 0)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            showProgressDialog()
         }
         scanIcon.setOnClickListener {
             mPresenter.getScanPermission()
@@ -92,10 +159,26 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
                 }
             }
         }
-        hasRouterParent.visibility = View.INVISIBLE
-        miniScanParent.visibility = View.INVISIBLE
-        scanParent.visibility = View.VISIBLE
-        noRoutergroup.visibility = View.VISIBLE
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        if (routerList.size != 0) {
+            routerId = routerList[0].routerId
+            userId = routerList[0].userId
+            username = routerList[0].username
+            routerName.text = routerList[0].routerName
+            if (!username.equals("")) {
+                userName.isEnabled = false
+                userName.setText(username)
+            }
+            hasRouterParent.visibility = View.VISIBLE
+            scanParent.visibility = View.INVISIBLE
+            noRoutergroup.visibility = View.INVISIBLE
+            miniScanParent.visibility = View.VISIBLE
+        } else {
+            scanParent.visibility = View.VISIBLE
+            noRoutergroup.visibility = View.VISIBLE
+            miniScanParent.visibility = View.INVISIBLE
+            hasRouterParent.visibility = View.INVISIBLE
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
             // init fingerprint.
             try {
@@ -202,9 +285,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, 1)
     }
+
     private fun handleErrorCode(code: Int) {
         when (code) {
-        //case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
+            //case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
             FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE, FingerprintManager.FINGERPRINT_ERROR_LOCKOUT, FingerprintManager.FINGERPRINT_ERROR_NO_SPACE, FingerprintManager.FINGERPRINT_ERROR_TIMEOUT, FingerprintManager.FINGERPRINT_ERROR_UNABLE_TO_PROCESS -> {
                 setResultInfo(R.string.ErrorHwUnavailable_warning)
             }
@@ -216,6 +300,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
             FingerprintManager.FINGERPRINT_ACQUIRED_GOOD, FingerprintManager.FINGERPRINT_ACQUIRED_IMAGER_DIRTY, FingerprintManager.FINGERPRINT_ACQUIRED_INSUFFICIENT, FingerprintManager.FINGERPRINT_ACQUIRED_PARTIAL, FingerprintManager.FINGERPRINT_ACQUIRED_TOO_FAST, FingerprintManager.FINGERPRINT_ACQUIRED_TOO_SLOW -> setResultInfo(R.string.AcquiredToSlow_warning)
         }
     }
+
     private fun setResultInfo(stringId: Int) {
         if (stringId == R.string.fingerprint_success) {
             finger?.setImageDrawable(resources.getDrawable(R.mipmap.icon_fingerprint_complete))
@@ -226,6 +311,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
             toast(stringId)
         }
     }
+
     override fun setupActivityComponent() {
         DaggerLoginActivityComponent
                 .builder()
@@ -234,6 +320,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
                 .build()
                 .inject(this)
     }
+
     override fun setPresenter(presenter: LoginActivityContract.LoginActivityContractPresenter) {
         mPresenter = presenter as LoginActivityPresenter
     }
@@ -254,6 +341,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
             scanParent.visibility = View.INVISIBLE
             noRoutergroup.visibility = View.INVISIBLE
             routerName?.setText(data!!.getStringExtra("result"))
+            routerId = data!!.getStringExtra("result")
+            newRouterEntity.routerId = data!!.getStringExtra("result")
             return
         }
     }
