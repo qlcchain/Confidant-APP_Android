@@ -28,5 +28,6 @@
     <string name="routerManagement">Router management</string>
     <string name="addRecentStatus">Add recent status</string>
     <string name="qr_code_business_card">QR code business Card</string>
+    <string name="search">Search</string>
 
 </resources>

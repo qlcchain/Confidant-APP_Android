@@ -199,6 +199,7 @@ public class CustomPopWindow {
     public static boolean onBackPressed() {
         if (isShowing && instance != null) {
             instance.dismiss();
+            isShowing = false;
             return true;
         }
         return false;

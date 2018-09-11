@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.ui.activity.user.contract.QRCodeContract
 import com.stratagile.pnrouter.ui.activity.user.module.QRCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
 import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
@@ -72,6 +73,14 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
             PopWindowUtil.showSharePopWindow(this, tvShare)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (CustomPopWindow.onBackPressed()) {
+
+        } else {
+            super.onBackPressed()
+        }
     }
 
 

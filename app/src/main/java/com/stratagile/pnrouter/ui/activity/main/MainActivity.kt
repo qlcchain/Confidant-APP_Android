@@ -64,6 +64,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
 
     override fun initData() {
+        swipeBackLayout.setEnableGesture(false)
         MessageRetrievalService.registerActivityStarted(this)
         bottomNavigation.enableAnimation(false)
         bottomNavigation.enableShiftingMode(false)
@@ -127,6 +128,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 //        }
 //        tv_hello.typeface.style
         signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
+        viewPager.offscreenPageLimit = 4
 
     }
 

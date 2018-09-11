@@ -13,7 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.utils.UIUtils
-import com.stratagile.pnrouter.utils.swipeback.SwipeBackHelper
+import com.stratagile.pnrouter.utils.swipeback.app.SwipeBackActivity
 import com.stratagile.pnrouter.view.RxDialogLoading
 
 /**
@@ -22,7 +22,7 @@ import com.stratagile.pnrouter.view.RxDialogLoading
  * 描述：
  */
 
-abstract class BaseActivity : AppCompatActivity(), ActivityDelegate, SwipeBackHelper.SlideBackManager {
+abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
 
     var toolbar: Toolbar? = null
     var needFront = false   //toolBar 是否需要显示在最上层的标识
@@ -31,7 +31,6 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate, SwipeBackHe
     lateinit var view: View
     lateinit var progressDialog : RxDialogLoading
     lateinit var title: TextView
-    var mSwipeBackHelper: SwipeBackHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,61 +169,20 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate, SwipeBackHe
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-//        if (ev.action == MotionEvent.ACTION_DOWN) {
-//            val v = currentFocus
-//            if (isShouldHideInput(v, ev)) {
-//
-//                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
-//            }
-//            return super.dispatchTouchEvent(ev)
-//        }
-//
-//        // 必不可少，否则所有的组件都不会有TouchEvent了
-//        return if (window.superDispatchTouchEvent(ev)) {
-//            true
-//        } else onTouchEvent(ev)
-        if (mSwipeBackHelper == null) {
-            mSwipeBackHelper = SwipeBackHelper(this)
+        if (ev.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (isShouldHideInput(v, ev)) {
+
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
+            }
+            return super.dispatchTouchEvent(ev)
         }
-        return mSwipeBackHelper!!.processTouchEvent(ev) || super.dispatchTouchEvent(ev)
-    }
 
-    override fun getSlideActivity(): Activity {
-        return this
-    }
-
-    override fun supportSlideBack(): Boolean {
-        return true
-    }
-
-    override fun canBeSlideBack(): Boolean {
-        return true
-    }
-
-    override fun finish() {
-        if (mSwipeBackHelper != null) {
-            mSwipeBackHelper!!.finishSwipeImmediately()
-            mSwipeBackHelper = null
-        }
-        super.finish()
-    }
-
-    override fun onBackPressed() {
-        if (mSwipeBackHelper == null) {
-            mSwipeBackHelper = SwipeBackHelper(this)
-        }
-        if (mSwipeBackHelper!!.mIsSlideAnimPlaying) {
-            return
-        }
-        super.onBackPressed()
-    }
-
-    fun getmSwipeBackHelper(): SwipeBackHelper {
-        if (mSwipeBackHelper == null) {
-            mSwipeBackHelper = SwipeBackHelper(this)
-        }
-        return mSwipeBackHelper!!
+        // 必不可少，否则所有的组件都不会有TouchEvent了
+        return if (window.superDispatchTouchEvent(ev)) {
+            true
+        } else onTouchEvent(ev)
     }
 
 }
