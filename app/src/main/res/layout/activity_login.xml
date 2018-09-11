@@ -194,7 +194,7 @@
             android:paddingBottom="@dimen/x36"
             android:paddingTop="@dimen/x36"
             android:text="@string/Login"
-            android:textColor="@color/white"
+            android:textColor="@color/color_808080"
             android:textSize="@dimen/x40"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
