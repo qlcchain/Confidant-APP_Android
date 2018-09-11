@@ -63,7 +63,7 @@
             android:id="@+id/miniScanParent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:visibility="visible"
             app:constraint_referenced_ids="miniScanBg,miniScanIcon" />
 
         <ImageView
@@ -71,7 +71,7 @@
             android:layout_width="48dp"
             android:layout_height="45dp"
             android:layout_marginEnd="@dimen/x29"
-            android:layout_marginTop="@dimen/x29"
+            android:layout_marginTop="27dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/icon_base" />
@@ -172,6 +172,7 @@
             android:inputType="text"
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
+            android:gravity="center"
             android:textColor="@color/white"
             android:textColorHint="@color/color_808080"
             android:textSize="@dimen/x31"

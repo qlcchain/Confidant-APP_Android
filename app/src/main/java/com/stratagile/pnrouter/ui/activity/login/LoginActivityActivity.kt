@@ -71,6 +71,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         scanIcon.setOnClickListener {
             mPresenter.getScanPermission()
         }
+        miniScanIcon.setOnClickListener {
+            mPresenter.getScanPermission()
+        }
+
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
