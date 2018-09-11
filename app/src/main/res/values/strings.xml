@@ -30,4 +30,12 @@
     <string name="qr_code_business_card">QR code business Card</string>
     <string name="search">Search</string>
 
+    <string name="Permission_Requeset">Permission Requeset</string>
+    <string name="We_Need_Some_Permission_to_continue">We Need Some Permission to continue</string>
+    <string name="permission_denied">permission denied</string>
+    <string name="close">close</string>
+    <string name="open_folder">open folder</string>
+    <string name="ok_btn_dialog">OK</string>
+    <string name="result">result</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -3,7 +3,7 @@
     <declare-styleable name="DrawableTextView">
         <attr name="text" format="string"/>
         <attr name="textSize" format="dimension"/>
-        <attr name="textColor" format="reference"/>
+        <attr name="textColor2" format="reference"/>
         <attr name="showNext" format="boolean"/>
     </declare-styleable>
     <declare-styleable name="DetailView">

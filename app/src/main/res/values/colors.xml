@@ -20,5 +20,6 @@
     <color name="color_f2f2f2">#f2f2f2</color>
     <color name="color_dedddd">#dedddd</color>
     <color name="color_4c000000">#4c000000</color>
+    <color name="colorFade">#D1D1D1</color>
 
 </resources>

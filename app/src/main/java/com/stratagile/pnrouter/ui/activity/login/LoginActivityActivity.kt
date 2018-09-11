@@ -24,6 +24,7 @@ import com.stratagile.pnrouter.ui.activity.login.contract.LoginActivityContract
 import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
+import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -62,6 +63,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
     override fun initData() {
         loginBtn.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
+        }
+        scanIcon.setOnClickListener {
+            mPresenter.getScanPermission()
         }
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -186,6 +190,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View {
         }
     }
 
+    override fun getScanPermissionSuccess() {
+        val intent1 = Intent(this, ScanQrCodeActivity::class.java)
+        startActivityForResult(intent1, 1)
+    }
     private fun handleErrorCode(code: Int) {
         when (code) {
         //case FingerprintManager.FINGERPRINT_ERROR_CANCELED:

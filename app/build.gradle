@@ -92,6 +92,8 @@ dependencies {
     //    compile 'com.safframework.log:saf-log:1.5.1'
     //    implementation project(':saf-log')
     implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.yanzhenjie:permission:1.1.2'
+    implementation project(':RxTools-library')
 
     //图片加载框架
     implementation 'com.github.bumptech.glide:glide:4.7.1'

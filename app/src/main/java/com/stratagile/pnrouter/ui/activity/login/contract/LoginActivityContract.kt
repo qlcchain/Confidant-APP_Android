@@ -19,12 +19,11 @@ interface LoginActivityContract {
          *
          */
         fun closeProgressDialog()
+
+        abstract fun getScanPermissionSuccess()
     }
 
     interface LoginActivityContractPresenter : BasePresenter {
-//        /**
-//         *
-//         */
-//        fun getBusinessInfo(map : Map)
+        abstract fun getScanPermission()
     }
 }
