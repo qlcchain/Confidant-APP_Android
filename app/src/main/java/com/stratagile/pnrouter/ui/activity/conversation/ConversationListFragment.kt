@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.os.Bundle
 import android.support.annotation.Nullable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,13 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.ConversationLi
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.utils.baseDataToJson
+import kotlinx.android.synthetic.main.fragment_conversation_list.*
+import kotlinx.android.synthetic.main.search_layout.*
 
 /**
  * @author hzp
@@ -30,11 +36,25 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
     @Inject
     lateinit internal var mPresenter: ConversationListPresenter
 
+    var  messageSender : PNRouterServiceMessageSender? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var view = inflater.inflate(R.layout.fragment_conversation_list, null);
+        var view = inflater.inflate(R.layout.fragment_conversation_list, null)
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        send.setOnClickListener {
+            if (messageSender == null) {
+                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
+            }
+            var login = LoginReq("Login", "F574DB6D9136090C75C8CD4132E70CA9938568A6308AD5B2AE00CA86C5E7CA3FF8345E8AE31F", "", 0)
+            var jsonStr = BaseData( login)
+            Log.i("MainActivity", jsonStr.baseDataToJson())
+            messageSender!!.send(jsonStr)
+        }
+    }
 
     override fun setupFragmentComponent() {
         DaggerConversationListComponent

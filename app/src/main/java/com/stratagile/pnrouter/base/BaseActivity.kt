@@ -1,10 +1,10 @@
 package com.stratagile.pnrouter.base
 
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DialogTitle
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -13,10 +13,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.utils.UIUtils
-import com.stratagile.pnrouter.utils.swipeback.swipeback.SwipeBackHelper
-import com.stratagile.pnrouter.view.FitRelativeLayout
+import com.stratagile.pnrouter.utils.swipeback.SwipeBackHelper
 import com.stratagile.pnrouter.view.RxDialogLoading
-import java.util.*
 
 /**
  * 作者：Android on 2017/8/1
@@ -24,16 +22,16 @@ import java.util.*
  * 描述：
  */
 
-abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
+abstract class BaseActivity : AppCompatActivity(), ActivityDelegate, SwipeBackHelper.SlideBackManager {
 
-    lateinit var toolbar: Toolbar
+    var toolbar: Toolbar? = null
     var needFront = false   //toolBar 是否需要显示在最上层的标识
-    lateinit var rootLayout: RelativeLayout
+    var rootLayout: RelativeLayout? = null
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
     lateinit var progressDialog : RxDialogLoading
     lateinit var title: TextView
-    lateinit var swipeBackHelper: SwipeBackHelper
+    var mSwipeBackHelper: SwipeBackHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,23 +65,23 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             return
         }
         if (needFront) {
-            toolbar.setBackgroundColor(resources.getColor(R.color.color_00000000))
+            toolbar?.setBackgroundColor(resources.getColor(R.color.color_00000000))
             relativeLayout_root.setBackgroundColor(resources.getColor(R.color.color_00000000))
             val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            rootLayout.addView(view, params)
-            toolbar.bringToFront()
-            toolbar.setVisibility(View.GONE)
+            rootLayout?.addView(view, params)
+            toolbar?.bringToFront()
+            toolbar?.setVisibility(View.GONE)
         } else {
             val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             params.addRule(RelativeLayout.BELOW, R.id.root_rl)
-            rootLayout.addView(view, params)
+            rootLayout?.addView(view, params)
         }
         initToolbar()
     }
 
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
-        title = toolbar.findViewById(R.id.title)
+        title = toolbar?.findViewById(R.id.title)!!
         relativeLayout_root = findViewById(R.id.root_rl)
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))
@@ -93,27 +91,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
 //        }
         //        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(getResources().getDimension(R.dimen.dp_69), this) - (UIUtils.getStatusBarHeight(this)));
         //        toolbar.setLayoutParams(rlp);
-        toolbar.setTitle("")
+        toolbar?.setTitle("")
         relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x110).toInt())))
         if (toolbar != null) {
             setSupportActionBar(toolbar)
         }
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_DOWN) {
-            val v = currentFocus
-            if (isShouldHideInput(v, ev)) {
-
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
-            }
-            return super.dispatchTouchEvent(ev)
-        }
-        // 必不可少，否则所有的组件都不会有TouchEvent了
-        return if (window.superDispatchTouchEvent(ev)) {
-            true
-        } else onTouchEvent(ev)
     }
 
     fun isShouldHideInput(v: View?, event: MotionEvent): Boolean {
@@ -187,9 +169,62 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         }
     }
 
-    override fun onBackPressed() {
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+//        if (ev.action == MotionEvent.ACTION_DOWN) {
+//            val v = currentFocus
+//            if (isShouldHideInput(v, ev)) {
+//
+//                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
+//            }
+//            return super.dispatchTouchEvent(ev)
+//        }
+//
+//        // 必不可少，否则所有的组件都不会有TouchEvent了
+//        return if (window.superDispatchTouchEvent(ev)) {
+//            true
+//        } else onTouchEvent(ev)
+        if (mSwipeBackHelper == null) {
+            mSwipeBackHelper = SwipeBackHelper(this)
+        }
+        return mSwipeBackHelper!!.processTouchEvent(ev) || super.dispatchTouchEvent(ev)
+    }
 
+    override fun getSlideActivity(): Activity {
+        return this
+    }
+
+    override fun supportSlideBack(): Boolean {
+        return true
+    }
+
+    override fun canBeSlideBack(): Boolean {
+        return true
+    }
+
+    override fun finish() {
+        if (mSwipeBackHelper != null) {
+            mSwipeBackHelper!!.finishSwipeImmediately()
+            mSwipeBackHelper = null
+        }
+        super.finish()
+    }
+
+    override fun onBackPressed() {
+        if (mSwipeBackHelper == null) {
+            mSwipeBackHelper = SwipeBackHelper(this)
+        }
+        if (mSwipeBackHelper!!.mIsSlideAnimPlaying) {
+            return
+        }
         super.onBackPressed()
+    }
+
+    fun getmSwipeBackHelper(): SwipeBackHelper {
+        if (mSwipeBackHelper == null) {
+            mSwipeBackHelper = SwipeBackHelper(this)
+        }
+        return mSwipeBackHelper!!
     }
 
 }

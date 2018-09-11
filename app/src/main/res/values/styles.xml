@@ -39,7 +39,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1px</item>
         <item name="android:layout_marginLeft">@dimen/x30</item>
-        <item name="android:background">@color/color_b3b3b3</item>
+        <item name="android:background">@color/color_ebebeb</item>
     </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>

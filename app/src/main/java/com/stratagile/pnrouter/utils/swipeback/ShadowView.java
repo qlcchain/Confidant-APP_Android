@@ -1,4 +1,4 @@
-package com.stratagile.pnrouter.utils.swipeback.swipeback;
+package com.stratagile.pnrouter.utils.swipeback;
 
 import android.content.Context;
 import android.graphics.Canvas;

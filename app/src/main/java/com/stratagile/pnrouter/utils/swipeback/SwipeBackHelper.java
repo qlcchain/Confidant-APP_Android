@@ -1,4 +1,4 @@
-package com.stratagile.pnrouter.utils.swipeback.swipeback;
+package com.stratagile.pnrouter.utils.swipeback;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

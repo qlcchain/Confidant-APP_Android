@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x28"
+        android:layout_marginLeft="@dimen/x50"
+        app:cardCornerRadius="@dimen/x5"
+        android:elevation="@dimen/x5"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/x40"
+                android:layout_marginBottom="@dimen/x40"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="17sp"
+                    android:text="Hzp"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/color_2c2c2c"
+                    android:layout_marginLeft="@dimen/x40"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_width="@dimen/x75"
+                    android:src="@mipmap/icon_twitter"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/x40"
+                    android:layout_height="@dimen/x75" />
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/color_ebebeb"
+                android:layout_height="@dimen/x1" />
+            <ImageView
+                android:layout_width="@dimen/x490"
+                android:layout_marginTop="@dimen/x60"
+                android:layout_marginBottom="@dimen/x60"
+                android:src="@mipmap/icon_twitter"
+                android:layout_height="@dimen/x490" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/color_ebebeb"
+                android:layout_height="@dimen/x1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/x20"
+                android:layout_marginBottom="@dimen/x20"
+                android:textSize="12sp"
+                android:textColor="@color/color_b3b3b3"
+                android:layout_height="wrap_content"
+                android:text="Sweep on private messages and add me"
+                />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/x50"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:text="Save to Phone"
+            android:gravity="center"
+            android:layout_height="@dimen/x85" />
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2"/>
+
+        <TextView
+            android:id="@+id/tvShare"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@color/main_color"
+            android:text="Share"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
+</LinearLayout>

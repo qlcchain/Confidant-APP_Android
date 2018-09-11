@@ -12,10 +12,13 @@
     <color name="black">#000</color>
     <color name="histroy">#330055</color>
     <color name="color_333">#333333</color>
+    <color name="color_2c2c2c">#2c2c2c</color>
     <color name="color_808080">#808080</color>
     <color name="color_e0e0e0">#e0e0e0</color>
     <color name="color_b3b3b3">#b3b3b3</color>
+    <color name="color_ebebeb">#ebebeb</color>
     <color name="color_f2f2f2">#f2f2f2</color>
     <color name="color_dedddd">#dedddd</color>
+    <color name="color_4c000000">#4c000000</color>
 
 </resources>

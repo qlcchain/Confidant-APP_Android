@@ -56,10 +56,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         this.attempts = 0
         this.connected = false
         reConnectThread = ReConnectThread()
-//        this.wsUri = httpUri.replace("https://", "wss://")
-//                .replace("http://", "ws://")
+        this.wsUri = httpUri.replace("https://", "wss://")
+                .replace("http://", "ws://")
 //        this.wsUri = "wss://47.96.76.184:18000"
-        this.wsUri = "wss://47.96.76.184:18001/"
+//        this.wsUri = "wss://47.96.76.184:18001/"
 //        this.wsUri = httpUri.replace("https://", "wss://")
 //                .replace("http://", "ws://") + "/v1/websocket/?login=%s&password=%s"
     }

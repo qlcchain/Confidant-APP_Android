@@ -27,7 +27,9 @@
         <activity android:name=".ui.activity.login.LoginActivityActivity">
 
         </activity>
-        <activity android:name=".ui.activity.main.MainActivity" />
+        <activity android:name=".ui.activity.main.MainActivity"
+            android:windowSoftInputMode="stateHidden"
+            />
         <activity android:name=".ui.activity.test.TestActivity" />
         <activity android:name=".ui.activity.main.SplashActivity"
             android:theme="@style/SplashTheme"
@@ -38,6 +40,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activity.user.MyDetailActivity" />
+        <activity android:name=".ui.activity.user.QRCodeActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <View
+        android:id="@+id/toDetail"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="wrap_content"
@@ -50,7 +51,7 @@
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x70"
-        app:text="Add recent status"
+        app:text="@string/addRecentStatus"
         app:showNext="false"
         app:layout_constraintTop_toBottomOf="@+id/view2">
 
@@ -70,7 +71,7 @@
             android:id="@+id/routerManagement"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="Router management">
+            app:text="@string/routerManagement">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
 
@@ -83,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:layout_constraintTop_toBottomOf="@+id/view3"
-            app:text="Collection">
+            app:text="@string/collection">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
 
@@ -93,7 +94,7 @@
             android:id="@+id/shareApp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="Share App">
+            app:text="@string/shareApp">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
 
@@ -103,7 +104,7 @@
             android:id="@+id/help"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="Help">
+            app:text="@string/help">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
     </LinearLayout>

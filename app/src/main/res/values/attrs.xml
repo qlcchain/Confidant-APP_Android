@@ -6,4 +6,13 @@
         <attr name="textColor" format="reference"/>
         <attr name="showNext" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="DetailView">
+        <attr name="text1" format="string"/>
+        <attr name="textSize1" format="dimension"/>
+        <attr name="textColor1" format="reference"/>
+        <attr name="showNext1" format="boolean"/>
+        <attr name="showImg" format="boolean"/>
+        <attr name="src" format="reference"/>
+        <attr name="contentStr" format="string"/>
+    </declare-styleable>
 </resources>

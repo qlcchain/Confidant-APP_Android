@@ -34,6 +34,7 @@ import android.support.design.widget.BottomNavigationView
 import android.view.MenuItem
 import com.stratagile.pnrouter.R.id.statusBar
 import com.stratagile.pnrouter.R.id.tvTitle
+import kotlinx.android.synthetic.main.fragment_conversation_list.*
 
 
 /**
@@ -43,7 +44,6 @@ class MainActivity : BaseActivity(), MainContract.View {
     override fun showToast() {
         toast("点击啦。。。。哈哈哈")
         showProgressDialog()
-
     }
 
     @Inject
@@ -127,16 +127,6 @@ class MainActivity : BaseActivity(), MainContract.View {
 //        }
 //        tv_hello.typeface.style
         signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
-//        send.setOnClickListener {
-//            if (messageSender == null) {
-//                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()
-//            }
-//            var login = LoginReq("login", "routerid", "WOZIJI", 1)
-//            var jsonStr = BaseData("123343434", "MIFI", login)
-//            Log.i("MainActivity", jsonStr.baseDataToJson())
-//            messageSender!!.send(jsonStr)
-//            edittext.text.clear()
-//        }
 
     }
 

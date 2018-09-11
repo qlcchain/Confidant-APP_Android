@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:id="@+id/ll_search"
+    android:gravity="center_vertical"
+    android:layout_marginTop="@dimen/x30"
+    android:layout_height="35dp">
+
+    <TextView
+        android:id="@+id/cacanl"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="取消"
+        android:layout_marginLeft="@dimen/x30"
+        android:layout_marginRight="@dimen/x30"
+        android:textSize="15sp"
+        android:textColor="@color/white"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rl_search"
+        android:layout_width="match_parent"
+        android:background="@drawable/search_background"
+        android:layout_height="30dp">
+        <android.support.v7.widget.AppCompatImageView
+            android:visibility="gone"
+            android:id="@+id/clear"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/x30"
+            />
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:maxLength="100"
+            android:layout_marginLeft="8dp"
+            android:layout_centerVertical="true"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:textSize="15sp"
+            android:drawablePadding="@dimen/x17"
+            android:layout_toLeftOf="@+id/clear"
+            android:textCursorDrawable="@drawable/color_cursor"
+            android:textColor="@color/color_333"
+            android:drawableLeft="@mipmap/icon_search"
+            android:hint="@string/search"
+            android:background="@null"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

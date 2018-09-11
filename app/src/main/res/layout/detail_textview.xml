@@ -10,7 +10,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/color_2c2c2c"
         tools:text=""
         android:layout_marginLeft="15dp"
@@ -20,6 +20,18 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         />
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="wrap_content"
+        android:textSize="14sp"
+        android:layout_marginRight="@dimen/x24"
+        android:textColor="#858585"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/ivContent"
+        android:layout_marginRight="@dimen/x24"
+        android:layout_width="@dimen/x50"
+        android:layout_height="@dimen/x50" />
     <ImageView
         android:id="@+id/ivNext"
         android:layout_width="@dimen/x30"

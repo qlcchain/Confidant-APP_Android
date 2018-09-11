@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.view.LayoutInflater
@@ -17,6 +18,8 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
+import kotlinx.android.synthetic.main.fragment_my.*
 
 /**
  * @author hzp
@@ -33,6 +36,13 @@ class MyFragment : BaseFragment(), MyContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_my, null);
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        toDetail.setOnClickListener {
+            startActivity(Intent(activity, MyDetailActivity::class.java))
+        }
     }
 
 

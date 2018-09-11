@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.entity
 
 import com.stratagile.pnrouter.BuildConfig
+import java.util.*
 
 /**
  * 数据基类
@@ -11,9 +12,9 @@ open class BaseData<T>() {
     var apiversion :Int ? = null
     var params : T? = null
 
-    constructor(timestamp : String, appid : String, params : T) : this() {
-        this.timestamp = timestamp
-        this.appid = appid
+    constructor(params : T) : this() {
+        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
     }
@@ -172,4 +173,6 @@ data class DelMsgReq(var Action : String = "DelMsg", var UserId : String, var Fr
  * (1)	请求（APP->Router）
  */
 data class DelMsgRsp(var Action : String, var retcode : Int, var Msg : String) :BaseData<DelMsgRsp>()
+
+data class ShareBean(var avatar : String, var name : String)
 
