@@ -71,13 +71,13 @@ object LocalRouterUtils {
                         localRouterArrayList = gson.fromJson<ArrayList<MyRouter>>(assetStr, object : TypeToken<ArrayList<MyRouter>>() {
 
                         }.type)
-                        for (myAsset in localRouterArrayList) {
+                        for (myRouter in localRouterArrayList) {
 
-                            if (myAsset.getType() === 0)
+                            if (myRouter.getType() == 0)
                             {
-                                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(myAsset.getRouterEntity().routerId)).list()
+                                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(myRouter.getRouterEntity().routerId)).list()
                                 if (routerEntityList != null && routerEntityList!!.size == 0) {
-                                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(myAsset.getRouterEntity())
+                                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(myRouter.getRouterEntity())
                                 }
                             }
                         }
@@ -100,16 +100,28 @@ object LocalRouterUtils {
                             }.type)
                             for (myRouter in localRouterArrayList) {
 
-                                if (myRouter.getType() === 0)
+                                if (myRouter.getType() ==0)
                                  {
                                     for (routerEntity in routerEntityList) {
 
                                         if (myRouter.getRouterEntity().routerId.equals(routerEntity.routerId)) {
                                             myRouter.getRouterEntity().setId(routerEntity.getId())//这个很重要，要不没法更新greenDao
-                                            myRouter.getRouterEntity().setRouterId(routerEntity.routerId)
-                                            myRouter.getRouterEntity().setUsername(routerEntity.username)
-                                            myRouter.getRouterEntity().setUserId(routerEntity.userId)
-                                            myRouter.getRouterEntity().setRouterName(routerEntity.routerName)
+                                            if(routerEntity.routerId != null)
+                                            {
+                                                myRouter.getRouterEntity().setRouterId(routerEntity.routerId)
+                                            }
+                                            if(routerEntity.username != null)
+                                            {
+                                                myRouter.getRouterEntity().setUsername(routerEntity.username)
+                                            }
+                                            if(routerEntity.userId != null)
+                                            {
+                                                myRouter.getRouterEntity().setUserId(routerEntity.userId)
+                                            }
+                                            if(routerEntity.routerName != null)
+                                            {
+                                                myRouter.getRouterEntity().setRouterName(routerEntity.routerName)
+                                            }
                                             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(myRouter.getRouterEntity())
                                         }
                                     }
@@ -153,7 +165,7 @@ object LocalRouterUtils {
                 var isHad = false
                 for (myRouterItem in localAssetArrayList) {
 
-                    if (myRouter!!.getType() === 0)
+                    if (myRouter!!.getType() == 0)
                     {
                         if (myRouterItem.getRouterEntity() != null && myRouter!!.getRouterEntity().routerId.equals(myRouterItem.getRouterEntity().routerId)) {
                             isHad = true
@@ -244,7 +256,7 @@ object LocalRouterUtils {
                 }.type)
                 for (myRouter in localRouterArrayList) {
 
-                    if (myRouter.getType() === 0)
+                    if (myRouter.getType() == 0)
                     {
                         if (router!!.getRouterEntity() != null && myRouter.getRouterEntity().routerId.equals(router!!.getRouterEntity().routerId)) {
                             newRouterArrayList.add(router)

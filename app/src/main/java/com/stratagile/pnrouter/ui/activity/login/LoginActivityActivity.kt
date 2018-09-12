@@ -20,14 +20,12 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
-import com.stratagile.pnrouter.constant.ConstantValue.Companion.userId
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.LoginReq
 import com.stratagile.pnrouter.entity.LoginRsp
+import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -38,6 +36,7 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -86,6 +85,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("数据局中已经包含了这个routerId")
             } else {
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+                //更新sd卡路由器数据begin
+                val myRouter = MyRouter()
+                myRouter.setType(0)
+                myRouter.setRouterEntity(newRouterEntity)
+                LocalRouterUtils.insertLocalAssets(myRouter)
             }
             runOnUiThread {
                 closeProgressDialog()
@@ -300,7 +304,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     dialog.create().show()
                 }
 
-            } catch (e: NoClassDefFoundError) {
+            } catch (e: Exception) {
                 SpUtil.putString(this, ConstantValue.fingerPassWord, "")
             }
 
