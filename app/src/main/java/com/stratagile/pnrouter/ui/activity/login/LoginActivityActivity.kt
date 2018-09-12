@@ -60,20 +60,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SCAN_QRCODE = 1
     override fun loginBack(loginRsp: LoginRsp) {
         KLog.i(loginRsp.toString())
-        runOnUiThread {
-            closeProgressDialog()
-        }
         if ("".equals(loginRsp.UserId)) {
             runOnUiThread {
                 toast("Too many users")
             }
         } else {
-            startActivity(Intent(this, MainActivity::class.java))
-            if (userId.equals("")) {
-                FileUtil.saveUserId2Local(loginRsp.UserId)
-                newRouterEntity.userId = loginRsp.UserId
-                SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
-            }
+            FileUtil.saveUserId2Local(loginRsp.UserId)
+            newRouterEntity.userId = loginRsp.UserId
+            SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
             SpUtil.putString(this, ConstantValue.userId, userId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
@@ -93,6 +87,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             } else {
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
+            runOnUiThread {
+                closeProgressDialog()
+            }
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }
