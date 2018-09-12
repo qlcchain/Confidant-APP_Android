@@ -29,14 +29,34 @@ import java.util.Calendar;
 public class FileUtil {
 
 
+    public static void init() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File dataFile = new File(Environment.getExternalStorageDirectory() + "/Router", "");
+                if (!dataFile.exists()) {
+                    dataFile.mkdir();
+                }
+                File vpnFile = new File(Environment.getExternalStorageDirectory() + "/Router/RouterList", "");
+                if (!vpnFile.exists()) {
+                    vpnFile.mkdir();
+                }
+                File UserID = new File(Environment.getExternalStorageDirectory() + "/Router/UserID", "");
+                if (!UserID.exists()) {
+                    UserID.mkdir();
+                }
+                KLog.i("文件夹初始化成功。。。。。。。。。。。。。");
+            }
+        }).start();
+    }
     /**
-     * 保存自己的p2pid到本地sd卡
+     * 保存自己的UserId到本地sd卡
      */
-    public static String saveP2pId2Local(String p2pId) {
-        String lastP2pId = getLocalP2pId();
+    public static String saveUserId2Local(String userId) {
+        String lastP2pId = getLocalUserId();
         if ("".equals(lastP2pId)) {
             copyDataFile();
-            String jsonPath = Environment.getExternalStorageDirectory() + "/Router/backup/p2p.json";
+            String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/userid.json";
             File jsonFile = new File(jsonPath);
 
             FileWriter fw = null;
@@ -47,7 +67,7 @@ public class FileUtil {
                 }
                 fw = new FileWriter(jsonFile);
                 out = new BufferedWriter(fw);
-                out.write(p2pId, 0, p2pId.length());
+                out.write(userId, 0, userId.length());
                 out.close();
             } catch (Exception e)
             {
@@ -66,7 +86,7 @@ public class FileUtil {
             }
             return "";
         } else {
-            if (lastP2pId.equals(p2pId)) {
+            if (lastP2pId.equals(userId)) {
                 return "";
             } else {
                 return lastP2pId;
@@ -75,23 +95,23 @@ public class FileUtil {
     }
 
     /**
-     * 获取sd卡已经保存的p2pId
+     * 获取sd卡已经保存的UserId
      */
-    public static String getLocalP2pId() {
+    public static String getLocalUserId() {
         FileInputStream fis = null;
         ObjectInputStream ois = null;
-        String p2pIdJson = "";
+        String userIdJson = "";
         try {
-            File file = new File(Environment.getExternalStorageDirectory(),"/Router/backup/p2p.json");
+            File file = new File(Environment.getExternalStorageDirectory(),"/Router/UserID/userid.json");
             if(!file.exists())
             {
-                return p2pIdJson;
+                return userIdJson;
             }
             fis = new FileInputStream(file);
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
             fis.close();
-            p2pIdJson = EncodingUtils.getString(buffer, "UTF-8");
+            userIdJson = EncodingUtils.getString(buffer, "UTF-8");
         } catch (IOException  e) {
             e.printStackTrace();
         } finally {
@@ -102,7 +122,7 @@ public class FileUtil {
                 e.printStackTrace();
             }
         }
-        return p2pIdJson;
+        return userIdJson;
     }
 
     /**

@@ -36,6 +36,7 @@ import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -65,6 +66,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             startActivity(Intent(this, MainActivity::class.java))
             if (userId.equals("")) {
                 SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
+                FileUtil.saveUserId2Local(loginRsp.UserId)
                 newRouterEntity.userId = loginRsp.UserId
             }
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())

@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.QRCodeContract
 import com.stratagile.pnrouter.ui.activity.user.module.QRCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
+import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -50,7 +51,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         title.text = getString(R.string.qr_code_business_card)
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
-        var userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var userId = FileUtil.getLocalUserId();
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
         RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
     }
