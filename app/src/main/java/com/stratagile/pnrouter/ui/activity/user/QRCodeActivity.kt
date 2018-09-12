@@ -51,7 +51,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         title.text = getString(R.string.qr_code_business_card)
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
-        var userId = FileUtil.getLocalUserId();
+        var userId = FileUtil.getLocalUserId()
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
         RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
     }

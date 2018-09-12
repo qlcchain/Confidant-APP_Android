@@ -65,7 +65,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         } else {
             startActivity(Intent(this, MainActivity::class.java))
             if (userId.equals("")) {
-                SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
                 FileUtil.saveUserId2Local(loginRsp.UserId)
                 newRouterEntity.userId = loginRsp.UserId
             }
@@ -128,6 +127,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initData() {
+        userId = FileUtil.getLocalUserId()
         swipeBackLayout.isEnabled = false
         AppConfig.instance.messageReceiver!!.loginBackListener = this
         loginBtn.setOnClickListener {
