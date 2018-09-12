@@ -22,6 +22,16 @@ import com.vondear.rxtools.view.RxQRCode
 import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
+import android.graphics.Bitmap
+import android.os.Environment
+import java.io.File.separator
+import android.os.Environment.getExternalStorageDirectory
+import com.pawegio.kandroid.toast
+import com.socks.library.KLog
+import java.io.File
+import java.io.FileOutputStream
+import kotlin.concurrent.thread
+
 
 /**
  * @author hzp
@@ -54,6 +64,40 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         var userId = FileUtil.getLocalUserId()
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
         RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
+        tvSaveToPhone.setOnClickListener {
+            saveQrCodeToPhone()
+        }
+    }
+
+    fun saveQrCodeToPhone() {
+        showProgressDialog()
+        thread {
+            val dView = cardView
+            dView.isDrawingCacheEnabled = true
+            dView.buildDrawingCache()
+            val bitmap = Bitmap.createBitmap(dView.drawingCache)
+            if (bitmap != null) {
+                try {
+                    // 获取内置SD卡路径
+                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + "/Router"
+                    // 图片文件路径
+                    var username = SpUtil.getString(this, ConstantValue.username, "")
+                    val filePath = sdCardPath + File.separator + username + ".png"
+                    val file = File(filePath)
+                    val os = FileOutputStream(file)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
+                    os.flush()
+                    os.close()
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(getString(R.string.save_to_phone_success) + "\n" + filePath)
+                    }
+                    KLog.i("存储完成")
+                } catch (e: Exception) {
+                }
+
+            }
+        }
     }
 
     override fun setupActivityComponent() {

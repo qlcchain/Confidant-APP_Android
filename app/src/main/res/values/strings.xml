@@ -40,4 +40,6 @@
     <string name="cancel">Cancel</string>
     <string name="Agree">Agree</string>
     <string name="Reject">Reject</string>
+    <string name="please_type_your_username">please type your username</string>
+    <string name="save_to_phone_success">save to phone success</string>
 </resources>

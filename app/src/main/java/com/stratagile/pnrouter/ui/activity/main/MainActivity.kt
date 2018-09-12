@@ -165,6 +165,10 @@ class MainActivity : BaseActivity(), MainContract.View {
         AppConfig.instance!!.applicationComponent!!.httpApiWrapper
     }
 
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
+
     override fun getScanPermissionSuccess() {
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, 1)
