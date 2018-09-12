@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.pawegio.kandroid.startActivityForResult
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -37,7 +38,9 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -53,6 +56,8 @@ import kotlin.math.log
  */
 
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
+    val REQUEST_SELECT_ROUTER = 2
+    val REQUEST_SCAN_QRCODE = 1
     override fun loginBack(loginRsp: LoginRsp) {
         KLog.i(loginRsp.toString())
         runOnUiThread {
@@ -67,7 +72,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (userId.equals("")) {
                 FileUtil.saveUserId2Local(loginRsp.UserId)
                 newRouterEntity.userId = loginRsp.UserId
+                SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
             }
+            SpUtil.putString(this, ConstantValue.userId, userId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -132,13 +139,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         AppConfig.instance.messageReceiver!!.loginBackListener = this
         loginBtn.setOnClickListener {
             if (userName.text.toString().equals("")) {
-                toast("please type your username")
+                toast(getString(R.string.please_type_your_username))
                 return@setOnClickListener
             }
             if (routerId.equals("")) {
                 return@setOnClickListener
             }
-            var login = LoginReq("Login", routerId, userId!!, 0)
+            var login = LoginReq( routerId, userId!!, 0)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
             showProgressDialog()
         }
@@ -185,6 +192,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             noRoutergroup.visibility = View.VISIBLE
             miniScanParent.visibility = View.INVISIBLE
             hasRouterParent.visibility = View.INVISIBLE
+        }
+        if (routerList.size > 0) {
+            routerName.setOnClickListener {
+                PopWindowUtil.showSelectRouterPopWindow(this, routerName, object : PopWindowUtil.OnRouterSelectListener{
+                    override fun onSelect(position: Int) {
+                        routerId = routerList[position].routerId
+                        userId = routerList[position].userId
+                        username = routerList[position].username
+                        routerName.text = routerList[position].routerName
+                        if (!username.equals("")) {
+                            userName.isEnabled = false
+                            userName.setText(username)
+                        }
+                    }
+                })
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
             // init fingerprint.
@@ -290,7 +313,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     override fun getScanPermissionSuccess() {
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
-        startActivityForResult(intent1, 1)
+        startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
 
     private fun handleErrorCode(code: Int) {
@@ -340,9 +363,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         progressDialog.hide()
     }
 
+    override fun onBackPressed() {
+        if (CustomPopWindow.onBackPressed()) {
+
+        } else {
+            super.onBackPressed()
+        }
+    }
+
    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             hasRouterParent.visibility = View.VISIBLE
             miniScanParent.visibility = View.VISIBLE
             scanParent.visibility = View.INVISIBLE

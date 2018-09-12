@@ -15,6 +15,7 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.ShareBean
+import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
 
@@ -129,8 +130,40 @@ object PopWindowUtil {
                 .create()
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showSelectRouterPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnRouterSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.select_router_pop_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+        var list = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        val selecRouterAdapter = SelectRouterAdapter(arrayListOf())
+        selecRouterAdapter.setNewData(list)
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position)
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+
+    interface OnRouterSelectListener {
+        fun onSelect(position : Int)
+    }
 }
-/**
- * @param activity 上下文
- * @param showView 从activity中传进来的view,用于让popWindow附着的
- */
