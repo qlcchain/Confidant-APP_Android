@@ -235,7 +235,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         val btn_cancel = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
 
                         btn_cancel.visibility = View.VISIBLE
-                        builder.setCancelable(true)
                         btn_cancel.setOnClickListener {
                             builderTips?.dismiss()
                             if (cancellationSignal != null) {
