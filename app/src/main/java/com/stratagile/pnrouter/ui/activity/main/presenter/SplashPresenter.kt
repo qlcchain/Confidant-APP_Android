@@ -1,11 +1,21 @@
 package com.stratagile.pnrouter.ui.activity.main.presenter
 
+import android.Manifest
+import android.app.Activity
 import android.support.annotation.NonNull
 import android.util.Log
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.LocalRouterUtils
+import com.yanzhenjie.alertdialog.AlertDialog
+import com.yanzhenjie.permission.AndPermission
+import com.yanzhenjie.permission.PermissionListener
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +56,15 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     }
 
     override fun getPermission() {
-        Log.i("splash", "3")
+        AndPermission.with(mView as Activity)
+                .requestCode(101)
+                .permission(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                .callback(permission)
+                .start()
     }
 
     override fun observeJump() {
@@ -102,6 +120,48 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     override fun unsubscribe() {
         if (!mCompositeDisposable.isDisposed) {
             mCompositeDisposable.dispose()
+        }
+    }
+
+    private val permission = object : PermissionListener {
+        override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
+            FileUtil.init()
+            LocalRouterUtils.updateGreanDaoFromLocal()
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                permissionState = 0
+                if (timeOver) {
+                    if (jumpToGuest) {
+                        mView.jumpToGuest()
+                        return
+                    }
+                    if (jump == JUMPTOMAIN) {
+                        mView.loginSuccees()
+                    } else if (jump == JUMPTOLOGIN) {
+                        mView.jumpToLogin()
+                    }
+                }
+            }
+        }
+
+        override fun onFailed(requestCode: Int, deniedPermissions: List<String>) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败")
+                permissionState = 0
+                AppConfig.instance.toast(R.string.permission_denied)
+                if (timeOver) {
+                    if (jumpToGuest) {
+                        mView.jumpToGuest()
+                        return
+                    }
+                    if (jump == JUMPTOMAIN) {
+                        mView.loginSuccees()
+                    } else if (jump == JUMPTOLOGIN) {
+                        mView.jumpToLogin()
+                    }
+                }
+            }
         }
     }
 }

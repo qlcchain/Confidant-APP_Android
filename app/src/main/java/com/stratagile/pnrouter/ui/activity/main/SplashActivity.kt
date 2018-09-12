@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.SpUtil
 
 import javax.inject.Inject;
@@ -53,7 +54,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        FileUtil.init();
         AppConfig.instance.getPNRouterServiceMessageReceiver()
         SpUtil.putString(this, ConstantValue.testValue, "test")
         mPresenter.getLastVersion()

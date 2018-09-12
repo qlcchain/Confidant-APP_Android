@@ -37,9 +37,9 @@ public class FileUtil {
                 if (!dataFile.exists()) {
                     dataFile.mkdir();
                 }
-                File vpnFile = new File(Environment.getExternalStorageDirectory() + "/Router/RouterList", "");
-                if (!vpnFile.exists()) {
-                    vpnFile.mkdir();
+                File routerList = new File(Environment.getExternalStorageDirectory() + "/Router/RouterList", "");
+                if (!routerList.exists()) {
+                    routerList.mkdir();
                 }
                 File UserID = new File(Environment.getExternalStorageDirectory() + "/Router/UserID", "");
                 if (!UserID.exists()) {
@@ -183,12 +183,12 @@ public class FileUtil {
     }
 
     /**
-     *  保持资产数据到sd卡
-     * @param walletAdress 钱包地址
+     *  保存路由器数据到sd卡
+     * @param userId 用户id
      * @param jsonStr 数据
      */
-    public static void saveAssetsData(String walletAdress,String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/Assets/"+walletAdress+".json";
+    public static void saveRouterData(String userId, String jsonStr) {
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RouterList/"+userId+".json";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -219,16 +219,16 @@ public class FileUtil {
     }
 
     /**
-     * 读取本地SDk卡资产数据
-     * @param walletAdress 钱包地址
+     * 读取本地SDk卡路由器数据
+     * @param userId 用户id
      * @return
      */
-    public static String readAssetsData(String walletAdress) {
+    public static String readRoutersData(String userId) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(),"/Router/Assets/"+walletAdress+".json");
+                File file = new File(Environment.getExternalStorageDirectory(),"/Router/RouterList/"+userId+".json");
                 if(!file.exists())
                 {
                     return  "";

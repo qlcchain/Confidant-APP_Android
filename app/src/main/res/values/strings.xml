@@ -38,4 +38,6 @@
     <string name="ok_btn_dialog">OK</string>
     <string name="result">result</string>
     <string name="cancel">Cancel</string>
+    <string name="Agree">Agree</string>
+    <string name="Reject">Reject</string>
 </resources>
