@@ -27,6 +27,16 @@ class AppConfig : MultiDexApplication() {
         super.onCreate()
         instance = this
         setupApplicationComponent()
+//        if (messageReceiver == null) {
+//            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+//                    APIModule.DynamicCredentialsProvider(this),
+//                    BuildConfig.USER_AGENT,
+//                    APIModule.PipeConnectivityListener())
+//        }
+        setDatabase()
+    }
+
+    fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
@@ -34,7 +44,7 @@ class AppConfig : MultiDexApplication() {
                     APIModule.PipeConnectivityListener())
         }
         MessageRetrievalService.registerActivityStarted(this)
-        setDatabase()
+        return messageReceiver!!
     }
 
     fun getPNRouterServiceMessageSender() :  PNRouterServiceMessageSender{

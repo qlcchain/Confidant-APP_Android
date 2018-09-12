@@ -23,11 +23,15 @@ interface MainContract {
         fun closeProgressDialog()
 
         fun showToast()
+
+        fun getScanPermissionSuccess()
     }
 
     interface MainContractPresenter : BasePresenter {
         fun latlngParseCountry(map: Map<*, *>)
         fun showToast()
         fun sendMessage(message : String)
+
+        fun getScanPermission()
     }
 }

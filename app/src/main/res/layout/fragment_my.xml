@@ -31,9 +31,8 @@
         app:layout_constraintStart_toStartOf="@+id/nickName"
         app:layout_constraintTop_toBottomOf="@+id/nickName" />
 
-    <ImageView
+    <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/avatar"
-        android:src="@mipmap/icon_twitter"
         android:layout_width="@dimen/x124"
         android:layout_height="@dimen/x124"
         android:layout_marginEnd="@dimen/x30"

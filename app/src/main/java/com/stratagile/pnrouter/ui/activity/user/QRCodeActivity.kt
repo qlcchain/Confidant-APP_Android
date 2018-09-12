@@ -9,12 +9,15 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.QRCodeContract
 import com.stratagile.pnrouter.ui.activity.user.module.QRCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
 import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.vondear.rxtools.view.RxQRCode
 import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
@@ -46,6 +49,10 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
     override fun initData() {
         title.text = getString(R.string.qr_code_business_card)
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
+        tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
+        var userId = SpUtil.getString(this, ConstantValue.userId, "")
+        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
+        RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
     }
 
     override fun setupActivityComponent() {

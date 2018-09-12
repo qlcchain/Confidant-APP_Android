@@ -1,5 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -18,12 +21,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.support.design.widget.BottomNavigationView
+import android.view.View
+import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
+import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import kotlinx.android.synthetic.main.activity_login.*
 
 
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View {
+
+    lateinit var viewModel : MainViewModel
     override fun showToast() {
         toast("点击啦。。。。哈哈哈")
         showProgressDialog()
@@ -46,6 +55,11 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
+        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        setToNews()
+        ivQrCode.setOnClickListener {
+            mPresenter.getScanPermission()
+        }
 //        SpUtil.putString(this, ConstantValue.userId, "271D61D2976D9A06A7F07274D5198EB511C8A334ACC07844868A9C260233F15E80D50696CC76")
         bottomNavigation.enableAnimation(false)
         bottomNavigation.enableShiftingMode(false)
@@ -114,6 +128,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     fun setToNews() {
         tvTitle.text = getString(R.string.news)
+        ivQrCode.visibility = View.VISIBLE
     }
 
     fun setToFile() {
@@ -148,5 +163,18 @@ class MainActivity : BaseActivity(), MainContract.View {
         needFront = true
         super.onCreate(savedInstanceState)
         AppConfig.instance!!.applicationComponent!!.httpApiWrapper
+    }
+
+    override fun getScanPermissionSuccess() {
+        val intent1 = Intent(this, ScanQrCodeActivity::class.java)
+        startActivityForResult(intent1, 1)
+    }
+
+    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            viewModel.toAddUserId.value = data!!.getStringExtra("result")
+            return
+        }
     }
 }

@@ -63,14 +63,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         } else {
             startActivity(Intent(this, MainActivity::class.java))
-            SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
+            if (userId.equals("")) {
+                SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
+                newRouterEntity.userId = loginRsp.UserId
+            }
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = userName.text.toString()
-            newRouterEntity.userId = loginRsp.UserId
             var contains = false
             for (i in routerList) {
                 if (i.routerId.equals(routerId)) {
@@ -118,6 +120,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     override fun onDestroy() {
         super.onDestroy()
         AppConfig.instance.messageReceiver!!.loginBackListener = null
+        myAuthCallback = null
+        cancellationSignal = null
+        builderTips = null
     }
 
     override fun initData() {
@@ -340,7 +345,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             miniScanParent.visibility = View.VISIBLE
             scanParent.visibility = View.INVISIBLE
             noRoutergroup.visibility = View.INVISIBLE
-            routerName?.setText(data!!.getStringExtra("result"))
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            routerName?.setText("Router " + (routerList.size + 1))
             routerId = data!!.getStringExtra("result")
             newRouterEntity.routerId = data!!.getStringExtra("result")
             return

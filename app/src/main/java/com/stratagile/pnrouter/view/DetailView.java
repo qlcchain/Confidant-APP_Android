@@ -22,7 +22,7 @@ public class DetailView extends LinearLayout {
     private TextView titleText;
     private ImageView ivNext;
     private ImageView ivContent;
-    private TextView tvContent;
+    public TextView tvContent;
     public DetailView(Context context) {
         super(context);
         init(context);

@@ -1,11 +1,14 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.socks.library.KLog
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -20,6 +23,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.ui.activity.main.MainViewModel
 import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.fragment_conversation_list.*
 import kotlinx.android.synthetic.main.search_layout.*
@@ -38,6 +42,8 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
 
     var  messageSender : PNRouterServiceMessageSender? = null
 
+    lateinit var viewModel: MainViewModel
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_conversation_list, null)
         return view
@@ -45,6 +51,10 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
+        viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
+            KLog.i(toAddUserId)
+        })
 //        send.setOnClickListener {
 //            if (messageSender == null) {
 //                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()

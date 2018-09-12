@@ -23,6 +23,7 @@
                 android:layout_marginBottom="@dimen/x40"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvUserName"
                     android:layout_width="wrap_content"
                     android:textSize="17sp"
                     android:text="Hzp"
@@ -30,18 +31,20 @@
                     android:textColor="@color/color_2c2c2c"
                     android:layout_marginLeft="@dimen/x40"
                     android:layout_height="wrap_content" />
-                <ImageView
+
+                <com.stratagile.pnrouter.view.ImageButtonWithText
                     android:layout_width="@dimen/x75"
-                    android:src="@mipmap/icon_twitter"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="@dimen/x40"
-                    android:layout_height="@dimen/x75" />
+                    android:layout_height="@dimen/x75"
+                    android:id="@+id/ivAvatar" />
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
                 android:background="@color/color_ebebeb"
                 android:layout_height="@dimen/x1" />
             <ImageView
+                android:id="@+id/ivQrCode"
                 android:layout_width="@dimen/x490"
                 android:layout_marginTop="@dimen/x60"
                 android:layout_marginBottom="@dimen/x60"

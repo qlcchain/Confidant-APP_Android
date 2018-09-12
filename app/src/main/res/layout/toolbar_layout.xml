@@ -36,7 +36,6 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:ellipsize="end"
-                android:fontFamily="@font/vagroun_q"
                 android:singleLine="true"
                 android:text=""
                 android:textAppearance="?android:attr/textAppearanceLarge"

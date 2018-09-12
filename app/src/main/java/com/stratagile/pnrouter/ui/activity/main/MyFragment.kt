@@ -18,8 +18,14 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_my.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * @author hzp
@@ -40,9 +46,23 @@ class MyFragment : BaseFragment(), MyContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        EventBus.getDefault().register(this)
         toDetail.setOnClickListener {
             startActivity(Intent(activity, MyDetailActivity::class.java))
         }
+        nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
+        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, ""))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNikNameChange(editnickName : EditNickName) {
+        nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
+        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, ""))
     }
 
 

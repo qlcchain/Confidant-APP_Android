@@ -30,4 +30,8 @@
     </declare-styleable>
 
     <attr name="SwipeBackLayoutStyle" format="reference"/>
+
+    <declare-styleable name="ImageButtonWithText">
+        <attr name="picture" format="reference"/>
+    </declare-styleable>
 </resources>
