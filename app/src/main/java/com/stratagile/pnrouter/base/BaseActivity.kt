@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.base
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -11,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.hyphenate.easeui.EaseUI
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.app.SwipeBackActivity
@@ -32,6 +34,8 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
     lateinit var progressDialog : RxDialogLoading
     lateinit var title: TextView
 
+    var inputMethodManager: InputMethodManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(R.layout.activity_base)
@@ -41,12 +45,34 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
             val localLayoutParams = window.attributes
             localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
         }
+        if (!isTaskRoot) {
+            val intent = intent
+            val action = intent.action
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && action == Intent.ACTION_MAIN) {
+                finish()
+                return
+            }
+        }
+        inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         initToolbar()
         setupActivityComponent()
         initView()
         initData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // cancel the notification
+        EaseUI.getInstance().notifier.reset()
+    }
+
+    protected fun hideSoftKeyboard() {
+        if (window.attributes.softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (currentFocus != null)
+                inputMethodManager?.hideSoftInputFromWindow(currentFocus!!.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
     override fun setContentView(layoutId: Int) {
         setContentView(View.inflate(this, layoutId, null))
     }

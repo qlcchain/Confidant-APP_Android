@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.application
 
 import android.support.multidex.MultiDexApplication
+import com.hyphenate.chat.EMClient
+import com.hyphenate.easeui.EaseUI
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
@@ -25,6 +27,8 @@ class AppConfig : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        EaseUI.getInstance().init(this, null)
+        EMClient.getInstance().setDebugMode(true);
         instance = this
         setupApplicationComponent()
 //        if (messageReceiver == null) {

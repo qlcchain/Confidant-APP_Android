@@ -22,9 +22,20 @@ import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.support.design.widget.BottomNavigationView
 import android.view.View
+import com.hyphenate.chat.EMConversation
+import com.hyphenate.easeui.EaseConstant
+import com.hyphenate.easeui.domain.EaseUser
+import com.hyphenate.easeui.ui.EaseBaseFragment
+import com.hyphenate.easeui.ui.EaseContactListFragment
+import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import kotlinx.android.synthetic.main.activity_login.*
+import java.util.HashMap
+import com.hyphenate.easeui.ui.EaseChatFragment
+
+
 
 
 /**
@@ -33,6 +44,8 @@ import kotlinx.android.synthetic.main.activity_login.*
 class MainActivity : BaseActivity(), MainContract.View {
 
     lateinit var viewModel : MainViewModel
+    private var conversationListFragment: EaseConversationListFragment? = null
+    private var contactListFragment: EaseContactListFragment? = null
     override fun showToast() {
         toast("点击啦。。。。哈哈哈")
         showProgressDialog()
@@ -71,12 +84,16 @@ class MainActivity : BaseActivity(), MainContract.View {
         bottomNavigation.setIconSizeAt(2, 22F, 18.8f)
         bottomNavigation.setIconsMarginTop(resources.getDimension(R.dimen.x22).toInt())
         bottomNavigation.selectedItemId = R.id.item_news
+
+        contactListFragment?.setContactsMap(getContacts())
+        conversationListFragment?.setConversationListItemClickListener(EaseConversationListFragment.EaseConversationListItemClickListener { conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
+        contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when(position) {
-                    0 -> return ConversationListFragment()
+                    0 -> return conversationListFragment!!
                     1 -> return FileFragment()
-                    2 -> return ContactFragment()
+                    2 -> return contactListFragment!!
                     else -> return MyFragment()
                 }
             }
@@ -126,6 +143,11 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     }
 
+    fun  getEaseConversationListFragment(): EaseConversationListFragment?
+    {
+        return conversationListFragment
+    }
+
     fun setToNews() {
         tvTitle.text = getString(R.string.news)
         ivQrCode.visibility = View.VISIBLE
@@ -148,6 +170,10 @@ class MainActivity : BaseActivity(), MainContract.View {
         tvTitle.text = getString(R.string.news)
         val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         statusBar.setLayoutParams(llp)
+        conversationListFragment = EaseConversationListFragment()
+        conversationListFragment?.hideTitleBar()
+        contactListFragment = EaseContactListFragment()
+        contactListFragment?.hideTitleBar()
     }
 
     override fun setupActivityComponent() {
@@ -180,5 +206,12 @@ class MainActivity : BaseActivity(), MainContract.View {
             viewModel.toAddUserId.value = data!!.getStringExtra("result")
             return
         }
+    }
+
+    private fun getContacts(): Map<String, EaseUser> {
+        val contacts = HashMap<String, EaseUser>()
+        val user = EaseUser("easeuitest")
+        contacts["easeuitest"] = user
+        return contacts
     }
 }
