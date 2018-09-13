@@ -211,8 +211,11 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     private fun getContacts(): Map<String, EaseUser> {
         val contacts = HashMap<String, EaseUser>()
-        val user = EaseUser("easeuitest")
-        contacts["easeuitest"] = user
+        val aa = arrayOf("aa", "cc", "ff", "gg", "kk", "ll", "bb", "jj", "oo", "zz", "mm")
+        for (i in 1..10) {
+            val user = EaseUser(aa[i])
+            contacts[aa[i]] = user
+        }
         return contacts
     }
 }
