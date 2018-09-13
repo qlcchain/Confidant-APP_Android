@@ -8,9 +8,9 @@
     <string name="button_pushtotalk">按住说话</string>
     <string name="button_send">发送</string>
     <string name="attach_smile">表情</string>
-    <string name="attach_picture">图片</string>
-    <string name="attach_take_pic">拍照</string>
-    <string name="attach_location">位置</string>
+    <string name="attach_picture">Album</string>
+    <string name="attach_take_pic">shot</string>
+    <string name="attach_location">Location</string>
     <string name="attach_video">视频</string>
     <string name="attach_file">文件</string>
     <string name="attach_voice_call">语音电话</string>
@@ -84,7 +84,7 @@
     <string name="chat_room">聊天室</string>
     <string name="voice_and_video_conference">音视频会议</string>
     <string name="add_friend">添加好友</string>
-    <string name="search">搜索</string>
+    <string name="search">Search</string>
     <string name="black_item">黑名单</string>
     <string name="diagnose">诊断</string>
     <string name="push_nick">iOS离线推送昵称</string>

@@ -31,6 +31,7 @@ class ChatActivity : BaseActivity(), ChatContract.View {
     internal var toChatUsername: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         activityInstance = this
