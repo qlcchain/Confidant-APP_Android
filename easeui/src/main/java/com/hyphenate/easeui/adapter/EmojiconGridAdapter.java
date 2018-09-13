@@ -48,7 +48,11 @@ public class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
             if(emojicon.getIcon() != 0){
                 imageView.setImageResource(emojicon.getIcon());
             }else if(emojicon.getIconPath() != null){
-                Glide.with(getContext()).load(emojicon.getIconPath()).placeholder(R.drawable.ease_default_expression).into(imageView);
+                Glide
+                        .with(getContext())
+                        .load(emojicon.getIconPath())
+//                        .placeholder(R.drawable.ease_default_expression)
+                        .into(imageView);
             }
         }
         

@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.base
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -33,6 +34,7 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
     lateinit var view: View
     lateinit var progressDialog : RxDialogLoading
     lateinit var title: TextView
+    val point = Point()
 
     var inputMethodManager: InputMethodManager? = null
 
@@ -196,6 +198,8 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.action == MotionEvent.ACTION_DOWN) {
+            point.x = ev.rawX.toInt()
+            point.y = ev.rawY.toInt()
             val v = currentFocus
             if (isShouldHideInput(v, ev)) {
 

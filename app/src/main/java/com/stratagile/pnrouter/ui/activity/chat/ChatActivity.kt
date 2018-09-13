@@ -39,7 +39,7 @@ class ChatActivity : BaseActivity(), ChatContract.View {
         chatFragment = EaseChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)
-        supportFragmentManager.beginTransaction().add(R.id.container, chatFragment).commit()
+        supportFragmentManager.beginTransaction().add(R.id.container, chatFragment!!).commit()
     }
 
     override fun initView() {

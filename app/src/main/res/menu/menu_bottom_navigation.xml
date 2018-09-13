@@ -7,7 +7,7 @@
     <item
         android:id="@+id/item_file"
         android:icon="@mipmap/btn_file_highlight"
-        android:title="@string/file" />
+        android:title="@string/file_" />
     <item
         android:id="@+id/item_contacts"
         android:icon="@mipmap/btn_contacts_highlight"

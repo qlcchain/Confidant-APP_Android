@@ -3,7 +3,7 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
+import android.support.v4.content.AsyncTaskLoader;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -123,36 +123,37 @@ public class EaseChatRowImage extends EaseChatRowFile{
             imageView.setImageBitmap(bitmap);
         } else {
             imageView.setImageResource(R.drawable.ease_default_image);
-            AsyncTaskCompat.executeParallel( new AsyncTask<Object, Void, Bitmap>() {
 
-                @Override
-                protected Bitmap doInBackground(Object... args) {
-                    File file = new File(thumbernailPath);
-                    if (file.exists()) {
-                        return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
-                    } else if (new File(imgBody.thumbnailLocalPath()).exists()) {
-                        return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), 160, 160);
-                    }
-                    else {
-                        if (message.direct() == EMMessage.Direct.SEND) {
-                            if (localFullSizePath != null && new File(localFullSizePath).exists()) {
-                                return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
-                            } else {
-                                return null;
-                            }
-                        } else {
-                            return null;
-                        }
-                    }
-                }
-
-                protected void onPostExecute(Bitmap image) {
-                    if (image != null) {
-                        imageView.setImageBitmap(image);
-                        EaseImageCache.getInstance().put(thumbernailPath, image);
-                    }
-                }
-            });
+//            AsyncTask.execute(new AsyncTask<Object, Void, Bitmap>() {
+//
+//                @Override
+//                protected Bitmap doInBackground(Object... args) {
+//                    File file = new File(thumbernailPath);
+//                    if (file.exists()) {
+//                        return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
+//                    } else if (new File(imgBody.thumbnailLocalPath()).exists()) {
+//                        return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), 160, 160);
+//                    }
+//                    else {
+//                        if (message.direct() == EMMessage.Direct.SEND) {
+//                            if (localFullSizePath != null && new File(localFullSizePath).exists()) {
+//                                return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
+//                            } else {
+//                                return null;
+//                            }
+//                        } else {
+//                            return null;
+//                        }
+//                    }
+//                }
+//
+//                protected void onPostExecute(Bitmap image) {
+//                    if (image != null) {
+//                        imageView.setImageBitmap(image);
+//                        EaseImageCache.getInstance().put(thumbernailPath, image);
+//                    }
+//                }
+//            });
         }
     }
 

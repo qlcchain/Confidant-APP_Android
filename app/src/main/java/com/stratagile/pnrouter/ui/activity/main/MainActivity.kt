@@ -15,30 +15,19 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
-import android.support.design.widget.BottomNavigationView
 import android.view.View
-import com.pawegio.kandroid.startActivity
-import com.hyphenate.chat.EMConversation
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
-import com.hyphenate.easeui.ui.EaseBaseFragment
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
-import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
-import kotlinx.android.synthetic.main.activity_login.*
 import java.util.HashMap
-import com.hyphenate.easeui.ui.EaseChatFragment
-
-
 
 
 /**
@@ -80,17 +69,16 @@ class MainActivity : BaseActivity(), MainContract.View {
             mPresenter.getScanPermission()
         }
 //        SpUtil.putString(this, ConstantValue.userId, "271D61D2976D9A06A7F07274D5198EB511C8A334ACC07844868A9C260233F15E80D50696CC76")
-        bottomNavigation.enableAnimation(false)
-        bottomNavigation.enableShiftingMode(false)
-        bottomNavigation.enableItemShiftingMode(false)
-        bottomNavigation.setTextSize(10F)
-        viewPager.offscreenPageLimit = 2
-        bottomNavigation.setIconSizeAt(0, 17.6f, 21.2f)
-        bottomNavigation.setIconSizeAt(1, 23.6f, 18.8f)
-        bottomNavigation.setIconSizeAt(2, 22F, 18.8f)
-        bottomNavigation.setIconsMarginTop(resources.getDimension(R.dimen.x22).toInt())
-        bottomNavigation.selectedItemId = R.id.item_news
-
+//        bottomNavigation.enableAnimation(false)
+//        bottomNavigation.enableShiftingMode(false)
+//        bottomNavigation.enableItemShiftingMode(false)
+//        bottomNavigation.setTextSize(10F)
+//        viewPager.offscreenPageLimit = 2
+//        bottomNavigation.setIconSizeAt(0, 17.6f, 21.2f)
+//        bottomNavigation.setIconSizeAt(1, 23.6f, 18.8f)
+//        bottomNavigation.setIconSizeAt(2, 22F, 18.8f)
+//        bottomNavigation.setIconsMarginTop(resources.getDimension(R.dimen.x22).toInt())
+//        bottomNavigation.selectedItemId = R.id.item_news
         contactListFragment?.setContactsMap(getContacts())
         conversationListFragment?.setConversationListItemClickListener(EaseConversationListFragment.EaseConversationListItemClickListener { conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
         contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
@@ -130,8 +118,8 @@ class MainActivity : BaseActivity(), MainContract.View {
             }
         })
         // 为bnv设置选择监听事件
-        bottomNavigation.onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when (item.getItemId()) {
+        bottomNavigation.setOnNavigationItemSelectedListener {
+            when (it.getItemId()) {
                 R.id.item_news -> viewPager.setCurrentItem(0, false)
                 R.id.item_file -> viewPager.setCurrentItem(1, false)
                 R.id.item_contacts -> viewPager.setCurrentItem(2, false)
@@ -156,19 +144,26 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     fun setToNews() {
         tvTitle.text = getString(R.string.news)
+        mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
     }
 
     fun setToFile() {
-        tvTitle.text = getString(R.string.file)
+        tvTitle.text = getString(R.string.file_)
+        mainIv1.visibility = View.VISIBLE
+        ivQrCode.visibility = View.VISIBLE
     }
 
     fun setToContact() {
         tvTitle.text = getString(R.string.contacts)
+        mainIv1.visibility = View.GONE
+        ivQrCode.visibility = View.VISIBLE
     }
 
     fun setToMy() {
         tvTitle.text = getString(R.string.my)
+        mainIv1.visibility = View.GONE
+        ivQrCode.visibility = View.GONE
     }
 
     override fun initView() {

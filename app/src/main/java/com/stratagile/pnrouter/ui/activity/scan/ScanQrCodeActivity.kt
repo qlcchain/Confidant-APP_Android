@@ -224,12 +224,12 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
     //========================================打开本地图片识别二维码 end=================================
 
     //--------------------------------------打开本地图片识别二维码 start---------------------------------
-    override protected fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             val resolver = contentResolver
             // 照片的原始资源地址
-            val originalUri = data.data
+            val originalUri = data!!.data
             try {
                 // 使用ContentProvider通过URI获取原始图片
                 val photo = MediaStore.Images.Media.getBitmap(resolver, originalUri)

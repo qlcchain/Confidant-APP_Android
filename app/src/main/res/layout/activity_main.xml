@@ -31,13 +31,21 @@
             android:textSize="18sp" />
 
         <RelativeLayout
-            android:layout_width="@dimen/x90"
+            android:layout_width="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/x22"
             android:layout_height="wrap_content">
             <ImageView
+                android:id="@+id/mainIv1"
+                android:layout_width="@dimen/x50"
+                android:visibility="gone"
+                android:src="@mipmap/icon_download"
+                android:layout_marginRight="@dimen/x30"
+                android:layout_height="@dimen/x50" />
+            <ImageView
                 android:id="@+id/ivQrCode"
+                android:layout_toRightOf="@+id/mainIv1"
                 android:layout_centerHorizontal="true"
                 android:visibility="invisible"
                 android:layout_width="@dimen/x50"
@@ -64,11 +72,16 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x100">
-        <com.stratagile.pnrouter.view.BottomNavigationViewEx
+        <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
+            app:itemIconSize="@dimen/x40"
+            app:elevation="0px"
+            app:labelVisibilityMode="labeled"
+            app:itemTextAppearanceActive="@style/BottomNavigationViewTextAppearance"
+            app:itemTextAppearanceInactive="@style/BottomNavigationViewTextAppearance"
             app:itemIconTint="@drawable/bottom_navigation_selector"
             app:itemTextColor="@drawable/bottom_navigation_selector"
             app:menu="@menu/menu_bottom_navigation" />

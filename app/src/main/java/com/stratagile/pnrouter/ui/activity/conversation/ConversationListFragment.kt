@@ -24,9 +24,14 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.LoginReq
 import com.stratagile.pnrouter.ui.activity.main.MainViewModel
+import com.stratagile.pnrouter.ui.adapter.conversation.ConversationListAdapter
 import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.fragment_conversation_list.*
 import kotlinx.android.synthetic.main.search_layout.*
+import com.stratagile.pnrouter.ui.activity.main.MainActivity
+import com.noober.menu.FloatMenu
+import com.stratagile.pnrouter.base.BaseActivity
+
 
 /**
  * @author hzp
@@ -42,6 +47,8 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
 
     var  messageSender : PNRouterServiceMessageSender? = null
 
+    var coversationListAdapter : ConversationListAdapter? = null
+
     lateinit var viewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,6 +62,15 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
         viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
         })
+        var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        coversationListAdapter = ConversationListAdapter(list)
+        coversationListAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+            val floatMenu = FloatMenu(activity)
+            floatMenu.items("菜单1", "菜单2", "菜单3")
+            floatMenu.show((activity!! as BaseActivity).point)
+            true
+        }
+        recyclerView.adapter = coversationListAdapter
 //        send.setOnClickListener {
 //            if (messageSender == null) {
 //                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()

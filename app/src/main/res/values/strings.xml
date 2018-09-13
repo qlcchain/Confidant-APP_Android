@@ -3,7 +3,7 @@
     <string name="loading">loading...</string>
     <string name="apploading">loading...</string>
     <string name="news">News</string>
-    <string name="file">File</string>
+    <string name="file_">File</string>
     <string name="contacts">Contacts</string>
     <string name="my">My</string>
     <string name="loginScanTips">Click here to scan the router’s QR code.</string>
