@@ -22,6 +22,7 @@ import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.support.design.widget.BottomNavigationView
 import android.view.View
+import com.pawegio.kandroid.startActivity
 import com.hyphenate.chat.EMConversation
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
@@ -29,8 +30,10 @@ import com.hyphenate.easeui.ui.EaseBaseFragment
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
+import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.HashMap
 import com.hyphenate.easeui.ui.EaseChatFragment
@@ -68,6 +71,9 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
+        tvTitle.setOnClickListener {
+            startActivity(Intent(this, SelectRouterActivity::class.java))
+        }
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         setToNews()
         ivQrCode.setOnClickListener {

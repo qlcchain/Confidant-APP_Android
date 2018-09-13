@@ -3,11 +3,15 @@ package com.stratagile.pnrouter.application
 import android.support.multidex.MultiDexApplication
 import com.hyphenate.chat.EMClient
 import com.hyphenate.easeui.EaseUI
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
+import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 
 /**
  * 作者：Android on 2017/8/1
@@ -24,6 +28,12 @@ class AppConfig : MultiDexApplication() {
     var messageSender: PNRouterServiceMessageSender? = null
 
     var mDaoMaster: DaoMaster? = null
+
+    var options = RequestOptions()
+            .centerCrop()
+            .transform(GlideCircleTransformMainColor(this))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .priority(Priority.HIGH)
 
     override fun onCreate() {
         super.onCreate()

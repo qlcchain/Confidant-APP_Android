@@ -9,6 +9,7 @@ import com.stratagile.pnrouter.ui.activity.login.component.DaggerSelectRouterCom
 import com.stratagile.pnrouter.ui.activity.login.contract.SelectRouterContract
 import com.stratagile.pnrouter.ui.activity.login.module.SelectRouterModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.SelectRouterPresenter
+import kotlinx.android.synthetic.main.activity_select_router.*
 
 import javax.inject.Inject;
 
@@ -32,7 +33,9 @@ class SelectRouterActivity : BaseActivity(), SelectRouterContract.View {
         setContentView(R.layout.activity_select_router)
     }
     override fun initData() {
-
+        upLoadFile.setOnClickListener {
+            mPresenter.upLoadFile()
+        }
     }
 
     override fun setupActivityComponent() {

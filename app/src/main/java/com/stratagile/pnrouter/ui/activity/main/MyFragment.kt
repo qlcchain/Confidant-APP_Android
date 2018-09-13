@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MyPresenter
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.events.EditNickName
@@ -51,7 +52,8 @@ class MyFragment : BaseFragment(), MyContract.View {
             startActivity(Intent(activity, MyDetailActivity::class.java))
         }
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
-        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, ""))
+        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
+        avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)
     }
 
     override fun onDestroy() {
@@ -62,7 +64,7 @@ class MyFragment : BaseFragment(), MyContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNikNameChange(editnickName : EditNickName) {
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
-        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, ""))
+        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
     }
 
 

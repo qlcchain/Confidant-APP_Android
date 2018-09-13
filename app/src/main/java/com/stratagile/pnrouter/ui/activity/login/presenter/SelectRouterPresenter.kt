@@ -1,13 +1,23 @@
 package com.stratagile.pnrouter.ui.activity.login.presenter
+import android.os.Environment
 import android.support.annotation.NonNull
+import com.socks.library.KLog
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
+import com.stratagile.pnrouter.entity.BaseBack
 import com.stratagile.pnrouter.ui.activity.login.contract.SelectRouterContract
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
+import com.stratagile.pnrouter.utils.SpUtil
 import javax.inject.Inject
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 /**
  * @author hzp
@@ -17,6 +27,27 @@ import io.reactivex.functions.Consumer
  */
 class SelectRouterPresenter @Inject
 constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: SelectRouterContract.View) : SelectRouterContract.SelectRouterContractPresenter {
+    override fun upLoadFile() {
+        val upLoadFile = File(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")
+        val image = RequestBody.create(MediaType.parse("image/png"), upLoadFile)
+        val photo = MultipartBody.Part.createFormData("", SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png", image)
+//        RequestBody.create(MediaType.parse("text/plain"), SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")
+        val disposable = httpAPIWrapper.upLoadFile(photo)     //userId, nickName
+                .subscribe(Consumer<BaseBack> { upLoadAvatar ->
+                    //isSuccesse
+                    KLog.i("onSuccesse")
+                    mView.closeProgressDialog()
+                }, Consumer<Throwable> { throwable ->
+                    //onError
+                    KLog.i("onError")
+                    throwable.printStackTrace()
+                    mView.closeProgressDialog()
+                }, Action {
+                    //onComplete
+                    KLog.i("onComplete")
+                })
+        mCompositeDisposable.add(disposable)
+    }
 
     private val mCompositeDisposable: CompositeDisposable
 

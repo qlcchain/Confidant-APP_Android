@@ -136,8 +136,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initData() {
+        swipeBackLayout.setEnableGesture(false)
         userId = FileUtil.getLocalUserId()
-        swipeBackLayout.isEnabled = false
         AppConfig.instance.messageReceiver!!.loginBackListener = this
         loginBtn.setOnClickListener {
             if (userName.text.toString().equals("")) {

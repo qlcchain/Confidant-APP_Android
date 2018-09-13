@@ -8,5 +8,7 @@ class ConstantValue {
         var userId = "UserId"
         var username = "username"
         var routerId = "routerId"
+
+        var selfImageName = "selfImageName"
     }
 }
