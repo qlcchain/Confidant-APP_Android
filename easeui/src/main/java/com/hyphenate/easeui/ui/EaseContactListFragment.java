@@ -14,6 +14,7 @@
 package com.hyphenate.easeui.ui;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -30,6 +31,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyphenate.EMConnectionListener;
@@ -59,6 +61,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
     protected ListView listView;
     protected boolean hidden;
     protected ImageButton clearSearch;
+    protected TextView addFriend;
     protected EditText query;
     protected Handler handler = new Handler();
     protected EaseUser toBeProcessUser;
@@ -89,7 +92,7 @@ public class EaseContactListFragment extends EaseBaseFragment {
         
         contactListLayout = (EaseContactList) getView().findViewById(R.id.contact_list);        
         listView = contactListLayout.getListView();
-        
+        addFriend = (TextView) getView().findViewById(R.id.addFriend);
         //search
         query = (EditText) getView().findViewById(R.id.query);
         clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
@@ -148,7 +151,12 @@ public class EaseContactListFragment extends EaseBaseFragment {
                 return false;
             }
         });
-        
+        addFriend.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent("com.ui.addfreind"));
+            }
+        });
     }
 
 

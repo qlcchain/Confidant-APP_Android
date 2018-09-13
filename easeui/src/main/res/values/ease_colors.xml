@@ -17,6 +17,7 @@
     <color name="top_bar_normal_bg">#00acff</color>
     <color name="error_item_color">#F6EBE6</color>
     <color name="bottom_bar_normal_bg">#2D2F31</color>
+    <color name="color_333333">#2D2F31</color>
     <color name="bottom_text_color_normal">#ffffff</color>
     <color name="btn_white_normal">#f7f8f8</color>
     <color name="btn_white_pressed">#b5b5b6</color>

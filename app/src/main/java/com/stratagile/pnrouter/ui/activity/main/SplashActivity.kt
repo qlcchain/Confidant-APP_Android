@@ -2,9 +2,7 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
 import android.os.Bundle
-import com.pawegio.kandroid.startActivity
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -14,8 +12,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.SpUtil
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
