@@ -48,9 +48,13 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             startActivity(Intent(this, QRCodeActivity::class.java))
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
-        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
+        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
+        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
         nickName.setOnClickListener {
             startActivityForResult(Intent(this, EditNickNameActivity::class.java), 1)
+        }
+        llAvatar.setOnClickListener {
+            startActivityForResult(Intent(this, ModifyAvatarActivity::class.java), 2)
         }
     }
 

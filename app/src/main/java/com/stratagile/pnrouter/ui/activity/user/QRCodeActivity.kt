@@ -26,8 +26,10 @@ import android.graphics.Bitmap
 import android.os.Environment
 import java.io.File.separator
 import android.os.Environment.getExternalStorageDirectory
+import com.pawegio.kandroid.longToast
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import kotlinx.android.synthetic.main.fragment_my.*
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
@@ -62,7 +64,8 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
         var userId = FileUtil.getLocalUserId()
-        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, ""))
+        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
+        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
         RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
         tvSaveToPhone.setOnClickListener {
             saveQrCodeToPhone()
@@ -90,7 +93,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
                     os.close()
                     runOnUiThread {
                         closeProgressDialog()
-                        toast(getString(R.string.save_to_phone_success) + "\n" + filePath)
+                        longToast(getString(R.string.save_to_phone_success) + "\n" + filePath)
                     }
                     KLog.i("存储完成")
                 } catch (e: Exception) {

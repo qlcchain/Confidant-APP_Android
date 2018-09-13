@@ -42,4 +42,7 @@
     <string name="Reject">Reject</string>
     <string name="please_type_your_username">please type your username</string>
     <string name="save_to_phone_success">save to phone success</string>
+    <string name="save_picture">save picture</string>
+    <string name="skip">skip</string>
+    <string name="save_success">save success</string>
 </resources>

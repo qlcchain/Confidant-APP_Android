@@ -47,6 +47,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.user.EditNickNameActivity" />
         <activity android:name=".ui.activity.login.SelectRouterActivity" />
+        <activity android:name=".ui.activity.user.ModifyAvatarActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -59,6 +60,17 @@
                 <action android:name="org.thoughtcrime.securesms.RESTART"/>
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".utils.MyFileProvider"
+            android:authorities="com.stratagile.pnrouter.utils.MyFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
+        </provider>
+
     </application>
 
 </manifest>
