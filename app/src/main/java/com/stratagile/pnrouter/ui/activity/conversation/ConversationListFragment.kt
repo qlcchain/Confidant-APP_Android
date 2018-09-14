@@ -32,7 +32,10 @@ import kotlinx.android.synthetic.main.search_layout.*
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.noober.menu.FloatMenu
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.ui.activity.user.AddFreindActivity
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
+import java.util.*
 
 
 /**
@@ -64,8 +67,22 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
         viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
             if (!"".equals(toAddUserId)) {
-                var intent  = Intent(activity!!, AddFreindActivity::class.java)
-                intent.putExtra("toUserId", toAddUserId)
+                var intent  = Intent(activity!!, UserInfoActivity::class.java)
+                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                for (i in useEntityList) {
+                    if (i.userId.equals(toAddUserId)) {
+                        intent.putExtra("user", i)
+                        startActivity(intent)
+                        return@Observer
+                    }
+                }
+                var userEntity = UserEntity()
+                userEntity.friendStatus = 7
+                userEntity.userId = toAddUserId
+                userEntity.nickName = ""
+                userEntity.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                intent.putExtra("user", userEntity)
                 startActivity(intent)
             }
         })

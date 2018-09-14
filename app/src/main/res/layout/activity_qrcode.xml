@@ -63,7 +63,7 @@
                 android:textSize="12sp"
                 android:textColor="@color/color_b3b3b3"
                 android:layout_height="wrap_content"
-                android:text="Sweep on private messages and add me"
+                android:text="@string/scan_qr_code_to_add_me"
                 />
         </LinearLayout>
     </android.support.v7.widget.CardView>

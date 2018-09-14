@@ -21,6 +21,8 @@ import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 import javax.inject.Inject;
 
@@ -59,22 +61,23 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
 
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver!!.addFriendDealCallBack = null
     }
 
     override fun initView() {
         setContentView(R.layout.activity_new_friend)
+        EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver!!.addFriendDealCallBack = this
     }
     override fun initData() {
-        title.text = "New Friend"
+        title.text = getString(R.string.add_contact)
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var showlist = arrayListOf<UserEntity>()
         for (i in list) {
-//            if (!i.isFriend) {
-//                showlist.add(i)
-//            }
-            showlist.add(i)
+            if (i.friendStatus != 7) {
+                showlist.add(i)
+            }
         }
         newFriendListAdapter = NewFriendListAdapter(showlist)
         newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
@@ -95,6 +98,11 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
             }
         }
         recyclerView.adapter = newFriendListAdapter
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun friendChange(friendChange: FriendChange) {
+        initData()
     }
 
     override fun setupActivityComponent() {

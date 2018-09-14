@@ -114,7 +114,7 @@
         android:layout_height="@dimen/x92"
         android:layout_marginTop="@dimen/x30"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:text="V">
+        app:text="@string/setting_">
 
     </com.stratagile.pnrouter.view.DrawableTextView>
 </android.support.constraint.ConstraintLayout>

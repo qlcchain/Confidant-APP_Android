@@ -60,7 +60,12 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         setContentView(R.layout.activity_qrcode)
     }
     override fun initData() {
-        title.text = getString(R.string.qr_code_business_card)
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
+        if ("".equals(nickName)) {
+            title.text = getString(R.string.details)
+        } else {
+            title.text = nickName
+        }
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
         var userId = FileUtil.getLocalUserId()

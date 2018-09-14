@@ -7,6 +7,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.protobuf.InvalidProtocolBufferException
 import com.socks.library.KLog
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos
 import okhttp3.*
 import java.util.*
@@ -29,7 +31,12 @@ import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequest
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.HeartBeatReq
+import com.stratagile.pnrouter.entity.JHeartBeatRsp
+import com.stratagile.pnrouter.entity.LoginRspWrapper
 import com.stratagile.pnrouter.utils.GsonUtil
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.security.SecureRandom
@@ -195,6 +202,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private fun sendKeepAlive() {
         if (keepAliveSender != null && client != null) {
             //todo keepalive message
+            var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
+            send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+            KLog.i("心跳消息为：：")
+            KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }
 
@@ -241,6 +252,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         try {
             val gson = GsonUtil.getIntGson()
             var baseData = gson.fromJson(text, BaseData::class.java)
+            if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
+                val heartBeatRsp  = gson.fromJson(text, JHeartBeatRsp::class.java)
+                if (heartBeatRsp.params.retCode == 0) {
+                    KLog.i("心跳监测和服务器的连接正常~~~")
+                }
+            } else {
+                onMessageReceiveListener!!.onMessage(baseData, text)
+            }
 //            KLog.i("解析消息")
 //            KLog.i(baseData.toString())
 //            KLog.i(baseData.timestamp)
@@ -252,7 +271,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
 //            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
 //            incomingRequests.add(baseData)
-            onMessageReceiveListener!!.onMessage(baseData, text)
         } catch (e : Exception) {
             e.printStackTrace()
         }

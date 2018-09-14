@@ -28,10 +28,12 @@ import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 
@@ -39,6 +41,21 @@ import java.util.*
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack{
+    //别人删除我，服务器给我的推送
+    override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
+        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in useEntityList) {
+            if (jDelFriendPushRsp.params.friendId.equals(i.userId)) {
+                i.friendStatus = 4
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                runOnUiThread {
+                    viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                }
+                EventBus.getDefault().post(FriendChange())
+                return
+            }
+        }
+    }
 
     /**
      * 目标好友处理完成好友请求操作，由router推送消息给好友请求发起方，本次好友请求的结果
@@ -57,7 +74,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
-                viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                runOnUiThread {
+                    viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                }
                 return
             }
         }
@@ -74,7 +93,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in useEntityList) {
             if (i.userId.equals(jAddFriendPushRsp.params.friendId)) {
-                return
+                if (i.friendStatus == 0) {
+                    return
+                } else {
+                    i.friendStatus = 3
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                    runOnUiThread {
+                        viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                    }
+                    return
+                }
             }
         }
         newFriend.nickName = jAddFriendPushRsp.params.nickName
@@ -85,6 +113,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.noteName = ""
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
+        runOnUiThread {
+            viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+        }
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
     }
 

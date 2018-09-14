@@ -3,7 +3,7 @@
     <item
         android:id="@+id/item_news"
         android:icon="@mipmap/btn_news_highlight"
-        android:title="@string/news" />
+        android:title="@string/chats" />
     <item
         android:id="@+id/item_file"
         android:icon="@mipmap/btn_file_highlight"

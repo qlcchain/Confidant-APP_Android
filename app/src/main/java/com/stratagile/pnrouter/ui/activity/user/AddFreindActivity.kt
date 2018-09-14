@@ -35,10 +35,16 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         com.pawegio.kandroid.runOnUiThread {
             toast(addFriendRsp.baseDataToJson())
         }
-        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
+        newFriend!!.friendStatus = 1
+        if (hasUserInfo) {
+            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(newFriend)
+        } else {
+            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
+        }
         KLog.i(addFriendRsp.baseDataToJson())
     }
 
+    var hasUserInfo = false
     @Inject
     internal lateinit var mPresenter: AddFreindPresenter
 
@@ -52,24 +58,28 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
     }
     override fun initData() {
         newFriend = UserEntity()
-        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        for (i in useEntityList) {
-            if (i.userId.equals(intent.getStringExtra("toUserId"))) {
-                var intent = Intent(this, UserInfoActivity::class.java)
-                intent.putExtra("user", i)
-                startActivity(intent)
-                finish()
-                return
-            }
-        }
         newFriend!!.nickName = ""
         newFriend!!.friendStatus = 1
         newFriend!!.userId = intent.getStringExtra("toUserId")
         newFriend!!.addFromMe = true
         newFriend!!.timestamp = Calendar.getInstance().timeInMillis
         newFriend!!.noteName = ""
-
-
+        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in useEntityList) {
+            if (i.userId.equals(intent.getStringExtra("toUserId"))) {
+                hasUserInfo = true
+                if (i.friendStatus != 0) {
+                    newFriend = i
+                } else {
+                    var intent = Intent(this, UserInfoActivity::class.java)
+                    intent.putExtra("user", i)
+                    startActivity(intent)
+                    finish()
+                    return
+                }
+                break
+            }
+        }
         AppConfig.instance.messageReceiver!!.addfrendCallBack = this
         userId.text = intent.getStringExtra("toUserId")
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")

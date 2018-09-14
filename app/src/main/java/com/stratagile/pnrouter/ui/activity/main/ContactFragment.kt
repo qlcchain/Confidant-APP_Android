@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.pawegio.kandroid.runOnUiThread
+import com.socks.library.KLog
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -18,16 +20,23 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
 import javax.inject.Inject;
 
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.AddFriendReq
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JPullFriendRsp
+import com.stratagile.pnrouter.entity.PullFriendReq
 import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 
 /**
  * @author hzp
@@ -36,7 +45,36 @@ import org.greenrobot.eventbus.ThreadMode
  * @date 2018/09/10 17:33:27
  */
 
-class ContactFragment : BaseFragment(), ContactContract.View {
+class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMessageReceiver.PullFriendCallBack {
+    override fun firendList(jPullFriendRsp: JPullFriendRsp) {
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+
+        for (i in jPullFriendRsp.params.payload) {
+            var isLocalFriend = false
+            for (j in localFriendList) {
+                if (i.id.equals(j.userId)) {
+                    isLocalFriend = true
+                    j.friendStatus = 0
+                    j.nickName = i.name
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
+                    break
+                }
+            }
+            if (!isLocalFriend) {
+                var userEntity = UserEntity()
+                userEntity.nickName = i.name
+                userEntity.userId = i.id
+                userEntity.friendStatus = 0
+                userEntity.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+            }
+
+        }
+
+        runOnUiThread {
+            initData()
+        }
+    }
 
     @Inject
     lateinit internal var mPresenter: ContactPresenter
@@ -50,10 +88,12 @@ class ContactFragment : BaseFragment(), ContactContract.View {
         return view
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
+        AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
         viewModel.freindChange.observe(this, Observer<Long> { friendChange ->
             initData()
         })
@@ -61,11 +101,23 @@ class ContactFragment : BaseFragment(), ContactContract.View {
             startActivity(Intent(activity!!, NewFriendActivity::class.java))
         }
         initData()
+        refreshLayout.setOnRefreshListener {
+            pullFriendList()
+            KLog.i("拉取好友列表")
+        }
+        pullFriendList()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendChange(friendChange: FriendChange) {
         initData()
+    }
+
+    fun pullFriendList() {
+        refreshLayout.isRefreshing = false
+        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+        var pullFriend = PullFriendReq( selfUserId!!)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
     }
 
     fun initData() {
@@ -113,5 +165,6 @@ class ContactFragment : BaseFragment(), ContactContract.View {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+        AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
     }
 }

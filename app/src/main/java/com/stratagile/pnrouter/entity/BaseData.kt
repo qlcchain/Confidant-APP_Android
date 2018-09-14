@@ -173,5 +173,9 @@ data class DelMsgReq(var UserId : String, var Friendid : String, var Action : St
  */
 data class DelMsgRsp(var Action : String, var Retcode : Int, var Msg : String)
 
+data class PullFriendReq(var UserId: String, var Action: String = "PullFriend")
+
+data class HeartBeatReq(var UserId: String, var Action: String = "HeartBeat")
+
 data class ShareBean(var avatar : String, var name : String)
 

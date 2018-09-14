@@ -1,11 +1,13 @@
 package com.stratagile.pnrouter.data.web
 
 import com.alibaba.fastjson.JSONObject
+import com.google.gson.*
 import com.socks.library.KLog
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
+import java.lang.reflect.Type
 
 
 class PNRouterServiceMessageReceiver
@@ -47,6 +49,20 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
                 mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
             }
+            //删除对方，服务器返回是否操作成功
+            "DelFriendCmd"-> {
+                val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
+                delFriendCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
+            }
+            //对方删除我，服务器给我推送消息
+            "DelFriendPush"-> {
+                val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
+                mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
+            }
+            "PullFriend"-> {
+                val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
+                pullFriendCallBack?.firendList(jPullFriendRsp)
+            }
             "SendMsg"-> {
                 val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
                 chatCallBack?.sendMsgRsp(JSendMsgRsp)
@@ -69,6 +85,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var mainInfoBack : MainInfoBack? = null
     var addFriendDealCallBack : AddFriendDealCallBack? = null
     var chatCallBack : ChatCallBack? = null
+
+    var delFriendCallBack : DelFriendCallBack? = null
+
+    var pullFriendCallBack : PullFriendCallBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -190,9 +210,18 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface MainInfoBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp : JAddFriendReplyRsp)
+        fun delFriendPushRsp(jDelFriendPushRsp : JDelFriendPushRsp)
     }
     interface AddFriendDealCallBack {
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
+    }
+
+    interface DelFriendCallBack {
+        fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
+    }
+
+    interface PullFriendCallBack {
+        fun firendList(jPullFriendRsp: JPullFriendRsp)
     }
 
     interface ChatCallBack {
