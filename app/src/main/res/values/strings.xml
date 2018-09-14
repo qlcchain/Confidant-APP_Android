@@ -55,8 +55,12 @@
     <string name="attach_picture">Image</string>
     <string name="attach_take_pic">Capture</string>
     <string name="attach_location">Location</string>
+    <string name="attach_Short_video">Short video</string>
     <string name="attach_video">Video</string>
-    <string name="attach_file">File</string>
+    <string name="attach_Meeting">Meetting</string>
+    <string name="attach_Video_call">Video call</string>
+    <string name="attach_file">Local</string>
+    <string name="attach_Privatefile">Private</string>
     <string name="attach_voice_call">Voice call</string>
     <string name="attach_video_call">Video call</string>
     <string name="user_card">Business card</string>
@@ -151,6 +155,7 @@
     <string name="register">Register</string>
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
+    <string name="wait"> please wait a moment</string>
     <string name="mute">Mute</string>
     <string name="Hands_free">Hands free</string>
     <string name="hang_up">Hang up</string>
