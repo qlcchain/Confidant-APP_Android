@@ -205,6 +205,7 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
 
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
+                closeKeyboad()
             }
             return super.dispatchTouchEvent(ev)
         }
@@ -213,6 +214,10 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
         return if (window.superDispatchTouchEvent(ev)) {
             true
         } else onTouchEvent(ev)
+    }
+
+    open fun closeKeyboad() {
+
     }
 
 }

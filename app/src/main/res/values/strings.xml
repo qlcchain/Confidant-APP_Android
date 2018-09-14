@@ -5,7 +5,7 @@
     <string name="news">News</string>
     <string name="file_">File</string>
     <string name="contacts">Contacts</string>
-    <string name="my">My</string>
+    <string name="my">Me</string>
     <string name="loginScanTips">Click here to scan the router’s QR code.</string>
     <string name="Login">Login</string>
     <string name="Username">Username</string>
@@ -37,6 +37,7 @@
     <string name="open_folder">open folder</string>
     <string name="ok_btn_dialog">OK</string>
     <string name="result">result</string>
+    <string name="cancel">Cancel</string>
     <string name="Agree">Agree</string>
     <string name="Reject">Reject</string>
     <string name="please_type_your_username">please type your username</string>
@@ -44,6 +45,8 @@
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
+    <string name="refuse">Refuse</string>
+    <string name="accept">Accept</string>
 
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
@@ -83,7 +86,6 @@
     <string name="button_logout">Logout</string>
     <string name="button_uploadlog">Upload the log</string>
     <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
     <string name="prompt">Prompt</string>
     <string name="clear_records">Clear conversation?</string>
     <string name="clear_all_records">Clear all conversations？</string>

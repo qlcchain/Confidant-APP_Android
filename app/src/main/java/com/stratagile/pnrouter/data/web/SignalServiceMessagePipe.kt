@@ -17,8 +17,8 @@ import java.util.concurrent.TimeoutException
 class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) : WebSocketConnection.OnMessageReceiveListener {
 
     open var messagePipeCallback : MessagePipeCallback? = null
-    override fun onMessage(message: BaseData<*>) {
-        messagePipeCallback?.onMessage(message)
+    override fun onMessage(message: BaseData, text : String?) {
+        messagePipeCallback?.onMessage(message, text)
     }
 
     init {
@@ -49,7 +49,7 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
         while (true) {
             val request = websocket.readRequest(2000)
 //            val response = createWebSocketResponse(request)
-            messageCallBack.onMessage(request)
+//            messageCallBack.onMessage(request)
 //            return request
 //            try {
 //                if (isSignalServiceEnvelope(request)) {
@@ -162,11 +162,11 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
      * received.
      */
     interface MessagePipeCallback {
-        fun onMessage(baseData : BaseData<*>)
+        fun onMessage(baseData : BaseData, text :String?)
     }
 
     open class NullMessagePipeCallback : MessagePipeCallback {
-        override fun onMessage(baseData : BaseData<*>) {}
+        override fun onMessage(baseData : BaseData, text :String?) {}
     }
 
     companion object {

@@ -5,4 +5,6 @@ import android.arch.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
     var toAddUserId = MutableLiveData<String>()
+
+    var freindChange = MutableLiveData<Long>()
 }

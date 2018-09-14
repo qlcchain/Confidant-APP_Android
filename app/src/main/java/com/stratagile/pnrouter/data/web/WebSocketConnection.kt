@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.protobuf.InvalidProtocolBufferException
+import com.socks.library.KLog
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos
 import okhttp3.*
 import java.util.*
@@ -28,6 +29,7 @@ import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequest
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.utils.GsonUtil
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.security.SecureRandom
@@ -37,7 +39,7 @@ import javax.net.ssl.*
 
 class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val credentialsProvider: CredentialsProvider, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
 
-    private val incomingRequests = LinkedList<BaseData<*>>()
+    private val incomingRequests = LinkedList<BaseData>()
     private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
 
     private val wsUri: String
@@ -116,7 +118,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)
-    fun readRequest(timeoutMillis: Long): BaseData<*> {
+    fun readRequest(timeoutMillis: Long): BaseData {
         if (client == null) {
             throw IOException("Connection closed!")
         }
@@ -237,19 +239,20 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.w(TAG, "onMessage(text)! " + text!!)
         try {
-            val gson = Gson()
+            val gson = GsonUtil.getIntGson()
             var baseData = gson.fromJson(text, BaseData::class.java)
-//            Log.i(TAG, "解析消息")
-//            Log.i(TAG, baseData.toString())
-//            Log.i(TAG, baseData.timestamp)
-//            Log.i(TAG, baseData.appid)
+//            KLog.i("解析消息")
+//            KLog.i(baseData.toString())
+//            KLog.i(baseData.timestamp)
+//            KLog.i(baseData.appid)
+//            KLog.i(baseData.params.toString())
 //            Log.i(TAG, baseData.params.toString())
 //            var jsonObject  = JSONObject.parseObject(text)
 //            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
 //            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
 //            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
 //            incomingRequests.add(baseData)
-            onMessageReceiveListener!!.onMessage(baseData)
+            onMessageReceiveListener!!.onMessage(baseData, text)
         } catch (e : Exception) {
             e.printStackTrace()
         }
@@ -453,7 +456,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     interface OnMessageReceiveListener {
-        fun onMessage(message : BaseData<*>)
+        fun onMessage(message : BaseData, text: String?)
     }
 
 }

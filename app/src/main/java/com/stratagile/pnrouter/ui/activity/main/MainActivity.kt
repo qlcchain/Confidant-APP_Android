@@ -20,20 +20,73 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.view.View
+import androidx.core.widget.toast
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import java.util.HashMap
+import java.util.*
 
 
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
-class MainActivity : BaseActivity(), MainContract.View {
+class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack{
+
+    /**
+     * 目标好友处理完成好友请求操作，由router推送消息给好友请求发起方，本次好友请求的结果
+     */
+    override fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp) {
+        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in useEntityList) {
+            //jAddFriendReplyRsp.params.userId==对方的id
+            if (i.userId.equals(jAddFriendReplyRsp.params.userId)) {
+                if (jAddFriendReplyRsp.params.result == 0) {
+                    i.friendStatus = 0
+                } else if (jAddFriendReplyRsp.params.result == 1) {
+                    i.friendStatus = 2
+                }
+                i.nickName = jAddFriendReplyRsp.params.nickname
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+                var addFriendReplyReq = AddFriendReplyReq(0, "")
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
+                viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                return
+            }
+        }
+    }
+
+    /**
+     * 当一个用户A被其他用户B请求添加好友，router推送消息到A
+     */
+    override fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp) {
+        runOnUiThread {
+            toast(jAddFriendPushRsp.params.friendId)
+        }
+        var newFriend = UserEntity()
+        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in useEntityList) {
+            if (i.userId.equals(jAddFriendPushRsp.params.friendId)) {
+                return
+            }
+        }
+        newFriend.nickName = jAddFriendPushRsp.params.nickName
+        newFriend.friendStatus = 3
+        newFriend.userId = jAddFriendPushRsp.params.friendId
+        newFriend.addFromMe = false
+        newFriend.timestamp = Calendar.getInstance().timeInMillis
+        newFriend.noteName = ""
+        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
+        var addFriendPushReq = AddFriendPushReq(0, "")
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
+    }
 
     lateinit var viewModel : MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
@@ -60,6 +113,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
+        AppConfig.instance.messageReceiver!!.mainInfoBack = this
         tvTitle.setOnClickListener {
             startActivity(Intent(this, SelectRouterActivity::class.java))
         }
@@ -85,9 +139,9 @@ class MainActivity : BaseActivity(), MainContract.View {
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when(position) {
-                    0 -> return conversationListFragment!!
+                    0 -> return ConversationListFragment()
                     1 -> return FileFragment()
-                    2 -> return contactListFragment!!
+                    2 -> return ContactFragment()
                     else -> return MyFragment()
                 }
             }

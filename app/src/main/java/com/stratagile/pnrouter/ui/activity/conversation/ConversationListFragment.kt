@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.util.Log
@@ -31,6 +32,7 @@ import kotlinx.android.synthetic.main.search_layout.*
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.noober.menu.FloatMenu
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.ui.activity.user.AddFreindActivity
 
 
 /**
@@ -61,6 +63,11 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
+            if (!"".equals(toAddUserId)) {
+                var intent  = Intent(activity!!, AddFreindActivity::class.java)
+                intent.putExtra("toUserId", toAddUserId)
+                startActivity(intent)
+            }
         })
         var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         coversationListAdapter = ConversationListAdapter(list)
@@ -71,6 +78,10 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
             true
         }
         recyclerView.adapter = coversationListAdapter
+        coversationListAdapter!!.setOnItemClickListener { adapter, view, position ->
+            var intent = Intent(activity!!, ConversationActivity::class.java)
+            startActivity(intent)
+        }
 //        send.setOnClickListener {
 //            if (messageSender == null) {
 //                messageSender = AppConfig.instance.getPNRouterServiceMessageSender()

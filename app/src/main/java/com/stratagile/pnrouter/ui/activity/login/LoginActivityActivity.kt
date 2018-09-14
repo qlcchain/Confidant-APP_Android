@@ -22,10 +22,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LoginReq
-import com.stratagile.pnrouter.entity.LoginRsp
-import com.stratagile.pnrouter.entity.MyRouter
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -35,10 +32,7 @@ import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -57,16 +51,16 @@ import kotlin.math.log
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
-    override fun loginBack(loginRsp: LoginRsp) {
+    override fun loginBack(loginRsp: LoginRspWrapper) {
         KLog.i(loginRsp.toString())
-        if ("".equals(loginRsp.UserId)) {
+        if ("".equals(loginRsp.params!!.UserId)) {
             runOnUiThread {
                 toast("Too many users")
             }
         } else {
-            FileUtil.saveUserId2Local(loginRsp.UserId)
-            newRouterEntity.userId = loginRsp.UserId
-            SpUtil.putString(this, ConstantValue.userId, loginRsp.UserId)
+            FileUtil.saveUserId2Local(loginRsp.params!!.UserId)
+            newRouterEntity.userId = loginRsp.params!!.UserId
+            SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.UserId)
             SpUtil.putString(this, ConstantValue.userId, userId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)

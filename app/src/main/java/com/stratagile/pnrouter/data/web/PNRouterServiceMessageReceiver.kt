@@ -1,19 +1,13 @@
 package com.stratagile.pnrouter.data.web
 
-import android.util.Log
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.Gson
+import com.google.gson.*
 import com.socks.library.KLog
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LoginRsp
+import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
-import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
-import java.util.*
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import java.lang.reflect.Type
 
 
 class PNRouterServiceMessageReceiver
@@ -25,24 +19,50 @@ class PNRouterServiceMessageReceiver
  */
 constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
 
-    override fun onMessage(baseData: BaseData<*>) {
+    override fun onMessage(baseData: BaseData, text :String?) {
         KLog.i(baseData.baseDataToJson())
-        var gson = Gson()
+        KLog.i(baseData.params.toString())
+        var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
-        when (JSONObject.parseObject((JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()).getString("Action")) {
+        KLog.i(paramsStr)
+        when (JSONObject.parseObject(paramsStr).getString("Action")) {
             "Login" -> {
-                var loginRsp  = gson.fromJson<LoginRsp>(paramsStr, LoginRsp::class.java)
+                val loginRsp  = gson.fromJson(text, LoginRspWrapper::class.java)
+                KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
+            }
+            "AddFriendReq" -> {
+                val addFreindRsp  = gson.fromJson(text, JAddFreindRsp::class.java)
+                KLog.i(addFreindRsp.toString())
+                addfrendCallBack?.addFriendBack(addFreindRsp)
+            }
+            "AddFriendPush"-> {
+                val addFreindPusRsp  = gson.fromJson(text, JAddFriendPushRsp::class.java)
+                KLog.i(addFreindPusRsp.toString())
+                mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
+            }
+            "AddFriendDeal"-> {
+                val addFriendDealRsp = gson.fromJson(text, JAddFriendDealRsp::class.java)
+                addFriendDealCallBack?.addFriendDealRsp(addFriendDealRsp)
+            }
+            "AddFriendReply"-> {
+                val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
+                mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
             }
         }
         messageListner?.onMessage(baseData)
     }
+
+
 
 //    private val socket: PushServiceSocket
 
     var  pipe : SignalServiceMessagePipe? = null
     var messageListner : MessageReceivedCallback? = null
     var loginBackListener : LoginMessageCallback? = null
+    var addfrendCallBack : AddfrendCallBack? = null
+    var mainInfoBack : MainInfoBack? = null
+    var addFriendDealCallBack : AddFriendDealCallBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -146,15 +166,27 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息
      */
     interface MessageReceivedCallback {
-        fun onMessage(baseData : BaseData<*>)
+        fun onMessage(baseData : BaseData)
     }
 
     class NullMessageReceivedCallback : MessageReceivedCallback {
-        override fun onMessage(envelope: BaseData<*>) {}
+        override fun onMessage(envelope: BaseData) {}
     }
 
     interface LoginMessageCallback {
-        fun loginBack(loginRsp : LoginRsp)
+        fun loginBack(loginRsp : LoginRspWrapper)
+    }
+
+    interface AddfrendCallBack {
+        fun addFriendBack(addFriendRsp : JAddFreindRsp)
+    }
+
+    interface MainInfoBack {
+        fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
+        fun addFriendReplyRsp(jAddFriendReplyRsp : JAddFriendReplyRsp)
+    }
+    interface AddFriendDealCallBack {
+        fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
     }
 
 }

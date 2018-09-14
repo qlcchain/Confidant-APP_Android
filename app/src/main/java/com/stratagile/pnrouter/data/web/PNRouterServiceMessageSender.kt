@@ -19,7 +19,7 @@ import kotlin.concurrent.thread
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
-    var toSendMessage: Queue<BaseData<*>> = LinkedList()
+    var toSendMessage: Queue<BaseData> = LinkedList()
     lateinit var thread: Thread
 
     init {
@@ -27,7 +27,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         initThread()
     }
 
-    fun send(message: BaseData<*>){
+    fun send(message: BaseData){
         toSendMessage.offer(message)
         Log.i("sender", "添加")
         if (thread.state == Thread.State.NEW) {
@@ -74,8 +74,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     fun sendMessage() {
         if (toSendMessage.isNotEmpty()) {
             var message = toSendMessage.poll()
-            Log.i("ServiceMessageSender", message.baseDataToJson())
-            pipe.get().get().webSocketConnection().send(message.baseDataToJson())
+            Log.i("ServiceMessageSender", message.baseDataToJson().replace("\\", ""))
+            pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
         } else {
 
         }

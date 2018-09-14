@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/x123">
+
+    <View
+        android:id="@+id/line"
+        style="@style/divide_line"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <com.stratagile.pnrouter.view.ImageButtonWithText
+        android:id="@+id/ivAvatar"
+        android:layout_width="@dimen/x95"
+        android:layout_height="@dimen/x95"
+        android:layout_marginLeft="@dimen/x30"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x24"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvNickName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="John"
+            android:textColor="@color/color_3f3f3f" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x31"
+        android:layout_marginTop="@dimen/x45"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/llOperate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/x30"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toTopOf="@+id/line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvRefuse"
+            android:layout_width="@dimen/x80"
+            android:layout_height="@dimen/x50"
+            android:layout_weight="1"
+            android:background="@color/color_efefef"
+            android:gravity="center"
+            android:textSize="9sp"
+            android:text="Refuse"
+            android:textColor="@color/main_color" />
+
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2" />
+
+        <TextView
+            android:id="@+id/tvAccept"
+            android:layout_width="@dimen/x80"
+            android:textSize="9sp"
+            android:layout_height="@dimen/x50"
+            android:layout_weight="1"
+            android:background="@color/main_color"
+            android:gravity="center"
+            android:text="Accept"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
