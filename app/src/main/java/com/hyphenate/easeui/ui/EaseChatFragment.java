@@ -849,6 +849,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendAtMessage(content);
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
+            String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+            EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
+            String msg = txtBody.getMessage();
+            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId,toChatUserId,msg);
             sendMessage(message);
         }
     }
@@ -942,10 +946,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(isMessageListInited) {
             messageList.refresh();
         }
-        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-        EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
-        String msg = txtBody.getMessage();
-        AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId,toChatUserId,msg);
         /*if(isMessageListInited) {
             messageList.refreshSelectLast();
         }*/
