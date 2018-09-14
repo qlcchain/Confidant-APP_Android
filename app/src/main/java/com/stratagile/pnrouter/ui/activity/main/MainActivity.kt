@@ -194,8 +194,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        bottomNavigation.setIconsMarginTop(resources.getDimension(R.dimen.x22).toInt())
 //        bottomNavigation.selectedItemId = R.id.item_news
         contactListFragment?.setContactsMap(getContacts())
-        conversationListFragment?.setConversationListItemClickListener(EaseConversationListFragment.EaseConversationListItemClickListener { conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
-        contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
+        conversationListFragment?.setConversationListItemClickListener(
+                EaseConversationListFragment.EaseConversationListItemClickListener
+                { conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
+        //contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when(position) {
