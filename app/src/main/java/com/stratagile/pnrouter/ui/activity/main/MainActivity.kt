@@ -25,6 +25,7 @@ import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
+import com.socks.library.KLog
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
@@ -33,6 +34,7 @@ import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
@@ -149,6 +151,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startActivity(Intent(this, SelectRouterActivity::class.java))
         }
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
+            KLog.i(toAddUserId)
+            if (!"".equals(toAddUserId)) {
+                var intent  = Intent(this, UserInfoActivity::class.java)
+                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                for (i in useEntityList) {
+                    if (i.userId.equals(toAddUserId)) {
+                        intent.putExtra("user", i)
+                        startActivity(intent)
+                        return@Observer
+                    }
+                }
+                var userEntity = UserEntity()
+                userEntity.friendStatus = 7
+                userEntity.userId = toAddUserId
+                userEntity.nickName = ""
+                userEntity.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                intent.putExtra("user", userEntity)
+                startActivity(intent)
+            }
+        })
         setToNews()
         ivQrCode.setOnClickListener {
             mPresenter.getScanPermission()

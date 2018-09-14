@@ -64,28 +64,28 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
-        viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
-            KLog.i(toAddUserId)
-            if (!"".equals(toAddUserId)) {
-                var intent  = Intent(activity!!, UserInfoActivity::class.java)
-                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-                for (i in useEntityList) {
-                    if (i.userId.equals(toAddUserId)) {
-                        intent.putExtra("user", i)
-                        startActivity(intent)
-                        return@Observer
-                    }
-                }
-                var userEntity = UserEntity()
-                userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId
-                userEntity.nickName = ""
-                userEntity.timestamp = Calendar.getInstance().timeInMillis
-                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
-                intent.putExtra("user", userEntity)
-                startActivity(intent)
-            }
-        })
+//        viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
+//            KLog.i(toAddUserId)
+//            if (!"".equals(toAddUserId)) {
+//                var intent  = Intent(activity!!, UserInfoActivity::class.java)
+//                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+//                for (i in useEntityList) {
+//                    if (i.userId.equals(toAddUserId)) {
+//                        intent.putExtra("user", i)
+//                        startActivity(intent)
+//                        return@Observer
+//                    }
+//                }
+//                var userEntity = UserEntity()
+//                userEntity.friendStatus = 7
+//                userEntity.userId = toAddUserId
+//                userEntity.nickName = ""
+//                userEntity.timestamp = Calendar.getInstance().timeInMillis
+//                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+//                intent.putExtra("user", userEntity)
+//                startActivity(intent)
+//            }
+//        })
         var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         coversationListAdapter = ConversationListAdapter(list)
         coversationListAdapter!!.setOnItemLongClickListener { adapter, view, position ->
