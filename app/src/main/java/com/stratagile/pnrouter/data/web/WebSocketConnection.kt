@@ -144,24 +144,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             incomingRequests.removeFirst()
     }
 
-    @Synchronized
-    @Throws(IOException::class)
-    fun sendRequest(request: WebSocketRequestMessage): Future<Pair<Integer, String>> {
-        if (client == null || !connected) throw IOException("No connection!")
-
-        val message = WebSocketProtos.WebSocketMessage.newBuilder()
-                .setType(WebSocketMessage.Type.REQUEST)
-                .setRequest(request)
-                .build()
-
-        val future = SettableFuture<Pair<Integer, String>>()!!
-        outgoingRequests[request.getId()] = future
-        if (!client!!.send(ByteString.of(ByteBuffer.wrap(message.toByteArray())))) {
-            throw IOException("Write failed!")
-        }
-
-        return future
-    }
     fun send(message : String?) : Boolean{
 //        Log.i("websocketConnection", message)
         if (client == null || !connected) {
@@ -175,26 +157,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             Log. i("WenSocketConnetion", "发送成功")
             return true
         }
-    }
-
-    @Synchronized
-    @Throws(IOException::class)
-    fun sendResponse(response: WebSocketResponseMessage) {
-        if (client == null) {
-            throw IOException("Connection closed!")
-        }
-
-        val message = WebSocketMessage.newBuilder()
-                .setType(WebSocketMessage.Type.RESPONSE)
-                .setResponse(response)
-                .build()
-
-        if (!client!!.send(ByteString.of(ByteBuffer.wrap(message.toByteArray())))) {
-            throw IOException("Write failed!")
-        }
-//        if (!client!!.send(ByteString.of(message.toByteArray()))) {
-//            throw IOException("Write failed!")
-//        }
     }
 
     @Synchronized
@@ -227,24 +189,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
         Log.w(TAG, "WSC onMessage()")
-        //        try {
-//            val message = WebSocketMessage.parseFrom(payload!!.toByteArray())
-//
-//            Log.w(TAG, "Message Type: " + message.getType().getNumber())
-//
-//            if (message.getType().getNumber() === WebSocketMessage.Type.REQUEST_VALUE) {
-//                incomingRequests.add(message.getRequest())
-//            } else if (message.getType().getNumber() === WebSocketMessage.Type.RESPONSE_VALUE) {
-//                val listener = outgoingRequests[message.getResponse().getId()]
-//                if (listener != null)
-//                    listener!!.set(Pair(message.getResponse().getStatus(),
-//                            String(message.getResponse().getBody().toByteArray())))
-//            }
-//
-//            notifyAll()
-//        } catch (e: InvalidProtocolBufferException) {
-//            Log.w(TAG, e)
-//        }
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {

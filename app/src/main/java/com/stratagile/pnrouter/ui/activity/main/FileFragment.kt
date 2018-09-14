@@ -43,9 +43,9 @@ class FileFragment : BaseFragment(), FileContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var titles = ArrayList<String>()
-        titles.add("all files")
-        titles.add("received file")
-        titles.add("sent file")
+        titles.add("ALL Files")
+        titles.add("Received files")
+        titles.add("Sent Files")
         viewPager.setAdapter(object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 return FileListFragment()

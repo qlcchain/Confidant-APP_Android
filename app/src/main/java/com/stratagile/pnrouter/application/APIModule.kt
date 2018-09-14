@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.data.qualifier.Remote
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.ReminderUpdateEvent
 
 import java.util.concurrent.TimeUnit
@@ -76,14 +77,17 @@ class APIModule(private val application: Application) {
 
         override fun onConnected() {
             Log.i("APIModule", "onConnected()")
+            EventBus.getDefault().post(ConnectStatus(0))
         }
 
         override fun onConnecting() {
             Log.i("APIModule", "onConnecting()")
+            EventBus.getDefault().post(ConnectStatus(1))
         }
 
         override fun onDisconnected() {
             Log.w("APIModule", "onDisconnected()")
+            EventBus.getDefault().post(ConnectStatus(2))
         }
 
         override fun onAuthenticationFailure() {

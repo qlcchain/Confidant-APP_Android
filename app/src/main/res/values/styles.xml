@@ -62,4 +62,8 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <style name="TabLayoutStyle">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

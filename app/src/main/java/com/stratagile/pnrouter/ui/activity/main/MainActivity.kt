@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.widget.toast
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
@@ -29,6 +30,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
@@ -36,6 +38,8 @@ import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 
 
@@ -147,6 +151,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
         AppConfig.instance.messageReceiver!!.mainInfoBack = this
+        EventBus.getDefault().register(this)
         tvTitle.setOnClickListener {
             startActivity(Intent(this, SelectRouterActivity::class.java))
         }
@@ -246,6 +251,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectStatusChange(statusChange : ConnectStatus) {
+        if (statusChange.status == 0) {
+            reConnect.visibility = View.GONE
+        } else {
+            reConnect.visibility = View.VISIBLE
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+
     fun  getEaseConversationListFragment(): EaseConversationListFragment?
     {
         return conversationListFragment
@@ -254,6 +273,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun setToNews() {
         tvTitle.text = getString(R.string.news)
         mainIv1.visibility = View.GONE
+        llSort.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
     }
 
@@ -261,24 +281,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.file_)
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.VISIBLE
+        llSort.visibility = View.VISIBLE
     }
 
     fun setToContact() {
         tvTitle.text = getString(R.string.contacts)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
+        llSort.visibility = View.GONE
     }
 
     fun setToMy() {
         tvTitle.text = getString(R.string.my)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
+        llSort.visibility = View.GONE
     }
 
     override fun initView() {
         setContentView(R.layout.activity_main)
         tvTitle.text = getString(R.string.news)
-        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         statusBar.setLayoutParams(llp)
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
