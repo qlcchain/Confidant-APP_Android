@@ -139,7 +139,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when(position) {
-                    0 -> return ConversationListFragment()
+                    0 -> return conversationListFragment!!
                     1 -> return FileFragment()
                     2 -> return ContactFragment()
                     else -> return MyFragment()

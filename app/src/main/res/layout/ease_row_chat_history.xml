@@ -19,7 +19,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:scaleType="fitXY"
-            android:src="@drawable/ease_default_avatar" />
+            android:src="@mipmap/img_person" />
 
         <TextView
             android:id="@+id/unread_msg_number"

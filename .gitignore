@@ -8,3 +8,11 @@
 /captures
 .externalNativeBuild
 /easeui/build
+/app/src/main/res/drawable-xhdpi/icon_shot.png
+/app/src/main/res/drawable-xhdpi/icno_videocall.png
+/app/src/main/res/drawable-xhdpi/icon_album.png
+/app/src/main/res/drawable-xhdpi/icon_local.png
+/app/src/main/res/drawable-xhdpi/icon_location.png
+/app/src/main/res/drawable-xhdpi/icon_meeting.png
+/app/src/main/res/drawable-xhdpi/icon_private.png
+/app/src/main/res/drawable-xhdpi/icon_shortvideo.png

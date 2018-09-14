@@ -131,7 +131,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     static final int ITEM_PRIVATEFILE = 8;
 
     protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file,R.string.attach_location, R.string.attach_Meeting, R.string.attach_Video_call, R.string.attach_Privatefile };
-    protected int[] itemdrawables = {  R.drawable.ease_chat_takepic_selector,R.drawable.ease_chat_image_selector,
+    protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector,R.drawable.ease_chat_location_selector, R.drawable.ease_chat_meeting_selector,
             R.drawable.ease_chat_videocall_selector, R.drawable.ease_chat_pirvatedocument_selector  };
     protected int[] itemIds = { ITEM_PICTURE,ITEM_TAKE_PICTURE,ITEM_SHORTVIDEO ,ITEM_FILE,ITEM_LOCATION,ITEM_MEETING,ITEM_VIDEOCALL,ITEM_PRIVATEFILE};

@@ -2,11 +2,13 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import com.hyphenate.easeui.EaseConstant
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
@@ -53,9 +55,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View {
         tvAccept.setOnClickListener {
             if (userInfo!!.friendStatus == 0) {
                 //send message
-                var intent = Intent(this, ConversationActivity::class.java)
+                /*var intent = Intent(this, ConversationActivity::class.java)
                 intent.putExtra("user", userInfo!!)
-                startActivity(intent)
+                startActivity(intent)*/
+                startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo!!.nickName))
             } else if (userInfo!!.friendStatus == 3) {
                 acceptFriend()
             }

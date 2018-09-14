@@ -26,7 +26,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity"
-            android:src="@drawable/ease_default_avatar"
+            android:src="@mipmap/img_person"
             android:scaleType="fitXY" />
 
         <LinearLayout
