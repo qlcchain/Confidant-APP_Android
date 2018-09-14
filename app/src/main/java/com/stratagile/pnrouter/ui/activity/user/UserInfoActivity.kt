@@ -7,6 +7,7 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
@@ -14,6 +15,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponen
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_user_info.*
 
 import javax.inject.Inject;
@@ -58,7 +60,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View {
                 /*var intent = Intent(this, ConversationActivity::class.java)
                 intent.putExtra("user", userInfo!!)
                 startActivity(intent)*/
-                startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo!!.nickName))
+                startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo!!))
             } else if (userInfo!!.friendStatus == 3) {
                 acceptFriend()
             }

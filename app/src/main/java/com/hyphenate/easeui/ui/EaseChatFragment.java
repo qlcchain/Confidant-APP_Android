@@ -14,6 +14,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.Spannable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
@@ -63,6 +65,12 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.entity.JPushMsgRsp;
+import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.utils.WiFiUtil;
 
 import java.io.File;
 import java.util.List;
@@ -98,6 +106,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected Bundle fragmentArgs;
     protected int chatType;
     protected String toChatUsername;
+    protected String toChatUserId;
     protected EaseChatMessageList messageList;
     protected EaseChatInputMenu inputMenu;
 
@@ -159,10 +168,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         fragmentArgs = getArguments();
         // check if single chat or group chat
-        chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
+        UserEntity userEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_USER_ID);
+        //chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
+        chatType = EaseConstant.CHATTYPE_SINGLE;
         // userId you are chat with or group id
-        toChatUsername = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
-
+        toChatUsername = userEntity.getNickName();
+        toChatUserId = userEntity.getUserId();
         this.turnOnTyping = turnOnTyping();
 
         super.onActivityCreated(savedInstanceState);
@@ -895,7 +906,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessage(message);
     }
 
-
+    /**
+     * 接受消息
+     * @param jPushMsgRsp
+     */
+    public void receiveMessage(JPushMsgRsp jPushMsgRsp)
+    {
+        EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUsername);
+        message.setDirection(EMMessage.Direct.RECEIVE);
+        sendMessage(message);
+    }
     protected void sendMessage(EMMessage message){
         if (message == null) {
             return;
@@ -922,6 +942,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(isMessageListInited) {
             messageList.refresh();
         }
+        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+        EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
+        String msg = txtBody.getMessage();
+        AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId,toChatUserId,msg);
         /*if(isMessageListInited) {
             messageList.refreshSelectLast();
         }*/

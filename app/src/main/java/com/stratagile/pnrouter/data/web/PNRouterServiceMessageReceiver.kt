@@ -1,13 +1,11 @@
 package com.stratagile.pnrouter.data.web
 
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.*
 import com.socks.library.KLog
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
-import java.lang.reflect.Type
 
 
 class PNRouterServiceMessageReceiver
@@ -49,6 +47,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
                 mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
             }
+            "SendMsg"-> {
+                val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
+                chatCallBack?.sendMsgRsp(JSendMsgRsp)
+            }"PushMsg"-> {
+            val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
+            chatCallBack?.pushMsgRsp(JPushMsgRsp)
+            }
         }
         messageListner?.onMessage(baseData)
     }
@@ -63,6 +68,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var addfrendCallBack : AddfrendCallBack? = null
     var mainInfoBack : MainInfoBack? = null
     var addFriendDealCallBack : AddFriendDealCallBack? = null
+    var chatCallBack : ChatCallBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -73,9 +79,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * @param signalingKey The 52 byte signaling key assigned to this user at registration.
      */
     constructor(urls: SignalServiceConfiguration,
-                        user: String, password: String,
-                        signalingKey: String, userAgent: String,
-                        listener: ConnectivityListener) : this(urls, StaticCredentialsProvider(user, password, signalingKey), userAgent, listener) {
+                user: String, password: String,
+                signalingKey: String, userAgent: String,
+                listener: ConnectivityListener) : this(urls, StaticCredentialsProvider(user, password, signalingKey), userAgent, listener) {
     }
 
     init {
@@ -189,5 +195,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
     }
 
+    interface ChatCallBack {
+        fun sendMsg(FromId:String,ToId:String,Msg:String);
+        fun sendMsgRsp(sendMsgRsp : JSendMsgRsp)
+        fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
+    }
 }
 

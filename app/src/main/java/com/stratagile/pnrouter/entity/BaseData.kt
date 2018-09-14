@@ -134,7 +134,7 @@ data class DelFriendPushReq(var Retcode : Int, var Msg : String, var Action : St
  * 场景：用户A向自己的好友用户B发送消息，A发送消息到router
  * (1)	请求（APP-->Router）
  */
-data class SendMsgReq(var ToId :String, var Msg : String, var Action : String = "SendMsg")
+data class SendMsgReq(var FromId :String ,var ToId :String, var Msg : String, var Action : String = "SendMsg")
 
 /**
  * 11.	发送消息
@@ -157,7 +157,7 @@ data class PushMsgRsp(var FromId : String, var ToId :String, var Msg : String, v
  * 场景：用户A向自己的好友用户B发送消息，router推送该消息到用户B
  * (2)	响应（APP->Router）
  */
-data class PushMsgReq(var FromId : String, var ToId :String, var Msg : String = "PushMsg")
+data class PushMsgReq(var MsgId :Int, var RetCode : Int,  var Msg : String = "PushMsg")
 
 /**
  * 13.	删除消息

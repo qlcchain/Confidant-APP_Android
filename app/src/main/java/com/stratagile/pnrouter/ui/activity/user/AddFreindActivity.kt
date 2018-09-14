@@ -2,18 +2,17 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
-import com.pawegio.kandroid.startActivity
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.ConstantValue.Companion.routerId
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.AddFriendReq
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JAddFreindRsp
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerAddFreindComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.AddFreindContract
 import com.stratagile.pnrouter.ui.activity.user.module.AddFreindModule
@@ -22,8 +21,7 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.activity_add_freind.*
 import java.util.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp

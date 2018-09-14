@@ -8,6 +8,9 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
@@ -22,7 +25,22 @@ import javax.inject.Inject;
  * @date 2018/09/13 13:18:46
  */
 
-class ChatActivity : BaseActivity(), ChatContract.View {
+class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack {
+    override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
+         var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        chatFragment?.receiveMessage(pushMsgRsp)
+    }
+
+    override fun sendMsg(FromId: String, ToId: String, Msg: String) {
+        var msgData = SendMsgReq( FromId!!, ToId!!, Msg)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+    }
+
+    override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
+        var aa = sendMsgRsp;
+        //todo
+    }
 
     @Inject
     internal lateinit var mPresenter: ChatPresenter
@@ -36,7 +54,9 @@ class ChatActivity : BaseActivity(), ChatContract.View {
         setContentView(R.layout.activity_chat)
         activityInstance = this
         //user or group id
-        toChatUsername = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
+
+        var userEntity:UserEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_USER_ID)
+        toChatUsername = userEntity.userId
         chatFragment = EaseChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)
@@ -47,7 +67,7 @@ class ChatActivity : BaseActivity(), ChatContract.View {
 //        setContentView(R.layout.activity_chat)
     }
     override fun initData() {
-
+        AppConfig.instance.messageReceiver!!.chatCallBack = this
     }
 
     override fun onDestroy() {
