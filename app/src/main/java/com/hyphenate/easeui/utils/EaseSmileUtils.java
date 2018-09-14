@@ -44,13 +44,13 @@ public class EaseSmileUtils {
 	public static final String ee_8 = "[:s]";
 	public static final String ee_9 = "[:$]";
 	public static final String ee_10 = "[:(]";
-	public static final String ee_11 = "[:'(]";
+	public static final String ee_11 = "[::(]";
 	public static final String ee_12 = "[:|]"; 
 	public static final String ee_13 = "[(a)]";
 	public static final String ee_14 = "[8o|]";
 	public static final String ee_15 = "[8-|]";
 	public static final String ee_16 = "[+o(]";
-	public static final String ee_17 = "[<o)]";
+	public static final String ee_17 = "[7o)]";
 	public static final String ee_18 = "[|-)]";
 	public static final String ee_19 = "[*-)]";
 	public static final String ee_20 = "[:-#]";
@@ -69,7 +69,11 @@ public class EaseSmileUtils {
 	public static final String ee_33 = "[(F)]";
 	public static final String ee_34 = "[(W)]";
 	public static final String ee_35 = "[(D)]";
-	
+	public static final String ee_36 = "[(E)]";
+	public static final String ee_37 = "[(F)]";
+	public static final String ee_38 = "[(G)]";
+	public static final String ee_39 = "[(H)]";
+	public static final String ee_40 = "[(I)]";
 	private static final Factory spannableFactory = Factory
 	        .getInstance();
 	
