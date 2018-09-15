@@ -6,11 +6,19 @@ import com.hyphenate.easeui.EaseUI
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.hyphenate.chat.EMConversation
+import com.hyphenate.chat.EMMessage
+import com.hyphenate.easeui.EaseConstant
+import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JPushMsgRsp
+import com.stratagile.pnrouter.entity.PushMsgReq
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 
 /**
@@ -29,6 +37,7 @@ class AppConfig : MultiDexApplication() {
 
     var mDaoMaster: DaoMaster? = null
 
+    var isChatWithFirend:String? = null
     var options = RequestOptions()
             .centerCrop()
             .transform(GlideCircleTransformMainColor(this))
@@ -58,6 +67,7 @@ class AppConfig : MultiDexApplication() {
                     APIModule.PipeConnectivityListener())
         }
         MessageRetrievalService.registerActivityStarted(this)
+        this.messageReceiver!!.globalBack = globalBack()
         return messageReceiver!!
     }
 
@@ -104,6 +114,25 @@ class AppConfig : MultiDexApplication() {
         //        // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         //        mDaoMaster = new DaoMaster(db);
     }
+    class globalBack:PNRouterServiceMessageReceiver.GlobalBack{
+        override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
+            if(AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId))
+            {
+                KLog.i("已经在聊天窗口了，不处理该条数据！")
+            }else{
+                var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+                var  conversation:EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+                val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+                message.setDirection(EMMessage.Direct.RECEIVE)
+                message.from = pushMsgRsp.params.fromId
+                message.to = pushMsgRsp.params.toId
+                message.isUnread = true;
+                message.setStatus(EMMessage.Status.SUCCESS)
+                conversation.insertMessage(message)
+            }
+        }
 
+    }
 
 }

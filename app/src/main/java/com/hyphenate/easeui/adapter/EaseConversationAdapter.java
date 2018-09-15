@@ -104,8 +104,15 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         // get conversation
         EMConversation conversation = getItem(position);
         // get username or group id
-        String frienduserid = conversation.conversationId();
-        UserEntity friendUser = UserDataManger.allUserList.get(frienduserid);
+        String conversationId = conversation.conversationId();
+        EMMessage lastMessage = conversation.getLastMessage();
+        UserEntity friendUser;
+        if(lastMessage.getTo() != UserDataManger.myUserData.getUserId())
+        {
+            friendUser = UserDataManger.allUserList.get(lastMessage.getTo());
+        }else{
+            friendUser = UserDataManger.allUserList.get(lastMessage.getFrom());
+        }
         String username = friendUser.getNickName();
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
@@ -116,16 +123,17 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             }
             // group message, show group avatar
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMGroup group = EMClient.getInstance().groupManager().getGroup(frienduserid);
+            EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
             holder.name.setText(group != null ? group.getGroupName() : username);
         } else if(conversation.getType() == EMConversationType.ChatRoom){
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(frienduserid);
+            EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(conversationId);
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
             holder.motioned.setVisibility(View.GONE);
         }else {
-            EaseUserUtils.setUserAvatar(getContext(), frienduserid, holder.avatar);
-            EaseUserUtils.setUserNick(username, holder.name);
+            EaseUserUtils.setUserAvatar(getContext(), conversationId, holder.avatar);
+            //EaseUserUtils.setUserNick(username, holder.name);
+            holder.name.setText(username);
             holder.motioned.setVisibility(View.GONE);
         }
 
@@ -148,10 +156,8 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
-
         if (conversation.getAllMsgCount() != 0) {
         	// show the content of latest message
-            EMMessage lastMessage = conversation.getLastMessage();
             String content = null;
             if(cvsListHelper != null){
                 content = cvsListHelper.onSetItemSecondaryText(lastMessage);

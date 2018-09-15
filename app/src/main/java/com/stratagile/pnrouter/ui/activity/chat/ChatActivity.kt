@@ -9,7 +9,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
@@ -46,7 +45,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     internal lateinit var mPresenter: ChatPresenter
     var activityInstance: ChatActivity? = null
     private var chatFragment: EaseChatFragment? = null
-    internal var toChatUsername: String? = null
+    internal var toChatUserID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -56,7 +55,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         //user or group id
 
 
-        toChatUsername = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
+        toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
+        AppConfig.instance.isChatWithFirend = toChatUserID
         chatFragment = EaseChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)
@@ -72,13 +72,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun onDestroy() {
         super.onDestroy()
+        AppConfig.instance.messageReceiver!!.chatCallBack = null
+        AppConfig.instance.isChatWithFirend = null;
         activityInstance = null
     }
 
     override fun onNewIntent(intent: Intent) {
         // enter to chat activity when click notification bar, here make sure only one chat activiy
         val username = intent.getStringExtra("userId")
-        if (toChatUsername == username)
+        if (toChatUserID == username)
             super.onNewIntent(intent)
         else {
             finish()
@@ -92,7 +94,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     fun getToChatUsername(): String {
-        return toChatUsername!!
+        return toChatUserID!!
     }
     override fun setupActivityComponent() {
        DaggerChatComponent

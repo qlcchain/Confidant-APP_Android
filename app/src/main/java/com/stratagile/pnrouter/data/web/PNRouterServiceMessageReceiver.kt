@@ -69,6 +69,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             }"PushMsg"-> {
             val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
             chatCallBack?.pushMsgRsp(JPushMsgRsp)
+            globalBack?.pushMsgRsp(JPushMsgRsp)
             }
         }
         messageListner?.onMessage(baseData)
@@ -89,7 +90,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var delFriendCallBack : DelFriendCallBack? = null
 
     var pullFriendCallBack : PullFriendCallBack? = null
-
+    var globalBack : GlobalBack? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -227,6 +228,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface ChatCallBack {
         fun sendMsg(FromId:String,ToId:String,Msg:String);
         fun sendMsgRsp(sendMsgRsp : JSendMsgRsp)
+        fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
+    }
+    interface GlobalBack {
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
     }
 }
