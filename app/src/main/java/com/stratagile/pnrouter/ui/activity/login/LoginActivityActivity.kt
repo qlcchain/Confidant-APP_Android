@@ -21,11 +21,13 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.ConstantValue.routerId
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -38,9 +40,13 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 
 import javax.inject.Inject;
+import kotlin.concurrent.thread
 import kotlin.math.log
 
 
@@ -54,6 +60,7 @@ import kotlin.math.log
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
+    var mThread : CustomThread? = null
     override fun loginBack(loginRsp: LoginRspWrapper) {
         KLog.i(loginRsp.toString())
         if ("".equals(loginRsp.params!!.UserId)) {
@@ -62,9 +69,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         } else {
             FileUtil.saveUserId2Local(loginRsp.params!!.UserId)
+            KLog.i("服务器返回的userId：${loginRsp.params!!.UserId}")
             newRouterEntity.userId = loginRsp.params!!.UserId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.UserId)
-            SpUtil.putString(this, ConstantValue.userId, userId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -135,13 +142,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         myAuthCallback = null
         cancellationSignal = null
         builderTips = null
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        if (connectStatus.status == 0) {
+            var login = LoginReq( routerId, userId, 0)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+        }
     }
 
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
         userId = FileUtil.getLocalUserId()
-        AppConfig.instance.messageReceiver!!.loginBackListener = this
+        EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
+            KLog.i("用来验证的routerId：${routerId}")
             if (userName.text.toString().equals("")) {
                 toast(getString(R.string.please_type_your_username))
                 return@setOnClickListener
@@ -149,9 +166,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (routerId.equals("")) {
                 return@setOnClickListener
             }
-            var login = LoginReq( routerId, userId!!, 0)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            AppConfig.instance.getPNRouterServiceMessageReceiver()
+            AppConfig.instance.messageReceiver!!.loginBackListener = this
             showProgressDialog()
+//            mThread = CustomThread(routerId, userId)
+//            mThread!!.start()
         }
         scanIcon.setOnClickListener {
             mPresenter.getScanPermission()
@@ -386,6 +405,18 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             routerId = data!!.getStringExtra("result")
             newRouterEntity.routerId = data!!.getStringExtra("result")
             return
+        }
+    }
+
+    class CustomThread(var routId : String, var usreId : String) : Thread() {
+        // 重写run()方法
+        override fun run() {
+            super.run()
+            Thread.sleep(3000)
+            KLog.i("延迟3s打印")
+            KLog.i("连接的routId：${routId}")
+            var login = LoginReq( routId, usreId!!, 0)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
     }
 }

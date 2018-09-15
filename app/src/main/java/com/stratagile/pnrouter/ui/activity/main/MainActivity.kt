@@ -150,9 +150,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
      * 当一个用户A被其他用户B请求添加好友，router推送消息到A
      */
     override fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp) {
-        runOnUiThread {
-            toast(jAddFriendPushRsp.params.friendId)
-        }
         var newFriend = UserEntity()
         var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in useEntityList) {

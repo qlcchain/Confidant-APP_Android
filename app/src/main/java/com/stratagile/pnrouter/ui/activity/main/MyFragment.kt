@@ -21,6 +21,7 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.events.EditNickName
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_my.*
@@ -65,6 +66,13 @@ class MyFragment : BaseFragment(), MyContract.View {
     fun onNikNameChange(editnickName : EditNickName) {
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun reSetAvatar(resetAvatar: ResetAvatar) {
+        nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
+        avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
+        avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)
     }
 
 

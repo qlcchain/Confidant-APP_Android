@@ -1,5 +1,8 @@
 package com.stratagile.pnrouter.data.web
 
+import android.content.Context.CONNECTIVITY_SERVICE
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.util.Log
 import android.widget.Toast
 import com.alibaba.fastjson.JSONObject
@@ -36,6 +39,7 @@ import com.stratagile.pnrouter.entity.JHeartBeatRsp
 import com.stratagile.pnrouter.entity.LoginRspWrapper
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.WiFiUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.lang.Exception
 import java.nio.ByteBuffer
@@ -59,7 +63,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
-    private var retryInterval = arrayListOf<Int>(1000, 5000, 10000, 30000, 60000)
+    private var retryInterval = arrayListOf<Int>(5000, 10000, 30000, 60000, 120000)
+    private var port = ":18006/"
+    private var ipAddress = ""
+    private var filledUri = ""
 
     init {
         this.attempts = 0
@@ -73,13 +80,26 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //                .replace("http://", "ws://") + "/v1/websocket/?login=%s&password=%s"
     }
 
+    fun isWifiConnect() : Boolean{
+        var connManager  = AppConfig.instance.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        var mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        return mWifi.isConnected()
+    }
+
     @Synchronized
     fun connect() {
         Log.w(TAG, "WSC connect()...")
-
+        KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
+        WiFiUtil.getGateWay(AppConfig.instance)
+        filledUri = wsUri
         if (client == null) {
-//            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
-            val filledUri = wsUri
+            if (isWifiConnect()) {
+                ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
+                filledUri = "wss://" + ipAddress + port
+            } else {
+                filledUri = wsUri
+            }
+            KLog.i("连接的地址为：${filledUri}")
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()
@@ -179,6 +199,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             connected = true
             retryTime = 0
             reConnectThread!!.shutdown()
+            reConnectThread = null
             keepAliveSender = KeepAliveSender()
             keepAliveSender!!.start()
 
@@ -241,6 +262,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         listener?.onDisconnected()
 
+        reConnectThread = ReConnectThread()
+
 //        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
         if (client != null) {
@@ -260,7 +283,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         if (client == null) {
 //            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
-            val filledUri = wsUri
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()
@@ -386,7 +408,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Log.w(TAG, "reConnect2...")
                     if (connected) {
                         shutdown()
+                        KLog.i("websocket已经连接上了，此处将继续重连的逻辑清除")
                         return
+                    }
+                    //测试服务器，测试用
+                    if (retryTime >=3) {
+                        filledUri = wsUri
                     }
                     if (client != null) {
                         client!!.close(1000, "OK")
@@ -414,7 +441,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     companion object {
 
         private val TAG = WebSocketConnection::class.java.simpleName
-        private val KEEPALIVE_TIMEOUT_SECONDS = 55
+        private val KEEPALIVE_TIMEOUT_SECONDS = 30
     }
 
     interface OnMessageReceiveListener {

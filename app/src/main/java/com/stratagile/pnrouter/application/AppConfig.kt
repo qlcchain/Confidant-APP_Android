@@ -50,12 +50,6 @@ class AppConfig : MultiDexApplication() {
         EMClient.getInstance().setDebugMode(true);
         instance = this
         setupApplicationComponent()
-//        if (messageReceiver == null) {
-//            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
-//                    APIModule.DynamicCredentialsProvider(this),
-//                    BuildConfig.USER_AGENT,
-//                    APIModule.PipeConnectivityListener())
-//        }
         setDatabase()
     }
 

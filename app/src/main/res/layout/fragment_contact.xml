@@ -54,6 +54,13 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
+                <View
+                    android:id="@+id/new_contact_dot"
+                    android:layout_width="@dimen/x5"
+                    android:background="@drawable/nick_text_bg"
+                    android:layout_marginRight="@dimen/x10"
+                    android:layout_height="@dimen/x5"/>
+
                 <ImageView
                     android:layout_width="@dimen/x30"
                     android:layout_height="@dimen/x30"

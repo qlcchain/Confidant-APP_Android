@@ -25,6 +25,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "APIVERSION", "\"1\""
 //        buildConfigField "String", "USER_AGENT", "\"OWA\""

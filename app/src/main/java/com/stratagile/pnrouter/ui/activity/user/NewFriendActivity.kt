@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -36,8 +37,8 @@ import javax.inject.Inject;
 class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServiceMessageReceiver.AddFriendDealCallBack{
 
     override fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp) {
+        KLog.i("NewFriendActivity 收到好友处理的回调")
         if (jAddFriendDealRsp.params.retCode == 0) {
-            handleUser?.friendStatus = 0
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(handleUser)
             EventBus.getDefault().post(FriendChange())
         }
@@ -81,6 +82,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
         }
         newFriendListAdapter = NewFriendListAdapter(showlist)
         newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
+            handleUser = newFriendListAdapter!!.getItem(position)
             var intent = Intent(this, UserInfoActivity::class.java)
             intent.putExtra("user", newFriendListAdapter?.getItem(position))
             startActivityForResult(intent, 1)
@@ -92,6 +94,16 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
                     var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
+                    handleUser?.friendStatus = 0
+                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                    showProgressDialog()
+                }
+                R.id.tvRefuse-> {
+                    handleUser = newFriendListAdapter!!.getItem(position)
+                    var nickName = SpUtil.getString(this, ConstantValue.username, "")
+                    var userId = SpUtil.getString(this, ConstantValue.userId, "")
+                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
+                    handleUser?.friendStatus = 5
                     AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
                     showProgressDialog()
                 }

@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingBottom="2dip"
-    android:paddingTop="2dip" >
+    android:paddingTop="2dip">
 
     <View
         android:layout_width="match_parent"
@@ -20,20 +21,20 @@
         android:orientation="horizontal"
         android:paddingTop="4dp" >
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_set_mode_voice"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginLeft="6dp"
-            android:background="@drawable/ease_chatting_setmode_voice_btn"
+            android:background="@drawable/ic_yuyin"
             android:visibility="visible" />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_set_mode_keyboard"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginLeft="6dp"
-            android:background="@drawable/ease_chatting_setmode_keyboard_btn"
+            android:background="@drawable/ic_keyboard"
             android:visibility="gone" />
 
         <LinearLayout
@@ -90,34 +91,34 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 >
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/iv_face_normal"
                 android:layout_width="24dip"
                 android:layout_height="24dip"
                 android:layout_margin="1dip"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ease_chatting_biaoqing_btn_normal"
+                app:srcCompat="@drawable/ic_emoji"
                 android:visibility="visible" />
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/iv_face_checked"
                 android:layout_width="24dip"
                 android:layout_height="24dip"
                 android:layout_margin="1dip"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ease_chatting_biaoqing_btn_enable"
+                app:srcCompat="@drawable/ic_emoji"
                 android:visibility="invisible" />
             
             </RelativeLayout>
         </RelativeLayout>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_more"
             android:layout_width="32dip"
             android:layout_height="32dip"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/ease_type_select_btn" />
+            android:background="@drawable/ic_message_more" />
 
         <Button
             android:id="@+id/btn_send"
