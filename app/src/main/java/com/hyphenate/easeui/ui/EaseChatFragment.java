@@ -440,7 +440,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }else {
                 message.setDirection(EMMessage.Direct.SEND );
             }
-            message.setMsgTime(PayloadBean.getTimeStatmp()*1000);
+            message.setMsgTime(PayloadBean.getTimeStatmp()* 1000);
             sendMessage(message);
         }
 

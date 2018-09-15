@@ -75,7 +75,7 @@ public class JPullMsgRsp extends BaseEntity {
 
             private int MsgId;
             private int MsgType;
-            private int TimeStatmp;
+            private long TimeStatmp;
             private String From;
             private String To;
             private String Msg;
@@ -96,11 +96,11 @@ public class JPullMsgRsp extends BaseEntity {
                 this.MsgType = MsgType;
             }
 
-            public int getTimeStatmp() {
+            public long getTimeStatmp() {
                 return TimeStatmp;
             }
 
-            public void setTimeStatmp(int TimeStatmp) {
+            public void setTimeStatmp(long TimeStatmp) {
                 this.TimeStatmp = TimeStatmp;
             }
 
