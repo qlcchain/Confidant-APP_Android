@@ -65,8 +65,10 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
+import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.io.File;
@@ -76,7 +78,7 @@ import java.util.concurrent.Executors;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
- * You need call setArguments to pass chatType and userId 
+ * You need call setArguments to pass chatType and userId
  * <br/>
  * <br/>
  * you can see ChatActivity in demo for your reference
@@ -149,6 +151,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     // "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
     private boolean turnOnTyping;
 
+    List<JPullMsgRsp.ParamsBean.PayloadBean> payloadBeanListTemp;
+
+    private  int currentPage = 0;
+    private int MsgStartId = 0;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
@@ -183,6 +190,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void initView() {
         // hold to record voice
         //noinspection ConstantConditions
+        currentPage = 0;
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         PathUtil.getInstance().initDirs("aa", "bb",getContext());
         // message list layout
@@ -424,10 +432,34 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         if (conversation != null) {
-            conversation.clearAllMessages();
+            if(currentPage == 0)
+            {
+                conversation.clearAllMessages();
+            }
+
         }
         int size = payloadBeanList.size();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 50);
+        if(size > 0)
+            currentPage ++;
+        else {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), R.string.nomore, Toast.LENGTH_SHORT).show();
+                }
+            }, 50);
 
+        }
+        if(payloadBeanListTemp == null)
+        {
+            payloadBeanListTemp = payloadBeanList;
+        }
         String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         for(int i= 0 ; i < size ;i++)
         {
@@ -443,6 +475,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setDirection(EMMessage.Direct.SEND );
             }
             message.setMsgTime(PayloadBean.getTimeStatmp()* 1000);
+            if(i == 0)
+            {
+                MsgStartId = PayloadBean.getMsgId();
+            }
             sendMessage(message);
         }
 
@@ -530,76 +566,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                     @Override
                     public void run() {
-                        if (!isRoaming) {
-                            loadMoreLocalMessage();
-                        } else {
-                            loadMoreRoamingMessages();
-                        }
+                        loadMoreRoamingMessages();
                     }
                 }, 600);
             }
         });
     }
 
-    private void loadMoreLocalMessage() {
-        if (listView.getFirstVisiblePosition() == 0 && !isloading && haveMoreData) {
-            List<EMMessage> messages;
-            try {
-                messages = conversation.loadMoreMsgFromDB(conversation.getAllMessages().size() == 0 ? "" : conversation.getAllMessages().get(0).getMsgId(),
-                        pagesize);
-            } catch (Exception e1) {
-                swipeRefreshLayout.setRefreshing(false);
-                return;
-            }
-            if (messages.size() > 0) {
-                messageList.refreshSeekTo(messages.size() - 1);
-                if (messages.size() != pagesize) {
-                    haveMoreData = false;
-                }
-            } else {
-                haveMoreData = false;
-            }
-
-            isloading = false;
-        } else {
-            Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
-                    Toast.LENGTH_SHORT).show();
-        }
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
     private void loadMoreRoamingMessages() {
-        if (!haveMoreData) {
-            Toast.makeText(getActivity(), getResources().getString(R.string.no_more_messages),
-                    Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
-            return;
-        }
-        if (fetchQueue != null) {
-            fetchQueue.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        List<EMMessage> messages = conversation.getAllMessages();
-                        EMClient.getInstance().chatManager().fetchHistoryMessages(
-                                toChatUserId, EaseCommonUtils.getConversationType(chatType), pagesize,
-                                (messages != null && messages.size() > 0) ? messages.get(0).getMsgId() : "");
-                    } catch (HyphenateException e) {
-                        e.printStackTrace();
-                    } finally {
-                        Activity activity = getActivity();
-                        if (activity != null) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadMoreLocalMessage();
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
+
+        swipeRefreshLayout.setRefreshing(true);
+        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        PullMsgReq pullMsgList = new PullMsgReq( userId,toChatUserId,1,MsgStartId,10,"PullMsg");
+        AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(pullMsgList));
+
     }
 
     @Override
