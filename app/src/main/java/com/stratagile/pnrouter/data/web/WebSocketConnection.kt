@@ -194,7 +194,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         if (client != null && keepAliveSender == null) {
-            Log.w(TAG, "onConnected()")
+            KLog.i("onConnected()")
             attempts = 0
             connected = true
             retryTime = 0

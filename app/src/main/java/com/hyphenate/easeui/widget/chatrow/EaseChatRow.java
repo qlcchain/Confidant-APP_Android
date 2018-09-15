@@ -23,7 +23,11 @@ import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseChatMessageList.MessageListItemClickListener;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.DateUtil;
+import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.Date;
 
@@ -45,7 +49,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected int position;
 
     protected TextView timeStampView;
-    protected ImageView userAvatarView;
+    protected ImageButtonWithText userAvatarView;
     protected View bubbleLayout;
     protected TextView usernickView;
 
@@ -92,7 +96,7 @@ public abstract class EaseChatRow extends LinearLayout {
     private void initView() {
         onInflateView();
         timeStampView = (TextView) findViewById(R.id.timestamp);
-        userAvatarView = (ImageView) findViewById(R.id.iv_userhead);
+        userAvatarView = (ImageButtonWithText) findViewById(R.id.iv_userhead);
         bubbleLayout = findViewById(R.id.bubble);
         usernickView = (TextView) findViewById(R.id.tv_userid);
 
@@ -146,10 +150,12 @@ public abstract class EaseChatRow extends LinearLayout {
         if(userAvatarView != null) {
             //set nickname and avatar
             if (message.direct() == Direct.SEND) {
-                EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
+//                EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
+                //设置自己的头像
+                userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
             } else {
-                EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
-                EaseUserUtils.setUserNick(message.getFrom(), usernickView);
+//                EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
+                EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView);
             }
         }
         if (EMClient.getInstance().getOptions().getRequireDeliveryAck()) {
@@ -178,18 +184,18 @@ public abstract class EaseChatRow extends LinearLayout {
             if (userAvatarView != null) {
                 if (itemStyle.isShowAvatar()) {
                     userAvatarView.setVisibility(View.VISIBLE);
-                    EaseAvatarOptions avatarOptions = EaseUI.getInstance().getAvatarOptions();
-                    if(avatarOptions != null && userAvatarView instanceof EaseImageView){
-                        EaseImageView avatarView = ((EaseImageView)userAvatarView);
-                        if(avatarOptions.getAvatarShape() != 0)
-                            avatarView.setShapeType(avatarOptions.getAvatarShape());
-                        if(avatarOptions.getAvatarBorderWidth() != 0)
-                            avatarView.setBorderWidth(avatarOptions.getAvatarBorderWidth());
-                        if(avatarOptions.getAvatarBorderColor() != 0)
-                            avatarView.setBorderColor(avatarOptions.getAvatarBorderColor());
-                        if(avatarOptions.getAvatarRadius() != 0)
-                            avatarView.setRadius(avatarOptions.getAvatarRadius());
-                    }
+//                    EaseAvatarOptions avatarOptions = EaseUI.getInstance().getAvatarOptions();
+//                    if(avatarOptions != null && userAvatarView instanceof EaseImageView){
+//                        EaseImageView avatarView = ((EaseImageView)userAvatarView);
+//                        if(avatarOptions.getAvatarShape() != 0)
+//                            avatarView.setShapeType(avatarOptions.getAvatarShape());
+//                        if(avatarOptions.getAvatarBorderWidth() != 0)
+//                            avatarView.setBorderWidth(avatarOptions.getAvatarBorderWidth());
+//                        if(avatarOptions.getAvatarBorderColor() != 0)
+//                            avatarView.setBorderColor(avatarOptions.getAvatarBorderColor());
+//                        if(avatarOptions.getAvatarRadius() != 0)
+//                            avatarView.setRadius(avatarOptions.getAvatarRadius());
+//                    }
                 } else {
                     userAvatarView.setVisibility(View.GONE);
                 }

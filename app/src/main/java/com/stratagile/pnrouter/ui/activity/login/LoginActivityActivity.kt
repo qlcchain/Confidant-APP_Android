@@ -199,7 +199,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if (routerList.size != 0) {
             routerId = routerList[0].routerId
-            userId = routerList[0].userId
+            userId = FileUtil.getLocalUserId()
             username = routerList[0].username
             routerName.text = routerList[0].routerName
             if (!username.equals("")) {
@@ -221,7 +221,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 PopWindowUtil.showSelectRouterPopWindow(this, routerName, object : PopWindowUtil.OnRouterSelectListener{
                     override fun onSelect(position: Int) {
                         routerId = routerList[position].routerId
-                        userId = routerList[position].userId
+                        userId = FileUtil.getLocalUserId()
                         username = routerList[position].username
                         routerName.text = routerList[position].routerName
                         if (!username.equals("")) {

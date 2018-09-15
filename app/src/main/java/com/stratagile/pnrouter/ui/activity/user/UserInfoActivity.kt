@@ -46,6 +46,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
 //            toast(addFriendRsp.baseDataToJson())
             closeProgressDialog()
             initData()
+            finish()
 
         }
     }

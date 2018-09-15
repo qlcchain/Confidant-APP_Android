@@ -196,25 +196,25 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
         }
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_DOWN) {
-            point.x = ev.rawX.toInt()
-            point.y = ev.rawY.toInt()
-            val v = currentFocus
-            if (isShouldHideInput(v, ev)) {
-
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
-                closeKeyboad()
-            }
-            return super.dispatchTouchEvent(ev)
-        }
-
-        // 必不可少，否则所有的组件都不会有TouchEvent了
-        return if (window.superDispatchTouchEvent(ev)) {
-            true
-        } else onTouchEvent(ev)
-    }
+//    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+//        if (ev.action == MotionEvent.ACTION_DOWN) {
+//            point.x = ev.rawX.toInt()
+//            point.y = ev.rawY.toInt()
+//            val v = currentFocus
+//            if (isShouldHideInput(v, ev)) {
+//
+//                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm?.hideSoftInputFromWindow(v!!.windowToken, 0)
+//                closeKeyboad()
+//            }
+//            return super.dispatchTouchEvent(ev)
+//        }
+//
+//        // 必不可少，否则所有的组件都不会有TouchEvent了
+//        return if (window.superDispatchTouchEvent(ev)) {
+//            true
+//        } else onTouchEvent(ev)
+//    }
 
     open fun closeKeyboad() {
 

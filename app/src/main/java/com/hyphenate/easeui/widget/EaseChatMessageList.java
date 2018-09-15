@@ -49,6 +49,7 @@ public class EaseChatMessageList extends RelativeLayout{
         this.context = context;
         LayoutInflater.from(context).inflate(R.layout.ease_chat_message_list, this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.chat_swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.main_color,R.color.main_color);
         listView = (ListView) findViewById(R.id.list);
     }
     

@@ -39,20 +39,11 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             .priority(Priority.HIGH)
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.ImageButtonWithText)
         val view = LayoutInflater.from(context).inflate(R.layout.image_button_with_text, this, true)
-        /*
-        * 在attrs.xml添加属性：
-        *   <declare-styleable name="ImageButtonWithText">
-             <attr name="picture" format="reference"/>
-            </declare-styleable>
-        * */
-        val picture_id = a.getResourceId(R.styleable.ImageButtonWithText_picture, -1)
         /**
          * Recycle the TypedArray, to be re-used by a later caller. After calling
          * this function you must not ever touch the typed array again.
          */
-        a.recycle()
         imageView = view.findViewById(R.id.ibIv)
 
         /**
@@ -81,8 +72,6 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         textView.gravity = Gravity.CENTER
         textView.setTextColor(getContext().resources.getColor(R.color.white))
         textView.setPadding(0, 0, 0, 0)
-        isClickable = true
-        isFocusable = true
         imageView.visibility = View.INVISIBLE
     }
 

@@ -10,6 +10,11 @@ import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.EaseUI.EaseUserProfileProvider;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.view.ImageButtonWithText;
+
+import java.util.List;
 
 public class EaseUserUtils {
 
@@ -67,6 +72,20 @@ public class EaseUserUtils {
             } else {
                 textView.setText(username);
             }
+        }
+    }
+
+    public static void setUserAvatar(String username, ImageButtonWithText textView) {
+        if (textView != null) {
+            List<UserEntity> userEntityList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
+            UserEntity userEntity;
+            for (int i = 0; i < userEntityList.size(); i++) {
+                if (userEntityList.get(i).getUserId().equals(username)) {
+                    textView.setText(userEntityList.get(i).getNickName());
+                    return;
+                }
+            }
+            textView.setText(username);
         }
     }
 
