@@ -75,7 +75,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             myUserData.userId = newRouterEntity.userId
             myUserData.nickName = newRouterEntity.username;
             UserDataManger.myUserData = myUserData
-            UserDataManger.allUserList.put(myUserData?.userId,myUserData)
             var contains = false
             for (i in routerList) {
                 if (i.routerId.equals(routerId)) {

@@ -29,6 +29,7 @@ import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.socks.library.KLog
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
@@ -38,6 +39,7 @@ import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
+import com.stratagile.pnrouter.utils.SpUtil
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -48,6 +50,37 @@ import java.util.*
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack{
+    override fun firendList(jPullFriendRsp: JPullFriendRsp) {
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+
+        for (i in jPullFriendRsp.params.payload) {
+            var isLocalFriend = false
+            for (j in localFriendList) {
+                if (i.id.equals(j.userId)) {
+                    isLocalFriend = true
+                    j.friendStatus = 0
+                    j.nickName = i.name
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
+                    break
+                }
+            }
+            if (!isLocalFriend) {
+                var userEntity = UserEntity()
+                userEntity.nickName = i.name
+                userEntity.userId = i.id
+                userEntity.friendStatus = 0
+                userEntity.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+            }
+
+        }
+        if(!ConstantValue.isRefeshed)
+        {
+            conversationListFragment?.refresh()
+            ConstantValue.isRefeshed = true
+        }
+    }
+
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if(AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId))
         {
@@ -64,7 +97,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
             conversation.insertMessage(message)
-            conversationListFragment?.refresh()
+            if(!ConstantValue.isRefeshed && ConstantValue.isInit)
+            {
+                conversationListFragment?.refresh()
+                ConstantValue.isRefeshed = true
+            }
         }
     }
 
@@ -202,6 +239,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         setToNews()
         ivQrCode.setOnClickListener {
             mPresenter.getScanPermission()
+        }
+        if(!ConstantValue.isInit)
+        {
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+            var pullFriend = PullFriendReq( selfUserId!!)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+            ConstantValue.isInit = true
         }
 //        SpUtil.putString(this, ConstantValue.userId, "271D61D2976D9A06A7F07274D5198EB511C8A334ACC07844868A9C260233F15E80D50696CC76")
 //        bottomNavigation.enableAnimation(false)

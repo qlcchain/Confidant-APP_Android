@@ -28,8 +28,10 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.widget.EaseConversationList;
+import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,22 +97,17 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     EMConversation conversation = conversationListView.getItem(position);
                     EMMessage lastMessage = conversation.getLastMessage();
-                    UserEntity friendInfo;
-                    if(lastMessage.getTo() != UserDataManger.myUserData.getUserId())
+                    UserEntity friendInfo = null;
+                    List<UserEntity> localFriendList = null;
+                    if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()) )
                     {
-                        friendInfo = UserDataManger.allUserList.get(lastMessage.getTo());
-                        if(friendInfo == null)
-                        {
-                            friendInfo = new UserEntity();
-                            friendInfo.setUserId(lastMessage.getTo());
-                        }
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+                        if(localFriendList.size() > 0)
+                            friendInfo = localFriendList.get(0);
                     }else{
-                        friendInfo = UserDataManger.allUserList.get(lastMessage.getFrom());
-                        if(friendInfo == null)
-                        {
-                            friendInfo = new UserEntity();
-                            friendInfo.setUserId(lastMessage.getFrom());
-                        }
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+                        if(localFriendList.size() > 0)
+                            friendInfo = localFriendList.get(0);
                     }
 
 

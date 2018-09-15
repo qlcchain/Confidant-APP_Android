@@ -29,8 +29,10 @@ import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.hyphenate.easeui.widget.EaseImageView;
+import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.DateUtil;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     private List<EMConversation> copyConversationList;
     private ConversationFilter conversationFilter;
     private boolean notiyfyByFilter;
-    
+
     protected int primaryColor;
     protected int secondaryColor;
     protected int timeColor;
@@ -106,12 +108,21 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         // get username or group id
         String conversationId = conversation.conversationId();
         EMMessage lastMessage = conversation.getLastMessage();
-        UserEntity friendUser;
-        if(lastMessage.getTo() != UserDataManger.myUserData.getUserId())
+        UserEntity friendUser = null;
+        List<UserEntity> localFriendList = null;
+        if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
         {
-            friendUser = UserDataManger.allUserList.get(lastMessage.getTo());
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+            if(localFriendList.size() > 0)
+                friendUser = localFriendList.get(0);
         }else{
-            friendUser = UserDataManger.allUserList.get(lastMessage.getFrom());
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+            if(localFriendList.size() > 0)
+                friendUser = localFriendList.get(0);
+        }
+        if(friendUser == null)
+        {
+            return convertView;
         }
         String username = friendUser.getNickName();
         if (conversation.getType() == EMConversationType.GroupChat) {
@@ -158,7 +169,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
         if (conversation.getAllMsgCount() != 0) {
-        	// show the content of latest message
+            // show the content of latest message
             String content = null;
             if(cvsListHelper != null){
                 content = cvsListHelper.onSetItemSecondaryText(lastMessage);
@@ -175,7 +186,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 holder.msgState.setVisibility(View.GONE);
             }
         }
-        
+
         //set property
         holder.name.setTextColor(primaryColor);
         holder.message.setTextColor(secondaryColor);
@@ -189,7 +200,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
         return convertView;
     }
-    
+
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
@@ -199,7 +210,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             notiyfyByFilter = false;
         }
     }
-    
+
     @Override
     public Filter getFilter() {
         if (conversationFilter == null) {
@@ -207,7 +218,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         return conversationFilter;
     }
-    
+
 
     public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
@@ -262,7 +273,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 for (int i = 0; i < count; i++) {
                     final EMConversation value = mOriginalValues.get(i);
                     String username = value.conversationId();
-                    
+
                     EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
                     if(group != null){
                         username = group.getGroupName();
@@ -277,10 +288,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                     if (username.startsWith(prefixString)) {
                         newValues.add(value);
                     } else{
-                          final String[] words = username.split(" ");
-                            final int wordCount = words.length;
+                        final String[] words = username.split(" ");
+                        final int wordCount = words.length;
 
-                            // Start at index 0, in case valueText starts with space(s)
+                        // Start at index 0, in case valueText starts with space(s)
                         for (String word : words) {
                             if (word.startsWith(prefixString)) {
                                 newValues.add(value);
@@ -316,7 +327,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
         this.cvsListHelper = cvsListHelper;
     }
-    
+
     private static class ViewHolder {
         /** who you chat with */
         TextView name;

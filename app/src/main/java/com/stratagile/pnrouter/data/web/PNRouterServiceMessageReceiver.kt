@@ -211,6 +211,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp : JAddFriendReplyRsp)
         fun delFriendPushRsp(jDelFriendPushRsp : JDelFriendPushRsp)
+        fun firendList(jPullFriendRsp: JPullFriendRsp)
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
     }
     interface AddFriendDealCallBack {

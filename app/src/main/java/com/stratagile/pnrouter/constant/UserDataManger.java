@@ -11,6 +11,4 @@ import java.util.HashMap;
 public class UserDataManger {
     public static UserEntity myUserData;
     public static UserEntity curreantfriendUserData;
-    public  static HashMap<String, UserEntity> allUserList = new HashMap<>();
-
 }

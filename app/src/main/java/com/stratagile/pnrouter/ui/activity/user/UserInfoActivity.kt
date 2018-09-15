@@ -100,7 +100,6 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
                 intent.putExtra("user", userInfo!!)
                 startActivity(intent)*/
                 UserDataManger.curreantfriendUserData = userInfo
-                UserDataManger.allUserList.put(userInfo?.userId,userInfo)
                 startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo?.userId))
             } else if (userInfo!!.friendStatus == 3) {
                 acceptFriend()
