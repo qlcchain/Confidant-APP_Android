@@ -67,6 +67,7 @@ import com.hyphenate.util.PathUtil;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -106,7 +107,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected Bundle fragmentArgs;
     protected int chatType;
     protected String toChatUsername;
-    protected String toChatUserId;
     protected EaseChatMessageList messageList;
     protected EaseChatInputMenu inputMenu;
 
@@ -168,12 +168,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         fragmentArgs = getArguments();
         // check if single chat or group chat
-        UserEntity userEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_USER_ID);
-        //chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
-        chatType = EaseConstant.CHATTYPE_SINGLE;
+        chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
         // userId you are chat with or group id
-        toChatUsername = userEntity.getNickName();
-        toChatUserId = userEntity.getUserId();
+        toChatUsername = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
+
         this.turnOnTyping = turnOnTyping();
 
         super.onActivityCreated(savedInstanceState);
@@ -311,7 +309,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void setUpView() {
-        titleBar.setTitle(toChatUsername);
+        titleBar.setTitle( UserDataManger.curreantfriendUserData.getNickName());
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
             // set title
             if(EaseUserUtils.getUserInfo(toChatUsername) != null){
@@ -850,9 +848,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUsername);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId,toChatUserId,content);
+            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),content);
             message.setFrom(userId);
-            message.setTo(toChatUserId);
+            message.setTo( UserDataManger.curreantfriendUserData.getUserId());
             sendMessage(message);
         }
     }
@@ -918,6 +916,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     {
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUsername);
         message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setFrom(jPushMsgRsp.getParams().getFromId());
+        message.setTo(jPushMsgRsp.getParams().getToId());
         sendMessage(message);
     }
     protected void sendMessage(EMMessage message){

@@ -55,8 +55,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         activityInstance = this
         //user or group id
 
-        var userEntity:UserEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_USER_ID)
-        toChatUsername = userEntity.userId
+
+        toChatUsername = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         chatFragment = EaseChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)

@@ -20,7 +20,6 @@ import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseUI;
-import com.hyphenate.util.DateUtils;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.domain.EaseUser;
@@ -30,7 +29,9 @@ import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.hyphenate.easeui.widget.EaseImageView;
-import com.stratagile.pnrouter.utils.swipeback.DateUtil;
+import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.utils.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,8 +104,9 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         // get conversation
         EMConversation conversation = getItem(position);
         // get username or group id
-        String username = conversation.conversationId();
-        
+        String frienduserid = conversation.conversationId();
+        UserEntity friendUser = UserDataManger.allUserList.get(frienduserid);
+        String username = friendUser.getNickName();
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
@@ -114,15 +116,15 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             }
             // group message, show group avatar
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
+            EMGroup group = EMClient.getInstance().groupManager().getGroup(frienduserid);
             holder.name.setText(group != null ? group.getGroupName() : username);
         } else if(conversation.getType() == EMConversationType.ChatRoom){
             holder.avatar.setImageResource(R.drawable.ease_group_icon);
-            EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(username);
+            EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(frienduserid);
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
             holder.motioned.setVisibility(View.GONE);
         }else {
-            EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
+            EaseUserUtils.setUserAvatar(getContext(), frienduserid, holder.avatar);
             EaseUserUtils.setUserNick(username, holder.name);
             holder.motioned.setVisibility(View.GONE);
         }

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.widget.RelativeLayout
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
@@ -21,7 +20,6 @@ import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.widget.LinearLayout
-import androidx.core.widget.toast
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
@@ -34,7 +32,6 @@ import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import org.greenrobot.eventbus.EventBus
@@ -196,7 +193,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         contactListFragment?.setContactsMap(getContacts())
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
-                { conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
+                {
+                    conversation -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, conversation.conversationId())) })
         //contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {

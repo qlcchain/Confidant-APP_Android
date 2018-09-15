@@ -1,5 +1,8 @@
 package com.stratagile.pnrouter.constant
 
+import com.stratagile.pnrouter.db.UserEntity
+import java.util.HashMap
+
 object ConstantValue {
         var testValue = "testValue"
         var fingerprintUnLock = "fingerprintUnLock"
@@ -8,5 +11,6 @@ object ConstantValue {
         var username = "username"
         var routerId = "routerId"
         var selfImageName = "selfImageName"
- 
+        var myUserData: UserEntity? = null
+
 }

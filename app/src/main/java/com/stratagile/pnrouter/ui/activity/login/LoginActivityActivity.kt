@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.login
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
@@ -20,8 +21,10 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
@@ -68,6 +71,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = userName.text.toString()
+            var myUserData = UserEntity()
+            myUserData.userId = newRouterEntity.userId
+            myUserData.nickName = newRouterEntity.username;
+            UserDataManger.myUserData = myUserData
+            UserDataManger.allUserList.put(myUserData?.userId,myUserData)
             var contains = false
             for (i in routerList) {
                 if (i.routerId.equals(routerId)) {
@@ -75,6 +83,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     break
                 }
             }
+
             if (contains) {
                 KLog.i("数据局中已经包含了这个routerId")
             } else {

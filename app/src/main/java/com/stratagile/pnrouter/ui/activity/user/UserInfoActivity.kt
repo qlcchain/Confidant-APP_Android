@@ -3,7 +3,6 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.hyphenate.easeui.EaseConstant
 import com.stratagile.pnrouter.R
@@ -12,11 +11,11 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
@@ -100,7 +99,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
                 /*var intent = Intent(this, ConversationActivity::class.java)
                 intent.putExtra("user", userInfo!!)
                 startActivity(intent)*/
-                startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo!!))
+                UserDataManger.curreantfriendUserData = userInfo
+                UserDataManger.allUserList.put(userInfo?.userId,userInfo)
+                startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo?.userId))
             } else if (userInfo!!.friendStatus == 3) {
                 acceptFriend()
             }

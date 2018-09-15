@@ -1,4 +1,4 @@
-package com.stratagile.pnrouter.utils.swipeback;
+package com.stratagile.pnrouter.utils;
 
 import com.hyphenate.util.TimeInfo;
 
@@ -24,24 +24,16 @@ public class DateUtil {
         boolean var3 = var2.startsWith("zh");
         long var4 = var0.getTime();
         if(isSameDay(var4)) {
-            if(var3) {
-                var1 = "aa hh:mm";
-            } else {
-                var1 = "hh:mm aa";
-            }
+            var1 = "hh:mm aa";
         } else if(isYesterday(var4)) {
-            if(!var3) {
-                return "Yesterday " + (new SimpleDateFormat("hh:mm aa", Locale.ENGLISH)).format(var0);
-            }
-
-            var1 = "aa hh:mm 昨天";
+            return (new SimpleDateFormat("hh:mm aa", Locale.ENGLISH)).format(var0) +" Yesterday" ;
         } else if(var3) {
-            var1 = "hh:mm M月d日aa";
+            var1 = "dd hh:mm aa MMM";
         } else {
             var1 = "dd hh:mm aa MMM";
         }
 
-        return var3?(new SimpleDateFormat(var1, Locale.CHINESE)).format(var0):(new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
+        return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
     }
 
     private static boolean isSameDay(long var0) {
