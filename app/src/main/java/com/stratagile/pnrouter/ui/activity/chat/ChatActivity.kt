@@ -83,7 +83,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun initData() {
         AppConfig.instance.messageReceiver!!.chatCallBack = this
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullMsgList = PullMsgReq( userId!!,toChatUserID!!,1,0,10)
+        var pullMsgList = PullMsgReq( userId!!,toChatUserID!!,1,0,20)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
     }
 
