@@ -149,9 +149,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             if (avatarOptions.getAvatarRadius() != 0)
                 avatarView.setRadius(avatarOptions.getAvatarRadius());
         }
-        if (conversation.getUnreadMsgCount() > 0) {
+        if (lastMessage.isUnread()) {
             // show unread message count
-            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+            //holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+            holder.unreadLabel.setText("");
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);

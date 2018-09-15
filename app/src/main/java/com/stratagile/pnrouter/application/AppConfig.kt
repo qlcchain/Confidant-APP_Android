@@ -67,7 +67,6 @@ class AppConfig : MultiDexApplication() {
                     APIModule.PipeConnectivityListener())
         }
         MessageRetrievalService.registerActivityStarted(this)
-        this.messageReceiver!!.globalBack = globalBack()
         return messageReceiver!!
     }
 
@@ -114,25 +113,4 @@ class AppConfig : MultiDexApplication() {
         //        // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         //        mDaoMaster = new DaoMaster(db);
     }
-    class globalBack:PNRouterServiceMessageReceiver.GlobalBack{
-        override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
-            if(AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId))
-            {
-                KLog.i("已经在聊天窗口了，不处理该条数据！")
-            }else{
-                var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-                var  conversation:EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
-                message.setDirection(EMMessage.Direct.RECEIVE)
-                message.from = pushMsgRsp.params.fromId
-                message.to = pushMsgRsp.params.toId
-                message.isUnread = true;
-                message.setStatus(EMMessage.Status.SUCCESS)
-                conversation.insertMessage(message)
-            }
-        }
-
-    }
-
 }

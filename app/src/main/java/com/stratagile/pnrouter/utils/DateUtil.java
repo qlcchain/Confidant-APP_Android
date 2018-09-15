@@ -28,9 +28,9 @@ public class DateUtil {
         } else if(isYesterday(var4)) {
             return (new SimpleDateFormat("hh:mm aa", Locale.ENGLISH)).format(var0) +" Yesterday" ;
         } else if(var3) {
-            var1 = "dd hh:mm aa MMM";
+            var1 = "hh:mm aa MMM dd";
         } else {
-            var1 = "dd hh:mm aa MMM";
+            var1 = "hh:mm aa MMM dd";
         }
 
         return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);

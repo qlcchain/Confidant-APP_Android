@@ -20,10 +20,14 @@ import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.widget.LinearLayout
+import com.hyphenate.chat.EMClient
+import com.hyphenate.chat.EMConversation
+import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
+import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
@@ -44,6 +48,26 @@ import java.util.*
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack{
+    override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
+        if(AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId))
+        {
+            KLog.i("已经在聊天窗口了，不处理该条数据！")
+        }else{
+            var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+            var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+            message.setDirection(EMMessage.Direct.RECEIVE)
+            message.from = pushMsgRsp.params.fromId
+            message.to = pushMsgRsp.params.toId
+            message.isUnread = true
+            message.isAcked = true
+            message.setStatus(EMMessage.Status.SUCCESS)
+            conversation.insertMessage(message)
+            conversationListFragment?.refresh()
+        }
+    }
+
     //别人删除我，服务器给我的推送
     override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
         var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
