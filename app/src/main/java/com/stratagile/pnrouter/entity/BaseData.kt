@@ -179,3 +179,10 @@ data class HeartBeatReq(var UserId: String, var Action: String = "HeartBeat")
 
 data class ShareBean(var avatar : String, var name : String)
 
+/**
+ * 12.	拉取历史消息
+ * 场景：用户A拉取自己跟好友B的聊天记录
+ * (2)	响应（APP->Router）
+ */
+data class PullMsgReq(var UserId :String, var FriendId : String, var MsgType : Int, var MsgStartId :Int,var MsgNum : Int ,var Action : String = "PullMsg")
+

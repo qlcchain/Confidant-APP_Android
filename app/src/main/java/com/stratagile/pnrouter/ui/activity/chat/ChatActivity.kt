@@ -9,12 +9,14 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_chat.*
 
@@ -28,6 +30,12 @@ import javax.inject.Inject;
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack {
+    override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
+
+        var payloadBeanList : List<JPullMsgRsp.ParamsBean.PayloadBean> = pushMsgRsp.params.payload
+        chatFragment?.refreshData(payloadBeanList)
+    }
+
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if(pushMsgRsp.params.fromId.equals(toChatUserID))
         {
@@ -55,13 +63,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         activityInstance = this
         //user or group id
-
-
-        toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         AppConfig.instance.isChatWithFirend = toChatUserID
         chatFragment = EaseChatFragment()
         //set arguments
@@ -76,6 +82,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun initData() {
         AppConfig.instance.messageReceiver!!.chatCallBack = this
+        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var pullMsgList = PullMsgReq( userId!!,toChatUserID!!,1,0,10)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
     }
 
     override fun onDestroy() {

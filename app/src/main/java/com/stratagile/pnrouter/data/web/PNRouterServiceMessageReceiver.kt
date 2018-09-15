@@ -49,12 +49,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
                 mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
             }
-            //删除对方，服务器返回是否操作成功
+        //删除对方，服务器返回是否操作成功
             "DelFriendCmd"-> {
                 val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
                 delFriendCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
             }
-            //对方删除我，服务器给我推送消息
+        //对方删除我，服务器给我推送消息
             "DelFriendPush"-> {
                 val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
                 mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
@@ -70,7 +70,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
             chatCallBack?.pushMsgRsp(JPushMsgRsp)
             mainInfoBack?.pushMsgRsp(JPushMsgRsp)
-            }
+        }"PullMsg"-> {
+            val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
+            chatCallBack?.pullMsgRsp(JPullMsgRsp)
+        }
         }
         messageListner?.onMessage(baseData)
     }
@@ -230,6 +233,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun sendMsg(FromId:String,ToId:String,Msg:String);
         fun sendMsgRsp(sendMsgRsp : JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
+        fun pullMsgRsp(pushMsgRsp : JPullMsgRsp)
     }
     interface GlobalBack {
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)

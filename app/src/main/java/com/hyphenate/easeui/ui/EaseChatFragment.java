@@ -65,6 +65,7 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.utils.SpUtil;
 
@@ -375,7 +376,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
     protected void onConversationInit(){
-        conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+        if(conversation == null)
+            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         EMMessage lastMessage = conversation.getLastMessage();
         if(lastMessage != null)
             lastMessage.setUnread(false);
@@ -417,7 +419,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
     }
+    public void  refreshData(List<JPullMsgRsp.ParamsBean.PayloadBean> payloadBeanList)
+    {
+        if (conversation != null) {
+            conversation.clearAllMessages();
+        }
+        int size = payloadBeanList.size();
 
+        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        for(int i= 0 ; i < size ;i++)
+        {
+            JPullMsgRsp.ParamsBean.PayloadBean PayloadBean = payloadBeanList.get(i);
+            EMMessage message = EMMessage.createTxtSendMessage(PayloadBean.getMsg(), toChatUserId);
+            message.setFrom(PayloadBean.getFrom());
+            message.setTo(PayloadBean.getTo());
+            message.setUnread(false);
+            if(PayloadBean.getFrom().equals(userId))
+            {
+                message.setDirection(EMMessage.Direct.RECEIVE );
+            }else {
+                message.setDirection(EMMessage.Direct.SEND );
+            }
+            message.setMsgTime(PayloadBean.getTimeStatmp()*1000);
+            sendMessage(message);
+        }
+
+    }
     protected void onMessageListInit(){
         messageList.init(toChatUserId, chatType, chatFragmentHelper != null ?
                 chatFragmentHelper.onSetCustomChatRowProvider() : null);
@@ -923,6 +950,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (message == null) {
             return;
         }
+        if(conversation == null)
+            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         if(chatFragmentHelper != null){
             //set extension
             chatFragmentHelper.onSetMessageAttributes(message);

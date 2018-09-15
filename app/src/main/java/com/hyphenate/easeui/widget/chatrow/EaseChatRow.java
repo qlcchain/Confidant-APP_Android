@@ -140,7 +140,8 @@ public abstract class EaseChatRow extends LinearLayout {
             	// show time stamp if interval with last message is > 30 seconds
                 EMMessage prevMessage = (EMMessage) adapter.getItem(position - 1);
                 if (prevMessage != null && DateUtils.isCloseEnough(message.getMsgTime(), prevMessage.getMsgTime())) {
-                    timestamp.setVisibility(View.GONE);
+                    timestamp.setText(DateUtil.getTimestampString(new Date(message.getMsgTime())));
+                    timestamp.setVisibility(View.VISIBLE);
                 } else {
                     timestamp.setText(DateUtil.getTimestampString(new Date(message.getMsgTime())));
                     timestamp.setVisibility(View.VISIBLE);
