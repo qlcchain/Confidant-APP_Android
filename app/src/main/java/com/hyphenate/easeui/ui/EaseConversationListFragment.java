@@ -112,7 +112,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
 
                     UserDataManger.curreantfriendUserData = friendInfo;
-                    listItemClickListener.onListItemClicked(conversation);
+                    listItemClickListener.onListItemClicked(friendInfo.getUserId());
                 }
             });
         }
@@ -317,9 +317,9 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     public interface EaseConversationListItemClickListener {
         /**
          * click event for conversation list
-         * @param conversation -- clicked item
+         * @param usersid -- clicked item
          */
-        void onListItemClicked(EMConversation conversation);
+        void onListItemClicked(String usersid);
     }
     
     /**
