@@ -48,8 +48,16 @@ import java.util.*
 class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMessageReceiver.PullFriendCallBack {
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-
+        if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size ==0) {
+            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.deleteAll()
+            runOnUiThread {
+                initData()
+            }
+            return
+        }
+        //添加新的好友
         for (i in jPullFriendRsp.params.payload) {
+            //是否为本地好友
             var isLocalFriend = false
             for (j in localFriendList) {
                 if (i.id.equals(j.userId)) {
@@ -68,7 +76,25 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
             }
-
+        }
+        //把本地的多余好友清除
+        localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in localFriendList) {
+            //是否为本地多余的好友
+            if (i.friendStatus == 3 || i.friendStatus == 1) {
+                //等待验证的S好友，不能处理
+                continue
+            }
+            var isLocalDeletedFriend = true
+            for (j in jPullFriendRsp.params.payload) {
+                if (i.userId.equals(j.id)) {
+                    isLocalDeletedFriend = false
+                }
+            }
+            if (isLocalDeletedFriend) {
+                i.friendStatus = 7
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+            }
         }
 
         runOnUiThread {
@@ -121,12 +147,21 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     }
 
     fun initData() {
+        var hasNewFriendRequest = false
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var contactList = arrayListOf<UserEntity>()
         for (i in list) {
             if (i.friendStatus == 0) {
                 contactList.add(i)
             }
+            if (i.friendStatus == 3) {
+                hasNewFriendRequest = true
+            }
+        }
+        if (hasNewFriendRequest) {
+            new_contact_dot.visibility = View.VISIBLE
+        } else {
+            new_contact_dot.visibility = View.GONE
         }
         contactAdapter = ContactListAdapter(contactList)
         recyclerView.adapter = contactAdapter

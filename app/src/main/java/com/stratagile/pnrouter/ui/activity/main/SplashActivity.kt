@@ -50,7 +50,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
         swipeBackLayout.setEnableGesture(false)
-        AppConfig.instance.getPNRouterServiceMessageReceiver()
         SpUtil.putString(this, ConstantValue.testValue, "test")
         mPresenter.getLastVersion()
         mPresenter.getPermission()

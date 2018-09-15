@@ -57,6 +57,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
     var options = RequestOptions()
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .priority(Priority.HIGH)
 
     override fun onCreate(savedInstanceState: Bundle?) {

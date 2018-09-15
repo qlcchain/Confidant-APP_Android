@@ -49,49 +49,38 @@ public class FileUtil {
             }
         }).start();
     }
+
     /**
      * 保存自己的UserId到本地sd卡
      */
     public static String saveUserId2Local(String userId) {
         String lastP2pId = getLocalUserId();
-        if ("".equals(lastP2pId)) {
-            copyDataFile();
-            String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/userid.json";
-            File jsonFile = new File(jsonPath);
-
-            FileWriter fw = null;
-            BufferedWriter out = null;
+        copyDataFile();
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/userid.json";
+        File jsonFile = new File(jsonPath);
+        FileWriter fw = null;
+        BufferedWriter out = null;
+        try {
+            if (!jsonFile.exists()) {
+                jsonFile.createNewFile();
+            }
+            fw = new FileWriter(jsonFile);
+            out = new BufferedWriter(fw);
+            out.write(userId, 0, userId.length());
+            out.close();
+        } catch (Exception e) {
+            System.out.println("保存数据异常" + e);
+            e.printStackTrace();
+        } finally {
             try {
-                if (!jsonFile.exists()) {
-                    jsonFile.createNewFile();
+                if (out != null) {
+                    out.close();
                 }
-                fw = new FileWriter(jsonFile);
-                out = new BufferedWriter(fw);
-                out.write(userId, 0, userId.length());
-                out.close();
-            } catch (Exception e)
-            {
-                System.out.println("保存数据异常" + e);
-                e.printStackTrace();
-            }
-            finally
-            {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-            }
-            return "";
-        } else {
-            if (lastP2pId.equals(userId)) {
-                return "";
-            } else {
-                return lastP2pId;
+            } catch (Exception e2) {
+                e2.printStackTrace();
             }
         }
+        return "";
     }
 
     /**
@@ -102,9 +91,8 @@ public class FileUtil {
         ObjectInputStream ois = null;
         String userIdJson = "";
         try {
-            File file = new File(Environment.getExternalStorageDirectory(),"/Router/UserID/userid.json");
-            if(!file.exists())
-            {
+            File file = new File(Environment.getExternalStorageDirectory(), "/Router/UserID/userid.json");
+            if (!file.exists()) {
                 return userIdJson;
             }
             fis = new FileInputStream(file);
@@ -112,7 +100,7 @@ public class FileUtil {
             fis.read(buffer);
             fis.close();
             userIdJson = EncodingUtils.getString(buffer, "UTF-8");
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -183,12 +171,13 @@ public class FileUtil {
     }
 
     /**
-     *  保存路由器数据到sd卡
-     * @param userId 用户id
+     * 保存路由器数据到sd卡
+     *
+     * @param userId  用户id
      * @param jsonStr 数据
      */
     public static void saveRouterData(String userId, String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RouterList/"+userId+".json";
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RouterList/" + userId + ".json";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -201,13 +190,10 @@ public class FileUtil {
             out = new BufferedWriter(fw);
             out.write(jsonStr, 0, jsonStr.length());
             out.close();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("保持资产数据异常" + e);
             e.printStackTrace();
-        }
-        finally
-        {
+        } finally {
             try {
                 if (out != null) {
                     out.close();
@@ -220,6 +206,7 @@ public class FileUtil {
 
     /**
      * 读取本地SDk卡路由器数据
+     *
      * @param userId 用户id
      * @return
      */
@@ -228,10 +215,9 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(),"/Router/RouterList/"+userId+".json");
-                if(!file.exists())
-                {
-                    return  "";
+                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RouterList/" + userId + ".json");
+                if (!file.exists()) {
+                    return "";
                 }
                 fis = new FileInputStream(file);
                 byte[] buffer = new byte[fis.available()];
@@ -239,7 +225,7 @@ public class FileUtil {
                 fis.close();
                 String res = EncodingUtils.getString(buffer, "UTF-8");
                 return res;
-            } catch (IOException  e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -252,8 +238,10 @@ public class FileUtil {
         }
         return "";
     }
+
     /**
      * 读取本地SDk卡所有资产的钱包名称
+     *
      * @return
      */
     public static String getAllWalletNames() {
@@ -261,27 +249,24 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(),"/Router/Assets/");
-                if(!file.exists())
-                {
-                    return  "";
+                File file = new File(Environment.getExternalStorageDirectory(), "/Router/Assets/");
+                if (!file.exists()) {
+                    return "";
                 }
                 File[] files = file.listFiles();
                 String name = "";
-                if(files != null && files.length >0)
-                {
-                    for (int i=0; i<files.length; i++) {
-                        if(name.equals(""))
-                        {
-                            name += files[i].getName().replace(".json","");
-                        }else{
-                            name += ","+files[i].getName().replace(".json","");
+                if (files != null && files.length > 0) {
+                    for (int i = 0; i < files.length; i++) {
+                        if (name.equals("")) {
+                            name += files[i].getName().replace(".json", "");
+                        } else {
+                            name += "," + files[i].getName().replace(".json", "");
                         }
 
                     }
                     return name;
                 }
-            } catch (Exception  e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -294,8 +279,10 @@ public class FileUtil {
         }
         return "";
     }
+
     /**
      * 读取本地SDk卡所有钱包的地址
+     *
      * @return
      */
     public static String getAllAddressNames() {
@@ -303,28 +290,25 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(),"/Router/Address/");
-                if(!file.exists())
-                {
-                    return  "";
+                File file = new File(Environment.getExternalStorageDirectory(), "/Router/Address/");
+                if (!file.exists()) {
+                    return "";
                 }
                 File[] files = file.listFiles();
                 String name = "";
-                if(files != null && files.length >0)                {
+                if (files != null && files.length > 0) {
 
-                    for (int i=0; i<files.length; i++) {
+                    for (int i = 0; i < files.length; i++) {
                         String data = getDataFromFile(files[i]);
                         String addData = data;
-                        if(!"".equals(data) && data.length() >= 42)
-                        {
+                        if (!"".equals(data) && data.length() >= 42) {
                             boolean isBase64 = StringUitl.isBase64(data);
-                            if(!isBase64)
-                            {
+                            if (!isBase64) {
                                 try {
                                     FileOutputStream fos = new FileOutputStream(files[i]);
                                     OutputStreamWriter osw = new OutputStreamWriter(fos, "utf-8");
                                     byte[] bytes = data.getBytes();
-                                    String encryptPrivateKey = Base64.encodeToString(bytes,Base64.NO_WRAP);
+                                    String encryptPrivateKey = Base64.encodeToString(bytes, Base64.NO_WRAP);
                                     addData = encryptPrivateKey;
                                     osw.write(encryptPrivateKey);
                                     osw.flush();
@@ -337,60 +321,24 @@ public class FileUtil {
                             }
 
                             isBase64 = StringUitl.isBase64(addData);
-                            if(isBase64)
-                            {
+                            if (isBase64) {
                                 byte[] bytesAddData = Base64.decode(addData, Base64.NO_WRAP);
                                 byte[] bytes = bytesAddData;
-                                String decryptPrivateKey =  new String(bytes);
-                                addData =  decryptPrivateKey;
+                                String decryptPrivateKey = new String(bytes);
+                                addData = decryptPrivateKey;
                             }
-                            if(!name.contains(addData))
-                            {
-                                if(name.equals(""))
-                                {
+                            if (!name.contains(addData)) {
+                                if (name.equals("")) {
                                     name += addData;
-                                }else{
-                                    name += ","+addData;
+                                } else {
+                                    name += "," + addData;
                                 }
                             }
                         }
                     }
                     return name;
                 }
-            } catch (Exception  e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (fis != null) fis.close();
-                    if (ois != null) ois.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return "";
-    }
-    /**
-     * 读取文件数据
-     * @param file
-     * @return
-     */
-    public static String getDataFromFile(File file) {
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            FileInputStream fis = null;
-            ObjectInputStream ois = null;
-            try {
-                if(!file.exists())
-                {
-                    return  "";
-                }
-                fis = new FileInputStream(file);
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                fis.close();
-                String res = EncodingUtils.getString(buffer, "UTF-8");
-                return res;
-            } catch (IOException  e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -405,12 +353,46 @@ public class FileUtil {
     }
 
     /**
-     *  保存数据到sd卡
+     * 读取文件数据
+     *
+     * @param file
+     * @return
+     */
+    public static String getDataFromFile(File file) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try {
+                if (!file.exists()) {
+                    return "";
+                }
+                fis = new FileInputStream(file);
+                byte[] buffer = new byte[fis.available()];
+                fis.read(buffer);
+                fis.close();
+                String res = EncodingUtils.getString(buffer, "UTF-8");
+                return res;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fis != null) fis.close();
+                    if (ois != null) ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     * 保存数据到sd卡
+     *
      * @param path 路径包括文件名称
      * @param data 数据
      */
-    public static void savaData(String path,String data)
-    {
+    public static void savaData(String path, String data) {
         File walletFile = new File(Environment.getExternalStorageDirectory() + path, "");//"/Router/Address/index.txt"
         if (!walletFile.exists()) {
             try {
@@ -446,6 +428,7 @@ public class FileUtil {
 
     /**
      * 根据路径获取sd卡数据
+     *
      * @param path
      * @return
      */
@@ -454,19 +437,18 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(),path);
-                if(!file.exists())
-                {
-                    return  "";
+                File file = new File(Environment.getExternalStorageDirectory(), path);
+                if (!file.exists()) {
+                    return "";
                 }
-				
+
                 fis = new FileInputStream(file);
                 byte[] buffer = new byte[fis.available()];
                 fis.read(buffer);
                 fis.close();
                 String res = EncodingUtils.getString(buffer, "UTF-8");
                 return res;
-            } catch (IOException  e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
@@ -481,12 +463,13 @@ public class FileUtil {
     }
 
     /**
-     *  保持vpn server数据到sd卡
-     * @param name 文件名称
+     * 保持vpn server数据到sd卡
+     *
+     * @param name    文件名称
      * @param jsonStr 数据内容
      */
-    public static void saveVpnServerData(String name,String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/vpn/"+name+".ovpn";
+    public static void saveVpnServerData(String name, String jsonStr) {
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/vpn/" + name + ".ovpn";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -499,13 +482,10 @@ public class FileUtil {
             out = new BufferedWriter(fw);
             out.write(jsonStr, 0, jsonStr.length());
             out.close();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("保持vpn sever数据异常" + e);
             e.printStackTrace();
-        }
-        finally
-        {
+        } finally {
             try {
                 if (out != null) {
                     out.close();

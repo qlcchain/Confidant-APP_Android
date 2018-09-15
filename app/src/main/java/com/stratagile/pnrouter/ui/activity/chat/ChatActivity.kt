@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.chat
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.LinearLayout
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.stratagile.pnrouter.R
@@ -14,6 +15,8 @@ import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
+import com.stratagile.pnrouter.utils.UIUtils
+import kotlinx.android.synthetic.main.activity_chat.*
 
 import javax.inject.Inject;
 
@@ -64,6 +67,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         //set arguments
         chatFragment?.setArguments(intent.extras)
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment!!).commit()
+        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        view1.setLayoutParams(llp)
     }
 
     override fun initView() {

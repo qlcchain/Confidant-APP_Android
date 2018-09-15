@@ -24,6 +24,8 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_user_info.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 import javax.inject.Inject;
 
@@ -60,8 +62,21 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun friendRelationshhipChange(friendChange : FriendChange) {
+        var friendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        for (i in friendList) {
+            if (userInfo!!.userId.equals(i.userId)) {
+                userInfo == i
+                initData()
+                closeProgressDialog()
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver!!.addfrendCallBack = null
         AppConfig.instance.messageReceiver!!.delFriendCallBack = null
     }
@@ -77,12 +92,17 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
 
     override fun initView() {
         setContentView(R.layout.activity_user_info)
+        EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver!!.delFriendCallBack = this
         AppConfig.instance.messageReceiver!!.addfrendCallBack = this
         userInfo = intent.getParcelableExtra("user")
     }
     override fun initData() {
-        title.text = getString(R.string.adam_graspn)
+        if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
+            title.text = userInfo!!.nickName
+        } else {
+            title.text = getString(R.string.details)
+        }
         nickName.text = userInfo!!.nickName
         avatar.setText(userInfo!!.nickName)
         tvRefuse.setOnClickListener {
@@ -118,7 +138,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
             }
             1-> {
                 llOperate.visibility = View.GONE
-                tvAddFriend.visibility = View.GONE
+//                tvAddFriend.visibility = View.GONE
             }
             2-> {
                 llOperate.visibility = View.GONE
@@ -162,11 +182,21 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
      * 同意添加好友
      */
     fun acceptFriend() {
-
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
+        var userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, 0)
+        userInfo?.friendStatus = 0
+        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        showProgressDialog()
     }
 
     fun refuseFriend() {
-
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
+        var userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, 0)
+        userInfo?.friendStatus = 1
+        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        showProgressDialog()
     }
 
     fun addFriend() {

@@ -12,6 +12,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
 import com.stratagile.pnrouter.ui.activity.user.module.MyDetailModule
@@ -20,6 +21,7 @@ import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_my_detail.*
 import kotlinx.android.synthetic.main.fragment_my.view.*
+import org.greenrobot.eventbus.EventBus
 
 import javax.inject.Inject;
 
@@ -60,6 +62,7 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        EventBus.getDefault().post(ResetAvatar())
         initData()
     }
 

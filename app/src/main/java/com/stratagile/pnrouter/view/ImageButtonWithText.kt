@@ -14,6 +14,7 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -30,6 +31,12 @@ import java.util.Arrays
 class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs) {
     var imageView: ImageView
     var textView: TextView
+    var options = RequestOptions()
+            .centerCrop()
+            .transform(GlideCircleTransformMainColor(context))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .priority(Priority.HIGH)
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ImageButtonWithText)
@@ -131,7 +138,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                     imageView.visibility = View.VISIBLE
                     Glide.with(this)
                             .load(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
-                            .apply(AppConfig.instance.options)
+                            .apply(options)
                             .into(imageView)
                 } else {
 
