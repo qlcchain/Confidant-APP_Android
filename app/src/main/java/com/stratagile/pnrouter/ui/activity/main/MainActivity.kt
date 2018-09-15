@@ -97,7 +97,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
             conversation.insertMessage(message)
-            if(!ConstantValue.isRefeshed && ConstantValue.isInit)
+            if(ConstantValue.isInit)
             {
                 conversationListFragment?.refresh()
                 ConstantValue.isRefeshed = true
