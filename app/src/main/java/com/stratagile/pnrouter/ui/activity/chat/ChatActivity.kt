@@ -26,9 +26,12 @@ import javax.inject.Inject;
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack {
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
-         var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-        chatFragment?.receiveMessage(pushMsgRsp)
+        if(pushMsgRsp.params.fromId.equals(toChatUserID))
+        {
+            var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+            chatFragment?.receiveMessage(pushMsgRsp)
+        }
     }
 
     override fun sendMsg(FromId: String, ToId: String, Msg: String) {
