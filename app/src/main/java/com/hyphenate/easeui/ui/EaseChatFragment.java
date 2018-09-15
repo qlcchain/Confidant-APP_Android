@@ -421,6 +421,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void  refreshData(List<JPullMsgRsp.ParamsBean.PayloadBean> payloadBeanList)
     {
+        if(conversation == null)
+            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         if (conversation != null) {
             conversation.clearAllMessages();
         }
