@@ -470,9 +470,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setUnread(false);
             if(PayloadBean.getFrom().equals(userId))
             {
-                message.setDirection(EMMessage.Direct.RECEIVE );
-            }else {
                 message.setDirection(EMMessage.Direct.SEND );
+            }else {
+                message.setDirection(EMMessage.Direct.RECEIVE );
             }
             message.setMsgTime(PayloadBean.getTimeStatmp()* 1000);
             if(i == 0)
