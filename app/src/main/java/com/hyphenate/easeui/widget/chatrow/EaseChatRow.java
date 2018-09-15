@@ -155,7 +155,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
             } else {
 //                EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
-                EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView);
+                EaseUserUtils.setUserAvatar(message.getTo(), userAvatarView);
             }
         }
         if (EMClient.getInstance().getOptions().getRequireDeliveryAck()) {

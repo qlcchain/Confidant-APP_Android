@@ -150,7 +150,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var hasNewFriendRequest = false
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var contactList = arrayListOf<UserEntity>()
+        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         for (i in list) {
+            if (i.userId.equals(selfUserId)) {
+                continue
+            }
             if (i.friendStatus == 0) {
                 contactList.add(i)
             }

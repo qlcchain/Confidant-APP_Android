@@ -70,7 +70,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         } else {
             FileUtil.saveUserId2Local(loginRsp.params!!.UserId)
             KLog.i("服务器返回的userId：${loginRsp.params!!.UserId}")
-            newRouterEntity.userId = loginRsp.params!!.UserId
+            newRouterEntity.userId = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.UserId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
@@ -79,7 +79,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = userName.text.toString()
             var myUserData = UserEntity()
-            myUserData.userId = newRouterEntity.userId
+            myUserData.userId = loginRsp.params!!.UserId
             myUserData.nickName = newRouterEntity.username;
             UserDataManger.myUserData = myUserData
             var contains = false

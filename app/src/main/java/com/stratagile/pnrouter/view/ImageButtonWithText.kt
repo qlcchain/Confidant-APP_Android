@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -80,6 +81,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     }
 
     fun setText(buttonText: CharSequence) {
+        KLog.i(buttonText)
         val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val stringArrayList = Arrays.asList(*strings)
         val itTemp = stringArrayList.iterator()

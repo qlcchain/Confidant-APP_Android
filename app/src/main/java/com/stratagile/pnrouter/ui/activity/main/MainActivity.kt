@@ -213,6 +213,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+            if (toAddUserId.equals(selfUserId)) {
+                return@Observer
+            }
             if (!"".equals(toAddUserId)) {
                 var intent  = Intent(this, UserInfoActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -336,7 +340,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     fun setToNews() {
-        tvTitle.text = getString(R.string.news)
+        tvTitle.text = getString(R.string.private_faith)
         mainIv1.visibility = View.GONE
         llSort.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE

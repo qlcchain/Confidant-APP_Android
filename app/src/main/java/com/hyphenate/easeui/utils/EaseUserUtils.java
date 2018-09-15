@@ -78,7 +78,6 @@ public class EaseUserUtils {
     public static void setUserAvatar(String username, ImageButtonWithText textView) {
         if (textView != null) {
             List<UserEntity> userEntityList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
-            UserEntity userEntity;
             for (int i = 0; i < userEntityList.size(); i++) {
                 if (userEntityList.get(i).getUserId().equals(username)) {
                     textView.setText(userEntityList.get(i).getNickName());

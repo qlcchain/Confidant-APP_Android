@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.PushMsgReq
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
+import com.tencent.bugly.crashreport.CrashReport
 
 /**
  * 作者：Android on 2017/8/1
@@ -50,6 +51,7 @@ class AppConfig : MultiDexApplication() {
         EMClient.getInstance().setDebugMode(true);
         instance = this
         setupApplicationComponent()
+        CrashReport.initCrashReport(this, "22ae8f7fc8 ", BuildConfig.LOG_DEBUG)
         setDatabase()
     }
 
