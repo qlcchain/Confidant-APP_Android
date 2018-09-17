@@ -112,8 +112,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
             conversation.insertMessage(message)
-            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
-            controlleMessageUnReadCount(UnReadMessageCount)
+            runOnUiThread {
+                var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
+                controlleMessageUnReadCount(UnReadMessageCount)
+            }
             if(ConstantValue.isInit)
             {
                 conversationListFragment?.refresh()
@@ -301,8 +303,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                          message.isAcked = true
                          message.setStatus(EMMessage.Status.SUCCESS)
                          conversation.insertMessage(message)
-                         var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
-                         controlleMessageUnReadCount(UnReadMessageCount)
+                         runOnUiThread {
+                             var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
+                             controlleMessageUnReadCount(UnReadMessageCount)
+                         }
                          if(ConstantValue.isInit)
                          {
                              conversationListFragment?.refresh()
@@ -371,6 +375,35 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
+     override fun onResume() {
+        super.onResume()
+         var localFriendList:List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+         var hasUnReadMsg:Boolean = false;
+         for(friendData in localFriendList)
+         {
+             var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+             if(conversation != null)
+             {
+                 val msgs:List<EMMessage> = conversation.allMessages
+                 for (msg in msgs)
+                 {
+                     if(msg.isUnread)
+                     {
+                         hasUnReadMsg = true
+                     }
+                 }
+             }
+         }
+         if(hasUnReadMsg)
+         {
+             var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1)
+             controlleMessageUnReadCount(UnReadMessageCount)
+         }else{
+             var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(0)
+             controlleMessageUnReadCount(UnReadMessageCount)
+         }
+
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
         if (unReadContactCount.messageCount == 0) {
