@@ -26,7 +26,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         KLog.i(paramsStr)
         when (JSONObject.parseObject(paramsStr).getString("Action")) {
             "Login" -> {
-                val loginRsp  = gson.fromJson(text, LoginRspWrapper::class.java)
+                val loginRsp  = gson.fromJson(text, JLoginRsp::class.java)
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
             }
@@ -212,7 +212,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     interface LoginMessageCallback {
-        fun loginBack(loginRsp : LoginRspWrapper)
+        fun loginBack(loginRsp : JLoginRsp)
     }
 
     interface AddfrendCallBack {

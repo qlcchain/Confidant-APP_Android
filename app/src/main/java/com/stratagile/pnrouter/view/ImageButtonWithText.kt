@@ -81,7 +81,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     }
 
     fun setText(buttonText: CharSequence) {
-        KLog.i(buttonText)
+//        KLog.i(buttonText)
         val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val stringArrayList = Arrays.asList(*strings)
         val itTemp = stringArrayList.iterator()

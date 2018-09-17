@@ -67,6 +67,19 @@ class AppConfig : MultiDexApplication() {
         return messageReceiver!!
     }
 
+    fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
+        if (reStart) {
+            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+                    APIModule.DynamicCredentialsProvider(this),
+                    BuildConfig.USER_AGENT,
+                    APIModule.PipeConnectivityListener())
+            MessageRetrievalService.registerActivityStarted(this)
+        } else {
+            getPNRouterServiceMessageReceiver()
+        }
+        return messageReceiver!!
+    }
+
     fun getPNRouterServiceMessageSender() :  PNRouterServiceMessageSender{
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))

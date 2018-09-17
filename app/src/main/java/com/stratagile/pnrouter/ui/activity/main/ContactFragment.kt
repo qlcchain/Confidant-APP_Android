@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.PullFriendReq
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
@@ -49,7 +50,15 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size ==0) {
-            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.deleteAll()
+            for (i in localFriendList) {
+                //是否为本地多余的好友
+                if (i.friendStatus == 3 || i.friendStatus == 1) {
+                    //等待验证的好友，不能处理
+                    continue
+                } else {
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.delete(i)
+                }
+            }
             runOnUiThread {
                 initData()
             }
@@ -151,6 +160,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+        var newFriendCount = 0
         for (i in list) {
             if (i.userId.equals(selfUserId)) {
                 continue
@@ -160,12 +170,15 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
             if (i.friendStatus == 3) {
                 hasNewFriendRequest = true
+                newFriendCount++
             }
         }
         if (hasNewFriendRequest) {
             new_contact_dot.visibility = View.VISIBLE
+            EventBus.getDefault().post(UnReadContactCount(newFriendCount))
         } else {
             new_contact_dot.visibility = View.GONE
+            EventBus.getDefault().post(UnReadContactCount(0))
         }
         contactAdapter = ContactListAdapter(contactList)
         recyclerView.adapter = contactAdapter

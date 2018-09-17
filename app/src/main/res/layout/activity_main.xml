@@ -105,18 +105,120 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x100">
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/bottomNavigation"
+        <com.lzy.widget.AlphaIndicator
+            android:background="@color/white"
+            android:id="@+id/alphaIndicator"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            app:itemIconSize="@dimen/x40"
-            app:elevation="0px"
-            app:labelVisibilityMode="labeled"
-            app:itemTextAppearanceActive="@style/BottomNavigationViewTextAppearance"
-            app:itemTextAppearanceInactive="@style/BottomNavigationViewTextAppearance"
-            app:itemIconTint="@drawable/bottom_navigation_selector"
-            app:itemTextColor="@drawable/bottom_navigation_selector"
-            app:menu="@menu/menu_bottom_navigation" />
+            android:layout_height="55dp"
+            android:orientation="horizontal">
+
+            <com.lzy.widget.AlphaView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_click_recycler_item_bg"
+                android:padding="6dp"
+                app:av_tabIconNormal="@mipmap/btn_news_normal"
+                app:av_tabIconSelected="@mipmap/btn_news_highlight"
+                app:av_tabText="@string/news"
+                app:av_tabTextSize="12sp"
+                app:av_textColorNormal="#999999"
+                app:av_textColorSelected="@color/main_color" />
+
+            <com.lzy.widget.AlphaView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_click_recycler_item_bg"
+                android:padding="6dp"
+                app:av_tabIconNormal="@mipmap/btn_file_normal"
+                app:av_tabIconSelected="@mipmap/btn_file_highlight"
+                app:av_tabText="@string/file_"
+                app:av_tabTextSize="12sp"
+                app:av_textColorNormal="#999999"
+                app:av_textColorSelected="@color/main_color" />
+
+            <com.lzy.widget.AlphaView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_click_recycler_item_bg"
+                android:padding="6dp"
+                app:av_tabIconNormal="@mipmap/btn_contacts_normal"
+                app:av_tabIconSelected="@mipmap/btn_contacts_highlight"
+                app:av_tabText="@string/contacts"
+                app:av_tabTextSize="12sp"
+                app:av_textColorNormal="#999999"
+                app:av_textColorSelected="@color/main_color" />
+
+            <com.lzy.widget.AlphaView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="6dp"
+                android:background="@drawable/selector_click_recycler_item_bg"
+                app:av_tabIconNormal="@mipmap/btn_my_normal"
+                app:av_tabIconSelected="@mipmap/btn_my_highlight"
+                app:av_tabText="@string/my"
+                app:av_tabTextSize="12sp"
+                app:av_textColorNormal="#999999"
+                app:av_textColorSelected="@color/main_color" />
+
+        </com.lzy.widget.AlphaIndicator>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/unread_count"
+                    android:layout_width="@dimen/x26"
+                    android:layout_height="@dimen/x26"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="@dimen/x57"
+                    android:layout_marginTop="@dimen/x2"
+                    android:background="@drawable/new_message_flag_bg"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="7sp"
+                    android:visibility="invisible" />
+            </FrameLayout>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/new_contact"
+                    android:layout_width="@dimen/x26"
+                    android:layout_height="@dimen/x26"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="@dimen/x57"
+                    android:layout_marginTop="@dimen/x2"
+                    android:background="@drawable/new_message_flag_bg"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="7sp"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

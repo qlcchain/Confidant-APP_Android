@@ -139,7 +139,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
             }
             1-> {
                 llOperate.visibility = View.GONE
-//                tvAddFriend.visibility = View.GONE
+                tvAddFriend.visibility = View.VISIBLE
             }
             2-> {
                 llOperate.visibility = View.GONE

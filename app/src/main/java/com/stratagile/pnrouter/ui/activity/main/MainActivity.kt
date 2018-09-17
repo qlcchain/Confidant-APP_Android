@@ -36,6 +36,8 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.UnReadContactCount
+import com.stratagile.pnrouter.entity.events.UnReadMessageCount
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
@@ -331,7 +333,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             override fun onPageSelected(position: Int) {
                 // 将当前的页面对应的底部标签设为选中状态
-                bottomNavigation.getMenu().getItem(position).setChecked(true)
+//                bottomNavigation.getMenu().getItem(position).setChecked(true)
                 when (position) {
                     0 -> setToNews()
                     1 -> setToFile()
@@ -344,16 +346,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
         })
+        alphaIndicator.setViewPager(viewPager)
         // 为bnv设置选择监听事件
-        bottomNavigation.setOnNavigationItemSelectedListener {
-            when (it.getItemId()) {
-                R.id.item_news -> viewPager.setCurrentItem(0, false)
-                R.id.item_file -> viewPager.setCurrentItem(1, false)
-                R.id.item_contacts -> viewPager.setCurrentItem(2, false)
-                R.id.item_my -> viewPager.setCurrentItem(3, false)
-            }
-            true
-        }
+//        bottomNavigation.setOnNavigationItemSelectedListener {
+//            when (it.getItemId()) {
+//                R.id.item_news -> viewPager.setCurrentItem(0, false)
+//                R.id.item_file -> viewPager.setCurrentItem(1, false)
+//                R.id.item_contacts -> viewPager.setCurrentItem(2, false)
+//                R.id.item_my -> viewPager.setCurrentItem(3, false)
+//            }
+//            true
+//        }
 //        tv_hello.text = "hahhaha"
 //        tv_hello.setOnClickListener {
 //            mPresenter.showToast()
@@ -362,6 +365,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        tv_hello.typeface.style
         viewPager.offscreenPageLimit = 4
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
+        if (unReadContactCount.messageCount == 0) {
+            new_contact.visibility = View.INVISIBLE
+            new_contact.text = ""
+        } else {
+            new_contact.visibility = View.VISIBLE
+            new_contact.text = "" + unReadContactCount.messageCount
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
+        if (unReadMessageCount.messageCount == 0) {
+            unread_count.visibility = View.INVISIBLE
+            unread_count.text = ""
+        } else {
+            unread_count.visibility = View.VISIBLE
+            unread_count.text = ""
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

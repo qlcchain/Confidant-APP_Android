@@ -63,7 +63,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
-    private var retryInterval = arrayListOf<Int>(5000, 10000, 30000, 60000, 120000)
+    private var retryInterval = arrayListOf<Int>(5000, 15000, 30000, 60000, 120000)
     private var port = ":18006/"
     private var ipAddress = ""
     private var filledUri = ""
@@ -244,7 +244,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClose()...")
+        Log.w(TAG, "onClosed()...")
         this.connected = false
 
 //        val iterator = outgoingRequests.entries.iterator()
@@ -268,6 +268,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         if (client != null) {
             client!!.close(1000, "OK")
+//            client!!.cancel()
             client = null
             connected = false
         }
@@ -408,6 +409,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Log.w(TAG, "reConnect2...")
                     if (connected) {
                         shutdown()
+                        retryTime = 0
                         KLog.i("websocket已经连接上了，此处将继续重连的逻辑清除")
                         return
                     }
@@ -416,7 +418,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         filledUri = wsUri
                     }
                     if (client != null) {
-                        client!!.close(1000, "OK")
+//                        client!!.close(1000, "OK")
+                        client!!.cancel()
                         client = null
                         connected = false
                     }

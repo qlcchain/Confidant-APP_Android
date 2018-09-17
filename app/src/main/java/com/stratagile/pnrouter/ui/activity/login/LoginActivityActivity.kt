@@ -61,17 +61,45 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
     var mThread : CustomThread? = null
-    override fun loginBack(loginRsp: LoginRspWrapper) {
+    override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
-        if ("".equals(loginRsp.params!!.UserId)) {
+        if (loginRsp.params.retCode != 0) {
+            if (loginRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast("The current service is not available.")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 2) {
+                runOnUiThread {
+                    toast("Too many users")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 1) {
+                runOnUiThread {
+                    toast("RouterId Error")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast("System Error")
+                    closeProgressDialog()
+                }
+            }
+            return
+        }
+        if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
                 toast("Too many users")
+                closeProgressDialog()
             }
         } else {
-            FileUtil.saveUserId2Local(loginRsp.params!!.UserId)
-            KLog.i("服务器返回的userId：${loginRsp.params!!.UserId}")
+            FileUtil.saveUserId2Local(loginRsp.params!!.userId)
+            KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = ""
-            SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.UserId)
+            SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             SpUtil.putString(this, ConstantValue.username, userName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, routerId)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -79,7 +107,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = userName.text.toString()
             var myUserData = UserEntity()
-            myUserData.userId = loginRsp.params!!.UserId
+            myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = newRouterEntity.username;
             UserDataManger.myUserData = myUserData
             var contains = false
@@ -166,7 +194,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (routerId.equals("")) {
                 return@setOnClickListener
             }
-            AppConfig.instance.getPNRouterServiceMessageReceiver()
+            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
             AppConfig.instance.messageReceiver!!.loginBackListener = this
             showProgressDialog()
 //            mThread = CustomThread(routerId, userId)

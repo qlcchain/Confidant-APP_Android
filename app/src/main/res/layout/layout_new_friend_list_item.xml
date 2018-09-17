@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/x123">
+    android:layout_height="@dimen/x110">
 
     <View
         android:id="@+id/line"
@@ -12,8 +12,8 @@
 
     <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/x95"
-        android:layout_height="@dimen/x95"
+        android:layout_width="@dimen/x70"
+        android:layout_height="@dimen/x70"
         android:layout_marginLeft="@dimen/x30"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,8 +52,7 @@
     <LinearLayout
         android:id="@+id/llOperate"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/x30"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         app:layout_constraintBottom_toTopOf="@+id/line"
@@ -61,25 +60,22 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="@dimen/x70"
+            android:layout_width="@dimen/x110"
             android:gravity="center"
             android:id="@+id/tvRefuse"
             android:background="@color/main_color"
-            android:layout_height="@dimen/x50">
+            android:layout_height="match_parent">
             <ImageView
                 android:layout_width="@dimen/x30"
                 android:layout_height="@dimen/x30"
                 android:src="@mipmap/icon_delete" />
         </LinearLayout>
-        <View
-            android:layout_width="@dimen/x20"
-            android:layout_height="@dimen/x2" />
         <LinearLayout
-            android:layout_width="@dimen/x70"
+            android:layout_width="@dimen/x110"
             android:gravity="center"
             android:id="@+id/tvAccept"
             android:background="@color/main_color"
-            android:layout_height="@dimen/x50">
+            android:layout_height="match_parent">
             <ImageView
                 android:layout_width="@dimen/x30"
                 android:layout_height="@dimen/x30"

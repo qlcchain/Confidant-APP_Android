@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="@dimen/x123">
 
@@ -12,8 +13,8 @@
 
     <ImageView
         android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/x95"
-        android:layout_height="@dimen/x95"
+        android:layout_width="@dimen/x80"
+        android:layout_height="@dimen/x80"
         android:layout_marginLeft="@dimen/x30"
         android:src="@mipmap/icon_ppt"
         app:layout_constraintBottom_toBottomOf="parent"

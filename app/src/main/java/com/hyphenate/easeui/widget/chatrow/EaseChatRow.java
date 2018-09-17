@@ -25,11 +25,14 @@ import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.Date;
+import java.util.List;
 
 public abstract class EaseChatRow extends LinearLayout {
     public interface EaseChatRowActionCallback {
@@ -156,8 +159,12 @@ public abstract class EaseChatRow extends LinearLayout {
                 //设置自己的头像
                 userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
             } else {
-//                EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
-                EaseUserUtils.setUserAvatar(message.getTo(), userAvatarView);
+                List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
+                if (user.size() != 0) {
+                    EaseUserUtils.setUserAvatar(user.get(0).getNickName(), userAvatarView);
+                } else {
+                    EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView);
+                }
             }
         }
         if (EMClient.getInstance().getOptions().getRequireDeliveryAck()) {

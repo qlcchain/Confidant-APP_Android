@@ -21,17 +21,17 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
             0-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "已同意")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.agreed))
             }
             1-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "等待验证")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.wait_for_verification))
             }
             2-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "对方拒绝")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.rejected))
             }
             3-> {
                 helper.setVisible(R.id.llOperate, true)
@@ -41,18 +41,24 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
             4-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "对方删除")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.deleted))
             }
             5-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "已拒绝")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.rejected))
             }
             6-> {
                 helper.setGone(R.id.llOperate, false)
                 helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, "我删除")
+                helper.setText(R.id.tvStatus, mContext.getString(R.string.deleted))
             }
+        }
+
+        if ((helper.layoutPosition + 1) == mData.size) {
+            helper.setGone(R.id.line, false)
+        } else {
+            helper.setGone(R.id.line, true)
         }
     }
 

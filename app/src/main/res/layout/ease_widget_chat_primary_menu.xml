@@ -3,29 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:background="#aaffffff"
     android:orientation="vertical"
-    android:paddingBottom="2dip"
-    android:paddingTop="2dip">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x1"
-        android:background="@color/color_efefef" />
+    android:paddingBottom="6dip"
+    android:paddingTop="4dip">
 
     <LinearLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#aaffffff"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="4dp" >
+        android:orientation="horizontal">
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_set_mode_voice"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginLeft="6dp"
+            android:layout_marginLeft="@dimen/x14"
             android:background="@drawable/ic_yuyin"
             android:visibility="visible" />
 
@@ -33,7 +28,7 @@
             android:id="@+id/btn_set_mode_keyboard"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginLeft="6dp"
+            android:layout_marginLeft="@dimen/x14"
             android:background="@drawable/ic_keyboard"
             android:visibility="gone" />
 
@@ -41,12 +36,10 @@
             android:id="@+id/btn_press_to_speak"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_marginRight="@dimen/x10"
             android:layout_weight="1"
-            android:background="@drawable/ease_chat_press_speak_btn"
+            android:background="@drawable/input_background"
             android:gravity="center"
             android:visibility="gone" >
 
@@ -54,6 +47,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
+                android:gravity="center"
+                android:minHeight="33dp"
                 android:text="@string/button_pushtotalk"
                 android:textColor="#666666"
                 android:textSize="16sp" />
@@ -63,9 +58,9 @@
             android:id="@+id/edittext_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
+            android:layout_marginLeft="@dimen/x10"
+            android:layout_marginRight="@dimen/x10"
+            android:background="@drawable/input_background"
             android:layout_weight="1"
             android:gravity="bottom" >
 
@@ -73,28 +68,27 @@
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="35dip"
                 android:background="@null"
                 android:maxLines="3"
-                android:minHeight="40dp"
-                android:paddingBottom="3dp"
-                android:paddingLeft="1dp"
-                android:paddingRight="1dp"
-                android:paddingTop="3dp"
+                android:minHeight="33dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:textSize="18sp"
                 android:imeOptions="actionSend"/>
 
-            <RelativeLayout 
-                android:id="@+id/rl_face"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                >
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_face"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            >
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/iv_face_normal"
-                android:layout_width="24dip"
-                android:layout_height="24dip"
+                android:layout_width="32dip"
+                android:layout_height="32dip"
                 android:layout_margin="1dip"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_emoji"
@@ -102,33 +96,34 @@
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/iv_face_checked"
-                android:layout_width="24dip"
-                android:layout_height="24dip"
+                android:layout_width="32dip"
+                android:layout_height="32dip"
                 android:layout_margin="1dip"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_emoji"
                 android:visibility="invisible" />
-            
-            </RelativeLayout>
+
         </RelativeLayout>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_more"
-            android:layout_width="32dip"
-            android:layout_height="32dip"
-            android:layout_marginLeft="4dp"
+            android:layout_width="33dip"
+            android:layout_height="33dip"
+            android:layout_marginLeft="6dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/ic_message_more" />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginRight="4dp"
+            android:layout_width="43dp"
+            android:layout_height="33dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginLeft="3dp"
             android:background="@drawable/ease_chat_send_btn_selector"
             android:text="@string/button_send"
-            android:textColor="#666666"
-            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             android:visibility="gone" />
     </LinearLayout>
 

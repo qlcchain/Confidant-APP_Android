@@ -65,6 +65,7 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JDelMsgRsp;
@@ -72,6 +73,7 @@ import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.io.File;
@@ -160,6 +162,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private int MsgStartId = 0;
     private EMMessage currentSendMsg;
 
+    private UserEntity toChatUser;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
@@ -176,6 +180,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         fragmentArgs = getArguments();
         // check if single chat or group chat
         chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
+        if (chatType == EaseConstant.CHATTYPE_SINGLE) {
+            List<UserEntity> userEntities = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
+            for (int i = 0; i < userEntities.size(); i++) {
+                if (userEntities.get(i).getUserId().equals(toChatUserId)) {
+                    toChatUser = userEntities.get(i);
+                    break;
+                }
+            }
+        }
         // userId you are chat with or group id
         toChatUserId = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
 
@@ -326,7 +339,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     titleBar.setTitle(user.getNick());
                 }
             }
-            titleBar.setRightImageResource(R.drawable.ease_mm_title_remove);
+            titleBar.setRightImageResource(R.mipmap.icon_person);
         } else {
             titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
             if (chatType == EaseConstant.CHATTYPE_GROUP) {
@@ -361,7 +374,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onClick(View v) {
                 if (chatType == EaseConstant.CHATTYPE_SINGLE) {
-                    emptyHistory();
+//                    emptyHistory();
+                    toPersonDetails();
                 } else {
                     toGroupDetails();
                 }
@@ -1121,6 +1135,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         startActivityForResult(intent, REQUEST_CODE_LOCAL);
     }
 
+    private void toPersonDetails() {
+        if (chatType == EaseConstant.CHATTYPE_SINGLE) {
+            Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+            List<UserEntity> userEntities = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
+            if (toChatUser != null) {
+                intent.putExtra("user", toChatUser);
+                startActivity(intent);
+            } else {
+                for (int i = 0; i < userEntities.size(); i++) {
+                    if (userEntities.get(i).getUserId().equals(toChatUserId)) {
+                        intent.putExtra("user", userEntities.get(i));
+                        startActivity(intent);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 
     /**
