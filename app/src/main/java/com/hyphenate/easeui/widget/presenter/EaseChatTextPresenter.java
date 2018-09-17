@@ -20,16 +20,21 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.vondear.rxtools.view.popupwindows.tools.RxPopupView;
+import com.vondear.rxtools.view.popupwindows.tools.RxPopupViewManager;
 
 /**
  * Created by zhangsong on 17-10-12.
  */
 
-public class EaseChatTextPresenter extends EaseChatRowPresenter {
+public class EaseChatTextPresenter extends EaseChatRowPresenter implements RxPopupViewManager.TipListener {
     private static final String TAG = "EaseChatTextPresenter";
-
+    private RxPopupViewManager mRxPopupViewManager;
+    private Context context;
+    private View viewRoot;
     @Override
     protected EaseChatRow onCreateChatRow(Context cxt, EMMessage message, int position, BaseAdapter adapter) {
+        context = cxt;
         return new EaseChatRowText(cxt, message, position, adapter);
     }
 
@@ -50,9 +55,28 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
     public void onBubbleLongClick(EMMessage message, View view) {
         super.onBubbleLongClick(message,view);
         String fromID = message.getFrom();
+        viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
         if(fromID.equals(userId))
         {
+            /*RxPopupView.Builder builder;
+            if (mRxPopupViewManager == null) {
+                mRxPopupViewManager = new RxPopupViewManager(this);
+                //mRxPopupViewManager.findAndDismiss(tvQlc);
+            }
+            builder = new RxPopupView.Builder(context, view, null, "withdraw", RxPopupView.POSITION_ABOVE);
+            builder.setBackgroundColor(R.color.white);
+            builder.setTextColor(R.color.mainColor);
+            builder.setGravity(RxPopupView.GRAVITY_CENTER);
+            builder.setTextSize(12);
+            view = mRxPopupViewManager.show(builder.build());
+            view.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRxPopupViewManager.dismiss(viewRoot, true);
+                }
+            }, 3000);*/
+
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
             floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
             int[] loc1=new int[2];
@@ -91,5 +115,10 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
 
         // Send the group-ack cmd type msg if this msg is a ding-type msg.
         EaseDingMessageHelper.get().sendAckMessage(message);
+    }
+
+    @Override
+    public void onTipDismissed(View view, int anchorViewId, boolean byUser) {
+
     }
 }
