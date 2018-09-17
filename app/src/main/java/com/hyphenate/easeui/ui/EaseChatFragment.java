@@ -830,7 +830,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         @Override
         public void onClick(int itemId, View view) {
-           /* if(chatFragmentHelper != null){
+            Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
+            /*if(chatFragmentHelper != null){
                 if(chatFragmentHelper.onExtendMenuItemClick(itemId, view)){
                     return;
                 }
