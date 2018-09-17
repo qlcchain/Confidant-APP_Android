@@ -367,4 +367,5 @@
     <string name="chats">Chats</string>
     <string name="private_faith">Private Faith</string>
     <string name="nomore">No more data</string>
+    <string name="Revoke">Revoke</string>
 </resources>

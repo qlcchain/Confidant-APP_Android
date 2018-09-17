@@ -66,8 +66,11 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.entity.BaseData;
+import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
+import com.stratagile.pnrouter.entity.JDelMsgRsp;
 import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
+import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.utils.SpUtil;
 
@@ -155,6 +158,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     private  int currentPage = 0;
     private int MsgStartId = 0;
+    private EMMessage currentSendMsg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -479,9 +483,26 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             {
                 MsgStartId = PayloadBean.getMsgId();
             }
+            message.setMsgId( PayloadBean.getMsgId()+"");
             sendMessage(message);
         }
 
+    }
+    public void delMyMsg(JDelMsgRsp jDelMsgRsp)
+    {
+        conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+        //refresh ui
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
+    }
+    public void  delFreindMsg(JDelMsgPushRsp jDelMsgRsp)
+    {
+        conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+        //refresh ui
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
     }
     protected void onMessageListInit(){
         messageList.init(toChatUserId, chatType, chatFragmentHelper != null ?
@@ -859,10 +880,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setFrom(userId);
             message.setTo( UserDataManger.curreantfriendUserData.getUserId());
             message.setUnread(false);
+            currentSendMsg = message;
             sendMessage(message);
         }
     }
-
+    public void upateMessage(JSendMsgRsp jSendMsgRsp)
+    {
+        conversation.removeMessage(currentSendMsg.getMsgId());
+        currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+        conversation.insertMessage(currentSendMsg);
+    }
     /**
      * send @ message, only support group chat message
      * @param content
@@ -924,6 +951,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     {
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
         message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         message.setFrom(jPushMsgRsp.getParams().getFromId());
         message.setTo(jPushMsgRsp.getParams().getToId());
         sendMessage(message);

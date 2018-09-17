@@ -1,13 +1,12 @@
 package com.stratagile.pnrouter.data.web
 
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.*
 import com.socks.library.KLog
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
-import java.lang.reflect.Type
 
 
 class PNRouterServiceMessageReceiver
@@ -69,10 +68,20 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             }"PushMsg"-> {
             val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
             chatCallBack?.pushMsgRsp(JPushMsgRsp)
+            if(mainInfoBack == null)
+            {
+                AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
+            }
             mainInfoBack?.pushMsgRsp(JPushMsgRsp)
         }"PullMsg"-> {
             val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
             chatCallBack?.pullMsgRsp(JPullMsgRsp)
+        }"DelMsg"-> {
+            val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
+            chatCallBack?.delMsgRsp(JDelMsgRsp)
+        }"PushDelMsg"-> {
+            val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
+            chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
         }
         }
         messageListner?.onMessage(baseData)
@@ -216,6 +225,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delFriendPushRsp(jDelFriendPushRsp : JDelFriendPushRsp)
         fun firendList(jPullFriendRsp: JPullFriendRsp)
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
+        fun pushDelMsgRsp(delMsgPushRsp : JDelMsgPushRsp)
     }
     interface AddFriendDealCallBack {
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
@@ -234,6 +244,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun sendMsgRsp(sendMsgRsp : JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp : JPullMsgRsp)
+        fun delMsgRsp(delMsgRsp : JDelMsgRsp)
+        fun pushDelMsgRsp(delMsgPushRsp : JDelMsgPushRsp)
     }
     interface GlobalBack {
         fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)

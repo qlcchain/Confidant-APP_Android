@@ -39,6 +39,7 @@ class AppConfig : MultiDexApplication() {
     var mDaoMaster: DaoMaster? = null
 
     var isChatWithFirend:String? = null
+    var tempPushMsgList:ArrayList<JPushMsgRsp> = ArrayList<JPushMsgRsp>()
     var options = RequestOptions()
             .centerCrop()
             .transform(GlideCircleTransformMainColor(this))

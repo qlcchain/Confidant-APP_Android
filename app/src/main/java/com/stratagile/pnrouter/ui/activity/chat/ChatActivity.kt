@@ -30,6 +30,17 @@ import javax.inject.Inject;
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack {
+    override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
+        chatFragment?.delFreindMsg(delMsgPushRsp)
+    }
+
+    override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
+        if(delMsgRsp.params.retCode == 0)
+        {
+            chatFragment?.delMyMsg(delMsgRsp)
+        }
+    }
+
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
         var payloadBeanList : List<JPullMsgRsp.ParamsBean.PayloadBean> = pushMsgRsp.params.payload
@@ -51,7 +62,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
-        var aa = sendMsgRsp;
+        chatFragment?.upateMessage(sendMsgRsp)
         //todo
     }
 

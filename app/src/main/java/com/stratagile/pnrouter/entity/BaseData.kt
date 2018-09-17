@@ -164,7 +164,7 @@ data class PushMsgReq(var MsgId :Int, var RetCode : Int, var Msg : String, var A
  * 场景：用户A发起删除和自己好友用户B的会话记录，删除后，路由器上也不再保存
  * (1)	请求（APP->Router）
  */
-data class DelMsgReq(var UserId : String, var Friendid : String, var Action : String = "DelMsg")
+data class DelMsgReq(var UserId : String, var Friendid : String, var MsgId :Int,var Action : String = "DelMsg")
 
 /**
  * 13.	删除消息

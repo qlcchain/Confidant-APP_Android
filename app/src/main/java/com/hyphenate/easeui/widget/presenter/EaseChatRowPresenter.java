@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.presenter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.BaseAdapter;
 
 import com.hyphenate.chat.EMMessage;
@@ -43,7 +44,9 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
     @Override
     public void onBubbleClick(EMMessage message) {
     }
-
+    @Override
+    public void onBubbleLongClick(EMMessage message, View view) {
+    }
     @Override
     public void onDetachedFromWindow() {
     }

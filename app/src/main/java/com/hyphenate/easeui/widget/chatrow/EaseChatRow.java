@@ -37,6 +37,8 @@ public abstract class EaseChatRow extends LinearLayout {
 
         void onBubbleClick(EMMessage message);
 
+        void onBubbleLongClick(EMMessage message,View view);
+
         void onDetachedFromWindow();
     }
 
@@ -240,8 +242,8 @@ public abstract class EaseChatRow extends LinearLayout {
     
                 @Override
                 public boolean onLongClick(View v) {
-                    if (itemClickListener != null) {
-                        itemClickListener.onBubbleLongClick(message);
+                    if (itemActionCallback != null) {
+                        itemActionCallback.onBubbleLongClick(message,v);
                     }
                     return true;
                 }

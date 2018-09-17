@@ -28,6 +28,7 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.pawegio.kandroid.i
 import com.socks.library.KLog
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
@@ -44,12 +45,24 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack{
+    override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
+
+        var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+        conversation.removeMessage(delMsgPushRsp.params.msgId.toString())
+        if(ConstantValue.isInit)
+        {
+            conversationListFragment?.refresh()
+            ConstantValue.isRefeshed = true
+        }
+    }
+
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
 
@@ -248,6 +261,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
             ConstantValue.isInit = true
         }
+
 //        SpUtil.putString(this, ConstantValue.userId, "271D61D2976D9A06A7F07274D5198EB511C8A334ACC07844868A9C260233F15E80D50696CC76")
 //        bottomNavigation.enableAnimation(false)
 //        bottomNavigation.enableShiftingMode(false)
@@ -265,6 +279,36 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 {
                     userid -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid)) })
         //contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
+        if(AppConfig.instance.tempPushMsgList.size != 0)
+        {
+            Thread(Runnable(){
+                 run(){
+                    Thread.sleep(1000);
+                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
+                     {
+                         var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+                         message.setDirection(EMMessage.Direct.RECEIVE)
+                         message.from = pushMsgRsp.params.fromId
+                         message.to = pushMsgRsp.params.toId
+                         message.isUnread = true
+                         message.isAcked = true
+                         message.setStatus(EMMessage.Status.SUCCESS)
+                         conversation.insertMessage(message)
+                         if(ConstantValue.isInit)
+                         {
+                             conversationListFragment?.refresh()
+                             ConstantValue.isRefeshed = true
+                         }
+                     }
+                     AppConfig.instance.tempPushMsgList =  ArrayList<JPushMsgRsp>()
+                }
+            }).start()
+
+
+        }
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when(position) {
