@@ -112,6 +112,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
             conversation.insertMessage(message)
+            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
+            controlleMessageUnReadCount(UnReadMessageCount)
             if(ConstantValue.isInit)
             {
                 conversationListFragment?.refresh()
@@ -299,6 +301,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                          message.isAcked = true
                          message.setStatus(EMMessage.Status.SUCCESS)
                          conversation.insertMessage(message)
+                         var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
+                         controlleMessageUnReadCount(UnReadMessageCount)
                          if(ConstantValue.isInit)
                          {
                              conversationListFragment?.refresh()
@@ -380,12 +384,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
-        if (unReadMessageCount.messageCount == 0) {
-            unread_count.visibility = View.INVISIBLE
-            unread_count.text = ""
-        } else {
-            unread_count.visibility = View.VISIBLE
-            unread_count.text = ""
+        if(unread_count!= null)
+        {
+            if (unReadMessageCount.messageCount == 0) {
+                unread_count.visibility = View.INVISIBLE
+                unread_count.text = ""
+            } else {
+                unread_count.visibility = View.VISIBLE
+                unread_count.text = ""
+            }
         }
     }
 

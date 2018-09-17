@@ -367,6 +367,7 @@
     <string name="chats">Chats</string>
     <string name="private_faith">Private Faith</string>
     <string name="nomore">No more data</string>
+    <string name="withDraw">withDraw</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
     <string name="wait_for_verification">Wait for verification</string>

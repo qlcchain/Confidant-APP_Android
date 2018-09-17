@@ -19,8 +19,6 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
-import com.stratagile.pnrouter.entity.SendMsgReq;
-import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 /**
@@ -56,7 +54,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         if(fromID.equals(userId))
         {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
-            floatMenu.items(AppConfig.instance.getResources().getString(R.string.Revoke), AppConfig.instance.getResources().getString(R.string.cancel));
+            floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
             int[] loc1=new int[2];
             view.getLocationOnScreen(loc1);
             floatMenu.show(new Point(loc1[0],loc1[1]));

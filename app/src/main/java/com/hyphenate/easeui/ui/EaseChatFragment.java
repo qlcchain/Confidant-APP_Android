@@ -992,11 +992,42 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //EMClient.getInstance().chatManager().sendMessage(message);
         //message.setDirection(EMMessage.Direct.RECEIVE );
         message.setStatus(EMMessage.Status.SUCCESS);
-        conversation.insertMessage(message);
-        //refresh ui
-        if(isMessageListInited) {
-            messageList.refresh();
+        if(conversation == null)
+            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+        if(conversation != null)
+        {
+            conversation.insertMessage(message);
+            //refresh ui
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }else{
+            new Thread(new Runnable(){
+
+                public void run(){
+
+                    try
+                    {
+                        Thread.sleep(1000);
+                        if(conversation == null)
+                            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+                        if(conversation != null)
+                        {
+                            conversation.insertMessage(message);
+                            //refresh ui
+                            if(isMessageListInited) {
+                                messageList.refresh();
+                            }
+                        }
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+
+            }).start();
         }
+
         /*if(isMessageListInited) {
             messageList.refreshSelectLast();
         }*/
