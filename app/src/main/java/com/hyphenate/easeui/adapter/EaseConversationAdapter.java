@@ -170,7 +170,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
-        if (conversation.getAllMsgCount() != 0) {
+        if (lastMessage.isUnread()) {
             // show the content of latest message
             String content = null;
             if(cvsListHelper != null){
