@@ -215,12 +215,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      * refresh ui
      */
     public void refresh() {
-    	if(!handler.hasMessages(MSG_REFRESH)){
-    		handler.sendEmptyMessage(MSG_REFRESH);
-    	}
+
+        if(!handler.hasMessages(MSG_REFRESH)){
+            handler.sendEmptyMessage(MSG_REFRESH);
+        }
     }
     public void removeFriend()
     {
+        conversationList.clear();
         conversationList.addAll(loadConversationList());
         conversationListView.init(conversationList);
         refresh();

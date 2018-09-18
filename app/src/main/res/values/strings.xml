@@ -157,7 +157,7 @@
     <string name="register">Register</string>
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
-    <string name="wait"> please wait a moment</string>
+    <string name="wait">developing</string>
     <string name="mute">Mute</string>
     <string name="Hands_free">Hands free</string>
     <string name="hang_up">Hang up</string>
