@@ -137,8 +137,8 @@ public class FloatMenu extends PopupWindow{
 		for(int i = 0; i < menuItemList.size(); i ++){
 			TextView textView = new TextView(context);
 			textView.setClickable(true);
-			//textView.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.selector_item));
-			textView.setPadding(padding, padding+30, padding, padding+20);
+			//textView.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.shape_main_list_bg));
+			textView.setPadding(padding, padding+30, padding, padding+30);
 			textView.setWidth(itemWidth);
 			textView.setGravity(Gravity.CENTER_HORIZONTAL);
 			textView.setTextSize(11);
