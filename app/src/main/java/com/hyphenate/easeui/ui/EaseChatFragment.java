@@ -507,7 +507,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void delMyMsg(JDelMsgRsp jDelMsgRsp)
     {
-        conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+        if(conversation !=null )
+            conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
         //refresh ui
         if(isMessageListInited) {
             messageList.refresh();
@@ -518,7 +519,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
         EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
         forward_msg.addBody(var3);
-        conversation.updateMessage(forward_msg);
+        if(conversation !=null )
+            conversation.updateMessage(forward_msg);
         //conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
         //refresh ui
         if(isMessageListInited) {
@@ -908,9 +910,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void upateMessage(JSendMsgRsp jSendMsgRsp)
     {
-        conversation.removeMessage(currentSendMsg.getMsgId());
-        currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
-        conversation.insertMessage(currentSendMsg);
+        if(conversation !=null )
+        {
+            conversation.removeMessage(currentSendMsg.getMsgId());
+            currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+            conversation.insertMessage(currentSendMsg);
+        }
     }
     /**
      * send @ message, only support group chat message
