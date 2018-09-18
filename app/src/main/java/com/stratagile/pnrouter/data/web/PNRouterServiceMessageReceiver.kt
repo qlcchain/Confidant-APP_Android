@@ -91,6 +91,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             "PushDelMsg" -> {
                 val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
                 chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
+                mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
             }
         }
         messageListner?.onMessage(baseData)

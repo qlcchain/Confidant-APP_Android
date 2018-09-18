@@ -56,12 +56,17 @@ import kotlin.collections.ArrayList
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack {
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
 
-        var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-        conversation.removeMessage(delMsgPushRsp.params.msgId.toString())
-        if (ConstantValue.isInit) {
-            conversationListFragment?.refresh()
-            ConstantValue.isRefeshed = true
+        if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(delMsgPushRsp.params.friendId)) {
+            KLog.i("已经在聊天窗口了，不处理该条数据！")
+        }else{
+            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            conversation.removeMessage(delMsgPushRsp.params.msgId.toString())
+            if (ConstantValue.isInit) {
+                conversationListFragment?.refresh()
+                ConstantValue.isRefeshed = true
+            }
         }
+
     }
 
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
