@@ -87,7 +87,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter implements RxPop
                             break;
                         case 1:
                             break;
-                        case 3:
+                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
                             ConstantValue.INSTANCE.setMsgId(message.getMsgId());
