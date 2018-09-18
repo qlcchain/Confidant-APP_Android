@@ -160,9 +160,9 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             
             @Override 
             public boolean onTouch(View v, MotionEvent event) {
-                if(listener != null){
+                /*if(listener != null){
                     return listener.onPressToSpeakBtnTouch(v, event);
-                }
+                }*/
                 return false;
             }
         });
