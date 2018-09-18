@@ -466,12 +466,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(size > 0)
             currentPage ++;
         else {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getActivity(), R.string.nomore, Toast.LENGTH_SHORT).show();
-                }
-            }, 50);
+            if(currentPage !=0)
+            {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.nomore, Toast.LENGTH_SHORT).show();
+                    }
+                }, 50);
+            }
 
         }
         if(payloadBeanListTemp == null)
