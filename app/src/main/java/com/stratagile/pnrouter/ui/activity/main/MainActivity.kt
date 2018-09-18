@@ -64,9 +64,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if(conversation !=null)
             {
                 val forward_msg = EMClient.getInstance().chatManager().getMessage(delMsgPushRsp.params.msgId.toString())
-                val var3 = EMTextMessageBody(resources.getString(R.string.withdrawn))
-                forward_msg.addBody(var3)
-                conversation.updateMessage(forward_msg)
+                if(forward_msg != null)
+                {
+                    val var3 = EMTextMessageBody(resources.getString(R.string.withdrawn))
+                    forward_msg.addBody(var3)
+                    conversation.updateMessage(forward_msg)
+                }
             }
 
             if (ConstantValue.isInit) {
