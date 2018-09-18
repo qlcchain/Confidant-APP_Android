@@ -374,4 +374,5 @@
     <string name="agreed">Agreed</string>
     <string name="Revoke">Revoke</string>
     <string name="withdrawn">The message has been withdrawn</string>
+    <string name="copy_success">Copy success</string>
 </resources>

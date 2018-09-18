@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/RxTools-library" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/easeui" />
+            <option value="$PROJECT_DIR$/menu" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
