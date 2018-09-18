@@ -12,6 +12,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.message.Message
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
@@ -43,8 +44,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
-        var payloadBeanList : List<JPullMsgRsp.ParamsBean.PayloadBean> = pushMsgRsp.params.payload
-        chatFragment?.refreshData(payloadBeanList)
+        var messageList : List<Message> = pushMsgRsp.params.payload
+        chatFragment?.refreshData(messageList)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {

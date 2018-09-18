@@ -10,6 +10,10 @@
         <item name="android:windowEnterAnimation">@anim/open_top_left</item>
         <item name="android:windowExitAnimation">@anim/close_top_left</item>
     </style>
+    <style name="Animation_fade">
+        <item name="android:windowEnterAnimation">@anim/open_fade</item>
+        <item name="android:windowExitAnimation">@anim/close_fade</item>
+    </style>
 
     <style name="Animation_bottom_left">
         <item name="android:windowEnterAnimation">@anim/open_bottom_left</item>

@@ -61,7 +61,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         if (jDelFriendCmdRsp.params.retCode == 0) {
             userInfo!!.friendStatus = 6
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
-            EventBus.getDefault().post(FriendChange())
+            EventBus.getDefault().post(FriendChange(userInfo!!.userId))
         }
         runOnUiThread {
             closeProgressDialog()

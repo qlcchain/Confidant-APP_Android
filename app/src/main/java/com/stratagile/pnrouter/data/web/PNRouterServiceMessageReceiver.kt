@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.message.MessageProvider
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
@@ -82,6 +83,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             //拉取某个好友的消息,一次十条
             "PullMsg" -> {
                 val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
+                MessageProvider.getInstance().addMessage(JPullMsgRsp.params.payload)
                 chatCallBack?.pullMsgRsp(JPullMsgRsp)
             }
             "DelMsg" -> {

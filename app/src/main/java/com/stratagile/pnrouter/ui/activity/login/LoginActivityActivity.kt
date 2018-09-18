@@ -178,12 +178,27 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver!!.loginBackListener = null
-        myAuthCallback = null
-        cancellationSignal = null
-        builderTips = null
+        if (cancellationSignal != null) {
+            cancellationSignal!!.cancel()
+            cancellationSignal = null
+        }
+        if (builderTips != null) {
+            builderTips?.dismiss()
+            builderTips = null
+        }
+        if (myAuthCallback != null) {
+            myAuthCallback?.removeHandle()
+            myAuthCallback = null
+        }
+        if (handler != null) {
+            handler?.removeCallbacksAndMessages(null)
+        }
+        if (handler != null) {
+            handler = null
+        }
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

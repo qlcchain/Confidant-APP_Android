@@ -3,7 +3,7 @@
      <dimen name="height_top_bar">66dp</dimen>
     <dimen name="padding_search_bar">5dp</dimen>
     <dimen name="height_row_weixin">59dp</dimen>
-    <dimen name="size_avatar">40dp</dimen>
+    <dimen name="size_avatar">35dp</dimen>
     <dimen name="size_avatar2">48dp</dimen>
     <dimen name="margin_chat_activity2">4dp</dimen>
     <dimen name="margin_chat_activity">5dp</dimen>

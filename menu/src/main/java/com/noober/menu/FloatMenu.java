@@ -268,7 +268,7 @@ public class FloatMenu extends PopupWindow{
 			setBackgroundDrawable(new BitmapDrawable());
 		}
 
-		setAnimationStyle(R.style.Animation_top_left);
+		setAnimationStyle(R.style.Animation_fade);
 		showAtLocation(view, ANCHORED_GRAVITY, clickX , clickY + VERTICAL_OFFSET);
 
 	}

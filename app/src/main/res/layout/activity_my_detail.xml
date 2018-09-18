@@ -29,6 +29,7 @@
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/ivAvatar"
             android:layout_marginRight="@dimen/x24"
+            app:imageButtonTextSize="12"
             android:layout_width="@dimen/x50"
             android:layout_height="@dimen/x50" />
         <ImageView

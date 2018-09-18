@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -73,6 +72,7 @@ import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
+import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
@@ -156,7 +156,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     // "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
     private boolean turnOnTyping;
 
-    List<JPullMsgRsp.ParamsBean.PayloadBean> payloadBeanListTemp;
+    List<Message> messageListTemp;
 
     private  int currentPage = 0;
     private int MsgStartId = 0;
@@ -275,7 +275,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         // to handle during-typing actions.
         typingHandler = new Handler() {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
                     case MSG_TYPING_BEGIN: // Notify typing start
 
@@ -445,7 +445,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
     }
-    public void  refreshData(List<JPullMsgRsp.ParamsBean.PayloadBean> payloadBeanList)
+    public void  refreshData(List<Message> messageList)
     {
         if(conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
@@ -456,7 +456,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
         }
-        int size = payloadBeanList.size();
+        int size = messageList.size();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -477,30 +477,30 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
         }
-        if(payloadBeanListTemp == null)
+        if(messageListTemp == null)
         {
-            payloadBeanListTemp = payloadBeanList;
+            messageListTemp = messageList;
         }
         String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         for(int i= 0 ; i < size ;i++)
         {
-            JPullMsgRsp.ParamsBean.PayloadBean PayloadBean = payloadBeanList.get(i);
-            EMMessage message = EMMessage.createTxtSendMessage(PayloadBean.getMsg(), toChatUserId);
-            message.setFrom(PayloadBean.getFrom());
-            message.setTo(PayloadBean.getTo());
+            Message Message = messageList.get(i);
+            EMMessage message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+            message.setFrom(Message.getFrom());
+            message.setTo(Message.getTo());
             message.setUnread(false);
-            if(PayloadBean.getFrom().equals(userId))
+            if(Message.getFrom().equals(userId))
             {
                 message.setDirection(EMMessage.Direct.SEND );
             }else {
                 message.setDirection(EMMessage.Direct.RECEIVE );
             }
-            message.setMsgTime(PayloadBean.getTimeStatmp()* 1000);
+            message.setMsgTime(Message.getTimeStatmp()* 1000);
             if(i == 0)
             {
-                MsgStartId = PayloadBean.getMsgId();
+                MsgStartId = Message.getMsgId();
             }
-            message.setMsgId( PayloadBean.getMsgId()+"");
+            message.setMsgId( Message.getMsgId()+"");
             sendMessage(message);
         }
 

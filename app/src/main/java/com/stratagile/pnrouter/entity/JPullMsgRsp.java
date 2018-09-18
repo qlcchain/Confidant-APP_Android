@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.message.Message;
+
 import java.util.List;
 
 public class JPullMsgRsp extends BaseEntity {
@@ -29,7 +31,7 @@ public class JPullMsgRsp extends BaseEntity {
         private String Action;
         private int RetCode;
         private int MsgNum;
-        private List<PayloadBean> Payload;
+        private List<Message> Payload;
 
         public String getAction() {
             return Action;
@@ -55,78 +57,12 @@ public class JPullMsgRsp extends BaseEntity {
             this.MsgNum = MsgNum;
         }
 
-        public List<PayloadBean> getPayload() {
+        public List<Message> getPayload() {
             return Payload;
         }
 
-        public void setPayload(List<PayloadBean> Payload) {
+        public void setPayload(List<Message> Payload) {
             this.Payload = Payload;
-        }
-
-        public static class PayloadBean {
-            /**
-             * MsgId : 1537001926
-             * MsgType : 1
-             * TimeStatmp : 1537001926
-             * From : 8A9A37275400CE381F80C738235440350FB8322824988565DED2793AE83BFF377F0D95AC5A74
-             * To : 8EDE2DD3C5A84F14A386155233AE44AD1DB9752DF9FE744A562548A896A30913BCB70A123ADE
-             * Msg : [发怒][调皮][调皮][调皮]
-             */
-
-            private int MsgId;
-            private int MsgType;
-            private long TimeStatmp;
-            private String From;
-            private String To;
-            private String Msg;
-
-            public int getMsgId() {
-                return MsgId;
-            }
-
-            public void setMsgId(int MsgId) {
-                this.MsgId = MsgId;
-            }
-
-            public int getMsgType() {
-                return MsgType;
-            }
-
-            public void setMsgType(int MsgType) {
-                this.MsgType = MsgType;
-            }
-
-            public long getTimeStatmp() {
-                return TimeStatmp;
-            }
-
-            public void setTimeStatmp(long TimeStatmp) {
-                this.TimeStatmp = TimeStatmp;
-            }
-
-            public String getFrom() {
-                return From;
-            }
-
-            public void setFrom(String From) {
-                this.From = From;
-            }
-
-            public String getTo() {
-                return To;
-            }
-
-            public void setTo(String To) {
-                this.To = To;
-            }
-
-            public String getMsg() {
-                return Msg;
-            }
-
-            public void setMsg(String Msg) {
-                this.Msg = Msg;
-            }
         }
     }
 }

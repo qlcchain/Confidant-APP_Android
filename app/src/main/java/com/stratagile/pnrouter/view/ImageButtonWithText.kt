@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.os.Environment
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -40,12 +41,17 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             .priority(Priority.HIGH)
 
     init {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.ImageButtonWithText)
         val view = LayoutInflater.from(context).inflate(R.layout.image_button_with_text, this, true)
+        val textSize = a.getFloat(R.styleable.ImageButtonWithText_imageButtonTextSize, 16F)
         /**
          * Recycle the TypedArray, to be re-used by a later caller. After calling
          * this function you must not ever touch the typed array again.
          */
         imageView = view.findViewById(R.id.ibIv)
+
+        a.recycle()
+
 
         /**
          * Sets a drawable as the content of this ImageView.
@@ -61,6 +67,8 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
         textView = view.findViewById(R.id.ibTv)
         textView.background = getContext().resources.getDrawable(R.drawable.nick_text_bg)
+
+        setTextSize(textSize)
         /**
          * Sets the horizontal alignment of the text and the
          * vertical gravity that will be used when there is extra space
@@ -116,6 +124,10 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                     .apply(AppConfig.instance.options)
                     .into(imageView)
         }
+    }
+
+    fun setTextSize(size : Float) {
+        textView.setTextSize(size)
     }
 
     fun setImageFile(url: String) {

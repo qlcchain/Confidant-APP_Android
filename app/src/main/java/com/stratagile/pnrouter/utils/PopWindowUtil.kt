@@ -7,8 +7,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.TextView
-import androidx.core.widget.toast
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.pawegio.kandroid.toast
@@ -42,7 +40,7 @@ object PopWindowUtil {
     fun showPopWindow(activity: Activity, showView: View, clickListener: View.OnClickListener, tipContentStr: String, comfirmContent: String = "", cancalContent: String = "") {
         //        View maskView = LayoutInflater.from(activity).inflate(R.layout.confirm_cancal_layout, null);
         //        View contentView = maskView.findViewById(R.id.ll_popup);
-        //        maskView.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_in));
+        //        maskView.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.open_fade));
         //        contentView.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in));
         //        //对具体的view的事件的处理
         //        TextView confirm = (TextView) maskView.findViewById(R.id.bt_confirm);
@@ -88,7 +86,7 @@ object PopWindowUtil {
     fun showSharePopWindow(activity: Activity, showView: View) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.share_pop_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
         contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
@@ -137,7 +135,7 @@ object PopWindowUtil {
     fun showSelectRouterPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnRouterSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.select_router_pop_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
         contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)

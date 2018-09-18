@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.PushMsgReq
+import com.stratagile.pnrouter.message.MessageProvider
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.tencent.bugly.crashreport.CrashReport
 
@@ -54,6 +55,7 @@ class AppConfig : MultiDexApplication() {
         setupApplicationComponent()
         CrashReport.initCrashReport(this, "22ae8f7fc8 ", true)
         setDatabase()
+        MessageProvider.getInstance()
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{

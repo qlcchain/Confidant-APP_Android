@@ -190,7 +190,7 @@ public class CustomPopWindow {
         } else {
             contentView.setVisibility(View.GONE);
             contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
-            mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
+            mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.close_fade));
             dismissHandler.sendEmptyMessageDelayed(0, 200);
         }
     }

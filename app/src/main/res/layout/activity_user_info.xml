@@ -33,9 +33,10 @@
 
     <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/avatar"
-        android:layout_width="@dimen/x124"
-        android:layout_height="@dimen/x124"
+        android:layout_width="@dimen/x100"
+        android:layout_height="@dimen/x100"
         android:layout_marginEnd="@dimen/x30"
+        app:imageButtonTextSize="24"
         android:layout_marginTop="@dimen/x46"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

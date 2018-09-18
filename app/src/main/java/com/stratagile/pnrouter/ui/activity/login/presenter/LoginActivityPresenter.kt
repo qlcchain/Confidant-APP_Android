@@ -62,7 +62,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Logi
                 .start()
     }
 
-    private val permission = object : PermissionListener {
+    private var permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
             // 权限申请成功回调。
             if (requestCode == 101) {

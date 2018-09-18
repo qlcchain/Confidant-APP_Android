@@ -33,5 +33,6 @@
 
     <declare-styleable name="ImageButtonWithText">
         <attr name="picture" format="reference"/>
+        <attr name="imageButtonTextSize" format="float"/>
     </declare-styleable>
 </resources>
