@@ -109,6 +109,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         // get username or group id
         String conversationId = conversation.conversationId();
         EMMessage lastMessage = conversation.getLastMessage();
+        if(lastMessage == null)
+        {
+            return convertView;
+        }
         UserEntity friendUser = null;
         List<UserEntity> localFriendList = null;
         if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))

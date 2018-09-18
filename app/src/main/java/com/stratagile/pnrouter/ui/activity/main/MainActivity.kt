@@ -23,6 +23,7 @@ import android.widget.LinearLayout
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMConversation
 import com.hyphenate.chat.EMMessage
+import com.hyphenate.chat.EMTextMessageBody
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
@@ -61,7 +62,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else{
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             if(conversation !=null)
-                conversation.removeMessage(delMsgPushRsp.params.msgId.toString())
+            {
+                val forward_msg = EMClient.getInstance().chatManager().getMessage(delMsgPushRsp.params.msgId.toString())
+                val var3 = EMTextMessageBody(resources.getString(R.string.withdrawn))
+                forward_msg.addBody(var3)
+                conversation.updateMessage(forward_msg)
+            }
+
             if (ConstantValue.isInit) {
                 conversationListFragment?.refresh()
                 ConstantValue.isRefeshed = true
@@ -139,7 +146,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
                 }
-                EventBus.getDefault().post(FriendChange())
+                EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
                 return
             }
         }
@@ -211,7 +218,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         toast("点击啦。。。。哈哈哈")
         showProgressDialog()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun friendChange(friendChange: FriendChange) {
+      if(friendChange.userId != null && !friendChange.userId.equals(""))
+      {
+          var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendChange.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+          if(conversation !=null)
+          {
+              conversation.clearAllMessages()
+              if (ConstantValue.isInit) {
+                  conversationListFragment?.removeFriend()
+                  ConstantValue.isRefeshed = true
+              }
+          }
+      }
+    }
     @Inject
     internal lateinit var mPresenter: MainPresenter
 

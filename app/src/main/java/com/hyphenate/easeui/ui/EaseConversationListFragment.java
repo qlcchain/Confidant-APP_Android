@@ -219,7 +219,12 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     		handler.sendEmptyMessage(MSG_REFRESH);
     	}
     }
-    
+    public void removeFriend()
+    {
+        conversationList.addAll(loadConversationList());
+        conversationListView.init(conversationList);
+        refresh();
+    }
     /**
      * load conversation list
      * 
