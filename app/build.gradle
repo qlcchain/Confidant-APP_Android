@@ -32,6 +32,9 @@ android {
         buildConfigField "String", "USER_AGENT", "\"lws-minimal\""
         buildConfigField "String", "SIGNAL_URL", "\"https://47.96.76.184:18006/\""
         buildConfigField "String", "SIGNAL_CDN_URL", "\"https://47.96.76.184:18006/\""
+        ndk {
+            abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
+        }
 
     }
     buildTypes {
@@ -53,9 +56,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlin {
+        experimental {
+            coroutines 'enable'
+        }
+    }
 }
 greendao {
-    schemaVersion 6//数据库版本号
+    schemaVersion 7//数据库版本号
     daoPackage 'com.stratagile.pnrouter.db'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
     //targetGenDirTest：设置生成单元测试目录
@@ -124,4 +133,7 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport:2.6.6.1'
     implementation 'com.tencent.bugly:nativecrashreport:3.3.1'
     implementation 'com.lzy.widget:view-core:0.1.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.20'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.20'
+    implementation files('libs/wowoviewpager.aar')
 }

@@ -13,6 +13,7 @@ object ConstantValue {
         var username = "username"
         var routerId = "routerId"
         var selfImageName = "selfImageName"
-        var msgId = "";
+        var msgId = ""
+        var LOCALVERSIONCODE = "localversioncode"
 
 }

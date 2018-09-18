@@ -25,6 +25,11 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
+
     <application
         android:name=".application.AppConfig"
         android:allowBackup="true"
@@ -99,6 +104,8 @@
         <activity
             android:name=".ui.activity.user.UserInfoActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.main.LogActivity" />
+        <activity android:name=".ui.activity.main.GuestActivity" />
 
         <!-- 设置环信应用的appkey -->
         <meta-data

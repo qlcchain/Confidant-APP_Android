@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.socks.library.KLog
 import com.hyphenate.easeui.EaseConstant
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -23,6 +24,10 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_user_info.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -39,6 +44,7 @@ import javax.inject.Inject;
 class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceMessageReceiver.DelFriendCallBack, PNRouterServiceMessageReceiver.AddfrendCallBack {
 
     override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
+        standaloneCoroutine.cancel()
         userInfo!!.friendStatus = 1
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
         KLog.i(addFriendRsp.baseDataToJson())
@@ -86,6 +92,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
     internal lateinit var mPresenter: UserInfoPresenter
 
     var userInfo : UserEntity? = null
+
+    var opreateBack = false
+
+    lateinit var standaloneCoroutine : Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,6 +216,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         var login = AddFriendReq( selfUserId!!, nickName!!, userInfo!!.userId)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         showProgressDialog()
+        standaloneCoroutine = launch(CommonPool) {
+            delay(10000)
+            if (!opreateBack) {
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast("time out")
+                }
+            }
+        }
     }
 
     override fun setupActivityComponent() {

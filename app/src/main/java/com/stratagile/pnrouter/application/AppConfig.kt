@@ -52,7 +52,7 @@ class AppConfig : MultiDexApplication() {
         EMClient.getInstance().setDebugMode(true);
         instance = this
         setupApplicationComponent()
-        CrashReport.initCrashReport(this, "22ae8f7fc8 ", BuildConfig.LOG_DEBUG)
+        CrashReport.initCrashReport(this, "22ae8f7fc8 ", true)
         setDatabase()
     }
 

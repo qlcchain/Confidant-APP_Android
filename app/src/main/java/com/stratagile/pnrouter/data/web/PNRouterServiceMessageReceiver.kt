@@ -18,90 +18,99 @@ class PNRouterServiceMessageReceiver
  */
 constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
 
-    override fun onMessage(baseData: BaseData, text :String?) {
-        KLog.i(baseData.baseDataToJson())
-        KLog.i(baseData.params.toString())
+    override fun onMessage(baseData: BaseData, text: String?) {
+//        KLog.i(baseData.baseDataToJson())
+//        KLog.i(baseData.params.toString())
         var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
-        KLog.i(paramsStr)
         when (JSONObject.parseObject(paramsStr).getString("Action")) {
             "Login" -> {
-                val loginRsp  = gson.fromJson(text, JLoginRsp::class.java)
+                val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
             }
             "AddFriendReq" -> {
-                val addFreindRsp  = gson.fromJson(text, JAddFreindRsp::class.java)
+                val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
                 KLog.i(addFreindRsp.toString())
                 addfrendCallBack?.addFriendBack(addFreindRsp)
             }
-            "AddFriendPush"-> {
-                val addFreindPusRsp  = gson.fromJson(text, JAddFriendPushRsp::class.java)
+            //对方要加我为好友，服务器给我推送的好友请求
+            "AddFriendPush" -> {
+                val addFreindPusRsp = gson.fromJson(text, JAddFriendPushRsp::class.java)
                 KLog.i(addFreindPusRsp.toString())
                 mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
             }
-            "AddFriendDeal"-> {
+            //添加好友，对方处理的结果的推送
+            "AddFriendDeal" -> {
                 val addFriendDealRsp = gson.fromJson(text, JAddFriendDealRsp::class.java)
                 addFriendDealCallBack?.addFriendDealRsp(addFriendDealRsp)
             }
-            "AddFriendReply"-> {
+            //添加好友的返回
+            "AddFriendReply" -> {
                 val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
                 mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
             }
-        //删除对方，服务器返回是否操作成功
-            "DelFriendCmd"-> {
+            //删除对方，服务器返回是否操作成功
+            "DelFriendCmd" -> {
                 val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
                 delFriendCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
             }
-        //对方删除我，服务器给我推送消息
-            "DelFriendPush"-> {
+            //对方删除我，服务器给我推送消息
+            "DelFriendPush" -> {
                 val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
                 mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
             }
-            "PullFriend"-> {
+            //拉取好友列表
+            "PullFriend" -> {
                 val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
                 pullFriendCallBack?.firendList(jPullFriendRsp)
             }
-            "SendMsg"-> {
+            //发送消息服务器给的返回，代表消息服务器已经收到
+            "SendMsg" -> {
                 val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
                 chatCallBack?.sendMsgRsp(JSendMsgRsp)
-            }"PushMsg"-> {
-            val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
-            chatCallBack?.pushMsgRsp(JPushMsgRsp)
-            if(mainInfoBack == null)
-            {
-                AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
             }
-            mainInfoBack?.pushMsgRsp(JPushMsgRsp)
-        }"PullMsg"-> {
-            val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
-            chatCallBack?.pullMsgRsp(JPullMsgRsp)
-        }"DelMsg"-> {
-            val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
-            chatCallBack?.delMsgRsp(JDelMsgRsp)
-        }"PushDelMsg"-> {
-            val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
-            chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
-        }
+            //服务器推送过来的别人的消息
+            "PushMsg" -> {
+                val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
+                chatCallBack?.pushMsgRsp(JPushMsgRsp)
+                if (mainInfoBack == null) {
+                    AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
+                }
+                mainInfoBack?.pushMsgRsp(JPushMsgRsp)
+            }
+            //拉取某个好友的消息,一次十条
+            "PullMsg" -> {
+                val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
+                chatCallBack?.pullMsgRsp(JPullMsgRsp)
+            }
+            "DelMsg" -> {
+                val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
+                chatCallBack?.delMsgRsp(JDelMsgRsp)
+            }
+            "PushDelMsg" -> {
+                val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
+                chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
+            }
         }
         messageListner?.onMessage(baseData)
     }
 
 
-
 //    private val socket: PushServiceSocket
 
-    var  pipe : SignalServiceMessagePipe? = null
-    var messageListner : MessageReceivedCallback? = null
-    var loginBackListener : LoginMessageCallback? = null
-    var addfrendCallBack : AddfrendCallBack? = null
-    var mainInfoBack : MainInfoBack? = null
-    var addFriendDealCallBack : AddFriendDealCallBack? = null
-    var chatCallBack : ChatCallBack? = null
+    var pipe: SignalServiceMessagePipe? = null
+    var messageListner: MessageReceivedCallback? = null
+    var loginBackListener: LoginMessageCallback? = null
+    var addfrendCallBack: AddfrendCallBack? = null
+    var mainInfoBack: MainInfoBack? = null
+    var addFriendDealCallBack: AddFriendDealCallBack? = null
+    var chatCallBack: ChatCallBack? = null
 
-    var delFriendCallBack : DelFriendCallBack? = null
+    var delFriendCallBack: DelFriendCallBack? = null
 
-    var pullFriendCallBack : PullFriendCallBack? = null
+    var pullFriendCallBack: PullFriendCallBack? = null
+
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -204,7 +213,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息
      */
     interface MessageReceivedCallback {
-        fun onMessage(baseData : BaseData)
+        fun onMessage(baseData: BaseData)
     }
 
     class NullMessageReceivedCallback : MessageReceivedCallback {
@@ -212,21 +221,22 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     interface LoginMessageCallback {
-        fun loginBack(loginRsp : JLoginRsp)
+        fun loginBack(loginRsp: JLoginRsp)
     }
 
     interface AddfrendCallBack {
-        fun addFriendBack(addFriendRsp : JAddFreindRsp)
+        fun addFriendBack(addFriendRsp: JAddFreindRsp)
     }
 
     interface MainInfoBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
-        fun addFriendReplyRsp(jAddFriendReplyRsp : JAddFriendReplyRsp)
-        fun delFriendPushRsp(jDelFriendPushRsp : JDelFriendPushRsp)
+        fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
+        fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp)
         fun firendList(jPullFriendRsp: JPullFriendRsp)
-        fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
-        fun pushDelMsgRsp(delMsgPushRsp : JDelMsgPushRsp)
+        fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
+        fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
     }
+
     interface AddFriendDealCallBack {
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
     }
@@ -240,15 +250,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     interface ChatCallBack {
-        fun sendMsg(FromId:String,ToId:String,Msg:String);
-        fun sendMsgRsp(sendMsgRsp : JSendMsgRsp)
-        fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
-        fun pullMsgRsp(pushMsgRsp : JPullMsgRsp)
-        fun delMsgRsp(delMsgRsp : JDelMsgRsp)
-        fun pushDelMsgRsp(delMsgPushRsp : JDelMsgPushRsp)
+        fun sendMsg(FromId: String, ToId: String, Msg: String);
+        fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
+        fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
+        fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
+        fun delMsgRsp(delMsgRsp: JDelMsgRsp)
+        fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
     }
+
     interface GlobalBack {
-        fun pushMsgRsp(pushMsgRsp : JPushMsgRsp)
+        fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
     }
 }
 

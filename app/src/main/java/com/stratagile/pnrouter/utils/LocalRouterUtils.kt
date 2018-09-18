@@ -122,6 +122,7 @@ object LocalRouterUtils {
                                             {
                                                 myRouter.getRouterEntity().setRouterName(routerEntity.routerName)
                                             }
+                                            myRouter.getRouterEntity().setLastCheck(routerEntity.lastCheck)
                                             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(myRouter.getRouterEntity())
                                         }
                                     }

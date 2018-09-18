@@ -5,6 +5,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 import com.stratagile.pnrouter.data.service.MessageRetrievalService.pipe
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import io.reactivex.annotations.SchedulerSupport.CUSTOM
 import java.io.IOException
@@ -75,7 +76,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         if (toSendMessage.isNotEmpty()) {
             var message = toSendMessage.poll()
             Log.i("ServiceMessageSender", message.baseDataToJson().replace("\\", ""))
-            pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
+            LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
+            var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
+            LogUtil.addLog("发送结果：${reslut}")
         } else {
 
         }

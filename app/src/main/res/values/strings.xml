@@ -2,7 +2,7 @@
     <string name="app_name">PP Messager</string>
     <string name="loading">loading...</string>
     <string name="apploading">loading...</string>
-    <string name="news">News</string>
+    <string name="news">Chats</string>
     <string name="file_">Files</string>
     <string name="contacts">Contacts</string>
     <string name="my">Me</string>
@@ -157,7 +157,7 @@
     <string name="register">Register</string>
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
-    <string name="wait">developing</string>
+    <string name="wait"> please wait a moment</string>
     <string name="mute">Mute</string>
     <string name="Hands_free">Hands free</string>
     <string name="hang_up">Hang up</string>
@@ -358,7 +358,7 @@
 
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
-    <string name="setting_">Setting</string>
+    <string name="setting_">Settings</string>
     <string name="scan_qr_code_to_add_me">Scan QR code to add me</string>
     <string name="delete_contact">Delete Contact</string>
     <string name="send_a_message">Send a message</string>
@@ -373,6 +373,11 @@
     <string name="wait_for_verification">Wait for verification</string>
     <string name="agreed">Agreed</string>
     <string name="Revoke">Revoke</string>
+    <string name="next">Next</string>
+    <string name="guest_viewpager_1">Safeguard your privacy using PP Messenger,\n via the PP Router secure channel.</string>
+    <string name="guest_viewpager_2">Use PP Messenger in the same WiFi \n environment as PP Router</string>
+    <string name="guest_viewpager_3">Get your public key QR Code \n Scan the QR Code on PP Messenger, \n connect your messenger to the PP Router</string>
+    <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
 </resources>

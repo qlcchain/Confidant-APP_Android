@@ -27,6 +27,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         public final static Property Username = new Property(2, String.class, "username", false, "USERNAME");
         public final static Property UserId = new Property(3, String.class, "userId", false, "USER_ID");
         public final static Property RouterName = new Property(4, String.class, "routerName", false, "ROUTER_NAME");
+        public final static Property LastCheck = new Property(5, boolean.class, "lastCheck", false, "LAST_CHECK");
     }
 
 
@@ -46,7 +47,8 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
                 "\"ROUTER_ID\" TEXT," + // 1: routerId
                 "\"USERNAME\" TEXT," + // 2: username
                 "\"USER_ID\" TEXT," + // 3: userId
-                "\"ROUTER_NAME\" TEXT);"); // 4: routerName
+                "\"ROUTER_NAME\" TEXT," + // 4: routerName
+                "\"LAST_CHECK\" INTEGER NOT NULL );"); // 5: lastCheck
     }
 
     /** Drops the underlying database table. */
@@ -83,6 +85,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         if (routerName != null) {
             stmt.bindString(5, routerName);
         }
+        stmt.bindLong(6, entity.getLastCheck() ? 1L: 0L);
     }
 
     @Override
@@ -113,6 +116,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         if (routerName != null) {
             stmt.bindString(5, routerName);
         }
+        stmt.bindLong(6, entity.getLastCheck() ? 1L: 0L);
     }
 
     @Override
@@ -127,7 +131,8 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // routerId
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // username
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // userId
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // routerName
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // routerName
+            cursor.getShort(offset + 5) != 0 // lastCheck
         );
         return entity;
     }
@@ -139,6 +144,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         entity.setUsername(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setUserId(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setRouterName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setLastCheck(cursor.getShort(offset + 5) != 0);
      }
     
     @Override

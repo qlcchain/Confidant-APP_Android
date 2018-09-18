@@ -8,11 +8,14 @@ import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.LocalRouterUtils
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.VersionUtil
 import com.yanzhenjie.alertdialog.AlertDialog
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
@@ -37,7 +40,6 @@ import kotlin.math.log
 class SplashPresenter @Inject
 constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: SplashContract.View) : SplashContract.SplashContractPresenter {
     private val mCompositeDisposable: CompositeDisposable
-    private val JUMPTOMAIN = 0
     private val JUMPTOLOGIN = 1
     private val HASPUDATE = 3
     private val getLastVersionBack = false
@@ -53,6 +55,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
 
     override fun getLastVersion() {
         Log.i("splash", "1")
+        if (SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0) !== VersionUtil.getAppVersionCode(AppConfig.instance)) {
+            KLog.i("需要跳转到guest.........................")
+            KLog.i(SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0))
+            KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
+            jumpToGuest = true
+        }
     }
 
     override fun getPermission() {
@@ -98,9 +106,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                             mView.jumpToGuest()
                             return
                         }
-                        if (jump == JUMPTOMAIN) {
-                            mView.loginSuccees()
-                        } else if (jump == JUMPTOLOGIN) {
+                        if (jump == JUMPTOLOGIN) {
                             mView.jumpToLogin()
                         }
                     }
@@ -133,9 +139,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                         mView.jumpToGuest()
                         return
                     }
-                    if (jump == JUMPTOMAIN) {
-                        mView.loginSuccees()
-                    } else if (jump == JUMPTOLOGIN) {
+                    else if (jump == JUMPTOLOGIN) {
                         mView.jumpToLogin()
                     }
                 }
@@ -152,9 +156,6 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     if (jumpToGuest) {
                         mView.jumpToGuest()
                         return
-                    }
-                    if (jump == JUMPTOMAIN) {
-                        mView.loginSuccees()
                     } else if (jump == JUMPTOLOGIN) {
                         mView.jumpToLogin()
                     }

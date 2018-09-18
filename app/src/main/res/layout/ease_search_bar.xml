@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:paddingTop="7dp"
     android:paddingBottom="7dp"
-    android:background="#ededed"
+    android:background="@color/white"
     android:paddingLeft="@dimen/padding_search_bar"
     android:paddingRight="@dimen/padding_search_bar">
 
@@ -16,8 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:background="@drawable/ease_seabar_input"
-        android:drawableLeft="@drawable/ease_search_bar_icon_normal"
+        android:background="@drawable/search_background"
+        android:drawableLeft="@mipmap/icon_search"
+        android:drawablePadding="@dimen/x17"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:textColorHint="#8C8C8C"

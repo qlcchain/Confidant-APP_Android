@@ -12,6 +12,7 @@ import com.google.protobuf.InvalidProtocolBufferException
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.MessageRetrievalService.pipe
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos
 import okhttp3.*
 import java.util.*
@@ -37,10 +38,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
 import com.stratagile.pnrouter.entity.LoginRspWrapper
-import com.stratagile.pnrouter.utils.GsonUtil
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.WiFiUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.security.SecureRandom
@@ -185,7 +183,9 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         if (keepAliveSender != null && client != null) {
             //todo keepalive message
             var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
-            send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+            LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
+            var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+            LogUtil.addLog("发送结果：${reslut}")
             KLog.i("心跳消息为：：")
             KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
@@ -195,6 +195,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         if (client != null && keepAliveSender == null) {
             KLog.i("onConnected()")
+            KLog.i(client!!.request().url())
+            LogUtil.addLog("连接成功：${client!!.request().url()}")
             attempts = 0
             connected = true
             retryTime = 0
@@ -214,6 +216,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.w(TAG, "onMessage(text)! " + text!!)
+        LogUtil.addLog("接收信息：${text}")
         try {
             val gson = GsonUtil.getIntGson()
             var baseData = gson.fromJson(text, BaseData::class.java)
@@ -415,6 +418,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     }
                     //测试服务器，测试用
                     if (retryTime >=3) {
+                        KLog.i("重连次数过多，切换公网服务器连接。。")
                         filledUri = wsUri
                     }
                     if (client != null) {

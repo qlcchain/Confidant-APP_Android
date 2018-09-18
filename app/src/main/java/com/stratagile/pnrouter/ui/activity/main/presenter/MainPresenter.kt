@@ -27,7 +27,7 @@ import io.reactivex.disposables.CompositeDisposable
 class MainPresenter @Inject
 constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: MainContract.View) : MainContract.MainContractPresenter {
     override fun sendMessage(message: String) {
-        signalServiceMessageReceiver.createMessagePipe().webSocketConnection().send(message)
+//        signalServiceMessageReceiver.createMessagePipe().webSocketConnection().send(message)
     }
 
     override fun showToast() {

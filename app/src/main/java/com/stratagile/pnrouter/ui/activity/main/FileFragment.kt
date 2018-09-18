@@ -44,7 +44,7 @@ class FileFragment : BaseFragment(), FileContract.View {
         super.onViewCreated(view, savedInstanceState)
         var titles = ArrayList<String>()
         titles.add("ALL Files")
-        titles.add("Received files")
+        titles.add("Received Files")
         titles.add("Sent Files")
         viewPager.setAdapter(object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {

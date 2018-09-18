@@ -19,13 +19,9 @@
             android:layout_height="wrap_content">
             <include
                 android:id="@+id/include"
-                layout="@layout/search_layout"
+                layout="@layout/ease_search_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/x10"
-                android:layout_marginLeft="@dimen/x30"
-                android:layout_marginRight="@dimen/x30"
-                android:layout_marginTop="@dimen/x10" />
+                android:layout_height="wrap_content" />
         </FrameLayout>
 
         <TextView

@@ -220,4 +220,8 @@ abstract class BaseActivity : SwipeBackActivity(), ActivityDelegate {
 
     }
 
+    fun showProgressDialog(text: String) {
+        progressDialog.setDialogText(text)
+        progressDialog.show()
+    }
 }

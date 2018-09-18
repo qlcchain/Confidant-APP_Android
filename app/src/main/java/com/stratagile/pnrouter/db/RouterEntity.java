@@ -14,14 +14,17 @@ public class RouterEntity {
     private String userId;
     private String routerName;
 
-    @Generated(hash = 1870467570)
+    private boolean lastCheck;
+
+    @Generated(hash = 1871779795)
     public RouterEntity(Long id, String routerId, String username, String userId,
-            String routerName) {
+            String routerName, boolean lastCheck) {
         this.id = id;
         this.routerId = routerId;
         this.username = username;
         this.userId = userId;
         this.routerName = routerName;
+        this.lastCheck = lastCheck;
     }
 
     @Generated(hash = 997370902)
@@ -66,6 +69,14 @@ public class RouterEntity {
 
     public void setRouterName(String routerName) {
         this.routerName = routerName;
+    }
+
+    public boolean getLastCheck() {
+        return this.lastCheck;
+    }
+
+    public void setLastCheck(boolean lastCheck) {
+        this.lastCheck = lastCheck;
     }
 
 }

@@ -33,7 +33,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
 
     override fun jumpToGuest() {
-        startActivity(Intent(this, LoginActivityActivity::class.java))
+        startActivity(Intent(this, GuestActivity::class.java))
         finish()
     }
 

@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.pawegio.kandroid.runOnUiThread
+import com.pawegio.kandroid.startActivity
 import com.pawegio.kandroid.startActivityForResult
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -35,11 +37,14 @@ import com.stratagile.pnrouter.ui.activity.login.component.DaggerLoginActivityCo
 import com.stratagile.pnrouter.ui.activity.login.contract.LoginActivityContract
 import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
+import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.coroutines.experimental.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -60,9 +65,10 @@ import kotlin.math.log
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
-    var mThread : CustomThread? = null
+    var loginBack = false
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
+        standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
@@ -106,6 +112,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = userName.text.toString()
+            newRouterEntity.lastCheck = true
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = newRouterEntity.username;
@@ -121,6 +128,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (contains) {
                 KLog.i("数据局中已经包含了这个routerId")
             } else {
+                routerList.forEach {
+                    it.lastCheck = false
+                }
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
                 //更新sd卡路由器数据begin
                 val myRouter = MyRouter()
@@ -150,6 +161,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     internal var finger: ImageView? = null
 
     var newRouterEntity = RouterEntity()
+    private lateinit var standaloneCoroutine : Job
 
     var routerId = ""
     var userId = ""
@@ -162,6 +174,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     override fun initView() {
         setContentView(R.layout.activity_login)
+//        CrashReport.testNativeCrash()
     }
 
     override fun onDestroy() {
@@ -176,6 +189,19 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         if (connectStatus.status == 0) {
+            loginBack = false
+            closeProgressDialog()
+            showProgressDialog("login...")
+            standaloneCoroutine = launch(CommonPool) {
+                delay(10000)
+                if (!loginBack) {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast("login time out")
+                    }
+                }
+            }
+//            standaloneCoroutine.cancel()
             var login = LoginReq( routerId, userId, 0)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
@@ -196,7 +222,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
             AppConfig.instance.messageReceiver!!.loginBackListener = this
-            showProgressDialog()
+            showProgressDialog("connectting...")
 //            mThread = CustomThread(routerId, userId)
 //            mThread!!.start()
         }
@@ -205,6 +231,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         miniScanIcon.setOnClickListener {
             mPresenter.getScanPermission()
+        }
+
+        viewLog.setOnClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
         }
 
         handler = object : Handler() {
@@ -226,10 +256,25 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if (routerList.size != 0) {
-            routerId = routerList[0].routerId
-            userId = FileUtil.getLocalUserId()
-            username = routerList[0].username
-            routerName.text = routerList[0].routerName
+            var hasCheckedRouter = false
+            run breaking@ {
+                routerList.forEach {
+                    if (it.lastCheck) {
+                        routerId = it.routerId
+                        userId = FileUtil.getLocalUserId()
+                        username = it.username
+                        routerName.text = it.routerName
+                        hasCheckedRouter = true
+                        return@breaking
+                    }
+                }
+            }
+            if (!hasCheckedRouter) {
+                routerId = routerList[0].routerId
+                userId = FileUtil.getLocalUserId()
+                username = routerList[0].username
+                routerName.text = routerList[0].routerName
+            }
             if (!username.equals("")) {
                 userName.isEnabled = false
                 userName.setText(username)
@@ -245,13 +290,21 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             hasRouterParent.visibility = View.INVISIBLE
         }
         if (routerList.size > 0) {
-            routerName.setOnClickListener {
+            routerName.setOnClickListener { view1 ->
                 PopWindowUtil.showSelectRouterPopWindow(this, routerName, object : PopWindowUtil.OnRouterSelectListener{
                     override fun onSelect(position: Int) {
+                        routerList.forEach {
+                            if(it.lastCheck) {
+                                it.lastCheck = false
+                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                            }
+                        }
                         routerId = routerList[position].routerId
                         userId = FileUtil.getLocalUserId()
                         username = routerList[position].username
                         routerName.text = routerList[position].routerName
+                        routerList[position].lastCheck = true
+                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         if (!username.equals("")) {
                             userName.isEnabled = false
                             userName.setText(username)
@@ -433,18 +486,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             routerId = data!!.getStringExtra("result")
             newRouterEntity.routerId = data!!.getStringExtra("result")
             return
-        }
-    }
-
-    class CustomThread(var routId : String, var usreId : String) : Thread() {
-        // 重写run()方法
-        override fun run() {
-            super.run()
-            Thread.sleep(3000)
-            KLog.i("延迟3s打印")
-            KLog.i("连接的routId：${routId}")
-            var login = LoginReq( routId, usreId!!, 0)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
     }
 }
