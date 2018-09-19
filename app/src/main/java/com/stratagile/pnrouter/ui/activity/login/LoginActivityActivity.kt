@@ -237,7 +237,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
             AppConfig.instance.messageReceiver!!.loginBackListener = this
-            showProgressDialog("connectting...")
+            showProgressDialog("connecting...")
 //            mThread = CustomThread(routerId, userId)
 //            mThread!!.start()
         }

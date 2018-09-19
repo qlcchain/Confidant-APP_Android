@@ -20,10 +20,11 @@ import kotlin.concurrent.thread
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
-    var toSendMessage: Queue<BaseData> = LinkedList()
+    lateinit var toSendMessage: Queue<BaseData>
     lateinit var thread: Thread
 
     init {
+        toSendMessage = LinkedList()
         this.pipe = AtomicReference(pipe)
         initThread()
     }

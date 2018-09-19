@@ -44,6 +44,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.SpUtil
+import com.tencent.bugly.crashreport.CrashReport
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
