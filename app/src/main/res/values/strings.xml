@@ -374,7 +374,7 @@
     <string name="agreed">Agreed</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
-    <string name="guest_viewpager_1">Safeguard your privacy using PP Messenger,\n via the PP Router secure channel.</string>
+    <string name="guest_viewpager_1">Safeguard your privacy using Pretty Private Messenger,\n via the Pretty Private Router secure channel.</string>
     <string name="guest_viewpager_2">Use PP Messenger in the same WiFi \n environment as PP Router</string>
     <string name="guest_viewpager_3">Get your public key QR Code \n Scan the QR Code on PP Messenger, \n connect your messenger to the PP Router</string>
     <string name="start">Start</string>
