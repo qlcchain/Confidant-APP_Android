@@ -60,7 +60,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(delMsgPushRsp.params.friendId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         }else{
-            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            var conversation2: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            if(conversation2 != null)
+            {
+                val lastMessage2 = conversation2.lastMessage
+                var all2 = conversation2.allMessages
+                var aa = "";
+            }
             if(conversation !=null)
             {
                 val forward_msg = EMClient.getInstance().chatManager().getMessage(delMsgPushRsp.params.msgId.toString())
@@ -69,13 +76,36 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     val var3 = EMTextMessageBody(resources.getString(R.string.withdrawn))
                     forward_msg.addBody(var3)
                     conversation.updateMessage(forward_msg)
+                    if (ConstantValue.isInit) {
+                        conversationListFragment?.refresh()
+                        ConstantValue.isRefeshed = true
+                    }
                 }
+               /* val lastMessage = conversation.lastMessage
+                var all = conversation.allMessages
+
+                if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
+                {
+                    val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
+                    message.setDirection(EMMessage.Direct.RECEIVE)
+                    message.msgId = delMsgPushRsp.params.msgId.toString()
+                    message.from = delMsgPushRsp.params.friendId
+                    message.to = delMsgPushRsp.params.userId
+                    message.isUnread = true
+                    message.isAcked = true
+                    message.setStatus(EMMessage.Status.SUCCESS)
+                    if(conversation != null)
+                    {
+                        conversation.insertMessage(message)
+                        if (ConstantValue.isInit) {
+                            conversationListFragment?.refresh()
+                            ConstantValue.isRefeshed = true
+                        }
+                    }
+                }*/
+
             }
 
-            if (ConstantValue.isInit) {
-                conversationListFragment?.refresh()
-                ConstantValue.isRefeshed = true
-            }
         }
 
     }
@@ -119,6 +149,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
             message.setDirection(EMMessage.Direct.RECEIVE)
+            message.msgId = pushMsgRsp?.params.msgId
             message.from = pushMsgRsp.params.fromId
             message.to = pushMsgRsp.params.toId
             message.isUnread = true
@@ -322,6 +353,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
+                        message.msgId = pushMsgRsp?.params.msgId
                         message.from = pushMsgRsp.params.fromId
                         message.to = pushMsgRsp.params.toId
                         message.isUnread = true
@@ -342,6 +374,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
+                        message.msgId = pushMsgRsp.params.msgId
                         message.from = pushMsgRsp.params.fromId
                         message.to = pushMsgRsp.params.toId
                         message.isUnread = true
