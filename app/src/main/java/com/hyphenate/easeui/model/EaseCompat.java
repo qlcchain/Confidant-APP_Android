@@ -6,6 +6,8 @@ import android.os.Build;
 import android.support.v4.content.FileProvider;
 import android.view.WindowManager;
 
+import com.vondear.rxtools.RxFileTool;
+
 import java.io.File;
 
 /**
@@ -15,11 +17,13 @@ import java.io.File;
 public class EaseCompat {
 
     public static Uri getUriForFile(Context context, File file) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Uri contentUri = RxFileTool.getUriForFile(context, file);
+        return contentUri;
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", file);
         } else {
             return Uri.fromFile(file);
-        }
+        }*/
     }
 
     public static int getSupportedWindowType() {

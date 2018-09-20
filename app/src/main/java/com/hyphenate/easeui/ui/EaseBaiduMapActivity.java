@@ -47,6 +47,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.application.AppConfig;
 
 public class EaseBaiduMapActivity extends EaseBaseActivity {
 
@@ -155,7 +156,7 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 
 		progressDialog.show();
 
-		mLocClient = new LocationClient(this);
+		mLocClient = new LocationClient(AppConfig.instance);
 		mLocClient.registerLocationListener(myListener);
 
 		LocationClientOption option = new LocationClientOption();

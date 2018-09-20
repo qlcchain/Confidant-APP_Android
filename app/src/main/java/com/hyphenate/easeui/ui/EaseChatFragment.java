@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipboardManager;
@@ -60,6 +61,7 @@ import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
@@ -75,6 +77,8 @@ import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.PermissionListener;
 
 import java.io.File;
 import java.util.List;
@@ -216,7 +220,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageList.setShowUserNick(true);
 //        messageList.setAvatarShape(1);
         listView = messageList.getListView();
-
         kickedForOfflineLayout = getView().findViewById(R.id.layout_alert_kicked_off);
         kickedForOfflineLayout.setOnClickListener(new OnClickListener() {
             @Override
@@ -839,8 +842,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         @Override
         public void onClick(int itemId, View view) {
-            Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
-            /*if(chatFragmentHelper != null){
+            if(chatFragmentHelper != null){
                 if(chatFragmentHelper.onExtendMenuItemClick(itemId, view)){
                     return;
                 }
@@ -850,7 +852,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     selectPicFromLocal();
                     break;
                 case ITEM_TAKE_PICTURE:
-                    selectPicFromCamera();
+                    AndPermission.with(AppConfig.instance)
+                            .requestCode(101)
+                            .permission(
+                                    Manifest.permission.CAMERA
+                            )
+                            .callback(permission)
+                            .start();
+                    break;
+                case ITEM_SHORTVIDEO:
+                    AndPermission.with(AppConfig.instance)
+                            .requestCode(101)
+                            .permission(
+                                    Manifest.permission.CAMERA
+                            )
+                            .callback(permissionVideo)
+                            .start();
                     break;
                 case ITEM_LOCATION:
                     startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
@@ -858,11 +875,48 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
-            }*/
+            }
         }
 
     }
+    private PermissionListener permission = new PermissionListener() {
+        @Override
+        public void onSucceed(int requestCode, List<String> grantedPermissions) {
 
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                selectPicFromCamera();
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, List<String> deniedPermissions) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败");
+
+            }
+        }
+    };
+    private PermissionListener permissionVideo = new PermissionListener() {
+        @Override
+        public void onSucceed(int requestCode, List<String> grantedPermissions) {
+
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                selectVideoFromCamera();
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, List<String> deniedPermissions) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败");
+
+            }
+        }
+    };
     /**
      * input @
      * @param username
@@ -1163,7 +1217,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)),
                 REQUEST_CODE_CAMERA);
     }
-
+    /**
+     * capture new video
+     */
+    protected void selectVideoFromCamera() {
+        if (!EaseCommonUtils.isSdcardExist()) {
+            Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
+                + System.currentTimeMillis() + ".jpg");
+        //noinspection ResultOfMethodCallIgnored
+        cameraFile.getParentFile().mkdirs();
+        startActivityForResult(
+                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10),
+                REQUEST_CODE_CAMERA);
+    }
     /**
      * select local image
      */

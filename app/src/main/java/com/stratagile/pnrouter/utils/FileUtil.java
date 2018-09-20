@@ -240,16 +240,16 @@ public class FileUtil {
     }
 
     /**
-     * 读取本地SDk卡所有资产的钱包名称
+     * 读取本地SDk卡所有路由器数据
      *
      * @return
      */
-    public static String getAllWalletNames() {
+    public static String getAllRouterJsonNames() {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), "/Router/Assets/");
+                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RouterList/");
                 if (!file.exists()) {
                     return "";
                 }

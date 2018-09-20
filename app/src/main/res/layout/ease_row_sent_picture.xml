@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="13dp" >
+    android:paddingTop="13dp">
 
     <TextView
         android:id="@+id/timestamp"
@@ -18,15 +19,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_chat_activity" >
 
-        <com.hyphenate.easeui.widget.EaseImageView
+        <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
+            app:imageButtonTextSize="16"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/x5"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/margin_chat_activity"
-            android:src="@mipmap/img_person"
-            android:scaleType="fitXY" />
+            android:layout_marginRight="@dimen/margin_chat_activity" />
 
         <RelativeLayout
             android:id="@+id/bubble"

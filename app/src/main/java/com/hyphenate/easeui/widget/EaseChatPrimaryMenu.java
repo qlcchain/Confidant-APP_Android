@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.widget;
 
+import android.Manifest;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -18,8 +19,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.util.EMLog;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.PermissionListener;
+
+import java.util.List;
 
 /**
  * primary menu
@@ -160,14 +167,14 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             
             @Override 
             public boolean onTouch(View v, MotionEvent event) {
-                /*if(listener != null){
+                if(listener != null){
                     return listener.onPressToSpeakBtnTouch(v, event);
-                }*/
+                }
                 return false;
             }
         });
     }
-    
+
     /**
      * set recorder view when speak icon is touched
      * @param voiceRecorderView
@@ -208,10 +215,14 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 listener.onSendBtnClicked(s);
             }
         } else if (id == R.id.btn_set_mode_voice) {
-            setModeVoice();
-            showNormalFaceImage();
-            if(listener != null)
-                listener.onToggleVoiceBtnClicked();
+            AndPermission.with(AppConfig.instance)
+                    .requestCode(101)
+                    .permission(
+                            Manifest.permission.RECORD_AUDIO
+                    )
+                    .callback(permission)
+                    .start();
+
         } else if (id == R.id.btn_set_mode_keyboard) {
             setModeKeyboard();
             showNormalFaceImage();
@@ -316,5 +327,26 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     public EditText getEditText() {
         return editText;
     }
+    private PermissionListener permission = new PermissionListener() {
+        @Override
+        public void onSucceed(int requestCode, List<String> grantedPermissions) {
 
+            // 权限申请成功回调。
+            if (requestCode == 101) {
+                setModeVoice();
+                showNormalFaceImage();
+                if(listener != null)
+                    listener.onToggleVoiceBtnClicked();
+            }
+        }
+
+        @Override
+        public void onFailed(int requestCode, List<String> deniedPermissions) {
+            // 权限申请失败回调。
+            if (requestCode == 101) {
+                KLog.i("权限申请失败");
+
+            }
+        }
+    };
 }

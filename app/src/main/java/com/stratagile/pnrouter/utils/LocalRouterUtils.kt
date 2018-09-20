@@ -24,7 +24,7 @@ object LocalRouterUtils {
     //记录每一个元素
     val localAssetsList: ArrayList<MyRouter>
         get() {
-            var userId = FileUtil.getLocalUserId()
+            var userId = "routerData"
             var localAssetArrayList: ArrayList<MyRouter> = ArrayList()
             if(userId.equals(""))
             {
@@ -53,7 +53,7 @@ object LocalRouterUtils {
      */
     fun updateGreanDaoFromLocal() {
             //wallet = walletList.get(SpUtil.getInt(AppConfig.instance, ConstantValue.currentWallet, 0));
-        var userId = FileUtil.getLocalUserId()
+        var userId = "routerData"
         if(userId.equals(""))
         {
             return
@@ -149,7 +149,7 @@ object LocalRouterUtils {
         if (myRouter == null) {
             return
         }
-        var userId = FileUtil.getLocalUserId()
+        var userId = "routerData"
         if(userId.equals(""))
         {
             return
@@ -201,7 +201,7 @@ object LocalRouterUtils {
      * @param myAssets
      */
     fun updateList(myAssets: ArrayList<MyRouter>?) {
-        var userId = FileUtil.getLocalUserId()
+        var userId = "routerData"
         if(userId.equals(""))
         {
             return
@@ -237,7 +237,7 @@ object LocalRouterUtils {
      * @param router
      */
     fun updateLocalAssets(router: MyRouter?) {
-        var userId = FileUtil.getLocalUserId()
+        var userId = "routerData"
         if(userId.equals(""))
         {
             return
