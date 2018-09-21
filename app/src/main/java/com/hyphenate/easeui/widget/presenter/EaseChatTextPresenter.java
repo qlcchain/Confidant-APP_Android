@@ -26,17 +26,13 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.utils.SpUtil;
-import com.vondear.rxtools.view.RxToast;
-import com.vondear.rxtools.view.popupwindows.tools.RxPopupView;
-import com.vondear.rxtools.view.popupwindows.tools.RxPopupViewManager;
 
 /**
  * Created by zhangsong on 17-10-12.
  */
 
-public class EaseChatTextPresenter extends EaseChatRowPresenter implements RxPopupViewManager.TipListener {
+public class EaseChatTextPresenter extends EaseChatRowPresenter {
     private static final String TAG = "EaseChatTextPresenter";
-    private RxPopupViewManager mRxPopupViewManager;
     private Context context;
     private View viewRoot;
     @Override
@@ -113,10 +109,5 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter implements RxPop
 
         // Send the group-ack cmd type msg if this msg is a ding-type msg.
         EaseDingMessageHelper.get().sendAckMessage(message);
-    }
-
-    @Override
-    public void onTipDismissed(View view, int anchorViewId, boolean byUser) {
-
     }
 }

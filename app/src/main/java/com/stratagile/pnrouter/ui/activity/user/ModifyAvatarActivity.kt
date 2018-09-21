@@ -27,10 +27,9 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerModifyAvatarComp
 import com.stratagile.pnrouter.ui.activity.user.contract.ModifyAvatarContract
 import com.stratagile.pnrouter.ui.activity.user.module.ModifyAvatarModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.ModifyAvatarPresenter
-import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
+import com.stratagile.pnrouter.utils.RxFileTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.SystemUtil
-import com.vondear.rxtools.RxFileTool
 import kotlinx.android.synthetic.main.activity_modify_avatar.*
 import java.io.*
 import java.util.*

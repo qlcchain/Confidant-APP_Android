@@ -3,10 +3,10 @@ package com.hyphenate.easeui.model;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
 import android.view.WindowManager;
 
-import com.vondear.rxtools.RxFileTool;
+
+import com.stratagile.pnrouter.utils.RxFileTool;
 
 import java.io.File;
 

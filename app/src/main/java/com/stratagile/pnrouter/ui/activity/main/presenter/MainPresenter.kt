@@ -36,11 +36,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Main
 
     private val mCompositeDisposable: CompositeDisposable
 
-    lateinit var signalServiceMessageReceiver: PNRouterServiceMessageReceiver
-
     init {
         mCompositeDisposable = CompositeDisposable()
-        signalServiceMessageReceiver = AppConfig.instance.messageReceiver!!
     }
 
     override fun subscribe() {

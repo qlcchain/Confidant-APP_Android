@@ -3,18 +3,18 @@ package com.stratagile.pnrouter.ui.activity.scan
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
-import android.os.Handler
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.view.View
 import android.widget.*
-import com.google.zxing.Result
+import cn.bingoogolapple.qrcode.core.QRCodeView
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -24,15 +24,9 @@ import com.stratagile.pnrouter.ui.activity.scan.component.DaggerScanQrCodeCompon
 import com.stratagile.pnrouter.ui.activity.scan.contract.ScanQrCodeContract
 import com.stratagile.pnrouter.ui.activity.scan.module.ScanQrCodeModule
 import com.stratagile.pnrouter.ui.activity.scan.presenter.ScanQrCodePresenter
-import com.stratagile.pnrouter.ui.activity.scan.qrcode.CaptureActivityHandler
-import com.vondear.rxtools.RxAnimationTool
-import com.vondear.rxtools.RxBeepTool
-import com.vondear.rxtools.RxPhotoTool
-import com.vondear.rxtools.RxQrBarTool
-import com.vondear.rxtools.interfaces.OnRxScanerListener
-import com.vondear.rxtools.module.scaner.CameraManager
-import com.vondear.rxtools.module.scaner.decoding.InactivityTimer
-import com.vondear.rxtools.view.dialog.RxDialogSure
+import com.stratagile.pnrouter.utils.RxPhotoTool
+import com.tencent.bugly.crashreport.CrashReport
+import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -45,47 +39,55 @@ import javax.inject.Inject;
  * @date 2018/09/11 15:29:14
  */
 
-class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
+class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.Delegate {
 
     @Inject
     internal lateinit var mPresenter: ScanQrCodePresenter
-    private var mScanerListener: OnRxScanerListener? = null//扫描结果监听
-    private var inactivityTimer: InactivityTimer? = null
-    private var handler: CaptureActivityHandler? = null//扫描处理
-    private var mContainer: RelativeLayout? = null//整体根布局
-    private var mCropLayout: RelativeLayout? = null//扫描框根布局
-    private var mCropWidth = 0//扫描边界的宽度
-    private var mCropHeight = 0//扫描边界的高度
-    private var hasSurface: Boolean = false//是否有预览
-    private val vibrate = true//扫描成功后是否震动
-    private var mFlashing = true//闪光灯开启状态
-    private var mIvLight: ImageView? = null//闪光灯 按钮
-    private val rxDialogSure: RxDialogSure? = null//扫描结果显示框
-
-    fun setScanerListener(scanerListener: OnRxScanerListener) {
-        mScanerListener = scanerListener
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
-        needFront = true
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
         setContentView(R.layout.activity_scan_qr_code)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        mIvLight = findViewById(R.id.top_mask) as ImageView
-        mContainer = findViewById(R.id.capture_containter) as RelativeLayout
-        mCropLayout = findViewById(R.id.capture_crop_layout) as RelativeLayout
+        mZXingView.setDelegate(this)
         //请求Camera权限 与 文件读写 权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
         }
+        mZXingView.startCamera() // 打开后置摄像头开始预览，但是并未开始识别
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mZXingView.startSpotDelay(50)
+        mZXingView.showScanRect()
+//        mZXingView.startSpotAndShowRect() // 显示扫描框，并且延迟0.5秒后开始识别
+    }
+
+    override fun onStop() {
+        mZXingView.stopCamera() // 关闭摄像头预览，并且隐藏扫描框
+        super.onStop()
+    }
+
+    private fun vibrate() {
+        var vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val pattern = longArrayOf(50, 50)
+        vibrator.vibrate(pattern, -1)
+    }
+
+    override fun onScanQRCodeSuccess(result: String) {
+        KLog.i( "result:$result")
+        initDialogResult(result)
+        mZXingView.stopSpot()
+        vibrate()
+    }
+
+    override fun onScanQRCodeOpenCameraError() {
+        KLog.i( "打开相机出错")
     }
     override fun initData() {
-        initScanerAnimation()//扫描动画初始化
-        CameraManager.init(this)//初始化 CameraManager
-        hasSurface = false
-        inactivityTimer = InactivityTimer(this)
+        setTitle("ScanQRCode")
     }
 
     override fun setupActivityComponent() {
@@ -99,44 +101,14 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
 
    override protected fun onResume() {
         super.onResume()
-        val surfaceView = findViewById(com.vondear.rxtools.R.id.capture_preview) as SurfaceView
-        val surfaceHolder = surfaceView.holder
-        if (hasSurface) {
-            initCamera(surfaceHolder)//Camera初始化
-        } else {
-            surfaceHolder.addCallback(object : SurfaceHolder.Callback {
-                override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-
-                }
-
-                override fun surfaceCreated(holder: SurfaceHolder) {
-                    if (!hasSurface) {
-                        hasSurface = true
-                        initCamera(holder)
-                    }
-                }
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {
-                    hasSurface = false
-
-                }
-            })
-            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
-        }
     }
 
     override protected fun onPause() {
         super.onPause()
-        if (handler != null) {
-            handler?.quitSynchronously()
-            handler = null
-        }
-        CameraManager.get().closeDriver()
     }
 
     override protected fun onDestroy() {
-        inactivityTimer?.shutdown()
-        mScanerListener = null
+        mZXingView.onDestroy() // 销毁二维码扫描控件
         super.onDestroy()
     }
     override fun setPresenter(presenter: ScanQrCodeContract.ScanQrCodeContractPresenter) {
@@ -151,80 +123,12 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
         progressDialog.hide()
     }
 
-    private fun initScanerAnimation() {
-        val mQrLineView = findViewById(R.id.capture_scan_line) as ImageView
-        RxAnimationTool.ScaleUpDowm(mQrLineView)
-    }
 
-    fun getCropWidth(): Int {
-        return mCropWidth
-    }
-
-    fun setCropWidth(cropWidth: Int) {
-        mCropWidth = cropWidth
-        CameraManager.FRAME_WIDTH = mCropWidth
-
-    }
-
-    fun getCropHeight(): Int {
-        return mCropHeight
-    }
-
-    fun setCropHeight(cropHeight: Int) {
-        this.mCropHeight = cropHeight
-        CameraManager.FRAME_HEIGHT = mCropHeight
-    }
-
-    fun btn(view: View) {
-        val viewId = view.id
-        if (viewId == com.vondear.rxtools.R.id.top_mask) {
-            light()
-        } else if (viewId == com.vondear.rxtools.R.id.top_back) {
-            finish()
-        } else if (viewId == com.vondear.rxtools.R.id.top_openpicture) {
-            RxPhotoTool.openLocalImage(this)
-        }
-    }
-
-    private fun light() {
-        if (mFlashing) {
-            mFlashing = false
-            // 开闪光灯
-            CameraManager.get().openLight()
-        } else {
-            mFlashing = true
-            // 关闪光灯
-            CameraManager.get().offLight()
-        }
-
-    }
-
-    private fun initCamera(surfaceHolder: SurfaceHolder) {
-        try {
-            CameraManager.get().openDriver(surfaceHolder)
-            val point = CameraManager.get().getCameraResolution()
-            val width = AtomicInteger(point.y)
-            val height = AtomicInteger(point.x)
-            val cropWidth = mCropLayout?.getWidth()
-            val cropHeight = mCropLayout?.getHeight()
-            KLog.i(cropWidth)
-            KLog.i(cropHeight)
-            setCropWidth(cropWidth!!)
-            setCropHeight(cropHeight!!)
-        } catch (ioe: IOException) {
-            return
-        } catch (ioe: RuntimeException) {
-            return
-        }
-
-        if (handler == null) {
-            handler = CaptureActivityHandler(this)
-        }
-    }
     //========================================打开本地图片识别二维码 end=================================
 
     //--------------------------------------打开本地图片识别二维码 start---------------------------------
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        mZXingView.startSpotAndShowRect() // 显示扫描框，并且延迟0.5秒后开始识别
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             val resolver = contentResolver
@@ -233,18 +137,18 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
             try {
                 // 使用ContentProvider通过URI获取原始图片
                 val photo = MediaStore.Images.Media.getBitmap(resolver, originalUri)
-
+                mZXingView.decodeQRCode(photo)
                 // 开始对图像资源解码
-                val rawResult = RxQrBarTool.decodeFromPhoto(photo)
-                if (rawResult != null) {
-                    if (mScanerListener == null) {
-                        initDialogResult(rawResult)
-                    } else {
-                        mScanerListener?.onSuccess("From to Picture", rawResult)
-                    }
-                } else {
-                    mScanerListener?.onFail("From to Picture", "图片识别失败")
-                }
+//                val rawResult = RxQrBarTool.decodeFromPhoto(photo)
+//                if (rawResult != null) {
+//                    if (mScanerListener == null) {
+//                        initDialogResult(rawResult)
+//                    } else {
+//                        mScanerListener?.onSuccess("From to Picture", rawResult)
+//                    }
+//                } else {
+//                    mScanerListener?.onFail("From to Picture", "图片识别失败")
+//                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -253,8 +157,8 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
     }
     //==============================================================================================解析结果 及 后续处理 end
 
-    private fun initDialogResult(result: Result) {
-        val realContent = result.getText()
+    private fun initDialogResult(result: String) {
+        val realContent = result
         val builder = AlertDialog.Builder(this)
         val view = View.inflate(this, R.layout.dialog_layout, null)
         builder.setView(view)
@@ -270,8 +174,9 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
         btn_cancel.text = getString(R.string.cancel).toLowerCase()
         btn_cancel.setOnClickListener {
             dialog.dismiss()
+            mZXingView.startSpot() // 延迟0.5秒后开始识别
             // 连续扫描，不发送此消息扫描一次结束后就不能再次扫描
-            handler?.sendEmptyMessage(com.vondear.rxtools.R.id.restart_preview)
+//            handler?.sendEmptyMessage(com.vondear.rxtools.R.id.restart_preview)
         }
         btn_comfirm.setOnClickListener {
             dialog.dismiss()
@@ -283,21 +188,27 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View {
         dialog.show()
     }
 
-    fun handleDecode(result: Result) {
-        inactivityTimer?.onActivity()
-        RxBeepTool.playBeep(this, vibrate)//扫描成功之后的振动与声音提示
-
-        val result1 = result.getText()
-        //KLog.i("二维码/条形码 扫描结果", result1)
-        if (mScanerListener == null) {
-            //            RxToast.success(result1);
-            initDialogResult(result)
+    var mFlashing = false
+    private fun light() {
+        if (mFlashing) {
+            mFlashing = false
+            // 开闪光灯
+            mZXingView.closeFlashlight() // 打开闪光灯
         } else {
-            mScanerListener?.onSuccess("From to Camera", result)
+            mFlashing = true
+            // 关闪光灯
+            mZXingView.openFlashlight() // 打开闪光灯
+        }
+
+    }
+
+    fun btn(view: View) {
+        val viewId = view.id
+        if (viewId == R.id.top_mask) {
+            light()
+        } else if (viewId == R.id.top_openpicture) {
+            RxPhotoTool.openLocalImage(this)
         }
     }
 
-    fun getHandler(): Handler? {
-        return handler
-    }
 }

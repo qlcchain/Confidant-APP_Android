@@ -18,17 +18,24 @@ import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
-import com.vondear.rxtools.view.RxQRCode
 import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Environment
 import java.io.File.separator
 import android.os.Environment.getExternalStorageDirectory
+import android.widget.ImageView
+import android.widget.Toast
+import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
+import cn.bingoogolapple.qrcode.core.QRCodeView
+import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.longToast
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.R.id.ivQrCode
 import kotlinx.android.synthetic.main.fragment_my.*
 import java.io.File
 import java.io.FileOutputStream
@@ -52,6 +59,8 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
     @Inject
     internal lateinit var mPresenter: QRCodePresenter
 
+    lateinit var createEnglishQRCode : CreateEnglishQRCode
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -71,9 +80,31 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         var userId = FileUtil.getLocalUserId()
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
-        RxQRCode.builder(userId!!).backColor(resources.getColor(com.vondear.rxtools.R.color.white)).codeColor(resources.getColor(com.vondear.rxtools.R.color.black)).codeSide(800).into(ivQrCode)
+        createEnglishQRCode = CreateEnglishQRCode(userId, ivQrCode)
+        createEnglishQRCode.execute()
         tvSaveToPhone.setOnClickListener {
             saveQrCodeToPhone()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        createEnglishQRCode.cancel(true)
+    }
+
+    companion object {
+        class CreateEnglishQRCode(var userId : String, var view: ImageView) : AsyncTask<Void, Void, Bitmap>() {
+            override fun doInBackground(vararg p0: Void?): Bitmap {
+                return QRCodeEncoder.syncEncodeQRCode(userId, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.resources.getColor(R.color.mainColor))
+            }
+
+            override fun onPostExecute(bitmap: Bitmap?) {
+                if (bitmap != null) {
+                    view.setImageBitmap(bitmap)
+                } else {
+//                    Toast.makeText(AppConfig.instance, "生成英文二维码失败", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

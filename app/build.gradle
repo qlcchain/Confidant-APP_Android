@@ -117,7 +117,7 @@ dependencies {
     //    implementation project(':saf-log')
     implementation "com.android.support:cardview-v7:$supportVersion"
     implementation 'com.yanzhenjie:permission:1.1.2'
-    implementation project(':RxTools-library')
+//    implementation project(':RxTools-library')
     implementation project(':menu')
     implementation project(':easeui')
     implementation 'org.greenrobot:greendao:3.2.2'
@@ -137,4 +137,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.20'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.20'
     implementation files('libs/wowoviewpager.aar')
+    implementation ('cn.bingoogolapple:bga-qrcode-zxing:1.2.5')
 }

@@ -380,4 +380,5 @@
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
+    <string name="continue_">continue</string>
 </resources>
