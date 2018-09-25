@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 
@@ -156,6 +157,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     }
 
     fun initData() {
+        var bundle = getArguments();
         var hasNewFriendRequest = false
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var contactList = arrayListOf<UserEntity>()
@@ -180,12 +182,26 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             new_contact_dot.visibility = View.GONE
             EventBus.getDefault().post(UnReadContactCount(0))
         }
-        contactAdapter = ContactListAdapter(contactList)
+        if(bundle == null)
+        {
+            contactAdapter = ContactListAdapter(contactList,false)
+        }else{
+            contactAdapter = ContactListAdapter(contactList,true)
+        }
+
         recyclerView.adapter = contactAdapter
         contactAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var intent = Intent(activity!!, UserInfoActivity::class.java)
-            intent.putExtra("user", contactAdapter!!.getItem(position))
-            startActivity(intent)
+            if(bundle == null)
+            {
+                var intent = Intent(activity!!, UserInfoActivity::class.java)
+                intent.putExtra("user", contactAdapter!!.getItem(position))
+                startActivity(intent)
+            }else{
+               var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
+                checkBox.setChecked(!checkBox.isChecked)
+                //contactAdapter!!.setCheckBox(position)
+            }
+
         }
     }
 

@@ -106,7 +106,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".ui.activity.main.LogActivity" />
         <activity android:name=".ui.activity.main.GuestActivity" />
-
+        <activity
+            android:name=".ui.activity.selectfriend.selectFriendActivity"
+            android:screenOrientation="portrait" />
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"

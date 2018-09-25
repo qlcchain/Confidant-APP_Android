@@ -34,7 +34,6 @@
                 android:id="@+id/newFriend"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x90"
-                android:layout_marginTop="@dimen/x20"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/x30"

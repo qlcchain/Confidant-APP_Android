@@ -10,14 +10,27 @@
         style="@style/divide_line"
         app:layout_constraintBottom_toTopOf="parent" />
 
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:button="@drawable/checkbox_style"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.51" />
+
     <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/x80"
-        app:imageButtonTextSize="20"
         android:layout_height="@dimen/x80"
-        android:layout_marginLeft="@dimen/x30"
+        android:layout_marginStart="16dp"
+        app:imageButtonTextSize="20"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/checkBox"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -34,9 +47,9 @@
             android:id="@+id/tvNickName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
             android:text="John"
-            android:textColor="@color/color_3f3f3f" />
+            android:textColor="@color/color_3f3f3f"
+            android:textSize="15sp" />
 
     </LinearLayout>
 

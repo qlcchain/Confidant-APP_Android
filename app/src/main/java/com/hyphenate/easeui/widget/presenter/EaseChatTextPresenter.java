@@ -25,6 +25,8 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 /**
@@ -74,6 +76,8 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                     switch (position)
                     {
                         case 0:
+                            break;
+                        case 1:
                             ClipboardManager cm = (ClipboardManager) AppConfig.instance.getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                             // 创建普通字符型ClipData
                             ClipData mClipData = ClipData.newPlainText("Label", EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(message, getContext())));
@@ -81,9 +85,13 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                             cm.setPrimaryClip(mClipData);
                             Toast.makeText(AppConfig.instance.getApplicationContext(), R.string.copy_success, Toast.LENGTH_SHORT).show();
                             break;
-                        case 1:
-                            break;
                         case 2:
+                            break;
+                        case 3:
+                            Intent intent = new Intent(getContext(), selectFriendActivity.class);
+                            getContext().startActivity(intent);
+                            break;
+                        case 4:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
                             ConstantValue.INSTANCE.setMsgId(message.getMsgId());

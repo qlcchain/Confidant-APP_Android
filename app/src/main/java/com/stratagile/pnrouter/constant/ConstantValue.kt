@@ -15,5 +15,6 @@ object ConstantValue {
         var selfImageName = "selfImageName"
         var msgId = ""
         var LOCALVERSIONCODE = "localversioncode"
+        var selectFriend = "selectFriend"
 
 }

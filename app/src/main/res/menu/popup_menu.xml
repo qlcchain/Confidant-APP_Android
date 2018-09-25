@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-   <!-- <item app:menu_title="Collection" app:icon = "@mipmap/icon_collection"></item>-->
     <item
-        app:menu_title="Copy" app:icon = "@mipmap/icon_copy"/>
+        app:menu_title="@string/collection" app:icon = "@mipmap/icon_collection">
+    </item>
     <item
-        app:menu_title="Forward" app:icon = "@mipmap/icon_forward"/>
-   <!-- <item
-        app:menu_title="Scanvenging" app:icon = "@mipmap/icon_little_scan"/>-->
+        app:menu_title="@string/copy" app:icon = "@mipmap/icon_copy"/>
     <item
-        app:menu_title="withDraw" app:icon = "@mipmap/icon_withdraw"/>
+        app:menu_title="@string/forward" app:icon = "@mipmap/icon_forward"/>
+    <item
+        app:menu_title="@string/multiSelect" app:icon = "@mipmap/icon_little_scan"/>
+    <item
+        app:menu_title="@string/withDraw" app:icon = "@mipmap/icon_withdraw"/>
 </menu>
