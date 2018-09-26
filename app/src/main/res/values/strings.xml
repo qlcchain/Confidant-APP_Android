@@ -382,5 +382,8 @@
     <string name="copy_success">Copy success</string>
     <string name="continue_">continue</string>
     <string name="multiSelect">MultiSelect</string>
+    <string name="Contacts">Contacts</string>
+    <string name="selected">selected:</string>
+
 
 </resources>
