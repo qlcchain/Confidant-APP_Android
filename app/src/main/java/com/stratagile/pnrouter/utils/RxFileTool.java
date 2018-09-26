@@ -1793,7 +1793,7 @@ public class RxFileTool {
     public static Uri getUriForFile(Context mContext, File file) {
         Uri fileUri = null;
         if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(mContext, mContext.getPackageName() + ".fileprovider", file);
+            fileUri = FileProvider.getUriForFile(mContext, mContext.getPackageName() + ".utils.MyFileProvider", file);
         } else {
             fileUri = Uri.fromFile(file);
         }

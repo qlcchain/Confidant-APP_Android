@@ -65,7 +65,6 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     }
 
     override fun initView() {
-        swipeBackLayout.setEnableGesture(false)
         setContentView(R.layout.activity_guest)
         var wowoAdapter = WoWoViewPagerAdapter.builder()
                 .fragmentManager(supportFragmentManager)

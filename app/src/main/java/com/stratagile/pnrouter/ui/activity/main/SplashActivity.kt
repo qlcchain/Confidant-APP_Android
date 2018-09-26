@@ -49,7 +49,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        swipeBackLayout.setEnableGesture(false)
         SpUtil.putString(this, ConstantValue.testValue, "test")
         mPresenter.getLastVersion()
         mPresenter.getPermission()

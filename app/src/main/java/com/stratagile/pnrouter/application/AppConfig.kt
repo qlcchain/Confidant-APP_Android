@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.PushMsgReq
 import com.stratagile.pnrouter.message.MessageProvider
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
+import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.tencent.bugly.crashreport.CrashReport
 
 /**
@@ -56,6 +57,7 @@ class AppConfig : MultiDexApplication() {
         setupApplicationComponent()
         setDatabase()
         MessageProvider.getInstance()
+        BGASwipeBackHelper.init(this, null)
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{

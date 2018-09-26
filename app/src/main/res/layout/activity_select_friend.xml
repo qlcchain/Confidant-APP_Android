@@ -5,6 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/main_color"
+        android:gravity="center"
+        android:textColor="@color/color_333"
+        android:textSize="9sp" />
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="match_parent"

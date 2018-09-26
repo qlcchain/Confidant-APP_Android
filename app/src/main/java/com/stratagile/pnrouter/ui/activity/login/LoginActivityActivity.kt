@@ -223,7 +223,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initData() {
-        swipeBackLayout.setEnableGesture(false)
         userId = FileUtil.getLocalUserId()
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {

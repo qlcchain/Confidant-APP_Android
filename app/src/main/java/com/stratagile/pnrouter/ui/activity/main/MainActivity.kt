@@ -284,7 +284,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
-        swipeBackLayout.setEnableGesture(false)
         AppConfig.instance.messageReceiver!!.mainInfoBack = this
         EventBus.getDefault().register(this)
         tvTitle.setOnClickListener {
