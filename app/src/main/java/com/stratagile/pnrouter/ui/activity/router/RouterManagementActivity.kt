@@ -62,7 +62,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             intent.putExtra("router", routerListAdapter.getItem(position))
             startActivity(intent)
         }
-        cardView.setOnClickListener {
+        tvRouterName.setOnClickListener {
             var intent = Intent(this, RouterQRCodeActivity::class.java)
             intent.putExtra("router", selectedRouter)
             startActivity(intent)

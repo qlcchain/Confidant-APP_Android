@@ -95,6 +95,7 @@ public class EaseChatInputMenu extends LinearLayout {
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
         int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), 0);
+        KLog.i("sp中记录的键盘的高度为：" + height);
         if (height != 0) {
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(UIUtils.getDisplayWidth((Activity) getContext()), height);
             chatExtendMenuContainer.setLayoutParams(llp);

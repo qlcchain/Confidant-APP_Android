@@ -56,7 +56,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         val realKeyboardHeight = heightDiff - statusBarHeight
         KLog.e("keyboard height(单位像素) = $realKeyboardHeight")
-        if (realKeyboardHeight != 0) {
+        if (realKeyboardHeight >= 200) {
             SpUtil.putInt(this@ChatActivity, ConstantValue.realKeyboardHeight, realKeyboardHeight)
             parentLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this@ChatActivity)
         }
