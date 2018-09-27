@@ -43,7 +43,7 @@ public class EmojiconGridAdapter extends ArrayAdapter<EaseEmojicon>{
         }
 
         if(EaseSmileUtils.DELETE_KEY.equals(emojicon.getEmojiText())){
-            imageView.setImageResource(R.drawable.ease_delete_expression);
+            imageView.setImageResource(R.drawable.ease_delete);
         }else{
             if(emojicon.getIcon() != 0){
                 imageView.setImageResource(emojicon.getIcon());

@@ -33,7 +33,7 @@ import java.util.List;
  *
  */
 public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnClickListener {
-    private EditText editText;
+    public EditText editText;
     private View buttonSetModeKeyboard;
     private RelativeLayout edittext_layout;
     private View buttonSetModeVoice;
@@ -43,6 +43,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private ImageView faceChecked;
     private Button buttonMore;
     private boolean ctrlPress = false;
+    private View contentView;
 
     public EaseChatPrimaryMenu(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -85,6 +86,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                KLog.i("焦点：" + hasFocus);
 //                if (hasFocus) {
 //                    edittext_layout.setBackgroundResource(R.drawable.ease_input_bar_bg_active);
 //                } else {
@@ -181,6 +183,10 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
      */
     public void setPressToSpeakRecorderView(EaseVoiceRecorderView voiceRecorderView){
         EaseVoiceRecorderView voiceRecorderView1 = voiceRecorderView;
+    }
+
+    public void bindContentView(View contentView) {
+        this.contentView = contentView;
     }
 
     /**

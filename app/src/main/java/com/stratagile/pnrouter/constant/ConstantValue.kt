@@ -1,8 +1,5 @@
 package com.stratagile.pnrouter.constant
 
-import com.stratagile.pnrouter.db.UserEntity
-import java.util.HashMap
-
 object ConstantValue {
         var isInit = false;
         var isRefeshed = false
@@ -16,5 +13,6 @@ object ConstantValue {
         var msgId = ""
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
+        var realKeyboardHeight = "realKeyboardHeight"
 
 }

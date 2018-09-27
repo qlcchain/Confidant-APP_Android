@@ -64,7 +64,7 @@
             android:name=".ui.activity.chat.ChatActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <activity
             android:name=".ui.activity.user.MyDetailActivity"
@@ -109,6 +109,8 @@
         <activity
             android:name=".ui.activity.selectfriend.selectFriendActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.RouterManagementActivity" />
+        <activity android:name=".ui.activity.router.RouterQRCodeActivity" />
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"

@@ -70,15 +70,19 @@ import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JDelMsgRsp;
-import com.stratagile.pnrouter.entity.JPullMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
+import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.List;
@@ -175,8 +179,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, boolean roaming) {
         isRoaming = roaming;
+        EventBus.getDefault().register(this);
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -200,6 +206,29 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         super.onActivityCreated(savedInstanceState);
     }
+
+    /**
+     * 锁定内容高度，防止跳闪
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void lockContentHeight(ChatKeyboard chatKeyboard){
+//        if (chatKeyboard.isLock()) {
+//            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) messageList.getLayoutParams();
+//            params.height = messageList.getHeight();
+//            params.weight = 0.0F;
+//        } else {
+//            ((LinearLayout.LayoutParams) messageList.getLayoutParams()).weight = 1.0F;
+//        }
+    }
+
+    /**
+     * 释放被锁定的内容高度
+     */
+//    private void unLockContentHeight() {
+//        ((LinearLayout.LayoutParams) messageList.getLayoutParams()).weight = 1.0F;
+//    }
+//
+
 
     protected boolean turnOnTyping() {
         return false;
@@ -230,6 +259,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
+        inputMenu.bindContentView(messageList);
         registerExtendMenuItem();
         // init input menu
         inputMenu.init(null);
@@ -696,7 +726,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        EventBus.getDefault().unregister(this);
         if (groupListener != null) {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
         }
