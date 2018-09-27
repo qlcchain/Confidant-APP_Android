@@ -496,7 +496,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             scanParent.visibility = View.INVISIBLE
             noRoutergroup.visibility = View.INVISIBLE
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            routerName?.setText("Router " + (routerList.size + 1))
+            if (routerList != null && routerList.size != 0) {
+                routerList.forEach { itt ->
+                    if (itt.routerId.equals(data!!.getStringExtra("result"))) {
+                        routerName?.setText(itt.routerName)
+                        routerId = data!!.getStringExtra("result")
+                        routerList.forEach {
+                            if (it.lastCheck) {
+                                it.lastCheck = false
+                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                            }
+                        }
+                        itt.lastCheck = true
+                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(itt)
+                        return
+                    }
+                }
+            }
             routerId = data!!.getStringExtra("result")
             newRouterEntity.routerId = data!!.getStringExtra("result")
             return

@@ -6,18 +6,17 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
 import cn.bingoogolapple.qrcode.core.QRCodeView
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.ui.activity.scan.component.DaggerScanQrCodeComponent
@@ -25,12 +24,9 @@ import com.stratagile.pnrouter.ui.activity.scan.contract.ScanQrCodeContract
 import com.stratagile.pnrouter.ui.activity.scan.module.ScanQrCodeModule
 import com.stratagile.pnrouter.ui.activity.scan.presenter.ScanQrCodePresenter
 import com.stratagile.pnrouter.utils.RxPhotoTool
-import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import java.io.IOException
-import java.util.concurrent.atomic.AtomicInteger
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl

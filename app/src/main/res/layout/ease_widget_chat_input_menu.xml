@@ -3,6 +3,7 @@
     xmlns:hyphenate="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chat_menu_container"
     android:layout_width="match_parent"
+    android:background="@color/color_efefef"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:orientation="vertical" >
@@ -23,15 +24,14 @@
         android:id="@+id/extend_menu_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#fff"
         android:visibility="gone" >
 
         <com.hyphenate.easeui.widget.EaseChatExtendMenu
             android:id="@+id/extend_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="7dp"
-            android:layout_marginTop="9dp"
+            android:layout_marginBottom="@dimen/x30"
+            android:layout_marginTop="@dimen/x30"
             hyphenate:numColumns="4" />
 
         <FrameLayout 
