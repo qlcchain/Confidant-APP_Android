@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.PullFriendReq
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
@@ -176,16 +177,18 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
         }
         if (hasNewFriendRequest) {
-            new_contact_dot.visibility = View.VISIBLE
+            newFriend.visibility = View.VISIBLE
             EventBus.getDefault().post(UnReadContactCount(newFriendCount))
         } else {
-            new_contact_dot.visibility = View.GONE
+            newFriend.visibility = View.GONE
             EventBus.getDefault().post(UnReadContactCount(0))
         }
         if(bundle == null)
         {
+            newFriend.visibility = View.VISIBLE
             contactAdapter = ContactListAdapter(contactList,false)
         }else{
+            newFriend.visibility = View.GONE
             contactAdapter = ContactListAdapter(contactList,true)
         }
 
@@ -199,7 +202,16 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }else{
                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
                 checkBox.setChecked(!checkBox.isChecked)
-                //contactAdapter!!.setCheckBox(position)
+                var itemCount =  contactAdapter!!.itemCount -1
+                var count :Int = 0;
+                for (i in 0..itemCount) {
+                    var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+                    if(checkBox.isChecked)
+                    {
+                        count ++
+                    }
+                }
+                EventBus.getDefault().post(SelectFriendChange(count,0))
             }
 
         }

@@ -17,9 +17,16 @@ import javax.inject.Inject
 import butterknife.ButterKnife
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.utils.UIUtils
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_select_friend.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.util.UUID.randomUUID
+
+
 
 /**
  * @author zl
@@ -45,12 +52,13 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         setToorBar(false)
         //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
-        tvTitle.text = getString(R.string.select_contacts)
+        tvTitle.text = getString(R.string.Contacts)
         val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         statusBar.setLayoutParams(llp)
     }
 
     override fun initData() {
+        EventBus.getDefault().register(this)
         fragment = ContactFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
@@ -65,8 +73,19 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             }
         }
         viewPager.offscreenPageLimit = 1
-    }
+        llCancel.setOnClickListener {
 
+           finish();
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun selectFriendChange(selectFriendChange: SelectFriendChange) {
+        selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.people)
+    }
     override fun setupActivityComponent() {
         DaggerselectFriendComponent
                 .builder()
