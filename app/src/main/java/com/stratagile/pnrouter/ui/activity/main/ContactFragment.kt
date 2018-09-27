@@ -177,10 +177,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
         }
         if (hasNewFriendRequest) {
-            newFriend.visibility = View.VISIBLE
+            new_contact_dot.visibility = View.VISIBLE
             EventBus.getDefault().post(UnReadContactCount(newFriendCount))
         } else {
-            newFriend.visibility = View.GONE
+            new_contact_dot.visibility = View.GONE
             EventBus.getDefault().post(UnReadContactCount(0))
         }
         if(bundle == null)
