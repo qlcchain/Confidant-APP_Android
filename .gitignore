@@ -17,3 +17,5 @@
 /app/src/main/res/drawable-xhdpi/icon_private.png
 /app/src/main/res/drawable-xhdpi/icon_shortvideo.png
 /qlink.jks
+/app/release/app-release.apk
+/app/release/output.json
