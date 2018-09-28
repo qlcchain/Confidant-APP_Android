@@ -5,7 +5,8 @@
     android:layout_height="@dimen/x105">
     <View
         android:id="@+id/divideLine"
-        style="@style/divide_line"/>
+        style="@style/divide_line"
+        android:layout_marginLeft="@dimen/x60"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center_vertical"
@@ -13,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:id="@+id/routerName"
-            android:layout_marginLeft="@dimen/x30"
+            android:layout_marginLeft="@dimen/x60"
             android:textSize="16sp"
             android:textColor="@color/main_color"
             android:layout_height="wrap_content" />
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:src="@mipmap/icon_back"
             android:rotation="180"
-            android:layout_marginRight="@dimen/x30"
+            android:layout_marginRight="@dimen/x60"
             android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>

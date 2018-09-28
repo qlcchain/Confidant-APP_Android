@@ -4,3 +4,5 @@ class ReminderUpdateEvent {
 }
 
 class EditNickName{}
+
+class RouterChange

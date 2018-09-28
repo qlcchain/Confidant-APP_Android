@@ -1,25 +1,19 @@
 package com.stratagile.pnrouter.application
 
 import android.support.multidex.MultiDexApplication
-import com.hyphenate.chat.EMClient
-import com.hyphenate.easeui.EaseUI
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.hyphenate.chat.EMConversation
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.easeui.EaseConstant
-import com.hyphenate.easeui.utils.EaseCommonUtils
-import com.socks.library.KLog
+import com.hyphenate.chat.EMClient
+import com.hyphenate.easeui.EaseUI
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
-import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPushMsgRsp
-import com.stratagile.pnrouter.entity.PushMsgReq
 import com.stratagile.pnrouter.message.MessageProvider
+import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.tencent.bugly.crashreport.CrashReport
@@ -37,6 +31,7 @@ class AppConfig : MultiDexApplication() {
     var messageReceiver: PNRouterServiceMessageReceiver? = null
 
     var messageSender: PNRouterServiceMessageSender? = null
+    lateinit var mAppActivityManager: AppActivityManager
 
     var mDaoMaster: DaoMaster? = null
 
@@ -58,6 +53,7 @@ class AppConfig : MultiDexApplication() {
         setDatabase()
         MessageProvider.getInstance()
         BGASwipeBackHelper.init(this, null)
+        mAppActivityManager = AppActivityManager(this)
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{

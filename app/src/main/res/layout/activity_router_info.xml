@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/color_efefef"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvSwitchRouter"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x30"
+        android:background="@color/white"
+        android:text="Switch Router"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/x30"
+        android:layout_height="@dimen/x90" />
+    <LinearLayout
+        android:id="@+id/llRouterAlias"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="@dimen/x30"
+        android:layout_height="@dimen/x90">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x30"
+            android:text="Router Alias"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tvRouterAlias"
+            android:layout_width="wrap_content"
+            android:text="Adam Grason"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x35"
+            android:src="@mipmap/icon_enter"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="@dimen/x35" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:id="@+id/llRouterQRCode"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x90">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x30"
+            android:text="Router QR Code"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@mipmap/icon_qr_code"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x35"
+            android:src="@mipmap/icon_enter"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="@dimen/x35" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvLogOut"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x30"
+        android:background="@color/white"
+        android:text="Log Out"
+        android:gravity="center"
+        android:paddingLeft="@dimen/x30"
+        android:layout_height="@dimen/x90" />
+</LinearLayout>

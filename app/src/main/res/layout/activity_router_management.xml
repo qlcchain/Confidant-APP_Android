@@ -21,28 +21,42 @@
         app:layout_constraintStart_toStartOf="@+id/view1"
         app:layout_constraintTop_toTopOf="@+id/view1" />
 
-
-    <TextView
-        android:id="@+id/tvRouterName"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Router 1"
-        android:textSize="20sp"
-        android:textColor="@color/white"
+        android:id="@+id/llRoutername"
         app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/x10"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivRouter" />
+        app:layout_constraintTop_toBottomOf="@+id/ivRouter"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvRouterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="Router 1"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@mipmap/icon_enter"
+            android:layout_marginRight="@dimen/x10"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRouterName"
+        app:layout_constraintTop_toBottomOf="@+id/llRoutername"
         android:padding="@dimen/x10"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="@dimen/x20"
+
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content">
         <ImageView
@@ -52,7 +66,7 @@
             android:layout_height="wrap_content" />
         <TextView
             android:layout_width="wrap_content"
-            android:text="Successful connection security protection"
+            android:text="Successful connection"
             android:textColor="@color/white"
             android:layout_height="wrap_content" />
 
@@ -65,6 +79,8 @@
         android:layout_height="@dimen/x92"
         android:padding="@dimen/x30"
         android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:textColor="@color/main_color"
         android:text="Other routers"
         android:background="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/view1" />

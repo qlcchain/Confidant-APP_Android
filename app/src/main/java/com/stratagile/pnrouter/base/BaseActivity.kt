@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.base
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
@@ -15,6 +14,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.hyphenate.easeui.EaseUI
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.pnrouter.view.RxDialogLoading
@@ -49,6 +49,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
             val localLayoutParams = window.attributes
             localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
         }
+        AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {
             val intent = intent
             val action = intent.action

@@ -7,10 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterManagementContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterManagementModule
@@ -19,7 +19,9 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.MutableListToArrayList
 import kotlinx.android.synthetic.main.activity_router_management.*
-
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 /**
@@ -42,7 +44,9 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_router_management)
+        EventBus.getDefault().register(this)
     }
+
     override fun initData() {
         title.text = "Router Management"
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -58,15 +62,25 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         routerListAdapter = RouterListAdapter(routerList.MutableListToArrayList())
         recyclerView.adapter = routerListAdapter
         routerListAdapter.setOnItemClickListener { adapter, view, position ->
-            var intent = Intent(this, RouterQRCodeActivity::class.java)
+            var intent = Intent(this, RouterInfoActivity::class.java)
             intent.putExtra("router", routerListAdapter.getItem(position))
             startActivity(intent)
         }
-        tvRouterName.setOnClickListener {
-            var intent = Intent(this, RouterQRCodeActivity::class.java)
+        llRoutername.setOnClickListener {
+            var intent = Intent(this, RouterInfoActivity::class.java)
             intent.putExtra("router", selectedRouter)
             startActivity(intent)
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun routerChange(routerChange: RouterChange) {
+        initData()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun setupActivityComponent() {

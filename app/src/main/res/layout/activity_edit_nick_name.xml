@@ -12,21 +12,11 @@
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_marginTop="@dimen/x30"
+        android:textColor="@color/main_color"
+        android:textColorHint="@color/colorPrimaryDark"
         android:paddingRight="@dimen/x30"
         android:paddingLeft="@dimen/x30"
         android:hint="@string/Please_type_your_username_here"
         android:layout_height="@dimen/x90" />
 
-    <TextView
-        android:id="@+id/tvConfirm"
-        android:layout_width="@dimen/x200"
-        android:layout_height="@dimen/x80"
-        android:layout_marginTop="@dimen/x30"
-        android:gravity="center"
-        android:background="@color/main_color"
-        android:textColor="@color/white"
-        android:text="@string/save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etNickName" />
 </LinearLayout>

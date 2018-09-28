@@ -1,11 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.login
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
-import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
@@ -13,22 +11,20 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.pawegio.kandroid.runOnUiThread
-import com.pawegio.kandroid.startActivity
-import com.pawegio.kandroid.startActivityForResult
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.ConstantValue.routerId
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JLoginRsp
+import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
@@ -40,19 +36,20 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.LocalRouterUtils
+import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
-import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.*
-
-import javax.inject.Inject;
-import kotlin.concurrent.thread
-import kotlin.math.log
+import javax.inject.Inject
 
 
 /**
@@ -234,9 +231,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (routerId.equals("")) {
                 return@setOnClickListener
             }
-            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-            AppConfig.instance.messageReceiver!!.loginBackListener = this
-            showProgressDialog("connecting...")
+            if (intent.hasExtra("flag")) {
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                onWebSocketConnected(ConnectStatus(0))
+            } else {
+                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                showProgressDialog("connecting...")
+            }
 //            mThread = CustomThread(routerId, userId)
 //            mThread!!.start()
         }
@@ -512,9 +514,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         return
                     }
                 }
+                routerId = data!!.getStringExtra("result")
+                routerName.text = "Router " + routerList.size + 1
+                newRouterEntity.routerId = data!!.getStringExtra("result")
+                return
             }
-            routerId = data!!.getStringExtra("result")
-            newRouterEntity.routerId = data!!.getStringExtra("result")
             return
         }
     }

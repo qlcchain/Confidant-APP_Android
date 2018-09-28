@@ -1,8 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.user
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -14,8 +17,7 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.EditNickNamePresenter
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import org.greenrobot.eventbus.EventBus
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -37,23 +39,59 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View {
         setContentView(R.layout.activity_edit_nick_name)
     }
     override fun initData() {
-        title.text = "Edit NickName"
-        var nickName = SpUtil.getString(this, ConstantValue.username, "")!!
-        etNickName.setText(nickName)
-        etNickName.setSelection(nickName.length)
-        tvConfirm.setOnClickListener {
-            if ("".equals(etNickName.text.toString().trim())) {
-                return@setOnClickListener
-            }
-            SpUtil.putString(this, ConstantValue.username, etNickName.text.toString().trim())
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            routerList.forEach {
-                it.username = etNickName.text.toString().trim()
-                AppConfig.instance.mDaoMaster!!.newSession().update(it)
-            }
-            EventBus.getDefault().post(EditNickName())
-            finish()
+        if (intent.hasExtra("flag")) {
+            title.text = "Alias"
+            etNickName.setText(intent.getStringExtra("alias"))
+            etNickName.setSelection(intent.getStringExtra("alias").length)
+            etNickName.hint = "Edit alias"
+        } else {
+            title.text = "Edit NickName"
+            var nickName = SpUtil.getString(this, ConstantValue.username, "")!!
+            etNickName.setText(nickName)
+            etNickName.setSelection(nickName.length)
         }
+    }
+
+    override fun onBackPressed() {
+        if (intent.hasExtra("flag")) {
+            if (etNickName.text.toString().equals(intent.getStringExtra("alias"))) {
+                setResult(0)
+            } else {
+                var intent = Intent()
+                intent.putExtra("alias", etNickName.text.toString())
+                setResult(Activity.RESULT_OK, intent)
+
+            }
+        }
+        super.onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.save, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.save -> {
+                if ("".equals(etNickName.text.toString().trim())) {
+                    return true
+                }
+                if (!intent.hasExtra("flag")) {
+                    SpUtil.putString(this, ConstantValue.username, etNickName.text.toString().trim())
+                    var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+                    routerList.forEach {
+                        it.username = etNickName.text.toString().trim()
+                        AppConfig.instance.mDaoMaster!!.newSession().update(it)
+                    }
+                    EventBus.getDefault().post(EditNickName())
+                }
+                onBackPressed()
+            }
+            else -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun setupActivityComponent() {

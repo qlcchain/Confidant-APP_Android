@@ -83,7 +83,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
         KLog.i( "打开相机出错")
     }
     override fun initData() {
-        setTitle("ScanQRCode")
+        setTitle("Scan")
     }
 
     override fun setupActivityComponent() {
