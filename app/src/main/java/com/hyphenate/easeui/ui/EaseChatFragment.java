@@ -75,6 +75,7 @@ import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.message.Message;
+import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -103,6 +104,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
     protected static final int REQUEST_CODE_DING_MSG = 4;
+    protected static final int REQUEST_CODE_FILE = 5;
 
     protected static final int MSG_TYPING_BEGIN = 0;
     protected static final int MSG_TYPING_END = 1;
@@ -901,6 +903,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     break;
                 case ITEM_LOCATION:
                     startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                    break;
+                case ITEM_FILE:
+                    startActivityForResult(new Intent(getActivity(), FileChooseActivity.class), REQUEST_CODE_FILE);
                     break;
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();

@@ -384,6 +384,7 @@
     <string name="multiSelect">MultiSelect</string>
     <string name="Contacts">Contacts</string>
     <string name="selected">selected:</string>
-
+    <string name="SELECT_PROFILE">SELECT PROFILE</string>
+    <string name="error">error</string>
 
 </resources>
