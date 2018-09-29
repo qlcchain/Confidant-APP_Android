@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingBottom="4dp"
-    android:paddingTop="13dp" >
+    android:paddingTop="13dp">
 
     <TextView
         android:id="@+id/timestamp"
@@ -19,15 +20,15 @@
         android:layout_marginTop="@dimen/margin_chat_activity"
         android:paddingRight="20dp" >
 
-        <com.hyphenate.easeui.widget.EaseImageView
+        <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
             android:layout_width="@dimen/size_avatar"
+            app:imageButtonTextSize="16"
             android:layout_height="@dimen/size_avatar"
             android:layout_alignParentLeft="true"
+            android:layout_marginTop="@dimen/x5"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="@dimen/margin_chat_activity"
-            android:src="@mipmap/img_person"
-            android:scaleType="fitXY" />
+            android:layout_marginLeft="@dimen/margin_chat_activity" />
 
         <TextView
             android:id="@+id/tv_userid"

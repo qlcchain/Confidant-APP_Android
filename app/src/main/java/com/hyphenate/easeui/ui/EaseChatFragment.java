@@ -74,9 +74,13 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
+import com.stratagile.pnrouter.entity.events.FileTransformEntity;
+import com.stratagile.pnrouter.entity.events.TransformFileMessage;
+import com.stratagile.pnrouter.entity.events.TransformStrMessage;
 import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
+import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
@@ -86,7 +90,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -105,6 +111,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final int REQUEST_CODE_LOCAL = 3;
     protected static final int REQUEST_CODE_DING_MSG = 4;
     protected static final int REQUEST_CODE_FILE = 5;
+    protected static final int REQUEST_CODE_VIDEO = 6;
 
     protected static final int MSG_TYPING_BEGIN = 0;
     protected static final int MSG_TYPING_END = 1;
@@ -130,6 +137,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     protected Handler handler = new Handler();
     protected File cameraFile;
+    protected File videoFile;
     protected EaseVoiceRecorderView voiceRecorderView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected ListView listView;
@@ -174,14 +182,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     private UserEntity toChatUser;
 
+    private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, boolean roaming) {
         isRoaming = roaming;
-        EventBus.getDefault().register(this);
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
     }
 
@@ -208,7 +218,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         super.onActivityCreated(savedInstanceState);
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnectWebSocket(FileTransformEntity fileTransformEntity){
 
+        if(fileTransformEntity.getMessage() == 0)
+        {
+            return;
+        }
+        switch (fileTransformEntity.getMessage())
+        {
+            case 1:
+                //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),new File()));
+                break;
+            case 2:
+                break;
+            default:
+                break;
+        }
+    }
     /**
      * 锁定内容高度，防止跳闪
      */
@@ -363,7 +390,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         };
 
     }
-
     protected void setUpView() {
         titleBar.setTitle( UserDataManger.curreantfriendUserData.getNickName());
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
@@ -668,7 +694,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists())
                     sendImageMessage(cameraFile.getAbsolutePath());
-            } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
+            }else if(requestCode == REQUEST_CODE_VIDEO)
+            {
+                //if (videoFile != null && videoFile.exists())
+                //sendImageMessage(videoFile.getAbsolutePath());
+            }else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 if (data != null) {
                     Uri selectedImage = data.getData();
                     if (selectedImage != null) {
@@ -691,6 +721,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 // Send the ding-type msg.
                 EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUserId, msgContent);
                 sendMessage(dingMsg);
+            }else  if (requestCode == REQUEST_CODE_FILE) {
+                String filePath = data.getStringExtra("path");
+                File file = new File(filePath);
+                long fileSize = file.length();
+                String md5Data = "";
+                if(file.exists())
+                {
+                    md5Data = FileUtil.getFileMD5(file);
+                }
+                sendFileMessage(filePath);
+                KLog.i("返回。。。。。。。SELECT_PROFILE" + md5Data);
             }
         }
     }
@@ -1041,7 +1082,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     protected void sendImageMessage(String imagePath) {
         EMMessage message = EMMessage.createImageSendMessage(imagePath, false, toChatUserId);
-        sendMessage(message);
+        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+        message.setFrom(userId);
+        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+        message.setUnread(false);
+        currentSendMsg = message;
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        sendMsgMap.put(uuid,message);
+        EventBus.getDefault().post(new FileTransformEntity(uuid,0,""));
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
@@ -1260,13 +1308,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
-                + System.currentTimeMillis() + ".jpg");
+        videoFile = new File(PathUtil.getInstance().getVideoPath(), EMClient.getInstance().getCurrentUser()
+                + System.currentTimeMillis() + ".mp4");
         //noinspection ResultOfMethodCallIgnored
-        cameraFile.getParentFile().mkdirs();
+        videoFile.getParentFile().mkdirs();
         startActivityForResult(
-                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10),
-                REQUEST_CODE_CAMERA);
+                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10),
+                REQUEST_CODE_VIDEO);
     }
     /**
      * select local image
