@@ -1,8 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.chat
 
+import android.annotation.TargetApi
 import android.content.Intent
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import com.hyphenate.easeui.EaseConstant
@@ -45,21 +48,79 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             // 如果超过100个像素，它可能是一个键盘。获取状态栏的高度
             statusBarHeight = 0
         }
-        try {
-            val c = Class.forName("com.android.internal.R\$dimen")
-            val obj = c.newInstance()
-            val field = c.getField("status_bar_height")
-            val x = Integer.parseInt(field.get(obj).toString())
-            statusBarHeight = getResources().getDimensionPixelSize(x)
-        } catch (e: Exception) {
-            e.printStackTrace()
+//        try {
+//            val c = Class.forName("com.android.internal.R\$dimen")
+//            val obj = c.newInstance()
+//            val field = c.getField("status_bar_height")
+//            val x = Integer.parseInt(field.get(obj).toString())
+//            statusBarHeight = getResources().getDimensionPixelSize(x)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//
+//        val realKeyboardHeight = heightDiff - statusBarHeight
+//        KLog.e("keyboard height(单位像素) = $realKeyboardHeight")
+//        if (realKeyboardHeight >= 200) {
+//            SpUtil.putInt(this@ChatActivity, ConstantValue.realKeyboardHeight, realKeyboardHeight)
+//            parentLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this@ChatActivity)
+//        }
+        getSupportSoftInputHeight()
+    }
+
+    /**
+     * 获取软件盘的高度
+     * @return
+     */
+    private fun getSupportSoftInputHeight(): Int {
+        val r = Rect()
+        /**
+         * decorView是window中的最顶层view，可以从window中通过getDecorView获取到decorView。
+         * 通过decorView获取到程序显示的区域，包括标题栏，但不包括状态栏。
+         */
+        getWindow().getDecorView().getWindowVisibleDisplayFrame(r)
+        //获取屏幕的高度
+        val screenHeight = getWindow().getDecorView().getRootView().getHeight()
+        //计算软件盘的高度
+        var softInputHeight = screenHeight - r.bottom
+
+        /**
+         * 某些Android版本下，没有显示软键盘时减出来的高度总是144，而不是零，
+         * 这是因为高度是包括了虚拟按键栏的(例如华为系列)，所以在API Level高于20时，
+         * 我们需要减去底部虚拟按键栏的高度（如果有的话）
+         */
+        if (Build.VERSION.SDK_INT >= 20) {
+            // When SDK Level >= 20 (Android L), the softInputHeight will contain the height of softButtonsBar (if has)
+            softInputHeight = softInputHeight - getSoftButtonsBarHeight()
         }
 
-        val realKeyboardHeight = heightDiff - statusBarHeight
-        KLog.e("keyboard height(单位像素) = $realKeyboardHeight")
-        if (realKeyboardHeight >= 200) {
-            SpUtil.putInt(this@ChatActivity, ConstantValue.realKeyboardHeight, realKeyboardHeight)
-            parentLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this@ChatActivity)
+        if (softInputHeight < 0) {
+            KLog.w("EmotionKeyboard--Warning: value of softInputHeight is below zero!")
+        }
+        //存一份到本地
+        if (softInputHeight > 0) {
+            SpUtil.putInt(this@ChatActivity, ConstantValue.realKeyboardHeight, softInputHeight)
+        }
+        return softInputHeight
+    }
+
+
+    /**
+     * 底部虚拟按键栏的高度
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private fun getSoftButtonsBarHeight(): Int {
+        val metrics = DisplayMetrics()
+        //这个方法获取可能不是真实屏幕的高度
+        getWindowManager().getDefaultDisplay().getMetrics(metrics)
+        val usableHeight = metrics.heightPixels
+        //获取当前屏幕的真实高度
+        getWindowManager().getDefaultDisplay().getRealMetrics(metrics)
+        val realHeight = metrics.heightPixels
+        return if (realHeight > usableHeight) {
+            realHeight - usableHeight
+        } else {
+            0
         }
     }
 

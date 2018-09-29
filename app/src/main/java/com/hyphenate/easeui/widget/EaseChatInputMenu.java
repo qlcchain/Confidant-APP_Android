@@ -94,7 +94,7 @@ public class EaseChatInputMenu extends LinearLayout {
         //选择其他的，如图片菜单，文件菜单，的容器
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
-        int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), 0);
+        int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), 787);
         KLog.i("sp中记录的键盘的高度为：" + height);
         if (height != 0) {
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(UIUtils.getDisplayWidth((Activity) getContext()), height);
@@ -331,6 +331,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
                 hideKeyboard();
                 chatExtendMenuContainer.setVisibility(View.VISIBLE);
+                KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                 chatExtendMenu.setVisibility(View.VISIBLE);
                 emojiconMenu.setVisibility(View.GONE);
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
@@ -338,6 +339,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         chatExtendMenuContainer.setVisibility(View.VISIBLE);
+                        KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                         chatExtendMenu.setVisibility(View.VISIBLE);
                         emojiconMenu.setVisibility(View.GONE);
                         chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
@@ -386,7 +388,7 @@ public class EaseChatInputMenu extends LinearLayout {
         //表情菜单关闭状态
         chatPrimaryMenu.setModeKeyboard();
         if (chatExtendMenuContainer.getVisibility() == View.GONE) {
-            KLog.i("意料之外的跳山");
+            KLog.i("意料之外的跳闪");
             if (isSoftInputShown()) {
                 lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
                 hideKeyboard();
@@ -398,6 +400,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         chatExtendMenuContainer.setVisibility(View.VISIBLE);
+                        KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                         chatExtendMenu.setVisibility(View.GONE);
                         emojiconMenu.setVisibility(View.VISIBLE);
                         chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
@@ -417,6 +420,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
                 hideEmotionLayout(true);//隐藏表情布局，显示软件盘
                 chatExtendMenuContainer.setVisibility(GONE);
+                KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                 emojiconMenu.setVisibility(View.GONE);
                 chatExtendMenu.setVisibility(View.GONE);
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
@@ -430,6 +434,7 @@ public class EaseChatInputMenu extends LinearLayout {
                     lockContentHeight();
                     hideKeyboard();
                     chatExtendMenuContainer.setVisibility(VISIBLE);
+                    KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                     emojiconMenu.setVisibility(View.VISIBLE);
                     chatExtendMenu.setVisibility(View.GONE);
                     unlockContentHeightDelayed();
@@ -437,6 +442,7 @@ public class EaseChatInputMenu extends LinearLayout {
                     //键盘是关闭的，就是就要关闭菜单页面，比如文件，，，
 //                    showEmotionLayout();//两者都没显示，直接显示表情布局
                     chatExtendMenuContainer.setVisibility(VISIBLE);
+                    KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                     chatExtendMenu.setVisibility(View.GONE);
                     emojiconMenu.setVisibility(View.VISIBLE);
                 }
