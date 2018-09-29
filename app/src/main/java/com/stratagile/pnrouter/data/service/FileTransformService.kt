@@ -34,16 +34,13 @@ class FileTransformService : Service() {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun startNewConnect(fileTransformEntity: FileTransformEntity) {
-        KLog.i("收到eventbus消息。。")
-        webSocketList.forEach {
-            if (it.toId.equals(fileTransformEntity.toId)) {
-                return
-            }
+        if (fileTransformEntity.message == 0) {
+            KLog.i("收到eventbus消息。。")
+            val fileWebSocketConnection = AppConfig.instance.messageReceiver!!.createFileWebSocket()
+            fileWebSocketConnection.connect()
+            fileWebSocketConnection.toId = fileTransformEntity.toId
+            webSocketList.add(fileWebSocketConnection)
         }
-        val fileWebSocketConnection = AppConfig.instance.messageReceiver!!.createFileWebSocket()
-        fileWebSocketConnection.connect()
-        fileWebSocketConnection.toId = fileTransformEntity.toId
-        webSocketList.add(fileWebSocketConnection)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

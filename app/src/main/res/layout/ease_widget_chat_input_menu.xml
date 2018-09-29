@@ -30,8 +30,6 @@
             android:id="@+id/extend_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/x30"
-            android:layout_marginTop="@dimen/x30"
             hyphenate:numColumns="4" />
 
         <FrameLayout 

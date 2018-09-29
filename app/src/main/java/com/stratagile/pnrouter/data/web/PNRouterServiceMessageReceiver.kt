@@ -196,13 +196,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         pipe!!.reConenct()
     }
 
-    var fileWebSocketConnection : FileWebSocketConnection? = null
 
-    fun createFileWebSocket() : FileWebSocketConnection{
-        if (fileWebSocketConnection == null) {
-            fileWebSocketConnection = FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
-        }
-        return fileWebSocketConnection!!
+    fun createFileWebSocket(): FileWebSocketConnection {
+        return FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
     }
 
     /**
