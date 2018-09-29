@@ -2,26 +2,21 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import com.socks.library.KLog
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.events.EditNickName
+import com.stratagile.pnrouter.entity.events.FileTransformEntity
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMyComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MyContract
 import com.stratagile.pnrouter.ui.activity.main.module.MyModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MyPresenter
-
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.R
-import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.entity.events.EditNickName
-import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.router.RouterManagementActivity
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.utils.SpUtil
@@ -29,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -59,6 +55,10 @@ class MyFragment : BaseFragment(), MyContract.View {
         routerManagement.setOnClickListener {
             var intent  = Intent(activity, RouterManagementActivity::class.java)
             startActivity(intent)
+        }
+        settings.setOnClickListener {
+            KLog.i("点击。。。")
+            EventBus.getDefault().post(FileTransformEntity("dddd"))
         }
     }
 

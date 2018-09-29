@@ -7,6 +7,7 @@ import android.view.View
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -81,8 +82,14 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
 
     fun showDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
-                .setTitleText("Oops")
-                .setContentText("log out?")
+                .setTitleText("Log Out")
+                .setConfirmClickListener {
+                    showProgressDialog()
+                    AppConfig.instance.messageReceiver!!.shutdown()
+                    MessageRetrievalService.registerActivityStopped(this)
+                    closeProgressDialog()
+                    onLogOutSuccess()
+                }
                 .show()
 
     }

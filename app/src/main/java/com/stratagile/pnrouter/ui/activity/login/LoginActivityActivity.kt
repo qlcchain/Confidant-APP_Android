@@ -232,8 +232,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 return@setOnClickListener
             }
             if (intent.hasExtra("flag")) {
+                AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
-                onWebSocketConnected(ConnectStatus(0))
+                showProgressDialog("connecting...")
+//                onWebSocketConnected(ConnectStatus(0))
             } else {
                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -515,7 +517,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                 }
                 routerId = data!!.getStringExtra("result")
-                routerName.text = "Router " + routerList.size + 1
+                routerName.text = "Router " + (routerList.size + 1)
                 newRouterEntity.routerId = data!!.getStringExtra("result")
                 return
             }

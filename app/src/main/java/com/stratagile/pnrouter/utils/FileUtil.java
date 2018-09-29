@@ -22,9 +22,10 @@ import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import okio.ByteString;
 
 /**
  * Created by huzhipeng on 2018/3/7.
@@ -553,5 +554,26 @@ public class FileUtil {
             }
         }
         return map;
+    }
+
+    public static ByteString readFile(File file) {
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        byte[] buffer = null;
+        try {
+            fis = new FileInputStream(file);
+            buffer = new byte[fis.available()];
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) fis.close();
+                if (ois != null) ois.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return ByteString.of(buffer);
     }
 }

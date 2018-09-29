@@ -95,15 +95,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
                 .inject(this)
     }
 
-   override protected fun onResume() {
-        super.onResume()
-    }
-
-    override protected fun onPause() {
-        super.onPause()
-    }
-
-    override protected fun onDestroy() {
+    override fun onDestroy() {
         mZXingView.onDestroy() // 销毁二维码扫描控件
         super.onDestroy()
     }

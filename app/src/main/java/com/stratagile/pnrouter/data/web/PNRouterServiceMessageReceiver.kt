@@ -179,9 +179,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
         if (pipe == null) {
-            val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url,
-                    urls.signalServiceUrls[0].trustStore,
-                    credentialsProvider, userAgent, connectivityListener)
+            val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
             pipe!!.messagePipeCallback = this
             return pipe!!
@@ -190,27 +188,22 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         }
     }
 
-//    @Throws(IOException::class)
-//    @JvmOverloads
-//    fun retrieveMessages(callback: MessageReceivedCallback = NullMessageReceivedCallback()): List<SignalServiceEnvelope> {
-//        val results = LinkedList<E>()
-//        val entities = socket.getMessages()
-//
-//        for (entity in entities) {
-//            val envelope = SignalServiceEnvelope(entity.getType(), entity.getSource(),
-//                    entity.getSourceDevice(), entity.getRelay(),
-//                    entity.getTimestamp(), entity.getMessage(),
-//                    entity.getContent())
-//
-//            callback.onMessage(envelope)
-//            results.add(envelope)
-//
-//            socket.acknowledgeMessage(entity.getSource(), entity.getTimestamp())
-//        }
-//
-//        return results
-//    }
+    fun shutdown() {
+        pipe!!.shutdown()
+    }
 
+    fun reConnect() {
+        pipe!!.reConenct()
+    }
+
+    var fileWebSocketConnection : FileWebSocketConnection? = null
+
+    fun createFileWebSocket() : FileWebSocketConnection{
+        if (fileWebSocketConnection == null) {
+            fileWebSocketConnection = FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
+        }
+        return fileWebSocketConnection!!
+    }
 
     /**
      * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息

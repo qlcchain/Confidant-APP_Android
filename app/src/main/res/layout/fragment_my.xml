@@ -110,7 +110,7 @@
     </LinearLayout>
 
     <com.stratagile.pnrouter.view.DrawableTextView
-        android:id="@+id/Version"
+        android:id="@+id/settings"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
         android:layout_marginTop="@dimen/x30"

@@ -12,6 +12,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.message.Message
@@ -128,6 +129,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 1, 0, 10)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+        var intent = Intent(this, FileTransformService::class.java)
+        startService(intent)
     }
 
     override fun onDestroy() {

@@ -3,18 +3,17 @@ package com.stratagile.pnrouter.data.web
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.util.Log
-import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.HeartBeatReq
-import com.stratagile.pnrouter.entity.JHeartBeatRsp
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.entity.events.FileTransformEntity
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.WiFiUtil
 import okhttp3.*
 import okio.ByteString
-import java.io.IOException
-import java.lang.Exception
+import org.greenrobot.eventbus.EventBus
+import java.io.*
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -22,19 +21,14 @@ import java.security.cert.X509Certificate
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.*
 
-class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val credentialsProvider: CredentialsProvider, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
+class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
 
     private val incomingRequests = LinkedList<BaseData>()
-    private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
-
     private val wsUri: String
 
     private var client: WebSocket? = null
-    private var keepAliveSender: KeepAliveSender? = null
-    private var reConnectThread: ReConnectThread? = null
     private var attempts: Int = 0
     private var connected: Boolean = false
     private var reConnectTimeOut = false
@@ -44,11 +38,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var port = ":18006/"
     private var ipAddress = ""
     private var filledUri = ""
+    var toId = ""
 
     init {
         this.attempts = 0
         this.connected = false
-        reConnectThread = ReConnectThread()
         this.wsUri = httpUri.replace("https://", "wss://")
                 .replace("http://", "ws://")
 //        this.wsUri = "wss://47.96.76.184:18000"
@@ -115,11 +109,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             client = null
             connected = false
         }
-
-        if (keepAliveSender != null) {
-            keepAliveSender!!.shutdown()
-            keepAliveSender = null
-        }
     }
 
     @Synchronized
@@ -144,6 +133,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     fun send(message : String?) : Boolean{
+        KLog.i("开始传输字符串。。")
 //        Log.i("websocketConnection", message)
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
@@ -154,39 +144,66 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             return false
         } else {
             Log. i("WenSocketConnetion", "发送成功")
+            EventBus.getDefault().post(FileTransformEntity(toId, 2))
             return true
         }
     }
 
-    @Synchronized
-    @Throws(IOException::class)
-    private fun sendKeepAlive() {
-        if (keepAliveSender != null && client != null) {
-            //todo keepalive message
-            var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
-            LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
-            var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
-            LogUtil.addLog("发送结果：${reslut}")
-            KLog.i("心跳消息为：：")
-            KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+
+    fun sendFile(file : File) : Boolean{
+        KLog.i("开始传输文件。。")
+        if (client == null || !connected) {
+            Log.i("websocket", "No connection!")
+            return false
         }
+        var byteString = FileUtil.readFile(file)
+
+        if (!client!!.send(byteString)) {
+            return false
+        } else {
+            Log. i("WenSocketConnetion", "发送成功")
+            EventBus.getDefault().post(FileTransformEntity(toId, 2))
+            return true
+        }
+    }
+
+    /**
+     * 获得指定文件的byte数组
+     */
+    private fun getBytes(file: File): ByteArray? {
+        var buffer: ByteArray? = null
+        try {
+            val fis = FileInputStream(file)
+            val bos = ByteArrayOutputStream(1000)
+            val b = ByteArray(1000)
+            var n = 0
+            while ({n = (fis.read(b)); n}()!= -1) {
+                bos.write(b, 0, n)
+            }
+            fis.close()
+            bos.close()
+            buffer = bos.toByteArray()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return buffer
     }
 
 //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
-        if (client != null && keepAliveSender == null) {
+        if (client != null) {
             KLog.i("onConnected()")
             KLog.i(client!!.request().url())
             LogUtil.addLog("连接成功：${client!!.request().url()}")
             attempts = 0
             connected = true
             retryTime = 0
-            reConnectThread!!.shutdown()
-            reConnectThread = null
-            keepAliveSender = KeepAliveSender()
-            keepAliveSender!!.start()
-
             if (listener != null) listener!!.onConnected()
+            //连接成功，告诉外接,准备发送文件的消息
+            EventBus.getDefault().post(FileTransformEntity(toId, 1))
         }
     }
 
@@ -197,32 +214,22 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.w(TAG, "onMessage(text)! " + text!!)
-        LogUtil.addLog("接收信息：${text}")
-        try {
-            val gson = GsonUtil.getIntGson()
-            var baseData = gson.fromJson(text, BaseData::class.java)
-            if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
-                val heartBeatRsp  = gson.fromJson(text, JHeartBeatRsp::class.java)
-                if (heartBeatRsp.params.retCode == 0) {
-                    KLog.i("心跳监测和服务器的连接正常~~~")
-                }
-            } else {
-                onMessageReceiveListener!!.onMessage(baseData, text)
-            }
-//            KLog.i("解析消息")
-//            KLog.i(baseData.toString())
-//            KLog.i(baseData.timestamp)
-//            KLog.i(baseData.appid)
-//            KLog.i(baseData.params.toString())
-//            Log.i(TAG, baseData.params.toString())
-//            var jsonObject  = JSONObject.parseObject(text)
-//            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
-//            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
-//            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
-//            incomingRequests.add(baseData)
-        } catch (e : Exception) {
-            e.printStackTrace()
-        }
+        EventBus.getDefault().post(FileTransformEntity(toId, 3, text))
+//        LogUtil.addLog("接收信息：${text}")
+//        try {
+//            val gson = GsonUtil.getIntGson()
+//            var baseData = gson.fromJson(text, BaseData::class.java)
+//            if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
+//                val heartBeatRsp  = gson.fromJson(text, JHeartBeatRsp::class.java)
+//                if (heartBeatRsp.params.retCode == 0) {
+//                    KLog.i("心跳监测和服务器的连接正常~~~")
+//                }
+//            } else {
+//                onMessageReceiveListener!!.onMessage(baseData, text)
+//            }
+//        } catch (e : Exception) {
+//            e.printStackTrace()
+//        }
     }
 
 
@@ -231,68 +238,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         Log.w(TAG, "onClosed()...")
         this.connected = false
 
-//        val iterator = outgoingRequests.entries.iterator()
-//
-//        while (iterator.hasNext()) {
-//            val entry = iterator.next()
-//            entry.value.setException(IOException("Closed: $code, $reason"))
-//            iterator.remove()
-//        }
-
-        if (keepAliveSender != null) {
-            keepAliveSender!!.shutdown()
-            keepAliveSender = null
-        }
-
         listener?.onDisconnected()
-
-        reConnectThread = ReConnectThread()
-
-//        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
         if (client != null) {
             client!!.close(1000, "OK")
-//            client!!.cancel()
             client = null
             connected = false
         }
-        if (reConnectThread != null && !isShutDown) {
-            reConnectThread?.reStart()
-        }
 
-//        notifyAll()
-    }
-
-    fun reConnect() {
-        Log.w(TAG, "WSC reConnect()...")
-
-        if (client == null) {
-//            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
-            val socketFactory = createTlsSocketFactory(trustStore)
-
-            val okHttpClient = OkHttpClient.Builder()
-                    .sslSocketFactory(socketFactory.first)
-                    .hostnameVerifier(object : HostnameVerifier {
-                        override fun verify(hostname: String, session: SSLSession): Boolean {
-                            return true
-                        }
-                    })
-//                    .sslSocketFactory(socketFactory.first, socketFactory.second)
-                    .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
-                    .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
-                    .build()
-            val requestBuilder = Request.Builder().url(filledUri)
-
-            if (userAgent != null) {
-//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
-                requestBuilder.addHeader("Sec-WebSocket-Protocol", userAgent)
-            }
-
-            listener?.onConnecting()
-
-            this.connected = false
-            this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
-        }
     }
 
     @Synchronized
@@ -354,81 +307,9 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     }
 
-    private inner class KeepAliveSender : Thread() {
-
-        private val stop = AtomicBoolean(false)
-
-        override fun run() {
-            while (!stop.get()) {
-                try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(KEEPALIVE_TIMEOUT_SECONDS.toLong()))
-
-                    Log.w(TAG, "Sending keep alive...")
-                    sendKeepAlive()
-                } catch (e: Throwable) {
-                    Log.w(TAG, e)
-                }
-
-            }
-        }
-
-        fun shutdown() {
-            stop.set(true)
-        }
-    }
-    private inner class ReConnectThread : Thread() {
-
-        private val stop = AtomicBoolean(false)
-
-        override fun run() {
-            while (!stop.get() &&! reConnectTimeOut) {
-                try {
-                    if (retryTime > retryInterval.size) {
-                        reConnectTimeOut = true
-                        return
-                    }
-                    Log.w(TAG, "reConnect1..." + retryInterval[retryTime])
-                    Thread.sleep(retryInterval[retryTime].toLong())
-                    retryTime++
-                    Log.w(TAG, "reConnect2...")
-                    if (connected) {
-                        shutdown()
-                        retryTime = 0
-                        KLog.i("websocket已经连接上了，此处将继续重连的逻辑清除")
-                        return
-                    }
-                    //测试服务器，测试用
-                    if (retryTime >=3) {
-                        KLog.i("重连次数过多，切换公网服务器连接。。")
-                        filledUri = wsUri
-                    }
-                    if (client != null) {
-//                        client!!.close(1000, "OK")
-                        client!!.cancel()
-                        client = null
-                        connected = false
-                    }
-                    reConnect()
-                } catch (e: Throwable) {
-                    Log.w(TAG, e)
-                }
-
-            }
-        }
-
-        fun shutdown() {
-            stop.set(true)
-        }
-        fun reStart() {
-            stop.set(false)
-            reConnectTimeOut = false
-            run()
-        }
-    }
-
     companion object {
 
-        private val TAG = WebSocketConnection::class.java.simpleName
+        private val TAG = FileWebSocketConnection::class.java.simpleName
         private val KEEPALIVE_TIMEOUT_SECONDS = 30
     }
 

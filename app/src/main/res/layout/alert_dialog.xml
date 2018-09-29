@@ -4,6 +4,7 @@
     android:id="@+id/loading"
     android:layout_width="290dp"
     android:layout_height="wrap_content"
+    android:background="@color/color_f2f2f2"
     android:gravity="center"
     android:layout_gravity="center"
     android:orientation="vertical"
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:textSize="19sp"
         android:textColor="#575757"
+        android:visibility="gone"
         android:layout_marginTop="10dp"
         android:singleLine="true"
         android:text="title" />
@@ -32,16 +34,20 @@
         android:id="@+id/content_text"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="@dimen/x40"
+        android:layout_marginRight="@dimen/x40"
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:textAlignment="center"
         android:gravity="center"
-        android:textColor="#797979"
-        android:visibility="gone" />
+        android:text="Confirm to log out the router? Please be aware that your chatting history, files and contacts will be erased."
+        android:textColor="@color/mainColor"
+        android:visibility="visible" />
 
     <LinearLayout
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/x40"
         android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/x20"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:gravity="center">
@@ -50,17 +56,19 @@
             android:id="@+id/cancel_button"
             android:layout_width="0px"
             android:layout_weight="1"
+            android:background="@color/mainColor"
+            android:textColor="@color/white"
             android:layout_height="31dp"
-            style="@style/dialog_blue_button"
             android:layout_marginRight="10dp"
-            android:text="cancel" />
+            android:text="Cancel" />
 
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="20dp"
             android:layout_weight="1"
+            android:background="@color/white"
+            android:textColor="@color/mainColor"
             android:layout_height="31dp"
-            style="@style/dialog_blue_button"
-            android:text="ok" />
+            android:text="Confirm" />
     </LinearLayout>
 </LinearLayout>

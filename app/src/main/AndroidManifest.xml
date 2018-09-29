@@ -150,6 +150,7 @@
             android:resource="@array/preloaded_fonts" />
 
         <service android:name=".data.service.MessageRetrievalService" />
+        <service android:name=".data.service.FileTransformService" />
 
         <receiver android:name=".data.receiver.BootReceiver">
             <intent-filter>

@@ -1,17 +1,9 @@
 package com.stratagile.pnrouter.data.web
 
-import android.util.Log
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.utils.baseDataToJson
-import okhttp3.internal.Util
-import okio.ByteString
 import java.io.IOException
-import java.security.NoSuchAlgorithmException
-import java.security.SecureRandom
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) : WebSocketConnection.OnMessageReceiveListener {
@@ -130,7 +122,12 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
      * Close this connection to the server.
      */
     fun shutdown() {
-        websocket.disconnect()
+        websocket.disconnect(true)
+    }
+
+    fun reConenct() {
+        websocket.connect()
+        websocket.isShutDown = false
     }
 
     fun webSocketConnection() : WebSocketConnection {

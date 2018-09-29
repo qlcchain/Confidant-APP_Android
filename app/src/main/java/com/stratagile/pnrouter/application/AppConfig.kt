@@ -62,10 +62,11 @@ class AppConfig : MultiDexApplication() {
                     APIModule.DynamicCredentialsProvider(this),
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
+            MessageRetrievalService.registerActivityStarted(this)
         }
-        MessageRetrievalService.registerActivityStarted(this)
         return messageReceiver!!
     }
+
 
     fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
         if (reStart) {
@@ -86,6 +87,12 @@ class AppConfig : MultiDexApplication() {
         }
         return messageSender!!
     }
+
+    fun getPNRouterServiceMessageSender(reStart: Boolean) :  PNRouterServiceMessageSender{
+        messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
+        return messageSender!!
+    }
+
 
     protected fun setupApplicationComponent() {
         applicationComponent = DaggerAppComponent
