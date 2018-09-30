@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="@color/color_2c2c2c"
-            android:text="Avatar"
+            android:text="Profile Photo"
             android:layout_marginLeft="15dp"
             />
         <View
@@ -50,7 +50,7 @@
         android:layout_height="@dimen/x92"
         app:contentStr="HZP"
         app:showImg="false"
-        app:text1="NickName">
+        app:text1="Name">
     </com.stratagile.pnrouter.view.DetailView>
 
     <include layout="@layout/divide_line"/>
@@ -61,7 +61,7 @@
         android:layout_height="@dimen/x92"
         app:src="@mipmap/icon_qr_code"
         app:showImg="true"
-        app:text1="QRCode">
+        app:text1="My QR Code">
     </com.stratagile.pnrouter.view.DetailView>
 
     <include layout="@layout/divide_line"/>
@@ -82,7 +82,7 @@
         android:layout_height="@dimen/x92"
         app:contentStr="Not set"
         app:showImg="false"
-        app:text1="Profession">
+        app:text1="Occupation">
     </com.stratagile.pnrouter.view.DetailView>
     <include layout="@layout/divide_line"/>
 
@@ -92,7 +92,7 @@
         android:layout_height="@dimen/x92"
         app:contentStr="Not set"
         app:showImg="false"
-        app:text1="Location">
+        app:text1="Region">
     </com.stratagile.pnrouter.view.DetailView>
 
 

@@ -40,6 +40,13 @@ class FileTransformService : Service() {
             fileWebSocketConnection.connect()
             fileWebSocketConnection.toId = fileTransformEntity.toId
             webSocketList.add(fileWebSocketConnection)
+        } else if (fileTransformEntity.message == 4) {
+            webSocketList.forEach {
+                if (it.toId.equals(fileTransformEntity.toId)) {
+                    it.disconnect(true)
+                    return
+                }
+            }
         }
     }
 

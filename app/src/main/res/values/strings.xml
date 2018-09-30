@@ -386,5 +386,8 @@
     <string name="selected">selected:</string>
     <string name="SELECT_PROFILE">SELECT PROFILE</string>
     <string name="error">error</string>
+    <string name="successful_connection">Successful connection</string>
+    <string name="connection">Connection</string>
+    <string name="failed_to_connect">Failed to connect</string>
 
 </resources>

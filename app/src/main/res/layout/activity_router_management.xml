@@ -50,6 +50,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llStatus"
         android:layout_width="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llRoutername"
@@ -60,16 +61,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/ivConnectStatus"
             android:layout_width="wrap_content"
             android:src="@mipmap/icon_connected"
             android:layout_marginRight="@dimen/x10"
             android:layout_height="wrap_content" />
         <TextView
+            android:id="@+id/tvConnectStatus"
             android:layout_width="wrap_content"
-            android:text="Successful connection"
+            android:text="@string/successful_connection"
             android:textColor="@color/white"
             android:layout_height="wrap_content" />
 
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/llReConnect"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/view1"
+        android:paddingBottom="@dimen/x60"
+        android:background="@color/mainColor"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="@dimen/x300"
+            android:text="Try again"
+            android:background="@drawable/reconnect_bg"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_height="@dimen/x90" />
     </LinearLayout>
 
 
@@ -83,7 +103,7 @@
         android:textColor="@color/main_color"
         android:text="Other routers"
         android:background="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/view1" />
+        app:layout_constraintTop_toBottomOf="@+id/llReConnect" />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:background="@color/white"

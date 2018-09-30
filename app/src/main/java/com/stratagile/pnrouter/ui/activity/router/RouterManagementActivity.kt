@@ -5,11 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterManagementContract
@@ -71,11 +73,46 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             intent.putExtra("router", selectedRouter)
             startActivity(intent)
         }
+        if (ConnectStatus.currentStatus == 0) {
+            ivConnectStatus.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
+            tvConnectStatus.text = resources.getString(R.string.successful_connection)
+            ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+        } else if (ConnectStatus.currentStatus  == 1){
+            ivConnectStatus.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
+            ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+            tvConnectStatus.text = resources.getString(R.string.connection)
+        } else if (ConnectStatus.currentStatus  == 2){
+            ivConnectStatus.visibility = View.GONE
+            llReConnect.visibility = View.VISIBLE
+            tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun routerChange(routerChange: RouterChange) {
         initData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectStatusChange(statusChange: ConnectStatus) {
+        //连接状态，0已经连接，1正在连接，2未连接
+        if (statusChange.status == 0) {
+            ivConnectStatus.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
+            tvConnectStatus.text = resources.getString(R.string.successful_connection)
+            ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+        } else if (statusChange.status   == 1){
+            ivConnectStatus.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
+            ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+            tvConnectStatus.text = resources.getString(R.string.connection)
+        } else if (statusChange.status   == 2){
+            ivConnectStatus.visibility = View.GONE
+            tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+            llReConnect.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroy() {
