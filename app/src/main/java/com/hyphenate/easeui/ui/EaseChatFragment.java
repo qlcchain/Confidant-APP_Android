@@ -27,6 +27,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
@@ -71,8 +73,11 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JDelMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
+import com.stratagile.pnrouter.entity.JSendFileEndRsp;
+import com.stratagile.pnrouter.entity.JSendFileRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
+import com.stratagile.pnrouter.entity.SendStrMsg;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.TransformFileMessage;
@@ -92,6 +97,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -183,6 +189,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private UserEntity toChatUser;
 
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
+    private HashMap<String, String> sendFilePathMap = new HashMap<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -228,10 +235,57 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         switch (fileTransformEntity.getMessage())
         {
             case 1:
-                //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),new File()));
+                EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
+                String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
+                String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                File file = new File(filePath);
+                if(file.exists())
+                {
+                    long fileSize = file.length();
+                    String fileMD5 = FileUtil.getFileMD5(file);
+                   /* Map<String, Object> parentMap = new HashMap<>();
+                    Map<String, Object> infoMap = new HashMap<>();
+                    infoMap.put("Action", "SendFile");
+                    infoMap.put("FromId", EMMessage.getFrom());
+                    infoMap.put("ToId", EMMessage.getTo());
+                    infoMap.put("FileName", fileName);
+                    infoMap.put("FileSize", fileSize);
+                    infoMap.put("FileMD5", fileMD5);
+                    String jsonData = JSONObject.toJSON(infoMap).toString();*/
+                    SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
+                    String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
+                    EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));
+                }
                 break;
             case 2:
                 break;
+            case 3:
+                Gson gson = new Gson();
+                String filePathOk = sendFilePathMap.get(fileTransformEntity.getToId());
+                File fileOk = new File(filePathOk);
+                String retMsg = fileTransformEntity.getRetMsg();
+                switch (JSONObject.parseObject((JSONObject.parseObject(retMsg)).get("params").toString()).getString("Action"))
+                {
+                    case "SendFile":
+                        JSendFileRsp jSendFileRsp = gson.fromJson(retMsg, JSendFileRsp.class);
+                        if(fileOk.exists() && jSendFileRsp.getParams().getRetCode()== 0)
+                        {
+                            EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                        }
+                        break;
+                    case "SendFileEnd":
+                        JSendFileEndRsp jSendFileEndRsp = gson.fromJson(retMsg, JSendFileEndRsp.class);
+                        if(jSendFileEndRsp.getParams().getRetCode() != 0)
+                        {
+                            EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                        }else {
+
+                        }
+                        break;
+                    default:
+                        break;
+                }
+               break;
             default:
                 break;
         }
@@ -1089,6 +1143,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
+        sendFilePathMap.put(uuid,imagePath);
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,""));
     }
 
