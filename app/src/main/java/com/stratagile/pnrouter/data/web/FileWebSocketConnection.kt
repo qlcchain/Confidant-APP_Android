@@ -134,7 +134,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     fun send(message : String?) : Boolean{
         KLog.i("开始传输字符串。。")
-//        Log.i("websocketConnection", message)
+       Log.i("websocketFilesend", message)
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
@@ -213,7 +213,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.w(TAG, "onMessage(text)! " + text!!)
+        Log.w(TAG, "websocketFilereceive " + text!!)
         EventBus.getDefault().post(FileTransformEntity(toId, 3, text))
 //        LogUtil.addLog("接收信息：${text}")
 //        try {

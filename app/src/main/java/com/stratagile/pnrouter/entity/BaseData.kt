@@ -186,3 +186,5 @@ data class ShareBean(var avatar : String, var name : String)
  */
 data class PullMsgReq(var UserId :String, var FriendId : String, var MsgType : Int, var MsgStartId :Int,var MsgNum : Int ,var Action : String = "PullMsg")
 
+data class SendStrMsg(var FromId :String, var ToId : String, var FileName : String, var FileSize :Long,var FileMD5 : String ,var Action : String = "SendFile")
+
