@@ -151,13 +151,13 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
 
     fun sendFile(file : File) : Boolean{
-        KLog.i("开始传输文件。。")
+
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
         }
         var byteString = FileUtil.readFile(file)
-
+        KLog.i("开始传输文件。。"+byteString)
         if (!client!!.send(byteString)) {
             return false
         } else {

@@ -85,6 +85,7 @@ import com.stratagile.pnrouter.entity.events.TransformStrMessage;
 import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
+import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -98,6 +99,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -190,6 +193,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
+    private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
+
+    private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -205,7 +211,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
+        sendMsgMap = new HashMap<>();
+        sendFilePathMap = new HashMap<>();
+        sendFileResultMap = new HashMap<>();
         fragmentArgs = getArguments();
         // check if single chat or group chat
         chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
@@ -243,15 +251,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 {
                     long fileSize = file.length();
                     String fileMD5 = FileUtil.getFileMD5(file);
-                   /* Map<String, Object> parentMap = new HashMap<>();
-                    Map<String, Object> infoMap = new HashMap<>();
-                    infoMap.put("Action", "SendFile");
-                    infoMap.put("FromId", EMMessage.getFrom());
-                    infoMap.put("ToId", EMMessage.getTo());
-                    infoMap.put("FileName", fileName);
-                    infoMap.put("FileSize", fileSize);
-                    infoMap.put("FileMD5", fileMD5);
-                    String jsonData = JSONObject.toJSON(infoMap).toString();*/
                     SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));
@@ -270,16 +269,29 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         JSendFileRsp jSendFileRsp = gson.fromJson(retMsg, JSendFileRsp.class);
                         if(fileOk.exists() && jSendFileRsp.getParams().getRetCode()== 0)
                         {
+                            sendFileResultMap.put(fileTransformEntity.getToId(),false);
                             EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }
+                        Timer timer = new Timer();// 实例化Timer类
+                        timer.schedule(new TimerTask() {
+                            public void run() {
+                                Log.i("sendFileTimer","beginCounTimer");
+                                if(!sendFileResultMap.get(fileTransformEntity.getToId()))
+                                {
+                                    EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                                }
+                                this.cancel();
+                            }
+                        }, 20000);// 这里百毫秒
                         break;
                     case "SendFileEnd":
+                        sendFileResultMap.put(fileTransformEntity.getToId(),true);
                         JSendFileEndRsp jSendFileEndRsp = gson.fromJson(retMsg, JSendFileEndRsp.class);
                         if(jSendFileEndRsp.getParams().getRetCode() != 0)
                         {
                             EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }else {
-
+                            EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,""));
                         }
                         break;
                     default:
