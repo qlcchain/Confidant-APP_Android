@@ -9,6 +9,7 @@ import com.stratagile.pnrouter.ui.activity.test.component.DaggerTestComponent
 import com.stratagile.pnrouter.ui.activity.test.contract.TestContract
 import com.stratagile.pnrouter.ui.activity.test.module.TestModule
 import com.stratagile.pnrouter.ui.activity.test.presenter.TestPresenter
+import kotlinx.android.synthetic.main.activity_test.*
 
 import javax.inject.Inject;
 
@@ -31,6 +32,8 @@ class TestActivity : BaseActivity(), TestContract.View {
     override fun initView() {
         setContentView(R.layout.activity_test)
         setTitle("TestActivity")
+        avi.setIndicator("BallSpinFadeLoaderIndicator")
+        avi.show()
     }
     override fun initData() {
 

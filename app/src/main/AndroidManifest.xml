@@ -49,7 +49,9 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.activity.test.TestActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+
+        </activity>
         <activity
             android:name=".ui.activity.main.SplashActivity"
             android:screenOrientation="portrait"

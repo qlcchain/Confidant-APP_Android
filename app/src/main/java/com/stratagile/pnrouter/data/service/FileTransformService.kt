@@ -44,6 +44,7 @@ class FileTransformService : Service() {
             webSocketList.forEach {
                 if (it.toId.equals(fileTransformEntity.toId)) {
                     it.disconnect(true)
+                    webSocketList.remove(it)
                     return
                 }
             }

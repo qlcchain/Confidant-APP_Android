@@ -60,12 +60,23 @@
 
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/ivConnectStatus"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:src="@mipmap/icon_connected"
-            android:layout_marginRight="@dimen/x10"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivConnectStatus"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_connected"
+                android:layout_marginRight="@dimen/x10"
+                android:layout_height="wrap_content" />
+            <com.stratagile.pnrouter.indicators.AVLoadingIndicatorView
+                android:id="@+id/avi"
+                android:layout_width="wrap_content"
+                app:indicatorName="BallSpinFadeLoaderIndicator"
+                android:layout_height="wrap_content"
+                style="@style/AVLoadingIndicatorView.Small" />
+        </RelativeLayout>
         <TextView
             android:id="@+id/tvConnectStatus"
             android:layout_width="wrap_content"

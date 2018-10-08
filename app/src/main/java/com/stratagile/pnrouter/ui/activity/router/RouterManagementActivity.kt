@@ -25,6 +25,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 /**
  * @author hzp
@@ -78,15 +79,23 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             llReConnect.visibility = View.GONE
             tvConnectStatus.text = resources.getString(R.string.successful_connection)
             ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+            avi.smoothToHide()
         } else if (ConnectStatus.currentStatus  == 1){
-            ivConnectStatus.visibility = View.VISIBLE
+            ivConnectStatus.visibility = View.GONE
             llReConnect.visibility = View.GONE
             ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
             tvConnectStatus.text = resources.getString(R.string.connection)
+            avi.smoothToShow()
         } else if (ConnectStatus.currentStatus  == 2){
+            avi.hide()
             ivConnectStatus.visibility = View.GONE
             llReConnect.visibility = View.VISIBLE
             tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+        }
+        llReConnect.setOnClickListener {
+            thread {
+                AppConfig.instance.messageReceiver!!.reConnect()
+            }
         }
     }
 
@@ -101,15 +110,18 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         if (statusChange.status == 0) {
             ivConnectStatus.visibility = View.VISIBLE
             llReConnect.visibility = View.GONE
+            avi.smoothToHide()
             tvConnectStatus.text = resources.getString(R.string.successful_connection)
             ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
         } else if (statusChange.status   == 1){
-            ivConnectStatus.visibility = View.VISIBLE
+            ivConnectStatus.visibility = View.GONE
             llReConnect.visibility = View.GONE
+            avi.smoothToShow()
             ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
             tvConnectStatus.text = resources.getString(R.string.connection)
         } else if (statusChange.status   == 2){
             ivConnectStatus.visibility = View.GONE
+            avi.hide()
             tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
             llReConnect.visibility = View.VISIBLE
         }
