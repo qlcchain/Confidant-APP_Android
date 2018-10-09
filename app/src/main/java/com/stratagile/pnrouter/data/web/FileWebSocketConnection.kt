@@ -35,8 +35,6 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
     private var retryInterval = arrayListOf<Int>(5000, 15000, 30000, 60000, 120000)
-    private var port = ":18006/"
-    private var ipAddress = ""
     private var filledUri = ""
     var toId = ""
 
@@ -65,8 +63,6 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         filledUri = wsUri
         if (client == null) {
             if (isWifiConnect()) {
-                ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
-                filledUri = "wss://" + ipAddress + port
             } else {
                 filledUri = wsUri
             }
