@@ -33,7 +33,7 @@ import okio.ByteString;
 
 public class FileUtil {
 
-
+    private final int PLOY =  0X1021;
     public static void init() {
         new Thread(new Runnable() {
             @Override
@@ -576,4 +576,21 @@ public class FileUtil {
         }
         return ByteString.of(buffer);
     }
+
+    /*public int getCRS16(int[] bytes,int size) {
+        int crc = 0;
+        short i;
+        for (; size > 0; size--) {
+            crc = crc ^ (bytes++ <<8);
+            for (i = 0; i < 8; i++) {
+                if ((crc & 0X8000) != 0) {
+                    crc = (crc << 1) ^ PLOY;
+                }else {
+                    crc <<= 1;
+                }
+            }
+            crc &= 0XFFFF;
+        }
+        return crc;
+    }*/
 }

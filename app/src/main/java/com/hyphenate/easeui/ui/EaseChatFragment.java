@@ -77,6 +77,7 @@ import com.stratagile.pnrouter.entity.JSendFileEndRsp;
 import com.stratagile.pnrouter.entity.JSendFileRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
+import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendStrMsg;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
@@ -88,6 +89,7 @@ import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.utils.WiFiUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
@@ -249,11 +251,26 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 File file = new File(filePath);
                 if(file.exists())
                 {
-                    long fileSize = file.length();
+                    /*long fileSize = file.length();
                     String fileMD5 = FileUtil.getFileMD5(file);
                     SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
-                    EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));
+                    EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
+
+
+                    SendFileData sendFileData = new SendFileData();
+                    sendFileData.setAction(1);
+                    sendFileData.setSegSize(1024);
+                    sendFileData.setSegSeq(1);
+                    sendFileData.setFileOffset(0);
+                    sendFileData.setFileId(1234);
+                    sendFileData.setCRC((short) 0);
+                    sendFileData.setSegMore('0');
+                    sendFileData.setCotinue('0');
+                    sendFileData.setFileName("img1".getBytes());
+                    sendFileData.setFromId("12345".getBytes());
+                    sendFileData.setToId("12345".getBytes());
+                    byte[] aa = sendFileData.toByteArray();
                 }
                 break;
             case 2:
@@ -291,7 +308,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         {
                             EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }else {
-                            EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,""));
+                            String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+                            String wssUrl = pAddress+ ConstantValue.INSTANCE.getPort();
+                            EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                         }
                         break;
                     default:
@@ -1156,7 +1175,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
-        EventBus.getDefault().post(new FileTransformEntity(uuid,0,""));
+        String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+        String wssUrl = pAddress + ConstantValue.INSTANCE.getPort();
+        EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
