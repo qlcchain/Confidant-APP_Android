@@ -36,7 +36,7 @@ class FileTransformService : Service() {
     fun startNewConnect(fileTransformEntity: FileTransformEntity) {
         if (fileTransformEntity.message == 0) {
             KLog.i("收到eventbus消息。。")
-            val fileWebSocketConnection = AppConfig.instance.messageReceiver!!.createFileWebSocket()
+            val fileWebSocketConnection = FileWebSocketConnection(fileTransformEntity.httpUrl, AppConfig.instance.messageReceiver!!.getTrustStore(), fileTransformEntity.userAgent,null)
             fileWebSocketConnection.connect()
             fileWebSocketConnection.toId = fileTransformEntity.toId
             webSocketList.add(fileWebSocketConnection)

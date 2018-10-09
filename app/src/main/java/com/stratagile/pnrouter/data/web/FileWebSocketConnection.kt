@@ -134,7 +134,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     fun send(message : String?) : Boolean{
         KLog.i("开始传输字符串。。")
-       Log.i("websocketFilesend", message)
+       KLog.i(message)
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
@@ -143,7 +143,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 //            throw IOException("Write failed!")
             return false
         } else {
-            Log. i("WenSocketConnetion", "发送成功")
+            KLog.i("发送成功")
             EventBus.getDefault().post(FileTransformEntity(toId, 2))
             return true
         }
@@ -153,7 +153,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     fun sendFile(file : File) : Boolean{
 
         if (client == null || !connected) {
-            Log.i("websocket", "No connection!")
+            KLog.i("No connection!")
             return false
         }
         var byteString = FileUtil.readFile(file)
@@ -161,7 +161,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         if (!client!!.send(byteString)) {
             return false
         } else {
-            Log. i("WenSocketConnetion", "发送成功")
+            KLog.i("发送成功")
             EventBus.getDefault().post(FileTransformEntity(toId, 2))
             return true
         }
@@ -209,11 +209,11 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
-        Log.w(TAG, "WSC onMessage()")
+        KLog.i("WSC onMessage()")
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.w(TAG, "websocketFilereceive " + text!!)
+        KLog.i("websocketFilereceive " + text!!)
         EventBus.getDefault().post(FileTransformEntity(toId, 3, text))
 //        LogUtil.addLog("接收信息：${text}")
 //        try {
@@ -235,7 +235,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClosed()...")
+        KLog.i("onClosed()...")
         this.connected = false
 
         listener?.onDisconnected()
@@ -250,8 +250,8 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        Log.w(TAG, "onFailure()")
-        Log.w(TAG, t)
+        KLog.i("onFailure()")
+        KLog.i(t)
 
         if (response != null && (response.code() == 401 || response.code() == 403)) {
             if (listener != null) listener!!.onAuthenticationFailure()
@@ -264,7 +264,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClosing()!...")
+        KLog.i("onClosing()!...")
         webSocket!!.close(1000, "OK")
     }
 

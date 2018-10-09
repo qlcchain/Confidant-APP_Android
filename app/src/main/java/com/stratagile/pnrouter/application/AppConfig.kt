@@ -6,6 +6,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.hyphenate.chat.EMClient
 import com.hyphenate.easeui.EaseUI
+import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
@@ -52,6 +53,7 @@ class AppConfig : MultiDexApplication() {
         setupApplicationComponent()
         setDatabase()
         MessageProvider.getInstance()
+        KLog.init(BuildConfig.LOG_DEBUG)
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
     }

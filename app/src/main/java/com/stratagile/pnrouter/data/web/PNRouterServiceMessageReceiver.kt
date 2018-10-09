@@ -196,6 +196,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         pipe!!.reConenct()
     }
 
+    fun getTrustStore() : TrustStore{
+        return urls.signalServiceUrls[0].trustStore
+    }
 
     fun createFileWebSocket(): FileWebSocketConnection {
         return FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
