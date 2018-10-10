@@ -139,4 +139,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.20'
     implementation files('libs/wowoviewpager.aar')
     implementation ('cn.bingoogolapple:bga-qrcode-zxing:1.2.5')
+    implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
 }

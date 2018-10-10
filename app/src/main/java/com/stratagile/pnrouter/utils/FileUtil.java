@@ -577,6 +577,11 @@ public class FileUtil {
         return ByteString.of(buffer);
     }
 
+
+    public static ByteString toByteString(byte[] bytes) {
+        return ByteString.of(bytes);
+    }
+
     /*public int getCRS16(int[] bytes,int size) {
         int crc = 0;
         short i;

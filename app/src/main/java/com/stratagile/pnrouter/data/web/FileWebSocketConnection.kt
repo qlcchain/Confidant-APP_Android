@@ -163,6 +163,17 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         }
     }
 
+    fun sendByteString(bytes : ByteArray) : Boolean {
+        KLog.i("开始传输文件。。"+ FileUtil.toByteString(bytes))
+        if (!client!!.send(FileUtil.toByteString(bytes))) {
+            return false
+        } else {
+            KLog.i("发送成功")
+            EventBus.getDefault().post(FileTransformEntity(toId, 2))
+            return true
+        }
+    }
+
     /**
      * 获得指定文件的byte数组
      */

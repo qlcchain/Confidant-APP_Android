@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.entity.events
 
-import java.io.File
-
 class ReminderUpdateEvent {
 }
 
@@ -14,4 +12,4 @@ class FileTransformEntity(var toId : String, var message : Int = 0, var retMsg :
 
 class TransformStrMessage(var toId : String, var message : String)
 
-class TransformFileMessage(var toId : String, var message : File)
+class TransformFileMessage(var toId : String, var message : ByteArray)

@@ -1,24 +1,21 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
 import com.stratagile.pnrouter.ui.activity.conversation.module.FileListModule
 import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileListPresenter
-
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
 import kotlinx.android.synthetic.main.fragment_file_list.*
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -44,6 +41,9 @@ class FileListFragment : BaseFragment(), FileListContract.View {
         var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         fileListAdapter = FileListAdapter(list)
         recyclerView.adapter = fileListAdapter
+        fileListAdapter!!.setOnItemClickListener { adapter, view, position ->
+            startActivity(Intent(activity, PdfViewActivity::class.java))
+        }
     }
 
 

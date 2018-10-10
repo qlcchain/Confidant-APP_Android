@@ -65,7 +65,7 @@ class FileTransformService : Service() {
     fun sendMessage(transfromFileMessage: TransformFileMessage) {
         webSocketList.forEach {
             if (it.toId.equals(transfromFileMessage.toId)) {
-                it.sendFile(transfromFileMessage.message)
+                it.sendByteString(transfromFileMessage.message)
                 return
             }
         }

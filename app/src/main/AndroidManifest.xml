@@ -116,6 +116,7 @@
         <activity android:name=".ui.activity.router.RouterManagementActivity" />
         <activity android:name=".ui.activity.router.RouterQRCodeActivity" />
         <activity android:name=".ui.activity.router.RouterInfoActivity" />
+        <activity android:name=".ui.activity.file.PdfViewActivity" />
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
