@@ -579,6 +579,39 @@ public class FileUtil {
         }
         return ByteString.of(buffer);
     }
+    public static byte[] readFileBuffer(File file) {
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        byte[] buffer = null;
+        try {
+            fis = new FileInputStream(file);
+            buffer = new byte[fis.available()];
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) fis.close();
+                if (ois != null) ois.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return buffer;
+    }
+
+    /**
+     * 在字节数组中截取指定长度数组
+     * @param src
+     * @param begin
+     * @param count
+     * @return
+     */
+    public static byte[] subBytes(byte[] src, int begin, int count) {
+        byte[] bs = new byte[count];
+        System.arraycopy(src, begin, bs, 0, count);
+        return bs;
+    }
     /**
      * 对象转数组
      * @param obj
@@ -599,8 +632,6 @@ public class FileUtil {
         }
         return bytes;
     }
-
-
     public static ByteString toByteString(byte[] bytes) {
         return ByteString.of(bytes);
     }
@@ -627,7 +658,7 @@ public class FileUtil {
     }
     /**
      * 字符串转换成十六进制字符串
-     * @param String str 待转换的ASCII字符串
+     * @param  str 待转换的ASCII字符串
      * @return String 每个Byte之间空格分隔，如: [61 6C 6B]
      */
     public static String str2HexStr(String str)
@@ -650,7 +681,7 @@ public class FileUtil {
     }
     /**
      * bytes字符串转换为Byte值
-     * @param String src Byte字符串，每个Byte之间没有分隔符
+     * @param  src Byte字符串，每个Byte之间没有分隔符
      * @return byte[]
      */
     public static byte[] hexStr2Bytes(String src) {

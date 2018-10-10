@@ -78,6 +78,7 @@ import com.stratagile.pnrouter.entity.JSendFileRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
+import com.stratagile.pnrouter.entity.SendFileDataTest;
 import com.stratagile.pnrouter.entity.SendStrMsg;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
@@ -88,6 +89,7 @@ import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
+import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.WiFiUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -106,6 +108,9 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import com.stratagile.pnrouter.entity.Person;
+
+import okio.ByteString;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -131,6 +136,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final String ACTION_TYPING_END = "TypingEnd";
 
     protected static final int TYPING_SHOW_TIME = 5000;
+
+    protected static final int sendFileSizeMax = 1024 *100;
 
     /**
      * params to fragment
@@ -196,6 +203,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
+    private HashMap<String, SendFileData> sendFileDataMap = new HashMap<>();
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -252,24 +260,71 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if(file.exists())
                 {
                     long fileSize = file.length();
+
+                    Person person = new Person(12333);
+                    byte[] objectToByteArray = FileUtil.toByteArray(person);
+                    System.err.println("objectToByteArray: " + objectToByteArray);
+                    ByteString dddd12 = ByteString.of(objectToByteArray);
+                    Object byteArrayToObject = FileUtil.toObject(objectToByteArray);
+                    System.err.println("byteArrayToObject: " + byteArrayToObject.toString());
+
                    /* String fileMD5 = FileUtil.getFileMD5(file);
                     SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
+                    byte[] fileBuffer= FileUtil.readFileBuffer(file);
+                    ByteString aa = FileUtil.readFile(file);
                     SendFileData sendFileData = new SendFileData();
-                    sendFileData.setAction(1);
-                    sendFileData.setSegSize(1024);
-                    sendFileData.setSegSeq(1);
-                    sendFileData.setFileOffset(0);
-                    sendFileData.setFileId(1234);
-                    sendFileData.setCRC((short) 0);
-                    sendFileData.setSegMore('0');
-                    sendFileData.setCotinue('0');
-                    sendFileData.setFileName("img1".getBytes());
-                    sendFileData.setFromId("12345".getBytes());
-                    sendFileData.setToId("12345".getBytes());
-                    byte[] sendData = FileUtil.toByteArray(sendFileData);
-                    byte[] dd = "12345".getBytes();
+                    SendFileDataTest sendFileDataTest = new SendFileDataTest();
+                    byte[] sendData = FileUtil.toByteArray(sendFileDataTest);
+                    ByteString dddd1 = ByteString.of(sendData);
+                    int action = FormatTransfer.reverseInt(1);
+                    int segSize = fileSize > sendFileSizeMax ? sendFileSizeMax : (int)fileSize;
+                    sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setAction(FormatTransfer.reverseInt(5));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setSegSeq(FormatTransfer.reverseInt(2));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setFileOffset(FormatTransfer.reverseInt(0));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setFileId(FormatTransfer.reverseInt((int)System.currentTimeMillis()/1000));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setSegMore((byte) 0);
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setCotinue((byte) 0);
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setFileName(fileName.getBytes());
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setFromId(EMMessage.getFrom().getBytes());
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    sendFileData.setToId(EMMessage.getTo().getBytes());
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    dddd1 = ByteString.of(sendData);
+                    byte[] content = FileUtil.subBytes(fileBuffer,0,1024*100);
+                    ByteString dddd = ByteString.of(content);
+                    sendFileData.setContent(content);
+                    dddd1 = ByteString.of(FormatTransfer.toLH(1));
+                    sendData = FileUtil.toByteArray(sendFileData);
+                    SendFileData sendFileDataTest2 = (SendFileData)FileUtil.toObject(sendData);
+                    int ap = sendFileDataTest2.getMagic();
+                    int aaaa = sendData.length;
+                    ByteString dd = ByteString.of(sendData);
                     byte[] bb = FileUtil.hexStr2Bytes("12345");
                     String cc = "";
                     sendFileResultMap.put(fileTransformEntity.getToId(),false);

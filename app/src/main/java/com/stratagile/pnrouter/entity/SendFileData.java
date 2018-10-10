@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
 import com.alibaba.fastjson.JSONObject;
+import com.stratagile.pnrouter.utils.FileUtil;
 
 import java.io.Serializable;
 
@@ -9,20 +10,28 @@ import java.io.Serializable;
  */
 
 public class SendFileData implements Serializable {
-    private static final long serialVersionUID = -219988432063763456L;
+
+    private int Magic = 0x0dadc0de;
     private int Action = 1;
     private int SegSize;
     private int SegSeq;
     private int FileOffset;
     private int FileId;
     private short CRC;
-    private char SegMore;
-    private char Cotinue;
+    private byte SegMore;
+    private byte Cotinue;
     private byte[] FileName = new byte[256];
     private byte[] FromId = new byte[77];
     private byte[] ToId = new byte[77];
-    private byte[] Content = new byte[1024];
+    private byte[] Content = new byte[1024*100];
 
+    public int getMagic() {
+        return Magic;
+    }
+
+    public void setMagic(int magic) {
+        Magic = magic;
+    }
     public int getAction() {
         return Action;
     }
@@ -71,19 +80,19 @@ public class SendFileData implements Serializable {
         this.CRC = CRC;
     }
 
-    public char getSegMore() {
+    public byte getSegMore() {
         return SegMore;
     }
 
-    public void setSegMore(char segMore) {
+    public void setSegMore(byte segMore) {
         SegMore = segMore;
     }
 
-    public char getCotinue() {
+    public byte getCotinue() {
         return Cotinue;
     }
 
-    public void setCotinue(char cotinue) {
+    public void setCotinue(byte cotinue) {
         Cotinue = cotinue;
     }
 
@@ -119,12 +128,9 @@ public class SendFileData implements Serializable {
         Content = content;
     }
 
-
-
-
-    public byte[] toByteArray() {
-        String jsonData = JSONObject.toJSON(this).toString();
-        return jsonData.getBytes();
+    public byte[] toByteArray(int size) {
+        byte[] fileBuffer = new byte[size];
+        //System.arraycopy(src, 0, fileBuffer, 0, count);
+        return fileBuffer;
     }
-
 }

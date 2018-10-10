@@ -6,14 +6,13 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.entity.SendFileData
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.utils.Crc16
 import com.stratagile.pnrouter.utils.SpUtil
+import java.nio.ByteOrder
 import javax.inject.Inject
 
 /**
@@ -51,6 +50,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
+        System.out.println(ByteOrder.nativeOrder());
         SpUtil.putString(this, ConstantValue.testValue, "test")
         mPresenter.getLastVersion()
         mPresenter.getPermission()

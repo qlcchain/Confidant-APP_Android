@@ -114,6 +114,19 @@ public class FormatTransfer {
         return s.getBytes();
     }
     /**
+     * 将字节数组转换为String
+     * @param b byte[]
+     * @return String
+     */
+    public static String bytesToString(byte[] b) {
+        StringBuffer result = new  StringBuffer( "" );
+        int  length = b.length;
+        for  ( int  i= 0 ; i< length; i++) {
+            result.append((char )(b[i] &  0xff ));
+        }
+        return  result.toString();
+    }
+    /**
      * 将字符串转换为byte数组
      * @param s String
      * @return byte[]
@@ -121,6 +134,29 @@ public class FormatTransfer {
     public static byte[] stringToBytes(String s) {
         return s.getBytes();
     }
+    /**
+     * 将高字节数组转换为int
+     * @param b byte[]
+     * @return int
+     */
+    public static int hBytesToInt(byte[] b) {
+        int  s =  0 ;
+        for  ( int  i =  0 ; i <  3 ; i++) {
+            if  (b[i] >=  0 ) {
+                s = s + b[i];
+            } else  {
+                s = s + 256  + b[i];
+            }
+            s = s * 256 ;
+        }
+        if  (b[ 3 ] >=  0 ) {
+            s = s + b[3 ];
+        } else  {
+            s = s + 256  + b[ 3 ];
+        }
+        return  s;
+    }
+
     /**
      * 将低字节数组转换为int
      * @param b byte[]
@@ -212,6 +248,17 @@ public class FormatTransfer {
         return F.intBitsToFloat(i);
     }
     /**
+     * 将byte数组中的元素倒序排列
+     */
+    public static byte[] bytesReverseOrder(byte[] b) {
+        int  length = b.length;
+        byte [] result =  new   byte [length];
+        for ( int  i= 0 ; i< length; i++) {
+            result[length-i-1 ] = b[i];
+        }
+        return  result;
+    }
+    /**
      * 打印byte数组
      */
     public static void printBytes(byte[] bb) {
@@ -227,6 +274,15 @@ public class FormatTransfer {
         for (int i=0; i<length; i++) {
             out = out + bb + " ";
         }
+    }
+    /**
+     * 将int类型的值转换为字节序颠倒过来对应的int值
+     * @param i int
+     * @return int
+     */
+    public static int reverseInt(int i) {
+        int result = FormatTransfer.hBytesToInt(FormatTransfer.toLH(i));
+        return result;
     }
     /**
      * 将short类型的值转换为字节序颠倒过来对应的short值
@@ -247,4 +303,5 @@ public class FormatTransfer {
         return result;
     }
 }
+
 
