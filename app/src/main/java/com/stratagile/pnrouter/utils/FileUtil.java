@@ -11,6 +11,8 @@ import org.apache.http.util.EncodingUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -576,12 +579,92 @@ public class FileUtil {
         }
         return ByteString.of(buffer);
     }
+    /**
+     * 对象转数组
+     * @param obj
+     * @return
+     */
+    public static byte[] toByteArray (Object obj) {
+        byte[] bytes = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+            oos.flush();
+            bytes = bos.toByteArray ();
+            oos.close();
+            bos.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return bytes;
+    }
 
 
     public static ByteString toByteString(byte[] bytes) {
         return ByteString.of(bytes);
     }
 
+    /**
+     * 数组转对象
+     * @param bytes
+     * @return
+     */
+    public static Object toObject (byte[] bytes) {
+        Object obj = null;
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
+            ObjectInputStream ois = new ObjectInputStream (bis);
+            obj = ois.readObject();
+            ois.close();
+            bis.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        return obj;
+    }
+    /**
+     * 字符串转换成十六进制字符串
+     * @param String str 待转换的ASCII字符串
+     * @return String 每个Byte之间空格分隔，如: [61 6C 6B]
+     */
+    public static String str2HexStr(String str)
+    {
+
+        char[] chars = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bs = str.getBytes();
+        int bit;
+
+        for (int i = 0; i < bs.length; i++)
+        {
+            bit = (bs[i] & 0x0f0) >> 4;
+            sb.append(chars[bit]);
+            bit = bs[i] & 0x0f;
+            sb.append(chars[bit]);
+            sb.append(' ');
+        }
+        return sb.toString().trim();
+    }
+    /**
+     * bytes字符串转换为Byte值
+     * @param String src Byte字符串，每个Byte之间没有分隔符
+     * @return byte[]
+     */
+    public static byte[] hexStr2Bytes(String src) {
+        int m = 0, n = 0;
+        int l = src.length() / 2;
+        System.out.println(l);
+        byte[] ret = new byte[l];
+        for (int i = 0; i < l; i++) {
+            m = i * 2 + 1;
+            n = m + 1;
+            ret[i] = Byte.decode("0x" + src.substring(i * 2, m) + src.substring(m, n));
+        }
+        return ret;
+    }
     /*public int getCRS16(int[] bytes,int size) {
         int crc = 0;
         short i;

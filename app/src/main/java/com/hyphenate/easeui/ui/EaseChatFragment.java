@@ -251,13 +251,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 File file = new File(filePath);
                 if(file.exists())
                 {
-                    /*long fileSize = file.length();
-                    String fileMD5 = FileUtil.getFileMD5(file);
+                    long fileSize = file.length();
+                   /* String fileMD5 = FileUtil.getFileMD5(file);
                     SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
-
-
                     SendFileData sendFileData = new SendFileData();
                     sendFileData.setAction(1);
                     sendFileData.setSegSize(1024);
@@ -270,7 +268,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendFileData.setFileName("img1".getBytes());
                     sendFileData.setFromId("12345".getBytes());
                     sendFileData.setToId("12345".getBytes());
-                    byte[] aa = sendFileData.toByteArray();
+                    byte[] sendData = FileUtil.toByteArray(sendFileData);
+                    byte[] dd = "12345".getBytes();
+                    byte[] bb = FileUtil.hexStr2Bytes("12345");
+                    String cc = "";
+                    sendFileResultMap.put(fileTransformEntity.getToId(),false);
+                    EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),sendData));
                 }
                 break;
             case 2:
@@ -287,7 +290,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         if(fileOk.exists() && jSendFileRsp.getParams().getRetCode()== 0)
                         {
                             sendFileResultMap.put(fileTransformEntity.getToId(),false);
-                            EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                            //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }
                         Timer timer = new Timer();// 实例化Timer类
                         timer.schedule(new TimerTask() {
@@ -295,7 +298,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 Log.i("sendFileTimer","beginCounTimer");
                                 if(!sendFileResultMap.get(fileTransformEntity.getToId()))
                                 {
-                                    EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                                    //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                                 }
                                 this.cancel();
                             }
@@ -306,10 +309,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         JSendFileEndRsp jSendFileEndRsp = gson.fromJson(retMsg, JSendFileEndRsp.class);
                         if(jSendFileEndRsp.getParams().getRetCode() != 0)
                         {
-                            EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
+                            //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }else {
                             String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-                            String wssUrl = pAddress+ ConstantValue.INSTANCE.getPort();
+                            String wssUrl = "https://"+pAddress+ ConstantValue.INSTANCE.getPort();
                             EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                         }
                         break;
@@ -1176,7 +1179,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-        String wssUrl = pAddress + ConstantValue.INSTANCE.getPort();
+        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getPort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
     }
 
