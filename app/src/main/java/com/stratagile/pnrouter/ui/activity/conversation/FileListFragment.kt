@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +43,17 @@ class FileListFragment : BaseFragment(), FileListContract.View {
         fileListAdapter = FileListAdapter(list)
         recyclerView.adapter = fileListAdapter
         fileListAdapter!!.setOnItemClickListener { adapter, view, position ->
-            startActivity(Intent(activity, PdfViewActivity::class.java))
+            var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
+            if (position == 0) {
+                filePath = "" + Environment.getExternalStorageDirectory() + "/1/test.txt"
+            } else if (position == 1) {
+                filePath = "" + Environment.getExternalStorageDirectory() + "/1/tupian.jpg"
+            } else if (position == 2) {
+                filePath = "" + Environment.getExternalStorageDirectory() + "/1/xxx.jpg"
+            } else if (position == 3) {
+                filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
+            }
+            startActivity(Intent(activity, PdfViewActivity::class.java).putExtra("filePath", filePath))
         }
     }
 

@@ -1,11 +1,15 @@
 package com.stratagile.pnrouter.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.application.AppConfig;
 
 import org.apache.http.util.EncodingUtils;
 
@@ -579,6 +583,7 @@ public class FileUtil {
         }
         return ByteString.of(buffer);
     }
+
     public static byte[] readFileBuffer(File file) {
         FileInputStream fis = null;
         ObjectInputStream ois = null;
@@ -609,22 +614,27 @@ public class FileUtil {
      */
     public static byte[] subBytes(byte[] src, int begin, int count) {
         byte[] bs = new byte[count];
-        System.arraycopy(src, begin, bs, 0, count);
+        if (src.length < count) {
+            System.arraycopy(src, begin, bs, 0, src.length);
+        } else {
+            System.arraycopy(src, begin, bs, 0, count);
+        }
         return bs;
     }
     /**
      * 对象转数组
+     *
      * @param obj
      * @return
      */
-    public static byte[] toByteArray (Object obj) {
+    public static byte[] toByteArray(Object obj) {
         byte[] bytes = null;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             ObjectOutputStream oos = new ObjectOutputStream(bos);
             oos.writeObject(obj);
             oos.flush();
-            bytes = bos.toByteArray ();
+            bytes = bos.toByteArray();
             oos.close();
             bos.close();
         } catch (IOException ex) {
@@ -638,14 +648,15 @@ public class FileUtil {
 
     /**
      * 数组转对象
+     *
      * @param bytes
      * @return
      */
-    public static Object toObject (byte[] bytes) {
+    public static Object toObject(byte[] bytes) {
         Object obj = null;
         try {
-            ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
-            ObjectInputStream ois = new ObjectInputStream (bis);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bis);
             obj = ois.readObject();
             ois.close();
             bis.close();
@@ -656,21 +667,22 @@ public class FileUtil {
         }
         return obj;
     }
+
     /**
      * 字符串转换成十六进制字符串
+     *
+     * @param String str 待转换的ASCII字符串
      * @param  str 待转换的ASCII字符串
      * @return String 每个Byte之间空格分隔，如: [61 6C 6B]
      */
-    public static String str2HexStr(String str)
-    {
+    public static String str2HexStr(String str) {
 
         char[] chars = "0123456789ABCDEF".toCharArray();
         StringBuilder sb = new StringBuilder("");
         byte[] bs = str.getBytes();
         int bit;
 
-        for (int i = 0; i < bs.length; i++)
-        {
+        for (int i = 0; i < bs.length; i++) {
             bit = (bs[i] & 0x0f0) >> 4;
             sb.append(chars[bit]);
             bit = bs[i] & 0x0f;
@@ -679,8 +691,11 @@ public class FileUtil {
         }
         return sb.toString().trim();
     }
+
     /**
      * bytes字符串转换为Byte值
+     *
+     * @param String src Byte字符串，每个Byte之间没有分隔符
      * @param  src Byte字符串，每个Byte之间没有分隔符
      * @return byte[]
      */
@@ -712,4 +727,39 @@ public class FileUtil {
         }
         return crc;
     }*/
+
+    //android获取一个用于打开Word文件的intent
+    public static Intent getWordFileIntent(String Path) {
+        File file = new File(Path);
+        Intent intent = new Intent("android.intent.action.VIEW");
+        intent.addCategory("android.intent.category.DEFAULT");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri uri = Uri.fromFile(file);
+        intent.setDataAndType(uri, "application/msword");
+        return intent;
+    }
+
+    //android获取一个用于打开Excel文件的intent
+    public static Intent getExcelFileIntent(String Path) {
+        File file = new File(Path);
+        Intent intent = new Intent("android.intent.action.VIEW");
+        intent.addCategory("android.intent.category.DEFAULT");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        Uri uri = Uri.fromFile(file);
+        Uri uri1 = FileProvider.getUriForFile(AppConfig.instance, AppConfig.instance.getPackageName() + ".utils.MyFileProvider", file);
+        intent.setDataAndType(uri1, "application/vnd.ms-excel");
+        return intent;
+    }
+
+    //android获取一个用于打开PPT文件的intent
+    public static Intent getPPTFileIntent(String Path) {
+        File file = new File(Path);
+        Intent intent = new Intent("android.intent.action.VIEW");
+        intent.addCategory("android.intent.category.DEFAULT");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri uri = Uri.fromFile(file);
+        intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+        return intent;
+    }
+
 }

@@ -57,10 +57,10 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         routerList.forEach {
             if (it.lastCheck) {
                 selectedRouter = it
-                routerList.remove(it)
                 return@forEach
             }
         }
+        routerList.remove(selectedRouter)
         tvRouterName.text = selectedRouter.routerName
         routerListAdapter = RouterListAdapter(routerList.MutableListToArrayList())
         recyclerView.adapter = routerListAdapter
@@ -182,6 +182,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             routerEntity.routerName = ("Router " + (routerList.size + 1))
             routerEntity.routerId = data!!.getStringExtra("result")
             routerEntity.username = ""
+            routerEntity.lastCheck = false
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(routerEntity)
             initData()
         }

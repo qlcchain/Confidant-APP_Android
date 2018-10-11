@@ -1,23 +1,23 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.events.EditNickName
-import com.stratagile.pnrouter.entity.events.FileTransformEntity
 import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMyComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MyContract
 import com.stratagile.pnrouter.ui.activity.main.module.MyModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MyPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterManagementActivity
+import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_my.*
@@ -49,6 +49,7 @@ class MyFragment : BaseFragment(), MyContract.View {
         toDetail.setOnClickListener {
             startActivity(Intent(activity, MyDetailActivity::class.java))
         }
+        status.text = SpUtil.getString(activity!!, ConstantValue.status, "")
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
         avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)
@@ -56,12 +57,22 @@ class MyFragment : BaseFragment(), MyContract.View {
             var intent  = Intent(activity, RouterManagementActivity::class.java)
             startActivity(intent)
         }
-        settings.setOnClickListener {
-            KLog.i("点击。。。")
-            EventBus.getDefault().post(FileTransformEntity("dddd"))
+        status.setOnClickListener {
+            var intent = Intent(activity, EditNickNameActivity::class.java)
+            intent.putExtra("flag", "Recent Status")
+            intent.putExtra("alias", status.text!!)
+            intent.putExtra("hint", "What's new")
+            startActivityForResult(intent, 1)
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            SpUtil.putString(activity!!, ConstantValue.status, data!!.getStringExtra("alias"))
+            status.text = data!!.getStringExtra("alias")
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

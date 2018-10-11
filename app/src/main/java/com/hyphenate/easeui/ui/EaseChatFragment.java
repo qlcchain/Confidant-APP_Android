@@ -76,14 +76,13 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendFileEndRsp;
 import com.stratagile.pnrouter.entity.JSendFileRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
+import com.stratagile.pnrouter.entity.Person;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendFileDataTest;
-import com.stratagile.pnrouter.entity.SendStrMsg;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.TransformFileMessage;
-import com.stratagile.pnrouter.entity.events.TransformStrMessage;
 import com.stratagile.pnrouter.message.Message;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
@@ -102,13 +101,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.stratagile.pnrouter.entity.Person;
 
 import okio.ByteString;
 
@@ -136,8 +133,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final String ACTION_TYPING_END = "TypingEnd";
 
     protected static final int TYPING_SHOW_TIME = 5000;
-
-    protected static final int sendFileSizeMax = 1024 *100;
 
     /**
      * params to fragment
@@ -178,6 +173,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     static final int ITEM_VIDEOCALL = 7;
     static final int ITEM_PRIVATEFILE = 8;
 
+    protected static final int sendFileSizeMax = 1024 *100;
     protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file,R.string.attach_location, R.string.attach_Meeting, R.string.attach_Video_call, R.string.attach_Privatefile };
     protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector,R.drawable.ease_chat_location_selector, R.drawable.ease_chat_meeting_selector,
@@ -203,7 +199,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
-    private HashMap<String, SendFileData> sendFileDataMap = new HashMap<>();
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -1456,10 +1451,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         videoFile = new File(PathUtil.getInstance().getVideoPath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".mp4");
+        KLog.i(videoFile.getPath());
         //noinspection ResultOfMethodCallIgnored
         videoFile.getParentFile().mkdirs();
         startActivityForResult(
-                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10),
+                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10).putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0),
                 REQUEST_CODE_VIDEO);
     }
     /**

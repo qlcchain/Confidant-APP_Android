@@ -64,7 +64,8 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         }
         llRouterAlias.setOnClickListener {
             var intent = Intent(this, EditNickNameActivity::class.java)
-            intent.putExtra("flag", "routerAlias")
+            intent.putExtra("flag", "Alias")
+            intent.putExtra("hint", "Edit alias")
             intent.putExtra("alias", routerEntity.routerName)
             startActivityForResult(intent, 1)
         }

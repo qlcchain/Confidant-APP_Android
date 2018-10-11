@@ -40,10 +40,10 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View {
     }
     override fun initData() {
         if (intent.hasExtra("flag")) {
-            title.text = "Alias"
+            title.text = intent.getStringExtra("flag")
             etNickName.setText(intent.getStringExtra("alias"))
             etNickName.setSelection(intent.getStringExtra("alias").length)
-            etNickName.hint = "Edit alias"
+            etNickName.hint = intent.getStringExtra("hint")
         } else {
             title.text = "Edit NickName"
             var nickName = SpUtil.getString(this, ConstantValue.username, "")!!
@@ -56,7 +56,7 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View {
         if (intent.hasExtra("flag")) {
             if (etNickName.text.toString().equals(intent.getStringExtra("alias"))) {
                 setResult(0)
-            } else {
+            } else if (!etNickName.text.toString().equals("")){
                 var intent = Intent()
                 intent.putExtra("alias", etNickName.text.toString())
                 setResult(Activity.RESULT_OK, intent)

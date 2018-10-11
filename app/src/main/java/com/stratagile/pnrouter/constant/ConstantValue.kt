@@ -15,5 +15,6 @@ object ConstantValue {
         var selectFriend = "selectFriend"
         var realKeyboardHeight = "realKeyboardHeight"
         var port =":18007"
+        var status = "status"
 
 }
