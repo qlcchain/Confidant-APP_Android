@@ -132,77 +132,19 @@ public class SendFileData implements Serializable {
         System.arraycopy(content, 0, Content, 0, content.length > Content.length ? Content.length : content.length);
     }
 
-    public byte[] toByteArray(int size) {
-        byte[] fileBuffer = new byte[size];
-        //System.arraycopy(src, 0, fileBuffer, 0, count);
-        return fileBuffer;
-    }
-
-    public String toByteLength() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Magic ").append(FileUtil.toByteArray(Magic));
-        return stringBuilder.toString();
-    }
-
-    public static void main(String args[]) {
-        SendFileData sendFileData = new SendFileData();
-        //int = 4
-        sendFileData.Magic = 1;
-        sendFileData.Action = 2;
-        sendFileData.SegSize = 3;
-        sendFileData.SegSeq = 4;
-        sendFileData.FileOffset = 5;
-        sendFileData.FileId = 6;
-        //short = 2
-        sendFileData.CRC = 7;
-        //byte = 1
-        sendFileData.SegMore = 8;
-        sendFileData.Cotinue = 9;
-
-        sendFileData.FileName = new byte[256];
-        sendFileData.FromId = new byte[77];
-        sendFileData.ToId = new byte[77];
-        sendFileData.Content = new byte[1024*100];
-//        System.out.println(Arrays.toString(FileUtil.toByteArray(sendFileData)));
-        byte[] magicByte = FormatTransfer.toLH(sendFileData.Magic);
-        byte[] ActionByte = FormatTransfer.toLH(sendFileData.Action);
-        byte[] SegSizeByte = FormatTransfer.toLH(sendFileData.Magic);
-        byte[] SegSeqByte = FormatTransfer.toLH(sendFileData.SegSeq);
-        byte[] FileOffsetByte = FormatTransfer.toLH(sendFileData.FileOffset);
-        byte[] FileIdByte = FormatTransfer.toLH(sendFileData.FileId);
-
-        byte[] CRCByte = FormatTransfer.toLH(sendFileData.CRC);
-
-        byte[] SegMoreByte = new byte[sendFileData.SegMore];
-        byte[] CotinueByte = new byte[sendFileData.Cotinue];
-
-        System.out.println(magicByte.length);
-        System.out.println(ActionByte.length);
-        System.out.println(SegSizeByte.length);
-        System.out.println(SegSeqByte.length);
-        System.out.println(FileOffsetByte.length);
-        System.out.println(FileIdByte.length);
-
-        System.out.println(CRCByte.length);
-
-        System.out.println(SegMoreByte.length);
-        System.out.println(CotinueByte.length);
-
-        System.out.println(sendFileData.FileName.length);
-        System.out.println(sendFileData.FromId.length);
-        System.out.println(sendFileData.ToId.length);
-        System.out.println(sendFileData.Content.length);
-
+    public byte[] toByteArray() {
+        byte[] magicByte = FormatTransfer.toLH(this.Magic);
+        byte[] ActionByte = FormatTransfer.toLH(this.Action);
+        byte[] SegSizeByte = FormatTransfer.toLH(this.Magic);
+        byte[] SegSeqByte = FormatTransfer.toLH(this.SegSeq);
+        byte[] FileOffsetByte = FormatTransfer.toLH(this.FileOffset);
+        byte[] FileIdByte = FormatTransfer.toLH(this.FileId);
+        byte[] CRCByte = FormatTransfer.toLH(this.CRC);
+        byte[] SegMoreByte = new byte[]{this.SegMore};
+        byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
-                + sendFileData.FileName.length + sendFileData.FromId.length + sendFileData.ToId.length + sendFileData.Content.length;
-        System.out.println("总长度为：" + length);
-
-        byte[] result = new byte[length];
-//        Object src : 原数组
-//        int srcPos : 从元数据的起始位置开始
-//　　Object dest : 目标数组
-//　　int destPos : 目标数组的开始起始位置
-//　　int length  : 要copy的数组的长度
+                + this.FileName.length + this.FromId.length + this.ToId.length + this.Content.length;
+        byte[] result = new byte[length + 2];
         int copyLength = 0;
         System.arraycopy(magicByte, 0, result, copyLength, magicByte.length);
         copyLength += magicByte.length;
@@ -222,16 +164,15 @@ public class SendFileData implements Serializable {
         copyLength += SegMoreByte.length;
         System.arraycopy(CotinueByte, 0, result, copyLength, CotinueByte.length);
         copyLength += CotinueByte.length;
-        System.arraycopy(sendFileData.FileName, 0, result, copyLength, sendFileData.FileName.length);
-        copyLength += sendFileData.FileName.length;
-        System.arraycopy(sendFileData.FromId, 0, result, copyLength,sendFileData.FromId.length);
-        copyLength += sendFileData.FromId.length;
-        System.arraycopy(sendFileData.ToId, 0, result, copyLength,sendFileData.ToId.length);
-        copyLength += sendFileData.ToId.length;
-        System.arraycopy(sendFileData.Content, 0, result, copyLength,sendFileData.Content.length);
-        copyLength += sendFileData.Content.length;
-        System.out.println("数组的总长度为 ：" + result.length);
-        System.out.println(Arrays.toString(result));
-//        System.out.println(Arrays.toString(new byte[1]));
+        System.arraycopy(this.FileName, 0, result, copyLength, this.FileName.length);
+        copyLength += this.FileName.length;
+        System.arraycopy(this.FromId, 0, result, copyLength,this.FromId.length);
+        copyLength += this.FromId.length;
+        System.arraycopy(this.ToId, 0, result, copyLength,this.ToId.length);
+        copyLength += this.ToId.length;
+        System.arraycopy(this.Content, 0, result, copyLength,this.Content.length);
+        byte[] add = new byte[]{0, 0};
+        System.arraycopy(add, 0, result, copyLength,add.length);
+        return result;
     }
 }

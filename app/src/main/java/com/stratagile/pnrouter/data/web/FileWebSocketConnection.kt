@@ -7,6 +7,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.FileTransformEntity
+import com.stratagile.pnrouter.entity.events.TransformReceiverFileMessage
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.WiFiUtil
@@ -216,7 +217,9 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
-        KLog.i("WSC onMessage()")
+        var text = payload.toString();
+        KLog.i("WSC onMessage()" + text);
+        EventBus.getDefault().post(TransformReceiverFileMessage(toId, payload!!.toByteArray()))
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {

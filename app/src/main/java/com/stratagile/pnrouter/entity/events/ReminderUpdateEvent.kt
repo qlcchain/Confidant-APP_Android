@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity.events
 
+import okio.ByteString
+
 class ReminderUpdateEvent {
 }
 
@@ -13,3 +15,5 @@ class FileTransformEntity(var toId : String, var message : Int = 0, var retMsg :
 class TransformStrMessage(var toId : String, var message : String)
 
 class TransformFileMessage(var toId : String, var message : ByteArray)
+//发送文件接收的反馈
+class TransformReceiverFileMessage(var toId : String, var message : ByteArray)
