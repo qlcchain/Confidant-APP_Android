@@ -101,7 +101,7 @@ public class SendFileData implements Serializable {
     }
 
     public void setFileName(byte[] fileName) {
-        FileName = fileName;
+        System.arraycopy(fileName, 0, FileName, 0, fileName.length> FileName.length ? FileName.length : fileName.length);
     }
 
     public byte[] getFromId() {
@@ -109,7 +109,7 @@ public class SendFileData implements Serializable {
     }
 
     public void setFromId(byte[] fromId) {
-        FromId = fromId;
+        System.arraycopy(fromId, 0, FromId, 0, fromId.length > FromId.length ? FromId.length:fromId.length );
     }
 
     public byte[] getToId() {
@@ -117,7 +117,7 @@ public class SendFileData implements Serializable {
     }
 
     public void setToId(byte[] toId) {
-        ToId = toId;
+        System.arraycopy(toId, 0, ToId, 0, toId.length > FromId.length ? FromId.length : toId.length);
     }
 
     public byte[] getContent() {
@@ -125,7 +125,7 @@ public class SendFileData implements Serializable {
     }
 
     public void setContent(byte[] content) {
-        Content = content;
+        System.arraycopy(content, 0, Content, 0, content.length > Content.length ? Content.length : content.length);
     }
 
     public byte[] toByteArray(int size) {
