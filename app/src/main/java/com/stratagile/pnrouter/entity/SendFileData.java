@@ -147,17 +147,17 @@ public class SendFileData implements Serializable {
     public static void main(String args[]) {
         SendFileData sendFileData = new SendFileData();
         //int = 4
-        sendFileData.Magic = 0x1;
-        sendFileData.Action = 0x2;
-        sendFileData.SegSize = 0x3;
-        sendFileData.SegSeq = 0x4;
-        sendFileData.FileOffset = 0x5;
-        sendFileData.FileId = 0x2;
+        sendFileData.Magic = 1;
+        sendFileData.Action = 2;
+        sendFileData.SegSize = 3;
+        sendFileData.SegSeq = 4;
+        sendFileData.FileOffset = 5;
+        sendFileData.FileId = 6;
         //short = 2
-        sendFileData.CRC = 2;
+        sendFileData.CRC = 7;
         //byte = 1
-        sendFileData.SegMore = 1;
-        sendFileData.Cotinue = 1;
+        sendFileData.SegMore = 8;
+        sendFileData.Cotinue = 9;
 
         sendFileData.FileName = new byte[256];
         sendFileData.FromId = new byte[77];
@@ -204,31 +204,31 @@ public class SendFileData implements Serializable {
 //　　int destPos : 目标数组的开始起始位置
 //　　int length  : 要copy的数组的长度
         int copyLength = 0;
-        System.arraycopy(magicByte, 0, result, length, magicByte.length);
+        System.arraycopy(magicByte, 0, result, copyLength, magicByte.length);
         copyLength += magicByte.length;
-        System.arraycopy(ActionByte, 0, result, length, ActionByte.length);
+        System.arraycopy(ActionByte, 0, result, copyLength, ActionByte.length);
         copyLength += ActionByte.length;
-        System.arraycopy(SegSizeByte, 0, result, length, SegSizeByte.length);
+        System.arraycopy(SegSizeByte, 0, result, copyLength, SegSizeByte.length);
         copyLength += SegSizeByte.length;
-        System.arraycopy(SegSeqByte, 0, result, length, SegSeqByte.length);
+        System.arraycopy(SegSeqByte, 0, result, copyLength, SegSeqByte.length);
         copyLength += SegSeqByte.length;
-        System.arraycopy(FileOffsetByte, 0, result, length, FileOffsetByte.length);
+        System.arraycopy(FileOffsetByte, 0, result, copyLength, FileOffsetByte.length);
         copyLength += FileOffsetByte.length;
-        System.arraycopy(FileIdByte, 0, result, length, FileIdByte.length);
+        System.arraycopy(FileIdByte, 0, result, copyLength, FileIdByte.length);
         copyLength += FileIdByte.length;
-        System.arraycopy(CRCByte, 0, result, length, CRCByte.length);
+        System.arraycopy(CRCByte, 0, result, copyLength, CRCByte.length);
         copyLength += CRCByte.length;
-        System.arraycopy(SegMoreByte, 0, result, length, SegMoreByte.length);
+        System.arraycopy(SegMoreByte, 0, result, copyLength, SegMoreByte.length);
         copyLength += SegMoreByte.length;
-        System.arraycopy(CotinueByte, 0, result, length, CotinueByte.length);
+        System.arraycopy(CotinueByte, 0, result, copyLength, CotinueByte.length);
         copyLength += CotinueByte.length;
-        System.arraycopy(sendFileData.FileName, 0, result, length, sendFileData.FileName.length);
+        System.arraycopy(sendFileData.FileName, 0, result, copyLength, sendFileData.FileName.length);
         copyLength += sendFileData.FileName.length;
-        System.arraycopy(sendFileData.FromId, 0, result, length,sendFileData.FromId.length);
+        System.arraycopy(sendFileData.FromId, 0, result, copyLength,sendFileData.FromId.length);
         copyLength += sendFileData.FromId.length;
-        System.arraycopy(sendFileData.ToId, 0, result, length,sendFileData.ToId.length);
+        System.arraycopy(sendFileData.ToId, 0, result, copyLength,sendFileData.ToId.length);
         copyLength += sendFileData.ToId.length;
-        System.arraycopy(sendFileData.Content, 0, result, length,sendFileData.Content.length);
+        System.arraycopy(sendFileData.Content, 0, result, copyLength,sendFileData.Content.length);
         copyLength += sendFileData.Content.length;
         System.out.println("数组的总长度为 ：" + result.length);
         System.out.println(Arrays.toString(result));
