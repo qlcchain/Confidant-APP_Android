@@ -56,6 +56,13 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack {
+    override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
+        if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
+            KLog.i("已经在聊天窗口了，不处理该条数据！")
+        }else{
+
+        }
+    }
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
 
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(delMsgPushRsp.params.friendId)) {

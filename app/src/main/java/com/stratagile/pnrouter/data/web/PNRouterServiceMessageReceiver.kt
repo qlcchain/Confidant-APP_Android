@@ -94,7 +94,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
                 chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
                 mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
-            }
+            }"PushFile" -> {
+            val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
+            chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
+            mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
+        }
         }
         messageListner?.onMessage(baseData)
     }
@@ -230,6 +234,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun firendList(jPullFriendRsp: JPullFriendRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
+        fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
     }
 
     interface AddFriendDealCallBack {
@@ -251,6 +256,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
         fun delMsgRsp(delMsgRsp: JDelMsgRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
+        fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
     }
 
     interface GlobalBack {

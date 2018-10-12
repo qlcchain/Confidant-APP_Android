@@ -135,7 +135,7 @@ public class SendFileData implements Serializable {
     public byte[] toByteArray() {
         byte[] magicByte = FormatTransfer.toLH(this.Magic);
         byte[] ActionByte = FormatTransfer.toLH(this.Action);
-        byte[] SegSizeByte = FormatTransfer.toLH(this.Magic);
+        byte[] SegSizeByte = FormatTransfer.toLH(this.SegSize);
         byte[] SegSeqByte = FormatTransfer.toLH(this.SegSeq);
         byte[] FileOffsetByte = FormatTransfer.toLH(this.FileOffset);
         byte[] FileIdByte = FormatTransfer.toLH(this.FileId);

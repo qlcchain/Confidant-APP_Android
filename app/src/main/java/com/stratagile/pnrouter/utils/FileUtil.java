@@ -13,12 +13,14 @@ import com.stratagile.pnrouter.application.AppConfig;
 
 import org.apache.http.util.EncodingUtils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -583,28 +585,41 @@ public class FileUtil {
         }
         return ByteString.of(buffer);
     }
-
-    public static byte[] readFileBuffer(File file) {
-        FileInputStream fis = null;
-        ObjectInputStream ois = null;
-        byte[] buffer = null;
+    public static byte[] file2Byte(String filePath) {
+        ByteArrayOutputStream bos = null;
+        BufferedInputStream in = null;
         try {
-            fis = new FileInputStream(file);
-            buffer = new byte[fis.available()];
-            fis.close();
-        } catch (IOException e) {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                throw new FileNotFoundException("file not exists");
+            }
+            bos = new ByteArrayOutputStream((int) file.length());
+            in = new BufferedInputStream(new FileInputStream(file));
+            int buf_size = 1024;
+            byte[] buffer = new byte[buf_size];
+            int len = 0;
+            while (-1 != (len = in.read(buffer, 0, buf_size))) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
+            return null;
         } finally {
             try {
-                if (fis != null) fis.close();
-                if (ois != null) ois.close();
-            } catch (IOException e) {
+                if (in != null) {
+                    in.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
         }
-        return buffer;
     }
-
     /**
      * 在字节数组中截取指定长度数组
      * @param src

@@ -188,3 +188,9 @@ data class PullMsgReq(var UserId :String, var FriendId : String, var MsgType : I
 
 data class SendStrMsg(var FromId :String, var ToId : String, var FileName : String, var FileSize :Long,var FileMD5 : String ,var Action : String = "SendFile")
 
+/**
+ * 12.	接收文件
+ * 场景：用户A向自己的好友用户B发送消息，router推送该消息到用户B
+ * (2)	响应（APP->Router）
+ */
+data class PushFileReq(var FromId :String, var ToId : String, var FilePath : String, var FileName :String,var FileMD5 : String ,var MsgId:Int,var Action : String = "SendFile")

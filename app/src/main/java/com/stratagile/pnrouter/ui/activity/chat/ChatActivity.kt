@@ -127,6 +127,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
         chatFragment?.delFreindMsg(delMsgPushRsp)
     }
+    override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
+        //chatFragment?.delFreindMsg(delMsgPushRsp)
+    }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
         if (delMsgRsp.params.retCode == 0) {

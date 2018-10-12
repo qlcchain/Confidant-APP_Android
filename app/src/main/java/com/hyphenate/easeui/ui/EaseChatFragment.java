@@ -198,7 +198,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, String> sendFileNameMap = new HashMap<>();
+    private HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
+    private HashMap<String, String> sendMsgIdMap = new HashMap<>();
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -254,24 +256,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 File file = new File(filePath);
                 if(file.exists())
                 {
-                    /* long fileSize = file.length();
+                    long fileSize = file.length();
                     String fileMD5 = FileUtil.getFileMD5(file);
-                    SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
+                   /*  SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
-                    byte[] fileBuffer= FileUtil.readFileBuffer(file);
+                    byte[] fileBuffer= FileUtil.file2Byte(filePath);
+
                     SendFileData sendFileData = new SendFileData();
                     SendFileDataTest sendFileDataTest = new SendFileDataTest();
-                           int action = FormatTransfer.reverseInt(1);
+                    int fileId = (int)System.currentTimeMillis()/1000;
+                    /*int action = FormatTransfer.reverseInt(1);
                     int segSize = fileBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileBuffer.length;
+                    sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
                     sendFileData.setAction(FormatTransfer.reverseInt(1));
                     sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
                     sendFileData.setSegSeq(FormatTransfer.reverseInt(1));
                     sendFileData.setFileOffset(FormatTransfer.reverseInt(0));
-                    int fileId = (int)System.currentTimeMillis()/1000;
+
                     sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
                     sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-                    sendFileData.setSegMore((byte) 0);
+                    sendFileData.setSegMore((byte) 1);
                     sendFileData.setCotinue((byte) 0);
                     sendFileData.setFileName(fileName.getBytes());
                     sendFileData.setFromId(EMMessage.getFrom().getBytes());
@@ -282,23 +287,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                     char[] cs = new char[] {0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f, 0x7f, 0x8f };//要转换的char数组
                     String str = new String(cs);
-                    byte[] bs = str.getBytes();//转换过来的byte数组 不过介于你初学 建议你用第2中方式
+                    byte[] bs = str.getBytes();
 
                     String aa = FormatTransfer.conver2HexStr(bs);
-                    int crc1= CRC16Util.getCRC1(bs);
-                    String crc2= CRC16Util.getCRC2(bs);
+                    int crc1= CRC16Util.crc16_ccitt_xmodem(bs);
+                    String crc2= Integer.toHexString(crc1);
                     String crc3= CRC16Util.getCRC3(bs);
                     short crc5= CRC16Util.getCRC5(bs);
                     String aaa = CRC16Util.getCRC99(bs,bs.length);
-                    int uui = CRC16Util.getCrc162(bs);
+                    String uui = CRC16Util.CRC16_ccitt(bs);
                     int newCRC = CRC16Util.getCRC(sendData,sendData.length);
                     sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
 
                     int aakk = CRC16Util.getCRC(bs,bs.length);
 
                     short abb = FormatTransfer.reverseShort(sendFileData.getCRC());
-                    sendData = sendFileData.toByteArray();
+                    sendData = sendFileData.toByteArray();*/
                     //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),sendData));
+                    sendFileByteData(fileBuffer,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
                 }
                 break;
             case 2:
@@ -346,7 +352,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     default:
                         break;
                 }*/
-               break;
+                break;
             default:
                 break;
         }
@@ -359,53 +365,85 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         byte[] SegSeq = new byte[4];
         byte[] CRC = new byte[2];
         byte[] Code = new byte[2];
-        byte[] FromId = new byte[77];
-        byte[] ToId = new byte[77];
+        byte[] FromId = new byte[76];
+        byte[] ToId = new byte[76];
         System.arraycopy(retMsg, 0, Action, 0, 4);
         System.arraycopy(retMsg, 4, FileId, 0, 4);
         System.arraycopy(retMsg, 8, SegSeq, 0, 4);
         System.arraycopy(retMsg, 12, CRC, 0, 2);
         System.arraycopy(retMsg, 14, Code, 0, 2);
-        System.arraycopy(retMsg, 16, FromId, 0, 77);
-        System.arraycopy(retMsg, 93, ToId, 0, 77);
+        System.arraycopy(retMsg, 16, FromId, 0, 76);
+        System.arraycopy(retMsg, 93, ToId, 0, 76);
         int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action)) ;
         int FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId));
         int SegSeqResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(SegSeq));
         short CRCResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(CRC));
         short CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code));
+        String FromIdResult  = new String(FromId);
+        String ToIdResult  = new String(ToId);
         String aa = "";
-        /*switch ()
+        switch (CodeResult)
         {
-            case "":
+            case 0:
+                int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
+                byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
+                int leftSize =fileBuffer.length - lastSendSize;
+                String msgId = sendMsgIdMap.get(FileIdResult+"");
+                if(leftSize >0)
+                {
+                    byte[] fileLeftBuffer = new byte[leftSize];
+                    System.arraycopy(fileBuffer, 0, fileLeftBuffer, 0, leftSize);
+                    String fileName = sendFileNameMap.get(FileIdResult+"");
+                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
+                }else{
+                    String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+                    String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getPort();
+                    EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+                    KLog.i("文件发送成功！");
+                }
                 break;
-        }*/
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
     }
-    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,int fileId,int segSeq)
+    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq)
     {
         SendFileData sendFileData = new SendFileData();
-        SendFileDataTest sendFileDataTest = new SendFileDataTest();
-        int action = FormatTransfer.reverseInt(1);
         int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
+        sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
         sendFileData.setAction(FormatTransfer.reverseInt(1));
         sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
+        int aa = FormatTransfer.reverseInt(9437440);
         sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
-        sendFileData.setFileOffset(FormatTransfer.reverseInt(0));
+        int fileOffset = 0;
+        fileOffset = (segSeq -1) * sendFileSizeMax;
+        sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
         sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
         sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-        sendFileData.setSegMore((byte) (fileLeftBuffer.length>sendFileSizeMax ? 1: 0));
+        int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
+        sendFileData.setSegMore((byte) segMore);
         sendFileData.setCotinue((byte) 0);
         sendFileData.setFileName(fileName.getBytes());
         sendFileData.setFromId(From.getBytes());
         sendFileData.setToId(To.getBytes());
-        byte[] content = FileUtil.subBytes(fileLeftBuffer,0,segSize);
+        byte[] content = new byte[sendFileSizeMax];
+        System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
         sendFileData.setContent(content);
         byte[] sendData = sendFileData.toByteArray();
         int newCRC = CRC16Util.getCRC(sendData,sendData.length);
         sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
         sendData = sendFileData.toByteArray();
         sendFileNameMap.put(fileId+"",fileName);
+        sendFileLastByteSizeMap.put(fileId+"",segSize);
         sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
-        EventBus.getDefault().post(new TransformFileMessage(To,sendData));
+        sendMsgIdMap.put(fileId+"",msgId);
+        EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
+        String s = new String(content);
+        KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize());
     }
     /**
      * 锁定内容高度，防止跳闪
@@ -1264,6 +1302,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
         String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getPort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+        sendMessage(message);
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
