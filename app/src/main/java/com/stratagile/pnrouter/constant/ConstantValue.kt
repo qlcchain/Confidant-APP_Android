@@ -14,7 +14,8 @@ object ConstantValue {
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
         var realKeyboardHeight = "realKeyboardHeight"
-        var port =":18007"
+        var port =":18006"
+        var filePort =":18007"
         var status = "status"
 
 }

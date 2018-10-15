@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
@@ -41,7 +42,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
     private var retryInterval = arrayListOf<Int>(5000, 15000, 30000, 60000, 120000)
-    private var port = ":18006/"
     private var ipAddress = ""
     private var filledUri = ""
 

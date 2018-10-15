@@ -103,8 +103,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import okio.ByteString;
-
 import static android.net.Uri.encode;
 
 /**
@@ -344,7 +342,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
                         }else {
                             String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-                            String wssUrl = "https://"+pAddress+ ConstantValue.INSTANCE.getPort();
+                            String wssUrl = "https://"+pAddress+ ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                         }
                         break;
@@ -396,7 +394,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
                 }else{
                     String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-                    String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getPort();
+                    String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                     KLog.i("文件发送成功！");
                 }
@@ -444,7 +442,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String s = new String(content);
         String aabb =  FileUtil.bytesToHex(content);
         //KLog.i("发送中>>>内容"+"content:"+aabb);
-        KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize());
+        KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
     }
     /**
      * 锁定内容高度，防止跳闪
@@ -756,7 +754,30 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         for(int i= 0 ; i < size ;i++)
         {
             Message Message = messageList.get(i);
-            EMMessage message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+            EMMessage message = null;
+            switch (Message.getMsgType())
+            {
+                case 0:
+                    message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    message = EMMessage.createImageSendMessage("", false, toChatUserId);
+                    break;
+                case 5:
+                    break;
+                default:
+                    break;
+            }
+            if(message == null)
+            {
+                continue;
+            }
             message.setFrom(Message.getFrom());
             message.setTo(Message.getTo());
             message.setUnread(false);
@@ -1301,7 +1322,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getPort();
+        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         sendMessage(message);
     }

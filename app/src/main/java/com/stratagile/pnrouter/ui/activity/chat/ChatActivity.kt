@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
@@ -15,6 +17,8 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.ConstantValue.filePort
+import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
@@ -23,8 +27,10 @@ import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
+import com.stratagile.pnrouter.utils.FileDownloadUtils
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
+import com.stratagile.pnrouter.utils.WiFiUtil
 import kotlinx.android.synthetic.main.activity_chat.*
 import javax.inject.Inject
 
@@ -129,6 +135,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         //chatFragment?.delFreindMsg(delMsgPushRsp)
+        var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
+        var filledUri = "https://" + ipAddress + port+jPushFileMsgRsp.params.filePath
+        var files_dir = this.filesDir.absolutePath + "/image/"
+        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, handler)
     }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
@@ -245,4 +255,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         progressDialog.hide()
     }
 
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x12 -> {
+
+                }
+                0x16 -> {
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
 }
