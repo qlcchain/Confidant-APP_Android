@@ -43,6 +43,8 @@ import okio.ByteString;
 public class FileUtil {
 
     private final int PLOY =  0X1021;
+    private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     public static void init() {
         new Thread(new Runnable() {
             @Override
@@ -686,7 +688,7 @@ public class FileUtil {
     /**
      * 字符串转换成十六进制字符串
      *
-     * @param String str 待转换的ASCII字符串
+     * @param  str 待转换的ASCII字符串
      * @param  str 待转换的ASCII字符串
      * @return String 每个Byte之间空格分隔，如: [61 6C 6B]
      */
@@ -710,7 +712,7 @@ public class FileUtil {
     /**
      * bytes字符串转换为Byte值
      *
-     * @param String src Byte字符串，每个Byte之间没有分隔符
+     * @param  src Byte字符串，每个Byte之间没有分隔符
      * @param  src Byte字符串，每个Byte之间没有分隔符
      * @return byte[]
      */
@@ -790,5 +792,28 @@ public class FileUtil {
         intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
         return intent;
     }
+    /**
+     * bytes 转十六进制
+     * byte[] to hex string
+     *
+     * @param bytes
+     * @return
+     */
+    public static String bytesToHex(byte[] bytes) {
+        // 一个byte为8位，可用两个十六进制位标识
+        char[] buf = new char[bytes.length * 2];
+        int a = 0;
+        int index = 0;
+        for(byte b : bytes) { // 使用除与取余进行转换
+            if(b < 0) {
+                a = 256 + b;
+            } else {
+                a = b;
+            }
 
+            buf[index++] = HEX_CHAR[a / 16];
+            buf[index++] = HEX_CHAR[a % 16];
+        }
+        return new String(buf);
+    }
 }

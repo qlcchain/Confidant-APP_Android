@@ -262,7 +262,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
                     byte[] fileBuffer= FileUtil.file2Byte(filePath);
-
                     SendFileData sendFileData = new SendFileData();
                     SendFileDataTest sendFileDataTest = new SendFileDataTest();
                     int fileId = (int)System.currentTimeMillis()/1000;
@@ -392,7 +391,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if(leftSize >0)
                 {
                     byte[] fileLeftBuffer = new byte[leftSize];
-                    System.arraycopy(fileBuffer, 0, fileLeftBuffer, 0, leftSize);
+                    System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
                     String fileName = sendFileNameMap.get(FileIdResult+"");
                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
                 }else{
@@ -443,6 +442,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMsgIdMap.put(fileId+"",msgId);
         EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
         String s = new String(content);
+        String aabb =  FileUtil.bytesToHex(content);
+        //KLog.i("发送中>>>内容"+"content:"+aabb);
         KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize());
     }
     /**

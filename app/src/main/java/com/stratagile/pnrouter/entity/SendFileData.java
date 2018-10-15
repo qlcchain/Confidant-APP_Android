@@ -172,6 +172,7 @@ public class SendFileData implements Serializable {
         copyLength += this.ToId.length;
         System.arraycopy(this.Content, 0, result, copyLength,this.Content.length);
         byte[] add = new byte[]{0, 0};
+        copyLength += this.Content.length;
         System.arraycopy(add, 0, result, copyLength,add.length);
         return result;
     }
