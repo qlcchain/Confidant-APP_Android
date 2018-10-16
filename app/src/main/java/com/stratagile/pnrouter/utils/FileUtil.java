@@ -3,6 +3,8 @@ package com.stratagile.pnrouter.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
@@ -815,5 +817,39 @@ public class FileUtil {
             buf[index++] = HEX_CHAR[a % 16];
         }
         return new String(buf);
+    }
+    /**
+     * drawable转为file
+     * @param mContext
+     * @param drawableId  drawable的ID
+     * @param fileName   转换后的文件名
+     * @return
+     */
+        public static File drawableToFile(Context mContext,int drawableId,String fileName){
+//        InputStream is = view.getContext().getResources().openRawResource(R.drawable.logo);
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId);
+//        Bitmap bitmap = BitmapFactory.decodeStream(is);
+        String defaultPath = mContext.getFilesDir()
+                .getAbsolutePath() + "/image";
+        File file = new File(defaultPath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        String defaultImgPath = defaultPath + "/"+fileName+".png";
+        file = new File(defaultImgPath);
+        if(!file.exists())
+        {
+            try {
+                file.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+//            is.close();
+                fOut.flush();
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
     }
 }

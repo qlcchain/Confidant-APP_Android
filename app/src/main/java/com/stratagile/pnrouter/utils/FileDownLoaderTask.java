@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private Context mContext;
 	private Handler handler;
 	private int bytesCopiedFlag;
+	private int msgID;
 
 	/**
 	 *
@@ -54,8 +56,9 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context, Handler message){
+	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message){
 		super();
+		msgID = msgId;
 		if(context!=null){
 			mContext = context;
 			handler = message;
@@ -105,6 +108,9 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		new Handler().postDelayed(new Runnable() {
 			public void run() {
 				Message msg = new Message();
+				Bundle data = new Bundle();
+				data.putInt("msgID",msgID);
+				msg.setData(data);
 				if(isCancelled())
 				{
 					msg.what = 0x404;

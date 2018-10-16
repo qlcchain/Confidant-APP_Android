@@ -1,9 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
@@ -14,7 +17,6 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 import android.support.v4.view.ViewPager
@@ -39,15 +41,17 @@ import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.entity.events.UnReadMessageCount
+import com.stratagile.pnrouter.message.Message
 import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.tencent.bugly.crashreport.CrashReport
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -60,7 +64,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         }else{
-
+            var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
+            var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
+            var files_dir = this.filesDir.absolutePath + "/image/"
+            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)
         }
     }
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
@@ -296,6 +303,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
+        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_image")
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
@@ -612,5 +620,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             contacts[aa[i]] = user
         }
         return contacts
+    }
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x12 -> {
+
+                }
+                0x16 -> {
+                }
+            }//goMain();
+            //goMain();
+        }
     }
 }

@@ -17,6 +17,8 @@ public class Message {
     private String From;
     private String To;
     private String Msg;
+    private String FileName;
+    private String  FilePath;
 
     public int getMsgId() {
         return MsgId;
@@ -64,5 +66,19 @@ public class Message {
 
     public void setMsg(String Msg) {
         this.Msg = Msg;
+    }
+    public String getFileName() {
+        return FileName;
+    }
+
+    public void setFileName(String fileName) {
+        FileName = fileName;
+    }
+    public String getFilePath() {
+        return FilePath;
+    }
+
+    public void setFilePath(String filePath) {
+        FilePath = filePath;
     }
 }

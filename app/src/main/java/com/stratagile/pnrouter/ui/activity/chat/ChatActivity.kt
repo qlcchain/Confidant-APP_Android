@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.chat
 
 import android.annotation.TargetApi
+import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
@@ -17,7 +18,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.ConstantValue.filePort
 import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.WiFiUtil
 import kotlinx.android.synthetic.main.activity_chat.*
+import java.util.HashMap
 import javax.inject.Inject
 
 /**
@@ -43,6 +44,7 @@ import javax.inject.Inject
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
     var statusBarHeight: Int = 0
+    var receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
     override fun onGlobalLayout() {
         var myLayout = getWindow().getDecorView();
         val r = Rect()
@@ -134,11 +136,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         chatFragment?.delFreindMsg(delMsgPushRsp)
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
-        //chatFragment?.delFreindMsg(delMsgPushRsp)
+        var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
         var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
         var filledUri = "https://" + ipAddress + port+jPushFileMsgRsp.params.filePath
         var files_dir = this.filesDir.absolutePath + "/image/"
-        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, handler)
+        var testDir = Environment.getExternalStorageDirectory().toString() + "/Router/"
+        receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
+        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler)
     }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
@@ -157,7 +162,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-            chatFragment?.receiveMessage(pushMsgRsp)
+            chatFragment?.receiveTxtMessage(pushMsgRsp)
         }
     }
 
@@ -258,10 +263,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
-                0x12 -> {
+                0x404 -> {
 
                 }
-                0x16 -> {
+                0x55 -> {
+                    var data:Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
+                    var fileName = jPushFileMsgRsp.params.fileName;
+                    var fromId = jPushFileMsgRsp.params.fromId;
+                    var toId = jPushFileMsgRsp.params.toId
+                    chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId)
+                    var aa = "123"
                 }
             }//goMain();
             //goMain();

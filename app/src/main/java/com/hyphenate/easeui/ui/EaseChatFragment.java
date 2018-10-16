@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -85,6 +87,7 @@ import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.CRC16Util;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
+import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -102,8 +105,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static android.net.Uri.encode;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -144,7 +145,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected InputMethodManager inputManager;
     protected ClipboardManager clipboard;
 
-    protected Handler handler = new Handler();
     protected File cameraFile;
     protected File videoFile;
     protected EaseVoiceRecorderView voiceRecorderView;
@@ -761,13 +761,33 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                     break;
                 case 1:
+                    String ease_default_image = getActivity().getFilesDir().getAbsolutePath() + "/image/ease_default_image.png";
+                    String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +Message.getFileName();
+                    String testDir = Environment.getExternalStorageDirectory().toString() + "/Router/"+Message.getFileName();
+                    File aa = new File(files_dir);
+                    long bb = aa.length();
+                    Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                    + getResources().getResourcePackageName(R.drawable.ease_default_image) + "/"
+                    + getResources().getResourceTypeName(R.drawable.ease_default_image) + "/"
+                    + getResources().getResourceEntryName(R.drawable.ease_default_image));
+                    File File=new File(ease_default_image);
+                    boolean aabb = File.exists();
+                    if(aa.exists())
+                    {
+                        message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                    }else{
+                        message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
+                        String ipAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+                        String filledUri = "https://" + ipAddress + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
+                        String save_dir = getActivity().getFilesDir().getAbsolutePath()+ "/image/";
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handler);
+                    }
                     break;
                 case 2:
                     break;
                 case 3:
                     break;
                 case 4:
-                    message = EMMessage.createImageSendMessage("", false, toChatUserId);
                     break;
                 case 5:
                     break;
@@ -1343,16 +1363,33 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     /**
-     * 接受消息
+     * 接受文字和表情消息
      * @param jPushMsgRsp
      */
-    public void receiveMessage(JPushMsgRsp jPushMsgRsp)
+    public void receiveTxtMessage(JPushMsgRsp jPushMsgRsp)
     {
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
         message.setDirection(EMMessage.Direct.RECEIVE);
         message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         message.setFrom(jPushMsgRsp.getParams().getFromId());
         message.setTo(jPushMsgRsp.getParams().getToId());
+        sendMessage(message);
+    }
+    /**
+     * 接受文件消息
+     * @param url
+     * @param msgId
+     * @param fromId
+     * @param toId
+     */
+    public void receiveFileMessage(String url,String msgId, String fromId,String toId)
+    {
+        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +url;
+        EMMessage message = EMMessage.createImageSendMessage(files_dir, false, toChatUserId);
+        message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setMsgId(msgId);
+        message.setFrom(fromId);
+        message.setTo(toId);
         sendMessage(message);
     }
     protected void sendMessage(EMMessage message){
@@ -1840,5 +1877,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
          */
         EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
+    protected Handler handler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case 0x404:
 
+                    break;
+                case 0x55:
+                    if(conversation !=null )
+                    {
+                        conversation.removeMessage(currentSendMsg.getMsgId());
+                        //currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+                        conversation.insertMessage(currentSendMsg);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 }

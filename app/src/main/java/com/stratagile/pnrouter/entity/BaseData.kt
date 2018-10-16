@@ -194,3 +194,9 @@ data class SendStrMsg(var FromId :String, var ToId : String, var FileName : Stri
  * (2)	响应（APP->Router）
  */
 data class PushFileReq(var FromId :String, var ToId : String, var FilePath : String, var FileName :String,var FileMD5 : String ,var MsgId:Int,var Action : String = "SendFile")
+
+/**
+ * 12.	接收到文件反馈给服务器
+ * (2)	响应（APP->Router）
+ */
+data class PushFileRespone(var Retcode :Int, var FromId : String, var ToId : String,var MsgId : Int,  var Action : String = "PushFile")
