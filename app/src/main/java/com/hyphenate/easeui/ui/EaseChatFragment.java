@@ -199,6 +199,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
     private HashMap<String, String> sendMsgIdMap = new HashMap<>();
+    private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
+
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -813,7 +815,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 MsgStartId = Message.getMsgId();
             }
             message.setMsgId( Message.getMsgId()+"");
-            sendMessage(message);
+            if(Message.getMsgType() != 0)
+            {
+                receiveFileDataMap.put(Message.getMsgId()+"",Message);
+            }
+
+            sendMessageTo(message);
         }
 
     }
@@ -877,7 +884,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             return;
                         }
                         message.setStatus(EMMessage.Status.CREATE);
-                        sendMessage(message);
+                        sendMessageTo(message);
                     }
                 }, true).show();
                 return true;
@@ -971,7 +978,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 EMLog.i(TAG, "To send the ding-type msg, content: " + msgContent);
                 // Send the ding-type msg.
                 EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUserId, msgContent);
-                sendMessage(dingMsg);
+                sendMessageTo(dingMsg);
             }else  if (requestCode == REQUEST_CODE_FILE) {
                 String filePath = data.getStringExtra("path");
                 File file = new File(filePath);
@@ -1286,7 +1293,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setTo( UserDataManger.curreantfriendUserData.getUserId());
             message.setUnread(false);
             currentSendMsg = message;
-            sendMessage(message);
+            sendMessageTo(message);
         }
     }
     public void upateMessage(JSendMsgRsp jSendMsgRsp)
@@ -1316,19 +1323,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG,
                     EaseAtMessageHelper.get().atListToJsonArray(EaseAtMessageHelper.get().getAtMessageUsernames(content)));
         }
-        sendMessage(message);
+        sendMessageTo(message);
 
     }
 
 
     protected void sendBigExpressionMessage(String name, String identityCode){
         EMMessage message = EaseCommonUtils.createExpressionMessage(toChatUserId, name, identityCode);
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     protected void sendVoiceMessage(String filePath, int length) {
         EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     protected void sendImageMessage(String imagePath) {
@@ -1344,22 +1351,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
         String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUserId);
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     protected void sendVideoMessage(String videoPath, String thumbPath, int videoLength) {
         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     protected void sendFileMessage(String filePath) {
         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
-        sendMessage(message);
+        sendMessageTo(message);
     }
 
     /**
@@ -1373,7 +1380,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         message.setFrom(jPushMsgRsp.getParams().getFromId());
         message.setTo(jPushMsgRsp.getParams().getToId());
-        sendMessage(message);
+        sendMessageTo(message);
     }
     /**
      * 接受文件消息
@@ -1390,9 +1397,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setMsgId(msgId);
         message.setFrom(fromId);
         message.setTo(toId);
-        sendMessage(message);
+        sendMessageTo(message);
     }
-    protected void sendMessage(EMMessage message){
+    protected void sendMessageTo(EMMessage message){
         if (message == null) {
             return;
         }
@@ -1411,7 +1418,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setMessageStatusCallback(messageStatusCallback);
 
         // Send message.
-        //EMClient.getInstance().chatManager().sendMessage(message);
+        //EMClient.getInstance().chatManager().sendMessageTo(message);
         //message.setDirection(EMMessage.Direct.RECEIVE );
         message.setStatus(EMMessage.Status.SUCCESS);
         if(conversation == null)
@@ -1886,9 +1893,25 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 case 0x55:
                     if(conversation !=null )
                     {
-                        conversation.removeMessage(currentSendMsg.getMsgId());
-                        //currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
-                        conversation.insertMessage(currentSendMsg);
+                        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        Bundle data = msg.getData();
+                        String msgId = data.getInt("msgID")+"";
+                        Message message = receiveFileDataMap.get(msgId);
+                        conversation.removeMessage(msgId);
+                        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +message.getFileName();
+                        EMMessage messageImg = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);;
+                        messageImg.setFrom(message.getFrom());
+                        messageImg.setTo(message.getTo());
+                        messageImg.setUnread(false);
+                        if(message.getFrom().equals(userId))
+                        {
+                            messageImg.setDirection(EMMessage.Direct.SEND );
+                        }else {
+                            messageImg.setDirection(EMMessage.Direct.RECEIVE );
+                        }
+                        messageImg.setMsgTime(message.getTimeStatmp()* 1000);
+                        messageImg.setMsgId( message.getMsgId()+"");
+                        sendMessageTo(messageImg);
                     }
                     break;
                 default:

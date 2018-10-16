@@ -274,7 +274,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     var fromId = jPushFileMsgRsp.params.fromId;
                     var toId = jPushFileMsgRsp.params.toId
                     chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId)
-                    var aa = "123"
+                    receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();
             //goMain();

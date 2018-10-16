@@ -36,7 +36,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             thread.start()
         }
 //        javaObject.notifyAll()
-//        return sendMessage()
+//        return sendMessageTo()
     }
     /**
      * Send a read receipt for a received message.
@@ -48,7 +48,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
 //    fun sendReceipt(recipient: SignalServiceAddress, message: SignalServiceReceiptMessage) {
 //        val content = createReceiptContent(message)
-//        sendMessage(recipient, message.getWhen(), content, true)
+//        sendMessageTo(recipient, message.getWhen(), content, true)
 //    }
 
     /**
@@ -60,7 +60,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
 //    fun sendCallMessage(recipient: SignalServiceAddress, message: SignalServiceCallMessage) {
 //        val content = createCallContent(message)
-//        sendMessage(recipient, System.currentTimeMillis(), content, true)
+//        sendMessageTo(recipient, System.currentTimeMillis(), content, true)
 //    }
 
     @Synchronized
