@@ -1351,6 +1351,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
         String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
+        int result =  FileUtil.copySdcardFile(imagePath,files_dir);
         sendMessageTo(message);
     }
 

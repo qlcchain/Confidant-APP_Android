@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -851,5 +852,33 @@ public class FileUtil {
             }
         }
         return file;
+    }
+
+    /**
+     * 拷贝本地文件
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copySdcardFile(String fromFile, String toFile)
+    {
+        try
+        {
+            InputStream fosfrom = new FileInputStream(fromFile);
+            OutputStream fosto = new FileOutputStream(toFile);
+            byte bt[] = new byte[1024];
+            int c;
+            while ((c = fosfrom.read(bt)) > 0)
+            {
+                fosto.write(bt, 0, c);
+            }
+            fosfrom.close();
+            fosto.close();
+            return 0;
+
+        } catch (Exception ex)
+        {
+            return -1;
+        }
     }
 }
