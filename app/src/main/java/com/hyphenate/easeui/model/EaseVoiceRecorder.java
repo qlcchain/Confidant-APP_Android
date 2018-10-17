@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
 
@@ -57,7 +58,7 @@ public class EaseVoiceRecorder {
             // file = File.createTempFile(PREFIX + userId, EXTENSION,
             // User.getVoicePath());
             voiceFileName = getVoiceFileName(EMClient.getInstance().getCurrentUser());
-            voiceFilePath = PathUtil.getInstance().getVoicePath() + "/" + voiceFileName;
+            voiceFilePath = PathUtils.getInstance().getVoicePath() + "/" + voiceFileName;
             file = new File(voiceFilePath);
             recorder.setOutputFile(file.getAbsolutePath());
             recorder.prepare();

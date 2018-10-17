@@ -13,6 +13,7 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
+import com.hyphenate.easeui.utils.PathUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -141,7 +142,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
         var filledUri = "https://" + ipAddress + port+jPushFileMsgRsp.params.filePath
         var files_dir = this.filesDir.absolutePath + "/image/"
-        var testDir = Environment.getExternalStorageDirectory().toString() + "/Router/"
+        when (jPushFileMsgRsp.params.fileType) {
+            1 -> {
+                files_dir = PathUtils.getInstance().imagePath.toString()+"/"
+            }
+            2 -> {
+                files_dir = PathUtils.getInstance().voicePath.toString()+"/"
+            }
+        }//goMain();
         receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
         FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler)
     }
@@ -273,7 +281,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     var fileName = jPushFileMsgRsp.params.fileName;
                     var fromId = jPushFileMsgRsp.params.fromId;
                     var toId = jPushFileMsgRsp.params.toId
-                    chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId)
+                    var FileType = jPushFileMsgRsp.params.fileType
+                    chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType)
                     receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();

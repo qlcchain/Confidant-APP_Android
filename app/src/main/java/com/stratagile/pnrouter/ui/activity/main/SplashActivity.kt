@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
 import android.os.Bundle
+import com.hyphenate.easeui.utils.PathUtils
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -50,6 +51,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
+        PathUtils.getInstance().initDirs("", "", this)
         System.out.println(ByteOrder.nativeOrder());
         SpUtil.putString(this, ConstantValue.testValue, "test")
         mPresenter.getLastVersion()

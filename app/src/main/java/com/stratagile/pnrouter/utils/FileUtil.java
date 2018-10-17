@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
 
+import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 
@@ -32,6 +33,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -826,17 +828,26 @@ public class FileUtil {
      * @param fileName   转换后的文件名
      * @return
      */
-        public static File drawableToFile(Context mContext,int drawableId,String fileName){
+        public static File drawableToFile(Context mContext,int drawableId,String fileName,int fileType){
 //        InputStream is = view.getContext().getResources().openRawResource(R.drawable.logo);
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId);
 //        Bitmap bitmap = BitmapFactory.decodeStream(is);
         String defaultPath = mContext.getFilesDir()
                 .getAbsolutePath() + "/image";
+        switch (fileType)
+        {
+            case 1:
+                defaultPath = PathUtils.getInstance().getImagePath()+"";
+                break;
+            case 2:
+                defaultPath = PathUtils.getInstance().getVoicePath()+"";
+                break;
+        }
         File file = new File(defaultPath);
         if (!file.exists()) {
             file.mkdirs();
         }
-        String defaultImgPath = defaultPath + "/"+fileName+".png";
+        String defaultImgPath = defaultPath + "/"+fileName;
         file = new File(defaultImgPath);
         if(!file.exists())
         {
@@ -864,6 +875,10 @@ public class FileUtil {
     {
         try
         {
+            File destDir = new File(toFile);
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
             InputStream fosfrom = new FileInputStream(fromFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];
@@ -880,5 +895,59 @@ public class FileUtil {
         {
             return -1;
         }
+    }
+    /**
+     * 得到amr的时长
+     *
+     * @param file
+     * @return amr文件时间长度
+     * @throws IOException
+     */
+    public static int getAmrDuration(File file) {
+        long duration = -1;
+        int[] packedSize = { 12, 13, 15, 17, 19, 20, 26, 31, 5, 0, 0, 0, 0, 0,
+                0, 0 };
+        RandomAccessFile randomAccessFile = null;
+        try {
+            randomAccessFile = new RandomAccessFile(file, "rw");
+            // 文件的长度
+            long length = file.length();
+            // 设置初始位置
+            int pos = 6;
+            // 初始帧数
+            int frameCount = 0;
+            int packedPos = -1;
+            // 初始数据值
+            byte[] datas = new byte[1];
+            while (pos <= length) {
+                randomAccessFile.seek(pos);
+                if (randomAccessFile.read(datas, 0, 1) != 1) {
+                    duration = length > 0 ? ((length - 6) / 650) : 0;
+                    break;
+                }
+                packedPos = (datas[0] >> 3) & 0x0F;
+                pos += packedSize[packedPos] + 1;
+                frameCount++;
+            }
+            // 帧数*20
+            duration += frameCount * 20;
+        } catch (IOException e)
+        {
+            return  0;
+        }
+        finally {
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                }catch (IOException e)
+                {
+
+                }  finally {
+                    return  0;
+                }
+
+            }
+        }
+        return (int)((duration/1000)+1);
     }
 }

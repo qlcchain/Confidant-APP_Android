@@ -34,6 +34,7 @@ public class JPushFileMsgRsp extends BaseEntity {
         private String FileMD5;
         private String FilePath;
         private int MsgId;
+        private int FileType;
 
         public String getAction() {
             return Action;
@@ -90,5 +91,14 @@ public class JPushFileMsgRsp extends BaseEntity {
         public void setMsgId(int MsgId) {
             this.MsgId = MsgId;
         }
+
+        public int getFileType() {
+            return FileType;
+        }
+
+        public void setFileType(int fileType) {
+            FileType = fileType;
+        }
+
     }
 }

@@ -64,10 +64,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         }else{
-            var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
+           /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
             var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
             var files_dir = this.filesDir.absolutePath + "/image/"
-            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)
+            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)*/
         }
     }
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
@@ -303,7 +303,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
-        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_image")
+        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_image.png",1)
+        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_amr.amr",2)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)

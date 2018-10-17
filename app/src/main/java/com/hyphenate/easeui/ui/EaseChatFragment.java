@@ -52,6 +52,7 @@ import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
 import com.hyphenate.easeui.widget.EaseAlertDialog.AlertDialogUser;
 import com.hyphenate.easeui.widget.EaseChatExtendMenu;
@@ -183,7 +184,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private Handler typingHandler = null;
     // "正在输入"功能的开关，打开后本设备发送消息将持续发送cmd类型消息通知对方"正在输入"
     private boolean turnOnTyping;
-
+    protected Handler handler = new Handler();
     List<Message> messageListTemp;
 
     private  int currentPage = 0;
@@ -262,47 +263,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
                     byte[] fileBuffer= FileUtil.file2Byte(filePath);
-                    SendFileData sendFileData = new SendFileData();
-                    SendFileDataTest sendFileDataTest = new SendFileDataTest();
                     int fileId = (int)System.currentTimeMillis()/1000;
-                    /*int action = FormatTransfer.reverseInt(1);
-                    int segSize = fileBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileBuffer.length;
-                    sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
-                    sendFileData.setAction(FormatTransfer.reverseInt(1));
-                    sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
-                    sendFileData.setSegSeq(FormatTransfer.reverseInt(1));
-                    sendFileData.setFileOffset(FormatTransfer.reverseInt(0));
-
-                    sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
-                    sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-                    sendFileData.setSegMore((byte) 1);
-                    sendFileData.setCotinue((byte) 0);
-                    sendFileData.setFileName(fileName.getBytes());
-                    sendFileData.setFromId(EMMessage.getFrom().getBytes());
-                    sendFileData.setToId(EMMessage.getTo().getBytes());
-                    byte[] content = FileUtil.subBytes(fileBuffer,0,1024*100);
-                    sendFileData.setContent(content);
-                    byte[] sendData = sendFileData.toByteArray();
-
-                    char[] cs = new char[] {0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f, 0x7f, 0x8f };//要转换的char数组
-                    String str = new String(cs);
-                    byte[] bs = str.getBytes();
-
-                    String aa = FormatTransfer.conver2HexStr(bs);
-                    int crc1= CRC16Util.crc16_ccitt_xmodem(bs);
-                    String crc2= Integer.toHexString(crc1);
-                    String crc3= CRC16Util.getCRC3(bs);
-                    short crc5= CRC16Util.getCRC5(bs);
-                    String aaa = CRC16Util.getCRC99(bs,bs.length);
-                    String uui = CRC16Util.CRC16_ccitt(bs);
-                    int newCRC = CRC16Util.getCRC(sendData,sendData.length);
-                    sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
-
-                    int aakk = CRC16Util.getCRC(bs,bs.length);
-
-                    short abb = FormatTransfer.reverseShort(sendFileData.getCRC());
-                    sendData = sendFileData.toByteArray();*/
-                    //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),sendData));
                     sendFileByteData(fileBuffer,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
                 }
                 break;
@@ -411,10 +372,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq)
     {
+        String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
+        int action = 1;
+        switch (MsgType)
+        {
+            case "png":
+            case "jpg":
+                action = 1;
+                break;
+            case "amr":
+                action = 2;
+                break;
+        }
         SendFileData sendFileData = new SendFileData();
         int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
         sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
-        sendFileData.setAction(FormatTransfer.reverseInt(1));
+        sendFileData.setAction(FormatTransfer.reverseInt(action));
         sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
         int aa = FormatTransfer.reverseInt(9437440);
         sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
@@ -481,7 +454,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //noinspection ConstantConditions
         currentPage = 0;
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
-        PathUtil.getInstance().initDirs("aa", "bb",getContext());
         // message list layout
         messageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
         if(chatType != EaseConstant.CHATTYPE_SINGLE)
@@ -763,29 +735,36 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                     break;
                 case 1:
-                    String ease_default_image = getActivity().getFilesDir().getAbsolutePath() + "/image/ease_default_image.png";
-                    String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +Message.getFileName();
-                    String testDir = Environment.getExternalStorageDirectory().toString() + "/Router/"+Message.getFileName();
-                    File aa = new File(files_dir);
-                    long bb = aa.length();
-                    Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
-                    + getResources().getResourcePackageName(R.drawable.ease_default_image) + "/"
-                    + getResources().getResourceTypeName(R.drawable.ease_default_image) + "/"
-                    + getResources().getResourceEntryName(R.drawable.ease_default_image));
-                    File File=new File(ease_default_image);
-                    boolean aabb = File.exists();
-                    if(aa.exists())
+                    String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
+                    String files_dir =  PathUtils.getInstance().getImagePath()+"/" +Message.getFileName();
+                    File filesFile = new File(files_dir);
+                    if(filesFile.exists())
                     {
                         message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                     }else{
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                         String ipAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
                         String filledUri = "https://" + ipAddress + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                        String save_dir = getActivity().getFilesDir().getAbsolutePath()+ "/image/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handler);
+                        String save_dir = PathUtils.getInstance().getImagePath()+"/";
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown);
                     }
                     break;
                 case 2:
+                    String ease_default_amr =  PathUtils.getInstance().getVoicePath()+"/" + "ease_default_amr.amr";
+                    String files_dir_amr = PathUtils.getInstance().getVoicePath()+"/" +Message.getFileName();
+                    File filesFileAmr = new File(files_dir_amr);
+                    if(filesFileAmr.exists())
+                    {
+                        long sizea = filesFileAmr.length();
+                        int longTime = FileUtil.getAmrDuration(filesFileAmr);
+                        message = EMMessage.createVoiceSendMessage(files_dir_amr, longTime, toChatUserId);
+                    }else{
+                        message = EMMessage.createVoiceSendMessage(ease_default_amr, 2, toChatUserId);
+                        String ipAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+                        String filledUri = "https://" + ipAddress + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
+                        String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown);
+                    }
                     break;
                 case 3:
                     break;
@@ -1335,6 +1314,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     protected void sendVoiceMessage(String filePath, int length) {
         EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
+        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+        message.setFrom(userId);
+        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+        message.setUnread(false);
+        currentSendMsg = message;
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        sendMsgMap.put(uuid,message);
+        sendFilePathMap.put(uuid,filePath);
+        String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+        EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/voice/" + filePath.substring(filePath.lastIndexOf("/")+1);
+        //int result =  FileUtil.copySdcardFile(filePath,files_dir);
         sendMessageTo(message);
     }
 
@@ -1391,10 +1383,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param fromId
      * @param toId
      */
-    public void receiveFileMessage(String url,String msgId, String fromId,String toId)
+    public void receiveFileMessage(String url,String msgId, String fromId,String toId,int FileType)
     {
-        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +url;
-        EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+        String files_dir = "";
+        EMMessage message = null;
+        switch (FileType)
+        {
+            case 1:
+                files_dir = PathUtils.getInstance().getImagePath() + "/" +url;
+                message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                break;
+            case 2:
+                files_dir = PathUtils.getInstance().getVoicePath() + "/" +url;
+                message = EMMessage.createVoiceSendMessage(files_dir, 4, toChatUserId);
+                break;
+            default:
+                break;
+        }
         message.setDirection(EMMessage.Direct.RECEIVE);
         message.setMsgId(msgId);
         message.setFrom(fromId);
@@ -1573,7 +1578,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        cameraFile = new File(PathUtil.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
+        cameraFile = new File(PathUtils.getInstance().getImagePath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
@@ -1589,7 +1594,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        videoFile = new File(PathUtil.getInstance().getVideoPath(), EMClient.getInstance().getCurrentUser()
+        videoFile = new File(PathUtils.getInstance().getVideoPath(), EMClient.getInstance().getCurrentUser()
                 + System.currentTimeMillis() + ".mp4");
         KLog.i(videoFile.getPath());
         //noinspection ResultOfMethodCallIgnored
@@ -1886,7 +1891,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
          */
         EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
-    protected Handler handler = new Handler(){
+    protected Handler handlerDown = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0x404:
@@ -1900,20 +1905,34 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String msgId = data.getInt("msgID")+"";
                         Message message = receiveFileDataMap.get(msgId);
                         conversation.removeMessage(msgId);
-                        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +message.getFileName();
-                        EMMessage messageImg = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);;
-                        messageImg.setFrom(message.getFrom());
-                        messageImg.setTo(message.getTo());
-                        messageImg.setUnread(false);
-                        if(message.getFrom().equals(userId))
+                        String files_dir = "";
+                        EMMessage messageData = null;
+                        switch (message.getMsgType())
                         {
-                            messageImg.setDirection(EMMessage.Direct.SEND );
-                        }else {
-                            messageImg.setDirection(EMMessage.Direct.RECEIVE );
+                            case 1:
+                                files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                                break;
+                            case 2:
+                                files_dir = PathUtils.getInstance().getVoicePath()+"/" +message.getFileName();
+                                messageData = EMMessage.createVoiceSendMessage(files_dir, 2, toChatUserId);
+                                break;
                         }
-                        messageImg.setMsgTime(message.getTimeStatmp()* 1000);
-                        messageImg.setMsgId( message.getMsgId()+"");
-                        sendMessageTo(messageImg);
+                        if(messageData != null)
+                        {
+                            messageData.setFrom(message.getFrom());
+                            messageData.setTo(message.getTo());
+                            messageData.setUnread(false);
+                            if(message.getFrom().equals(userId))
+                            {
+                                messageData.setDirection(EMMessage.Direct.SEND );
+                            }else {
+                                messageData.setDirection(EMMessage.Direct.RECEIVE );
+                            }
+                            messageData.setMsgTime(message.getTimeStatmp()* 1000);
+                            messageData.setMsgId( message.getMsgId()+"");
+                            sendMessageTo(messageData);
+                        }
                     }
                     break;
                 default:
