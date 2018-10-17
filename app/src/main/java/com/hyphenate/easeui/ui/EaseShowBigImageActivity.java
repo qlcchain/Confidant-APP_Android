@@ -21,6 +21,7 @@ import java.util.Map;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.model.EaseImageCache;
 import com.hyphenate.easeui.utils.EaseLoadLocalBigImgTask;
@@ -84,7 +85,8 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 					task.execute();
 				}
 			} else {
-				image.setImageBitmap(bitmap);
+				Bitmap bigData = EaseImageUtils.getBitmap(new File(uri.getPath()));
+				image.setImageBitmap(bigData);
 			}
 		} else if(msgId != null) {
 		    downloadImage(msgId);
@@ -103,7 +105,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 	/**
 	 * download image
 	 * 
-	 * @param remoteFilePath
+	 * @param
 	 */
 	@SuppressLint("NewApi")
 	private void downloadImage(final String msgId) {

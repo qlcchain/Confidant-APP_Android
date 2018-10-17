@@ -13,8 +13,18 @@
  */
 package com.hyphenate.easeui.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
+import com.stratagile.pnrouter.utils.RxFileTool;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 	
@@ -33,5 +43,23 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
         EMLog.d("msg", "thum image path:" + path);
         return path;
     }
-	
+	/**
+	 * 获取bitmap
+	 *
+	 * @param file 文件
+	 * @return bitmap
+	 */
+	public static Bitmap getBitmap(File file) {
+		if (file == null) return null;
+		InputStream is = null;
+		try {
+			is = new BufferedInputStream(new FileInputStream(file));
+			return BitmapFactory.decodeStream(is);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			RxFileTool.closeIO(is);
+		}
+	}
 }

@@ -71,6 +71,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         }
         Intent intent = new Intent(getContext(), EaseShowBigImageActivity.class);
         File file = new File(imgBody.getLocalUrl());
+        long fileSize = file.length();
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);

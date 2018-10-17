@@ -1339,7 +1339,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendImageMessage(String imagePath) {
-        EMMessage message = EMMessage.createImageSendMessage(imagePath, false, toChatUserId);
+        EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
@@ -1394,7 +1394,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void receiveFileMessage(String url,String msgId, String fromId,String toId)
     {
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" +url;
-        EMMessage message = EMMessage.createImageSendMessage(files_dir, false, toChatUserId);
+        EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
         message.setDirection(EMMessage.Direct.RECEIVE);
         message.setMsgId(msgId);
         message.setFrom(fromId);
