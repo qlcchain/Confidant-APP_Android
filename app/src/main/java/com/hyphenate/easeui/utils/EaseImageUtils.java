@@ -15,6 +15,8 @@ package com.hyphenate.easeui.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
@@ -62,4 +64,27 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 			RxFileTool.closeIO(is);
 		}
 	}
+	//根据路径得到视频缩略图
+	private Bitmap getVideoPhoto(String videoPath) {
+		MediaMetadataRetriever media = new MediaMetadataRetriever();
+		Bitmap bitmap = null;
+		try {
+			media.setDataSource(videoPath);
+			bitmap = media.getFrameAtTime();
+		}catch (Exception e)
+		{
+
+		}
+
+		return bitmap;
+	}
+
+	//获取视频总时长
+	private int getVideoDuration(String path){
+		MediaMetadataRetriever media = new MediaMetadataRetriever();
+		media.setDataSource(path);
+		String duration = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); //
+		return Integer.parseInt(duration);
+	}
+
 }

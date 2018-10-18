@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import com.hyphenate.easeui.model.EaseAtMessageHelper;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
@@ -931,8 +933,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendCameraImageMessage(cameraFile.getAbsolutePath());
             }else if(requestCode == REQUEST_CODE_VIDEO)
             {
-                //if (videoFile != null && videoFile.exists())
-                //sendImageMessage(videoFile.getAbsolutePath());
+                if (videoFile != null && videoFile.exists())
+                {
+                    //String thumbPath = EaseImageUtils.saveVideoThumb(videoFile,128,128,1);
+                    //sendVideoMessage(videoFile.getAbsolutePath(),thumbPath,20);
+                }
             }else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 if (data != null) {
                     Uri selectedImage = data.getData();
@@ -1348,8 +1353,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessageTo(message);
     }
     protected void sendCameraImageMessage(String imagePath) {
-        File file = new File(imagePath);
-        boolean isHas = file.exists();
         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
@@ -1371,6 +1374,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendVideoMessage(String videoPath, String thumbPath, int videoLength) {
+        thumbPath = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
+        File file = new File(videoPath);
+        boolean isHas = file.exists();
         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
         sendMessageTo(message);
     }
