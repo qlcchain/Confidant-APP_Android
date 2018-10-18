@@ -31,10 +31,10 @@
         <RelativeLayout 
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/x55"
             android:layout_toLeftOf="@id/iv_userhead"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="@dimen/x20"
+            android:layout_marginTop="@dimen/x12"
              android:background="@drawable/ease_chatto_bg"
             >
 	        <ImageView

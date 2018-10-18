@@ -1183,10 +1183,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             .start();
                     break;
                 case ITEM_LOCATION:
-                    startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                    //startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                    Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 case ITEM_FILE:
-                    startActivityForResult(new Intent(getActivity(), FileChooseActivity.class), REQUEST_CODE_FILE);
+                    //startActivityForResult(new Intent(getActivity(), FileChooseActivity.class), REQUEST_CODE_FILE);
+                    Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
