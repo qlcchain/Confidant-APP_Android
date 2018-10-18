@@ -1,24 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
-import com.stratagile.pnrouter.ui.activity.main.module.MainModule
-import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
-import com.stratagile.pnrouter.R
-import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.base.BaseActivity
-import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
-import com.pawegio.kandroid.toast
-import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.widget.LinearLayout
@@ -29,10 +17,13 @@ import com.hyphenate.chat.EMTextMessageBody
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
-import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
-import com.pawegio.kandroid.i
+import com.message.MessageProvider
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
@@ -41,83 +32,100 @@ import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.entity.events.UnReadMessageCount
-import com.stratagile.pnrouter.message.Message
-import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
-import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
+import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
+import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
+import com.stratagile.pnrouter.ui.activity.main.module.MainModule
+import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
-import com.stratagile.pnrouter.utils.*
-import com.tencent.bugly.crashreport.CrashReport
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.UIUtils
+import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
+import javax.inject.Inject
 
 
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
-class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack {
+class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    override fun unReadCount(unReadCOunt: Int) {
+        runOnUiThread {
+            if (unread_count != null) {
+                if (unReadCOunt == 0) {
+                    unread_count.visibility = View.INVISIBLE
+                    unread_count.text = ""
+                } else {
+                    unread_count.visibility = View.VISIBLE
+                    unread_count.text = unReadCOunt.toString()
+                }
+            }
+        }
+    }
+
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
-        }else{
+        } else {
+
+//        }else{
            /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
             var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
             var files_dir = this.filesDir.absolutePath + "/image/"
             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)*/
         }
     }
+
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
 
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(delMsgPushRsp.params.friendId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
-        }else{
+        } else {
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             var conversation2: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            if(conversation2 != null)
-            {
+            if (conversation2 != null) {
                 val lastMessage2 = conversation2.lastMessage
                 var all2 = conversation2.allMessages
                 var aa = "";
             }
-            if(conversation !=null)
-            {
+            if (conversation != null) {
                 val forward_msg = EMClient.getInstance().chatManager().getMessage(delMsgPushRsp.params.msgId.toString())
-                if(forward_msg != null)
-                {
+                if (forward_msg != null) {
                     val var3 = EMTextMessageBody(resources.getString(R.string.withdrawn))
                     forward_msg.addBody(var3)
                     conversation.updateMessage(forward_msg)
                     if (ConstantValue.isInit) {
-                        conversationListFragment?.refresh()
+//                        conversationListFragment?.refresh()
                         ConstantValue.isRefeshed = true
                     }
                 }
-               /* val lastMessage = conversation.lastMessage
-                var all = conversation.allMessages
+                /* val lastMessage = conversation.lastMessage
+                 var all = conversation.allMessages
 
-                if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
-                {
-                    val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
-                    message.setDirection(EMMessage.Direct.RECEIVE)
-                    message.msgId = delMsgPushRsp.params.msgId.toString()
-                    message.from = delMsgPushRsp.params.friendId
-                    message.to = delMsgPushRsp.params.userId
-                    message.isUnread = true
-                    message.isAcked = true
-                    message.setStatus(EMMessage.Status.SUCCESS)
-                    if(conversation != null)
-                    {
-                        conversation.insertMessage(message)
-                        if (ConstantValue.isInit) {
-                            conversationListFragment?.refresh()
-                            ConstantValue.isRefeshed = true
-                        }
-                    }
-                }*/
+                 if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
+                 {
+                     val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
+                     message.setDirection(EMMessage.Direct.RECEIVE)
+                     message.msgId = delMsgPushRsp.params.msgId.toString()
+                     message.from = delMsgPushRsp.params.friendId
+                     message.to = delMsgPushRsp.params.userId
+                     message.isUnread = true
+                     message.isAcked = true
+                     message.setStatus(EMMessage.Status.SUCCESS)
+                     if(conversation != null)
+                     {
+                         conversation.insertMessage(message)
+                         if (ConstantValue.isInit) {
+                             conversationListFragment?.refresh()
+                             ConstantValue.isRefeshed = true
+                         }
+                     }
+                 }*/
 
             }
 
@@ -150,7 +158,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         }
         if (!ConstantValue.isRefeshed) {
-            conversationListFragment?.refresh()
+//            conversationListFragment?.refresh()
             ConstantValue.isRefeshed = true
         }
     }
@@ -164,13 +172,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
             message.setDirection(EMMessage.Direct.RECEIVE)
-            message.msgId = pushMsgRsp?.params.msgId
+            message.msgId = "" + pushMsgRsp?.params.msgId
             message.from = pushMsgRsp.params.fromId
             message.to = pushMsgRsp.params.toId
             message.isUnread = true
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
-            if(conversation != null)
+            if (conversation != null)
                 conversation.insertMessage(message)
             if (ConstantValue.isInit) {
                 runOnUiThread {
@@ -178,7 +186,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
                 if (ConstantValue.isInit) {
-                    conversationListFragment?.refresh()
+//                    conversationListFragment?.refresh()
                     ConstantValue.isRefeshed = true
                 }
             }
@@ -260,28 +268,29 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
     }
 
-    lateinit var viewModel : MainViewModel
-    private var conversationListFragment: EaseConversationListFragment? = null
+    lateinit var viewModel: MainViewModel
+    //    private var conversationListFragment: EaseConversationListFragment? = null
     private var contactListFragment: EaseContactListFragment? = null
+
     override fun showToast() {
         toast("点击啦。。。。哈哈哈")
         showProgressDialog()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendChange(friendChange: FriendChange) {
-      if(friendChange.userId != null && !friendChange.userId.equals(""))
-      {
-          var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendChange.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-          if(conversation !=null)
-          {
-              conversation.clearAllMessages()
-              if (ConstantValue.isInit) {
-                  conversationListFragment?.removeFriend()
-                  ConstantValue.isRefeshed = true
-              }
-          }
-      }
+        if (friendChange.userId != null && !friendChange.userId.equals("")) {
+            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendChange.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            if (conversation != null) {
+                conversation.clearAllMessages()
+                if (ConstantValue.isInit) {
+//                  conversationListFragment?.removeFriend()
+                    ConstantValue.isRefeshed = true
+                }
+            }
+        }
     }
+
     @Inject
     internal lateinit var mPresenter: MainPresenter
 
@@ -299,6 +308,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun initData() {
         AppConfig.instance.messageReceiver!!.mainInfoBack = this
+        MessageProvider.getInstance().messageListenter = this
         EventBus.getDefault().register(this)
         tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
@@ -355,69 +365,69 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        bottomNavigation.setIconsMarginTop(resources.getDimension(R.dimen.x22).toInt())
 //        bottomNavigation.selectedItemId = R.id.item_news
         contactListFragment?.setContactsMap(getContacts())
-        conversationListFragment?.setConversationListItemClickListener(
-                EaseConversationListFragment.EaseConversationListItemClickListener
-                { userid -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid)) })
+//        conversationListFragment?.setConversationListItemClickListener(
+//                EaseConversationListFragment.EaseConversationListItemClickListener
+//                { userid -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid)) })
         //contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
-        if (AppConfig.instance.tempPushMsgList.size != 0) {
-            Thread(Runnable() {
-                run() {
-                    Thread.sleep(1000);
-                    for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
-                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-                        var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
-                        message.setDirection(EMMessage.Direct.RECEIVE)
-                        message.msgId = pushMsgRsp?.params.msgId
-                        message.from = pushMsgRsp.params.fromId
-                        message.to = pushMsgRsp.params.toId
-                        message.isUnread = true
-                        message.isAcked = true
-                        message.setStatus(EMMessage.Status.SUCCESS)
-                        if(conversation !=null)
-                            conversation.insertMessage(message)
-                        if (ConstantValue.isInit) {
-                            conversationListFragment?.refresh()
-                            ConstantValue.isRefeshed = true
-                        }
-                    }
-                    AppConfig.instance.tempPushMsgList = ArrayList<JPushMsgRsp>()
-                    for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
-                    {
-                        var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-                        var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
-                        message.setDirection(EMMessage.Direct.RECEIVE)
-                        message.msgId = pushMsgRsp.params.msgId
-                        message.from = pushMsgRsp.params.fromId
-                        message.to = pushMsgRsp.params.toId
-                        message.isUnread = true
-                        message.isAcked = true
-                        message.setStatus(EMMessage.Status.SUCCESS)
-                        if(conversation !=null)
-                            conversation.insertMessage(message)
-                        runOnUiThread {
-                            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
-                            controlleMessageUnReadCount(UnReadMessageCount)
-                        }
-                        if(ConstantValue.isInit)
-                        {
-                            conversationListFragment?.refresh()
-                            ConstantValue.isRefeshed = true
-                        }
-                    }
-                    AppConfig.instance.tempPushMsgList =  ArrayList<JPushMsgRsp>()
-                }
-            }).start()
-
-
-        }
+//        if (AppConfig.instance.tempPushMsgList.size != 0) {
+//            Thread(Runnable() {
+//                run() {
+//                    Thread.sleep(1000);
+//                    for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
+//                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
+//                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+//                        var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+//                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+//                        message.setDirection(EMMessage.Direct.RECEIVE)
+//                        message.msgId = pushMsgRsp?.params.msgId
+//                        message.from = pushMsgRsp.params.fromId
+//                        message.to = pushMsgRsp.params.toId
+//                        message.isUnread = true
+//                        message.isAcked = true
+//                        message.setStatus(EMMessage.Status.SUCCESS)
+//                        if(conversation !=null)
+//                            conversation.insertMessage(message)
+//                        if (ConstantValue.isInit) {
+//                            conversationListFragment?.refresh()
+//                            ConstantValue.isRefeshed = true
+//                        }
+//                    }
+//                    AppConfig.instance.tempPushMsgList = ArrayList<JPushMsgRsp>()
+//                    for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
+//                    {
+//                        var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+//                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+//                        var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+//                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+//                        message.setDirection(EMMessage.Direct.RECEIVE)
+//                        message.msgId = pushMsgRsp.params.msgId
+//                        message.from = pushMsgRsp.params.fromId
+//                        message.to = pushMsgRsp.params.toId
+//                        message.isUnread = true
+//                        message.isAcked = true
+//                        message.setStatus(EMMessage.Status.SUCCESS)
+//                        if(conversation !=null)
+//                            conversation.insertMessage(message)
+//                        runOnUiThread {
+//                            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
+//                            controlleMessageUnReadCount(UnReadMessageCount)
+//                        }
+//                        if(ConstantValue.isInit)
+//                        {
+//                            conversationListFragment?.refresh()
+//                            ConstantValue.isRefeshed = true
+//                        }
+//                    }
+//                    AppConfig.instance.tempPushMsgList =  ArrayList<JPushMsgRsp>()
+//                }
+//            }).start()
+//
+//
+//        }
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when (position) {
-                    0 -> return conversationListFragment!!
+                    0 -> return ConversationListFragment()
                     1 -> return FileFragment()
                     2 -> return ContactFragment()
                     else -> return MyFragment()
@@ -472,33 +482,29 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onResume() {
         super.onResume()
-        var localFriendList:List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var hasUnReadMsg:Boolean = false;
-        for(friendData in localFriendList)
-        {
-            var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            if(conversation != null)
-            {
-                val msgs:List<EMMessage> = conversation.allMessages
-                for (msg in msgs)
-                {
-                    if(msg.isUnread)
-                    {
+        var localFriendList: List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        var hasUnReadMsg: Boolean = false;
+        for (friendData in localFriendList) {
+            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            if (conversation != null) {
+                val msgs: List<EMMessage> = conversation.allMessages
+                for (msg in msgs) {
+                    if (msg.isUnread) {
                         hasUnReadMsg = true
                     }
                 }
             }
         }
-        if(hasUnReadMsg)
-        {
-            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1)
+        if (hasUnReadMsg) {
+            var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
             controlleMessageUnReadCount(UnReadMessageCount)
-        }else{
-            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(0)
+        } else {
+            var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
             controlleMessageUnReadCount(UnReadMessageCount)
         }
 
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
         if (unReadContactCount.messageCount == 0) {
@@ -512,17 +518,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
-        if(unread_count!= null)
-        {
-            if (unReadMessageCount.messageCount == 0) {
-                unread_count.visibility = View.INVISIBLE
-                unread_count.text = ""
-            } else {
-                unread_count.visibility = View.VISIBLE
-                unread_count.text = ""
-            }
-        }
+//        if(unread_count!= null)
+//        {
+//            if (unReadMessageCount.messageCount == 0) {
+//                unread_count.visibility = View.INVISIBLE
+//                unread_count.text = ""
+//            } else {
+//                unread_count.visibility = View.VISIBLE
+//                unread_count.text = ""
+//            }
+//        }
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectStatusChange(statusChange: ConnectStatus) {
@@ -538,9 +545,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         EventBus.getDefault().unregister(this)
     }
 
-    fun getEaseConversationListFragment(): EaseConversationListFragment? {
-        return conversationListFragment
-    }
+//    fun getEaseConversationListFragment(): EaseConversationListFragment? {
+//        return conversationListFragment
+//    }
 
     fun setToNews() {
         tvTitle.text = getString(R.string.private_faith)
@@ -575,8 +582,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.news)
         val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         statusBar.setLayoutParams(llp)
-        conversationListFragment = EaseConversationListFragment()
-        conversationListFragment?.hideTitleBar()
+//        conversationListFragment = EaseConversationListFragment()
+//        conversationListFragment?.hideTitleBar()
         contactListFragment = EaseContactListFragment()
         contactListFragment?.hideTitleBar()
     }

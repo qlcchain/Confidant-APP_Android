@@ -59,7 +59,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
             }
         }
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        initToolbar()
+//        initToolbar()
         setupActivityComponent()
         initView()
         initData()
@@ -115,6 +115,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
 
     override fun setContentView(view: View) {
         rootLayout = findViewById(R.id.root_layout)
+        relativeLayout_root = findViewById(R.id.root_rl)
         progressDialog = RxDialogLoading(this)
         progressDialog.setmDialogColor(resources.getColor(R.color.mainColor))
         progressDialog.setDialogText(resources.getString(R.string.apploading))
@@ -132,14 +133,13 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
             val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             params.addRule(RelativeLayout.BELOW, R.id.root_rl)
             rootLayout?.addView(view, params)
+            initToolbar()
         }
-        initToolbar()
     }
 
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
         title = toolbar?.findViewById(R.id.title)!!
-        relativeLayout_root = findViewById(R.id.root_rl)
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))
 //        if (!SpUtil.getBoolean(this, ConstantValue.isMainNet, false)) {

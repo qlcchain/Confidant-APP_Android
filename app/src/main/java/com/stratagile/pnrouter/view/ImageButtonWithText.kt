@@ -1,34 +1,25 @@
 package com.stratagile.pnrouter.view
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.os.Environment
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.utils.GlideCircleTransform
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.UIUtils
 import java.io.File
-
-import java.util.ArrayList
-import java.util.Arrays
+import java.util.*
 
 class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs) {
     var imageView: ImageView
@@ -88,7 +79,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         textView.setText(resId)
     }
 
-    fun setText(buttonText: CharSequence) {
+    fun setText(buttonText: CharSequence?) {
 //        KLog.i(buttonText)
         val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val stringArrayList = Arrays.asList(*strings)

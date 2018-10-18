@@ -3,41 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/x123">
+    android:layout_height="@dimen/x110">
 
     <View
         android:id="@+id/line"
         style="@style/divide_line"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageView
+    <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/x95"
-        android:layout_height="@dimen/x95"
+        android:layout_width="@dimen/x80"
+        android:layout_height="@dimen/x80"
+        android:layout_centerVertical="true"
+        app:imageButtonTextSize="18"
         android:layout_marginLeft="@dimen/x30"
-        android:src="@mipmap/img_person"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvNewMessageFlag"
-        android:layout_width="@dimen/x26"
+        android:layout_width="@dimen/x20"
         android:gravity="center"
         android:textColor="@color/white"
-        android:text="30"
         android:textSize="7sp"
         android:background="@drawable/new_message_flag_bg"
-        android:layout_marginLeft="@dimen/x2"
-        android:layout_height="@dimen/x26"
-        app:layout_constraintStart_toStartOf="@+id/ivAvatar"
+        android:layout_marginRight="@dimen/x5"
+        android:layout_height="@dimen/x20"
+        app:layout_constraintRight_toRightOf="@+id/ivAvatar"
         app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
 
     <LinearLayout
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/x24"
+        android:layout_marginLeft="@dimen/x15"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivAvatar"
@@ -64,9 +64,9 @@
         android:id="@+id/tvLastMessageTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/x31"
-        android:layout_marginTop="@dimen/x45"
         android:text="1:23 PM"
+        android:layout_marginRight="@dimen/x30"
+        app:layout_constraintBottom_toTopOf="@+id/line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyphenate.chat.EMClient;
@@ -20,13 +19,13 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowText;
 import com.hyphenate.exceptions.HyphenateException;
 import com.noober.menu.FloatMenu;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 /**
@@ -69,7 +68,9 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
             //floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
             int[] loc1=new int[2];
             view.getLocationOnScreen(loc1);
-            floatMenu.show(new Point(loc1[0]-50,loc1[1]-230));
+            KLog.i(loc1[0]);
+            KLog.i(loc1[1]);
+            floatMenu.show(new Point(110,loc1[1]-200));
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {

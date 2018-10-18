@@ -26,8 +26,8 @@ import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
-import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.widget.EaseConversationList;
+import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
@@ -115,6 +115,41 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                     listItemClickListener.onListItemClicked(friendInfo.getUserId());
                 }
             });
+
+//            conversationListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//                @Override
+//                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                    FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
+//                    floatMenu.inflate(R.menu.conversation_popup_menu);
+//                    int[] loc1=new int[2];
+//                    view.getLocationOnScreen(loc1);
+//                    floatMenu.show(new Point(loc1[0]-50,loc1[1]-100));
+//                    floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
+//                        @Override
+//                        public void onClick(View v, int position) {
+//                            switch (position)
+//                            {
+//                                case 0:
+//                                    String isTop = conversationList.get(position).getExtField();
+//                                    if ("toTop".equals(isTop)) {
+//                                        conversationList.get(position).setExtField("false");
+//                                    } else {
+//                                        conversationList.get(position).setExtField("toTop");
+//                                    }
+//                                    refresh();
+//                                    break;
+//                                case 1:
+//
+//                                    break;
+//
+//                                default:
+//                                    break;
+//                            }
+//                        }
+//                    });
+//                    return true;
+//                }
+//            });
         }
         
         EMClient.getInstance().addConnectionListener(connectionListener);

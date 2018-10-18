@@ -3,26 +3,26 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.socks.library.KLog
 import com.hyphenate.easeui.EaseConstant
+import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.AddFriendDealReq
+import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
-import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -31,8 +31,7 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -41,15 +40,10 @@ import javax.inject.Inject;
  * @date 2018/09/13 22:03:00
  */
 
-class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceMessageReceiver.DelFriendCallBack, PNRouterServiceMessageReceiver.AddfrendCallBack {
-
-    override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
-        standaloneCoroutine.cancel()
-        userInfo!!.friendStatus = 1
-        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
-        KLog.i(addFriendRsp.baseDataToJson())
+class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener {
+    override fun delFriendRsp(retCode: Int) {
         runOnUiThread {
-//            toast(addFriendRsp.baseDataToJson())
+            //            toast(addFriendRsp.baseDataToJson())
             closeProgressDialog()
             initData()
             finish()
@@ -57,17 +51,67 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         }
     }
 
-    override fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp) {
-        if (jDelFriendCmdRsp.params.retCode == 0) {
-            userInfo!!.friendStatus = 6
-            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
-            EventBus.getDefault().post(FriendChange(userInfo!!.userId))
-        }
+    override fun accepteFriendRsp(retCode: Int) {
         runOnUiThread {
+            //            toast(addFriendRsp.baseDataToJson())
             closeProgressDialog()
+            initData()
             finish()
+
         }
     }
+
+    override fun refuseFriendRsp(retCode: Int) {
+        runOnUiThread {
+            //            toast(addFriendRsp.baseDataToJson())
+            closeProgressDialog()
+            initData()
+            finish()
+
+        }
+    }
+
+    override fun addFriendRsp(retCode: Int) {
+        runOnUiThread {
+            if (retCode == 0) {
+                standaloneCoroutine.cancel()
+                userInfo!!.friendStatus = 1
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
+                closeProgressDialog()
+                initData()
+                finish()
+            } else {
+                toast("添加失败")
+            }
+
+        }
+    }
+
+//    override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
+//        standaloneCoroutine.cancel()
+//        userInfo!!.friendStatus = 1
+//        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
+//        KLog.i(addFriendRsp.baseDataToJson())
+//        runOnUiThread {
+////            toast(addFriendRsp.baseDataToJson())
+//            closeProgressDialog()
+//            initData()
+//            finish()
+//
+//        }
+//    }
+//
+//    override fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp) {
+//        if (jDelFriendCmdRsp.params.retCode == 0) {
+//            userInfo!!.friendStatus = 6
+//            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
+//            EventBus.getDefault().post(FriendChange(userInfo!!.userId))
+//        }
+//        runOnUiThread {
+//            closeProgressDialog()
+//            finish()
+//        }
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendRelationshhipChange(friendChange : FriendChange) {
@@ -84,8 +128,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        AppConfig.instance.messageReceiver!!.addfrendCallBack = null
-        AppConfig.instance.messageReceiver!!.delFriendCallBack = null
+//        AppConfig.instance.messageReceiver!!.addfrendCallBack = null
+//        AppConfig.instance.messageReceiver!!.delFriendCallBack = null
+        UserProvider.getInstance().friendOperateListener = null
     }
 
     @Inject
@@ -104,8 +149,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
     override fun initView() {
         setContentView(R.layout.activity_user_info)
         EventBus.getDefault().register(this)
-        AppConfig.instance.messageReceiver!!.delFriendCallBack = this
-        AppConfig.instance.messageReceiver!!.addfrendCallBack = this
+//        AppConfig.instance.messageReceiver!!.delFriendCallBack = this
+//        AppConfig.instance.messageReceiver!!.addfrendCallBack = this
+        UserProvider.getInstance().friendOperateListener = this
         userInfo = intent.getParcelableExtra("user")
     }
     override fun initData() {
@@ -118,7 +164,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         avatar.setText(userInfo!!.nickName)
         tvRefuse.setOnClickListener {
             if (userInfo!!.friendStatus == 0) {
-                deleteFriend()
+                showDialog()
             } else if (userInfo!!.friendStatus == 3) {
                 refuseFriend()
             }
@@ -138,6 +184,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
         }
         tvAddFriend.setOnClickListener {
             addFriend()
+        }
+
+        company.setOnClickListener {
+            startActivity(Intent(this@UserInfoActivity, ConversationActivity::class.java).putExtra("user", userInfo))
         }
 
 
@@ -179,13 +229,26 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
 
     }
 
+    fun showDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.delete_contact_text))
+                .setConfirmClickListener {
+                    showProgressDialog()
+                    closeProgressDialog()
+                    deleteFriend()
+                }
+                .show()
+
+    }
+
     /**
      * 删除好友
      */
     fun deleteFriend() {
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var delFriendCmdReq = DelFriendCmdReq(userId!!, userInfo!!.userId)
-        AppConfig.instance.messageSender!!.send(BaseData(delFriendCmdReq))
+//        var delFriendCmdReq = DelFriendCmdReq(userId!!, userInfo!!.userId)
+        UserProvider.getInstance().deleteFriend(userId!!, userInfo!!.userId)
+//        AppConfig.instance.messageSender!!.send(BaseData(delFriendCmdReq))
         showProgressDialog()
     }
 
@@ -213,8 +276,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, PNRouterServiceM
     fun addFriend() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
-        var login = AddFriendReq( selfUserId!!, nickName!!, userInfo!!.userId)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+        UserProvider.getInstance().addFriend(selfUserId!!, nickName!!, userInfo!!.userId)
+//        var login = AddFriendReq( selfUserId!!, nickName!!, userInfo!!.userId)
+//        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         showProgressDialog()
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)

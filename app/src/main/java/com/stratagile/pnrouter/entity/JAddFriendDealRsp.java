@@ -28,7 +28,53 @@ public class JAddFriendDealRsp extends BaseEntity{
 
         private String Action;
         private int RetCode;
+
+        public int getRetCode() {
+            return RetCode;
+        }
+
+        public void setRetCode(int retCode) {
+            RetCode = retCode;
+        }
+
+        public String getUserId() {
+            return UserId;
+        }
+
+        public void setUserId(String userId) {
+            UserId = userId;
+        }
+
         private String Msg;
+        private String UserId;
+
+        public String getNickname() {
+            return Nickname;
+        }
+
+        public void setNickname(String nickname) {
+            Nickname = nickname;
+        }
+
+        public String getFriendName() {
+            return FriendName;
+        }
+
+        public void setFriendName(String friendName) {
+            FriendName = friendName;
+        }
+
+        public int getResult() {
+            return Result;
+        }
+
+        public void setResult(int result) {
+            Result = result;
+        }
+
+        private String Nickname;
+        private String FriendName;
+        private int Result;
 
         public String getAction() {
             return Action;
@@ -36,14 +82,6 @@ public class JAddFriendDealRsp extends BaseEntity{
 
         public void setAction(String Action) {
             this.Action = Action;
-        }
-
-        public int getRetCode() {
-            return RetCode;
-        }
-
-        public void setRetCode(int RetCode) {
-            this.RetCode = RetCode;
         }
 
         public String getMsg() {

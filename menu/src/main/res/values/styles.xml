@@ -28,4 +28,9 @@
         <item name="android:windowEnterAnimation">@anim/open_top_right</item>
         <item name="android:windowExitAnimation">@anim/close_top_right</item>
     </style>
+
+    <style name="Animation_conversation_item">
+        <item name="android:windowEnterAnimation">@anim/conversation_open</item>
+        <item name="android:windowExitAnimation">@anim/conversation_close</item>
+    </style>
 </resources>

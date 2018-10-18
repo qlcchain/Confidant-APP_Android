@@ -4,27 +4,23 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.widget.LinearLayout
-
+import butterknife.ButterKnife
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
+import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendContract
 import com.stratagile.pnrouter.ui.activity.selectfriend.module.selectFriendModule
 import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.selectFriendPresenter
-
-import javax.inject.Inject
-
-import butterknife.ButterKnife
-import com.stratagile.pnrouter.R
-import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.entity.events.SelectFriendChange
-import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.UUID.randomUUID
+import javax.inject.Inject
 
 
 
@@ -77,7 +73,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
            finish();
         }
+        send.setOnClickListener {
+            showSendDialog()
+        }
     }
+
+    /**
+     * 显示转发的弹窗
+     */
+    fun showSendDialog() {
+
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

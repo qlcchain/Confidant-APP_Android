@@ -15,7 +15,6 @@ import com.stratagile.pnrouter.utils.*
 import okhttp3.*
 import okio.ByteString
 import java.io.IOException
-import java.lang.Exception
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -297,8 +296,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        Log.w(TAG, "onFailure()")
-        Log.w(TAG, t)
+        KLog.i("onFailure()")
+        KLog.i( t!!.printStackTrace())
 
         if (response != null && (response.code() == 401 || response.code() == 403)) {
             if (listener != null) listener!!.onAuthenticationFailure()

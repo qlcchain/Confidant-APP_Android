@@ -13,6 +13,21 @@ public class UserEntity implements Parcelable{
     private Long id;
     //用户id
     private String userId;
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", noteName='" + noteName + '\'' +
+                ", friendStatus=" + friendStatus +
+                ", addFromMe=" + addFromMe +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
     //昵称
     private String nickName;
     //头像

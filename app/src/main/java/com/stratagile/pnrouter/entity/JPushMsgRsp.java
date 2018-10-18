@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.entity;
 
-import java.util.SimpleTimeZone;
-
 public class JPushMsgRsp extends BaseEntity {
     private ParamsBean params;
 
@@ -25,15 +23,15 @@ public class JPushMsgRsp extends BaseEntity {
         private String FromId;
         private String ToId;
 
-        public String getMsgId() {
+        public int getMsgId() {
             return MsgId;
         }
 
-        public void setMsgId(String msgId) {
+        public void setMsgId(int msgId) {
             MsgId = msgId;
         }
 
-        private String MsgId;
+        private int MsgId;
         private String Msg;
 
         public String getFromId() {

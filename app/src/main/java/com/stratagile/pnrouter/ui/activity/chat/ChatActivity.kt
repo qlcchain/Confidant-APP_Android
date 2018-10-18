@@ -13,6 +13,7 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
+import com.message.Message
 import com.hyphenate.easeui.utils.PathUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -23,7 +24,6 @@ import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.message.Message
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule

@@ -6,6 +6,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.hyphenate.chat.EMClient
 import com.hyphenate.easeui.EaseUI
+import com.message.MessageProvider
+import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
@@ -13,7 +15,6 @@ import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.JPushMsgRsp
-import com.stratagile.pnrouter.message.MessageProvider
 import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
@@ -56,6 +57,8 @@ class AppConfig : MultiDexApplication() {
         KLog.init(BuildConfig.LOG_DEBUG)
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
+        UserProvider.init()
+        MessageProvider.init()
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
@@ -65,6 +68,8 @@ class AppConfig : MultiDexApplication() {
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
             MessageRetrievalService.registerActivityStarted(this)
+            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         }
         return messageReceiver!!
     }
@@ -77,6 +82,8 @@ class AppConfig : MultiDexApplication() {
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
             MessageRetrievalService.registerActivityStarted(this)
+            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         } else {
             getPNRouterServiceMessageReceiver()
         }

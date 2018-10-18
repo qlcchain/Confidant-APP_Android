@@ -389,5 +389,7 @@
     <string name="successful_connection">Successful connection</string>
     <string name="connection">Connection</string>
     <string name="failed_to_connect">Failed to connect</string>
+    <string name="top">top</string>
+    <string name="delete_contact_text">Confirm to delete contact. Please be aware that the chatting history, shared files and contact information will be erased.</string>
 
 </resources>

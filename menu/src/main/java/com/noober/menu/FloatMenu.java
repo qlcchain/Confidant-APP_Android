@@ -78,7 +78,7 @@ public class FloatMenu extends PopupWindow{
 		this.context = context;
 		this.view = view;
 		VERTICAL_OFFSET = Display.dip2px(context, 1);
-		DEFAULT_MENU_WIDTH = Display.dip2px(context, 70);
+		DEFAULT_MENU_WIDTH = Display.dip2px(context, 60);
 		screenPoint = Display.getScreenMetrics(context);
 		menuItemList = new ArrayList<>();
 	}
@@ -131,7 +131,7 @@ public class FloatMenu extends PopupWindow{
 
 	private void generateLayout(int itemWidth) {
 		menuLayout = new LinearLayout(context);
-		menuLayout.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.bg_interaction));
+		menuLayout.setBackgroundDrawable(ContextCompat.getDrawable(context, R.mipmap.bg_interaction));
 		menuLayout.setOrientation(LinearLayout.HORIZONTAL);
 		int padding = Display.dip2px(context, 1);
 		for(int i = 0; i < menuItemList.size(); i ++){
@@ -268,7 +268,7 @@ public class FloatMenu extends PopupWindow{
 			setBackgroundDrawable(new BitmapDrawable());
 		}
 
-		setAnimationStyle(R.style.Animation_fade);
+		setAnimationStyle(R.style.Animation_conversation_item);
 		showAtLocation(view, ANCHORED_GRAVITY, clickX , clickY + VERTICAL_OFFSET);
 
 	}

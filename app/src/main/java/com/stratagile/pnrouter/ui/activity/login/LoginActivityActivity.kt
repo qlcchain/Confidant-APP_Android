@@ -175,7 +175,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun onDestroy() {
-        AppConfig.instance.messageReceiver!!.loginBackListener = null
+
+        AppConfig.instance.messageReceiver?.loginBackListener = null
         if (cancellationSignal != null) {
             cancellationSignal!!.cancel()
             cancellationSignal = null
@@ -505,6 +506,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
                         routerName?.setText(itt.routerName)
                         routerId = data!!.getStringExtra("result")
+                        KLog.i("routerId为：" + routerId)
                         routerList.forEach {
                             if (it.lastCheck) {
                                 it.lastCheck = false
@@ -520,6 +522,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 routerName.text = "Router " + (routerList.size + 1)
                 newRouterEntity.routerId = data!!.getStringExtra("result")
                 return
+            } else {
+                routerName?.setText("Router 1")
+                routerId = data!!.getStringExtra("result")
             }
             return
         }

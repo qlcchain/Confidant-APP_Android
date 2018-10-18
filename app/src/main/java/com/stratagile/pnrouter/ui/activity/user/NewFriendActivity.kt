@@ -2,17 +2,13 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.AddFriendDealReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JAddFriendDealRsp
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewFriendComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
@@ -24,8 +20,7 @@ import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -34,14 +29,11 @@ import javax.inject.Inject;
  * @date 2018/09/13 21:25:01
  */
 
-class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServiceMessageReceiver.AddFriendDealCallBack{
+class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.AddFriendDelListener {
 
-    override fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp) {
+    override fun addFriendDealRsp(retCode: Int) {
         KLog.i("NewFriendActivity 收到好友处理的回调")
-        if (jAddFriendDealRsp.params.retCode == 0) {
-            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(handleUser)
-            EventBus.getDefault().post(FriendChange())
-        }
+        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(handleUser)
         runOnUiThread {
             closeProgressDialog()
             initData()
@@ -52,9 +44,9 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
     @Inject
     internal lateinit var mPresenter: NewFriendPresenter
 
-    var newFriendListAdapter : NewFriendListAdapter? = null
+    var newFriendListAdapter: NewFriendListAdapter? = null
 
-    var handleUser : UserEntity? = null
+    var handleUser: UserEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,14 +55,15 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        AppConfig.instance.messageReceiver!!.addFriendDealCallBack = null
+        UserProvider.getInstance().addFriendDelListener = null
     }
 
     override fun initView() {
         setContentView(R.layout.activity_new_friend)
         EventBus.getDefault().register(this)
-        AppConfig.instance.messageReceiver!!.addFriendDealCallBack = this
+        UserProvider.getInstance().addFriendDelListener = this
     }
+
     override fun initData() {
         title.text = getString(R.string.add_contact)
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -88,23 +81,27 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
             startActivityForResult(intent, 1)
         }
         newFriendListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
-            when(view.id) {
-                R.id.tvAccept-> {
+            when (view.id) {
+                R.id.tvAccept -> {
                     handleUser = newFriendListAdapter!!.getItem(position)
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
-                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
+//                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
                     handleUser?.friendStatus = 0
-                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+
+//                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                    UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
                     showProgressDialog()
                 }
-                R.id.tvRefuse-> {
+                R.id.tvRefuse -> {
                     handleUser = newFriendListAdapter!!.getItem(position)
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
-                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
+                    UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
+//                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
                     handleUser?.friendStatus = 5
-                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+//                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+//                    UserProvider.getInstance().refreshFriend()
                     showProgressDialog()
                 }
             }
@@ -118,16 +115,17 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, PNRouterServic
     }
 
     override fun setupActivityComponent() {
-       DaggerNewFriendComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .newFriendModule(NewFriendModule(this))
-               .build()
-               .inject(this)
+        DaggerNewFriendComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .newFriendModule(NewFriendModule(this))
+                .build()
+                .inject(this)
     }
+
     override fun setPresenter(presenter: NewFriendContract.NewFriendContractPresenter) {
-            mPresenter = presenter as NewFriendPresenter
-        }
+        mPresenter = presenter as NewFriendPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

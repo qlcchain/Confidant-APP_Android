@@ -1,9 +1,5 @@
 package com.hyphenate.easeui.widget;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -16,13 +12,12 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseEmojiconGroupEntity;
 import com.hyphenate.easeui.model.EaseDefaultEmojiconDatas;
@@ -32,12 +27,16 @@ import com.hyphenate.easeui.widget.EaseChatPrimaryMenuBase.EaseChatPrimaryMenuLi
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconMenu;
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconMenuBase;
 import com.hyphenate.easeui.widget.emojicon.EaseEmojiconMenuBase.EaseEmojiconMenuListener;
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.UIUtils;
 
-import org.greenrobot.eventbus.EventBus;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * input menu
@@ -54,6 +53,15 @@ public class EaseChatInputMenu extends LinearLayout {
     protected EaseChatExtendMenu chatExtendMenu;
     protected FrameLayout chatExtendMenuContainer;
     protected LayoutInflater layoutInflater;
+    private ChatMenuOpenListenter chatMenuOpenListenter;
+
+    public ChatMenuOpenListenter getChatMenuOpenListenter() {
+        return chatMenuOpenListenter;
+    }
+
+    public void setChatMenuOpenListenter(ChatMenuOpenListenter chatMenuOpenListenter) {
+        this.chatMenuOpenListenter = chatMenuOpenListenter;
+    }
 
     private Handler handler = new Handler();
     private ChatInputMenuListener listener;
@@ -261,16 +269,25 @@ public class EaseChatInputMenu extends LinearLayout {
             @Override
             public void onToggleExtendClicked() {
                 toggleMore();
+                if (chatMenuOpenListenter != null) {
+                    chatMenuOpenListenter.onOpen();
+                }
             }
 
             @Override
             public void onToggleEmojiconClicked() {
                 toggleEmojicon();
+                if (chatMenuOpenListenter != null) {
+                    chatMenuOpenListenter.onOpen();
+                }
             }
 
             @Override
             public void onEditTextClicked() {
                 hideExtendMenuContainer();
+                if (chatMenuOpenListenter != null) {
+                    chatMenuOpenListenter.onOpen();
+                }
             }
 
 
@@ -544,6 +561,15 @@ public class EaseChatInputMenu extends LinearLayout {
         });
     }
 
+    public void hideSoftInput() {
+        chatPrimaryMenu.editText.post(new Runnable() {
+            @Override
+            public void run() {
+                mInputManager.hideSoftInputFromWindow(chatPrimaryMenu.editText.getWindowToken(), 0);
+            }
+        });
+    }
+
     /**
      * 锁定内容高度，防止跳闪
      */
@@ -632,6 +658,10 @@ public class EaseChatInputMenu extends LinearLayout {
          * @return
          */
         boolean onPressToSpeakBtnTouch(View v, MotionEvent event);
+    }
+
+    public interface ChatMenuOpenListenter {
+        void onOpen();
     }
     
 }

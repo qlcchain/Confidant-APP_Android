@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
@@ -770,7 +771,14 @@ public class FileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(file);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(AppConfig.instance, AppConfig.instance.getPackageName() + ".utils.MyFileProvider", file);
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(file);
+        }
         intent.setDataAndType(uri, "application/msword");
         return intent;
     }
@@ -781,9 +789,16 @@ public class FileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        Uri uri = Uri.fromFile(file);
-        Uri uri1 = FileProvider.getUriForFile(AppConfig.instance, AppConfig.instance.getPackageName() + ".utils.MyFileProvider", file);
-        intent.setDataAndType(uri1, "application/vnd.ms-excel");
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(AppConfig.instance, AppConfig.instance.getPackageName() + ".utils.MyFileProvider", file);
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(file);
+        }
+
+        intent.setDataAndType(uri, "application/vnd.ms-excel");
         return intent;
     }
 
@@ -793,7 +808,14 @@ public class FileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(file);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(AppConfig.instance, AppConfig.instance.getPackageName() + ".utils.MyFileProvider", file);
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(file);
+        }
         intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
         return intent;
     }

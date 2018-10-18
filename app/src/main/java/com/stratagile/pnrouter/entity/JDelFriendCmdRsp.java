@@ -29,6 +29,25 @@ public class JDelFriendCmdRsp extends BaseEntity {
         private int RetCode;
         private String Msg;
 
+        private String UserId;
+
+        public String getUserId() {
+            return UserId;
+        }
+
+        public void setUserId(String userId) {
+            UserId = userId;
+        }
+
+        public String getFriendId() {
+            return FriendId;
+        }
+
+        public void setFriendId(String friendId) {
+            FriendId = friendId;
+        }
+
+        private String FriendId;
         public String getAction() {
             return Action;
         }

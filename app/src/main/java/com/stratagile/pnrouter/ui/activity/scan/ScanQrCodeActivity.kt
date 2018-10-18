@@ -51,14 +51,14 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
         }
-        mZXingView.startCamera() // 打开后置摄像头开始预览，但是并未开始识别
+//        mZXingView.startCamera() // 打开后置摄像头开始预览，但是并未开始识别
     }
 
     override fun onStart() {
         super.onStart()
-        mZXingView.startSpotDelay(50)
-        mZXingView.showScanRect()
-//        mZXingView.startSpotAndShowRect() // 显示扫描框，并且延迟0.5秒后开始识别
+//        mZXingView.startSpotDelay(150)
+//        mZXingView.showScanRect()
+        mZXingView.startSpotAndShowRect() // 显示扫描框，并且延迟0.5秒后开始识别
     }
 
     override fun onStop() {
@@ -171,7 +171,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
             val intent = Intent()
             intent.putExtra("result", realContent)
             setResult(RESULT_OK, intent)
-            onBackPressed()
+            finish()
         }
         dialog.show()
     }

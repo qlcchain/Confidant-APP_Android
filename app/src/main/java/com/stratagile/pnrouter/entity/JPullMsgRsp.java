@@ -1,6 +1,6 @@
 package com.stratagile.pnrouter.entity;
 
-import com.stratagile.pnrouter.message.Message;
+import com.message.Message;
 
 import java.util.List;
 

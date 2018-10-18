@@ -1,41 +1,28 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.Nullable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.socks.library.KLog
-
+import com.message.Conversation
+import com.message.MessageProvider
+import com.noober.menu.FloatMenu
+import com.pawegio.kandroid.runOnUiThread
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerConversationListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.ConversationListContract
 import com.stratagile.pnrouter.ui.activity.conversation.module.ConversationListModule
 import com.stratagile.pnrouter.ui.activity.conversation.presenter.ConversationListPresenter
-
-import javax.inject.Inject;
-
-import com.stratagile.pnrouter.R
-import com.stratagile.pnrouter.data.web.PNRouterServiceMessageSender
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.LoginReq
 import com.stratagile.pnrouter.ui.activity.main.MainViewModel
 import com.stratagile.pnrouter.ui.adapter.conversation.ConversationListAdapter
-import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.fragment_conversation_list.*
-import kotlinx.android.synthetic.main.search_layout.*
-import com.stratagile.pnrouter.ui.activity.main.MainActivity
-import com.noober.menu.FloatMenu
-import com.stratagile.pnrouter.base.BaseActivity
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.ui.activity.user.AddFreindActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
-import java.util.*
+import javax.inject.Inject
 
 
 /**
@@ -45,7 +32,12 @@ import java.util.*
  * @date 2018/09/10 17:25:57
  */
 
-class ConversationListFragment : BaseFragment(), ConversationListContract.View {
+class ConversationListFragment : BaseFragment(), ConversationListContract.View, MessageProvider.ConversationChangeListener {
+    override fun conversationChange(arrayList: ArrayList<Conversation>) {
+        runOnUiThread {
+            coversationListAdapter!!.notifyDataSetChanged()
+        }
+    }
 
     @Inject
     lateinit internal var mPresenter: ConversationListPresenter
@@ -64,6 +56,7 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
+        MessageProvider.getInstance().conversationChangeListener = this
 //        viewModel.toAddUserId.observe(this, Observer<String> { toAddUserId ->
 //            KLog.i(toAddUserId)
 //            if (!"".equals(toAddUserId)) {
@@ -86,8 +79,7 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
 //                startActivity(intent)
 //            }
 //        })
-        var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
-        coversationListAdapter = ConversationListAdapter(list)
+        coversationListAdapter = ConversationListAdapter(MessageProvider.getInstance().conversationList)
         coversationListAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             val floatMenu = FloatMenu(activity)
             floatMenu.items("菜单1", "菜单2", "菜单3")
@@ -97,6 +89,7 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View {
         recyclerView.adapter = coversationListAdapter
         coversationListAdapter!!.setOnItemClickListener { adapter, view, position ->
             var intent = Intent(activity!!, ConversationActivity::class.java)
+            intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
             startActivity(intent)
         }
 //        send.setOnClickListener {
