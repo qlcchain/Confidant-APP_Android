@@ -61,7 +61,7 @@ public class EaseChatRowVoice extends EaseChatRowFile {
                 // hide the unread icon
                 readStatusView.setVisibility(View.INVISIBLE);
             } else {
-                readStatusView.setVisibility(View.VISIBLE);
+                readStatusView.setVisibility(View.INVISIBLE);
             }
             EMLog.d(TAG, "it is receive msg");
             if (voiceBody.downloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
