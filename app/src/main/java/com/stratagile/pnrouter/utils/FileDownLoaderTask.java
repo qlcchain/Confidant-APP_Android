@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.util.Log;
 
 import javax.net.ssl.HostnameVerifier;
@@ -66,8 +67,9 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		try {
 			mUrl = new URL(url);
 			String fileName = new File(mUrl.getFile()).getName();
-			mFile = new File(out, fileName);
-			Log.d(TAG, "out="+out+", name="+fileName+",mUrl.getFile()="+mUrl.getFile());
+			String FileNameOld = new String(Base64.decode(fileName.getBytes(), Base64.DEFAULT));
+			mFile = new File(out, FileNameOld);
+			Log.d(TAG, "out="+out+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

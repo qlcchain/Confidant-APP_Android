@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import android.util.Base64;
+
 public class JPushFileMsgRsp extends BaseEntity {
 
     /**
@@ -61,7 +63,9 @@ public class JPushFileMsgRsp extends BaseEntity {
         }
 
         public String getFileName() {
-            return FileName;
+            //base64解码
+            String FileNameOld = new String(Base64.decode(FileName.getBytes(), Base64.DEFAULT));
+            return FileNameOld;
         }
 
         public void setFileName(String FileName) {

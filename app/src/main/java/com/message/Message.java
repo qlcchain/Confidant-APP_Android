@@ -1,5 +1,7 @@
 package com.message;
 
+import android.util.Base64;
+
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -29,7 +31,9 @@ public class Message {
     private String  FilePath;
 
     public String getFileName() {
-        return FileName;
+        //base64解码
+        String FileNameOld = new String(Base64.decode(FileName.getBytes(), Base64.DEFAULT));
+        return FileNameOld;
     }
 
     public void setFileName(String fileName) {

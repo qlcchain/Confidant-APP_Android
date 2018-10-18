@@ -220,24 +220,24 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
      * 计算所有的未读消息数
      */
     fun calculateUnreadCount() {
-        var allUnReadCount = 0
-        conversationList.forEach {
-            var conversationUnReadCount = 0
-            userMessageList.forEach { s, arrayList ->
-                if (it.userId.equals(s)) {
-                    arrayList.forEach {
-                        if (it.isUnRead) {
-                            conversationUnReadCount++
-                        }
-                    }
-                }
-            }
-            it.unReadCount = conversationUnReadCount
-            allUnReadCount += conversationUnReadCount
-        }
-        unReadCount = allUnReadCount
-        conversationChangeListener?.conversationChange(sortConversationList())
-        messageListenter?.unReadCount(unReadCount)
+//        var allUnReadCount = 0
+//        conversationList.forEach {
+//            var conversationUnReadCount = 0
+//            userMessageList.forEach { s, arrayList ->
+//                if (it.userId.equals(s)) {
+//                    arrayList.forEach {
+//                        if (it.isUnRead) {
+//                            conversationUnReadCount++
+//                        }
+//                    }
+//                }
+//            }
+//            it.unReadCount = conversationUnReadCount
+//            allUnReadCount += conversationUnReadCount
+//        }
+//        unReadCount = allUnReadCount
+//        conversationChangeListener?.conversationChange(sortConversationList())
+//        messageListenter?.unReadCount(unReadCount)
     }
 
     fun deletConversationByDeleteFriend(userId: String) {

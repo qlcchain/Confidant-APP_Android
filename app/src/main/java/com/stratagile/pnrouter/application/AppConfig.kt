@@ -57,8 +57,8 @@ class AppConfig : MultiDexApplication() {
         KLog.init(BuildConfig.LOG_DEBUG)
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
-        UserProvider.init()
-        MessageProvider.init()
+//        UserProvider.init()
+//        MessageProvider.init()
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
@@ -68,8 +68,8 @@ class AppConfig : MultiDexApplication() {
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
             MessageRetrievalService.registerActivityStarted(this)
-            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
-            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
+//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+//            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         }
         return messageReceiver!!
     }
@@ -82,8 +82,8 @@ class AppConfig : MultiDexApplication() {
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
             MessageRetrievalService.registerActivityStarted(this)
-            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
-            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
+//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+//            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         } else {
             getPNRouterServiceMessageReceiver()
         }

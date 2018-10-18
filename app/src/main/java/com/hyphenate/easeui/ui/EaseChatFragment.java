@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -395,7 +396,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
         sendFileData.setSegMore((byte) segMore);
         sendFileData.setCotinue((byte) 0);
-        sendFileData.setFileName(fileName.getBytes());
+        String strBase64 = Base64.encodeToString(fileName.getBytes(), Base64.NO_WRAP);
+        sendFileData.setFileName(strBase64.getBytes());
         sendFileData.setFromId(From.getBytes());
         sendFileData.setToId(To.getBytes());
         byte[] content = new byte[sendFileSizeMax];

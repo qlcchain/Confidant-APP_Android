@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
@@ -278,7 +279,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     var data:Bundle = msg.data;
                     var msgId = data.getInt("msgID")
                     var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
-                    var fileName = jPushFileMsgRsp.params.fileName;
+                    var fileName:String = jPushFileMsgRsp.params.fileName;
                     var fromId = jPushFileMsgRsp.params.fromId;
                     var toId = jPushFileMsgRsp.params.toId
                     var FileType = jPushFileMsgRsp.params.fileType
