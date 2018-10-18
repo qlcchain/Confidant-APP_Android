@@ -106,7 +106,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         ConstantValue.isRefeshed = true
                     }
                 }
-                /* val lastMessage = conversation.lastMessage
+                val lastMessage = conversation.lastMessage
                  var all = conversation.allMessages
 
                  if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
@@ -127,7 +127,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                              ConstantValue.isRefeshed = true
                          }
                      }
-                 }*/
+                 }
 
             }
 
@@ -160,7 +160,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         }
         if (!ConstantValue.isRefeshed) {
-//            conversationListFragment?.refresh()
+           conversationListFragment?.refresh()
             ConstantValue.isRefeshed = true
         }
     }
