@@ -51,6 +51,7 @@
             style="@style/chat_text_name_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x22"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/bubble"
             android:gravity="center" />
