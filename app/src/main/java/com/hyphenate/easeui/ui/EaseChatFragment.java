@@ -928,7 +928,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists())
-                    sendImageMessage(cameraFile.getAbsolutePath());
+                    sendCameraImageMessage(cameraFile.getAbsolutePath());
             }else if(requestCode == REQUEST_CODE_VIDEO)
             {
                 //if (videoFile != null && videoFile.exists())
@@ -1329,6 +1329,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendImageMessage(String imagePath) {
+        File file = new File(imagePath);
+        boolean isHas = file.exists();
         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
@@ -1345,7 +1347,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         int result =  FileUtil.copySdcardFile(imagePath,files_dir);
         sendMessageTo(message);
     }
-
+    protected void sendCameraImageMessage(String imagePath) {
+        File file = new File(imagePath);
+        boolean isHas = file.exists();
+        EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
+        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+        message.setFrom(userId);
+        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+        message.setUnread(false);
+        currentSendMsg = message;
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        sendMsgMap.put(uuid,message);
+        sendFilePathMap.put(uuid,imagePath);
+        String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
+        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+        EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
+        sendMessageTo(message);
+    }
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUserId);
         sendMessageTo(message);
