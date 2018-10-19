@@ -1,3 +1,7 @@
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
+
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 
@@ -7,10 +11,10 @@ public class test {
 
     public static void main(String args[])
     {
-        String files_dir_amr = "C://20181018T193748.amr";
-        File filesFileAmr = new File(files_dir_amr);
-        boolean is = filesFileAmr.exists();
-        int longTime = FileUtil.getAmrDuration(filesFileAmr);
-        int aa = 0;
+        String files_dir_amr = "C://VID_20181019_075604.mp4";
+        File aa = new File(files_dir_amr);
+        boolean is = aa.exists();
+
+        int aabb = 0;
     }
 }

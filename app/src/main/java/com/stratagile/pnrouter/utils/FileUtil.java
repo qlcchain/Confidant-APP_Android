@@ -971,4 +971,31 @@ public class FileUtil {
         }
         return (int)((duration/1000)+1);
     }
+
+    /**
+     * 保存bitmap到本地
+     * @param bitmap
+     * @param path
+     */
+    public static void saveBitmpToFile(Bitmap bitmap,String path) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (bitmap != null) {
+                    try {
+                        // 图片文件路径
+                        File file = new File(path);
+                        FileOutputStream os = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                        os.flush();
+                        os.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }).start();
+    }
+
 }

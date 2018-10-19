@@ -514,7 +514,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             new_contact.text = ""
         } else {
             new_contact.visibility = View.VISIBLE
-            new_contact.text = "" + unReadContactCount.messageCount
+            //new_contact.text = "" + unReadContactCount.messageCount
+            new_contact.text = ""
         }
     }
 

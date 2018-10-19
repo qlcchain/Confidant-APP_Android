@@ -68,18 +68,31 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		}
 	}
 	//根据路径得到视频缩略图
-	private Bitmap getVideoPhoto(String videoPath) {
-		MediaMetadataRetriever media = new MediaMetadataRetriever();
+	public static Bitmap getVideoPhoto(String videoPath) {
 		Bitmap bitmap = null;
 		try {
+			MediaMetadataRetriever media = new MediaMetadataRetriever();
 			media.setDataSource(videoPath);
 			bitmap = media.getFrameAtTime();
 		}catch (Exception e)
 		{
-
+          e.printStackTrace();
 		}
 
 		return bitmap;
+	}
+	//获取视频总时长
+	public static int getVideoDuration(String path){
+		String duration = "0";
+		try {
+			MediaMetadataRetriever media = new MediaMetadataRetriever();
+			media.setDataSource(path);
+			duration = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); //
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return Integer.parseInt(duration);
 	}
 	/**
 	 * 图片旋转
@@ -124,12 +137,6 @@ public class EaseImageUtils extends com.hyphenate.util.ImageUtils{
 		}
 		return degree;
 	}
-	//获取视频总时长
-	private int getVideoDuration(String path){
-		MediaMetadataRetriever media = new MediaMetadataRetriever();
-		media.setDataSource(path);
-		String duration = media.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); //
-		return Integer.parseInt(duration);
-	}
+
 
 }
