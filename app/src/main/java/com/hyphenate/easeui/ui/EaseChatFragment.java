@@ -355,8 +355,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileName = sendFileNameMap.get(FileIdResult+"");
                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
                 }else{
-                    String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-                    String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                     KLog.i("文件发送成功！");
                 }
@@ -1327,8 +1326,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,filePath);
-        String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/voice/" + filePath.substring(filePath.lastIndexOf("/")+1);
         //int result =  FileUtil.copySdcardFile(filePath,files_dir);
@@ -1347,8 +1345,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
-        String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
         FileUtil.copySdcardFile(imagePath,files_dir);
@@ -1365,7 +1362,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
         String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-        String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
+        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
         sendMessageTo(message);
