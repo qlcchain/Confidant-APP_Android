@@ -45,7 +45,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             }
         }
         addFriendDelListener?.addFriendDealRsp(jAddFriendDealRsp.params.retCode)
-        refreshFriend()
+        refreshFriend("")
     }
 
     /**
@@ -58,7 +58,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 if (it.userId.equals(jDelFriendCmdRsp.params.friendId)) {
                     it.friendStatus = 6
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                    refreshFriend()
+                    refreshFriend(jDelFriendCmdRsp.params.friendId)
                     return@forEach
                 }
             }
@@ -97,7 +97,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         EventBus.getDefault().post(FriendChange())
     }
 
-    fun refreshFriend() {
+    fun refreshFriend(friendId:String) {
         userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll().MutableListToArrayList()
         var newFriendCount = 0
         for (i in userList) {
@@ -109,7 +109,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             }
         }
         EventBus.getDefault().post(UnReadContactCount(newFriendCount))
-        EventBus.getDefault().post(FriendChange())
+        EventBus.getDefault().post(FriendChange(friendId))
     }
 
 
@@ -129,7 +129,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
-                refreshFriend()
+                refreshFriend("")
                 return
             }
         }
@@ -145,7 +145,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
         var addFriendReplyReq = AddFriendReplyReq(0, "")
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
-        refreshFriend()
+        refreshFriend("")
     }
 
     override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
