@@ -893,26 +893,31 @@ public class FileUtil {
      * @param toFile
      * @return
      */
-    public static int copySdcardFile(String fromFile, String toFile)
+    public static void copySdcardFile(String fromFile, String toFile)
     {
-        try
-        {
-            InputStream fosfrom = new FileInputStream(fromFile);
-            OutputStream fosto = new FileOutputStream(toFile);
-            byte bt[] = new byte[1024];
-            int c;
-            while ((c = fosfrom.read(bt)) > 0)
-            {
-                fosto.write(bt, 0, c);
-            }
-            fosfrom.close();
-            fosto.close();
-            return 0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try
+                {
+                    InputStream fosfrom = new FileInputStream(fromFile);
+                    OutputStream fosto = new FileOutputStream(toFile);
+                    byte bt[] = new byte[1024];
+                    int c;
+                    while ((c = fosfrom.read(bt)) > 0)
+                    {
+                        fosto.write(bt, 0, c);
+                    }
+                    fosfrom.close();
+                    fosto.close();
 
-        } catch (Exception ex)
-        {
-            return -1;
-        }
+                } catch (Exception ex)
+                {
+
+                }
+            }
+        }).start();
+
     }
     /**
      * 得到amr的时长

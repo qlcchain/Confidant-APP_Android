@@ -1351,7 +1351,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String wssUrl = "https://"+pAddress + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
-        int result =  FileUtil.copySdcardFile(imagePath,files_dir);
+        FileUtil.copySdcardFile(imagePath,files_dir);
         sendMessageTo(message);
     }
     protected void sendCameraImageMessage(String imagePath) {
