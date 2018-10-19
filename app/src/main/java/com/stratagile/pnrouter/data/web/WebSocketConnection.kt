@@ -31,7 +31,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
 
     private val wsUri: String
-
+    private var isLocalLogin = false //是否本地路由器登录
     private var client: WebSocket? = null
     private var keepAliveSender: KeepAliveSender? = null
     private var reConnectThread: ReConnectThread? = null
@@ -40,7 +40,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
-    private var retryInterval = arrayListOf<Int>(5000, 15000, 30000, 60000, 120000)
+    private var retryInterval = arrayListOf<Int>(1000, 3000, 5000, 10000, 12000)
     private var ipAddress = ""
     private var filledUri = ""
 
@@ -70,9 +70,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         filledUri = wsUri
         if (client == null) {
             if (isWifiConnect()) {
+                isLocalLogin = true;
                 ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
                 filledUri = "wss://" + ipAddress + port
             } else {
+                isLocalLogin = false;
                 filledUri = wsUri
             }
             KLog.i("连接的地址为：${filledUri}")
@@ -255,8 +257,18 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             client = null
             connected = false
         }
-        if (reConnectThread != null && !isShutDown) {
+        if (reConnectThread != null && !isShutDown && !isLocalLogin) {
+            isLocalLogin = false;
             reConnectThread?.reStart()
+        }else{
+            filledUri = wsUri  //局域登录不了立即跳转外网
+            if (client != null) {
+//                        client!!.close(1000, "OK")
+                client!!.cancel()
+                client = null
+                connected = false
+            }
+            reConnect()
         }
 
 //        notifyAll()
@@ -380,6 +392,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         private val stop = AtomicBoolean(false)
 
         override fun run() {
+            Log.w(TAG, "beginreConnect..."+(!stop.get() &&! reConnectTimeOut))
             while (!stop.get() &&! reConnectTimeOut) {
                 try {
                     if (retryTime > retryInterval.size) {
