@@ -964,9 +964,7 @@ public class FileUtil {
                     randomAccessFile.close();
                 }catch (IOException e)
                 {
-
-                }  finally {
-                    return  0;
+                   e.printStackTrace();
                 }
 
             }

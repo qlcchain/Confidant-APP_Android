@@ -759,7 +759,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         int longTime = FileUtil.getAmrDuration(filesFileAmr);
                         message = EMMessage.createVoiceSendMessage(files_dir_amr, longTime, toChatUserId);
                     }else{
-                        message = EMMessage.createVoiceSendMessage(ease_default_amr, 2, toChatUserId);
+                        message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
                         String ipAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
                         String filledUri = "https://" + ipAddress + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
                         String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
@@ -1420,7 +1420,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case 2:
                 files_dir = PathUtils.getInstance().getVoicePath() + "/" +url;
-                message = EMMessage.createVoiceSendMessage(files_dir, 4, toChatUserId);
+                int longTime = FileUtil.getAmrDuration(new File(files_dir));
+                message = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                 break;
             default:
                 break;
@@ -1940,7 +1941,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 break;
                             case 2:
                                 files_dir = PathUtils.getInstance().getVoicePath()+"/" +message.getFileName();
-                                messageData = EMMessage.createVoiceSendMessage(files_dir, 2, toChatUserId);
+                                int longTime = FileUtil.getAmrDuration(new File(files_dir));
+                                messageData = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                                 break;
                         }
                         if(messageData != null)
