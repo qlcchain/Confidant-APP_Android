@@ -75,6 +75,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
                 it.friendStatus = 3
+                it.nickName = jAddFriendPushRsp.params.nickName;
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var addFriendPushReq = AddFriendPushReq(0, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))

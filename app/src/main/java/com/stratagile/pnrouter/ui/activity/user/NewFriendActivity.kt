@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
+
 /**
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.user
@@ -66,7 +67,17 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
 
     override fun initData() {
         title.text = getString(R.string.add_contact)
+        //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        var userIDStr:String = "";
+        for (i in list) {
+            if (userIDStr.indexOf(i.userId+",") > -1) {
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.delete(i)
+                continue
+            }
+            userIDStr = i.userId+","
+        }
+        list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var showlist = arrayListOf<UserEntity>()
         for (i in list) {
             if (i.friendStatus != 7) {

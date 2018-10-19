@@ -370,7 +370,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         tvContent.setText(R.string.choose_finger_dialog_title)
                         val currentContext = this
                         builderTips = builder.create()
-                        builderTips?.show()
+                        //builderTips?.show()
                     } catch (e: Exception) {
                         try {
                             myAuthCallback = MyAuthCallback(handler)
