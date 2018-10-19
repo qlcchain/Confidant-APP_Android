@@ -86,7 +86,9 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				}
 			} else {
 				Bitmap bigData = EaseImageUtils.getBitmap(new File(uri.getPath()));
-				image.setImageBitmap(bigData);
+				int degree = EaseImageUtils.readPictureDegree(uri.getPath());
+				Bitmap bmpOk = EaseImageUtils.rotateToDegrees(bigData, degree);
+				image.setImageBitmap(bmpOk);
 			}
 		} else if(msgId != null) {
 		    downloadImage(msgId);
@@ -135,8 +137,10 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 						if (bitmap == null) {
 							image.setImageResource(default_res);
 						} else {
-							image.setImageBitmap(bitmap);
-							EaseImageCache.getInstance().put(localFilePath, bitmap);
+							int degree = EaseImageUtils.readPictureDegree(localFilePath);
+							Bitmap bmpOk = EaseImageUtils.rotateToDegrees(bitmap, degree);
+							image.setImageBitmap(bmpOk);
+							EaseImageCache.getInstance().put(localFilePath, bmpOk);
 							isDownloaded = true;
 						}
 						if (isFinishing() || isDestroyed()) {

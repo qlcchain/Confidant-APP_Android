@@ -897,10 +897,6 @@ public class FileUtil {
     {
         try
         {
-            File destDir = new File(toFile);
-            if (!destDir.exists()) {
-                destDir.mkdirs();
-            }
             InputStream fosfrom = new FileInputStream(fromFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];
