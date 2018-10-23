@@ -140,8 +140,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
-        var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
-        var filledUri = "https://" + ipAddress + port+jPushFileMsgRsp.params.filePath
+        var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
         var files_dir = this.filesDir.absolutePath + "/image/"
         when (jPushFileMsgRsp.params.fileType) {
             1 -> {

@@ -36,7 +36,11 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
     @Override
     public void onBubbleClick(final EMMessage message) {
         String msgId = message.getMsgId();
-
+        String localUrl = ((EMVoiceMessageBody) message.getBody()).getLocalUrl();
+        if(localUrl.contains("ease_default_amr"))
+        {
+            return;
+        }
         if (voicePlayer.isPlaying()) {
             // Stop the voice play first, no matter the playing voice item is this or others.
             voicePlayer.stop();

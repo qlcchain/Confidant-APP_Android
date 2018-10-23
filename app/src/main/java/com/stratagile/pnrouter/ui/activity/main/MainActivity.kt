@@ -317,6 +317,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_image.png",1)
         FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_amr.amr",2)
+        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)

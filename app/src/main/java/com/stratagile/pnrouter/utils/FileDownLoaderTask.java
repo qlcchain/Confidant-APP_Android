@@ -187,6 +187,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		return bytesCopied;
 	}
 	private int copy(InputStream input, OutputStream output){
+
 		byte[] buffer = new byte[1024*8];
 		BufferedInputStream in = new BufferedInputStream(input, 1024*8);
 		BufferedOutputStream out  = new BufferedOutputStream(output, 1024*8);

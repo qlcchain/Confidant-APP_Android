@@ -864,6 +864,9 @@ public class FileUtil {
             case 2:
                 defaultPath = PathUtils.getInstance().getVoicePath()+"";
                 break;
+            case 3:
+                defaultPath = PathUtils.getInstance().getVideoPath()+"";
+                break;
         }
         File file = new File(defaultPath);
         if (!file.exists()) {
@@ -978,6 +981,10 @@ public class FileUtil {
      * @param path
      */
     public static void saveBitmpToFile(Bitmap bitmap,String path) {
+        if(new File(path).exists())
+        {
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {

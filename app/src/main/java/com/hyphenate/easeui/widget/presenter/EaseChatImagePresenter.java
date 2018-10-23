@@ -10,6 +10,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
@@ -53,6 +54,11 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
     @Override
     public void onBubbleClick(EMMessage message) {
         EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
+        String localUrl = imgBody.getLocalUrl();
+        if(localUrl.contains("ease_default_image"))
+        {
+            return;
+        }
         if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
             if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
                 getChatRow().updateView(message);

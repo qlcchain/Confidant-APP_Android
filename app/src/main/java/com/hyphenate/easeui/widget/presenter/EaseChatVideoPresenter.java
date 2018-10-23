@@ -29,6 +29,11 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
     public void onBubbleClick(EMMessage message) {
         EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         EMLog.d(TAG, "video view is on click");
+        String localUrl = videoBody.getLocalUrl();
+        if(localUrl.contains("ease_default_vedio"))
+        {
+            return;
+        }
         if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
 
         }else{
