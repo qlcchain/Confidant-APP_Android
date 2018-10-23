@@ -139,7 +139,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
         var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
         var filledUri = "https://" + ipAddress + port+jPushFileMsgRsp.params.filePath
         var files_dir = this.filesDir.absolutePath + "/image/"
@@ -170,7 +170,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
             chatFragment?.receiveTxtMessage(pushMsgRsp)
         }
     }

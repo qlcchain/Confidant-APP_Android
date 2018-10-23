@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.entity
 
 import com.stratagile.pnrouter.BuildConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import java.util.*
 
 /**
@@ -10,6 +11,7 @@ open class BaseData() {
     var timestamp : String? = null
     var appid : String? = null
     var apiversion :Int ? = null
+    var msgid :Int ? = null
     var params : Any? = null
 
     constructor(params : Any) : this() {
@@ -17,6 +19,20 @@ open class BaseData() {
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
+        this.msgid =  ConstantValue.msgIndex++
+    }
+    constructor(params : Any,msgId:Int) : this() {
+        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.appid = "MiFi"
+        this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
+        this.params = params
+        if(msgId != null)
+        {
+            this.msgid =  msgId
+        }
+        else{
+            this.msgid =  ConstantValue.msgIndex++
+        }
     }
 }
 

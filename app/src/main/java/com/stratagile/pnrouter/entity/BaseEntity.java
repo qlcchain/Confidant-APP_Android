@@ -11,6 +11,7 @@ public class BaseEntity {
     private String appid;
     private int timestamp;
     private int apiversion;
+    private int msgid;
 
     public String getAppid() {
         return appid;
@@ -34,5 +35,12 @@ public class BaseEntity {
 
     public void setApiversion(int apiversion) {
         this.apiversion = apiversion;
+    }
+    public int getMsgid() {
+        return msgid;
+    }
+
+    public void setMsgid(int msgid) {
+        this.msgid = msgid;
     }
 }

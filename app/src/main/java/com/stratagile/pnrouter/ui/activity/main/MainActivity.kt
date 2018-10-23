@@ -170,7 +170,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
             message.setDirection(EMMessage.Direct.RECEIVE)
@@ -227,7 +227,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 i.nickName = jAddFriendReplyRsp.params.nickname
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
                 }
@@ -267,7 +267,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         runOnUiThread {
             viewModel.freindChange.value = Calendar.getInstance().timeInMillis
         }
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
     }
 
     lateinit var viewModel: MainViewModel
@@ -377,7 +377,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Thread.sleep(1000);
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
@@ -398,7 +398,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
                     {
                         var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)

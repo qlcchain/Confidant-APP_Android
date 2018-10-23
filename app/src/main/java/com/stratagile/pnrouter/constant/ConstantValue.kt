@@ -18,5 +18,6 @@ object ConstantValue {
         var currentIp= ""
         var filePort =":18007"
         var status = "status"
+        var msgIndex:Int = 1 //客户端的消息ID
 
 }

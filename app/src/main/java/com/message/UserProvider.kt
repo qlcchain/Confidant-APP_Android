@@ -78,7 +78,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var addFriendPushReq = AddFriendPushReq(0, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
                 EventBus.getDefault().post(FriendChange())
                 return
             }
@@ -93,7 +93,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         userList.add(newFriend)
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq))
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
         EventBus.getDefault().post(FriendChange())
     }
 
@@ -128,7 +128,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.nickName = jAddFriendReplyRsp.params.nickname
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
                 refreshFriend("")
                 return
             }
@@ -144,7 +144,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
         var addFriendReplyReq = AddFriendReplyReq(0, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq))
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
         refreshFriend("")
     }
 
