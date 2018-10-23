@@ -85,5 +85,4 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
 }

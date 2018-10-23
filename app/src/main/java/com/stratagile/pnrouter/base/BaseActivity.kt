@@ -226,13 +226,13 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
         }
     }
 
-    override fun onBackPressed() {
+    /*override fun onBackPressed() {
         // 正在滑动返回的时候取消返回按钮事件
         if (mSwipeBackHelper.isSliding) {
             return
         }
         mSwipeBackHelper.backward()
-    }
+    }*/
 
     /**
      * 是否支持滑动返回。这里在父类中默认返回 true 来支持滑动返回，如果某个界面不想支持滑动返回则重写该方法返回 false 即可
