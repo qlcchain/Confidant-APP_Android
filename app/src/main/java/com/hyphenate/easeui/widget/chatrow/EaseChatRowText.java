@@ -73,12 +73,12 @@ public class EaseChatRowText extends EaseChatRow{
     }
 
     private void onMessageCreate() {
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 
     private void onMessageSuccess() {
-        progressBar.setVisibility(View.GONE);
+        //progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.GONE);
 
         // Show "1 Read" if this msg is a ding-type msg.
@@ -94,12 +94,12 @@ public class EaseChatRowText extends EaseChatRow{
     }
 
     private void onMessageError() {
-        progressBar.setVisibility(View.GONE);
+        //progressBar.setVisibility(View.GONE);
         statusView.setVisibility(View.VISIBLE);
     }
 
     private void onMessageInProgress() {
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
         statusView.setVisibility(View.GONE);
     }
 

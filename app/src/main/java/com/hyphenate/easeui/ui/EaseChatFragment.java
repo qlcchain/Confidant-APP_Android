@@ -380,6 +380,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case "amr":
                 action = 2;
+                break;
             case "mp4":
                 action = 4;
                 break;
@@ -1451,8 +1452,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                 break;
             case 4:
-                files_dir = PathUtils.getInstance().getVoicePath() + "/" +url;
-                String thumbPath =  PathUtils.getInstance().getImagePath()+"/" + "ease_default_image.png";
+                files_dir = PathUtils.getInstance().getVideoPath() + "/" +url;
+                String videoName = files_dir.substring(files_dir.lastIndexOf("/")+1,files_dir.lastIndexOf(".")+1);
+                String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
+                FileUtil.saveBitmpToFile(bitmap,thumbPath);
                 message = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
                 break;
             default:

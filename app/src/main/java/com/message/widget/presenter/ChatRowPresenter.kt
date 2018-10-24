@@ -56,11 +56,11 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
         }
         if (message.from.equals(SpUtil.getString(context, ConstantValue.userId, ""))) {
             progress_bar = itemView.findViewById(R.id.progress_bar)
-            if (message.status == Message.Status.SUCCESS) {
+           /* if (message.status == Message.Status.SUCCESS) {
                 progress_bar.visibility = View.GONE
             } else if (message.status == Message.Status.CREATE) {
                 progress_bar.visibility = View.VISIBLE
-            }
+            }*/
         }
         avatar.setText(userEntity?.nickName)
     }

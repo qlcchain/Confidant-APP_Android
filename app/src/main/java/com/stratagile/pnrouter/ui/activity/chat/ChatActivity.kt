@@ -149,6 +149,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             2 -> {
                 files_dir = PathUtils.getInstance().voicePath.toString()+"/"
             }
+            4 -> {
+                files_dir = PathUtils.getInstance().videoPath.toString()+"/"
+            }
         }//goMain();
         receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
         FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler)

@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:text="100%"
                 android:textColor="@android:color/black"
-                android:visibility="visible"
+                android:visibility="gone"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 

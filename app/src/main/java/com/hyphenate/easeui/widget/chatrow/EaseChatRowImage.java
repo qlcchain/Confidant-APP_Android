@@ -7,6 +7,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
@@ -21,6 +22,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     protected ImageView imageView;
     private EMImageMessageBody imgBody;
+    private ProgressBar progressBarShelf;
 
     public EaseChatRowImage(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -35,13 +37,20 @@ public class EaseChatRowImage extends EaseChatRowFile{
     protected void onFindViewById() {
         percentageView = (TextView) findViewById(R.id.percentage);
         imageView = (ImageView) findViewById(R.id.image);
+        progressBarShelf = (ProgressBar) findViewById(R.id.progress_bar);
     }
 
     
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
-
+        String localUrl = imgBody.getLocalUrl();
+        if(localUrl.contains("ease_default_amr"))
+        {
+            progressBarShelf.setVisibility(View.VISIBLE);
+        }else{
+            progressBarShelf.setVisibility(View.INVISIBLE);
+        }
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             return;
@@ -61,12 +70,12 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
                             imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    percentageView.setVisibility(View.INVISIBLE);
+                  /*  progressBar.setVisibility(View.INVISIBLE);
+                    percentageView.setVisibility(View.INVISIBLE);*/
                     imageView.setImageResource(R.drawable.ease_default_image);
                 } else {
-                    progressBar.setVisibility(View.GONE);
-                    percentageView.setVisibility(View.GONE);
+                   /* progressBar.setVisibility(View.GONE);
+                    percentageView.setVisibility(View.GONE);*/
                     imageView.setImageResource(R.drawable.ease_default_image);
                     String thumbPath = imgBody.thumbnailLocalPath();
                     if (!new File(thumbPath).exists()) {
@@ -85,21 +94,21 @@ public class EaseChatRowImage extends EaseChatRowFile{
             if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
                 imageView.setImageResource(R.drawable.ease_default_image);
             }else {
-                progressBar.setVisibility(View.INVISIBLE);
-                percentageView.setVisibility(View.INVISIBLE);
+               /* progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);*/
                 imageView.setImageResource(R.drawable.ease_default_image);
             }
         } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
             if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                progressBar.setVisibility(View.VISIBLE);
-                percentageView.setVisibility(View.VISIBLE);
+               /* progressBar.setVisibility(View.VISIBLE);
+                percentageView.setVisibility(View.VISIBLE);*/
             }else {
-                progressBar.setVisibility(View.INVISIBLE);
-                percentageView.setVisibility(View.INVISIBLE);
+                /*progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);*/
             }
         } else {
-            progressBar.setVisibility(View.GONE);
-            percentageView.setVisibility(View.GONE);
+           /* progressBar.setVisibility(View.GONE);
+            percentageView.setVisibility(View.GONE);*/
             imageView.setImageResource(R.drawable.ease_default_image);
             String thumbPath = imgBody.thumbnailLocalPath();
             if (!new File(thumbPath).exists()) {

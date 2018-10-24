@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:text="0%"
                     android:textColor="@android:color/white"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
         </RelativeLayout>

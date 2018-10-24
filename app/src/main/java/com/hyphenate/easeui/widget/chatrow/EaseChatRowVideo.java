@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMClient;
@@ -31,6 +32,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
     private ImageView imageView;
     private TextView sizeView;
     private TextView timeLengthView;
+    private ProgressBar progressBarShelf;
 
     public EaseChatRowVideo(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -49,13 +51,21 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         timeLengthView = (TextView) findViewById(R.id.chatting_length_iv);
         ImageView playView = (ImageView) findViewById(R.id.chatting_status_btn);
         percentageView = (TextView) findViewById(R.id.percentage);
+        progressBarShelf = (ProgressBar) findViewById(R.id.progress_bar);
+        String aa = "";
 	}
 
 	@Override
 	protected void onSetUpView() {
 	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         String localThumb = videoBody.getLocalThumb();
-
+        String localUrl = videoBody.getLocalUrl();
+        if(localUrl.contains("ease_default_vedio"))
+        {
+            progressBarShelf.setVisibility(View.VISIBLE);
+        }else{
+            progressBarShelf.setVisibility(View.INVISIBLE);
+        }
         if (localThumb != null) {
 
             showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
@@ -94,12 +104,12 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
                         videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
-                progressBar.setVisibility(View.INVISIBLE);
-                percentageView.setVisibility(View.INVISIBLE);
+               /* progressBar.setVisibility(View.INVISIBLE);
+                percentageView.setVisibility(View.INVISIBLE);*/
                 imageView.setImageResource(R.drawable.ease_default_image);
             } else {
-                progressBar.setVisibility(View.GONE);
-                percentageView.setVisibility(View.GONE);
+               /* progressBar.setVisibility(View.GONE);
+                percentageView.setVisibility(View.GONE);*/
                 imageView.setImageResource(R.drawable.ease_default_image);
                 showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
             }

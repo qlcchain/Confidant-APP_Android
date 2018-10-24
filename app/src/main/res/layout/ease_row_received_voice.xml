@@ -90,6 +90,7 @@
             android:textSize="@dimen/chat_nick_text_size"
             android:layout_toRightOf="@id/iv_userhead"
             android:visibility="gone" />
+
     </RelativeLayout>
 
 </LinearLayout>
