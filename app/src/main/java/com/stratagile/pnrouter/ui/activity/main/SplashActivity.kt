@@ -70,11 +70,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             val strBase64Public = Base64.encodeToString(KeyPair.public.encoded, Base64.NO_WRAP)
             ConstantValue.privateRAS = strBase64Private
             ConstantValue.publicRAS = strBase64Public
-            var aabbcc = Base64.decode(strBase64Private, Base64.NO_WRAP)
-            var key = "0123456";
-            var keyPulic = RxEncryptTool.encryptByPublicKey(key.toByteArray(),KeyPair.public.encoded)
-            var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,aabbcc)
-            var keybb = String(keyOld);
             localRSAArrayList = ArrayList()
             var RSAData:RSAData = RSAData()
             RSAData.privateKey = strBase64Private
@@ -95,7 +90,21 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-       var key =  RxEncryptTool.generateKey();
+        var private = Base64.decode(ConstantValue.privateRAS, Base64.NO_WRAP)
+        var public = Base64.decode(ConstantValue.publicRAS, Base64.NO_WRAP)
+        var source = "0123456789";
+        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),public)
+
+        val strBase64keyPulic:String = Base64.encodeToString(keyPulic, Base64.NO_WRAP)
+        var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
+        var keybb = String(keyOld);
+
+        var key2 =  RxEncryptTool.generateKey();
+        var AES_KEY = "123456789"
+        var keybb2 = RxEncryptTool.encrypt(key2,AES_KEY)
+        var keydd2 = RxEncryptTool.decrypt(key2,keybb2)
+        //var keyaa = RxEncryptTool.encryptAES2Base64(keyStr.toByteArray(),AES_KEY.toByteArray())
+        //var keybb = RxEncryptTool.decryptAES(keyaa,AES_KEY.toByteArray())
         PathUtils.getInstance().initDirs("", "", this)
         System.out.println(ByteOrder.nativeOrder());
         SpUtil.putString(this, ConstantValue.testValue, "test")
