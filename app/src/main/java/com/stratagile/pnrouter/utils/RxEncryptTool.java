@@ -687,13 +687,13 @@ public class RxEncryptTool {
     /*
      * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
      */
-    public static String generateKey() {
+    public static String generateAESKey() {
         try {
             SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
             byte[] bytes_key = new byte[20];
             localSecureRandom.nextBytes(bytes_key);
             String str_key = toHex(bytes_key);
-            return str_key;
+            return str_key.substring(str_key.length() - 16);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -728,6 +728,7 @@ public class RxEncryptTool {
         }
         try {
             byte[] result = encrypt(key, cleartext.getBytes());
+            String aa = new String(result);
             return RxEncodeTool.base64Encode2String(result);
         } catch (Exception e) {
             e.printStackTrace();

@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
+import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import com.stratagile.pnrouter.utils.SpUtil
@@ -99,10 +100,10 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
         var keybb = String(keyOld);
 
-        var key2 =  RxEncryptTool.generateKey();
+        var key2 =  RxEncryptTool.generateAESKey()
         var AES_KEY = "123456789"
-        var keybb2 = RxEncryptTool.encrypt(key2,AES_KEY)
-        var keydd2 = RxEncryptTool.decrypt(key2,keybb2)
+        var keybb2 = AESCipher.aesEncryptString(AES_KEY,key2);
+        var keydd2 = AESCipher.aesDecryptString(keybb2,key2)
         //var keyaa = RxEncryptTool.encryptAES2Base64(keyStr.toByteArray(),AES_KEY.toByteArray())
         //var keybb = RxEncryptTool.decryptAES(keyaa,AES_KEY.toByteArray())
         PathUtils.getInstance().initDirs("", "", this)
