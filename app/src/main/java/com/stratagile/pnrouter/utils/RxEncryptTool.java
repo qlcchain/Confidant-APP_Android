@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 import static com.stratagile.pnrouter.utils.RxDataTool.bytes2HexString;
 import static com.stratagile.pnrouter.utils.RxDataTool.hexString2Bytes;
 import static com.superrtc.call.PeerConnection.KeyType.RSA;
+import static org.greenrobot.greendao.internal.SqlUtils.toHex;
 
 
 /**
@@ -39,6 +40,7 @@ public class RxEncryptTool {
     public static final int DEFAULT_KEY_SIZE = 2048;//秘钥默认长度
     public static final byte[] DEFAULT_SPLIT = "#PART#".getBytes();    // 当要加密的内容超过bufferSize，则采用partSplit进行分块加密
     public static final int DEFAULT_BUFFERSIZE = (DEFAULT_KEY_SIZE / 8) - 11;// 当前秘钥支持加密的最大字节数
+    private  static final String  SHA1PRNG="SHA1PRNG";//// SHA1PRNG 强随机种子算法, 要区别4.2以上版本的调用方法
     /**
      * DES转变
      * <p>法算法名称/加密模式/填充方式</p>
@@ -672,5 +674,21 @@ public class RxEncryptTool {
         cp.init(Cipher.DECRYPT_MODE, keyPrivate);
         byte[] arr = cp.doFinal(encrypted);
         return arr;
+    }
+
+    /*
+     * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
+     */
+    public static String generateKey() {
+        try {
+            SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
+            byte[] bytes_key = new byte[20];
+            localSecureRandom.nextBytes(bytes_key);
+            String str_key = toHex(bytes_key);
+            return str_key;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

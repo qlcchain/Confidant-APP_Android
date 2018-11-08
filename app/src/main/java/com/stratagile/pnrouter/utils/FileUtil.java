@@ -67,6 +67,10 @@ public class FileUtil {
                 if (!UserID.exists()) {
                     UserID.mkdir();
                 }
+                File rsa = new File(Environment.getExternalStorageDirectory() + "/Router/RA", "");
+                if (!rsa.exists()) {
+                    rsa.mkdir();
+                }
                 KLog.i("文件夹初始化成功。。。。。。。。。。。。。");
             }
         }).start();
@@ -260,7 +264,72 @@ public class FileUtil {
         }
         return "";
     }
+    /**
+     * 保存RA数据到sd卡
+     *
+     * @param jsonStr 数据
+     */
+    public static void saveRSAData(String jsonStr) {
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RA/data.json";
+        File jsonFile = new File(jsonPath);
 
+        FileWriter fw = null;
+        BufferedWriter out = null;
+        try {
+            if (!jsonFile.exists()) {
+                jsonFile.createNewFile();
+            }
+            fw = new FileWriter(jsonFile);
+            out = new BufferedWriter(fw);
+            out.write(jsonStr, 0, jsonStr.length());
+            out.close();
+        } catch (Exception e) {
+            System.out.println("保持资产数据异常" + e);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 读取本地SDk卡路由器数据
+     *
+     * @return
+     */
+    public static String readRSAData() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try {
+                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RA/data.json");
+                if (!file.exists()) {
+                    return "";
+                }
+                fis = new FileInputStream(file);
+                byte[] buffer = new byte[fis.available()];
+                fis.read(buffer);
+                fis.close();
+                String res = EncodingUtils.getString(buffer, "UTF-8");
+                return res;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fis != null) fis.close();
+                    if (ois != null) ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
     /**
      * 读取本地SDk卡所有路由器数据
      *

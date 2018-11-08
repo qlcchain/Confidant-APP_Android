@@ -19,5 +19,7 @@ object ConstantValue {
         var filePort =":18007"
         var status = "status"
         var msgIndex:Int = 1 //客户端的消息ID
+        var privateRAS:String = ""
+        var publicRAS:String = ""
 
 }

@@ -32,7 +32,7 @@ public class Message {
 
     public String getFileName() {
         //base64解码
-        String FileNameOld = new String(Base64.decode(FileName.getBytes(), Base64.DEFAULT));
+        String FileNameOld = new String(Base64.decode(FileName.getBytes(), Base64.NO_WRAP));
         return FileNameOld;
     }
 

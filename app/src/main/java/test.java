@@ -1,11 +1,14 @@
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
+import android.util.Base64;
 
 import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
+import com.stratagile.pnrouter.utils.RxEncryptTool;
 
 import java.io.File;
+import java.security.KeyPair;
 
 public class test {
 
