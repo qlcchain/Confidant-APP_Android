@@ -36,10 +36,7 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -500,7 +497,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             miniScanParent.visibility = View.VISIBLE
             scanParent.visibility = View.INVISIBLE
             noRoutergroup.visibility = View.INVISIBLE
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            var resultData:String = data!!.getStringExtra("result")
+            var resultByte = AESCipher.aesDecryptByte(resultData,"welcometoqlc0101")
+
+            var aa = "bb";
+            /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             if (routerList != null && routerList.size != 0) {
                 routerList.forEach { itt ->
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
@@ -525,7 +526,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             } else {
                 routerName?.setText("Router 1")
                 routerId = data!!.getStringExtra("result")
-            }
+            }*/
             return
         }
     }

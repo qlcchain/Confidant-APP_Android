@@ -1,7 +1,4 @@
 package com.stratagile.pnrouter.utils;
-//
-//  https://github.com/WelkinXie/AESCipher-Java
-//
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -37,7 +34,18 @@ public class AESCipher {
         byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
         return new String(decryptedBytes, charset);
     }
-
+    public static String aesDecryptString2(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+        byte[] encryptedBytes = content.getBytes(charset);
+        byte[] keyBytes = key.getBytes(charset);
+        byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
+        return new String(decryptedBytes, charset);
+    }
+    public static  byte[] aesDecryptByte(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+        byte[] encryptedBytes = RxEncodeTool.base64Decode(content);
+        byte[] keyBytes = key.getBytes(charset);
+        byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
+        return decryptedBytes;
+    }
     public static byte[] aesEncryptBytes(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return cipherOperation(contentBytes, keyBytes, Cipher.ENCRYPT_MODE);
     }
@@ -54,8 +62,15 @@ public class AESCipher {
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(mode, secretKey, ivParameterSpec);
+        byte[] result = null;
+        try{
+            result = cipher.doFinal(contentBytes);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        return cipher.doFinal(contentBytes);
+        return result;
     }
 
 }

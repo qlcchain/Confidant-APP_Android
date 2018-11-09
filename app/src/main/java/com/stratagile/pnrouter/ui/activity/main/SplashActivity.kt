@@ -101,9 +101,11 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var keybb = String(keyOld);
 
         var key2 =  RxEncryptTool.generateAESKey()
-        var AES_KEY = "123456789"
-        var keybb2 = AESCipher.aesEncryptString(AES_KEY,key2);
-        var keydd2 = AESCipher.aesDecryptString(keybb2,key2)
+        var AES_KEY = "010001D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A47201000001B827EBD089CB00005BE14F55"
+        var keybb2 = AESCipher.aesEncryptString(AES_KEY,"welcometoqlc0101")
+        var keydd2 = AESCipher.aesDecryptString(keybb2,"welcometoqlc0101")
+        var resultByte2 = AESCipher.aesDecryptString("ysPU3+VXYIWLKQkISIzR193yBMGzL+hkUPlRvrQPwh8yJmrX+BMRyGTdpJA349y00HZ6a0m+E0U7UP+TrEABf9UriJD6zff6IdfhQn8lbQBnIVWdONnMWmZzKpvX33ORpSj8qfvBYqc2NRt0Mq132fUHxfSljfYavhNYT2p016w=","welcometoqlc0101")
+
         //var keyaa = RxEncryptTool.encryptAES2Base64(keyStr.toByteArray(),AES_KEY.toByteArray())
         //var keybb = RxEncryptTool.decryptAES(keyaa,AES_KEY.toByteArray())
         PathUtils.getInstance().initDirs("", "", this)
