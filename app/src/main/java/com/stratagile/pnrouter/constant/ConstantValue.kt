@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.constant
 
+import java.util.HashMap
+
 object ConstantValue {
         var isInit = false;
         var isRefeshed = false
@@ -21,5 +23,6 @@ object ConstantValue {
         var msgIndex:Int = 1 //客户端的消息ID
         var privateRAS:String = ""
         var publicRAS:String = ""
+        var updRouterData: HashMap<String,String> = HashMap()
 
 }

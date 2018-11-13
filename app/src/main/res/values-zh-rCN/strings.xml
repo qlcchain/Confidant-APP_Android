@@ -386,5 +386,7 @@
     <string name="selected">selected:</string>
     <string name="SELECT_PROFILE">SELECT PROFILE</string>
     <string name="error">error</string>
+    <string name="send_failed">send failed</string>
+    <string name="send_success">send success</string>
 
 </resources>

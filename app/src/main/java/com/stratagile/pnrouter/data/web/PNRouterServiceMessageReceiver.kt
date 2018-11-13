@@ -230,7 +230,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     class NullMessageReceivedCallback : MessageReceivedCallback {
         override fun onMessage(envelope: BaseData) {}
     }
-
+    interface RegisterMessageCallback {
+        fun registerBack(registerRsp: JRegisterRsp)
+    }
     interface LoginMessageCallback {
         fun loginBack(loginRsp: JLoginRsp)
     }

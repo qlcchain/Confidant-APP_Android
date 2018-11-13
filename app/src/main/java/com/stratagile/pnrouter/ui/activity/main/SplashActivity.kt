@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -11,15 +13,14 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.RSAData
+import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.utils.AESCipher
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.RxEncryptTool
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
+import com.stratagile.pnrouter.utils.*
 import java.nio.ByteOrder
 import javax.inject.Inject
 
@@ -31,6 +32,8 @@ import javax.inject.Inject
  */
 
 class SplashActivity : BaseActivity(), SplashContract.View {
+    private var handler: Handler? = null
+
     override fun loginSuccees() {
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
@@ -59,7 +62,24 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
 
-
+        handler = object : Handler() {
+            override fun handleMessage(msg: Message) {
+                super.handleMessage(msg)
+                when (msg.what) {
+                    MyAuthCallback.MSG_UPD_DATA -> {
+                        var aa:String = msg.obj.toString()
+                        var udpData = AESCipher.aesDecryptString(aa,"slph\$%*&^@-78231")
+                        var udpRouterArray = udpData.split(";")
+                        if(udpRouterArray.size > 0)
+                        {
+                            ConstantValue.updRouterData.put(udpRouterArray[0],udpRouterArray[1])
+                        }
+                    }
+                }
+            }
+        }
+        MobileSocketClient.getInstance().init(handler,this)
+        MobileSocketClient.getInstance().receive();
         var rsaData = FileUtil.readRSAData();
         val localRSAArrayList: ArrayList<RSAData>
         val gson = Gson()
@@ -117,16 +137,16 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
 
     override fun setupActivityComponent() {
-       DaggerSplashComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .splashModule(SplashModule(this))
-               .build()
-               .inject(this)
+        DaggerSplashComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .splashModule(SplashModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: SplashContract.SplashContractPresenter) {
-            mPresenter = presenter as SplashPresenter
-        }
+        mPresenter = presenter as SplashPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

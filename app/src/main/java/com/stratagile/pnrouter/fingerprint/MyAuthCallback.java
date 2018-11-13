@@ -14,6 +14,7 @@ public class MyAuthCallback extends FingerprintManager.AuthenticationCallback {
     public static final int MSG_AUTH_FAILED = 101;
     public static final int MSG_AUTH_ERROR = 102;
     public static final int MSG_AUTH_HELP = 103;
+    public static final int MSG_UPD_DATA = 104;
 
     public MyAuthCallback(Handler handler) {
         super();
