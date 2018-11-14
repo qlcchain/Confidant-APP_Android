@@ -91,7 +91,7 @@ class GuestActivity : BaseActivity(), GuestContract.View {
 
             override fun onPageSelected(p0: Int) {
                 if (p0 == 2) {
-                    tvNext.text = getString(R.string.start)
+                    tvNext.text = getString(R.string.QR_Code)
                 } else {
                     tvNext.text = resources.getString(R.string.next)
                 }

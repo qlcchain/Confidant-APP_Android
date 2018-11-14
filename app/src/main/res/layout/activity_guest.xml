@@ -113,7 +113,7 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-    <TextView
+    <com.stratagile.pnrouter.view.DrawablePicTextView
         android:id="@+id/tvNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -122,11 +122,13 @@
         android:layout_marginStart="@dimen/x52"
         android:layout_marginTop="@dimen/x84"
         android:background="@drawable/textview_border"
-        android:gravity="center"
+        android:drawableLeft="@mipmap/icon_little_scan"
+        android:drawablePadding="10dp"
         android:paddingBottom="@dimen/x36"
         android:layout_alignParentBottom="true"
         android:paddingTop="@dimen/x36"
         android:text="@string/next"
         android:textColor="@color/color_efefef"
+
         android:textSize="@dimen/x40"/>
 </RelativeLayout>

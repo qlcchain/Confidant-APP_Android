@@ -35,7 +35,11 @@ open class BaseData() {
         }
     }
 }
-
+/**
+ * 1.	APP用户找回
+ * (1)	请求（APP-->Router）
+ */
+data class RecoveryReq(var RouteId : String, var UserSn : String, var Action : String = "Recovery")
 /**
  * 1.	APP登录（包含新用户注册）
  * (1)	请求（APP-->Router）

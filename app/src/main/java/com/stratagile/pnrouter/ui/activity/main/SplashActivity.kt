@@ -19,7 +19,6 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.utils.*
 import java.nio.ByteOrder
 import javax.inject.Inject
@@ -35,16 +34,19 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     private var handler: Handler? = null
 
     override fun loginSuccees() {
+        MobileSocketClient.getInstance().destroy()
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 
     override fun jumpToLogin() {
+        MobileSocketClient.getInstance().destroy()
         startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 
     override fun jumpToGuest() {
+        MobileSocketClient.getInstance().destroy()
         startActivity(Intent(this, GuestActivity::class.java))
         finish()
     }
@@ -67,19 +69,35 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 super.handleMessage(msg)
                 when (msg.what) {
                     MyAuthCallback.MSG_UPD_DATA -> {
-                        var aa:String = msg.obj.toString()
-                        var udpData = AESCipher.aesDecryptString(aa,"slph\$%*&^@-78231")
-                        var udpRouterArray = udpData.split(";")
-                        if(udpRouterArray.size > 0)
+                        var obj:String = msg.obj.toString()
+                        if(!obj.equals(""))
                         {
-                            ConstantValue.updRouterData.put(udpRouterArray[0],udpRouterArray[1])
+                            var objArray = obj.split("##");
+                            var index = 0;
+                            for(item in objArray)
+                            {
+                                if(!item.equals(""))
+                                {
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpRouterArray = udpData.split(";")
+
+                                    if(udpRouterArray.size > 1)
+                                    {
+                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                        ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                    }
+                                }
+                                index ++;
+                            }
+
                         }
+
                     }
                 }
             }
         }
         MobileSocketClient.getInstance().init(handler,this)
-        MobileSocketClient.getInstance().receive();
+        MobileSocketClient.getInstance().receive()
         var rsaData = FileUtil.readRSAData();
         val localRSAArrayList: ArrayList<RSAData>
         val gson = Gson()

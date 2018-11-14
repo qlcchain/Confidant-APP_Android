@@ -29,6 +29,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
             }
+            "Recovery" -> {
+                val loginRsp = gson.fromJson(text, JRecoveryRsp::class.java)
+                KLog.i(loginRsp)
+                loginBackListener?.recoveryBack(loginRsp)
+            }
             "AddFriendReq" -> {
                 val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
                 KLog.i(addFreindRsp.toString())
@@ -105,11 +110,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
                 convsationCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
                 mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
-            }"PushFile" -> {
+            }
+            "PushFile" -> {
             val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
             chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
             mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
-        }
+            }
+
         }
         messageListner?.onMessage(baseData)
     }
@@ -234,6 +241,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun registerBack(registerRsp: JRegisterRsp)
     }
     interface LoginMessageCallback {
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
         fun loginBack(loginRsp: JLoginRsp)
     }
 

@@ -105,27 +105,37 @@ public class MobileSocketClient {
 
             @Override
             protected String doInBackground(String... paramVarArgs) {
+                String message ="";
+                int count = 0;
                 try {
-
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     //receive()是阻塞方法，会等待客户端发送过来的信息
                     while(true){
                         multicastLock.acquire();
                         multicastSocket.receive(packet);
-                        String message = new String(packet.getData(), 0, packet.getLength());
+                        if(count <2)
+                        {
+                            message += new String(packet.getData(), 0, packet.getLength()) +"##";
+                        }else{
+                            message += new String(packet.getData(), 0, packet.getLength());
+                        }
+                        count ++;
+                        if(count >= 3)
+                        {
+                            multicastLock.release();
+                            multicastLock = null;
+                            multicastSocket.close();
+                            multicastSocket = null;
+                        }
                         System.out.println("ipdizhi:"+message);
-                        multicastLock.release();
-                        multicastSocket.close();
-                        return message;
                     }
-
-
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                     return "";
+                }finally {
+                    return message;
                 }
-                //return "send success";
             }
 
             @Override
@@ -141,10 +151,16 @@ public class MobileSocketClient {
     }
     public void destroy()
     {
-        multicastLock.release();
-        multicastSocket.close();
-        multicastLock = null;
-        multicastSocket = null;
+        if(multicastLock != null)
+        {
+            multicastLock.release();
+            multicastLock = null;
+        }
+       if(multicastSocket != null)
+       {
+           multicastSocket.close();
+           multicastSocket = null;
+       }
     }
 }
 

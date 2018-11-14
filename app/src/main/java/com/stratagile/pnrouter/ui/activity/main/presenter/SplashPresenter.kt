@@ -47,7 +47,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     private var hasUpdate = false
     private var timeOver = false
     private val jump = JUMPTOLOGIN
-    private var jumpToGuest = false
+    private var jumpToGuest = true
 
     override fun doAutoLogin() {
         Log.i("splash", "2")
@@ -75,7 +75,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     }
 
     override fun observeJump() {
-        Observable.interval(0, 1, TimeUnit.SECONDS).take(3)
+        Observable.interval(0, 1, TimeUnit.SECONDS).take(6)
                 .map { aLong -> 2 - aLong }
                 .observeOn(AndroidSchedulers.mainThread())//发射用的是observeOn
                 .doOnSubscribe {

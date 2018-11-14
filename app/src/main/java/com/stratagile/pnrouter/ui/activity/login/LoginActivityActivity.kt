@@ -21,10 +21,7 @@ import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JLoginRsp
-import com.stratagile.pnrouter.entity.LoginReq
-import com.stratagile.pnrouter.entity.MyRouter
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
@@ -36,10 +33,7 @@ import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresente
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -63,6 +57,28 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
+    override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
+
+        when (recoveryRsp.params.retCode) {
+            0 -> {
+
+            }
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+            else -> {
+            }
+        }
+    }
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         standaloneCoroutine.cancel()
@@ -215,8 +231,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
 //            standaloneCoroutine.cancel()
-            var login = LoginReq( routerId, userId, 0)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            //var login = LoginReq( routerId, userId, 0)
+            //AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(recovery))
         }
     }
 
@@ -225,13 +243,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
             KLog.i("用来验证的routerId：${routerId}")
-            if (userName.text.toString().equals("")) {
+            /*if (userName.text.toString().equals("")) {
                 toast(getString(R.string.please_type_your_username))
                 return@setOnClickListener
             }
             if (routerId.equals("")) {
                 return@setOnClickListener
-            }
+            }*/
             if (intent.hasExtra("flag")) {
                 AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -500,8 +518,29 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             miniScanParent.visibility = View.VISIBLE
             scanParent.visibility = View.INVISIBLE
             noRoutergroup.visibility = View.INVISIBLE
+            var result = data!!.getStringExtra("result");
+            var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
+            val keyId:ByteArray = ByteArray(6) //密钥ID
+            val RouterId:ByteArray = ByteArray(76) //路由器id
+            val UserSn:ByteArray = ByteArray(32)  //用户SN
+            System.arraycopy(soureData, 0, keyId, 0, 6)
+            System.arraycopy(soureData, 6, RouterId, 0, 76)
+            System.arraycopy(soureData, 82, UserSn, 0, 32)
+            var keyIdStr = String(keyId)
+            var RouterIdStr = String(RouterId)
+            var UserSnStr = String(UserSn)
+            for (data in ConstantValue.updRouterData)
+            {
+                var key:String = data.key;
+                if(key.equals(RouterIdStr))
+                {
+                    ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
+                    ConstantValue.currentRouterId = RouterIdStr
+                    ConstantValue.currentRouterSN = UserSnStr
+                }
+            }
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            if (routerList != null && routerList.size != 0) {
+            /*if (routerList != null && routerList.size != 0) {
                 routerList.forEach { itt ->
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
                         routerName?.setText(itt.routerName)
@@ -525,7 +564,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             } else {
                 routerName?.setText("Router 1")
                 routerId = data!!.getStringExtra("result")
-            }
+            }*/
             return
         }
     }
