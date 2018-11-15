@@ -107,7 +107,7 @@ data class AddFriendPushReq(var Retcode : Int, var Msg : String, var Action : St
  * 场景：APP上显示有新的好友请求，用户可以选择是否允许对方添加自己好友
  * (1)	请求（APP-->Router）
  */
-data class AddFriendDealReq(var Nickname : String, var FriendName : String, var UserId : String, var FriendId : String, var Result : Int, var Action : String = "AddFriendDeal")
+data class AddFriendDealReq(var Nickname : String, var FriendName : String, var UserId : String, var FriendId : String, var UserKey : String, var Result : Int, var Action : String = "AddFriendDeal")
 
 /**
  * 7.	好友请求处理

@@ -90,7 +90,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.addFromMe = false
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
-        newFriend.publicKey = jAddFriendPushRsp.params.publicKey
+        newFriend.publicKey = jAddFriendPushRsp.params.userKey
         userList.add(newFriend)
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
@@ -127,6 +127,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     it.friendStatus = 2
                 }
                 it.nickName = jAddFriendReplyRsp.params.nickname
+                it.publicKey = jAddFriendReplyRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
@@ -228,12 +229,12 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String) {
-        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId, 0)
+        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS, 0)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 
     fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String) {
-        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId,1)
+        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS,1)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 

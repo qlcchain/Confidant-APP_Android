@@ -258,7 +258,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     fun acceptFriend() {
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, 0)
+        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, ConstantValue.publicRAS,0)
         userInfo?.friendStatus = 0
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
         showProgressDialog()
@@ -267,7 +267,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     fun refuseFriend() {
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, 0)
+        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId,ConstantValue.publicRAS, 0)
         userInfo?.friendStatus = 1
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
         showProgressDialog()

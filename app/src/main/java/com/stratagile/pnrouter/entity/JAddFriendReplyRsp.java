@@ -74,5 +74,15 @@ public class JAddFriendReplyRsp extends BaseEntity {
         public void setAction(String Action) {
             this.Action = Action;
         }
+
+        private String UserKey;
+
+        public String getUserKey() {
+            return UserKey;
+        }
+
+        public void setUserKey(String userKey) {
+            UserKey = userKey;
+        }
     }
 }

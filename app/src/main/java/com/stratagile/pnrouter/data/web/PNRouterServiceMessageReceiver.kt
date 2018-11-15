@@ -38,6 +38,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
+                registerListener?.loginBack(loginRsp)
             }
             "AddFriendReq" -> {
                 val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -249,6 +250,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface RegisterMessageCallback {
         fun registerBack(registerRsp: JRegisterRsp)
+        fun loginBack(loginRsp: JLoginRsp)
     }
     interface LoginMessageCallback {
         fun loginBack(loginRsp: JLoginRsp)

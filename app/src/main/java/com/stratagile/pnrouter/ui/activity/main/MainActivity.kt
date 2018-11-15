@@ -34,7 +34,6 @@ import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.entity.events.UnReadMessageCount
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationListFragment
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -225,6 +224,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     i.friendStatus = 2
                 }
                 i.nickName = jAddFriendReplyRsp.params.nickname
+                i.publicKey = jAddFriendReplyRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var addFriendReplyReq = AddFriendReplyReq(0, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
@@ -262,7 +262,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.addFromMe = false
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
-        newFriend.publicKey = jAddFriendPushRsp.params.publicKey
+        newFriend.publicKey = jAddFriendPushRsp.params.userKey
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
         runOnUiThread {

@@ -72,7 +72,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     }
 
     override fun observeJump() {
-        Observable.interval(0, 1, TimeUnit.SECONDS).take(6)
+        Observable.interval(0, 1, TimeUnit.SECONDS).take(4)
                 .map { aLong -> 2 - aLong }
                 .observeOn(AndroidSchedulers.mainThread())//发射用的是observeOn
                 .doOnSubscribe {

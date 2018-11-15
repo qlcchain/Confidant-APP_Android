@@ -7,24 +7,26 @@ import android.os.Handler
 import android.os.Message
 import android.util.Base64
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JRegisterRsp
-import com.stratagile.pnrouter.entity.MyRouter
-import com.stratagile.pnrouter.entity.RegeisterReq
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.register.component.DaggerRegisterComponent
 import com.stratagile.pnrouter.ui.activity.register.contract.RegisterContract
 import com.stratagile.pnrouter.ui.activity.register.module.RegisterModule
 import com.stratagile.pnrouter.ui.activity.register.presenter.RegisterPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -40,6 +42,48 @@ import javax.inject.Inject
  */
 
 class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterServiceMessageReceiver.RegisterMessageCallback{
+    override fun loginBack(loginRsp: JLoginRsp) {
+        KLog.i(loginRsp.toString())
+        if (loginRsp.params.retCode != 0) {
+            if (loginRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast("The current service is not available.")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 2) {
+                runOnUiThread {
+                    toast("Too many users")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 1) {
+                runOnUiThread {
+                    toast("RouterId Error")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast("System Error")
+                    closeProgressDialog()
+                }
+            }
+            return
+        }
+        if ("".equals(loginRsp.params.userId)) {
+            runOnUiThread {
+                toast("Too many users")
+                closeProgressDialog()
+            }
+        } else {
+            runOnUiThread {
+                closeProgressDialog()
+            }
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    }
     override fun registerBack(registerRsp: JRegisterRsp) {
         FileUtil.saveUserId2Local(registerRsp.params!!.routeId)
         var newRouterEntity = RouterEntity()
@@ -55,6 +99,10 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         myRouter.setType(0)
         myRouter.setRouterEntity(newRouterEntity)
         LocalRouterUtils.insertLocalAssets(myRouter)
+
+        var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+        var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
     }
 
     @Inject
@@ -111,7 +159,11 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
         }
     }
-
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver!!.registerListener = null
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         if (connectStatus.status == 0) {
