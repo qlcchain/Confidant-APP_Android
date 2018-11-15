@@ -13,27 +13,18 @@ public class RouterEntity implements Parcelable{
     private Long id;
 
     private String routerId;
+    private String userSn;
     private String username;
     private String userId;
     private String routerName;
-
+    private Integer dataFileVersion;
+    private String dataFilePay;
     private boolean lastCheck;
 
-    @Generated(hash = 1871779795)
-    public RouterEntity(Long id, String routerId, String username, String userId,
-            String routerName, boolean lastCheck) {
-        this.id = id;
-        this.routerId = routerId;
-        this.username = username;
-        this.userId = userId;
-        this.routerName = routerName;
-        this.lastCheck = lastCheck;
-    }
+    public RouterEntity()
+    {
 
-    @Generated(hash = 997370902)
-    public RouterEntity() {
     }
-
     protected RouterEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -41,10 +32,59 @@ public class RouterEntity implements Parcelable{
             id = in.readLong();
         }
         routerId = in.readString();
+        userSn = in.readString();
         username = in.readString();
         userId = in.readString();
         routerName = in.readString();
+        if (in.readByte() == 0) {
+            dataFileVersion = null;
+        } else {
+            dataFileVersion = in.readInt();
+        }
+        dataFilePay = in.readString();
         lastCheck = in.readByte() != 0;
+    }
+    @Generated(hash = 176501218)
+    public RouterEntity(Long id, String routerId, String userSn, String username,
+            String userId, String routerName, Integer dataFileVersion, String dataFilePay,
+            boolean lastCheck) {
+        this.id = id;
+        this.routerId = routerId;
+        this.userSn = userSn;
+        this.username = username;
+        this.userId = userId;
+        this.routerName = routerName;
+        this.dataFileVersion = dataFileVersion;
+        this.dataFilePay = dataFilePay;
+        this.lastCheck = lastCheck;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(routerId);
+        dest.writeString(userSn);
+        dest.writeString(username);
+        dest.writeString(userId);
+        dest.writeString(routerName);
+        if (dataFileVersion == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(dataFileVersion);
+        }
+        dest.writeString(dataFilePay);
+        dest.writeByte((byte) (lastCheck ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<RouterEntity> CREATOR = new Creator<RouterEntity>() {
@@ -106,24 +146,29 @@ public class RouterEntity implements Parcelable{
     public void setLastCheck(boolean lastCheck) {
         this.lastCheck = lastCheck;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getUserSn() {
+        return userSn;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeLong(id);
-        }
-        parcel.writeString(routerId);
-        parcel.writeString(username);
-        parcel.writeString(userId);
-        parcel.writeString(routerName);
-        parcel.writeByte((byte) (lastCheck ? 1 : 0));
+    public void setUserSn(String userSn) {
+        this.userSn = userSn;
     }
+
+    public Integer getDataFileVersion() {
+        return dataFileVersion;
+    }
+
+    public void setDataFileVersion(Integer dataFileVersion) {
+        this.dataFileVersion = dataFileVersion;
+    }
+
+    public String getDataFilePay() {
+        return dataFilePay;
+    }
+
+    public void setDataFilePay(String dataFilePay) {
+        this.dataFilePay = dataFilePay;
+    }
+
+
 }

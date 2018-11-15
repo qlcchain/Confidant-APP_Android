@@ -110,6 +110,10 @@ object LocalRouterUtils {
                                             {
                                                 myRouter.getRouterEntity().setRouterId(routerEntity.routerId)
                                             }
+                                            if(routerEntity.userSn != null)
+                                            {
+                                                myRouter.getRouterEntity().setUserSn(routerEntity.userSn)
+                                            }
                                             if(routerEntity.username != null)
                                             {
                                                 myRouter.getRouterEntity().setUsername(routerEntity.username)
@@ -121,6 +125,14 @@ object LocalRouterUtils {
                                             if(routerEntity.routerName != null)
                                             {
                                                 myRouter.getRouterEntity().setRouterName(routerEntity.routerName)
+                                            }
+                                            if(routerEntity.dataFileVersion != null)
+                                            {
+                                                myRouter.getRouterEntity().setDataFileVersion(routerEntity.dataFileVersion)
+                                            }
+                                            if(routerEntity.dataFilePay != null)
+                                            {
+                                                myRouter.getRouterEntity().setDataFilePay(routerEntity.dataFilePay)
                                             }
                                             myRouter.getRouterEntity().setLastCheck(routerEntity.lastCheck)
                                             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(myRouter.getRouterEntity())

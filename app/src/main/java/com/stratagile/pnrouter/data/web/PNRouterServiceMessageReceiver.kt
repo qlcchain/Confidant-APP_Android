@@ -24,15 +24,20 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
         when (JSONObject.parseObject(paramsStr).getString("Action")) {
+            "Recovery" -> {
+                val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
+                KLog.i(jRecoveryRsp)
+                recoveryBackListener?.recoveryBack(jRecoveryRsp)
+            }
+            "Register" -> {
+                val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
+                KLog.i(JRegisterRsp)
+                registerListener?.registerBack(JRegisterRsp)
+            }
             "Login" -> {
                 val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
-            }
-            "Recovery" -> {
-                val loginRsp = gson.fromJson(text, JRecoveryRsp::class.java)
-                KLog.i(loginRsp)
-                loginBackListener?.recoveryBack(loginRsp)
             }
             "AddFriendReq" -> {
                 val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -126,6 +131,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var pipe: SignalServiceMessagePipe? = null
     var messageListner: MessageReceivedCallback? = null
+    var recoveryBackListener: RecoveryMessageCallback? = null
+    var registerListener: RegisterMessageCallback? = null
     var loginBackListener: LoginMessageCallback? = null
     var addfrendCallBack: AddfrendCallBack? = null
     var mainInfoBack: MainInfoBack? = null
@@ -237,11 +244,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     class NullMessageReceivedCallback : MessageReceivedCallback {
         override fun onMessage(envelope: BaseData) {}
     }
+    interface RecoveryMessageCallback {
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
+    }
     interface RegisterMessageCallback {
         fun registerBack(registerRsp: JRegisterRsp)
     }
     interface LoginMessageCallback {
-        fun recoveryBack(recoveryRsp: JRecoveryRsp)
         fun loginBack(loginRsp: JLoginRsp)
     }
 

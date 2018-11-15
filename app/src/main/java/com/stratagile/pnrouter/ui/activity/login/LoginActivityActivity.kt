@@ -36,6 +36,7 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -57,28 +58,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
-    override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
-
-        when (recoveryRsp.params.retCode) {
-            0 -> {
-
-            }
-            1 -> {
-
-            }
-            2 -> {
-
-            }
-            3 -> {
-
-            }
-            4 -> {
-
-            }
-            else -> {
-            }
-        }
-    }
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         standaloneCoroutine.cancel()
@@ -119,12 +98,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
-            SpUtil.putString(this, ConstantValue.username, userName.text.toString())
+            SpUtil.putString(this, ConstantValue.username,username)
             SpUtil.putString(this, ConstantValue.routerId, routerId)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
-            newRouterEntity.username = userName.text.toString()
+            //newRouterEntity.username = loginKey.text.toString()
             newRouterEntity.lastCheck = true
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
@@ -150,7 +129,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 val myRouter = MyRouter()
                 myRouter.setType(0)
                 myRouter.setRouterEntity(newRouterEntity)
-                LocalRouterUtils.insertLocalAssets(myRouter)
+                //LocalRouterUtils.insertLocalAssets(myRouter)
             }
             runOnUiThread {
                 closeProgressDialog()
@@ -177,8 +156,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private lateinit var standaloneCoroutine : Job
 
     var routerId = ""
+    var userSn = ""
     var userId = ""
     var username = ""
+    var dataFileVersion = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -231,46 +212,49 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
 //            standaloneCoroutine.cancel()
-            //var login = LoginReq( routerId, userId, 0)
-            //AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
-            var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(recovery))
+            var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+            var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
     }
 
     override fun initData() {
-        userId = FileUtil.getLocalUserId()
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
             KLog.i("用来验证的routerId：${routerId}")
-            /*if (userName.text.toString().equals("")) {
-                toast(getString(R.string.please_type_your_username))
+            if (loginKey.text.toString().equals("")) {
+                toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
-            if (routerId.equals("")) {
-                return@setOnClickListener
-            }*/
-            if (intent.hasExtra("flag")) {
-                AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                showProgressDialog("connecting...")
+            if(!ConstantValue.isConnected)
+            {
+                if (intent.hasExtra("flag")) {
+                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    showProgressDialog("connecting...")
 //                onWebSocketConnected(ConnectStatus(0))
-            } else {
-                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                showProgressDialog("connecting...")
+                } else {
+                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    showProgressDialog("connecting...")
+                }
+            }else{
+                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
             }
+
 //            mThread = CustomThread(routerId, userId)
 //            mThread!!.start()
         }
-        scanIcon.setOnClickListener {
+        scanIconLogin.setOnClickListener {
             mPresenter.getScanPermission()
         }
-        miniScanIcon.setOnClickListener {
+        miniScanIconLogin.setOnClickListener {
             mPresenter.getScanPermission()
         }
 
-        viewLog.setOnClickListener {
+        viewLogLogin.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
 
@@ -298,9 +282,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 routerList.forEach {
                     if (it.lastCheck) {
                         routerId = it.routerId
-                        userId = FileUtil.getLocalUserId()
+                        userSn = it.userSn
+                        userId = it.userId
                         username = it.username
-                        routerName.text = it.routerName
+                        dataFileVersion = it.dataFileVersion
+
+                        if(it.routerName != null){
+                            routerName.text = it.routerName
+                        }else{
+                            routerName.text =  "Router 1"
+                        }
                         hasCheckedRouter = true
                         return@breaking
                     }
@@ -308,23 +299,25 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             if (!hasCheckedRouter) {
                 routerId = routerList[0].routerId
-                userId = FileUtil.getLocalUserId()
+                userSn =  routerList[0].userSn
+                userId = routerList[0].userId
                 username = routerList[0].username
-                routerName.text = routerList[0].routerName
+                dataFileVersion = routerList[0].dataFileVersion
+                if(routerList[0].routerName != null){
+                    routerName.text = routerList[0].routerName
+                }else{
+                    routerName.text = "Router 1"
+                }
             }
-            if (!username.equals("")) {
-                userName.isEnabled = false
-                userName.setText(username)
-            }
-            hasRouterParent.visibility = View.VISIBLE
-            scanParent.visibility = View.INVISIBLE
-            noRoutergroup.visibility = View.INVISIBLE
-            miniScanParent.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.VISIBLE
         } else {
-            scanParent.visibility = View.VISIBLE
-            noRoutergroup.visibility = View.VISIBLE
-            miniScanParent.visibility = View.INVISIBLE
-            hasRouterParent.visibility = View.INVISIBLE
+            hasRouterParentLogin.visibility = View.VISIBLE
+            noRoutergroupLogin.visibility = View.VISIBLE
+            noRoutergroupLogin.visibility = View.INVISIBLE
+            hasRouterParentLogin.visibility = View.INVISIBLE
         }
         if (routerList.size > 0) {
             routerName.setOnClickListener { view1 ->
@@ -337,15 +330,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }
                         routerId = routerList[position].routerId
-                        userId = FileUtil.getLocalUserId()
+                        userSn = routerList[position].userSn
+                        userId = routerList[position].userId
                         username = routerList[position].username
+                        dataFileVersion = routerList[position].dataFileVersion
                         routerName.text = routerList[position].routerName
                         routerList[position].lastCheck = true
                         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
-                        if (!username.equals("")) {
-                            userName.isEnabled = false
-                            userName.setText(username)
-                        }
                     }
                 })
             }
@@ -514,11 +505,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
-            hasRouterParent.visibility = View.VISIBLE
-            miniScanParent.visibility = View.VISIBLE
-            scanParent.visibility = View.INVISIBLE
-            noRoutergroup.visibility = View.INVISIBLE
-            var result = data!!.getStringExtra("result");
+            hasRouterParentLogin.visibility = View.VISIBLE
+            noRoutergroupLogin.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.INVISIBLE
+            /*var result = data!!.getStringExtra("result");
             var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
             val keyId:ByteArray = ByteArray(6) //密钥ID
             val RouterId:ByteArray = ByteArray(76) //路由器id
@@ -538,9 +529,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     ConstantValue.currentRouterId = RouterIdStr
                     ConstantValue.currentRouterSN = UserSnStr
                 }
-            }
+            }*/
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            /*if (routerList != null && routerList.size != 0) {
+            if (routerList != null && routerList.size != 0) {
                 routerList.forEach { itt ->
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
                         routerName?.setText(itt.routerName)
@@ -564,7 +555,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             } else {
                 routerName?.setText("Router 1")
                 routerId = data!!.getStringExtra("result")
-            }*/
+            }
             return
         }
     }

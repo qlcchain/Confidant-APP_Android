@@ -2,34 +2,26 @@ package com.stratagile.pnrouter.ui.activity.main.presenter
 
 import android.Manifest
 import android.app.Activity
-import android.support.annotation.NonNull
 import android.util.Log
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
+import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
-import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.VersionUtil
-import com.yanzhenjie.alertdialog.AlertDialog
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
-import io.reactivex.functions.Function
+import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.log
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -47,7 +39,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     private var hasUpdate = false
     private var timeOver = false
     private val jump = JUMPTOLOGIN
-    private var jumpToGuest = true
+    private var jumpToGuest = false
 
     override fun doAutoLogin() {
         Log.i("splash", "2")
@@ -55,10 +47,15 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
 
     override fun getLastVersion() {
         Log.i("splash", "1")
-        if (SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0) !== VersionUtil.getAppVersionCode(AppConfig.instance)) {
+       /* if (SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0) !== VersionUtil.getAppVersionCode(AppConfig.instance)) {
             KLog.i("需要跳转到guest.........................")
             KLog.i(SpUtil.getInt(AppConfig.instance, ConstantValue.LOCALVERSIONCODE, 0))
             KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
+            jumpToGuest = true
+        }*/
+        var localData:ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+        if(localData.size == 0)
+        {
             jumpToGuest = true
         }
     }

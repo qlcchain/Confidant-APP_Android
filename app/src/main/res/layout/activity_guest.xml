@@ -122,7 +122,7 @@
         android:layout_marginStart="@dimen/x52"
         android:layout_marginTop="@dimen/x84"
         android:background="@drawable/textview_border"
-        android:drawableLeft="@mipmap/icon_little_scan"
+        android:drawableLeft="@mipmap/no"
         android:drawablePadding="10dp"
         android:paddingBottom="@dimen/x36"
         android:layout_alignParentBottom="true"

@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.data.api.HttpInfoInterceptor
 import com.stratagile.pnrouter.data.api.RequestBodyInterceptor
 import com.stratagile.pnrouter.data.qualifier.Remote
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -77,15 +78,18 @@ class APIModule(private val application: Application) {
 
         override fun onConnected() {
             Log.i("APIModule", "onConnected()")
+            ConstantValue.isConnected = true
             EventBus.getDefault().post(ConnectStatus(0))
         }
 
         override fun onConnecting() {
             Log.i("APIModule", "onConnecting()")
+            ConstantValue.isConnected = false
             EventBus.getDefault().post(ConnectStatus(1))
         }
 
         override fun onDisconnected() {
+            ConstantValue.isConnected = false
             Log.w("APIModule", "onDisconnected()")
             EventBus.getDefault().post(ConnectStatus(2))
         }

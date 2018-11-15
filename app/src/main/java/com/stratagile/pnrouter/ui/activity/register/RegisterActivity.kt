@@ -5,17 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.view.View
+import android.util.Base64
 import com.pawegio.kandroid.toast
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JRegisterRsp
-import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.entity.MyRouter
+import com.stratagile.pnrouter.entity.RegeisterReq
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.register.component.DaggerRegisterComponent
@@ -23,18 +24,13 @@ import com.stratagile.pnrouter.ui.activity.register.contract.RegisterContract
 import com.stratagile.pnrouter.ui.activity.register.module.RegisterModule
 import com.stratagile.pnrouter.ui.activity.register.presenter.RegisterPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.AESCipher
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.MobileSocketClient
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
-import javax.inject.Inject;
+import java.util.ArrayList
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -45,7 +41,20 @@ import javax.inject.Inject;
 
 class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterServiceMessageReceiver.RegisterMessageCallback{
     override fun registerBack(registerRsp: JRegisterRsp) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        FileUtil.saveUserId2Local(registerRsp.params!!.routeId)
+        var newRouterEntity = RouterEntity()
+        newRouterEntity.routerId = registerRsp.params.routeId
+        newRouterEntity.userSn = registerRsp.params.userSn
+        newRouterEntity.username = registerKey.text.toString()
+        newRouterEntity.userId = registerRsp.params.userId
+        newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
+        newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+        var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+        newRouterEntity.routerName = "Router " + (localData.size + 1)
+        val myRouter = MyRouter()
+        myRouter.setType(0)
+        myRouter.setRouterEntity(newRouterEntity)
+        LocalRouterUtils.insertLocalAssets(myRouter)
     }
 
     @Inject
@@ -62,14 +71,15 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     }
 
     override fun initView() {
+        setToorBar(false)
         setContentView(R.layout.activity_register)
     }
     override fun initData() {
         userId = FileUtil.getLocalUserId()
         EventBus.getDefault().register(this)
-        scanIcon.setOnClickListener {
+       /* miniScanParent.setOnClickListener {
             mPresenter.getScanPermission()
-        }
+        }*/
 
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -85,6 +95,21 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         }
         MobileSocketClient.getInstance().init(handler,this)
         MobileSocketClient.getInstance().receive()
+        AppConfig.instance.messageReceiver!!.registerListener = this
+        registerBtn.setOnClickListener {
+            if (registerKey.text.toString().equals("") || userName2.text.toString().equals("") || userName3.text.toString().equals("")) {
+                toast(getString(R.string.Cannot_be_empty))
+                return@setOnClickListener
+            }
+            if (!userName3.text.toString().equals(userName4.text.toString())) {
+                toast(getString(R.string.Password_inconsistent))
+                return@setOnClickListener
+            }
+            val NickName = Base64.encodeToString(registerKey.text.toString().toByteArray(), Base64.NO_WRAP)
+            var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+            var login = RegeisterReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN, userName2.text.toString(),LoginKey,NickName)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -119,10 +144,6 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
-            hasRouterParent.visibility = View.VISIBLE
-            miniScanParent.visibility = View.VISIBLE
-            scanParent.visibility = View.INVISIBLE
-            noRoutergroup.visibility = View.INVISIBLE
             var result = data!!.getStringExtra("result");
             var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
             val keyId = ByteArray(6) //密钥ID

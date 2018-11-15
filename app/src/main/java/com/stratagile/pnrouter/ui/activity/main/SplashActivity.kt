@@ -12,6 +12,8 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -20,6 +22,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_register.*
 import java.nio.ByteOrder
 import javax.inject.Inject
 
@@ -64,7 +67,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
 
-        handler = object : Handler() {
+         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
                 when (msg.what) {
@@ -72,7 +75,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                         var obj:String = msg.obj.toString()
                         if(!obj.equals(""))
                         {
-                            var objArray = obj.split("##");
+                            var objArray = obj.split("##")
                             var index = 0;
                             for(item in objArray)
                             {

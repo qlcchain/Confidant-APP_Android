@@ -132,6 +132,7 @@ public class MobileSocketClient {
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                    System.out.println("ipdizhi:no");
                     return "";
                 }finally {
                     return message;

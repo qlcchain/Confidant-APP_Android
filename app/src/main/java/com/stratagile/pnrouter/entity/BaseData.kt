@@ -14,6 +14,13 @@ open class BaseData() {
     var msgid :Int ? = null
     var params : Any? = null
 
+    constructor(apiverion:Int,params : Any) : this() {
+        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.appid = "MiFi"
+        this.apiversion = apiverion
+        this.params = params
+        this.msgid =  ConstantValue.msgIndex++
+    }
     constructor(params : Any) : this() {
         this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
         this.appid = "MiFi"
@@ -41,10 +48,15 @@ open class BaseData() {
  */
 data class RecoveryReq(var RouteId : String, var UserSn : String, var Action : String = "Recovery")
 /**
- * 1.	APP登录（包含新用户注册）
+ * 1.	APP注册（包含新用户注册）
  * (1)	请求（APP-->Router）
  */
-data class LoginReq(var RouteId : String, var UserId : String, var UserDataVersion :Int, var Action : String = "Login")
+data class RegeisterReq(var RouteId : String, var UserSn : String, var IdentifyCode :String,var LoginKey :String,var NickName :String, var Action : String = "Register")
+/**
+ * 1.	APP登录
+ * (1)	请求（APP-->Router）
+ */
+data class LoginReq(var RouteId : String, var UserSn:String, var UserId : String, var LoginKey : String, var DataFileVersion :Int, var Action : String = "Login")
 
 /**
  * 1.	APP登录（包含新用户注册）

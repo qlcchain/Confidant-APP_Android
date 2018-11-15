@@ -1,8 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.annotation.Px
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.view.Window
@@ -12,23 +13,32 @@ import com.nightonke.wowoviewpager.Animation.WoWoPositionAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoTranslationAnimation
 import com.nightonke.wowoviewpager.Enum.Ease
 import com.nightonke.wowoviewpager.WoWoViewPagerAdapter
-import com.pawegio.kandroid.startActivity
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JRecoveryRsp
+import com.stratagile.pnrouter.entity.RecoveryReq
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerGuestComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.GuestContract
 import com.stratagile.pnrouter.ui.activity.main.module.GuestModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.GuestPresenter
+import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
+import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.VersionUtil
 import kotlinx.android.synthetic.main.activity_guest.*
-
-import javax.inject.Inject;
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -37,7 +47,7 @@ import javax.inject.Inject;
  * @date 2018/09/18 14:25:55
  */
 
-class GuestActivity : BaseActivity(), GuestContract.View {
+class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessageReceiver.RecoveryMessageCallback{
 
     @Inject
     internal lateinit var mPresenter: GuestPresenter
@@ -48,7 +58,30 @@ class GuestActivity : BaseActivity(), GuestContract.View {
 
     protected var screenW: Int = 0
     protected var screenH: Int = 0
+    val REQUEST_SELECT_ROUTER = 2
+    val REQUEST_SCAN_QRCODE = 1
+    override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
+        when (recoveryRsp.params.retCode) {
+            0 -> {
+                startActivity(Intent(this, LoginActivityActivity::class.java))
+            }
+            1 -> {
+                startActivity(Intent(this, RegisterActivity::class.java))
+            }
+            2 -> {
+                toast("error")
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+            else -> {
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         window.requestFeature(Window.FEATURE_ACTION_BAR)
@@ -63,7 +96,10 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     protected fun fragmentColorsRes(): Array<Int> {
         return arrayOf(R.color.white, R.color.white, R.color.white)
     }
-
+    override fun getScanPermissionSuccess() {
+        val intent1 = Intent(this, ScanQrCodeActivity::class.java)
+        startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
+    }
     override fun initView() {
         setContentView(R.layout.activity_guest)
         var wowoAdapter = WoWoViewPagerAdapter.builder()
@@ -92,8 +128,14 @@ class GuestActivity : BaseActivity(), GuestContract.View {
             override fun onPageSelected(p0: Int) {
                 if (p0 == 2) {
                     tvNext.text = getString(R.string.QR_Code)
+                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.icon_little_scan)
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
+                    tvNext.setCompoundDrawables(drawable,null,null,null)
                 } else {
                     tvNext.text = resources.getString(R.string.next)
+                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.no)
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
+                    tvNext.setCompoundDrawables(drawable,null,null,null)
                 }
             }
 
@@ -130,7 +172,11 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     protected fun color(colorRes: Int): Int {
         return ContextCompat.getColor(this, colorRes)
     }
-
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.recoveryBackListener = null
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
     private fun addTvPage0TestNet() {
 //        wowo.addAnimation(tvPage0TestNet)
 //                .add(WoWoTranslationAnimation.builder().page(0)
@@ -225,11 +271,17 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     }
 
     override fun initData() {
+        EventBus.getDefault().register(this)
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
-
         tvNext.setOnClickListener {
             if (wowo.currentItem == 2) {
-                startActivity(Intent(this, LoginActivityActivity::class.java))
+                if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                {
+                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                    AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+                }
+                //mPresenter.getScanPermission()
+                //startActivity(Intent(this, LoginActivityActivity::class.java))
             } else {
                 wowo.next()
             }
@@ -237,16 +289,16 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     }
 
     override fun setupActivityComponent() {
-       DaggerGuestComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .guestModule(GuestModule(this))
-               .build()
-               .inject(this)
+        DaggerGuestComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .guestModule(GuestModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: GuestContract.GuestContractPresenter) {
-            mPresenter = presenter as GuestPresenter
-        }
+        mPresenter = presenter as GuestPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -255,5 +307,45 @@ class GuestActivity : BaseActivity(), GuestContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        if (connectStatus.status == 0) {
+            closeProgressDialog()
+            showProgressDialog("login...")
+            var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+        }
+    }
+    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
+            var result = data!!.getStringExtra("result");
+            var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
+            val keyId:ByteArray = ByteArray(6) //密钥ID
+            val RouterId:ByteArray = ByteArray(76) //路由器id
+            val UserSn:ByteArray = ByteArray(32)  //用户SN
+            System.arraycopy(soureData, 0, keyId, 0, 6)
+            System.arraycopy(soureData, 6, RouterId, 0, 76)
+            System.arraycopy(soureData, 82, UserSn, 0, 32)
+            var keyIdStr = String(keyId)
+            var RouterIdStr = String(RouterId)
+            var UserSnStr = String(UserSn)
+            for (data in ConstantValue.updRouterData)
+            {
+                var key:String = data.key;
+                if(key.equals(RouterIdStr))
+                {
+                    ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
+                    ConstantValue.currentRouterId = RouterIdStr
+                    ConstantValue.currentRouterSN = UserSnStr
+                    break;
+                }
+            }
+            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+            {
+                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+            }
+        }
+    }
 }

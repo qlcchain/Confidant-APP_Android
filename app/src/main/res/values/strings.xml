@@ -41,6 +41,7 @@
     <string name="Agree">Agree</string>
     <string name="Reject">Reject</string>
     <string name="please_type_your_username">please type your username</string>
+    <string name="please_type_your_password">please type your password</string>
     <string name="save_to_phone_success">save to phone success</string>
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
@@ -392,5 +393,11 @@
     <string name="top">top</string>
     <string name="delete_contact_text">Confirm to delete contact. Please be aware that the chatting history, shared files and contact information will be erased.</string>
     <string name="QR_Code">QR Code</string>
-
+    <string name="invitation_code">invitation code</string>
+    <string name="Password">Password(At least 6 characters)</string>
+    <string name="Duplicate_Password">Duplicate Password</string>
+    <string name="Reminder_The_password_cannott_be_retrieved">*Reminder:The password cannott be retrieved</string>
+    <string name="IdentifyCode">QLCADMIN</string>
+    <string name="Cannot_be_empty">Cannot be empty</string>
+    <string name="Password_inconsistent">Password inconsistent</string>
 </resources>

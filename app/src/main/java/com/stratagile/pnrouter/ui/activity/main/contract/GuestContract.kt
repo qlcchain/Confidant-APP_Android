@@ -19,12 +19,11 @@ interface GuestContract {
          *
          */
         fun closeProgressDialog()
+
+        abstract fun getScanPermissionSuccess()
     }
 
     interface GuestContractPresenter : BasePresenter {
-//        /**
-//         *
-//         */
-//        fun getBusinessInfo(map : Map)
+        abstract fun getScanPermission()
     }
 }
