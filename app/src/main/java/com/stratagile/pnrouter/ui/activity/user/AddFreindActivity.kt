@@ -85,7 +85,7 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         bbtAdd.setOnClickListener {
-            var login = AddFriendReq( selfUserId!!, nickName!!, intent.getStringExtra("toUserId"))
+            var login = AddFriendReq( selfUserId!!, nickName!!, intent.getStringExtra("toUserId"),ConstantValue.publicRAS)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
     }

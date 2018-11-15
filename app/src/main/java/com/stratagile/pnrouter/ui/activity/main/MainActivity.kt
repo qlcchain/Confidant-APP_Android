@@ -262,6 +262,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.addFromMe = false
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
+        newFriend.publicKey = jAddFriendPushRsp.params.publicKey
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
         runOnUiThread {

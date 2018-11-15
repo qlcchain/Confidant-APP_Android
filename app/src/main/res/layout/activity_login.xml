@@ -177,7 +177,7 @@
             android:ems="10"
             android:gravity="left"
             android:hint="@string/password"
-            android:inputType="text"
+            android:inputType="textPassword"
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
             android:textColor="@color/white"
@@ -216,11 +216,13 @@
             android:layout_marginBottom="128dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="@string/Reminder_The_password_cannott_be_retrieved"
             android:textColor="@color/color_808080"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginKey" />
 
 
     </android.support.constraint.ConstraintLayout>

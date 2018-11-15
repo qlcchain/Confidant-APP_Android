@@ -90,6 +90,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.addFromMe = false
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
+        newFriend.publicKey = jAddFriendPushRsp.params.publicKey
         userList.add(newFriend)
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var addFriendPushReq = AddFriendPushReq(0, "")
@@ -217,7 +218,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     fun addFriend(selfUserId : String, nickName : String, toUserId: String) {
-        var login = AddFriendReq( selfUserId, nickName, toUserId)
+        var login = AddFriendReq( selfUserId, nickName, toUserId,ConstantValue.publicRAS)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
     }
 

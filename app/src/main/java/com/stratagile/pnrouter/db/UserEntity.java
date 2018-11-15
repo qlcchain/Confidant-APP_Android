@@ -14,19 +14,7 @@ public class UserEntity implements Parcelable{
     //用户id
     private String userId;
 
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", noteName='" + noteName + '\'' +
-                ", friendStatus=" + friendStatus +
-                ", addFromMe=" + addFromMe +
-                ", timestamp=" + timestamp +
-                '}';
-    }
+    private String publicKey;
 
     //昵称
     private String nickName;
@@ -40,23 +28,11 @@ public class UserEntity implements Parcelable{
     private boolean addFromMe;
     //第一次通信的时间戳
     private long timestamp;
-    @Generated(hash = 456718967)
-    public UserEntity(Long id, String userId, String nickName, String avatar,
-            String noteName, int friendStatus, boolean addFromMe, long timestamp) {
-        this.id = id;
-        this.userId = userId;
-        this.nickName = nickName;
-        this.avatar = avatar;
-        this.noteName = noteName;
-        this.friendStatus = friendStatus;
-        this.addFromMe = addFromMe;
-        this.timestamp = timestamp;
-    }
-    @Generated(hash = 1433178141)
-    public UserEntity() {
-    }
 
+    public UserEntity()
+    {
 
+    }
     protected UserEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -64,12 +40,50 @@ public class UserEntity implements Parcelable{
             id = in.readLong();
         }
         userId = in.readString();
+        publicKey = in.readString();
         nickName = in.readString();
         avatar = in.readString();
         noteName = in.readString();
         friendStatus = in.readInt();
         addFromMe = in.readByte() != 0;
         timestamp = in.readLong();
+    }
+    @Generated(hash = 1253064024)
+    public UserEntity(Long id, String userId, String publicKey, String nickName,
+            String avatar, String noteName, int friendStatus, boolean addFromMe,
+            long timestamp) {
+        this.id = id;
+        this.userId = userId;
+        this.publicKey = publicKey;
+        this.nickName = nickName;
+        this.avatar = avatar;
+        this.noteName = noteName;
+        this.friendStatus = friendStatus;
+        this.addFromMe = addFromMe;
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(userId);
+        dest.writeString(publicKey);
+        dest.writeString(nickName);
+        dest.writeString(avatar);
+        dest.writeString(noteName);
+        dest.writeInt(friendStatus);
+        dest.writeByte((byte) (addFromMe ? 1 : 0));
+        dest.writeLong(timestamp);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<UserEntity> CREATOR = new Creator<UserEntity>() {
@@ -109,27 +123,7 @@ public class UserEntity implements Parcelable{
         this.avatar = avatar;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeLong(id);
-        }
-        parcel.writeString(userId);
-        parcel.writeString(nickName);
-        parcel.writeString(avatar);
-        parcel.writeString(noteName);
-        parcel.writeInt(friendStatus);
-        parcel.writeByte((byte) (addFromMe ? 1 : 0));
-        parcel.writeLong(timestamp);
-    }
     public String getNoteName() {
         return this.noteName;
     }
@@ -153,5 +147,12 @@ public class UserEntity implements Parcelable{
     }
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 }

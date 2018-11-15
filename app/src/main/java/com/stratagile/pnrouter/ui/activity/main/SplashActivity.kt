@@ -117,7 +117,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             RSAData.privateKey = strBase64Private
             RSAData.publicKey = strBase64Public
             localRSAArrayList.add(RSAData)
-
             FileUtil.saveRSAData(gson.toJson(localRSAArrayList))
         }else{
             var rsaStr = FileUtil.readRSAData()

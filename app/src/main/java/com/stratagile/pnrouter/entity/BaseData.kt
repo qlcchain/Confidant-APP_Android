@@ -79,7 +79,7 @@ data class CancellationRsp(var RouteId : String, var UserId : String, var Action
  * 5.	添加好友，发送好友请求
  * (1)	请求（APP-->Router）
  */
-data class AddFriendReq(var UserId : String, var NickName :String, var FriendId : String, var Action : String = "AddFriendReq")
+data class AddFriendReq(var UserId : String, var NickName :String, var FriendId : String,var UserKey:String ,var Action : String = "AddFriendReq")
 
 /**
  * 5.	添加好友，发送好友请求
