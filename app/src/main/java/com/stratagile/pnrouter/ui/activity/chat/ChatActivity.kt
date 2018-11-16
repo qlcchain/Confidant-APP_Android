@@ -29,10 +29,7 @@ import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
-import com.stratagile.pnrouter.utils.FileDownloadUtils
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.UIUtils
-import com.stratagile.pnrouter.utils.WiFiUtil
+import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_chat.*
 import java.util.HashMap
 import javax.inject.Inject
@@ -171,14 +168,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
-            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
             chatFragment?.receiveTxtMessage(pushMsgRsp)
         }
     }
 
-    override fun sendMsg(FromId: String, ToId: String, Msg: String) {
-        var msgData = SendMsgReq(FromId!!, ToId!!, Msg)
+    override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
+        var aesKey =  RxEncryptTool.generateAESKey()
+        var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+        var friend = RxEncodeTool.base64Decode(FriendPublicKey)
+        var SrcKey = RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my)
+        var DstKey = RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend)
+        var msgData = SendMsgReq(FromId!!, ToId!!,String(SrcKey),String(DstKey), Msg)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
     }
 

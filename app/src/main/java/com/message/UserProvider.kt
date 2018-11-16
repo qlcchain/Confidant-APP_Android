@@ -1,5 +1,6 @@
 package com.message
 
+import android.util.Base64
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -9,6 +10,7 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.utils.MutableListToArrayList
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -77,7 +79,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.friendStatus = 3
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                var addFriendPushReq = AddFriendPushReq(0, "")
+                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
                 EventBus.getDefault().post(FriendChange())
                 return
@@ -93,7 +96,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
         userList.add(newFriend)
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
-        var addFriendPushReq = AddFriendPushReq(0, "")
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
         EventBus.getDefault().post(FriendChange())
     }
@@ -129,7 +133,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.nickName = jAddFriendReplyRsp.params.nickname
                 it.publicKey = jAddFriendReplyRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                var addFriendReplyReq = AddFriendReplyReq(0, "")
+                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
                 refreshFriend("")
                 return
@@ -145,7 +150,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             userEntity.friendStatus = 2
         }
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
-        var addFriendReplyReq = AddFriendReplyReq(0, "")
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
         refreshFriend("")
     }
@@ -159,6 +165,9 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 return@forEach
             }
         }
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
     }
 
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
@@ -219,7 +228,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     fun addFriend(selfUserId : String, nickName : String, toUserId: String) {
-        var login = AddFriendReq( selfUserId, nickName, toUserId,ConstantValue.publicRAS)
+        val strBase64 = RxEncodeTool.base64Encode2String(nickName.toByteArray())
+        var login = AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.publicRAS,"")
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
     }
 

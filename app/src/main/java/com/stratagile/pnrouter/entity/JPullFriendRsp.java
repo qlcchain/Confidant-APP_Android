@@ -77,6 +77,7 @@ public class JPullFriendRsp extends BaseEntity {
             private int Status;
             private String Id;
             private String Name;
+            private String UserKey;
 
             public int getStatus() {
                 return Status;
@@ -100,6 +101,14 @@ public class JPullFriendRsp extends BaseEntity {
 
             public void setName(String Name) {
                 this.Name = Name;
+            }
+
+            public String getUserKey() {
+                return UserKey;
+            }
+
+            public void setUserKey(String userKey) {
+                UserKey = userKey;
             }
         }
 

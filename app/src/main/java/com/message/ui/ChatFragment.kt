@@ -225,10 +225,10 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         messageListAdapter.addData(message)
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
         KLog.i(messageList?.size)
-        sendMsg(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId, content)
+        sendMsg(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId,userEntity.publicKey, content)
     }
 
-    fun sendMsg(FromId: String, ToId: String, Msg: String) {
+    fun sendMsg(FromId: String, ToId: String,FriendPublicKey :String, Msg: String) {
         var msgData = SendMsgReq(FromId!!, ToId!!, Msg)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
     }

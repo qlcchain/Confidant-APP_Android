@@ -712,9 +712,9 @@ public class StringUitl {
         }
         //str = str.replace("\n","").replace(" ", "");
         return str.indexOf("+") >= 0 || str.indexOf("/") >= 0 || str.indexOf("=") >= 0;
-       /* byte[] bytes  = Base64.decode(str, Base64.NO_WRAP);
+       /* byte[] bytes  =RxEncodeTool.base64Decode(str, Base64.NO_WRAP);
         String temp = new String(bytes);
-        return str.equals(Base64.encodeToString(bytes,Base64.NO_WRAP));*/
+        return str.equals(RxEncodeTool.base64Encode2String(bytes));*/
     }
     /**
      * 判断是否为乱码

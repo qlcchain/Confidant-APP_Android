@@ -1985,7 +1985,7 @@ public class RxFileTool {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        base64String = Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
+        base64String = RxEncodeTool.base64Encode2String(bos.toByteArray());
         return base64String;
 
     }

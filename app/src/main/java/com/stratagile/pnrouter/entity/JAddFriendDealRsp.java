@@ -27,6 +27,7 @@ public class JAddFriendDealRsp extends BaseEntity{
          */
 
         private String Action;
+        private String FriendId;
         private int RetCode;
 
         public int getRetCode() {
@@ -90,6 +91,13 @@ public class JAddFriendDealRsp extends BaseEntity{
 
         public void setMsg(String Msg) {
             this.Msg = Msg;
+        }
+        public String getFriendId() {
+            return FriendId;
+        }
+
+        public void setFriendId(String friendId) {
+            FriendId = friendId;
         }
     }
 }

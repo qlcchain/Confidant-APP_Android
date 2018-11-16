@@ -108,8 +108,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         {
             val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
             val aahh = KeyPair!!.private.format
-            val strBase64Private:String = Base64.encodeToString(KeyPair.private.encoded, Base64.NO_WRAP)
-            val strBase64Public = Base64.encodeToString(KeyPair.public.encoded, Base64.NO_WRAP)
+            val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
+            val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
             ConstantValue.privateRAS = strBase64Private
             ConstantValue.publicRAS = strBase64Public
             localRSAArrayList = ArrayList()
@@ -131,12 +131,12 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-        var private = Base64.decode(ConstantValue.privateRAS, Base64.NO_WRAP)
-        var public = Base64.decode(ConstantValue.publicRAS, Base64.NO_WRAP)
+        var private = RxEncodeTool.base64Decode(ConstantValue.privateRAS)
+        var public = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
         var source = "0123456789";
         var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),public)
 
-        val strBase64keyPulic:String = Base64.encodeToString(keyPulic, Base64.NO_WRAP)
+        val strBase64keyPulic:String = RxEncodeTool.base64Encode2String(keyPulic)
         var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
         var keybb = String(keyOld);
 

@@ -3,6 +3,8 @@ package com.stratagile.pnrouter.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.stratagile.pnrouter.utils.RxEncodeTool;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
@@ -111,7 +113,8 @@ public class UserEntity implements Parcelable{
         this.userId = userId;
     }
     public String getNickName() {
-        return this.nickName;
+        String encryptedBytes = new String(RxEncodeTool.base64Decode(this.nickName));
+        return encryptedBytes;
     }
     public void setNickName(String nickName) {
         this.nickName = nickName;

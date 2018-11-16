@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -17,6 +18,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerAddFreindCompone
 import com.stratagile.pnrouter.ui.activity.user.contract.AddFreindContract
 import com.stratagile.pnrouter.ui.activity.user.module.AddFreindModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.AddFreindPresenter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import kotlinx.android.synthetic.main.activity_add_freind.*
@@ -85,7 +87,8 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         bbtAdd.setOnClickListener {
-            var login = AddFriendReq( selfUserId!!, nickName!!, intent.getStringExtra("toUserId"),ConstantValue.publicRAS)
+            val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+            var login = AddFriendReq( selfUserId!!, strBase64!!, intent.getStringExtra("toUserId"),ConstantValue.publicRAS,"")
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
         }
     }

@@ -90,6 +90,7 @@ import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
+import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.WiFiUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -400,7 +401,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
         sendFileData.setSegMore((byte) segMore);
         sendFileData.setCotinue((byte) 0);
-        String strBase64 = Base64.encodeToString(fileName.getBytes(), Base64.NO_WRAP);
+        String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
         sendFileData.setFileName(strBase64.getBytes());
         sendFileData.setFromId(From.getBytes());
         sendFileData.setToId(To.getBytes());
@@ -1289,7 +1290,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),content);
+            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
             message.setFrom(userId);
             message.setTo( UserDataManger.curreantfriendUserData.getUserId());
             message.setUnread(false);

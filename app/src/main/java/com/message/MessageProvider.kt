@@ -47,7 +47,8 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         if (!hasConversation(pushMsgRsp.params.fromId)) {
             addConversation(pushMsgRsp.params.fromId, message)
         }
-        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
         calculateUnreadCount()
         receivedMessageListener?.receivedMessage()

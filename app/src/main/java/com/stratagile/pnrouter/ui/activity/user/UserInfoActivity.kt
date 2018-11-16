@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.view.View
 import com.hyphenate.easeui.EaseConstant
 import com.message.UserProvider
@@ -14,6 +15,7 @@ import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.AddFriendDealReq
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.DelFriendCmdRsp
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
@@ -21,6 +23,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponen
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.activity_user_info.*
@@ -42,6 +45,9 @@ import javax.inject.Inject
 
 class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener {
     override fun delFriendRsp(retCode: Int) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
         runOnUiThread {
             //            toast(addFriendRsp.baseDataToJson())
             closeProgressDialog()
@@ -258,7 +264,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     fun acceptFriend() {
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId, ConstantValue.publicRAS,0)
+        val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(strBase64!!, userInfo!!.nickName, userId!!, userInfo!!.userId, ConstantValue.publicRAS,0)
         userInfo?.friendStatus = 0
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
         showProgressDialog()
@@ -267,7 +274,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     fun refuseFriend() {
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var addFriendDealReq = AddFriendDealReq(nickName!!, userInfo!!.nickName, userId!!, userInfo!!.userId,ConstantValue.publicRAS, 0)
+        val strBase64 =RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(strBase64!!, userInfo!!.nickName, userId!!, userInfo!!.userId,ConstantValue.publicRAS, 0)
         userInfo?.friendStatus = 1
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
         showProgressDialog()

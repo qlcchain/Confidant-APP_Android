@@ -48,6 +48,14 @@ public class JAddFriendPushRsp extends BaseEntity {
         private String FriendId;
         private String NickName;
         private String UserKey;
+        private String Msg;
+        public String getMsg() {
+            return Msg;
+        }
+
+        public void setMsg(String msg) {
+            Msg = msg;
+        }
 
         public String getUserKey() {
             return UserKey;

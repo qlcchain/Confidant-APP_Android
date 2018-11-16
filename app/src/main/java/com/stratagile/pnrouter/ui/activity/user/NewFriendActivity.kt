@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -15,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
 import com.stratagile.pnrouter.ui.activity.user.module.NewFriendModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.NewFriendPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
@@ -101,14 +103,16 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     handleUser?.friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                    UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
+                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                    UserProvider.getInstance().accepteAddFriend(strBase64!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
                     showProgressDialog()
                 }
                 R.id.tvRefuse -> {
                     handleUser = newFriendListAdapter!!.getItem(position)
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
-                    UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
+                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                    UserProvider.getInstance().refuseAddFriend(strBase64!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
                     handleUser?.friendStatus = 5
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))

@@ -79,7 +79,7 @@ data class CancellationRsp(var RouteId : String, var UserId : String, var Action
  * 5.	添加好友，发送好友请求
  * (1)	请求（APP-->Router）
  */
-data class AddFriendReq(var UserId : String, var NickName :String, var FriendId : String,var UserKey:String ,var Action : String = "AddFriendReq")
+data class AddFriendReq(var UserId : String, var NickName :String, var FriendId : String,var UserKey:String ,var Msg:String,var Action : String = "AddFriendReq")
 
 /**
  * 5.	添加好友，发送好友请求
@@ -100,7 +100,7 @@ data class AddFriendPushRsp(var UserId : String, var FriendId : String, var Frie
  * 场景：当一个用户A被其他用户B请求添加好友，router推送消息到A
  * (2)	响应（APP->Router）
  */
-data class AddFriendPushReq(var Retcode : Int, var Msg : String, var Action : String = "AddFriendPush")
+data class AddFriendPushReq(var Retcode : Int,var ToId : String, var Msg : String, var Action : String = "AddFriendPush")
 
 /**
  * 7.	好友请求处理
@@ -129,7 +129,7 @@ data class AddFriendReplyRsp(var UserId : String, var FriendId : String, var Res
  * 场景：目标好友处理完成好友请求操作，由router推送消息给好友请求发起方，本次好友
  * (2)	响应（APP-->Router）
  */
-data class AddFriendReplyReq(var Retcode : Int, var Msg : String, var Action : String = "AddFriendReply")
+data class AddFriendReplyReq(var Retcode : Int,var ToId : String, var Msg : String, var Action : String = "AddFriendReply")
 
 /**
  * 9.	删除好友
@@ -144,7 +144,7 @@ data class DelFriendCmdReq(var UserId : String, var FriendId : String, var Actio
  * 场景：APP发起，用户删除目标好友
  * (2)	响应（Router->APP）
  */
-data class DelFriendCmdRsp(var Retcode : Int, var Msg : String, var Action : String)
+data class DelFriendCmdRsp(var Retcode : Int,var ToId : String, var Msg : String, var Action : String ="DelFriendCmd")
 
 /**
  * 10.	删除好友推送
@@ -159,14 +159,14 @@ data class DelFriendPushRsp(var UserId : String, var FriendId : String, var Acti
  * 场景：用户A发起了删除用户B好友的行为，由router推送消息给用户B，删除对应好友
  * (2)	响应（APP->Router）
  */
-data class DelFriendPushReq(var Retcode : Int, var Msg : String, var Action : String = "DelFriendPush")
+data class DelFriendPushReq(var Retcode : Int,var ToId :String, var Msg : String, var Action : String = "DelFriendPush")
 
 /**
  * 11.	发送消息
  * 场景：用户A向自己的好友用户B发送消息，A发送消息到router
  * (1)	请求（APP-->Router）
  */
-data class SendMsgReq(var FromId :String ,var ToId :String, var Msg : String, var Action : String = "SendMsg")
+data class SendMsgReq(var FromId :String ,var ToId :String, var Msg : String, var SrcKey : String, var DstKey : String, var Action : String = "SendMsg")
 
 /**
  * 11.	发送消息
@@ -189,7 +189,7 @@ data class PushMsgRsp(var FromId : String, var ToId :String, var Msg : String, v
  * 场景：用户A向自己的好友用户B发送消息，router推送该消息到用户B
  * (2)	响应（APP->Router）
  */
-data class PushMsgReq(var MsgId :Int, var RetCode : Int, var Msg : String, var Action : String = "PushMsg")
+data class PushMsgReq(var MsgId :Int, var ToId :String, var RetCode : Int, var Msg : String, var Action : String = "PushMsg")
 
 /**
  * 13.	删除消息

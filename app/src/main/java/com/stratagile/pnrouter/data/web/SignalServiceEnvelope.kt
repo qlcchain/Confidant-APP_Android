@@ -95,7 +95,7 @@
 //     * @throws InvalidVersionException
 //     */
 //    @Throws(IOException::class, InvalidVersionException::class)
-//    constructor(message: String, signalingKey: String) : this(Base64.decode(message), signalingKey) {
+//    constructor(message: String, signalingKey: String) : this(RxEncodeTool.base64Decode(message), signalingKey) {
 //    }
 //
 //    /**
@@ -213,7 +213,7 @@
 //
 //    @Throws(IOException::class)
 //    private fun getCipherKey(signalingKey: String): SecretKeySpec {
-//        val signalingKeyBytes = Base64.decode(signalingKey)
+//        val signalingKeyBytes = RxEncodeTool.base64Decode(signalingKey)
 //        val cipherKey = ByteArray(CIPHER_KEY_SIZE)
 //        System.arraycopy(signalingKeyBytes, 0, cipherKey, 0, cipherKey.size)
 //
@@ -223,7 +223,7 @@
 //
 //    @Throws(IOException::class)
 //    private fun getMacKey(signalingKey: String): SecretKeySpec {
-//        val signalingKeyBytes = Base64.decode(signalingKey)
+//        val signalingKeyBytes = RxEncodeTool.base64Decode(signalingKey)
 //        val macKey = ByteArray(MAC_KEY_SIZE)
 //        System.arraycopy(signalingKeyBytes, CIPHER_KEY_SIZE, macKey, 0, macKey.size)
 //

@@ -399,7 +399,7 @@ public class FileUtil {
                                     FileOutputStream fos = new FileOutputStream(files[i]);
                                     OutputStreamWriter osw = new OutputStreamWriter(fos, "utf-8");
                                     byte[] bytes = data.getBytes();
-                                    String encryptPrivateKey = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                                    String encryptPrivateKey = RxEncodeTool.base64Encode2String(bytes);
                                     addData = encryptPrivateKey;
                                     osw.write(encryptPrivateKey);
                                     osw.flush();
@@ -413,7 +413,7 @@ public class FileUtil {
 
                             isBase64 = StringUitl.isBase64(addData);
                             if (isBase64) {
-                                byte[] bytesAddData = Base64.decode(addData, Base64.NO_WRAP);
+                                byte[] bytesAddData = RxEncodeTool.base64Decode(addData);
                                 byte[] bytes = bytesAddData;
                                 String decryptPrivateKey = new String(bytes);
                                 addData = decryptPrivateKey;

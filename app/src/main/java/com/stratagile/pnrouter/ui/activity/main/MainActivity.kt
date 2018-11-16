@@ -168,7 +168,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
-            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!,0, "")
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
@@ -204,6 +205,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
                 }
+                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
                 EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
                 return
             }
@@ -226,7 +230,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 i.nickName = jAddFriendReplyRsp.params.nickname
                 i.publicKey = jAddFriendReplyRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
-                var addFriendReplyReq = AddFriendReplyReq(0, "")
+                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
@@ -264,7 +269,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.noteName = ""
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
-        var addFriendPushReq = AddFriendPushReq(0, "")
+        var userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
         runOnUiThread {
             viewModel.freindChange.value = Calendar.getInstance().timeInMillis
         }
@@ -378,7 +384,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 run() {
                     Thread.sleep(1000);
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
-                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), 0, "")
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
@@ -399,7 +406,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.tempPushMsgList = ArrayList<JPushMsgRsp>()
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
                     {
-                        var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId), 0,"")
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0,"")
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)

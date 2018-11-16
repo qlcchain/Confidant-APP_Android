@@ -83,6 +83,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
+        SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+        SpUtil.putString(this, ConstantValue.username,username)
+        SpUtil.putString(this, ConstantValue.routerId, routerId)
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
         FileUtil.saveUserId2Local(registerRsp.params!!.routeId)
@@ -153,7 +156,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 toast(getString(R.string.Password_inconsistent))
                 return@setOnClickListener
             }
-            val NickName = Base64.encodeToString(registerKey.text.toString().toByteArray(), Base64.NO_WRAP)
+            val NickName = RxEncodeTool.base64Encode2String(registerKey.text.toString().toByteArray())
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             var login = RegeisterReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN, userName2.text.toString(),LoginKey,NickName)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
