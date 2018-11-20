@@ -17,7 +17,8 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
         helperItem = helper;
 
 
-        helper!!.setText(R.id.tvNickName,item!!.nickName)
+        var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+        helper!!.setText(R.id.tvNickName,nickNameSouce)
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
         if (item!!.nickName != null) {
             imagebutton.setText(item?.nickName)

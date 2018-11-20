@@ -107,6 +107,7 @@ public class RxEncodeTool {
      * @return Base64解码后的字符串
      */
     public static byte[] base64Decode(String input) {
+        input =  input.replace("\\n", "");
         return Base64.decode(input, Base64.NO_WRAP);
     }
 
@@ -188,7 +189,7 @@ public class RxEncodeTool {
 
     public static String RestoreMessage(String sourceKey,String msg)
     {
-        byte[] msgMi = RxEncodeTool.base64Decode(sourceKey);
+        byte[] msgMi = RxEncodeTool.base64Decode(sourceKey.replace("\n",""));
         try {
             byte[] privateMy = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPrivateRAS());
             byte[] SrcKey = RxEncryptTool.decryptByPrivateKey(msgMi,privateMy);

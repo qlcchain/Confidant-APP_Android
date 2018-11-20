@@ -80,7 +80,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             "PullFriend" -> {
                 val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
                 pullFriendCallBack?.firendList(jPullFriendRsp)
-                userControlleCallBack?.firendList(jPullFriendRsp)
+                //userControlleCallBack?.firendList(jPullFriendRsp)
             }
 
 

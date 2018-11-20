@@ -76,6 +76,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     isLocalFriend = true
                     j.friendStatus = 0
                     j.nickName = i.name
+                    j.publicKey = i.userKey
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
                     break
                 }
@@ -84,6 +85,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 var userEntity = UserEntity()
                 userEntity.nickName = i.name
                 userEntity.userId = i.id
+                userEntity.publicKey = i.userKey
                 userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)

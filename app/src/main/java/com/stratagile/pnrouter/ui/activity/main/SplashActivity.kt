@@ -135,15 +135,19 @@ class SplashActivity : BaseActivity(), SplashContract.View {
             }
         }
 
-        val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
+      /*  val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
         val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPairaa.private.encoded)
         val strBase64Public = RxEncodeTool.base64Encode2String(KeyPairaa.public.encoded)
 
-        val strBase64 = RxEncodeTool.base64Encode2String("aalc1metoqlc0101".toByteArray())
+        val strBase64 = RxEncodeTool.base64Decode("Ck1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRE01T0JnN29qei9TVWRHRTlzQmRQVkZrcmsKcUptdGVMUm9GNVlOOWkvc0JTeGVac1c3M2FnUkJ0U255MnZmWFNXVEhiZmw2U1laek5ha0VYZGVPZ3RTY0RPWQo4dnh1bHFTVG9xVitpTWMvQlFHYXlKZk1KWXpQUjFvUjBadG1BRWl1QTY4SGc2ZDdTY3NMMHpBZGFkbmFkVEFDCldUMWIvMEo3cVBRRDE2WVYxUUlEQVFBQgo=".toByteArray())
+        var sourceaa = String(strBase64);
         var private = RxEncodeTool.base64Decode(strBase64Private)
-        var public = RxEncodeTool.base64Decode(strBase64Public)
-        var source = "aalc1metoqlc0101";
-        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),public)
+        var public = RxEncodeTool.base64Decode("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDM5OBg7ojz/SUdGE9sBdPVFkrkqJmteLRoF5YN9i/sBSxeZsW73agRBtSny2vfXSWTHbfl6SYZzNakEXdeOgtScDOY8vxulqSToqV+iMc/BQGayJfMJYzPR1oR0ZtmAEiuA68Hg6d7ScsL0zAdadnadTACWT1b/0J7qPQD16YV1QIDAQAB")
+        var source = "123456";
+        var test =  RxEncodeTool.base64Decode(strBase64)
+        var sourceaabb = RxEncodeTool.base64Encode(test);
+        var keybbcaac = String(sourceaabb);
+        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),test)
         var keybbcc = String(keyPulic);
         val strBase64keyPulic:String = RxEncodeTool.base64Encode2String(keyPulic)
         var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
@@ -154,7 +158,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var keybb2 = AESCipher.aesEncryptString(AES_KEY,"welcometoqlc0101")
         var keydd2 = AESCipher.aesDecryptString(keybb2,"welcometoqlc0101")
         var resultByte2 = AESCipher.aesDecryptString("ysPU3+VXYIWLKQkISIzR193yBMGzL+hkUPlRvrQPwh8yJmrX+BMRyGTdpJA349y00HZ6a0m+E0U7UP+TrEABf9UriJD6zff6IdfhQn8lbQBnIVWdONnMWmZzKpvX33ORpSj8qfvBYqc2NRt0Mq132fUHxfSljfYavhNYT2p016w=","welcometoqlc0101")
-
+*/
         //var keyaa = RxEncryptTool.encryptAES2Base64(keyStr.toByteArray(),AES_KEY.toByteArray())
         //var keybb = RxEncryptTool.decryptAES(keyaa,AES_KEY.toByteArray())
         PathUtils.getInstance().initDirs("", "", this)

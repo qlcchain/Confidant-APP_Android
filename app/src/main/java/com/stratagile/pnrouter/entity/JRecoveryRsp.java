@@ -78,13 +78,7 @@ public class JRecoveryRsp extends BaseEntity {
         }
 
         public String getNickName() {
-            try{
-                String encryptedBytes = new String(RxEncodeTool.base64Decode(NickName));
-                return encryptedBytes;
-            }catch (IllegalArgumentException e)
-            {
-                return NickName;
-            }
+            return NickName;
         }
 
         public void setNickName(String NickName) {

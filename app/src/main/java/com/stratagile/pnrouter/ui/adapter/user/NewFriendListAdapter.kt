@@ -7,11 +7,13 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.ShareBean
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<UserEntity, BaseViewHolder>(R.layout.layout_new_friend_list_item, arrayList) {
     override fun convert(helper: BaseViewHolder?, item: UserEntity?) {
-        helper!!.setText(R.id.tvNickName, item!!.nickName)
+        var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+        helper!!.setText(R.id.tvNickName, nickNameSouce)
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
         imagebutton.setText(item!!.nickName)
         helper!!.addOnClickListener(R.id.tvRefuse)

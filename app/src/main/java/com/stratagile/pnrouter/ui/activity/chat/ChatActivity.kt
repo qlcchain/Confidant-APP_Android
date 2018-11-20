@@ -16,6 +16,7 @@ import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.message.Message
 import com.hyphenate.easeui.utils.PathUtils
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -181,6 +182,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var friend = RxEncodeTool.base64Decode(FriendPublicKey)
         var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
         var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+        var aa = RxEncodeTool.base64Encode2String(DstKey);
         var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
         var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
         var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))

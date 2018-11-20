@@ -53,13 +53,7 @@ public class JPushMsgRsp extends BaseEntity {
         }
 
         public String getMsg() {
-            try{
-                String encryptedBytes = new String(RxEncodeTool.base64Decode(Msg));
-                return encryptedBytes;
-            }catch (IllegalArgumentException e)
-            {
-                return Msg;
-            }
+            return Msg;
         }
 
         public void setMsg(String msg) {

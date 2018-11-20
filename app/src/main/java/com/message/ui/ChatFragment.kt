@@ -21,6 +21,7 @@ import com.message.Message
 import com.message.MessageProvider
 import com.message.adapter.MessageListAdapter
 import com.pawegio.kandroid.runOnUiThread
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
