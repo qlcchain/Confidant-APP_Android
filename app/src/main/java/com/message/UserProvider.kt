@@ -78,6 +78,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
                 it.friendStatus = 3
                 it.nickName = jAddFriendPushRsp.params.nickName;
+                it.publicKey = jAddFriendPushRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
@@ -238,13 +239,17 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         AppConfig.instance.messageSender!!.send(BaseData(delFriendCmdReq))
     }
 
-    fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String) {
-        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS, 0)
+    fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
+        val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
+        val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, selfUserId, toUserId, ConstantValue.publicRAS, friendKey,0)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 
-    fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String) {
-        var addFriendDealReq = AddFriendDealReq(selfNickName!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS,1)
+    fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
+        val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
+        val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, selfUserId, toUserId, "",friendKey,1)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 

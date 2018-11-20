@@ -76,7 +76,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     fun sendMessage() {
         if (toSendMessage != null && toSendMessage.isNotEmpty()) {
             var message = toSendMessage.poll()
-            Log.i("ServiceMessageSender", message.baseDataToJson().replace("\\", ""))
+            Log.i("send", message.baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
             var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送结果：${reslut}")

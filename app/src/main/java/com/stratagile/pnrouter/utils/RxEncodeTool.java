@@ -4,6 +4,8 @@ import android.os.Build;
 import android.text.Html;
 import android.util.Base64;
 
+import com.stratagile.pnrouter.constant.ConstantValue;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -182,5 +184,20 @@ public class RxEncodeTool {
      */
     public static String htmlDecode(String input) {
         return Html.fromHtml(input).toString();
+    }
+
+    public static String RestoreMessage(String sourceKey,String msg)
+    {
+        byte[] msgMi = RxEncodeTool.base64Decode(sourceKey);
+        try {
+            byte[] privateMy = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPrivateRAS());
+            byte[] SrcKey = RxEncryptTool.decryptByPrivateKey(msgMi,privateMy);
+            String aesKey = new String(SrcKey);
+            String msgSouce = AESCipher.aesDecryptString(msg,aesKey);
+            return msgSouce;
+        }catch (Exception e)
+        {
+             return "";
+        }
     }
 }

@@ -5,8 +5,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.utils.MutableListToArrayList
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
@@ -65,6 +64,10 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 it.status = Message.Status.SUCCESS
                 it.setType()
                 it.isUnRead = false
+                val msgSouce = RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
+                if (msgSouce != null && msgSouce != "") {
+                    it.setMsg(msgSouce)
+                }
             }
             if (messageList.get(0).from.equals(selfUserId)) {
                 addConversation(messageList.get(0).to, messageList.last())

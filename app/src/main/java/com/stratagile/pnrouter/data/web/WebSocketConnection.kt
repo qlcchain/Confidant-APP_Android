@@ -146,7 +146,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     fun send(message : String?) : Boolean{
-//        Log.i("websocketConnection", message)
+        if(message!!.indexOf("HeartBeat") < 0)
+        {
+            //Log.i("websocketConnection", message)
+        }
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
@@ -155,7 +158,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //            throw IOException("Write failed!")
             return false
         } else {
-            Log. i("WenSocketConnetion", "发送成功")
+            if(message.indexOf("HeartBeat") < 0)
+            {
+                Log. i("WenSocketConnetion", "发送成功")
+            }
             return true
         }
     }
@@ -169,8 +175,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
             var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送结果：${reslut}")
-            KLog.i("心跳消息为：：")
-            KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+            //KLog.i("心跳消息为：：")
+            //KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }
 
@@ -198,7 +204,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.w(TAG, "onMessage(text)! " + text!!)
+        if(text!!.indexOf("HeartBeat") < 0)
+        {
+            Log.w(TAG, "onMessage(text)! " + text!!)
+        }
         LogUtil.addLog("接收信息：${text}")
         try {
             val gson = GsonUtil.getIntGson()
@@ -206,7 +215,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
                 val heartBeatRsp  = gson.fromJson(text, JHeartBeatRsp::class.java)
                 if (heartBeatRsp.params.retCode == 0) {
-                    KLog.i("心跳监测和服务器的连接正常~~~")
+                    //KLog.i("心跳监测和服务器的连接正常~~~")
                 }
             } else {
                 onMessageReceiveListener!!.onMessage(baseData, text)
@@ -375,7 +384,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 try {
                     Thread.sleep(TimeUnit.SECONDS.toMillis(KEEPALIVE_TIMEOUT_SECONDS.toLong()))
 
-                    Log.w(TAG, "Sending keep alive...")
+                    //Log.w(TAG, "Sending keep alive...")
                     sendKeepAlive()
                 } catch (e: Throwable) {
                     Log.w(TAG, e)

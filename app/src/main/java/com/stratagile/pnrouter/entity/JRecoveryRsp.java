@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.utils.RxEncodeTool;
+
 public class JRecoveryRsp extends BaseEntity {
 
 
@@ -28,8 +30,11 @@ public class JRecoveryRsp extends BaseEntity {
 
         private String Action;
         private int RetCode;
+
+        private String RouteId;
         private String UserSn;
         private String UserId;
+
         private String NickName;
 
         public String getAction() {
@@ -64,8 +69,22 @@ public class JRecoveryRsp extends BaseEntity {
             this.UserId = UserId;
         }
 
+        public String getRouteId() {
+            return RouteId;
+        }
+
+        public void setRouteId(String routeId) {
+            RouteId = routeId;
+        }
+
         public String getNickName() {
-            return NickName;
+            try{
+                String encryptedBytes = new String(RxEncodeTool.base64Decode(NickName));
+                return encryptedBytes;
+            }catch (IllegalArgumentException e)
+            {
+                return NickName;
+            }
         }
 
         public void setNickName(String NickName) {

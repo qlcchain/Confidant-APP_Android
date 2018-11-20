@@ -113,8 +113,13 @@ public class UserEntity implements Parcelable{
         this.userId = userId;
     }
     public String getNickName() {
-        String encryptedBytes = new String(RxEncodeTool.base64Decode(this.nickName));
-        return encryptedBytes;
+        try{
+            String encryptedBytes = new String(RxEncodeTool.base64Decode(this.nickName));
+            return encryptedBytes;
+        }catch (IllegalArgumentException e)
+        {
+            return this.nickName;
+        }
     }
     public void setNickName(String nickName) {
         this.nickName = nickName;

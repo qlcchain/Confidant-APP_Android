@@ -19,8 +19,10 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JRecoveryRsp
+import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.RecoveryReq
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -30,14 +32,13 @@ import com.stratagile.pnrouter.ui.activity.main.module.GuestModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.GuestPresenter
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
-import com.stratagile.pnrouter.utils.AESCipher
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.UIUtils
-import com.stratagile.pnrouter.utils.VersionUtil
+import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_guest.*
+import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -62,6 +63,20 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     val REQUEST_SCAN_QRCODE = 1
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
+        FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
+        var newRouterEntity = RouterEntity()
+        newRouterEntity.routerId = recoveryRsp.params.routeId
+        newRouterEntity.userSn = recoveryRsp.params.userSn
+        newRouterEntity.username =String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
+        newRouterEntity.userId = recoveryRsp.params.userId
+        newRouterEntity.dataFileVersion = 1
+        var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+        newRouterEntity.routerName = "Router " + (localData.size + 1)
+        val myRouter = MyRouter()
+        myRouter.setType(0)
+        myRouter.setRouterEntity(newRouterEntity)
+        LocalRouterUtils.insertLocalAssets(myRouter)
+        LocalRouterUtils.updateGreanDaoFromLocal();
         when (recoveryRsp.params.retCode) {
             0 -> {
                 startActivity(Intent(this, LoginActivityActivity::class.java))
@@ -275,10 +290,11 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
         tvNext.setOnClickListener {
             if (wowo.currentItem == 2) {
-                if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+               if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                 {
                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+
                 }
                 //mPresenter.getScanPermission()
                 //startActivity(Intent(this, LoginActivityActivity::class.java))
@@ -311,7 +327,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         if (connectStatus.status == 0) {
             closeProgressDialog()
-            showProgressDialog("login...")
+            showProgressDialog("wait...")
             var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
         }

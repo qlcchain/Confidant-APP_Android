@@ -50,7 +50,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             "AddFriendPush" -> {
                 val addFreindPusRsp = gson.fromJson(text, JAddFriendPushRsp::class.java)
                 KLog.i(addFreindPusRsp.toString())
-                mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
+                //mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
                 userControlleCallBack?.addFriendPushRsp(addFreindPusRsp)
             }
             //添加好友，对方处理的结果的推送

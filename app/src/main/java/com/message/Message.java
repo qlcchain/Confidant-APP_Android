@@ -31,6 +31,17 @@ public class Message {
     private String FileName;
     private String  FilePath;
 
+    public String getUserKey() {
+        return UserKey;
+    }
+
+    public void setUserKey(String userKey) {
+        UserKey = userKey;
+    }
+
+    private String UserKey;
+
+
     public String getFileName() {
         //base64解码
         String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
@@ -131,6 +142,13 @@ public class Message {
     }
 
     public String getMsg() {
+       /* try{
+            String encryptedBytes = new String(RxEncodeTool.base64Decode(Msg));
+            return encryptedBytes;
+        }catch (IllegalArgumentException e)
+        {
+            return Msg;
+        }*/
         return Msg;
     }
 

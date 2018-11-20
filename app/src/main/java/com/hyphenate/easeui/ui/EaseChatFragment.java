@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.baidu.platform.comapi.map.E;
 import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
@@ -85,12 +86,14 @@ import com.stratagile.pnrouter.entity.events.TransformFileMessage;
 import com.stratagile.pnrouter.entity.events.TransformReceiverFileMessage;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
+import com.stratagile.pnrouter.utils.AESCipher;
 import com.stratagile.pnrouter.utils.CRC16Util;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
+import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.utils.WiFiUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -732,6 +735,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         {
             Message Message = messageList.get(i);
             EMMessage message = null;
+            String msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
+            if(msgSouce != null && !msgSouce.equals(""))
+            {
+                Message.setMsg(msgSouce);
+            }
             switch (Message.getMsgType())
             {
                 case 0:
@@ -1290,7 +1298,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
+            if (UserDataManger.curreantfriendUserData.getPublicKey() != null)
+                AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
             message.setFrom(userId);
             message.setTo( UserDataManger.curreantfriendUserData.getUserId());
             message.setUnread(false);
@@ -1423,6 +1432,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     public void receiveTxtMessage(JPushMsgRsp jPushMsgRsp)
     {
+        String msgSouce =  RxEncodeTool.RestoreMessage(jPushMsgRsp.getParams().getDstKey(),jPushMsgRsp.getParams().getMsg());
+        if(msgSouce != null && !msgSouce.equals(""))
+        {
+            jPushMsgRsp.getParams().setMsg(msgSouce);
+        }
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
         message.setDirection(EMMessage.Direct.RECEIVE);
         message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");

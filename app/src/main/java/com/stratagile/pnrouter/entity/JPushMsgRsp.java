@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.utils.RxEncodeTool;
+
 public class JPushMsgRsp extends BaseEntity {
     private ParamsBean params;
 
@@ -51,7 +53,13 @@ public class JPushMsgRsp extends BaseEntity {
         }
 
         public String getMsg() {
-            return Msg;
+            try{
+                String encryptedBytes = new String(RxEncodeTool.base64Decode(Msg));
+                return encryptedBytes;
+            }catch (IllegalArgumentException e)
+            {
+                return Msg;
+            }
         }
 
         public void setMsg(String msg) {
@@ -67,5 +75,25 @@ public class JPushMsgRsp extends BaseEntity {
         public void setAction(String Action) {
             this.Action = Action;
         }
+
+        public String getSrcKey() {
+            return SrcKey;
+        }
+
+        public void setSrcKey(String srcKey) {
+            SrcKey = srcKey;
+        }
+
+        public String getDstKey() {
+            return DstKey;
+        }
+
+        public void setDstKey(String dstKey) {
+            DstKey = dstKey;
+        }
+
+        private String SrcKey;
+
+        private String DstKey;
     }
 }

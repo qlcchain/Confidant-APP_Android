@@ -88,7 +88,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         SpUtil.putString(this, ConstantValue.routerId, routerId)
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
-        FileUtil.saveUserId2Local(registerRsp.params!!.routeId)
+        FileUtil.saveUserId2Local(registerRsp.params!!.userId)
         var newRouterEntity = RouterEntity()
         newRouterEntity.routerId = registerRsp.params.routeId
         newRouterEntity.userSn = registerRsp.params.userSn

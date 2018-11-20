@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.utils.RxEncodeTool;
+
 public class JAddFriendPushRsp extends BaseEntity {
     private ParamsBean params;
 

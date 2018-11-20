@@ -17,6 +17,19 @@ public class AESCipher {
     private static final String IV_STRING = "AABBCCDDEEFFGGHH";
     private static final String charset = "UTF-8";
 
+    /**
+     * 加密
+     * @param content
+     * @param key
+     * @return
+     * @throws InvalidKeyException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws UnsupportedEncodingException
+     */
     public static String aesEncryptString(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         byte[] contentBytes = content.getBytes(charset);
         byte[] keyBytes = key.getBytes(charset);
@@ -24,14 +37,21 @@ public class AESCipher {
         return RxEncodeTool.base64Encode2String(encryptedBytes);
     }
 
+    /**
+     * 解密
+     * @param content
+     * @param key
+     * @return
+     * @throws InvalidKeyException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws UnsupportedEncodingException
+     */
     public static String aesDecryptString(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         byte[] encryptedBytes = RxEncodeTool.base64Decode(content);
-        byte[] keyBytes = key.getBytes(charset);
-        byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
-        return new String(decryptedBytes, charset);
-    }
-    public static String aesDecryptString2(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
-        byte[] encryptedBytes = content.getBytes(charset);
         byte[] keyBytes = key.getBytes(charset);
         byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
         return new String(decryptedBytes, charset);

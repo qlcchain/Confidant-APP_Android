@@ -179,9 +179,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var aesKey =  RxEncryptTool.generateAESKey()
         var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
         var friend = RxEncodeTool.base64Decode(FriendPublicKey)
-        var SrcKey = RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my)
-        var DstKey = RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend)
-        var msgData = SendMsgReq(FromId!!, ToId!!,String(SrcKey),String(DstKey), Msg)
+        var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
+        var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+        var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
+        var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
+        var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
     }
 

@@ -103,16 +103,17 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     handleUser?.friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                    UserProvider.getInstance().accepteAddFriend(strBase64!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
-                    showProgressDialog()
+                    if(newFriendListAdapter!!.getItem(position)!!.publicKey != null)
+                    {
+                        UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.publicKey)
+                        showProgressDialog()
+                    }
                 }
                 R.id.tvRefuse -> {
                     handleUser = newFriendListAdapter!!.getItem(position)
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
-                    val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                    UserProvider.getInstance().refuseAddFriend(strBase64!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId)
+                    UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
                     handleUser?.friendStatus = 5
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))

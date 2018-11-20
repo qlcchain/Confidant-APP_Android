@@ -30,8 +30,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.SendMsgReq
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.UIUtils
+import com.stratagile.pnrouter.utils.*
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import kotlinx.android.synthetic.main.fragment_chat.*
@@ -229,7 +228,14 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
     }
 
     fun sendMsg(FromId: String, ToId: String,FriendPublicKey :String, Msg: String) {
-        var msgData = SendMsgReq(FromId!!, ToId!!, Msg)
+        var aesKey =  RxEncryptTool.generateAESKey()
+        var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+        var friend = RxEncodeTool.base64Decode(FriendPublicKey)
+        var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
+        var DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+        var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
+        var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
+        var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
     }
 

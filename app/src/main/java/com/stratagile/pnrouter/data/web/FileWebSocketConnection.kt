@@ -131,7 +131,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     fun send(message : String?) : Boolean{
         KLog.i("开始传输字符串。。")
-       KLog.i(message)
+       KLog.i("send:"+message)
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false

@@ -104,6 +104,9 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var rsaData = FileUtil.readRSAData();
         val localRSAArrayList: ArrayList<RSAData>
         val gson = Gson()
+
+
+
         if(rsaData.equals(""))
         {
             val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
@@ -131,11 +134,17 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-        var private = RxEncodeTool.base64Decode(ConstantValue.privateRAS)
-        var public = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-        var source = "0123456789";
-        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),public)
 
+        val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
+        val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPairaa.private.encoded)
+        val strBase64Public = RxEncodeTool.base64Encode2String(KeyPairaa.public.encoded)
+
+        val strBase64 = RxEncodeTool.base64Encode2String("aalc1metoqlc0101".toByteArray())
+        var private = RxEncodeTool.base64Decode(strBase64Private)
+        var public = RxEncodeTool.base64Decode(strBase64Public)
+        var source = "aalc1metoqlc0101";
+        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),public)
+        var keybbcc = String(keyPulic);
         val strBase64keyPulic:String = RxEncodeTool.base64Encode2String(keyPulic)
         var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
         var keybb = String(keyOld);

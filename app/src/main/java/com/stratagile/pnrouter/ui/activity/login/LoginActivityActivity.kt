@@ -214,7 +214,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 //            standaloneCoroutine.cancel()
             var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
             var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
         }
     }
 
@@ -241,6 +241,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }else{
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                standaloneCoroutine = launch(CommonPool) {
+                    delay(10000)
+                    if (!loginBack) {
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast("login time out")
+                        }
+                    }
+                }
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
             }
 
