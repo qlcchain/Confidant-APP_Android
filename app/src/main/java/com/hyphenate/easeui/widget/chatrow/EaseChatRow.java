@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.DateUtil;
+import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
@@ -161,7 +162,8 @@ public abstract class EaseChatRow extends LinearLayout {
             } else {
                 List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
                 if (user.size() != 0) {
-                    EaseUserUtils.setUserAvatar(user.get(0).getNickName(), userAvatarView);
+                    String usernameSouce = new String(RxEncodeTool.base64Decode(user.get(0).getNickName()));
+                    EaseUserUtils.setUserAvatar(usernameSouce, userAvatarView);
                 } else {
                     EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView);
                 }

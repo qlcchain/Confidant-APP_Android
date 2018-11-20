@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.utils.DateUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
 import java.util.*
@@ -62,7 +63,8 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
                 progress_bar.visibility = View.VISIBLE
             }*/
         }
-        avatar.setText(userEntity?.nickName)
+        val usernameSouce = String(RxEncodeTool.base64Decode(userEntity?.nickName))
+        avatar.setText(usernameSouce)
     }
 
     /**

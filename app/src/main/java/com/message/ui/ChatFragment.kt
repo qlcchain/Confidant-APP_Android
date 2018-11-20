@@ -103,7 +103,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         userEntity = arguments!!.getParcelable(USER)
-        toolbar_parent.findViewById<TextView>(R.id.title).text = userEntity.nickName
+        val usernameSouce = String(RxEncodeTool.base64Decode(userEntity.nickName))
+        toolbar_parent.findViewById<TextView>(R.id.title).text = usernameSouce
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar_parent.findViewById<android.support.v7.widget.Toolbar>(R.id.toolbar).setOnMenuItemClickListener {
                 if (it.itemId == R.id.home) {

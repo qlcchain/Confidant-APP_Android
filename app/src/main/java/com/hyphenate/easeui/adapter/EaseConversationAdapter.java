@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.DateUtil;
+import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.ArrayList;
@@ -125,6 +126,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             return convertView;
         }
         String username = friendUser.getNickName();
+        String usernameSouce = new  String(RxEncodeTool.base64Decode(username));
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
@@ -135,17 +137,17 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             // group message, show group avatar
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
-            holder.name.setText(group != null ? group.getGroupName() : username);
+            holder.name.setText(group != null ? group.getGroupName() : usernameSouce);
         } else if(conversation.getType() == EMConversationType.ChatRoom){
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(conversationId);
-            holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
+            holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : usernameSouce);
             holder.motioned.setVisibility(View.GONE);
         }else {
 //            EaseUserUtils.setUserAvatar(getContext(), conversationId, holder.avatar);
             //EaseUserUtils.setUserNick(username, holder.name);
-            holder.avatar.setText(username);
-            holder.name.setText(username);
+            holder.avatar.setText(usernameSouce);
+            holder.name.setText(usernameSouce);
             holder.motioned.setVisibility(View.GONE);
         }
 

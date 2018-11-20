@@ -161,13 +161,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         userInfo = intent.getParcelableExtra("user")
     }
     override fun initData() {
+        var nickNameSouce = ""
         if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
-            title.text = userInfo!!.nickName
+            nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.nickName))
+            title.text = nickNameSouce
         } else {
             title.text = getString(R.string.details)
         }
-        nickName.text = userInfo!!.nickName
-        avatar.setText(userInfo!!.nickName)
+        nickName.text = nickNameSouce
+        avatar.setText(nickNameSouce)
         tvRefuse.setOnClickListener {
             if (userInfo!!.friendStatus == 0) {
                 showDialog()

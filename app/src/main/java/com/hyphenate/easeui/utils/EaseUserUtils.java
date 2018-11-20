@@ -11,7 +11,9 @@ import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.EaseUI.EaseUserProfileProvider;
 import com.hyphenate.easeui.domain.EaseUser;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.List;
@@ -80,7 +82,8 @@ public class EaseUserUtils {
             List<UserEntity> userEntityList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
             for (int i = 0; i < userEntityList.size(); i++) {
                 if (userEntityList.get(i).getUserId().equals(username)) {
-                    textView.setText(userEntityList.get(i).getNickName());
+                    String usernameSouce = new String(RxEncodeTool.base64Decode(userEntityList.get(i).getNickName()));
+                    textView.setText(usernameSouce);
                     return;
                 }
             }

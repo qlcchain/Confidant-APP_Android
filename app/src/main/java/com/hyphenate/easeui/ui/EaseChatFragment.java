@@ -579,7 +579,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     }
     protected void setUpView() {
-        titleBar.setTitle( UserDataManger.curreantfriendUserData.getNickName());
+        String usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getNickName()));
+        titleBar.setTitle( usernameSouce);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
             // set title
             if(EaseUserUtils.getUserInfo(toChatUserId) != null){
