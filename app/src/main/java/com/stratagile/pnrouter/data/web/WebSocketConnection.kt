@@ -76,7 +76,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 filledUri = "wss://" + ipAddress + port
             } else {
                 isLocalLogin = false;
-                filledUri = wsUri
+                //filledUri = wsUri
+                filledUri = "wss://" + ipAddress + port
             }
             KLog.i("连接的地址为：${filledUri}")
             val socketFactory = createTlsSocketFactory(trustStore)

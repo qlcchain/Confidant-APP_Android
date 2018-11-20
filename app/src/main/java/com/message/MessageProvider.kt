@@ -42,6 +42,10 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             userMessageList.put(pushMsgRsp.params.fromId, messages)
         }
         var message = Message.createReceivedMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId, pushMsgRsp.params.msgId, pushMsgRsp.params.toId)
+        val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
+        if (msgSouce != null && msgSouce != "") {
+            message.setMsg(msgSouce)
+        }
         messages.add(message)
         if (!hasConversation(pushMsgRsp.params.fromId)) {
             addConversation(pushMsgRsp.params.fromId, message)

@@ -41,6 +41,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -172,8 +173,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!,0, "")
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+            val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
+            var message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+            if (msgSouce != null && msgSouce != "") {
+                message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
+            }
             message.setDirection(EMMessage.Direct.RECEIVE)
+
             message.msgId = "" + pushMsgRsp?.params.msgId
             message.from = pushMsgRsp.params.fromId
             message.to = pushMsgRsp.params.toId

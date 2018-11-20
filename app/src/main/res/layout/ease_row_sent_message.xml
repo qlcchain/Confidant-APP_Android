@@ -100,12 +100,13 @@
             android:visibility="invisible" />
 
         <ProgressBar
+
             android:id="@+id/progress_bar"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/bubble"
-            android:visibility="visible" />
+            android:visibility="invisible" />
     </RelativeLayout>
 
 </LinearLayout>

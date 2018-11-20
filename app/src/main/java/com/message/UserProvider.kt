@@ -168,7 +168,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq,jDelFriendPushRsp.msgid))
+        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
     }
 
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {

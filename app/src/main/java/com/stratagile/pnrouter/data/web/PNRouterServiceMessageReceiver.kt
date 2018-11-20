@@ -73,7 +73,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             //对方删除我，服务器给我推送消息
             "DelFriendPush" -> {
                 val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
-                mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
+                //mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
                 userControlleCallBack?.delFriendPushRsp(jDelFriendPushRsp)
             }
             //拉取好友列表
