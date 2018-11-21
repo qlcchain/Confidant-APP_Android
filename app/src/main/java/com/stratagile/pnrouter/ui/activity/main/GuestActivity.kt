@@ -339,6 +339,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
             }
             3 -> {
+                closeProgressDialog()
                 toast(R.string.Network_error)
             }
         }

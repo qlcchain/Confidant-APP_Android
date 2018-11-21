@@ -177,9 +177,11 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
 
             }
             2 -> {
+                closeProgressDialog()
                 toast(R.string.Network_error)
             }
             3 -> {
+                closeProgressDialog()
                 toast(R.string.Network_error)
             }
         }
