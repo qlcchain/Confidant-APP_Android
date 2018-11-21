@@ -40,7 +40,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
     private var retryTime = 0
-    private var retryInterval = arrayListOf<Int>(1000, 3000, 5000, 10000, 12000)
+    private var retryInterval = arrayListOf<Int>(1000, 2000, 3000, 5000, 8000)
     private var ipAddress = ""
     private var filledUri = ""
 
@@ -48,8 +48,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         this.attempts = 0
         this.connected = false
         reConnectThread = ReConnectThread()
-        this.wsUri = httpUri.replace("https://", "wss://")
-                .replace("http://", "ws://")
+        /*this.wsUri = httpUri.replace("https://", "wss://")
+                .replace("http://", "ws://")*/
+        ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
+        this.wsUri = "wss://" + ipAddress + port;
 //        this.wsUri = "wss://47.96.76.184:18000"
 //        this.wsUri = "wss://47.96.76.184:18001/"
 //        this.wsUri = httpUri.replace("https://", "wss://")
@@ -424,6 +426,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     if (retryTime >=3) {
                         KLog.i("重连次数过多，切换公网服务器连接。。")
                         filledUri = wsUri
+                        client!!.cancel()
+                        client = null
+                        connected = false
+                        listener?.onConnectFail()
+                        return
                     }
                     if (client != null) {
 //                        client!!.close(1000, "OK")

@@ -93,7 +93,11 @@ class APIModule(private val application: Application) {
             Log.w("APIModule", "onDisconnected()")
             EventBus.getDefault().post(ConnectStatus(2))
         }
-
+        override fun onConnectFail() {
+            ConstantValue.isConnected = false
+            Log.w("APIModule", "onConnectFail()")
+            EventBus.getDefault().post(ConnectStatus(3))
+        }
         override fun onAuthenticationFailure() {
             Log.w("APIModule", "onAuthenticationFailure()")
 //            TextSecurePreferences.setUnauthorizedReceived(application, true)

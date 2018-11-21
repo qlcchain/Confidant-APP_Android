@@ -325,11 +325,22 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        if (connectStatus.status == 0) {
-            closeProgressDialog()
-            showProgressDialog("wait...")
-            var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+        when (connectStatus.status) {
+            0 -> {
+                closeProgressDialog()
+                showProgressDialog("wait...")
+                var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+            }
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+                toast(R.string.Network_error)
+            }
         }
     }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

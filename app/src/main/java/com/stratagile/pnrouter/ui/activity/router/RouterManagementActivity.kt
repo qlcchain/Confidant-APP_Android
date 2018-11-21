@@ -124,6 +124,11 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             avi.hide()
             tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
             llReConnect.visibility = View.VISIBLE
+        }else if (statusChange.status   == 3){
+            ivConnectStatus.visibility = View.GONE
+            avi.hide()
+            tvConnectStatus.text = resources.getString(R.string.Network_error)
+            llReConnect.visibility = View.VISIBLE
         }
     }
 

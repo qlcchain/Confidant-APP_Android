@@ -4,5 +4,6 @@ interface ConnectivityListener {
     fun onConnected()
     fun onConnecting()
     fun onDisconnected()
+    fun onConnectFail()
     fun onAuthenticationFailure()
 }

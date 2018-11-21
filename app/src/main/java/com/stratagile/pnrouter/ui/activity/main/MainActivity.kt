@@ -552,10 +552,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectStatusChange(statusChange: ConnectStatus) {
-        if (statusChange.status == 0) {
-            reConnect.visibility = View.GONE
-        } else {
-            reConnect.visibility = View.VISIBLE
+        when (statusChange.status) {
+            0 -> {
+                reConnect.visibility = View.GONE
+            }
+            1 -> {
+
+            }
+            2 -> {
+                reConnect.visibility = View.VISIBLE
+            }
+            3 -> {
+                reConnect.visibility = View.VISIBLE
+            }
         }
     }
 

@@ -169,8 +169,19 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        if (connectStatus.status == 0) {
+        when (connectStatus.status) {
+            0 -> {
 
+            }
+            1 -> {
+
+            }
+            2 -> {
+                toast(R.string.Network_error)
+            }
+            3 -> {
+                toast(R.string.Network_error)
+            }
         }
     }
     override fun getScanPermissionSuccess() {

@@ -198,23 +198,36 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        if (connectStatus.status == 0) {
-            loginBack = false
-            closeProgressDialog()
-            showProgressDialog("login...")
-            standaloneCoroutine = launch(CommonPool) {
-                delay(10000)
-                if (!loginBack) {
-                    runOnUiThread {
-                        closeProgressDialog()
-                        toast("login time out")
+
+        when (connectStatus.status) {
+            0 -> {
+                loginBack = false
+                closeProgressDialog()
+                showProgressDialog("login...")
+                standaloneCoroutine = launch(CommonPool) {
+                    delay(10000)
+                    if (!loginBack) {
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast("login time out")
+                        }
                     }
                 }
-            }
 //            standaloneCoroutine.cancel()
-            var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-            var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+            }
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+                closeProgressDialog()
+               toast(R.string.Network_error)
+            }
         }
     }
 
