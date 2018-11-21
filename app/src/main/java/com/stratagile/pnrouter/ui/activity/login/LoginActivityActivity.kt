@@ -333,14 +333,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
             hasRouterParentLogin.visibility = View.VISIBLE
-            hasRouterParentLogin.visibility = View.INVISIBLE
             noRoutergroupLogin.visibility = View.INVISIBLE
-            noRoutergroupLogin.visibility = View.VISIBLE
+            scanParentLogin.visibility = View.INVISIBLE
         } else {
-            hasRouterParentLogin.visibility = View.VISIBLE
-            noRoutergroupLogin.visibility = View.VISIBLE
-            noRoutergroupLogin.visibility = View.INVISIBLE
             hasRouterParentLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.VISIBLE
+            scanParentLogin.visibility = View.VISIBLE
         }
         if (routerList.size > 0) {
             routerName.setOnClickListener { view1 ->
