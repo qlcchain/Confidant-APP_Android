@@ -121,7 +121,7 @@ public class SendFileData implements Serializable {
     }
 
     public void setToId(byte[] toId) {
-        System.arraycopy(toId, 0, ToId, 0, toId.length > FromId.length ? FromId.length : toId.length);
+        System.arraycopy(toId, 0, ToId, 0, toId.length > ToId.length ? ToId.length : toId.length);
     }
 
     public byte[] getContent() {

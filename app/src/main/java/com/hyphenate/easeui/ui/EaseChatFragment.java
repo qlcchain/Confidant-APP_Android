@@ -336,7 +336,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         System.arraycopy(retMsg, 12, CRC, 0, 2);
         System.arraycopy(retMsg, 14, Code, 0, 2);
         System.arraycopy(retMsg, 16, FromId, 0, 76);
-        System.arraycopy(retMsg, 92, ToId, 0, 76);
+        System.arraycopy(retMsg, 93, ToId, 0, 76);
         int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action)) ;
         int FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId));
         int SegSeqResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(SegSeq));
@@ -374,6 +374,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq)
     {
+        KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
         String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
         int action = 1;
         switch (MsgType)
