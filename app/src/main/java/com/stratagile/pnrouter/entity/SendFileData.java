@@ -27,6 +27,11 @@ public class SendFileData implements Serializable {
     private byte[] FileName = new byte[256];
     private byte[] FromId = new byte[77];
     private byte[] ToId = new byte[77];
+    private byte[] SrcKey = new byte[256];
+    private byte[] DstKey = new byte[256];
+
+
+
     private byte[] Content = new byte[1024*100];
 
     public int getMagic() {
@@ -131,6 +136,22 @@ public class SendFileData implements Serializable {
     public void setContent(byte[] content) {
         System.arraycopy(content, 0, Content, 0, content.length > Content.length ? Content.length : content.length);
     }
+    public byte[] getSrcKey() {
+        return SrcKey;
+    }
+
+    public void setSrcKey(byte[] srcKey) {
+
+        System.arraycopy(srcKey, 0, SrcKey, 0, srcKey.length > SrcKey.length ? SrcKey.length : srcKey.length);
+    }
+
+    public byte[] getDstKey() {
+        return DstKey;
+    }
+
+    public void setDstKey(byte[] dstKey) {
+        System.arraycopy(dstKey, 0, DstKey, 0, dstKey.length > DstKey.length ? DstKey.length : dstKey.length);
+    }
 
     public byte[] toByteArray() {
         byte[] magicByte = FormatTransfer.toLH(this.Magic);
@@ -143,7 +164,7 @@ public class SendFileData implements Serializable {
         byte[] SegMoreByte = new byte[]{this.SegMore};
         byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
-                + this.FileName.length + this.FromId.length + this.ToId.length + this.Content.length;
+                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+ this.Content.length;
         byte[] result = new byte[length + 2];
         int copyLength = 0;
         System.arraycopy(magicByte, 0, result, copyLength, magicByte.length);
@@ -170,6 +191,12 @@ public class SendFileData implements Serializable {
         copyLength += this.FromId.length;
         System.arraycopy(this.ToId, 0, result, copyLength,this.ToId.length);
         copyLength += this.ToId.length;
+
+        System.arraycopy(this.SrcKey, 0, result, copyLength,this.SrcKey.length);
+        copyLength += this.SrcKey.length;
+        System.arraycopy(this.DstKey, 0, result, copyLength,this.DstKey.length);
+        copyLength += this.DstKey.length;
+
         System.arraycopy(this.Content, 0, result, copyLength,this.Content.length);
         byte[] add = new byte[]{0, 0};
         copyLength += this.Content.length;

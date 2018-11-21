@@ -400,4 +400,5 @@
     <string name="IdentifyCode">QLCADMIN</string>
     <string name="Cannot_be_empty">Cannot be empty</string>
     <string name="Password_inconsistent">Password inconsistent</string>
+    <string name="senderror">send error</string>
 </resources>

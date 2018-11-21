@@ -198,6 +198,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
+    private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, String> sendFileNameMap = new HashMap<>();
     private HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
@@ -267,7 +268,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
                     byte[] fileBuffer= FileUtil.file2Byte(filePath);
                     int fileId = (int)System.currentTimeMillis()/1000;
-                    sendFileByteData(fileBuffer,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
+                    String aesKey =  RxEncryptTool.generateAESKey();
+                    byte[] fileBufferMi = new byte[0];
+                    try{
+
+                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
+                    }catch (Exception e)
+                    {
+                        Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 break;
             case 2:
@@ -374,57 +385,73 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq)
     {
-        KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
-        String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
-        int action = 1;
-        switch (MsgType)
+        String FriendPublicKey = sendFileFriendKeyMap.get(msgId);
+        String aesKey =  RxEncryptTool.generateAESKey();
+        byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+        byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
+        byte[] SrcKey = new byte[256];
+        byte[] DstKey = new byte[256];
+        try {
+            SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),my));
+            DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),friend));
+            KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
+            String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
+            int action = 1;
+            switch (MsgType)
+            {
+                case "png":
+                case "jpg":
+                    action = 1;
+                    break;
+                case "amr":
+                    action = 2;
+                    break;
+                case "mp4":
+                    action = 4;
+                    break;
+            }
+            SendFileData sendFileData = new SendFileData();
+            int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
+            sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
+            sendFileData.setAction(FormatTransfer.reverseInt(action));
+            sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
+            int aa = FormatTransfer.reverseInt(9437440);
+            sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
+            int fileOffset = 0;
+            fileOffset = (segSeq -1) * sendFileSizeMax;
+            sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
+            sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
+            sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
+            int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
+            sendFileData.setSegMore((byte) segMore);
+            sendFileData.setCotinue((byte) 0);
+            String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
+            sendFileData.setFileName(strBase64.getBytes());
+            sendFileData.setFromId(From.getBytes());
+            sendFileData.setToId(To.getBytes());
+            sendFileData.setSrcKey(SrcKey);
+            sendFileData.setDstKey(DstKey);
+            byte[] content = new byte[sendFileSizeMax];
+            System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
+            sendFileData.setContent(content);
+            byte[] sendData = sendFileData.toByteArray();
+            int newCRC = CRC16Util.getCRC(sendData,sendData.length);
+            sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
+            sendData = sendFileData.toByteArray();
+            sendFileNameMap.put(fileId+"",fileName);
+            sendFileLastByteSizeMap.put(fileId+"",segSize);
+            sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
+            sendMsgIdMap.put(fileId+"",msgId);
+            EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
+            String s = new String(content);
+            String aabb =  FileUtil.bytesToHex(content);
+            //KLog.i("发送中>>>内容"+"content:"+aabb);
+            KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
+
+        }catch (Exception e)
         {
-            case "png":
-            case "jpg":
-                action = 1;
-                break;
-            case "amr":
-                action = 2;
-                break;
-            case "mp4":
-                action = 4;
-                break;
+            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
         }
-        SendFileData sendFileData = new SendFileData();
-        int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
-        sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
-        sendFileData.setAction(FormatTransfer.reverseInt(action));
-        sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
-        int aa = FormatTransfer.reverseInt(9437440);
-        sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
-        int fileOffset = 0;
-        fileOffset = (segSeq -1) * sendFileSizeMax;
-        sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
-        sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
-        sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-        int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
-        sendFileData.setSegMore((byte) segMore);
-        sendFileData.setCotinue((byte) 0);
-        String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
-        sendFileData.setFileName(strBase64.getBytes());
-        sendFileData.setFromId(From.getBytes());
-        sendFileData.setToId(To.getBytes());
-        byte[] content = new byte[sendFileSizeMax];
-        System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
-        sendFileData.setContent(content);
-        byte[] sendData = sendFileData.toByteArray();
-        int newCRC = CRC16Util.getCRC(sendData,sendData.length);
-        sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
-        sendData = sendFileData.toByteArray();
-        sendFileNameMap.put(fileId+"",fileName);
-        sendFileLastByteSizeMap.put(fileId+"",segSize);
-        sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
-        sendMsgIdMap.put(fileId+"",msgId);
-        EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
-        String s = new String(content);
-        String aabb =  FileUtil.bytesToHex(content);
-        //KLog.i("发送中>>>内容"+"content:"+aabb);
-        KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
     }
     /**
      * 锁定内容高度，防止跳闪
@@ -1356,6 +1383,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,filePath);
+        sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/voice/" + filePath.substring(filePath.lastIndexOf("/")+1);
@@ -1375,6 +1403,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
+        sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
@@ -1391,6 +1420,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,imagePath);
+        sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         //String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
@@ -1418,6 +1448,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
         sendFilePathMap.put(uuid,videoPath);
+        sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
         sendMessageTo(message);
