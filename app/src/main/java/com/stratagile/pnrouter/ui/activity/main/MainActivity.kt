@@ -8,8 +8,10 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMConversation
 import com.hyphenate.chat.EMMessage
@@ -283,6 +285,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
     }
 
+    private var exitTime: Long = 0
     lateinit var viewModel: MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
     private var contactListFragment: EaseContactListFragment? = null
@@ -499,6 +502,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onResume() {
+        exitTime = System.currentTimeMillis() - 2001
         super.onResume()
         var localFriendList: List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var hasUnReadMsg: Boolean = false;
@@ -656,6 +660,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             contacts[aa[i]] = user
         }
         return contacts
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitToast()
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    fun exitToast(): Boolean {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            Toast.makeText(this, R.string.Press_again, Toast.LENGTH_SHORT)
+                    .show()
+            exitTime = System.currentTimeMillis()
+        } else {
+            finish()
+            System.exit(0)
+        }
+        return false
     }
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {

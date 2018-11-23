@@ -7,10 +7,12 @@ import android.hardware.fingerprint.FingerprintManager
 import android.os.*
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -94,6 +96,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
     var isFromScan = false
+    private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         standaloneCoroutine.cancel()
@@ -215,7 +218,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         setContentView(R.layout.activity_login)
 //        CrashReport.testNativeCrash()
     }
-
+    override fun onResume() {
+        exitTime = System.currentTimeMillis() - 2001
+        super.onResume()
+    }
     override fun onDestroy() {
 
         AppConfig.instance.messageReceiver?.loginBackListener = null
@@ -579,7 +585,24 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             super.onBackPressed()
         }
     }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitToast()
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 
+    fun exitToast(): Boolean {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            Toast.makeText(this, R.string.Press_again, Toast.LENGTH_SHORT)
+                    .show()
+            exitTime = System.currentTimeMillis()
+        } else {
+            finish()
+            System.exit(0)
+        }
+        return false
+    }
    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {

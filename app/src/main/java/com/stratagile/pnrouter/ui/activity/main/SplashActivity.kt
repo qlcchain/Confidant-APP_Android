@@ -21,7 +21,6 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_register.*
 import java.nio.ByteOrder
@@ -39,13 +38,13 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     override fun loginSuccees() {
         MobileSocketClient.getInstance().destroy()
-        startActivity(Intent(this, RegisterActivity::class.java))
+        startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 
     override fun jumpToLogin() {
         MobileSocketClient.getInstance().destroy()
-        startActivity(Intent(this, RegisterActivity::class.java))
+        startActivity(Intent(this, LoginActivityActivity::class.java))
         finish()
     }
 

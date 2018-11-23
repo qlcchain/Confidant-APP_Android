@@ -402,4 +402,6 @@
     <string name="Password_inconsistent">Password inconsistent</string>
     <string name="senderror">send error</string>
     <string name="Account_Help_Center">Account Help Center</string>
+    <string name="Press_again">Press again</string>
+
 </resources>
