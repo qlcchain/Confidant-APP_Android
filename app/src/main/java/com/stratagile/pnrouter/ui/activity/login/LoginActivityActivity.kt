@@ -63,6 +63,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             1 -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
+                finish()
             }
             2 -> {
                 toast("error")
@@ -147,8 +148,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             routerList.forEach {
                 it.lastCheck = false
             }
-            newRouterEntity.lastCheck = true
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            newRouterEntity.lastCheck = true
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)

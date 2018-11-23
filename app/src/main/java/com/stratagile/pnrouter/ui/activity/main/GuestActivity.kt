@@ -80,9 +80,11 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         when (recoveryRsp.params.retCode) {
             0 -> {
                 startActivity(Intent(this, LoginActivityActivity::class.java))
+                finish()
             }
             1 -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
+                finish()
             }
             2 -> {
                 toast("error")

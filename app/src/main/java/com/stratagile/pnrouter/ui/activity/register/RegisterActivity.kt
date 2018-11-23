@@ -105,7 +105,11 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                     break
                 }
             }
-
+            routerList.forEach {
+                it.lastCheck = false
+            }
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            newRouterEntity.lastCheck = true
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -113,10 +117,6 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-            routerList.forEach {
-                it.lastCheck = false
-            }
-            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
