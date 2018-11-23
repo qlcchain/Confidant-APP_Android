@@ -63,6 +63,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     val REQUEST_SCAN_QRCODE = 1
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
+        closeProgressDialog();
         /*FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
         var newRouterEntity = RouterEntity()
         newRouterEntity.routerId = recoveryRsp.params.routeId
@@ -329,7 +330,6 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         when (connectStatus.status) {
             0 -> {
-                closeProgressDialog()
                 showProgressDialog("wait...")
                 var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))

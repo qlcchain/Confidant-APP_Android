@@ -82,6 +82,8 @@ public class FileUtil {
      * @return
      */
     public static String saveUserData2Local(String userData, String from) {
+        if(userData == null)
+            return "";
         String lastP2pId = getLocalUserData(from);
         copyDataFile();
         String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/"+from+".json";

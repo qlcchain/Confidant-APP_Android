@@ -81,14 +81,14 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             }
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
-            FileUtil.saveUserData2Local(loginRsp.params!!.routerId,"routerid")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
-            SpUtil.putString(this, ConstantValue.username,username)
-            SpUtil.putString(this, ConstantValue.routerId, routerId)
+            SpUtil.putString(this, ConstantValue.username,registerKey.text.toString())
+            SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            newRouterEntity.routerId = routerId
+            newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             //newRouterEntity.username = loginKey.text.toString()
             newRouterEntity.lastCheck = true
@@ -105,10 +105,16 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                     break
                 }
             }
+            var needUpdate :ArrayList<MyRouter> = ArrayList();
             routerList.forEach {
                 it.lastCheck = false
+                var myRouter:MyRouter = MyRouter();
+                myRouter.setType(0)
+                myRouter.setRouterEntity(it)
+                needUpdate.add(myRouter);
             }
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -198,6 +204,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 toast(getString(R.string.Password_inconsistent))
                 return@setOnClickListener
             }
+            showProgressDialog("waiting...")
             val NickName = RxEncodeTool.base64Encode2String(registerKey.text.toString().toByteArray())
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             var login = RegeisterReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN, userName2.text.toString(),LoginKey,NickName)

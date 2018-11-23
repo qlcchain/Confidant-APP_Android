@@ -108,7 +108,13 @@ public class RxEncodeTool {
      */
     public static byte[] base64Decode(String input) {
         input =  input.replace("\\n", "");
-        return Base64.decode(input, Base64.NO_WRAP);
+        try {
+            byte[] data = Base64.decode(input, Base64.NO_WRAP);
+            return data;
+        }catch (Exception e)
+        {
+            return new byte[0];
+        }
     }
 
     /**

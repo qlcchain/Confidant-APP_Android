@@ -665,7 +665,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitToast()
         }
-        return super.onKeyDown(keyCode, event)
+        return false
     }
 
     fun exitToast(): Boolean {

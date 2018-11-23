@@ -47,6 +47,7 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.ArrayList
 import javax.inject.Inject
 
 
@@ -135,7 +136,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         } else {
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
-            FileUtil.saveUserData2Local(loginRsp.params!!.routerId,"routerid")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
@@ -159,10 +160,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     break
                 }
             }
+            var needUpdate :ArrayList<MyRouter> = ArrayList();
             routerList.forEach {
                 it.lastCheck = false
+                var myRouter:MyRouter = MyRouter();
+                myRouter.setType(0)
+                myRouter.setRouterEntity(it)
+                needUpdate.add(myRouter);
             }
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -589,7 +596,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             exitToast()
         }
-        return super.onKeyDown(keyCode, event)
+        return false
     }
 
     fun exitToast(): Boolean {

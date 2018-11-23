@@ -4,7 +4,7 @@ public class JLoginRsp extends BaseEntity {
 
 
     /**
-     * params : {"Action":"Login","RetCode":0,"RouterId":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000008B827EBD089CB00005BF37E7F","UserId":"5AA2F93E498E65CC2C7BEBE78F113777F9225A15A01E001F079415522A5BEF19B92DCF4552FE","NeedAsysn":0}
+     * params : {"Action":"Login","RetCode":0,"Routerid":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000010B827EBD089CB00005BF7CD9A","UserId":"50D065FC0DEF163E03B2D7100D8A2244F7A6B374E85B42D99DA7D0DB793B740ADAFF9CA03DD3","NeedAsysn":0,"NickName":"cmVkOQ=="}
      */
 
     private ParamsBean params;
@@ -21,18 +21,20 @@ public class JLoginRsp extends BaseEntity {
         /**
          * Action : Login
          * RetCode : 0
-         * RouterId : D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472
-         * UserSn : 02000008B827EBD089CB00005BF37E7F
-         * UserId : 5AA2F93E498E65CC2C7BEBE78F113777F9225A15A01E001F079415522A5BEF19B92DCF4552FE
+         * Routerid : D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472
+         * UserSn : 02000010B827EBD089CB00005BF7CD9A
+         * UserId : 50D065FC0DEF163E03B2D7100D8A2244F7A6B374E85B42D99DA7D0DB793B740ADAFF9CA03DD3
          * NeedAsysn : 0
+         * NickName : cmVkOQ==
          */
 
         private String Action;
         private int RetCode;
-        private String RouterId;
+        private String Routerid;
         private String UserSn;
         private String UserId;
         private int NeedAsysn;
+        private String NickName;
 
         public String getAction() {
             return Action;
@@ -50,12 +52,12 @@ public class JLoginRsp extends BaseEntity {
             this.RetCode = RetCode;
         }
 
-        public String getRouterId() {
-            return RouterId;
+        public String getRouterid() {
+            return Routerid;
         }
 
-        public void setRouterId(String Routerid) {
-            this.RouterId = Routerid;
+        public void setRouterid(String Routerid) {
+            this.Routerid = Routerid;
         }
 
         public String getUserSn() {
@@ -80,6 +82,14 @@ public class JLoginRsp extends BaseEntity {
 
         public void setNeedAsysn(int NeedAsysn) {
             this.NeedAsysn = NeedAsysn;
+        }
+
+        public String getNickName() {
+            return NickName;
+        }
+
+        public void setNickName(String NickName) {
+            this.NickName = NickName;
         }
     }
 }
