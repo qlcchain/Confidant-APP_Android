@@ -267,10 +267,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-        val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
+        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.publicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, userId!!, userInfo!!.userId, ConstantValue.publicRAS, userInfo!!.publicKey,0)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS, userInfo!!.publicKey,0)
             userInfo?.friendStatus = 0
             AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
             showProgressDialog()
@@ -282,10 +282,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-        val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
+        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.publicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, userId!!, userInfo!!.userId,ConstantValue.publicRAS, userInfo!!.publicKey, 0)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS, userInfo!!.publicKey, 0)
             userInfo?.friendStatus = 1
             AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
             showProgressDialog()

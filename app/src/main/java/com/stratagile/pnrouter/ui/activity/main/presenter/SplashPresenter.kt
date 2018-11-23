@@ -128,6 +128,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
             FileUtil.init()
             LocalRouterUtils.updateGreanDaoFromLocal()
+            getLastVersion()
             // 权限申请成功回调。
             if (requestCode == 101) {
                 permissionState = 0

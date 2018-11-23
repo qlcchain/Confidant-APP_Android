@@ -201,4 +201,17 @@ public class RxEncodeTool {
              return "";
         }
     }
+    public static String getAESKey(String sourceKey)
+    {
+        byte[] msgMi = RxEncodeTool.base64Decode(sourceKey.replace("\n",""));
+        try {
+            byte[] privateMy = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPrivateRAS());
+            byte[] SrcKey = RxEncryptTool.decryptByPrivateKey(msgMi,privateMy);
+            String aesKey = new String(SrcKey);
+            return aesKey;
+        }catch (Exception e)
+        {
+            return "";
+        }
+    }
 }

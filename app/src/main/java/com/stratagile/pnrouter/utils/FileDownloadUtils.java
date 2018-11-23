@@ -21,13 +21,13 @@ public class FileDownloadUtils {
             task.cancel(true);
         }
     }
-    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler){
+    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key){
         ///data/data/com.johnny.testzipanddownload/files
         File destDir = new File(to);
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
-        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler);
+        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key);
         task.execute();
     }
 }

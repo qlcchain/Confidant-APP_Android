@@ -242,15 +242,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
-        val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, selfUserId, toUserId, ConstantValue.publicRAS, friendKey,0)
+        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS, friendKey,0)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 
     fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
-        val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickNameBase64, selfUserId, toUserId, "",friendKey,1)
+        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
     }
 

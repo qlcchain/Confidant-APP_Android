@@ -30,6 +30,7 @@ public class Message {
     private Status status;
     private String FileName;
     private String  FilePath;
+    private Long FileSize;
 
     public String getUserKey() {
         return UserKey;
@@ -59,7 +60,13 @@ public class Message {
     public void setFilePath(String filePath) {
         FilePath = filePath;
     }
+    public Long getFileSize() {
+        return FileSize;
+    }
 
+    public void setFileSize(Long fileSize) {
+        FileSize = fileSize;
+    }
     @Override
     public String toString() {
         return "Message{" +

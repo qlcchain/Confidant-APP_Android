@@ -102,7 +102,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         myRouter.setType(0)
         myRouter.setRouterEntity(newRouterEntity)
         LocalRouterUtils.insertLocalAssets(myRouter)
-
+        LocalRouterUtils.updateGreanDaoFromLocal();
         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
         var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))

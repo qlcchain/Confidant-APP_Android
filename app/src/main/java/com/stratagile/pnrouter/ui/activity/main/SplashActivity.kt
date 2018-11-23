@@ -164,8 +164,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         PathUtils.getInstance().initDirs("", "", this)
         System.out.println(ByteOrder.nativeOrder());
         SpUtil.putString(this, ConstantValue.testValue, "test")
-        mPresenter.getLastVersion()
         mPresenter.getPermission()
+        //mPresenter.getLastVersion()
         mPresenter.observeJump()
     }
 

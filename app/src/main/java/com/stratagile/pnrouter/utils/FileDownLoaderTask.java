@@ -28,6 +28,8 @@ import android.os.Message;
 import android.util.Base64;
 import android.util.Log;
 
+import com.socks.library.KLog;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -49,6 +51,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private Handler handler;
 	private int bytesCopiedFlag;
 	private int msgID;
+	private String keyStr;
 
 	/**
 	 *
@@ -57,9 +60,10 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message){
+	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key){
 		super();
 		msgID = msgId;
+		keyStr = key;
 		if(context!=null){
 			mContext = context;
 			handler = message;
@@ -187,9 +191,22 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		return bytesCopied;
 	}
 	private int copy(InputStream input, OutputStream output){
-
+		InputStream newInput = input;
+		String aesKey =  RxEncodeTool.getAESKey(keyStr);
+		try {
+			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
+			String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
+			KLog.i("miString:"+miString.substring(0,100));
+			byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+			String miStringSouce  = RxEncodeTool.base64Encode2String(miFile);
+			KLog.i("miStringSouce:"+miString.substring(0,100));
+			newInput = FileUtil.byteTOInputStream(miFile);
+		}catch (Exception e)
+		{
+			Log.i("FileDownLoaderTask", "jiemi  error ");
+		}
 		byte[] buffer = new byte[1024*8];
-		BufferedInputStream in = new BufferedInputStream(input, 1024*8);
+		BufferedInputStream in = new BufferedInputStream(newInput, 1024*8);
 		BufferedOutputStream out  = new BufferedOutputStream(output, 1024*8);
 		int count =0,n=0;
 		try {

@@ -104,6 +104,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -272,10 +273,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     byte[] fileBufferMi = new byte[0];
                     try{
 
-                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                        String sourFile = RxEncodeTool.base64Encode2String(fileBuffer);
+                        String miStringScouce  = RxEncodeTool.base64Encode2String(fileBuffer);
+                        KLog.i("miStringScouce:"+miStringScouce.substring(0,100));
+                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                        String miString2  = RxEncodeTool.base64Encode2String(fileBufferMi);
+                        KLog.i("miString:"+miString2.substring(0,100));
+                         /* InputStream aabb = FileUtil.byteTOInputStream(fileBufferMi);
+
+                        fileBufferMi =  FileUtil.InputStreamTOByte(aabb);*/
+
+                        //String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
+                        //byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+
                         sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
                     }catch (Exception e)
                     {
+                        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                        EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                         Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                     }
 
@@ -450,6 +465,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }catch (Exception e)
         {
+            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+            EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
             Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
         }
     }
@@ -785,7 +802,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                         String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
                         String save_dir = PathUtils.getInstance().getImagePath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown);
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                     }
                     break;
                 case 2:
@@ -801,7 +818,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
                         String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
                         String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown);
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                     }
                     break;
                 case 3:
@@ -822,7 +839,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
                         String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
                         String save_dir =  PathUtils.getInstance().getVideoPath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown);
+                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                     }
                     break;
                 case 5:
@@ -869,15 +886,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void  delFreindMsg(JDelMsgPushRsp jDelMsgRsp)
     {
-        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
-        EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
-        forward_msg.addBody(var3);
-        if(conversation !=null )
-            conversation.updateMessage(forward_msg);
-        //conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
-        //refresh ui
-        if(isMessageListInited) {
-            messageList.refresh();
+        try {
+            EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
+            EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
+            forward_msg.addBody(var3);
+            if(conversation !=null )
+                conversation.updateMessage(forward_msg);
+            //conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+            //refresh ui
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }catch (Exception e)
+        {
+
         }
     }
     protected void onMessageListInit(){

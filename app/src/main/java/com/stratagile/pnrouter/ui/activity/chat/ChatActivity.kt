@@ -133,6 +133,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
+        var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
+        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
         chatFragment?.delFreindMsg(delMsgPushRsp)
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
@@ -152,7 +154,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }//goMain();
         receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler)
+       FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
     }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {

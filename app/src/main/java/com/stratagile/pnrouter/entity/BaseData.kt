@@ -203,7 +203,7 @@ data class DelMsgReq(var UserId : String, var Friendid : String, var MsgId :Int,
  * 场景：用户A发起删除和自己好友用户B的会话记录，删除后，路由器上也不再保存
  * (1)	请求（APP->Router）
  */
-data class DelMsgRsp(var Action : String, var Retcode : Int, var Msg : String)
+data class DelMsgRsp(var Retcode : Int, var Msg : String,var ToId:String,var Action: String = "PushDelMsg")
 
 data class PullFriendReq(var UserId: String, var Action: String = "PullFriend")
 

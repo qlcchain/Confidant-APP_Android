@@ -34,10 +34,15 @@ public class JPushFileMsgRsp extends BaseEntity {
         private String Action;
         private String FromId;
         private String ToId;
+        private String FilePath;
         private String FileName;
         private String FileMD5;
-        private String FilePath;
         private int MsgId;
+        private String SrcKey;
+        private String DstKey;
+
+
+
         private int FileType;
 
         public String getAction() {
@@ -97,7 +102,21 @@ public class JPushFileMsgRsp extends BaseEntity {
         public void setMsgId(int MsgId) {
             this.MsgId = MsgId;
         }
+        public String getSrcKey() {
+            return SrcKey;
+        }
 
+        public void setSrcKey(String srcKey) {
+            SrcKey = srcKey;
+        }
+
+        public String getDstKey() {
+            return DstKey;
+        }
+
+        public void setDstKey(String dstKey) {
+            DstKey = dstKey;
+        }
         public int getFileType() {
             return FileType;
         }

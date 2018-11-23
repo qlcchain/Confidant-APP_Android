@@ -63,7 +63,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     val REQUEST_SCAN_QRCODE = 1
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
-        FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
+        /*FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
         var newRouterEntity = RouterEntity()
         newRouterEntity.routerId = recoveryRsp.params.routeId
         newRouterEntity.userSn = recoveryRsp.params.userSn
@@ -76,7 +76,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         myRouter.setType(0)
         myRouter.setRouterEntity(newRouterEntity)
         LocalRouterUtils.insertLocalAssets(myRouter)
-        LocalRouterUtils.updateGreanDaoFromLocal();
+        LocalRouterUtils.updateGreanDaoFromLocal();*/
         when (recoveryRsp.params.retCode) {
             0 -> {
                 startActivity(Intent(this, LoginActivityActivity::class.java))
