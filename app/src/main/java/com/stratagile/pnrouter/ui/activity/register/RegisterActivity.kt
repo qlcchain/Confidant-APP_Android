@@ -169,9 +169,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     override fun initData() {
         newRouterEntity = RouterEntity()
         EventBus.getDefault().register(this)
-       /* miniScanParent.setOnClickListener {
-            mPresenter.getScanPermission()
-        }*/
+        /* miniScanParent.setOnClickListener {
+             mPresenter.getScanPermission()
+         }*/
 
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -187,7 +187,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         }
         MobileSocketClient.getInstance().init(handler,this)
         MobileSocketClient.getInstance().receive()
-        AppConfig.instance.messageReceiver!!.registerListener = this
+        if( AppConfig.instance.messageReceiver != null)
+            AppConfig.instance.messageReceiver!!.registerListener = this
         registerBtn.setOnClickListener {
             if (registerKey.text.toString().equals("") || userName2.text.toString().equals("") || userName3.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
@@ -232,16 +233,16 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
     override fun setupActivityComponent() {
-       DaggerRegisterComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .registerModule(RegisterModule(this))
-               .build()
-               .inject(this)
+        DaggerRegisterComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .registerModule(RegisterModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: RegisterContract.RegisterContractPresenter) {
-            mPresenter = presenter as RegisterPresenter
-        }
+        mPresenter = presenter as RegisterPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -262,32 +263,32 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             System.arraycopy(soureData, 6, RouterId, 0, 76)
             System.arraycopy(soureData, 82, UserSn, 0, 32)
             var aa = soureData;
-               /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-              if (routerList != null && routerList.size != 0) {
-                   routerList.forEach { itt ->
-                       if (itt.routerId.equals(data!!.getStringExtra("result"))) {
-                           routerName?.setText(itt.routerName)
-                           routerId = data!!.getStringExtra("result")
-                           KLog.i("routerId为：" + routerId)
-                           routerList.forEach {
-                               if (it.lastCheck) {
-                                   it.lastCheck = false
-                                   AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
-                               }
-                           }
-                           itt.lastCheck = true
-                           AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(itt)
-                           return
-                       }
-                   }
-                   routerId = data!!.getStringExtra("result")
-                   routerName.text = "Router " + (routerList.size + 1)
-                //newRouterEntity.routerId = data!!.getStringExtra("result")
-                return
-            } else {
-                routerName?.setText("Router 1")
+            /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+           if (routerList != null && routerList.size != 0) {
+                routerList.forEach { itt ->
+                    if (itt.routerId.equals(data!!.getStringExtra("result"))) {
+                        routerName?.setText(itt.routerName)
+                        routerId = data!!.getStringExtra("result")
+                        KLog.i("routerId为：" + routerId)
+                        routerList.forEach {
+                            if (it.lastCheck) {
+                                it.lastCheck = false
+                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                            }
+                        }
+                        itt.lastCheck = true
+                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(itt)
+                        return
+                    }
+                }
                 routerId = data!!.getStringExtra("result")
-            }*/
+                routerName.text = "Router " + (routerList.size + 1)
+             //newRouterEntity.routerId = data!!.getStringExtra("result")
+             return
+         } else {
+             routerName?.setText("Router 1")
+             routerId = data!!.getStringExtra("result")
+         }*/
             return
         }
     }
