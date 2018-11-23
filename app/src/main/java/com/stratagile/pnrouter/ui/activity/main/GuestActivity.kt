@@ -88,7 +88,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 finish()
             }
             2 -> {
-                toast("error")
+                runOnUiThread {
+                    toast("error")
+                }
             }
             3 -> {
 
@@ -341,8 +343,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
             }
             3 -> {
-                closeProgressDialog()
-                toast(R.string.Network_error)
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.Network_error)
+                }
+
+
             }
         }
     }
@@ -350,32 +356,40 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result");
-            var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
-            val keyId:ByteArray = ByteArray(6) //密钥ID
-            val RouterId:ByteArray = ByteArray(76) //路由器id
-            val UserSn:ByteArray = ByteArray(32)  //用户SN
-            System.arraycopy(soureData, 0, keyId, 0, 6)
-            System.arraycopy(soureData, 6, RouterId, 0, 76)
-            System.arraycopy(soureData, 82, UserSn, 0, 32)
-            var keyIdStr = String(keyId)
-            var RouterIdStr = String(RouterId)
-            var UserSnStr = String(UserSn)
-            for (data in ConstantValue.updRouterData)
-            {
-                var key:String = data.key;
-                if(key.equals(RouterIdStr))
+            try {
+                var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
+                val keyId:ByteArray = ByteArray(6) //密钥ID
+                val RouterId:ByteArray = ByteArray(76) //路由器id
+                val UserSn:ByteArray = ByteArray(32)  //用户SN
+                System.arraycopy(soureData, 0, keyId, 0, 6)
+                System.arraycopy(soureData, 6, RouterId, 0, 76)
+                System.arraycopy(soureData, 82, UserSn, 0, 32)
+                var keyIdStr = String(keyId)
+                var RouterIdStr = String(RouterId)
+                var UserSnStr = String(UserSn)
+                for (data in ConstantValue.updRouterData)
                 {
-                    ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
-                    ConstantValue.currentRouterId = RouterIdStr
-                    ConstantValue.currentRouterSN = UserSnStr
-                    break;
+                    var key:String = data.key;
+                    if(key.equals(RouterIdStr))
+                    {
+                        ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
+                        ConstantValue.currentRouterId = RouterIdStr
+                        ConstantValue.currentRouterSN = UserSnStr
+                        break;
+                    }
+                }
+                if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                {
+                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                    AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+                }
+            }catch (e:Exception)
+            {
+                runOnUiThread {
+                    toast(R.string.code_error)
                 }
             }
-            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
-            {
-                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-            }
+
         }
     }
 }

@@ -426,11 +426,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     if (retryTime >=3) {
                         KLog.i("重连次数过多，切换公网服务器连接。。")
                         filledUri = wsUri
-                        client!!.cancel()
+                        /*client!!.cancel()
                         client = null
                         connected = false
                         listener?.onConnectFail()
-                        return
+                        return*/
                     }
                     if (client != null) {
 //                        client!!.close(1000, "OK")

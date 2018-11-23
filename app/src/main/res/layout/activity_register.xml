@@ -63,7 +63,7 @@
             android:id="@+id/miniScanParent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:constraint_referenced_ids="miniScanBg,miniScanIcon"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
