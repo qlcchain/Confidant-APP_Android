@@ -276,7 +276,7 @@ public class RxEncryptTool {
      * @return 16进制密文
      */
     public static String encryptSHA256ToString(String data) {
-        return encryptSHA256ToString(data.getBytes());
+        return encryptSHA256ToString(data.getBytes()).toLowerCase();
     }
 
     /**

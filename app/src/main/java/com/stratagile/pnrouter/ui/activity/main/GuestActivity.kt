@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JRecoveryRsp
 import com.stratagile.pnrouter.entity.MyRouter
@@ -34,6 +35,7 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_guest.*
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -80,6 +82,25 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         LocalRouterUtils.updateGreanDaoFromLocal();*/
         when (recoveryRsp.params.retCode) {
             0 -> {
+                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
+                if (routerEntityList != null && routerEntityList!!.size != 0) {
+
+                }else{
+                    var newRouterEntity = RouterEntity()
+                    newRouterEntity.routerId = recoveryRsp.params.routeId
+                    newRouterEntity.userSn = recoveryRsp.params.userSn
+                    newRouterEntity.username = String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
+                    newRouterEntity.userId = recoveryRsp.params.userId
+                    newRouterEntity.dataFileVersion = recoveryRsp.params.dataFileVersion
+                    newRouterEntity.dataFilePay = ""
+                    var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+                    newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    val myRouter = MyRouter()
+                    myRouter.setType(0)
+                    myRouter.setRouterEntity(newRouterEntity)
+                    LocalRouterUtils.insertLocalAssets(myRouter)
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+                }
                 startActivity(Intent(this, LoginActivityActivity::class.java))
                 finish()
             }

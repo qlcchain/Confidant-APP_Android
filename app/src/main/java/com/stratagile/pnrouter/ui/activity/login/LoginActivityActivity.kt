@@ -72,6 +72,27 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     username = routerEntity.username
                     dataFileVersion = routerEntity.dataFileVersion
                     routerName.text = routerEntity.routerName
+                }else{
+                    var newRouterEntity = RouterEntity()
+                    newRouterEntity.routerId = recoveryRsp.params.routeId
+                    newRouterEntity.userSn = recoveryRsp.params.userSn
+                    newRouterEntity.username = String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
+                    newRouterEntity.userId = recoveryRsp.params.userId
+                    newRouterEntity.dataFileVersion = recoveryRsp.params.dataFileVersion
+                    newRouterEntity.dataFilePay = ""
+                    var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+                    newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    routerId = recoveryRsp.params.routeId
+                    userSn = recoveryRsp.params.userSn
+                    userId = recoveryRsp.params.userId
+                    username =String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
+                    dataFileVersion =recoveryRsp.params.dataFileVersion
+                    routerName.text = newRouterEntity.routerName
+                    val myRouter = MyRouter()
+                    myRouter.setType(0)
+                    myRouter.setRouterEntity(newRouterEntity)
+                    LocalRouterUtils.insertLocalAssets(myRouter)
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
                 }
 
             }
@@ -102,27 +123,39 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         KLog.i(loginRsp.toString())
         standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
-            if (loginRsp.params.retCode == 3) {
+            if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
-                    toast("The current service is not available.")
+                    toast("need Verification")
                     closeProgressDialog()
                 }
             }
             if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("Too many users")
+                    toast("rid error")
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 1) {
+            if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
-                    toast("RouterId Error")
+                    toast("uid error")
                     closeProgressDialog()
                 }
             }
             if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
-                    toast("System Error")
+                    toast("password error")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 5) {
+                runOnUiThread {
+                    toast("Verification code error")
+                    closeProgressDialog()
+                }
+            }
+            if (loginRsp.params.retCode == 5) {
+                runOnUiThread {
+                    toast("other error")
                     closeProgressDialog()
                 }
             }
@@ -145,11 +178,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
-            //newRouterEntity.username = loginKey.text.toString()
+            newRouterEntity.username = loginKey.text.toString()
             newRouterEntity.lastCheck = true
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
-            myUserData.nickName = newRouterEntity.username;
+            myUserData.nickName = loginRsp.params!!.nickName
             UserDataManger.myUserData = myUserData
             var contains = false
             for (i in routerList) {

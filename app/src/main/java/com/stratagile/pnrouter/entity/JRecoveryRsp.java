@@ -1,12 +1,10 @@
 package com.stratagile.pnrouter.entity;
 
-import com.stratagile.pnrouter.utils.RxEncodeTool;
-
 public class JRecoveryRsp extends BaseEntity {
 
 
     /**
-     * params : {"Action":"Recovery","RetCode":1,"UserSn":"01000001B827EBD089CB00005BE14F55","UserId":"","NickName":""}
+     * params : {"Action":"Recovery","RetCode":0,"RouteId":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000009B827EBD089CB00005BF760D1","UserId":"EF88AE41E7DC8BBD18FB280CC3DC4F3CE2ABAE3AE38B0CE744D0DDEB9447A42822CB7CFBC526","NickName":"cmVkMg==","DataFileVersion":0}
      */
 
     private ParamsBean params;
@@ -22,20 +20,21 @@ public class JRecoveryRsp extends BaseEntity {
     public static class ParamsBean {
         /**
          * Action : Recovery
-         * RetCode : 1
-         * UserSn : 01000001B827EBD089CB00005BE14F55
-         * UserId :
-         * NickName :
+         * RetCode : 0
+         * RouteId : D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472
+         * UserSn : 02000009B827EBD089CB00005BF760D1
+         * UserId : EF88AE41E7DC8BBD18FB280CC3DC4F3CE2ABAE3AE38B0CE744D0DDEB9447A42822CB7CFBC526
+         * NickName : cmVkMg==
+         * DataFileVersion : 0
          */
 
         private String Action;
         private int RetCode;
-
         private String RouteId;
         private String UserSn;
         private String UserId;
-
         private String NickName;
+        private int DataFileVersion;
 
         public String getAction() {
             return Action;
@@ -51,6 +50,14 @@ public class JRecoveryRsp extends BaseEntity {
 
         public void setRetCode(int RetCode) {
             this.RetCode = RetCode;
+        }
+
+        public String getRouteId() {
+            return RouteId;
+        }
+
+        public void setRouteId(String RouteId) {
+            this.RouteId = RouteId;
         }
 
         public String getUserSn() {
@@ -69,20 +76,20 @@ public class JRecoveryRsp extends BaseEntity {
             this.UserId = UserId;
         }
 
-        public String getRouteId() {
-            return RouteId;
-        }
-
-        public void setRouteId(String routeId) {
-            RouteId = routeId;
-        }
-
         public String getNickName() {
             return NickName;
         }
 
         public void setNickName(String NickName) {
             this.NickName = NickName;
+        }
+
+        public int getDataFileVersion() {
+            return DataFileVersion;
+        }
+
+        public void setDataFileVersion(int DataFileVersion) {
+            this.DataFileVersion = DataFileVersion;
         }
     }
 }
