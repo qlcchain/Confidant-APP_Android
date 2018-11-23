@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.util.Base64
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -26,7 +25,6 @@ import com.stratagile.pnrouter.ui.activity.register.module.RegisterModule
 import com.stratagile.pnrouter.ui.activity.register.presenter.RegisterPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -42,6 +40,7 @@ import javax.inject.Inject
  */
 
 class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterServiceMessageReceiver.RegisterMessageCallback{
+    var newRouterEntity = RouterEntity()
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         if (loginRsp.params.retCode != 0) {
@@ -80,15 +79,57 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             runOnUiThread {
                 closeProgressDialog()
             }
+            FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerId,"routerid")
+            KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
+            newRouterEntity.userId = loginRsp.params!!.userId
+            SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.username,username)
+            SpUtil.putString(this, ConstantValue.routerId, routerId)
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            newRouterEntity.routerId = routerId
+            newRouterEntity.routerName = "Router " + (routerList.size + 1)
+            //newRouterEntity.username = loginKey.text.toString()
+            newRouterEntity.lastCheck = true
+            var myUserData = UserEntity()
+            myUserData.userId = loginRsp.params!!.userId
+            myUserData.nickName = newRouterEntity.username;
+            UserDataManger.myUserData = myUserData
+            var contains = false
+            for (i in routerList) {
+                if (i.userSn.equals(loginRsp.params!!.userSn)) {
+                    contains = true
+                    newRouterEntity = i
+                    newRouterEntity.lastCheck = true
+                    break
+                }
+            }
+
+            if (contains) {
+                KLog.i("数据局中已经包含了这个userSn")
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
+            } else {
+
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            }
+            routerList.forEach {
+                it.lastCheck = false
+            }
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            //更新sd卡路由器数据begin
+            val myRouter = MyRouter()
+            myRouter.setType(0)
+            myRouter.setRouterEntity(newRouterEntity)
+            LocalRouterUtils.insertLocalAssets(myRouter)
+            runOnUiThread {
+                closeProgressDialog()
+            }
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-        SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
-        SpUtil.putString(this, ConstantValue.username,username)
-        SpUtil.putString(this, ConstantValue.routerId, routerId)
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
-        FileUtil.saveUserId2Local(registerRsp.params!!.userId)
         var newRouterEntity = RouterEntity()
         newRouterEntity.routerId = registerRsp.params.routeId
         newRouterEntity.userSn = registerRsp.params.userSn
@@ -102,7 +143,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         myRouter.setType(0)
         myRouter.setRouterEntity(newRouterEntity)
         LocalRouterUtils.insertLocalAssets(myRouter)
-        LocalRouterUtils.updateGreanDaoFromLocal();
+        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
         var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
@@ -118,15 +159,15 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     var userId = ""
     var username = ""
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
-        setToorBar(false)
         setContentView(R.layout.activity_register)
     }
     override fun initData() {
-        userId = FileUtil.getLocalUserId()
+        newRouterEntity = RouterEntity()
         EventBus.getDefault().register(this)
        /* miniScanParent.setOnClickListener {
             mPresenter.getScanPermission()

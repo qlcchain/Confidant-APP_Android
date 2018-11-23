@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
-import android.util.Base64;
 
 import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
@@ -77,12 +76,15 @@ public class FileUtil {
     }
 
     /**
-     * 保存自己的UserId到本地sd卡
+     * 保存自己的User数据到本地sd卡
+     * @param userData  用户数据
+     * @param from 用途
+     * @return
      */
-    public static String saveUserId2Local(String userId) {
-        String lastP2pId = getLocalUserId();
+    public static String saveUserData2Local(String userData, String from) {
+        String lastP2pId = getLocalUserData(from);
         copyDataFile();
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/userid.json";
+        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/"+from+".json";
         File jsonFile = new File(jsonPath);
         FileWriter fw = null;
         BufferedWriter out = null;
@@ -92,7 +94,7 @@ public class FileUtil {
             }
             fw = new FileWriter(jsonFile);
             out = new BufferedWriter(fw);
-            out.write(userId, 0, userId.length());
+            out.write(userData, 0, userData.length());
             out.close();
         } catch (Exception e) {
             System.out.println("保存数据异常" + e);
@@ -108,11 +110,12 @@ public class FileUtil {
         }
         return "";
     }
-
     /**
-     * 获取sd卡已经保存的UserId
+     * 获取sd卡已经保存的User数据
+     * @param from 用途
+     * @return
      */
-    public static String getLocalUserId() {
+    public static String getLocalUserData(String from) {
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         String userIdJson = "";

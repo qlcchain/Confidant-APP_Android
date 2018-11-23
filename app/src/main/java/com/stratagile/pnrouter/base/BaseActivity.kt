@@ -28,7 +28,7 @@ import com.stratagile.pnrouter.view.RxDialogLoading
 abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBackHelper.Delegate {
 
     var toolbar: Toolbar? = null
-    var needFront = false   //toolBar 是否需要显示在最上层的标识
+    var needFront = false   //toolBar 是否需要显示在最上面的返还标题栏
     var rootLayout: RelativeLayout? = null
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View

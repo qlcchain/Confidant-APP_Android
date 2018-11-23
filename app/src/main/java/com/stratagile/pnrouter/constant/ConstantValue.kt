@@ -26,7 +26,7 @@ object ConstantValue {
         var updRouterData: HashMap<String,String> = HashMap()
         var currentRouterIp:String = "192.168.1.103"//记录组播寻找到的路由器ip
         var currentRouterId:String = "D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472"//记录组播寻找到的路由器id
-        var currentRouterSN:String = "02000008B827EBD089CB00005BF37E7F"//记录组播寻找到的路由器SN  02000008B827EBD089CB00005BF37E7F     02000006B827EBD089CB00005BF37D99 华为
+        var currentRouterSN:String = "02000006B827EBD089CB00005BF37D99"//记录组播寻找到的路由器SN  02000008B827EBD089CB00005BF37E7F     02000006B827EBD089CB00005BF37D99 华为
         var isRegister:Boolean = false //记录当前选择路由器是否注册
         var isConnected:Boolean = false
 

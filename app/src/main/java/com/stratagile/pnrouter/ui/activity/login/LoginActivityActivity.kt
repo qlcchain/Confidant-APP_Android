@@ -32,11 +32,11 @@ import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
+import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -55,9 +55,33 @@ import javax.inject.Inject
  */
 
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
+    override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
+        closeProgressDialog()
+        when (recoveryRsp.params.retCode) {
+            0 -> {
+                //startActivity(Intent(this, LoginActivityActivity::class.java))
+            }
+            1 -> {
+                startActivity(Intent(this, RegisterActivity::class.java))
+            }
+            2 -> {
+                toast("error")
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+            else -> {
+            }
+        }
+    }
+
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
+    var isFromScan = false
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         standaloneCoroutine.cancel()
@@ -94,9 +118,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
         } else {
-            FileUtil.saveUserId2Local(loginRsp.params!!.userId)
+            FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
+            FileUtil.saveUserData2Local(loginRsp.params!!.routerId,"routerid")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
-            newRouterEntity.userId = ""
+            newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             SpUtil.putString(this, ConstantValue.username,username)
             SpUtil.putString(this, ConstantValue.routerId, routerId)
@@ -111,26 +137,31 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             UserDataManger.myUserData = myUserData
             var contains = false
             for (i in routerList) {
-                if (i.routerId.equals(routerId)) {
+                if (i.userSn.equals(loginRsp.params!!.userSn)) {
                     contains = true
+                    newRouterEntity = i
+
                     break
                 }
             }
-
-            if (contains) {
-                KLog.i("数据局中已经包含了这个routerId")
-            } else {
-                routerList.forEach {
-                    it.lastCheck = false
-                }
-                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
-                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
-                //更新sd卡路由器数据begin
-                val myRouter = MyRouter()
-                myRouter.setType(0)
-                myRouter.setRouterEntity(newRouterEntity)
-                //LocalRouterUtils.insertLocalAssets(myRouter)
+            routerList.forEach {
+                it.lastCheck = false
             }
+            newRouterEntity.lastCheck = true
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
+            if (contains) {
+                KLog.i("数据局中已经包含了这个userSn")
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
+            } else {
+
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            }
+
+            //更新sd卡路由器数据begin
+            val myRouter = MyRouter()
+            myRouter.setType(0)
+            myRouter.setRouterEntity(newRouterEntity)
+            LocalRouterUtils.insertLocalAssets(myRouter)
             runOnUiThread {
                 closeProgressDialog()
             }
@@ -160,9 +191,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var userId = ""
     var username = ""
     var dataFileVersion = 0
-
+    var lastLoginUserId = ""
+    var lastLoginUserSn = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        isFromScan = false
         super.onCreate(savedInstanceState)
     }
 
@@ -201,22 +234,31 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         when (connectStatus.status) {
             0 -> {
-                loginBack = false
-                closeProgressDialog()
-                showProgressDialog("login...")
-                standaloneCoroutine = launch(CommonPool) {
-                    delay(10000)
-                    if (!loginBack) {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            toast("login time out")
+                if(isFromScan)
+                {
+                    closeProgressDialog()
+                    showProgressDialog("wait...")
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                }else{
+                    loginBack = false
+                    closeProgressDialog()
+                    showProgressDialog("login...")
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("login time out")
+                            }
                         }
                     }
-                }
 //            standaloneCoroutine.cancel()
-                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                }
+
             }
             1 -> {
 
@@ -232,6 +274,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initData() {
+        newRouterEntity = RouterEntity()
+        lastLoginUserId = FileUtil.getLocalUserData("userid")
+        lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
             KLog.i("用来验证的routerId：${routerId}")
@@ -344,20 +389,20 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             routerName.setOnClickListener { view1 ->
                 PopWindowUtil.showSelectRouterPopWindow(this, routerName, object : PopWindowUtil.OnRouterSelectListener{
                     override fun onSelect(position: Int) {
-                        routerList.forEach {
+                       /* routerList.forEach {
                             if(it.lastCheck) {
                                 it.lastCheck = false
                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
                             }
-                        }
+                        }*/
                         routerId = routerList[position].routerId
                         userSn = routerList[position].userSn
                         userId = routerList[position].userId
                         username = routerList[position].username
                         dataFileVersion = routerList[position].dataFileVersion
                         routerName.text = routerList[position].routerName
-                        routerList[position].lastCheck = true
-                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
+                        //routerList[position].lastCheck = true
+                        //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                     }
                 })
             }
@@ -530,6 +575,34 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             noRoutergroupLogin.visibility = View.VISIBLE
             hasRouterParentLogin.visibility = View.INVISIBLE
             noRoutergroupLogin.visibility = View.INVISIBLE
+            var result = data!!.getStringExtra("result");
+            var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
+            val keyId:ByteArray = ByteArray(6) //密钥ID
+            val RouterId:ByteArray = ByteArray(76) //路由器id
+            val UserSn:ByteArray = ByteArray(32)  //用户SN
+            System.arraycopy(soureData, 0, keyId, 0, 6)
+            System.arraycopy(soureData, 6, RouterId, 0, 76)
+            System.arraycopy(soureData, 82, UserSn, 0, 32)
+            var keyIdStr = String(keyId)
+            var RouterIdStr = String(RouterId)
+            var UserSnStr = String(UserSn)
+            for (data in ConstantValue.updRouterData)
+            {
+                var key:String = data.key;
+                if(key.equals(RouterIdStr))
+                {
+                    ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
+                    ConstantValue.currentRouterId = RouterIdStr
+                    ConstantValue.currentRouterSN = UserSnStr
+                    break;
+                }
+            }
+            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+            {
+                isFromScan = true
+                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+            }
             /*var result = data!!.getStringExtra("result");
             var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
             val keyId:ByteArray = ByteArray(6) //密钥ID
@@ -551,7 +624,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     ConstantValue.currentRouterSN = UserSnStr
                 }
             }*/
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+           /* var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             if (routerList != null && routerList.size != 0) {
                 routerList.forEach { itt ->
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
@@ -577,7 +650,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 routerName?.setText("Router 1")
                 routerId = data!!.getStringExtra("result")
             }
-            return
+            return*/
         }
     }
 }

@@ -19,7 +19,7 @@ public class RouterEntity implements Parcelable{
     private String routerName;
     private Integer dataFileVersion;
     private String dataFilePay;
-    private boolean lastCheck;
+    private boolean lastCheck; //最后一次选中
 
     public RouterEntity()
     {

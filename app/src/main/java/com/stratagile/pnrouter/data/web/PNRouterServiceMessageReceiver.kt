@@ -28,6 +28,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
                 KLog.i(jRecoveryRsp)
                 recoveryBackListener?.recoveryBack(jRecoveryRsp)
+                loginBackListener?.recoveryBack(jRecoveryRsp)
             }
             "Register" -> {
                 val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -254,6 +255,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface LoginMessageCallback {
         fun loginBack(loginRsp: JLoginRsp)
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
     }
 
     interface AddfrendCallBack {

@@ -75,7 +75,7 @@ object LocalRouterUtils {
 
                             if (myRouter.getType() == 0)
                             {
-                                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(myRouter.getRouterEntity().routerId)).list()
+                                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(myRouter.getRouterEntity().userSn)).list()
                                 if (routerEntityList != null && routerEntityList!!.size == 0) {
                                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(myRouter.getRouterEntity())
                                 }
@@ -104,7 +104,7 @@ object LocalRouterUtils {
                                  {
                                     for (routerEntity in routerEntityList) {
 
-                                        if (myRouter.getRouterEntity().routerId.equals(routerEntity.routerId)) {
+                                        if (myRouter.getRouterEntity().userSn.equals(routerEntity.userSn)) {
                                             myRouter.getRouterEntity().setId(routerEntity.getId())//这个很重要，要不没法更新greenDao
                                             if(routerEntity.routerId != null)
                                             {
@@ -180,7 +180,7 @@ object LocalRouterUtils {
 
                     if (myRouter!!.getType() == 0)
                     {
-                        if (myRouterItem.getRouterEntity() != null && myRouter!!.getRouterEntity().routerId.equals(myRouterItem.getRouterEntity().routerId)) {
+                        if (myRouterItem.getRouterEntity() != null && myRouter!!.getRouterEntity().userSn.equals(myRouterItem.getRouterEntity().userSn)) {
                             isHad = true
                             break
                         }
@@ -271,7 +271,7 @@ object LocalRouterUtils {
 
                     if (myRouter.getType() == 0)
                     {
-                        if (router!!.getRouterEntity() != null && myRouter.getRouterEntity().routerId.equals(router!!.getRouterEntity().routerId)) {
+                        if (router!!.getRouterEntity() != null && myRouter.getRouterEntity().userSn.equals(router!!.getRouterEntity().userSn)) {
                             newRouterArrayList.add(router)
                         } else {
                             newRouterArrayList.add(myRouter)

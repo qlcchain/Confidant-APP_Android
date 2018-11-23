@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.ui.activity.user
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -22,22 +21,10 @@ import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Environment
-import java.io.File.separator
-import android.os.Environment.getExternalStorageDirectory
-import android.widget.ImageView
-import android.widget.Toast
-import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
-import cn.bingoogolapple.qrcode.core.QRCodeView
-import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.longToast
-import com.pawegio.kandroid.toast
 import com.socks.library.KLog
-import com.stratagile.pnrouter.R.id.ivQrCode
 import com.stratagile.pnrouter.utils.ThreadUtil
-import kotlinx.android.synthetic.main.fragment_my.*
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
@@ -78,7 +65,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         }
         tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
-        var userId = FileUtil.getLocalUserId()
+        var userId = FileUtil.getLocalUserData("userid")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
         createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(userId, ivQrCode)
