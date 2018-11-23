@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.utils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.MyRouter
 import java.util.*

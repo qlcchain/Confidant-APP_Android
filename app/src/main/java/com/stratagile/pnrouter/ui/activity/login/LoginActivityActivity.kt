@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -59,7 +60,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         closeProgressDialog()
         when (recoveryRsp.params.retCode) {
             0 -> {
-                //startActivity(Intent(this, LoginActivityActivity::class.java))
+                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
+                if (routerEntityList != null && routerEntityList!!.size != 0) {
+                    var routerEntity:RouterEntity = routerEntityList[0]
+                    routerId = routerEntity.routerId
+                    userSn = routerEntity.userSn
+                    userId = routerEntity.userId
+                    username = routerEntity.username
+                    dataFileVersion = routerEntity.dataFileVersion
+                    routerName.text = routerEntity.routerName
+                }
+
             }
             1 -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
