@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.constant
 import java.util.HashMap
 
 object ConstantValue {
+        var localPath = "/RouterData1"
         var isInit = false;
         var isRefeshed = false
         var testValue = "testValue"
@@ -29,5 +30,7 @@ object ConstantValue {
         var currentRouterSN:String = "02000006B827EBD089CB00005BF37D99"//记录组播寻找到的路由器SN  02000008B827EBD089CB00005BF37E7F     02000006B827EBD089CB00005BF37D99 华为
         var isRegister:Boolean = false //记录当前选择路由器是否注册
         var isConnected:Boolean = false
+        var shouBegin:Long = 0;
+        var shouEnd:Long = 0;
 
 }

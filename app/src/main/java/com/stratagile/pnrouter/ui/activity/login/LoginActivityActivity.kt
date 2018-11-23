@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -84,6 +85,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     newRouterEntity.username = String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
                     newRouterEntity.userId = recoveryRsp.params.userId
                     newRouterEntity.dataFileVersion = recoveryRsp.params.dataFileVersion
+                    newRouterEntity.loginKey = ""
                     newRouterEntity.dataFilePay = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
                     newRouterEntity.routerName = "Router " + (localData.size + 1)
@@ -169,7 +171,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
-                toast("Too many users")
+                toast("userId is empty")
                 closeProgressDialog()
             }
         } else {
@@ -184,8 +186,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
-            newRouterEntity.username = loginKey.text.toString()
+            newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
+            newRouterEntity.loginKey = loginKey.text.toString();
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
@@ -210,6 +213,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
+            newRouterEntity.loginKey = loginKey.text.toString();
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -433,6 +437,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }else{
                             routerNameTips.text =  "Router 1"
                         }
+                        if(it.loginKey != null){
+                            loginKey.setText(it.loginKey)
+                        }else{
+                            loginKey.setText("")
+                        }
+
                         hasCheckedRouter = true
                         return@breaking
                     }
@@ -448,6 +458,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     routerNameTips.text = routerList[0].routerName
                 }else{
                     routerNameTips.text = "Router 1"
+                }
+                if(routerList[0].loginKey != null){
+                    loginKey.setText(routerList[0].loginKey)
+                }else{
+                    loginKey.setText("")
                 }
             }
             hasRouterParentLogin.visibility = View.VISIBLE
@@ -480,7 +495,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 })
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
+        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager

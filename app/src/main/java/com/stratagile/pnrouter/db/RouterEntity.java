@@ -20,11 +20,13 @@ public class RouterEntity implements Parcelable{
     private Integer dataFileVersion;
     private String dataFilePay;
     private boolean lastCheck; //最后一次选中
+    private String loginKey;
 
     public RouterEntity()
     {
 
     }
+
     protected RouterEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -43,11 +45,13 @@ public class RouterEntity implements Parcelable{
         }
         dataFilePay = in.readString();
         lastCheck = in.readByte() != 0;
+        loginKey = in.readString();
     }
-    @Generated(hash = 176501218)
+
+    @Generated(hash = 1467761423)
     public RouterEntity(Long id, String routerId, String userSn, String username,
             String userId, String routerName, Integer dataFileVersion, String dataFilePay,
-            boolean lastCheck) {
+            boolean lastCheck, String loginKey) {
         this.id = id;
         this.routerId = routerId;
         this.userSn = userSn;
@@ -57,6 +61,7 @@ public class RouterEntity implements Parcelable{
         this.dataFileVersion = dataFileVersion;
         this.dataFilePay = dataFilePay;
         this.lastCheck = lastCheck;
+        this.loginKey = loginKey;
     }
 
     @Override
@@ -80,6 +85,7 @@ public class RouterEntity implements Parcelable{
         }
         dest.writeString(dataFilePay);
         dest.writeByte((byte) (lastCheck ? 1 : 0));
+        dest.writeString(loginKey);
     }
 
     @Override
@@ -169,6 +175,12 @@ public class RouterEntity implements Parcelable{
     public void setDataFilePay(String dataFilePay) {
         this.dataFilePay = dataFilePay;
     }
+    public String getLoginKey() {
+        return loginKey;
+    }
 
+    public void setLoginKey(String loginKey) {
+        this.loginKey = loginKey;
+    }
 
 }

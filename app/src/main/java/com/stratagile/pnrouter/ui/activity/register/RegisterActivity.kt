@@ -89,8 +89,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
+            newRouterEntity.loginKey = userName3.text.toString();
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
-            //newRouterEntity.username = loginKey.text.toString()
+            newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
@@ -116,6 +117,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
+            newRouterEntity.loginKey = userName3.text.toString();
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -141,6 +143,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         newRouterEntity.userSn = registerRsp.params.userSn
         newRouterEntity.username = registerKey.text.toString()
         newRouterEntity.userId = registerRsp.params.userId
+        newRouterEntity.loginKey = userName3.text.toString();
         newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
         newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
         var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList

@@ -138,6 +138,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         chatFragment?.delFreindMsg(delMsgPushRsp)
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
+        KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
         var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath

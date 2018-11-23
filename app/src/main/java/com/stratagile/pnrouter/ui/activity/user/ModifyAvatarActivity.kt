@@ -73,7 +73,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
             galleryPackName = SystemUtil.getSystemPackagesName(this, "gallery3d")
         }
         if (!SpUtil.getString(this, ConstantValue.selfImageName, "").equals("")) {
-            val lastFile = File(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(this, ConstantValue.selfImageName, ""), "")
+            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(this, ConstantValue.selfImageName, ""), "")
             if (lastFile.exists()) {
                 Glide.with(this)
                         .load(lastFile)
@@ -85,7 +85,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
         val packages = this.packageManager
                 .getInstalledPackages(0)
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            val tempFile = File(Environment.getExternalStorageDirectory().toString() + "/Router/temp.jpg")
+            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/temp.jpg")
             inputUri = RxFileTool.getUriForFile(this, tempFile)
             outputFile = Uri.fromFile(tempFile)
         }

@@ -126,12 +126,12 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             textView.visibility = View.VISIBLE
         } else {
             if (SpUtil.getString(context, ConstantValue.selfImageName, "") != "") {
-                val lastFile = File(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(context, ConstantValue.selfImageName, ""), "")
+                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""), "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
                     imageView.visibility = View.VISIBLE
                     Glide.with(this)
-                            .load(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
+                            .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
                             .apply(options)
                             .into(imageView)
                 } else {

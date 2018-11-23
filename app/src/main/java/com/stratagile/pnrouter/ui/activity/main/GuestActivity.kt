@@ -93,6 +93,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     newRouterEntity.userId = recoveryRsp.params.userId
                     newRouterEntity.dataFileVersion = recoveryRsp.params.dataFileVersion
                     newRouterEntity.dataFilePay = ""
+                    newRouterEntity.loginKey = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
                     newRouterEntity.routerName = "Router " + (localData.size + 1)
                     val myRouter = MyRouter()

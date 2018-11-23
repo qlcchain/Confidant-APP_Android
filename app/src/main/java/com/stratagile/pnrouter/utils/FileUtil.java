@@ -13,6 +13,7 @@ import android.support.v4.content.FileProvider;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
 
 import org.apache.http.util.EncodingUtils;
 
@@ -54,19 +55,19 @@ public class FileUtil {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                File dataFile = new File(Environment.getExternalStorageDirectory() + "/Router", "");
+                File dataFile = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath(), "");
                 if (!dataFile.exists()) {
                     dataFile.mkdir();
                 }
-                File routerList = new File(Environment.getExternalStorageDirectory() + "/Router/RouterList", "");
+                File routerList = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RouterList", "");
                 if (!routerList.exists()) {
                     routerList.mkdir();
                 }
-                File UserID = new File(Environment.getExternalStorageDirectory() + "/Router/UserID", "");
+                File UserID = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/UserID", "");
                 if (!UserID.exists()) {
                     UserID.mkdir();
                 }
-                File rsa = new File(Environment.getExternalStorageDirectory() + "/Router/RA", "");
+                File rsa = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RA", "");
                 if (!rsa.exists()) {
                     rsa.mkdir();
                 }
@@ -86,7 +87,7 @@ public class FileUtil {
             return "";
         String lastP2pId = getLocalUserData(from);
         copyDataFile();
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/UserID/"+from+".json";
+        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/UserID/"+from+".json";
         File jsonFile = new File(jsonPath);
         FileWriter fw = null;
         BufferedWriter out = null;
@@ -122,7 +123,7 @@ public class FileUtil {
         ObjectInputStream ois = null;
         String userIdJson = "";
         try {
-            File file = new File(Environment.getExternalStorageDirectory(), "/Router/UserID/userid.json");
+            File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/UserID/userid.json");
             if (!file.exists()) {
                 return userIdJson;
             }
@@ -148,7 +149,7 @@ public class FileUtil {
      * 复制data文件到backup文件夹
      */
     public static void copyDataFile() {
-        copyFile(Environment.getExternalStorageDirectory() + "/Router/data", Environment.getExternalStorageDirectory() + "/Router/backup/data");
+        copyFile(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/data", Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/backup/data");
     }
 
     /**
@@ -208,7 +209,7 @@ public class FileUtil {
      * @param jsonStr 数据
      */
     public static void saveRouterData(String userId, String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RouterList/" + userId + ".json";
+        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RouterList/" + userId + ".json";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -246,7 +247,7 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RouterList/" + userId + ".json");
+                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/RouterList/" + userId + ".json");
                 if (!file.exists()) {
                     return "";
                 }
@@ -275,7 +276,7 @@ public class FileUtil {
      * @param jsonStr 数据
      */
     public static void saveRSAData(String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/RA/data.json";
+        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RA/data.json";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -312,7 +313,7 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RA/data.json");
+                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/RA/data.json");
                 if (!file.exists()) {
                     return "";
                 }
@@ -345,7 +346,7 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), "/Router/RouterList/");
+                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/RouterList/");
                 if (!file.exists()) {
                     return "";
                 }
@@ -386,7 +387,7 @@ public class FileUtil {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), "/Router/Address/");
+                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/Address/");
                 if (!file.exists()) {
                     return "";
                 }
@@ -489,7 +490,7 @@ public class FileUtil {
      * @param data 数据
      */
     public static void savaData(String path, String data) {
-        File walletFile = new File(Environment.getExternalStorageDirectory() + path, "");//"/Router/Address/index.txt"
+        File walletFile = new File(Environment.getExternalStorageDirectory() + path, "");//ConstantValue.INSTANCE.getLocalPath()+"/Address/index.txt"
         if (!walletFile.exists()) {
             try {
                 walletFile.createNewFile();
@@ -565,7 +566,7 @@ public class FileUtil {
      * @param jsonStr 数据内容
      */
     public static void saveVpnServerData(String name, String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + "/Router/vpn/" + name + ".ovpn";
+        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/vpn/" + name + ".ovpn";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;

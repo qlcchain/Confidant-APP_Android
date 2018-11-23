@@ -30,4 +30,11 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
             }
         },RouterEntityDao.class, UserEntityDao.class);
     }
+    public void deleSQL(){
+        SQLiteDatabase db = getWritableDatabase();
+        DaoMaster daoMaster = new DaoMaster(db);
+        DaoMaster.dropAllTables(daoMaster.getDatabase(),true);
+        DaoMaster.createAllTables(daoMaster.getDatabase(),true);
+
+    }
 }

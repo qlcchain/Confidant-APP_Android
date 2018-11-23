@@ -28,7 +28,7 @@ import java.io.File
 class SelectRouterPresenter @Inject
 constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: SelectRouterContract.View) : SelectRouterContract.SelectRouterContractPresenter {
     override fun upLoadFile() {
-        val upLoadFile = File(Environment.getExternalStorageDirectory().toString() + "/Router/" + SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")
+        val upLoadFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")
         val image = RequestBody.create(MediaType.parse("image/png"), upLoadFile)
         val photo = MultipartBody.Part.createFormData("", SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png", image)
 //        RequestBody.create(MediaType.parse("text/plain"), SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")

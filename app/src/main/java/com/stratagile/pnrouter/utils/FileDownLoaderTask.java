@@ -195,11 +195,11 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		String aesKey =  RxEncodeTool.getAESKey(keyStr);
 		try {
 			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-			String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
-			KLog.i("miString:"+miString.substring(0,100));
+			/*String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
+			KLog.i("miString:"+miString.substring(0,100));*/
 			byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
-			String miStringSouce  = RxEncodeTool.base64Encode2String(miFile);
-			KLog.i("miStringSouce:"+miString.substring(0,100));
+			/*String miStringSouce  = RxEncodeTool.base64Encode2String(miFile);
+			KLog.i("miStringSouce:"+miString.substring(0,100));*/
 			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{

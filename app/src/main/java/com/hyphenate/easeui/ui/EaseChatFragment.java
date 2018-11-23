@@ -206,7 +206,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
     private HashMap<String, String> sendMsgIdMap = new HashMap<>();
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
-
+    private long  faBegin;
+    private long faEnd;
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -273,12 +274,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     byte[] fileBufferMi = new byte[0];
                     try{
 
-                        String sourFile = RxEncodeTool.base64Encode2String(fileBuffer);
-                        String miStringScouce  = RxEncodeTool.base64Encode2String(fileBuffer);
-                        KLog.i("miStringScouce:"+miStringScouce.substring(0,100));
+                        //String sourFile = RxEncodeTool.base64Encode2String(fileBuffer);
+                        //String miStringScouce  = RxEncodeTool.base64Encode2String(fileBuffer);
+                        //KLog.i("miStringScouce:"+miStringScouce.substring(0,100));
+                         long  miBegin = System.currentTimeMillis();
                          fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
-                        String miString2  = RxEncodeTool.base64Encode2String(fileBufferMi);
-                        KLog.i("miString:"+miString2.substring(0,100));
+                         long miend  = System.currentTimeMillis();
+                         KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
+                        //String miString2  = RxEncodeTool.base64Encode2String(fileBufferMi);
+                        //KLog.i("miString:"+miString2.substring(0,100));
                          /* InputStream aabb = FileUtil.byteTOInputStream(fileBufferMi);
 
                         fileBufferMi =  FileUtil.InputStreamTOByte(aabb);*/
@@ -286,6 +290,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         //String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
                         //byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
 
+                        faBegin = System.currentTimeMillis();
                         sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
                     }catch (Exception e)
                     {
@@ -385,9 +390,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileName = sendFileNameMap.get(FileIdResult+"");
                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
                 }else{
+                    faEnd = System.currentTimeMillis();
+                    KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                     KLog.i("文件发送成功！");
+
                 }
                 break;
             case 1:

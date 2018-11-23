@@ -31,6 +31,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         public final static Property DataFileVersion = new Property(6, Integer.class, "dataFileVersion", false, "DATA_FILE_VERSION");
         public final static Property DataFilePay = new Property(7, String.class, "dataFilePay", false, "DATA_FILE_PAY");
         public final static Property LastCheck = new Property(8, boolean.class, "lastCheck", false, "LAST_CHECK");
+        public final static Property LoginKey = new Property(9, String.class, "loginKey", false, "LOGIN_KEY");
     }
 
 
@@ -54,7 +55,8 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
                 "\"ROUTER_NAME\" TEXT," + // 5: routerName
                 "\"DATA_FILE_VERSION\" INTEGER," + // 6: dataFileVersion
                 "\"DATA_FILE_PAY\" TEXT," + // 7: dataFilePay
-                "\"LAST_CHECK\" INTEGER NOT NULL );"); // 8: lastCheck
+                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 8: lastCheck
+                "\"LOGIN_KEY\" TEXT);"); // 9: loginKey
     }
 
     /** Drops the underlying database table. */
@@ -107,6 +109,11 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(8, dataFilePay);
         }
         stmt.bindLong(9, entity.getLastCheck() ? 1L: 0L);
+ 
+        String loginKey = entity.getLoginKey();
+        if (loginKey != null) {
+            stmt.bindString(10, loginKey);
+        }
     }
 
     @Override
@@ -153,6 +160,11 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(8, dataFilePay);
         }
         stmt.bindLong(9, entity.getLastCheck() ? 1L: 0L);
+ 
+        String loginKey = entity.getLoginKey();
+        if (loginKey != null) {
+            stmt.bindString(10, loginKey);
+        }
     }
 
     @Override
@@ -171,7 +183,8 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // routerName
             cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // dataFileVersion
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // dataFilePay
-            cursor.getShort(offset + 8) != 0 // lastCheck
+            cursor.getShort(offset + 8) != 0, // lastCheck
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // loginKey
         );
         return entity;
     }
@@ -187,6 +200,7 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         entity.setDataFileVersion(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
         entity.setDataFilePay(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setLastCheck(cursor.getShort(offset + 8) != 0);
+        entity.setLoginKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
      }
     
     @Override

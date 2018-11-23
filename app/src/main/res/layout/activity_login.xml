@@ -173,7 +173,7 @@
             android:layout_height="51dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/x45"
             android:ems="10"
             android:gravity="left"
             android:hint="@string/password"
@@ -194,10 +194,10 @@
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/x52"
+            android:layout_marginBottom="16dp"
             android:layout_marginEnd="@dimen/x52"
             android:layout_marginStart="@dimen/x52"
-            android:layout_marginTop="@dimen/x84"
+            android:layout_marginTop="8dp"
             android:background="@drawable/textview_border"
             android:gravity="center"
             android:paddingBottom="@dimen/x36"
@@ -207,9 +207,9 @@
             android:textSize="@dimen/x40"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginUsKey" />
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
         <TextView
             android:id="@+id/textView3"

@@ -135,6 +135,10 @@ object LocalRouterUtils {
                                             {
                                                 myRouter.getRouterEntity().setDataFilePay(routerEntity.dataFilePay)
                                             }
+                                            if(routerEntity.loginKey != null)
+                                            {
+                                                myRouter.getRouterEntity().setLoginKey(routerEntity.loginKey)
+                                            }
                                             myRouter.getRouterEntity().setLastCheck(routerEntity.lastCheck)
                                             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(myRouter.getRouterEntity())
                                         }
