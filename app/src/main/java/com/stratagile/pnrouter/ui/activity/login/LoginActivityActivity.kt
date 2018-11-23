@@ -26,6 +26,8 @@ import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.NameChange
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -71,7 +73,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     userId = routerEntity.userId
                     username = routerEntity.username
                     dataFileVersion = routerEntity.dataFileVersion
-                    routerName.text = routerEntity.routerName
+                    /*runOnUiThread {
+                        routerNameTips.text = newRouterEntity.routerName
+                    }*/
+                    EventBus.getDefault().post(NameChange(routerEntity.routerName))
                 }else{
                     var newRouterEntity = RouterEntity()
                     newRouterEntity.routerId = recoveryRsp.params.routeId
@@ -87,7 +92,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     userId = recoveryRsp.params.userId
                     username =String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
                     dataFileVersion =recoveryRsp.params.dataFileVersion
-                    routerName.text = newRouterEntity.routerName
+                    //routerNameTips.text = newRouterEntity.routerName
+                    EventBus.getDefault().post(NameChange(newRouterEntity.routerName))
                     val myRouter = MyRouter()
                     myRouter.setType(0)
                     myRouter.setRouterEntity(newRouterEntity)
@@ -286,7 +292,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNameChange(nameChange: NameChange) {
+        routerNameTips.text = nameChange.name
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
 
@@ -369,6 +378,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                 }
+                runOnUiThread {
+                    showProgressDialog("login...")
+                }
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
             }
@@ -417,9 +429,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         dataFileVersion = it.dataFileVersion
 
                         if(it.routerName != null){
-                            routerName.text = it.routerName
+                            routerNameTips.text = it.routerName
                         }else{
-                            routerName.text =  "Router 1"
+                            routerNameTips.text =  "Router 1"
                         }
                         hasCheckedRouter = true
                         return@breaking
@@ -433,9 +445,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 username = routerList[0].username
                 dataFileVersion = routerList[0].dataFileVersion
                 if(routerList[0].routerName != null){
-                    routerName.text = routerList[0].routerName
+                    routerNameTips.text = routerList[0].routerName
                 }else{
-                    routerName.text = "Router 1"
+                    routerNameTips.text = "Router 1"
                 }
             }
             hasRouterParentLogin.visibility = View.VISIBLE
@@ -447,8 +459,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             scanParentLogin.visibility = View.VISIBLE
         }
         if (routerList.size > 0) {
-            routerName.setOnClickListener { view1 ->
-                PopWindowUtil.showSelectRouterPopWindow(this, routerName, object : PopWindowUtil.OnRouterSelectListener{
+            routerNameTips.setOnClickListener { view1 ->
+                PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnRouterSelectListener{
                     override fun onSelect(position: Int) {
                        /* routerList.forEach {
                             if(it.lastCheck) {
@@ -461,7 +473,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         userId = routerList[position].userId
                         username = routerList[position].username
                         dataFileVersion = routerList[position].dataFileVersion
-                        routerName.text = routerList[position].routerName
+                        routerNameTips.text = routerList[position].routerName
                         //routerList[position].lastCheck = true
                         //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                     }
@@ -650,8 +662,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             hasRouterParentLogin.visibility = View.VISIBLE
-            noRoutergroupLogin.visibility = View.VISIBLE
-            hasRouterParentLogin.visibility = View.INVISIBLE
             noRoutergroupLogin.visibility = View.INVISIBLE
             try {
                 var result = data!!.getStringExtra("result");
@@ -714,7 +724,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (routerList != null && routerList.size != 0) {
                 routerList.forEach { itt ->
                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
-                        routerName?.setText(itt.routerName)
+                        routerNameTips?.setText(itt.routerName)
                         routerId = data!!.getStringExtra("result")
                         KLog.i("routerId为：" + routerId)
                         routerList.forEach {
@@ -729,11 +739,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                 }
                 routerId = data!!.getStringExtra("result")
-                routerName.text = "Router " + (routerList.size + 1)
+                routerNameTips.text = "Router " + (routerList.size + 1)
                 newRouterEntity.routerId = data!!.getStringExtra("result")
                 return
             } else {
-                routerName?.setText("Router 1")
+                routerNameTips?.setText("Router 1")
                 routerId = data!!.getStringExtra("result")
             }
             return*/
