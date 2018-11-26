@@ -3,7 +3,7 @@ package com.stratagile.pnrouter.constant
 import java.util.HashMap
 
 object ConstantValue {
-        var localPath = "/RouterData1"
+        var localPath = "/RouterData2"
         var isInit = false;
         var isRefeshed = false
         var testValue = "testValue"
@@ -26,8 +26,8 @@ object ConstantValue {
         var publicRAS:String = ""
         var updRouterData: HashMap<String,String> = HashMap()
         var currentRouterIp:String = "192.168.1.103"//记录组播寻找到的路由器ip
-        var currentRouterId:String = "D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472"//记录组播寻找到的路由器id
-        var currentRouterSN:String = "02000006B827EBD089CB00005BF37D99"//记录组播寻找到的路由器SN  02000008B827EBD089CB00005BF37E7F     02000006B827EBD089CB00005BF37D99 华为
+        var currentRouterId:String = "3C285DE0D481DBBEE4A5A64B38D82E06F1C4A95A31228ED29BF4AED01F63E2619CEAD35B5A3E"//记录组播寻找到的路由器id
+        var currentRouterSN:String = "01000017B827EBD089CB00005BFB7067"//记录组播寻找到的路由器SN  02000018B827EBD089CB00005BFB70B9     01000017B827EBD089CB00005BFB7067 华为
         var isRegister:Boolean = false //记录当前选择路由器是否注册
         var isConnected:Boolean = false
         var shouBegin:Long = 0;

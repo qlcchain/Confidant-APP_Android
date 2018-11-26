@@ -186,7 +186,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = routerId
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
-            newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
+            if(loginRsp.params.nickName != null)
+                newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = loginKey.text.toString();
             var myUserData = UserEntity()
@@ -477,12 +478,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             routerNameTips.setOnClickListener { view1 ->
                 PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnRouterSelectListener{
                     override fun onSelect(position: Int) {
-                       /* routerList.forEach {
-                            if(it.lastCheck) {
-                                it.lastCheck = false
-                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
-                            }
-                        }*/
+                        /* routerList.forEach {
+                             if(it.lastCheck) {
+                                 it.lastCheck = false
+                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                             }
+                         }*/
                         routerId = routerList[position].routerId
                         userSn = routerList[position].userSn
                         userId = routerList[position].userId
@@ -673,7 +674,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         return false
     }
-   override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             hasRouterParentLogin.visibility = View.VISIBLE
@@ -735,33 +736,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     ConstantValue.currentRouterSN = UserSnStr
                 }
             }*/
-           /* var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            if (routerList != null && routerList.size != 0) {
-                routerList.forEach { itt ->
-                    if (itt.routerId.equals(data!!.getStringExtra("result"))) {
-                        routerNameTips?.setText(itt.routerName)
-                        routerId = data!!.getStringExtra("result")
-                        KLog.i("routerId为：" + routerId)
-                        routerList.forEach {
-                            if (it.lastCheck) {
-                                it.lastCheck = false
-                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
-                            }
-                        }
-                        itt.lastCheck = true
-                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(itt)
-                        return
-                    }
-                }
-                routerId = data!!.getStringExtra("result")
-                routerNameTips.text = "Router " + (routerList.size + 1)
-                newRouterEntity.routerId = data!!.getStringExtra("result")
-                return
-            } else {
-                routerNameTips?.setText("Router 1")
-                routerId = data!!.getStringExtra("result")
-            }
-            return*/
+            /* var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+             if (routerList != null && routerList.size != 0) {
+                 routerList.forEach { itt ->
+                     if (itt.routerId.equals(data!!.getStringExtra("result"))) {
+                         routerNameTips?.setText(itt.routerName)
+                         routerId = data!!.getStringExtra("result")
+                         KLog.i("routerId为：" + routerId)
+                         routerList.forEach {
+                             if (it.lastCheck) {
+                                 it.lastCheck = false
+                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                             }
+                         }
+                         itt.lastCheck = true
+                         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(itt)
+                         return
+                     }
+                 }
+                 routerId = data!!.getStringExtra("result")
+                 routerNameTips.text = "Router " + (routerList.size + 1)
+                 newRouterEntity.routerId = data!!.getStringExtra("result")
+                 return
+             } else {
+                 routerNameTips?.setText("Router 1")
+                 routerId = data!!.getStringExtra("result")
+             }
+             return*/
         }
     }
 }
