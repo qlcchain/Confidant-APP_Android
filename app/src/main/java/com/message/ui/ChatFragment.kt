@@ -123,9 +123,9 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         MessageProvider.getInstance().receivedMessageListener = this
         inputMenu.setChatInputMenuListener(object : EaseChatInputMenu.ChatInputMenuListener {
 
-           /* override fun onTyping(s: CharSequence, start: Int, before: Int, count: Int) {
+           override fun onTyping(s: CharSequence, start: Int, before: Int, count: Int) {
                 KLog.i("send action:TypingBegin cmd msg.")
-            }*/
+            }
 
             override fun onSendMessage(content: String) {
                 sendTextMessage(content)
@@ -143,24 +143,24 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             }
         })
 
-       /* inputMenu.setChatMenuOpenListenter {
+        inputMenu.setChatMenuOpenListenter {
             messageRecyclerView.postDelayed(Runnable {
                 messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
             }, 100)
-        }*/
+        }
 
         messageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 inputMenu.hideExtendMenuContainer()
-                //inputMenu.hideSoftInput()
+                inputMenu.hideSoftInput()
             }
         })
 
         messageRecyclerView.setOnClickListener {
             KLog.i("点击了messageRecyclerView")
             inputMenu.hideExtendMenuContainer()
-            //inputMenu.hideSoftInput()
+            inputMenu.hideSoftInput()
         }
 
         (messageRecyclerView.getItemAnimator() as SimpleItemAnimator).setSupportsChangeAnimations(false)
