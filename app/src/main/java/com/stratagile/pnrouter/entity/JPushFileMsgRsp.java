@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.entity;
 
 import android.util.Base64;
 
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 
 public class JPushFileMsgRsp extends BaseEntity {
@@ -70,8 +71,9 @@ public class JPushFileMsgRsp extends BaseEntity {
         }
 
         public String getFileName() {
-            //base64解码
-            String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
+            //base58解码
+            //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
+            String FileNameOld = new String(Base58.decode(FileName));
             return FileNameOld;
         }
 

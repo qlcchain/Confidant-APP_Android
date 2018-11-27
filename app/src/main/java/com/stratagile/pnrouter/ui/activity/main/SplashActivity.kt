@@ -135,7 +135,10 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
+        var secret = Base58.encode("123456".toByteArray())
+        var aastrs = String(Base58.decode(secret))
         var miMsg = AESCipher.aesEncryptString("aa","welcometoqlc0101")
+
       /*  val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
         val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPairaa.private.encoded)
         val strBase64Public = RxEncodeTool.base64Encode2String(KeyPairaa.public.encoded)

@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 
@@ -44,8 +45,9 @@ public class Message {
 
 
     public String getFileName() {
-        //base64解码
-        String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
+        //bas58解码
+        //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
+        String FileNameOld = new String(Base58.decode(FileName));
         return FileNameOld;
     }
 

@@ -396,7 +396,7 @@
     <string name="invitation_code">invitation code</string>
     <string name="Password">Password(At least 6 characters)</string>
     <string name="Duplicate_Password">Duplicate Password</string>
-    <string name="Reminder_The_password_cannott_be_retrieved">*Reminder:The password cannott be retrieved</string>
+    <string name="Reminder_The_password_cannott_be_retrieved">*Reminder: The password can\'t be retrieved.</string>
     <string name="IdentifyCode">QLCADMIN</string>
     <string name="Cannot_be_empty">Cannot be empty</string>
     <string name="Password_inconsistent">Password inconsistent</string>

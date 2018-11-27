@@ -71,7 +71,8 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		try {
 			mUrl = new URL(url);
 			String fileName = new File(mUrl.getFile()).getName();
-			String FileNameOld = new String(RxEncodeTool.base64Decode(fileName.getBytes()));
+			//String FileNameOld = new String(RxEncodeTool.base64Decode(fileName.getBytes()));
+			String FileNameOld = new String(Base58.decode(fileName));
 			mFile = new File(out, FileNameOld);
 			Log.d(TAG, "out="+out+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
 		} catch (MalformedURLException e) {
