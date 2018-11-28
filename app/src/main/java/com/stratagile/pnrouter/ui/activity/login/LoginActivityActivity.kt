@@ -354,8 +354,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-            KLog.i("用来验证的routerId：${routerId}")
-            if (loginKey.text.toString().equals("")) {
+
+           if (loginKey.text.toString().equals("")) {
                 toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
@@ -403,7 +403,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         viewLogLogin.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
-
+        var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
@@ -418,6 +418,45 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     MSG_AUTH_ERROR -> handleErrorCode(msg.arg1)
                     MSG_AUTH_HELP -> handleHelpCode(msg.arg1)
+                    MyAuthCallback.MSG_UPD_DATA -> {
+                        var obj:String = msg.obj.toString()
+                        if(!obj.equals(""))
+                        {
+                            var objArray = obj.split("##")
+                            var index = 0;
+                            for(item in objArray)
+                            {
+                                if(!item.equals(""))
+                                {
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpRouterArray = udpData.split(";")
+
+                                    if(udpRouterArray.size > 1)
+                                    {
+                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                        if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                        {
+                                            ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                            break;
+                                        }
+
+                                    }
+                                }
+                                index ++
+
+                            }
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                            {
+                                isFromScan = true
+                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -691,7 +730,20 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var keyIdStr = String(keyId)
                 var RouterIdStr = String(RouterId)
                 var UserSnStr = String(UserSn)
-                for (data in ConstantValue.updRouterData)
+
+                ConstantValue.scanRouterId = RouterIdStr
+                ConstantValue.scanRouterSN = UserSnStr
+                if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
+                {
+                    MobileSocketClient.getInstance().init(handler,this)
+                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                    var aa = AESCipher.aesDecryptString(toxIdMi,"slph\$%*&^@-78231")
+                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                    MobileSocketClient.getInstance().receive()
+                }else{
+                    toast(R.string.code_error)
+                }
+               /* for (data in ConstantValue.updRouterData)
                 {
                     var key:String = data.key;
                     if(key.equals(RouterIdStr))
@@ -707,7 +759,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     isFromScan = true
                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
-                }
+                }*/
             }catch (e:Exception)
             {
                 runOnUiThread {

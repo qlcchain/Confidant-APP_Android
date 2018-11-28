@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.view.Window
@@ -26,6 +28,7 @@ import com.stratagile.pnrouter.entity.JRecoveryRsp
 import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.RecoveryReq
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerGuestComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.GuestContract
@@ -59,6 +62,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
     private var r: Int = 0
 
+    private var handler: Handler? = null
     protected var screenW: Int = 0
     protected var screenH: Int = 0
     val REQUEST_SELECT_ROUTER = 2
@@ -313,6 +317,51 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     }
 
     override fun initData() {
+        var this_ = this
+        handler = object : Handler() {
+            override fun handleMessage(msg: Message) {
+                super.handleMessage(msg)
+                when (msg.what) {
+                    MyAuthCallback.MSG_UPD_DATA -> {
+                        var obj:String = msg.obj.toString()
+                        if(!obj.equals(""))
+                        {
+                            var objArray = obj.split("##")
+                            var index = 0;
+                            for(item in objArray)
+                            {
+                                if(!item.equals(""))
+                                {
+                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                    var udpRouterArray = udpData.split(";")
+
+                                    if(udpRouterArray.size > 1)
+                                    {
+                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                        if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                        {
+                                            ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                            break;
+                                        }
+
+                                    }
+                                }
+                                index ++
+                            }
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                            {
+                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
         EventBus.getDefault().register(this)
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
         tvNext.setOnClickListener {
@@ -389,7 +438,19 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 var keyIdStr = String(keyId)
                 var RouterIdStr = String(RouterId)
                 var UserSnStr = String(UserSn)
-                for (data in ConstantValue.updRouterData)
+                ConstantValue.scanRouterId = RouterIdStr
+                ConstantValue.scanRouterSN = UserSnStr
+                if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
+                {
+                    MobileSocketClient.getInstance().init(handler,this)
+                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                    MobileSocketClient.getInstance().receive()
+                }else{
+                    toast(R.string.code_error)
+                }
+
+              /*  for (data in ConstantValue.updRouterData)
                 {
                     var key:String = data.key;
                     if(key.equals(RouterIdStr))
@@ -404,7 +465,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 {
                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-                }
+                }*/
             }catch (e:Exception)
             {
                 runOnUiThread {

@@ -194,8 +194,6 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 }
             }
         }
-        MobileSocketClient.getInstance().init(handler,this)
-        MobileSocketClient.getInstance().receive()
         if( AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.registerListener = this
         registerBtn.setOnClickListener {

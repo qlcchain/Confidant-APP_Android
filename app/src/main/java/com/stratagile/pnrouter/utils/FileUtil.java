@@ -123,7 +123,7 @@ public class FileUtil {
         ObjectInputStream ois = null;
         String userIdJson = "";
         try {
-            File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/UserID/userid.json");
+            File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/UserID/"+from+".json");
             if (!file.exists()) {
                 return userIdJson;
             }

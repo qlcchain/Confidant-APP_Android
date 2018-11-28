@@ -88,25 +88,39 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                     if(udpRouterArray.size > 1)
                                     {
                                         println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
-                                        ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                        if( ConstantValue.currentRouterId.equals(udpRouterArray[1]))
+                                        {
+                                            ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                            break;
+                                        }
+
                                     }
                                 }
-                                index ++;
+                                index ++
                             }
-
                         }
 
                     }
                 }
             }
         }
-        MobileSocketClient.getInstance().init(handler,this)
-        MobileSocketClient.getInstance().receive()
         var rsaData = FileUtil.readRSAData();
         val localRSAArrayList: ArrayList<RSAData>
         val gson = Gson()
 
-
+        var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
+        var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
+        ConstantValue.currentRouterId = lastLoginRouterId;
+        if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+        {
+            MobileSocketClient.getInstance().init(handler,this)
+            var toxIdMi = AESCipher.aesEncryptString(lastLoginRouterId,"slph\$%*&^@-78231")
+            MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+            MobileSocketClient.getInstance().receive()
+        }
 
         if(rsaData.equals(""))
         {

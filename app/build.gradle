@@ -10,7 +10,6 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.google.protobuf'
 
-
 kapt {
     generateStubs = true
 }
