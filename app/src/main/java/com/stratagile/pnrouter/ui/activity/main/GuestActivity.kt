@@ -366,13 +366,13 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
         tvNext.setOnClickListener {
             if (wowo.currentItem == 2) {
-              /* if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+               if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                 {
                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     AppConfig.instance.messageReceiver!!.recoveryBackListener = this
 
-                }*/
-                mPresenter.getScanPermission()
+                }
+                //mPresenter.getScanPermission()
                 //startActivity(Intent(this, LoginActivityActivity::class.java))
             } else {
                 wowo.next()

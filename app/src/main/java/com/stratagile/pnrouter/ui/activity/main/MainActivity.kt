@@ -12,10 +12,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.hyphenate.chat.EMClient
-import com.hyphenate.chat.EMConversation
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.chat.EMTextMessageBody
+import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
@@ -130,6 +127,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                          }
                      }
                  }
+                if (forward_msg.type == EMMessage.Type.IMAGE) {
+                    val imgBody = forward_msg.body as EMImageMessageBody
+                    val localUrl = imgBody.localUrl
+                    FileUtil.deleteFile(localUrl)
+                } else if (forward_msg.type == EMMessage.Type.VIDEO) {
+                    val imgBody = forward_msg.body as EMImageMessageBody
+                    val localUrl = imgBody.localUrl
+                    FileUtil.deleteFile(localUrl)
+                } else if (forward_msg.type == EMMessage.Type.VOICE) {
+                    val imgBody = forward_msg.body as EMImageMessageBody
+                    val localUrl = imgBody.localUrl
+                    FileUtil.deleteFile(localUrl)
+                }
 
             }
 

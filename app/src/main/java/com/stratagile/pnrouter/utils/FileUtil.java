@@ -1172,4 +1172,23 @@ public class FileUtil {
         InputStream is = byteTOInputStream(in);
         return InputStreamTOString(is);
     }
+
+    /**
+     *  删除单个文件
+     * @param filePath
+     * @return
+     */
+    public static boolean deleteFile(String filePath) {
+        try {
+            File file = new File(filePath);
+            if (file.isFile() && file.exists()) {
+                return file.delete();
+            }
+        }catch (Exception e)
+        {
+
+        }
+        return false;
+    }
+
 }

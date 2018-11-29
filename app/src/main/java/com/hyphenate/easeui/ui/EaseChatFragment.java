@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -199,6 +200,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private UserEntity toChatUser;
 
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
+    private HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
@@ -227,6 +229,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         sendMsgMap = new HashMap<>();
+        sendMsgLocalMap = new HashMap<>();
         sendFilePathMap = new HashMap<>();
         sendFileResultMap = new HashMap<>();
         fragmentArgs = getArguments();
@@ -272,16 +275,29 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     byte[] fileBuffer= FileUtil.file2Byte(filePath);
                     int fileId = (int)System.currentTimeMillis()/1000;
                     String aesKey =  RxEncryptTool.generateAESKey();
+                  /*  new AsyncTask<String, Integer, String>() {
+
+                        @Override
+                        protected String doInBackground(String... paramVarArgs) {
+
+                            return "1";
+                        }
+
+                        @Override
+                        protected void onPostExecute(String result) {
+
+                        }
+                    }.execute();*/
+
                     byte[] fileBufferMi = new byte[0];
                     try{
-
                         //String sourFile = RxEncodeTool.base64Encode2String(fileBuffer);
                         //String miStringScouce  = RxEncodeTool.base64Encode2String(fileBuffer);
                         //KLog.i("miStringScouce:"+miStringScouce.substring(0,100));
-                         long  miBegin = System.currentTimeMillis();
-                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
-                         long miend  = System.currentTimeMillis();
-                         KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
+                        long  miBegin = System.currentTimeMillis();
+                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                        long miend  = System.currentTimeMillis();
+                        KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
                         //String miString2  = RxEncodeTool.base64Encode2String(fileBufferMi);
                         //KLog.i("miString:"+miString2.substring(0,100));
                          /* InputStream aabb = FileUtil.byteTOInputStream(fileBufferMi);
@@ -299,7 +315,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                         Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                     }
-
                 }
                 break;
             case 2:
@@ -357,6 +372,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         byte[] retMsg = transformReceiverFileMessage.getMessage();
         byte[] Action = new byte[4];
         byte[] FileId = new byte[4];
+        byte[] LogId = new byte[4];
         byte[] SegSeq = new byte[4];
         byte[] CRC = new byte[2];
         byte[] Code = new byte[2];
@@ -364,19 +380,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         byte[] ToId = new byte[76];
         System.arraycopy(retMsg, 0, Action, 0, 4);
         System.arraycopy(retMsg, 4, FileId, 0, 4);
-        System.arraycopy(retMsg, 8, SegSeq, 0, 4);
-        System.arraycopy(retMsg, 12, CRC, 0, 2);
-        System.arraycopy(retMsg, 14, Code, 0, 2);
-        System.arraycopy(retMsg, 16, FromId, 0, 76);
-        System.arraycopy(retMsg, 93, ToId, 0, 76);
+        System.arraycopy(retMsg, 8, LogId, 0, 4);
+        System.arraycopy(retMsg, 12, SegSeq, 0, 4);
+        System.arraycopy(retMsg, 16, CRC, 0, 2);
+        System.arraycopy(retMsg, 18, Code, 0, 2);
+        System.arraycopy(retMsg, 20, FromId, 0, 76);
+        System.arraycopy(retMsg, 97, ToId, 0, 76);
         int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action)) ;
         int FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId));
+        int LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId));
         int SegSeqResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(SegSeq));
         short CRCResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(CRC));
         short CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code));
         String FromIdResult  = new String(FromId);
         String ToIdResult  = new String(ToId);
         String aa = "";
+        KLog.i("CodeResult:"+ CodeResult);
         switch (CodeResult)
         {
             case 0:
@@ -391,6 +410,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileName = sendFileNameMap.get(FileIdResult+"");
                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
                 }else{
+                    EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
+                    conversation.removeMessage(msgId);
+                    EMMessage.setMsgId(LogIdIdResult+"");
+                    sendMessageTo(EMMessage);
+                    String aabbcc = EMMessage.getMsgId();
+
+                    conversation.updateMessage(EMMessage);
+                    EMMessage bb = conversation.getMessage(LogIdIdResult+"",true);
+                    EMMessage EMMessagenew = EMClient.getInstance().chatManager().getMessage(msgId);
+                    EMMessage EMMessagenew2 = EMClient.getInstance().chatManager().getMessage(LogIdIdResult+"");
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -750,6 +779,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
     }
+    public void delMyMsg(JDelMsgRsp jDelMsgRsp)
+    {
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
+        if(conversation !=null )
+            conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+        //refresh ui
+        if(isMessageListInited) {
+            messageList.refresh();
+        }
+        if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
+        {
+            EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+            String localUrl = imgBody.getLocalUrl();
+            FileUtil.deleteFile(localUrl);
+        }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
+        {
+            EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+            String localUrl = imgBody.getLocalUrl();
+            FileUtil.deleteFile(localUrl);
+        }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
+        {
+            EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+            String localUrl = imgBody.getLocalUrl();
+            FileUtil.deleteFile(localUrl);
+        }
+    }
     public void  refreshData(List<Message> messageList)
     {
         if(conversation == null)
@@ -885,15 +940,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
-    public void delMyMsg(JDelMsgRsp jDelMsgRsp)
-    {
-        if(conversation !=null )
-            conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
-        //refresh ui
-        if(isMessageListInited) {
-            messageList.refresh();
-        }
-    }
     public void  delFreindMsg(JDelMsgPushRsp jDelMsgRsp)
     {
         try {
@@ -907,6 +953,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if(isMessageListInited) {
                 messageList.refresh();
             }
+            if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
+            {
+                EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+                String localUrl = imgBody.getLocalUrl();
+                FileUtil.deleteFile(localUrl);
+            }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
+            {
+                EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+                String localUrl = imgBody.getLocalUrl();
+                FileUtil.deleteFile(localUrl);
+            }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
+            {
+                EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+                String localUrl = imgBody.getLocalUrl();
+                FileUtil.deleteFile(localUrl);
+            }
+
         }catch (Exception e)
         {
 
@@ -1414,6 +1477,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
+        sendMsgLocalMap.put(uuid,false);
         sendFilePathMap.put(uuid,filePath);
         sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -1426,21 +1490,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void sendImageMessage(String imagePath) {
         File file = new File(imagePath);
         boolean isHas = file.exists();
+        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
         message.setUnread(false);
-        currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        message.setMsgId(uuid);
+        currentSendMsg = message;
         sendMsgMap.put(uuid,message);
-        sendFilePathMap.put(uuid,imagePath);
+        sendMsgLocalMap.put(uuid,false);
+        sendFilePathMap.put(uuid,files_dir);
         sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
         FileUtil.copySdcardFile(imagePath,files_dir);
         sendMessageTo(message);
+
     }
     protected void sendCameraImageMessage(String imagePath) {
         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
@@ -1451,6 +1518,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
+        sendMsgLocalMap.put(uuid,false);
         sendFilePathMap.put(uuid,imagePath);
         sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -1479,6 +1547,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         sendMsgMap.put(uuid,message);
+        sendMsgLocalMap.put(uuid,false);
         sendFilePathMap.put(uuid,videoPath);
         sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();

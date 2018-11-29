@@ -40,7 +40,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
         progressBarShelf = (ProgressBar) findViewById(R.id.progress_bar);
     }
 
-    
+
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
@@ -69,7 +69,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             }else{
                 if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
-                            imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
+                        imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
                   /*  progressBar.setVisibility(View.INVISIBLE);
                     percentageView.setVisibility(View.INVISIBLE);*/
                     imageView.setImageResource(R.drawable.ease_default_image);
@@ -121,7 +121,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     /**
      * load image into image view
-     * 
+     *
      */
     private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
         // first check if the thumbnail image already loaded into cache s
@@ -132,6 +132,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
             imageView.setImageBitmap(bitmap);
         } else {
             imageView.setImageResource(R.drawable.ease_default_image);
+
 
             new AsyncTask<Object, Void, Bitmap>() {
 
