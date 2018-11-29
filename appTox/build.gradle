@@ -1,0 +1,237 @@
+buildscript {
+    System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true' // Fix gradle bug
+
+    repositories {
+        maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+        mavenCentral()
+        jcenter()
+
+        flatDir dirs: "libs"
+        google()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "http://dl.bintray.com/drummer-aidan/maven" }
+        maven { url "https://repository.apache.org/content/repositories/snapshots/" }
+        maven { url 'https://maven.google.com' }
+    }
+
+    dependencies {
+
+        classpath ('com.android.tools.build:gradle:3.2.1'){
+            exclude module: 'proguard-gradle'
+        }
+        // compiled by subliun --------
+        classpath 'jp.leafytree.gradle:gradle-android-scala-plugin:1.5-SNAPSHOT'
+        // compiled by subliun --------
+
+        // 5.0 -> [5.1, 5.2.1, 5.3.2]
+        classpath('net.sf.proguard:proguard-gradle:5.3.2') {
+            force = true
+        }
+    }
+}
+
+repositories {
+    maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    mavenCentral()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://jitpack.io" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://dl.bintray.com/drummer-aidan/maven" }
+    maven { url "https://repository.apache.org/content/repositories/snapshots/" }
+    maven { url 'https://maven.google.com' }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "jp.leafytree.android-scala"
+
+
+android {
+    compileSdkVersion 25
+
+    /*dexOptions {
+        javaMaxHeapSize "2012m"
+        // preDexLibraries = true
+    }*/
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+
+        renderscriptTargetApi 23
+
+        //multiDexEnabled true
+
+        //vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        //applicationId "chat.tox.antox"
+        //testApplicationId "chat.tox.antox.tests"
+
+        ndk {
+            abiFilters "arm64-v8a", "armeabi", "armeabi-v7a", "x86", "x86_64"
+        }
+    }
+
+    aaptOptions {
+        additionalParameters "--no-version-vectors"
+    }
+
+    lintOptions {
+       /* abortOnError false
+        absolutePaths false
+        lintConfig file("lint.xml")
+        showAll true
+        textReport true
+        xmlReport true
+        htmlReport true
+        textOutput file("lint-report.txt")
+        htmlOutput file("lint-report.html")
+        xmlOutput file("lint-report.xml")*/
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    packagingOptions {
+        exclude 'google/protobuf/compiler/plugin.proto'
+        exclude 'google/protobuf/any.proto'
+        exclude 'google/protobuf/api.proto'
+        exclude 'google/protobuf/descriptor.proto'
+        exclude 'google/protobuf/duration.proto'
+        exclude 'google/protobuf/empty.proto'
+        exclude 'google/protobuf/field_mask.proto'
+        exclude 'google/protobuf/source_context.proto'
+        exclude 'google/protobuf/struct.proto'
+        exclude 'google/protobuf/timestamp.proto'
+        exclude 'google/protobuf/type.proto'
+        exclude 'google/protobuf/wrappers.proto'
+        exclude 'scalapb/scalapb.proto'
+        exclude 'org/apache/commons/imaging/formats/xpm/rgb.txt'
+        exclude 'org/xbill/DNS/windows/DNSServer.properties'
+        exclude 'org/xbill/DNS/windows/DNSServer_de.properties'
+        exclude 'org/xbill/DNS/windows/DNSServer_fr.properties'
+        exclude 'org/xbill/DNS/windows/DNSServer_ja.properties'
+        exclude 'org/xbill/DNS/windows/DNSServer_pl.properties'
+        exclude 'library.properties'
+        exclude 'reflect.properties'
+        exclude 'rootdoc.txt'
+        exclude '.readme'
+        exclude 'LICENSE.txt'
+        exclude 'LICENSE-2.0.txt'
+        exclude 'APK LICENSE.txt'
+    }
+
+    buildTypes {
+        release {
+          /*  minifyEnabled true
+            proguardFiles 'proguard-rules.txt'
+            testProguardFile 'proguard-rules.txt'*/
+        }
+        debug {
+            minifyEnabled true
+            proguardFiles 'proguard-rules.txt'
+            testProguardFile 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+
+    compileOnly 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.3-SNAPSHOT'
+
+   // compileOnly 'com.android.support:multidex:1.0.2' // ???
+    compileOnly 'org.scala-lang:scala-library:2.11.8' // 2.11.8 -> [2.12.0, 2.12.1] *dont upgrade*
+    // 3.6.1-10 -> [4.0, 4.1, 4.2]
+    compileOnly 'org.scaloid:scaloid_2.11:4.2'
+    compileOnly 'com.typesafe.scala-logging:scala-logging_2.11:3.5.0' // 3.1.0 -> [3.5.0]
+    compileOnly 'com.trueaccord.scalapb:scalapb-runtime_2.11:0.5.47'
+    // 7.2.0-M1 -> [7.2.8, 7.3.0-M8] *dont upgrade*
+    compileOnly 'org.scalaz:scalaz-core_2.11:7.2.8'
+    // 1.8.2 -> [1.8.3, 1.9.0, 1.10.3]
+    compileOnly 'org.scodec:scodec-core_2.11:1.10.3'
+    compileOnly 'org.apache.commons:commons-imaging:1.0-SNAPSHOT' // 1.0-SNAPSHOT -> [1.0-R1534292]
+    compileOnly 'com.android.support:design:25.1.0'
+    compileOnly 'com.android.support:recyclerview-v7:25.1.0'
+    compileOnly 'com.android.support:appcompat-v7:25.1.0'
+    compileOnly 'com.android.support:gridlayout-v7:25.1.0'
+    compileOnly 'com.android.support:support-v4:25.1.0'
+    //
+    //
+    //
+    // -- upgrade me !! --
+    // -- upgrade me !! --
+    // 1.0.6 -> [1.1.10, 1.2.4] *1.2.4*
+    compileOnly 'io.reactivex:rxjava:1.0.17'
+    // 0.24.0 -> [1.0.2, 1.1.0, 1.2.0, 1.2.1] *1.2.1*
+    // io.reactivex:rxandroid -> io.reactivex:rxjava
+    compileOnly ('io.reactivex:rxandroid:0.24.0')
+    //    exclude group: 'io.reactivex'
+    // 0.25.0 -> [0.25.1, 0.26.5] ***
+    // io.reactivex:rxscala_2 -> io.reactivex:rxjava
+    compileOnly('io.reactivex:rxscala_2.11:0.25.1') {
+        exclude group: 'io.reactivex'
+    }
+    // -- upgrade me !! --
+    // -- upgrade me !! --
+    //
+    //
+    //
+    //
+    // 0.4.0 -> [0.4.1, 0.5.1, 0.6.3, 0.7.0, 0.8.0, 1.0.0, 1.1.1]
+    // com.squareup.sqlbrite:sqlbrite -> io.reactivex:rxjava
+    compileOnly('com.squareup.sqlbrite:sqlbrite:1.1.1') {
+        exclude group: 'io.reactivex'
+    }
+    // no newer version yet
+    compileOnly 'com.squareup.retrofit:retrofit:1.9.0'
+    compileOnly 'com.squareup.okhttp3:okhttp:3.9.1'
+    compileOnly 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'
+    // 2.0.0 -> [2.1.0, 2.2.0, 2.6.0, 2.7.5]
+    compileOnly 'com.squareup.okhttp3:okhttp:3.9.1' // 2.0.0 -> [2.1.0, 2.2.0, 2.6.0, 2.7.5]
+    compileOnly 'com.intellij:annotations:12.0' // no newer version yet
+    compileOnly 'de.hdodenhof:circleimageview:2.1.0' // 1.2.2 -> [1.3.0, 2.0.0, 2.1.0] *2.1.0*
+    // ---
+    // Error:Conflict with dependency 'com.android.support:support-annotations'. Resolved versions for app (24.2.0) and test app (23.0.1) differ.
+    // 1.0.3 -> [1.0.9, 1.1.1] *1.0.9*
+    compileOnly('com.jpardogo.materialtabstrip:library:1.0.9') {
+        exclude group: 'com.android.support'
+    }
+    // ---
+    compileOnly 'com.balysv:material-ripple:1.0.2' // no newer version yet
+    // ---
+    // Error:Conflict with dependency
+    // 1.3.0 -> [2.2.5] *2.2.5*
+    compileOnly('jp.wasabeef:recyclerview-animators:2.2.5') {
+        exclude group: 'com.android.support'
+    }
+    // ---
+
+    compileOnly 'pub.devrel:easypermissions:0.3.0'
+    compileOnly 'com.github.angads25:filepicker:1.0.6'
+
+//    androidTestImplementation 'org.scala-lang:scala-library:2.11.8'
+//    androidTestImplementation 'com.android.support.test:runner:0.4'
+//    androidTestImplementation 'com.android.support.test:rules:0.4'
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.1'
+}
+
+ScalaCompileOptions.metaClass.daemonServer = true
+ScalaCompileOptions.metaClass.fork = true
+ScalaCompileOptions.metaClass.useAnt = false
+ScalaCompileOptions.metaClass.useCompileDaemon = false
+
+tasks.withType(ScalaCompile) {
+
+    // If you want to use scala compileOnly daemon
+    scalaCompileOptions.useCompileDaemon = false
+    // Suppress deprecation warnings
+    scalaCompileOptions.deprecation = false
+    // Additional parameters
+    scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+}

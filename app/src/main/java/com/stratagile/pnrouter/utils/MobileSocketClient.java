@@ -59,7 +59,7 @@ public class MobileSocketClient {
                 byte[] data = paramVarArgs[0].getBytes();
                 try {
                     if(socket == null)
-                        socket = new DatagramSocket(BROADCAST_PORT);
+                        socket = new DatagramSocket();
                     DatagramPacket sendPack = new DatagramPacket(data,
                             data.length, inetAddress,
                             BROADCAST_PORT);
@@ -97,7 +97,7 @@ public class MobileSocketClient {
                 int count = 0;
                 try {
                     if(socket == null)
-                        socket = new DatagramSocket(BROADCAST_PORT);
+                        socket = new DatagramSocket();
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     //receive()是阻塞方法，会等待客户端发送过来的信息
                     while(true){

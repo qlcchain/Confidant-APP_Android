@@ -179,7 +179,7 @@ dependencies {
     implementation project(':menu')
     //implementation project(':easeui')
     implementation project(':library')
-    //implementation project(':appTox')
+    implementation project(':appTox')
     implementation 'org.greenrobot:greendao:3.2.2'
     //图片加载框架
     implementation 'com.github.bumptech.glide:glide:4.7.1'

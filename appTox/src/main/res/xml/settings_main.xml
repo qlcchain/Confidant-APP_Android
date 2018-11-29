@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_header_notifications">
+        <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="notifications_enable_notifications"
+            android:title="@string/pref_title_enable_notifications" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_persistent"
+            android:title="@string/pref_title_persistent_notification" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_new_message"
+            android:title="@string/pref_title_new_message_notifications" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_friend_request"
+            android:title="@string/pref_title_new_friend_notifications" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_sound"
+            android:title="@string/pref_title_notification_sound" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_vibrate"
+            android:title="@string/pref_title_notification_vibrate" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enable_notifications"
+            android:key="notifications_light"
+            android:title="@string/pref_title_notification_light" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_input">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="autocorrect"
+            android:title="@string/pref_enable_autocorrect" />
+
+        <ListPreference
+            android:defaultValue="emote"
+            android:entries="@array/pref_keyboard_hotkey_titles"
+            android:entryValues="@array/pref_keyboard_hotkey_values"
+            android:key="keyboard_hotkey"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_keyboard_hotkey" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_network">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="wifi_only"
+            android:title="@string/pref_title_wifi_only" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_udp"
+            android:title="@string/pref_udp" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_proxy"
+            android:title="@string/pref_title_enable_proxy" />
+
+        <ListPreference
+            android:defaultValue="SOCKS5"
+            android:dependency="enable_proxy"
+            android:entries="@array/pref_proxy_type_list_values"
+            android:entryValues="@array/pref_proxy_type_list_values"
+            android:key="proxy_type"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_proxy_type" />
+
+        <EditTextPreference
+            android:defaultValue="127.0.0.1"
+            android:dependency="enable_proxy"
+            android:key="proxy_address"
+            android:title="@string/pref_title_proxy_address" />
+
+        <EditTextPreference
+            android:defaultValue="9050"
+            android:dependency="enable_proxy"
+            android:key="proxy_port"
+            android:numeric="integer"
+            android:title="@string/pref_title_proxy_port" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_custom_node"
+            android:title="@string/pref_title_custom_node" />
+
+        <EditTextPreference
+            android:defaultValue="127.0.0.1"
+            android:dependency="enable_custom_node"
+            android:key="custom_node_address"
+            android:title="@string/pref_title_custom_node_address" />
+
+        <EditTextPreference
+            android:defaultValue="33445"
+            android:dependency="enable_custom_node"
+            android:key="custom_node_port"
+            android:numeric="integer"
+            android:title="@string/pref_title_custom_node_port" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="enable_custom_node"
+            android:key="custom_node_key"
+            android:title="@string/pref_title_custom_node_public_key" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_calls">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="call_event_logging"
+            android:title="@string/pref_title_enable_call_event_logging" />
+
+        <Preference
+            android:key="call_replies"
+            android:title="@string/title_pref_edit_call_replies" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="videocallstartwithnovideo"
+            android:title="@string/pref_enable_videocallstartwithnovideo" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_other">
+        <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+        <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/pref_language_list_titles"
+            android:entryValues="@array/pref_language_list_values"
+            android:key="locale"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_language" />
+
+        <Preference
+            android:defaultValue="@color/brand_primary"
+            android:editable="false"
+            android:key="theme_color"
+            android:singleLine="true"
+            android:title="@string/pref_title_theme_color" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="strip_exif"
+            android:title="@string/pref_strip_exif" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="autoacceptft"
+            android:title="@string/pref_enable_autoaccept" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="batterysavingmode"
+            android:title="@string/pref_enable_batterysavingmode" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autostart"
+            android:title="@string/pref_autostart" />
+    </PreferenceCategory>
+</PreferenceScreen>
