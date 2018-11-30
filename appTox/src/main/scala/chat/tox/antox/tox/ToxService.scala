@@ -22,7 +22,9 @@ class ToxService extends Service {
 
   private val connectionCheckInterval = 10000 //in ms
 
-  private val reconnectionIntervalSeconds = 60
+  private val reconnectionIntervalSeconds = 5
+
+  private var reconnectionCount = 1;
 
   private var callService: CallService = _
 
@@ -31,7 +33,7 @@ class ToxService extends Service {
       ToxSingleton.initTox(getApplicationContext)
       AntoxLog.debug("Initting ToxSingleton")
     }
-
+    reconnectionCount = 1
     keepRunning = true
     val thisService = this
 
@@ -59,12 +61,13 @@ class ToxService extends Service {
               AntoxLog.debug("Tox connected. Stopping reconnection")
             } else {
               reconnection = Observable
-                .interval(reconnectionIntervalSeconds seconds)
+                .interval((reconnectionIntervalSeconds * reconnectionCount) seconds)
                 .subscribe(x => {
                     AntoxLog.debug("Reconnecting")
                     Observable[Boolean](_ => ToxSingleton.bootstrap(getApplicationContext)).subscribe()
                   })
-              AntoxLog.debug(s"Tox disconnected. Scheduled reconnection every $reconnectionIntervalSeconds seconds")
+              AntoxLog.debug(s"Tox disconnected. Scheduled reconnection every "+ (reconnectionIntervalSeconds * reconnectionCount) +" seconds")
+              reconnectionCount = reconnectionCount +1;
             }
           })
 

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.util.Base64
+import chat.tox.antox.tox.ToxService
 import chat.tox.antox.utils.AntoxLog
+import chat.tox.antox.utils.CreateUserUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hyphenate.easeui.utils.PathUtils
@@ -68,8 +70,9 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        AntoxLog.debug("Registered another error handler when we didn't need to.", AntoxLog.DEFAULT_TAG())
-        JavaToScala.init(this);
+        CreateUserUtils.createToxData("test",this)
+        var intent = Intent(this, ToxService::class.java)
+        startService(intent)
          handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)

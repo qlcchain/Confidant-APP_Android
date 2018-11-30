@@ -1,16 +1,26 @@
 
 package chat.tox.antox.data
 
-import android.content.Context
-import android.database.{Cursor, Observable}
+import android.content.{ContentValues, Context}
+import android.database.Cursor
+import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
+import android.preference.PreferenceManager
+import chat.tox.antox.data.UserDB.DatabaseHelper
 import chat.tox.antox.toxme.ToxMeName
+import chat.tox.antox.utils.DatabaseConstants._
+import chat.tox.antox.utils.{AntoxLog, BriteScalaDatabase, DatabaseUtil}
 import chat.tox.antox.wrapper.{CallReply, ToxAddress, UserInfo}
+import com.squareup.sqlbrite.SqlBrite
+import im.tox.tox4j.core.data.{ToxNickname, ToxStatusMessage}
+import org.scaloid.common.LoggerTag
+import rx.lang.scala.Observable
+import rx.schedulers.Schedulers
 
 import scala.collection.mutable.ArrayBuffer
 
 object UserDB {
 
- /* private val TAG = LoggerTag(getClass.getSimpleName)
+  private val TAG = LoggerTag(getClass.getSimpleName)
 
   val databaseName = "userdb"
   val sqlBrite = SqlBrite.create()
@@ -18,20 +28,20 @@ object UserDB {
   class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, databaseName, null, USER_DATABASE_VERSION) {
     private val CREATE_TABLE_USERS: String =
       s"""CREATE TABLE IF NOT EXISTS $TABLE_USERS ( _id integer primary key ,
-          |$COLUMN_NAME_PROFILE_NAME text,
-          |$COLUMN_NAME_PASSWORD text,
-          |$COLUMN_NAME_NICKNAME text,
-          |$COLUMN_NAME_STATUS text,
-          |$COLUMN_NAME_STATUS_MESSAGE text,
-          |$COLUMN_NAME_AVATAR text,
-          |$COLUMN_NAME_LOGGING_ENABLED boolean,
-          |$COLUMN_NAME_TOXME_DOMAIN text);""".stripMargin
+         |$COLUMN_NAME_PROFILE_NAME text,
+         |$COLUMN_NAME_PASSWORD text,
+         |$COLUMN_NAME_NICKNAME text,
+         |$COLUMN_NAME_STATUS text,
+         |$COLUMN_NAME_STATUS_MESSAGE text,
+         |$COLUMN_NAME_AVATAR text,
+         |$COLUMN_NAME_LOGGING_ENABLED boolean,
+         |$COLUMN_NAME_TOXME_DOMAIN text);""".stripMargin
 
     private val CREATE_TABLE_CALL_REPLIES: String =
       s"""CREATE TABLE IF NOT EXISTS $TABLE_CALL_REPLIES ( _id integer primary key ,
-          |$COLUMN_NAME_PROFILE_NAME text,
-          |$COLUMN_NAME_CALL_REPLY text,
-          |FOREIGN KEY($COLUMN_NAME_PROFILE_NAME) REFERENCES $TABLE_USERS($COLUMN_NAME_PROFILE_NAME))""".stripMargin
+         |$COLUMN_NAME_PROFILE_NAME text,
+         |$COLUMN_NAME_CALL_REPLY text,
+         |FOREIGN KEY($COLUMN_NAME_PROFILE_NAME) REFERENCES $TABLE_USERS($COLUMN_NAME_PROFILE_NAME))""".stripMargin
 
     override def onCreate(db: SQLiteDatabase) {
       db.execSQL(CREATE_TABLE_USERS)
@@ -60,57 +70,144 @@ object UserDB {
       }
     }
 
-  }*/
+  }
 
 }
 
 class UserDB(ctx: Context) {
 
- case class NotLoggedInException(message: String = "Invalid request. No active user found.") extends RuntimeException
+  case class NotLoggedInException(message: String = "Invalid request. No active user found.") extends RuntimeException
 
+  private var mDbHelper: DatabaseHelper = _
 
+  private var mDb: BriteScalaDatabase = _
+
+  val preferences = PreferenceManager.getDefaultSharedPreferences(ctx)
 
   def activeUser: Option[String] = {
-    val user = null
-    user
+    val user = preferences.getString("active_account", "initName")
+    user match {
+      case "" =>
+        None
+      case _ =>
+        Some(user)
+    }
   }
 
   def getActiveUser: String = activeUser.getOrElse(throw new NotLoggedInException())
 
-
+  mDbHelper = new DatabaseHelper(ctx)
+  // old style ----
+  // mDb = new BriteScalaDatabase(AntoxDB.sqlBrite.wrapDatabaseHelper(mDbHelper))
+  // old style ----
+  mDb = new BriteScalaDatabase(AntoxDB.sqlBrite.wrapDatabaseHelper(mDbHelper, Schedulers.io()))
 
   def close() {
-
+    mDbHelper.close()
   }
 
   def login(username: String): Unit = {
+    preferences.edit().putString("active_account", username).commit()
 
+    val editor = preferences.edit()
+    val activeUserDetails = getActiveUserDetails
+    editor.putString("nickname", new String(activeUserDetails.nickname.value))
+    editor.putString("password", activeUserDetails.password)
+    editor.putString("status", activeUserDetails.status)
+    editor.putString("status_message", new String(activeUserDetails.statusMessage.value))
+    editor.putString("avatar", activeUserDetails.avatarName)
+    editor.putBoolean("logging_enabled", activeUserDetails.loggingEnabled)
+    activeUserDetails.toxMeName.domain match {
+      case Some(domain) =>
+        editor.putString("toxme_info", activeUserDetails.toxMeName.username + "@" + domain)
+      case None =>
+        editor.putString("toxme_info", "")
+    }
+
+    editor.commit()
+  }
+
+  def loggedIn: Boolean = activeUser.isDefined
+
+  def logout(): Unit = {
+    preferences.edit().putString("active_account", "").commit()
   }
 
   def addUser(toxMeName: ToxMeName, toxId: ToxAddress, password: String) {
+    val values = new ContentValues()
+    values.put(COLUMN_NAME_PROFILE_NAME, toxMeName.username)
+    values.put(COLUMN_NAME_PASSWORD, password)
+    values.put(COLUMN_NAME_NICKNAME, toxMeName.username)
+    values.put(COLUMN_NAME_STATUS, "online")
+    val defaultStatusMessage = "Hey! I\\'m using Antox"
+    values.put(COLUMN_NAME_STATUS_MESSAGE, defaultStatusMessage)
+    values.put(COLUMN_NAME_AVATAR, "")
+    values.put(COLUMN_NAME_LOGGING_ENABLED, true)
+    values.put(COLUMN_NAME_TOXME_DOMAIN, toxMeName.domain.getOrElse(""))
+    mDb.insert(TABLE_USERS, values)
 
+    addDefaultCallReplies(toxMeName.username)
+
+    val editor = preferences.edit()
+    editor.putString("tox_id", toxId.toString)
+    editor.putBoolean("logging_enabled", true)
+    editor.putBoolean("autostart", true)
+    editor.commit()
   }
 
   def addDefaultCallReplies(profileName: String): Unit = {
-
+    val values = new ContentValues()
+    for (_ <- 0 until QUICK_CALL_REPLY_COUNT) {
+      values.put(COLUMN_NAME_PROFILE_NAME, profileName)
+      values.put(COLUMN_NAME_CALL_REPLY, "") // call replies are initially empty until edited
+      mDb.insert(TABLE_CALL_REPLIES, values)
+      values.clear()
+    }
   }
 
   def doesUserExist(username: String): Boolean = {
-    val exists =false
+    val query =
+      s"""SELECT count(*)
+         |FROM $TABLE_USERS
+         |WHERE $COLUMN_NAME_PROFILE_NAME='$username'""".stripMargin
+
+    val exists = mDb.query(query).use { cursor =>
+      cursor.moveToFirst() && cursor.getInt(0) > 0
+    }
 
     exists
   }
 
   def deleteActiveUser(): Unit = {
-
+    val profileName = getActiveUserDetails.profileName
+    logout()
+    val where = s"$COLUMN_NAME_PROFILE_NAME == ?"
+    mDb.delete(TABLE_USERS, where, profileName)
+    ctx.deleteDatabase(profileName)
   }
 
-  private def userDetailsQuery(username: String): String =""
-
+  private def userDetailsQuery(username: String): String =
+    s"""SELECT *
+       |FROM $TABLE_USERS
+       |WHERE $COLUMN_NAME_PROFILE_NAME='$username'""".stripMargin
 
   private def userInfoFromCursor(cursor: Cursor): Option[UserInfo] = {
-    val userInfo: Option[UserInfo] = null
+    val userInfo: Option[UserInfo] =
+      if (cursor.moveToFirst()) {
+        val domain = cursor.getString(COLUMN_NAME_TOXME_DOMAIN)
+        val toxMeName = new ToxMeName(cursor.getString(COLUMN_NAME_PROFILE_NAME), if (domain.isEmpty) None else Some(domain))
 
+        Some(UserInfo(
+          toxMeName = toxMeName,
+          password = cursor.getString(COLUMN_NAME_PASSWORD),
+          nickname = ToxNickname.unsafeFromValue(cursor.getString(COLUMN_NAME_NICKNAME).getBytes),
+          status = cursor.getString(COLUMN_NAME_STATUS),
+          statusMessage = ToxStatusMessage.unsafeFromValue(cursor.getString(COLUMN_NAME_STATUS_MESSAGE).getBytes),
+          loggingEnabled = cursor.getBoolean(COLUMN_NAME_LOGGING_ENABLED),
+          avatarName = cursor.getString(COLUMN_NAME_AVATAR)))
+      } else {
+        None
+      }
 
     userInfo
   }
@@ -121,7 +218,9 @@ class UserDB(ctx: Context) {
   def getUserDetails(username: String): Option[UserInfo] = {
     val query = userDetailsQuery(username)
 
-    val userInfo = null
+    val userInfo = mDb.query(query).use { cursor =>
+      userInfoFromCursor(cursor)
+    }
 
     userInfo
   }
@@ -130,57 +229,101 @@ class UserDB(ctx: Context) {
     userDetailsObservable(getActiveUser)
 
   def userDetailsObservable(username: String): Observable[UserInfo] = {
-    val userInfo = null
+    val query = userDetailsQuery(username)
 
-    userInfo
+    mDb.createQuery(TABLE_USERS, query).map(closedCursor => {
+      val userInfo = closedCursor.use { cursor =>
+        userInfoFromCursor(cursor)
+      }
+
+      userInfo
+    }).filter(_.isDefined).map(_.get)
   }
 
   def updateActiveUserDetail(detail: String, newDetail: String): Unit = {
-
+    if (!preferences.getString(detail, "").equals(newDetail)) {
+      preferences.edit().putString(detail, newDetail).apply()
+    }
+    updateUserDetail(getActiveUser, detail, newDetail)
   }
 
   def updateActiveUserDetail(detail: String, newDetail: Boolean): Unit = {
-
+    if (!preferences.getBoolean(detail, false) == newDetail) {
+      preferences.edit().putBoolean(detail, newDetail).apply()
+    }
+    updateUserDetail(getActiveUser, detail, newDetail)
   }
 
   private def updateUserDetail(username: String, detail: String, newDetail: String) {
-
+    val whereClause = s"$COLUMN_NAME_PROFILE_NAME='$username'"
+    mDb.update(TABLE_USERS, contentValue(detail, newDetail), whereClause)
   }
 
   def updateUserDetail(username: String, detail: String, newDetail: Boolean) {
-
+    val whereClause = s"$COLUMN_NAME_PROFILE_NAME='$username'"
+    mDb.update(TABLE_USERS, contentValue(detail, if (newDetail) TRUE else FALSE), whereClause)
   }
 
   def getActiveUserCallRepliesObservable: Observable[ArrayBuffer[CallReply]] = {
-      val callReplies = null
+    val query = s"SELECT * FROM $TABLE_CALL_REPLIES WHERE $COLUMN_NAME_PROFILE_NAME='$getActiveUser'"
+    mDb.createQuery(TABLE_CALL_REPLIES, query).map(_.use { cursor =>
+      val callReplies = new ArrayBuffer[CallReply]()
+      val defaultReplies = Array[String]("Can\\'t talk now. What\\'s up?","I\\'ll call you right back.","I\\'ll call you later.","I\\'m on my way.")
 
+  /*    string-array name="call_incoming_reply_message_choices">
+        <item>Can\'t talk now. What\'s up?</item>
+          <item>I\'ll call you right back.</item>
+          <item>I\'ll call you later.</item>
+          <item>I\'m on my way.</item>*/
+      if (cursor.moveToFirst()) {
+        var i = 0
+        do {
+          val databaseReply = cursor.getString(COLUMN_NAME_CALL_REPLY)
+
+          //hack to keep the replies translatable by using defaults unless the user has set one
+          val reply = if (databaseReply.isEmpty) defaultReplies.lift(i).getOrElse("") else databaseReply
+          callReplies += CallReply(cursor.getInt(COLUMN_NAME_ID), reply)
+
+          i += 1
+        } while (cursor.moveToNext())
+      }
 
       callReplies
-
+    })
   }
-  def loggedIn: Boolean = activeUser.isDefined
-  def logout(): Unit = {
 
-  }
   def getActiveUserCallReplies: ArrayBuffer[CallReply] = {
-    val userInfo = null
-
-    userInfo
+    getActiveUserCallRepliesObservable.toBlocking.first
   }
 
   def updateActiveUserCallReply(callReply: CallReply): Unit = {
+    val values = new ContentValues()
+    values.put(COLUMN_NAME_CALL_REPLY, callReply.reply)
 
+    val where = s"$COLUMN_NAME_ID = ${callReply.id} AND $COLUMN_NAME_PROFILE_NAME='$getActiveUser'"
+    mDb.update(TABLE_CALL_REPLIES, values, where)
   }
 
   def numUsers(): Int = {
-
-      val count = 0
+    mDb.query(s"SELECT count(*) FROM $TABLE_USERS").use { cursor =>
+      cursor.moveToFirst()
+      val count = cursor.getInt(0)
 
       count
+    }
   }
 
   def getAllProfiles: ArrayBuffer[String] = {
     val profiles = new ArrayBuffer[String]()
+    val query = s"SELECT $COLUMN_NAME_PROFILE_NAME FROM $TABLE_USERS"
+    mDb.query(query).use { cursor =>
+      if (cursor.moveToFirst()) {
+        do {
+          profiles += cursor.getString(0)
+        } while (cursor.moveToNext())
+      }
+    }
+
     profiles
   }
 }

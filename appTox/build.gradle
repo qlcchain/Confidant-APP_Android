@@ -141,7 +141,13 @@ android {
 
 dependencies {
 
-    compileOnly fileTree(dir: 'libs', include: '*.jar')
+    compileOnly fileTree(dir: 'libs', include: 'core.jar')
+    compileOnly fileTree(dir: 'libs', include: 'dnsjava-2.1.6.jar')
+    api fileTree(dir: 'libs', include: 'gradle-android-scala-plugin-1.5-SNAPSHOT.jar')
+    api fileTree(dir: 'libs', include: 'kalium-jni-1.0.0-SNAPSHOT.jar')
+    api fileTree(dir: 'libs', include: 'org.xbill.DNS-dnsjava-2.1.6.jar')
+    api fileTree(dir: 'libs', include: 'tox4j-api.jar')
+    api fileTree(dir: 'libs', include: 'tox4j-c.jar')
     api 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.3-SNAPSHOT'
 
    // compileOnly 'com.android.support:multidex:1.0.2' // ???

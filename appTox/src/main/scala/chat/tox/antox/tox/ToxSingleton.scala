@@ -165,7 +165,8 @@ object ToxSingleton {
 
   def isToxConnected(preferences: SharedPreferences, context: Context): Boolean = {
     val connManager = context.getSystemService(Context.CONNECTIVITY_SERVICE).asInstanceOf[ConnectivityManager]
-    val wifiOnly = preferences.getBoolean("wifi_only", true)
+    //val wifiOnly = preferences.getBoolean("wifi_only", true)
+    val wifiOnly = false
     val wifiInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
     !(wifiOnly && !wifiInfo.isConnected)
@@ -189,7 +190,7 @@ object ToxSingleton {
     val options = ToxOptions(
       ipv6Enabled = Options.ipv6Enabled,
       proxy = proxyOptions,
-      udpEnabled = udpEnabled,
+      udpEnabled = true,
       saveData = dataFile.loadAsSaveType())
 
     try {
