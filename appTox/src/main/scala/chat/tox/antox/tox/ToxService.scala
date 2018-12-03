@@ -8,11 +8,16 @@ import android.preference.PreferenceManager
 import chat.tox.antox.av.CallService
 import chat.tox.antox.callbacks.{AntoxOnSelfConnectionStatusCallback, ToxCallbackListener, ToxavCallbackListener}
 import chat.tox.antox.utils.AntoxLog
+import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxConnection
 import im.tox.tox4j.impl.jni.ToxJniLog
 import rx.lang.scala.schedulers.AndroidMainThreadScheduler
 import rx.lang.scala.{Observable, Subscription}
+
 import scala.concurrent.duration._
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class ToxService extends Service {
 
@@ -58,6 +63,7 @@ class ToxService extends Service {
               if (reconnection != null && !reconnection.isUnsubscribed) {
                 reconnection.unsubscribe()
               }
+              EventBus.getDefault().post(new ToxStatusEvent(1))
               AntoxLog.debug("Tox connected. Stopping reconnection")
             } else {
               reconnection = Observable

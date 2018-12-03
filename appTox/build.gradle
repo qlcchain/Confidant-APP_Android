@@ -218,7 +218,7 @@ dependencies {
 
     api 'pub.devrel:easypermissions:0.3.0'
     api 'com.github.angads25:filepicker:1.0.6'
-
+    api 'org.greenrobot:eventbus:3.1.1'
 //    androidTestImplementation 'org.scala-lang:scala-library:2.11.8'
 //    androidTestImplementation 'com.android.support.test:runner:0.4'
 //    androidTestImplementation 'com.android.support.test:rules:0.4'

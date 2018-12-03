@@ -71,8 +71,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
         CreateUserUtils.createToxData("test",this)
-        var intent = Intent(this, ToxService::class.java)
-        startService(intent)
          handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)

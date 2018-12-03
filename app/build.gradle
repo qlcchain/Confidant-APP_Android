@@ -164,7 +164,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'com.alibaba:fastjson:1.2.37'
-    implementation 'org.greenrobot:eventbus:3.1.1'
+    //implementation 'org.greenrobot:eventbus:3.1.1'
     implementation files('libs/klogLibrary-release.aar')
     // Rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'

@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import chat.tox.antox.tox.ToxService
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -41,6 +42,7 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -347,8 +349,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
 
+        var aa = "aa";
+    }
     override fun initData() {
+        var intent = Intent(this, ToxService::class.java)
+        startService(intent)
         newRouterEntity = RouterEntity()
         lastLoginUserId = FileUtil.getLocalUserData("userid")
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
