@@ -139,7 +139,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
-        standaloneCoroutine.cancel()
+        if(standaloneCoroutine != null)
+            standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
@@ -365,6 +366,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         ConstantValue.curreantNetworkType = "TOX"
+        AppConfig.instance.getPNRouterServiceMessageToxReceiver()
     }
     override fun initData() {
         var intent = Intent(this, ToxService::class.java)
@@ -375,7 +377,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
 
-           if (loginKey.text.toString().equals("")) {
+            if (loginKey.text.toString().equals("")) {
                 toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
@@ -386,6 +388,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var baseData = BaseData(2,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey:FriendKey = FriendKey(ConstantValue.activeKey.substring(0, 64))
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                standaloneCoroutine = launch(CommonPool) {
+                    delay(10000)
+                    if (!loginBack) {
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast("login time out")
+                        }
+                    }
+                }
                 MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 if(!ConstantValue.isConnected)
@@ -774,23 +786,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }else{
                     toast(R.string.code_error)
                 }
-               /* for (data in ConstantValue.updRouterData)
-                {
-                    var key:String = data.key;
-                    if(key.equals(RouterIdStr))
-                    {
-                        ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
-                        ConstantValue.currentRouterId = RouterIdStr
-                        ConstantValue.currentRouterSN = UserSnStr
-                        break;
-                    }
-                }
-                if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
-                {
-                    isFromScan = true
-                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                }*/
+                /* for (data in ConstantValue.updRouterData)
+                 {
+                     var key:String = data.key;
+                     if(key.equals(RouterIdStr))
+                     {
+                         ConstantValue.currentRouterIp = ConstantValue.updRouterData.get(key)!!
+                         ConstantValue.currentRouterId = RouterIdStr
+                         ConstantValue.currentRouterSN = UserSnStr
+                         break;
+                     }
+                 }
+                 if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                 {
+                     isFromScan = true
+                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                     AppConfig.instance.messageReceiver!!.loginBackListener = this
+                 }*/
             }catch (e:Exception)
             {
                 runOnUiThread {

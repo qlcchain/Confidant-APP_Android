@@ -31,6 +31,8 @@ import com.tencent.bugly.crashreport.CrashReport
 class AppConfig : MultiDexApplication() {
     var applicationComponent: AppComponent? = null
 
+    var onToxMessageReceiveListener : WebSocketConnection.OnMessageReceiveListener? = null
+
     var messageReceiver: PNRouterServiceMessageReceiver? = null
 
     var messageSender: PNRouterServiceMessageSender? = null
@@ -63,6 +65,18 @@ class AppConfig : MultiDexApplication() {
         UserProvider.init()
         messageToxReceiver = ToxMessageReceiver()
 //        MessageProvider.init()
+    }
+    fun getPNRouterServiceMessageToxReceiver() :  PNRouterServiceMessageReceiver{
+        if (messageReceiver == null) {
+            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+                    APIModule.DynamicCredentialsProvider(this),
+                    BuildConfig.USER_AGENT,
+                    APIModule.PipeConnectivityListener())
+            MessageRetrievalService.registerActivityStarted(this)
+//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
+        }
+        return messageReceiver!!
     }
 
     fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{

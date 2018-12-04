@@ -235,7 +235,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 //                    KLog.i("心跳监测和服务器的连接正常~~~")
 //                }
 //            } else {
-//                onMessageReceiveListener!!.onMessage(baseData, text)
+//                onToxMessageReceiveListener!!.onMessage(baseData, text)
 //            }
 //        } catch (e : Exception) {
 //            e.printStackTrace()

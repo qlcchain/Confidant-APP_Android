@@ -1,12 +1,15 @@
 package com.stratagile.pnrouter.data.web
 
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage
 import com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage
 import com.stratagile.pnrouter.entity.BaseData
 import java.io.IOException
 import java.util.concurrent.TimeoutException
 
-class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) : WebSocketConnection.OnMessageReceiveListener {
+class SignalServiceMessagePipe internal constructor(private val websocket: WebSocketConnection, private val credentialsProvider: CredentialsProvider) : WebSocketConnection.OnMessageReceiveListener, ToxMessageReceiver.OnMessageReceiveListener {
 
     open var messagePipeCallback : MessagePipeCallback? = null
     override fun onMessage(message: BaseData, text : String?) {
@@ -14,8 +17,13 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
     }
 
     init {
-        this.websocket.connect()
-        this.websocket.onMessageReceiveListener = this
+        if( ConstantValue.curreantNetworkType.equals("TOX"))
+        {
+            AppConfig.instance.onToxMessageReceiveListener = this
+        }else{
+            this.websocket.connect()
+            this.websocket.onMessageReceiveListener = this
+        }
     }
 
     /**
