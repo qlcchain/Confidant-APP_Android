@@ -3,6 +3,9 @@ package com.stratagile.pnrouter.ui.activity.main.presenter
 import android.Manifest
 import android.app.Activity
 import android.util.Log
+import chat.tox.antox.toxme.ToxData
+import chat.tox.antox.utils.CreateUserUtils
+import chat.tox.antox.wrapper.ToxAddress
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -129,6 +132,17 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             FileUtil.init()
             LocalRouterUtils.updateGreanDaoFromLocal()
             getLastVersion()
+            var toxId:String =  FileUtil.getLocalUserData("toxId")
+            if(toxId == null && toxId.equals(""))
+            {
+                var toxData: ToxData = CreateUserUtils.createToxData("test",AppConfig.instance)
+                if(toxData != null && toxData.address()!= null)
+                {
+                    var toxAddress: ToxAddress = toxData.address()
+                    var toxId = toxAddress.toString()
+                    FileUtil.saveUserData2Local(toxId,"toxId")
+                }
+            }
             // 权限申请成功回调。
             if (requestCode == 101) {
                 permissionState = 0
@@ -150,14 +164,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 KLog.i("权限申请失败")
                 permissionState = 0
                 AppConfig.instance.toast(R.string.permission_denied)
-                if (timeOver) {
-                    if (jumpToGuest) {
-                        mView.jumpToGuest()
-                        return
-                    } else if (jump == JUMPTOLOGIN) {
-                        mView.jumpToLogin()
-                    }
-                }
+                mView.exitApp()
             }
         }
     }

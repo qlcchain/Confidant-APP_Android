@@ -917,12 +917,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 continue;
             }
             message.setFrom(Message.getFrom());
-            message.setTo(Message.getTo());
+            //message.setTo(Message.getTo());
             message.setUnread(false);
             if(Message.getFrom().equals(userId))
             {
+                message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.SEND );
             }else {
+                message.setTo(userId);
                 message.setDirection(EMMessage.Direct.RECEIVE );
             }
             message.setMsgTime(Message.getTimeStatmp()* 1000);

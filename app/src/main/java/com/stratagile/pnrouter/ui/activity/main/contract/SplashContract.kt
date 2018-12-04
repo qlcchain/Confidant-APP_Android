@@ -34,6 +34,8 @@ interface SplashContract {
          * 跳转到欢迎页面
          */
         fun jumpToGuest()
+
+        fun exitApp();
     }
 
     interface SplashContractPresenter : BasePresenter {

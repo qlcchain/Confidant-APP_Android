@@ -5,8 +5,10 @@ import chat.tox.antox.activities.{ChatActivity, GroupChatActivity}
 import chat.tox.antox.data.State
 import chat.tox.antox.utils._
 import chat.tox.antox.wrapper._
+import events.ToxMessageEvent
 import im.tox.tox4j.core.data.{ToxFriendMessage, ToxNickname}
 import im.tox.tox4j.core.enums.ToxMessageType
+import org.greenrobot.eventbus.EventBus
 import org.scaloid.common.LoggerTag
 import rx.lang.scala.Observable
 import rx.lang.scala.schedulers.IOScheduler
@@ -27,7 +29,7 @@ object MessageHelper {
       val chatActive = State.isChatActive(friendInfo.key)
       db.addMessage(friendInfo.key, friendInfo.key, ToxNickname.unsafeFromValue(friendInfo.getDisplayName.getBytes), new String(message.value), hasBeenReceived = true,
         hasBeenRead = chatActive, successfullySent = true, messageType)
-
+      EventBus.getDefault().post(new ToxMessageEvent(new String(message.value)))
       if (!chatActive) {
         val unreadCount = db.getUnreadCounts(friendInfo.key)
         //AntoxNotificationManager.createMessageNotification(ctx, classOf[ChatActivity], friendInfo, new String(message.value), unreadCount)
@@ -48,6 +50,38 @@ object MessageHelper {
     }
   }
 
+  /**
+    * 专门为kotlin调用的发送接口
+    * @param ctx
+    * @param friendKey
+    * @param msg
+    * @param messageType
+    */
+  def sendMessageFromKotlin(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType): Unit = {
+    State.setLastIncomingMessageAction()
+    val db = State.db
+    var mDbIdd: Option[Long] = None
+    for (splitMsg <- splitMessage(msg)) {
+      val databaseMessageId: Long = mDbIdd match {
+        case Some(dbId) => dbId
+        case None => {
+          val senderKey = ToxSingleton.tox.getSelfKey
+          val senderName = ToxSingleton.tox.getName
+          db.addMessage(friendKey, senderKey, senderName, splitMsg, hasBeenReceived = false,
+            hasBeenRead = false, successfullySent = false, messageType)
+        }
+      }
+      Observable[Boolean](subscriber => {
+        val mId = Try(ToxSingleton.tox.friendSendMessage(friendKey, ToxFriendMessage.unsafeFromValue(msg.getBytes), messageType)).toOption
+
+        mId match {
+          case Some(id) => db.updateUnsentMessage(id, databaseMessageId)
+          case None => AntoxLog.debug(s"SendMessage failed. dbId = $databaseMessageId")
+        }
+        subscriber.onCompleted()
+      }).subscribeOn(IOScheduler()).subscribe()
+    }
+  }
   def sendMessage(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType, mDbId: Option[Long]): Unit = {
     State.setLastIncomingMessageAction()
     val db = State.db

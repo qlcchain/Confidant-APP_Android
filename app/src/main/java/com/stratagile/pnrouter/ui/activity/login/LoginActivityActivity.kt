@@ -13,7 +13,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
+import chat.tox.antox.wrapper.FriendKey
+import chat.tox.antox.wrapper.ToxKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -43,6 +46,9 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import events.ToxStatusEvent
+import im.tox.tox4j.core.enums.ToxMessageType
+import im.tox.tox4j.core.options.ProxyOptions
+import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -52,6 +58,8 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import scala.None
+import scala.Option
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -351,8 +359,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
-
-        var aa = "aa";
+        when (toxStatusEvent.status) {
+            1 -> {
+                InterfaceScaleUtil.addFriend(ConstantValue.activeKey,this)
+            }
+        }
+        ConstantValue.curreantNetworkType = "TOX"
     }
     override fun initData() {
         var intent = Intent(this, ToxService::class.java)
@@ -367,36 +379,47 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
-            if(!ConstantValue.isConnected)
+            if( ConstantValue.curreantNetworkType.equals("TOX"))
             {
-                if (intent.hasExtra("flag")) {
-                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    showProgressDialog("connecting...")
-//                onWebSocketConnected(ConnectStatus(0))
-                } else {
-                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    showProgressDialog("connecting...")
-                }
-            }else{
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                standaloneCoroutine = launch(CommonPool) {
-                    delay(10000)
-                    if (!loginBack) {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            toast("login time out")
+                var baseData = BaseData(2,login)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey:FriendKey = FriendKey(ConstantValue.activeKey.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                if(!ConstantValue.isConnected)
+                {
+                    if (intent.hasExtra("flag")) {
+                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                        AppConfig.instance.messageReceiver!!.loginBackListener = this
+                        showProgressDialog("connecting...")
+//                onWebSocketConnected(ConnectStatus(0))
+                    } else {
+                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                        AppConfig.instance.messageReceiver!!.loginBackListener = this
+                        showProgressDialog("connecting...")
+                    }
+                }else{
+                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("login time out")
+                            }
                         }
                     }
+                    runOnUiThread {
+                        showProgressDialog("login...")
+                    }
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
                 }
-                runOnUiThread {
-                    showProgressDialog("login...")
-                }
-                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
             }
+
 
 //            mThread = CustomThread(routerId, userId)
 //            mThread!!.start()

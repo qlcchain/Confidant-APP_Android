@@ -11,6 +11,7 @@ import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
+import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
@@ -35,6 +36,8 @@ class AppConfig : MultiDexApplication() {
     var messageSender: PNRouterServiceMessageSender? = null
     lateinit var mAppActivityManager: AppActivityManager
 
+    var messageToxReceiver: ToxMessageReceiver? = null
+
     var mDaoMaster: DaoMaster? = null
 
     var isChatWithFirend:String? = null
@@ -58,6 +61,7 @@ class AppConfig : MultiDexApplication() {
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
+        messageToxReceiver = ToxMessageReceiver()
 //        MessageProvider.init()
     }
 

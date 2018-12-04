@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Message
 import android.util.Base64
 import chat.tox.antox.tox.ToxService
+import chat.tox.antox.toxme.ToxData
 import chat.tox.antox.utils.AntoxLog
 import chat.tox.antox.utils.CreateUserUtils
+import chat.tox.antox.wrapper.ToxAddress
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hyphenate.easeui.utils.PathUtils
@@ -57,6 +59,10 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         startActivity(Intent(this, GuestActivity::class.java))
         finish()
     }
+    override fun exitApp() {
+        finish()
+        System.exit(0)
+    }
 
     @Inject
     internal lateinit var mPresenter: SplashPresenter
@@ -70,7 +76,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        CreateUserUtils.createToxData("test",this)
          handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)

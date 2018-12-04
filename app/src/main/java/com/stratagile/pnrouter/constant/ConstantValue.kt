@@ -34,5 +34,7 @@ object ConstantValue {
         var isConnected:Boolean = false
         var shouBegin:Long = 0;
         var shouEnd:Long = 0;
+        var curreantNetworkType = ""   //   WIFI 或者 TOX
+        var activeKey:String = "A1DA6FFE24611BDE1D14B55B02F180961A3DFB8C9C9B2A572EB274896B7EAC30B4CDCDCE68B8"  //当然同学的路由器toxid
 
 }
