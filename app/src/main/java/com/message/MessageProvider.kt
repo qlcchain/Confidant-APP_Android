@@ -1,11 +1,14 @@
 package com.message
 
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
+import im.tox.tox4j.core.enums.ToxMessageType
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
@@ -52,7 +55,15 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         calculateUnreadCount()
         receivedMessageListener?.receivedMessage()
         addConversation(pushMsgRsp.params.fromId, message)
@@ -208,7 +219,14 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var pullMsgList = PullMsgReq(selfUserId!!, userId, 1, 0, 10)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(pullMsgList)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
         }
         return messageList
     }

@@ -1,8 +1,10 @@
 package com.stratagile.pnrouter.utils
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 
 /**
@@ -21,5 +23,11 @@ object WiFiUtil {
         val di = wm.dhcpInfo
         val getewayIpL = di.gateway
         return Formatter.formatIpAddress(getewayIpL)*/
+    }
+
+    fun isWifiConnect() : Boolean{
+        var connManager  = AppConfig.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        return mWifi.isConnected()
     }
 }

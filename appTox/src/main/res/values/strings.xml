@@ -341,4 +341,6 @@
     <string name="request_permissions_text">Grant Permissions</string>
     <string name="select_file">Select File</string>
 
+    <string name="waitamoment">wait a moment</string>
+
 </resources>

@@ -16,7 +16,6 @@ import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
-import chat.tox.antox.wrapper.ToxKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -30,7 +29,6 @@ import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.NameChange
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
@@ -47,10 +45,8 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
-import im.tox.tox4j.core.options.ProxyOptions
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -58,8 +54,6 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import scala.None
-import scala.Option
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -136,6 +130,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
     var isFromScan = false
+    var isClickLogin = false
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
@@ -362,15 +357,50 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             1 -> {
-                InterfaceScaleUtil.addFriend(ConstantValue.activeKey,this)
+                ConstantValue.isToxConnected = true
+                AppConfig.instance.getPNRouterServiceMessageToxReceiver()
+                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                if(isFromScan)
+                {
+                    closeProgressDialog()
+                    showProgressDialog("wait...")
+                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                    var baseData = BaseData(2,recovery)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    if(isClickLogin)
+                    {
+                        loginBack = false
+                        closeProgressDialog()
+                        showProgressDialog("login...")
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(10000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    toast("login time out")
+                                }
+                            }
+                        }
+                        var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                        var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+
+                        var baseData = BaseData(2,login)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        isClickLogin = false;
+                    }
+
+                }
             }
         }
-        ConstantValue.curreantNetworkType = "TOX"
-        AppConfig.instance.getPNRouterServiceMessageToxReceiver()
+
     }
     override fun initData() {
-        var intent = Intent(this, ToxService::class.java)
-        startService(intent)
         newRouterEntity = RouterEntity()
         lastLoginUserId = FileUtil.getLocalUserData("userid")
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
@@ -383,24 +413,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             if( ConstantValue.curreantNetworkType.equals("TOX"))
             {
-                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var baseData = BaseData(2,login)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey:FriendKey = FriendKey(ConstantValue.activeKey.substring(0, 64))
-                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                standaloneCoroutine = launch(CommonPool) {
-                    delay(10000)
-                    if (!loginBack) {
-                        runOnUiThread {
-                            closeProgressDialog()
-                            toast("login time out")
+                if(ConstantValue.isToxConnected)
+                {
+                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                    var baseData = BaseData(2,login)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("login time out")
+                            }
                         }
                     }
+                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    isClickLogin = true
+                    ConstantValue.curreantNetworkType = "TOX"
+                    var intent = Intent(this, ToxService::class.java)
+                    startService(intent)
                 }
-                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+
             }else{
-                if(!ConstantValue.isConnected)
+                if(!ConstantValue.isWebsocketConnected)
                 {
                     if (intent.hasExtra("flag")) {
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
@@ -493,6 +532,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                             {
+                                ConstantValue.curreantNetworkType = "WIFI"
                                 isFromScan = true
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 AppConfig.instance.messageReceiver!!.loginBackListener = this_
@@ -680,6 +720,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun getScanPermissionSuccess() {
+        showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
@@ -778,11 +819,55 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 ConstantValue.scanRouterSN = UserSnStr
                 if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
                 {
-                    MobileSocketClient.getInstance().init(handler,this)
+                    ConstantValue.currentRouterIp = ""
+                    if(WiFiUtil.isWifiConnect())
+                    {
+                        var count =0;
+                        KLog.i("测试计时器" + count)
+                        Thread(Runnable() {
+                            run() {
+
+                                while (true)
+                                {
+                                    if(count >=3)
+                                    {
+                                        if(!ConstantValue.currentRouterIp.equals(""))
+                                        {
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
+                                        }else{
+                                            isFromScan = true
+                                            ConstantValue.curreantNetworkType = "TOX"
+                                            var intent = Intent(this, ToxService::class.java)
+                                            startService(intent)
+
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
+                                        }
+
+                                    }
+                                    count ++;
+                                    MobileSocketClient.getInstance().init(handler,this)
+                                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                    MobileSocketClient.getInstance().receive()
+                                    KLog.i("测试计时器" + count)
+                                    Thread.sleep(1000)
+                                }
+
+                            }
+                        }).start()
+                    }else{
+                        isFromScan = true
+                        ConstantValue.curreantNetworkType = "TOX"
+                        var intent = Intent(this, ToxService::class.java)
+                        startService(intent)
+                    }
+                   /* MobileSocketClient.getInstance().init(handler,this)
                     var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
                     var aa = AESCipher.aesDecryptString(toxIdMi,"slph\$%*&^@-78231")
                     MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-                    MobileSocketClient.getInstance().receive()
+                    MobileSocketClient.getInstance().receive()*/
                 }else{
                     toast(R.string.code_error)
                 }
@@ -858,6 +943,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                  routerId = data!!.getStringExtra("result")
              }
              return*/
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+            }
         }
     }
 }

@@ -13,6 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.domain.EaseEmojicon
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity
 import com.hyphenate.easeui.widget.EaseChatExtendMenu
@@ -34,6 +36,7 @@ import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.*
 
@@ -238,7 +241,15 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
         var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
         var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     companion object {

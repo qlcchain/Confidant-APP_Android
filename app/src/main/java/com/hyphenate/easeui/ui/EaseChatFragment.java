@@ -30,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.platform.comapi.map.E;
 import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
@@ -112,6 +113,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import chat.tox.antox.tox.MessageHelper;
+import chat.tox.antox.wrapper.FriendKey;
+import im.tox.tox4j.core.enums.ToxMessageType;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -1072,7 +1077,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         swipeRefreshLayout.setRefreshing(true);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         PullMsgReq pullMsgList = new PullMsgReq( userId,toChatUserId,1,MsgStartId,10,"PullMsg");
-        AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(pullMsgList));
+        if(ConstantValue.INSTANCE.isWebsocketConnected())
+        {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(pullMsgList));
+        }else if(ConstantValue.INSTANCE.isToxConnected())
+        {
+            BaseData baseData = new BaseData(pullMsgList);
+            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+        }
+
 
     }
 

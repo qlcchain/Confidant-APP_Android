@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -25,6 +27,7 @@ import com.stratagile.pnrouter.ui.activity.register.module.RegisterModule
 import com.stratagile.pnrouter.ui.activity.register.presenter.RegisterPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -133,6 +136,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             runOnUiThread {
                 closeProgressDialog()
             }
+            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -155,7 +160,17 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
         var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+        if(ConstantValue.isWebsocketConnected)
+        {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+        }
+        else if(ConstantValue.isToxConnected)
+        {
+            var baseData = BaseData(2,login)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
     }
 
     @Inject
@@ -208,8 +223,19 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             showProgressDialog("waiting...")
             val NickName = RxEncodeTool.base64Encode2String(registerKey.text.toString().toByteArray())
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-            var login = RegeisterReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN, userName2.text.toString(),LoginKey,NickName)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+            var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, userName2.text.toString(),LoginKey,NickName)
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,regeister))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(2,regeister)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+
         }
     }
     override fun onDestroy() {

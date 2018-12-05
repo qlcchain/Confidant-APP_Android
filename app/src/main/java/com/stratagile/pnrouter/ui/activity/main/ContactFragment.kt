@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 
@@ -36,6 +38,8 @@ import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -157,7 +161,15 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var pullFriend = PullFriendReq( selfUserId!!)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(pullFriend)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     fun initData() {

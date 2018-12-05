@@ -13,6 +13,7 @@ import chat.tox.antox.wrapper.ToxAddress
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hyphenate.easeui.utils.PathUtils
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -30,6 +31,7 @@ import com.stratagile.pnrouter.utils.*
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import java.nio.ByteOrder
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -41,7 +43,7 @@ import javax.inject.Inject
 
 class SplashActivity : BaseActivity(), SplashContract.View {
     private var handler: Handler? = null
-
+    private var countDownTimerUtils: CountDownTimerUtils? = null
     override fun loginSuccees() {
         MobileSocketClient.getInstance().destroy()
         startActivity(Intent(this, LoginActivityActivity::class.java))
@@ -76,7 +78,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-         handler = object : Handler() {
+        var this_ = this
+        handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
                 when (msg.what) {
@@ -109,6 +112,10 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                 }
                                 index ++
                             }
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                            {
+                                ConstantValue.curreantNetworkType = "WIFI"
+                            }
                         }
 
                     }
@@ -122,12 +129,51 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
         var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         ConstantValue.currentRouterId = lastLoginRouterId;
-        if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+        MobileSocketClient.getInstance().init(handler,this)
+        if(WiFiUtil.isWifiConnect())
         {
-            MobileSocketClient.getInstance().init(handler,this)
-            var toxIdMi = AESCipher.aesEncryptString(lastLoginRouterId,"slph\$%*&^@-78231")
-            MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-            MobileSocketClient.getInstance().receive()
+            var count =0;
+            KLog.i("测试计时器" + count)
+            Thread(Runnable() {
+                run() {
+
+                    while (true)
+                    {
+                        if(count >=3)
+                        {
+                            if(!ConstantValue.currentRouterIp.equals(""))
+                            {
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                break;
+                            }else{
+                                ConstantValue.curreantNetworkType = "TOX"
+                                var intent = Intent(this, ToxService::class.java)
+                                startService(intent)
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                break;
+                            }
+                        }
+                        count ++;
+                        if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+                        {
+                            var toxIdMi = ""
+                            if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+                            {
+                                toxIdMi = AESCipher.aesEncryptString(lastLoginRouterId,"slph\$%*&^@-78231")
+                                MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                MobileSocketClient.getInstance().receive()
+                            }
+                        }
+                        KLog.i("测试计时器" + count)
+                        Thread.sleep(1000);
+                    }
+
+                }
+            }).start()
+        }else{
+            ConstantValue.curreantNetworkType = "TOX"
+            var intent = Intent(this_, ToxService::class.java)
+            startService(intent)
         }
 
         if(rsaData.equals(""))
@@ -161,30 +207,30 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var aastrs = String(Base58.decode(secret))
         var miMsg = AESCipher.aesEncryptString("aa","welcometoqlc0101")
 
-      /*  val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
-        val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPairaa.private.encoded)
-        val strBase64Public = RxEncodeTool.base64Encode2String(KeyPairaa.public.encoded)
+        /*  val KeyPairaa = RxEncryptTool.generateRSAKeyPair(2014)
+          val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPairaa.private.encoded)
+          val strBase64Public = RxEncodeTool.base64Encode2String(KeyPairaa.public.encoded)
 
-        val strBase64 = RxEncodeTool.base64Decode("Ck1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRE01T0JnN29qei9TVWRHRTlzQmRQVkZrcmsKcUptdGVMUm9GNVlOOWkvc0JTeGVac1c3M2FnUkJ0U255MnZmWFNXVEhiZmw2U1laek5ha0VYZGVPZ3RTY0RPWQo4dnh1bHFTVG9xVitpTWMvQlFHYXlKZk1KWXpQUjFvUjBadG1BRWl1QTY4SGc2ZDdTY3NMMHpBZGFkbmFkVEFDCldUMWIvMEo3cVBRRDE2WVYxUUlEQVFBQgo=".toByteArray())
-        var sourceaa = String(strBase64);
-        var private = RxEncodeTool.base64Decode(strBase64Private)
-        var public = RxEncodeTool.base64Decode("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDM5OBg7ojz/SUdGE9sBdPVFkrkqJmteLRoF5YN9i/sBSxeZsW73agRBtSny2vfXSWTHbfl6SYZzNakEXdeOgtScDOY8vxulqSToqV+iMc/BQGayJfMJYzPR1oR0ZtmAEiuA68Hg6d7ScsL0zAdadnadTACWT1b/0J7qPQD16YV1QIDAQAB")
-        var source = "123456";
-        var test =  RxEncodeTool.base64Decode(strBase64)
-        var sourceaabb = RxEncodeTool.base64Encode(test);
-        var keybbcaac = String(sourceaabb);
-        var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),test)
-        var keybbcc = String(keyPulic);
-        val strBase64keyPulic:String = RxEncodeTool.base64Encode2String(keyPulic)
-        var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
-        var keybb = String(keyOld);
+          val strBase64 = RxEncodeTool.base64Decode("Ck1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRRE01T0JnN29qei9TVWRHRTlzQmRQVkZrcmsKcUptdGVMUm9GNVlOOWkvc0JTeGVac1c3M2FnUkJ0U255MnZmWFNXVEhiZmw2U1laek5ha0VYZGVPZ3RTY0RPWQo4dnh1bHFTVG9xVitpTWMvQlFHYXlKZk1KWXpQUjFvUjBadG1BRWl1QTY4SGc2ZDdTY3NMMHpBZGFkbmFkVEFDCldUMWIvMEo3cVBRRDE2WVYxUUlEQVFBQgo=".toByteArray())
+          var sourceaa = String(strBase64);
+          var private = RxEncodeTool.base64Decode(strBase64Private)
+          var public = RxEncodeTool.base64Decode("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDM5OBg7ojz/SUdGE9sBdPVFkrkqJmteLRoF5YN9i/sBSxeZsW73agRBtSny2vfXSWTHbfl6SYZzNakEXdeOgtScDOY8vxulqSToqV+iMc/BQGayJfMJYzPR1oR0ZtmAEiuA68Hg6d7ScsL0zAdadnadTACWT1b/0J7qPQD16YV1QIDAQAB")
+          var source = "123456";
+          var test =  RxEncodeTool.base64Decode(strBase64)
+          var sourceaabb = RxEncodeTool.base64Encode(test);
+          var keybbcaac = String(sourceaabb);
+          var keyPulic = RxEncryptTool.encryptByPublicKey(source.toByteArray(),test)
+          var keybbcc = String(keyPulic);
+          val strBase64keyPulic:String = RxEncodeTool.base64Encode2String(keyPulic)
+          var keyOld = RxEncryptTool.decryptByPrivateKey(keyPulic,private)
+          var keybb = String(keyOld);
 
-        var key2 =  RxEncryptTool.generateAESKey()
-        var AES_KEY = "010001D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A47201000001B827EBD089CB00005BE14F55"
-        var keybb2 = AESCipher.aesEncryptString(AES_KEY,"welcometoqlc0101")
-        var keydd2 = AESCipher.aesDecryptString(keybb2,"welcometoqlc0101")
-        var resultByte2 = AESCipher.aesDecryptString("ysPU3+VXYIWLKQkISIzR193yBMGzL+hkUPlRvrQPwh8yJmrX+BMRyGTdpJA349y00HZ6a0m+E0U7UP+TrEABf9UriJD6zff6IdfhQn8lbQBnIVWdONnMWmZzKpvX33ORpSj8qfvBYqc2NRt0Mq132fUHxfSljfYavhNYT2p016w=","welcometoqlc0101")
-*/
+          var key2 =  RxEncryptTool.generateAESKey()
+          var AES_KEY = "010001D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A47201000001B827EBD089CB00005BE14F55"
+          var keybb2 = AESCipher.aesEncryptString(AES_KEY,"welcometoqlc0101")
+          var keydd2 = AESCipher.aesDecryptString(keybb2,"welcometoqlc0101")
+          var resultByte2 = AESCipher.aesDecryptString("ysPU3+VXYIWLKQkISIzR193yBMGzL+hkUPlRvrQPwh8yJmrX+BMRyGTdpJA349y00HZ6a0m+E0U7UP+TrEABf9UriJD6zff6IdfhQn8lbQBnIVWdONnMWmZzKpvX33ORpSj8qfvBYqc2NRt0Mq132fUHxfSljfYavhNYT2p016w=","welcometoqlc0101")
+  */
         //var keyaa = RxEncryptTool.encryptAES2Base64(keyStr.toByteArray(),AES_KEY.toByteArray())
         //var keybb = RxEncryptTool.decryptAES(keyaa,AES_KEY.toByteArray())
         PathUtils.getInstance().initDirs("", "", this)

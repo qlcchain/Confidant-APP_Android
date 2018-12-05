@@ -1,6 +1,8 @@
 package com.message
 
 import android.util.Base64
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -12,6 +14,8 @@ import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.utils.MutableListToArrayList
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
+import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
@@ -82,7 +86,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+                }else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }
                 EventBus.getDefault().post(FriendChange())
                 return
             }
@@ -99,7 +110,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         EventBus.getDefault().post(FriendChange())
     }
 
@@ -136,7 +155,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                }else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }
                 refreshFriend("")
                 return
             }
@@ -153,7 +179,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
         refreshFriend("")
     }
 
@@ -168,7 +201,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq,jDelFriendPushRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq,jDelFriendPushRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(delFriendPushReq,jDelFriendPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
     }
 
@@ -232,7 +273,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     fun addFriend(selfUserId : String, nickName : String, toUserId: String) {
         val strBase64 = RxEncodeTool.base64Encode2String(nickName.toByteArray())
         var login = AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.publicRAS,"")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(login)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     fun deleteFriend(selfUserId : String, toUserId: String) {

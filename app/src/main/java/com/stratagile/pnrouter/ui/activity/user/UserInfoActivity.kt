@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.EaseConstant
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
@@ -25,7 +27,9 @@ import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -47,7 +51,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     override fun delFriendRsp(retCode: Int) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(delFriendCmdRsp)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         runOnUiThread {
             //            toast(addFriendRsp.baseDataToJson())
             closeProgressDialog()

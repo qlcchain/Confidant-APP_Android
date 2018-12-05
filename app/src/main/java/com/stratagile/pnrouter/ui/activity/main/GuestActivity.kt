@@ -10,12 +10,16 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.view.Window
 import android.view.WindowManager
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.tox.ToxService
+import chat.tox.antox.wrapper.FriendKey
 import com.nightonke.wowoviewpager.Animation.ViewAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoPositionAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoTranslationAnimation
 import com.nightonke.wowoviewpager.Enum.Ease
 import com.nightonke.wowoviewpager.WoWoViewPagerAdapter
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -37,9 +41,10 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.GuestPresenter
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import events.ToxStatusEvent
+import im.tox.tox4j.core.enums.ToxMessageType
+import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_guest.*
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -143,6 +148,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         return arrayOf(R.color.white, R.color.white, R.color.white)
     }
     override fun getScanPermissionSuccess() {
+        showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
@@ -353,6 +359,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                             }
                             if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                             {
+                                ConstantValue.curreantNetworkType = "WIFI"
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
                             }
@@ -403,9 +410,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         when (connectStatus.status) {
             0 -> {
-                showProgressDialog("wait...")
                 var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+
             }
             1 -> {
 
@@ -418,10 +425,25 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     closeProgressDialog()
                     toast(R.string.Network_error)
                 }
-
-
             }
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
+        when (toxStatusEvent.status) {
+            1 -> {
+                ConstantValue.isToxConnected = true
+                InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                AppConfig.instance.getPNRouterServiceMessageToxReceiver()
+                AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+                var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                var baseData = BaseData(2,recovery)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+        }
+
     }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -442,13 +464,45 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 ConstantValue.scanRouterSN = UserSnStr
                 if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
                 {
-                    MobileSocketClient.getInstance().init(handler,this)
-                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
-                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-                    MobileSocketClient.getInstance().receive()
+
+                    if(WiFiUtil.isWifiConnect())
+                    {
+                        var count =0;
+                        KLog.i("测试计时器" + count)
+                        Thread(Runnable() {
+                            run() {
+
+                                while (true)
+                                {
+                                    if(count >=3 || !ConstantValue.currentRouterIp.equals(""))
+                                    {
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                        break;
+                                    }
+                                    count ++;
+                                    MobileSocketClient.getInstance().init(handler,this)
+                                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                    MobileSocketClient.getInstance().receive()
+                                    KLog.i("测试计时器" + count)
+                                    Thread.sleep(1000)
+                                }
+
+                            }
+                        }).start()
+
+
+                    }else{
+                        ConstantValue.curreantNetworkType = "TOX"
+                        var intent = Intent(this, ToxService::class.java)
+                        startService(intent)
+                    }
                 }else{
                     toast(R.string.code_error)
                 }
+
+
+
 
               /*  for (data in ConstantValue.updRouterData)
                 {

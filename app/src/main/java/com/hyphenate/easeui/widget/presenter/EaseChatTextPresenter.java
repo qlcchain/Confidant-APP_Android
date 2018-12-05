@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
@@ -27,6 +28,10 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
+
+import chat.tox.antox.tox.MessageHelper;
+import chat.tox.antox.wrapper.FriendKey;
+import im.tox.tox4j.core.enums.ToxMessageType;
 
 /**
  * Created by zhangsong on 17-10-12.
@@ -94,7 +99,17 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                             break;
                         case 4:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
+                            if(ConstantValue.INSTANCE.isWebsocketConnected())
+                            {
+                                AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
+                            }else if(ConstantValue.INSTANCE.isToxConnected())
+                            {
+                                BaseData baseData = new BaseData(msgData);
+                                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                            }
+
                             ConstantValue.INSTANCE.setMsgId(message.getMsgId());
                             break;
                         default:

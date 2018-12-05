@@ -27,14 +27,15 @@ object ConstantValue {
         var updRouterData: HashMap<String,String> = HashMap()
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn
-        var currentRouterIp:String = "192.168.1.103"//记录组播寻找到的路由器ip
+        var currentRouterIp:String = ""//记录组播寻找到的路由器ip
         var currentRouterId:String = "B888FAC730AE4117A628E7743A3E7AA137896CFE79F03BE76DBFAD39DE450934C7E4D5952ED3"//记录组播寻找到的路由器id
         var currentRouterSN:String = "0200000DB827EBD089CB00005BFFDFD3"//记录组播寻找到的路由器SN  02000018B827EBD089CB00005BFB70B9     02000006B827EBD4703000005BFDF5E8 华为
         var isRegister:Boolean = false //记录当前选择路由器是否注册
-        var isConnected:Boolean = false
+        var isWebsocketConnected:Boolean = false
         var shouBegin:Long = 0;
         var shouEnd:Long = 0;
-        var curreantNetworkType = ""   //   WIFI 或者 TOX
-        var activeKey:String = "A1DA6FFE24611BDE1D14B55B02F180961A3DFB8C9C9B2A572EB274896B7EAC30B4CDCDCE68B8"  //当然同学的路由器toxid
+        var curreantNetworkType = "TOX"   //   WIFI 或者 TOX
+        var activeKey:String = "A1DA6FFE24611BDE1D14B55B02F180961A3DFB8C9C9B2A572EB274896B7EAC30B4CDCDCE68B8"  //当然tox的路由器toxid
+        var isToxConnected = false
 
 }

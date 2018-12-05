@@ -12,6 +12,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
@@ -39,10 +41,8 @@ import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.UIUtils
+import com.stratagile.pnrouter.utils.*
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -183,7 +183,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!,0, "")
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
             var message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
@@ -250,7 +258,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                }else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
                 }
@@ -292,7 +307,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         runOnUiThread {
             viewModel.freindChange.value = Calendar.getInstance().timeInMillis
         }
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     private var exitTime: Long = 0
@@ -378,7 +401,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (!ConstantValue.isInit) {
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var pullFriend = PullFriendReq(selfUserId!!)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(pullFriend)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+
+
             ConstantValue.isInit = true
         }
 
@@ -405,7 +437,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                        }else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
@@ -427,7 +466,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0,"")
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                        }else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }
+
                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)

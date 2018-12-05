@@ -12,6 +12,8 @@ import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.message.Message
@@ -31,6 +33,7 @@ import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
 import com.stratagile.pnrouter.utils.*
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_chat.*
 import java.util.HashMap
 import javax.inject.Inject
@@ -134,13 +137,29 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
         var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(msgData,delMsgPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         chatFragment?.delFreindMsg(delMsgPushRsp)
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(msgData,jPushFileMsgRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
         var files_dir = this.filesDir.absolutePath + "/image/"
         when (jPushFileMsgRsp.params.fileType) {
@@ -174,7 +193,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
             chatFragment?.receiveTxtMessage(pushMsgRsp)
         }
     }
@@ -189,7 +215,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
         var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
         var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
@@ -228,7 +262,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         AppConfig.instance.messageReceiver!!.chatCallBack = this
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 1, 0, 10)
-        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(pullMsgList)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
         var intent = Intent(this, FileTransformService::class.java)
         startService(intent)
     }
