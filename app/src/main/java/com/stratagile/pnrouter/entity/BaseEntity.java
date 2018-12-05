@@ -12,6 +12,8 @@ public class BaseEntity {
     private int timestamp;
     private int apiversion;
     private int msgid;
+    private int offset;
+    private int more;
 
     public String getAppid() {
         return appid;
@@ -42,5 +44,21 @@ public class BaseEntity {
 
     public void setMsgid(int msgid) {
         this.msgid = msgid;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getMore() {
+        return more;
+    }
+
+    public void setMore(int more) {
+        this.more = more;
     }
 }

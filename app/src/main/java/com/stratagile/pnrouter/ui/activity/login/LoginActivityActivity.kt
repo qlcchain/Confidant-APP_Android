@@ -382,7 +382,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
-                                    toast("login time out")
+                                    //toast("login time out")
                                 }
                             }
                         }
@@ -427,7 +427,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         if (!loginBack) {
                             runOnUiThread {
                                 closeProgressDialog()
-                                toast("login time out")
+                                //toast("login time out")
                             }
                         }
                     }

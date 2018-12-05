@@ -13,6 +13,9 @@ open class BaseData() {
     var apiversion :Int ? = null
     var msgid :Int ? = null
     var params : Any? = null
+    var offset :Int ? = null
+    var more :Int ? = null
+
 
     constructor(apiverion:Int,params : Any) : this() {
         this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
