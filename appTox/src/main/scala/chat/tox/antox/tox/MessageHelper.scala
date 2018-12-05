@@ -58,6 +58,7 @@ object MessageHelper {
     * @param messageType
     */
   def sendMessageFromKotlin(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType): Unit = {
+    AntoxLog.debug("SendMessage:"+msg)
     State.setLastIncomingMessageAction()
     val db = State.db
     var mDbIdd: Option[Long] = None

@@ -359,10 +359,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             1 -> {
                 ConstantValue.isToxConnected = true
                 AppConfig.instance.getPNRouterServiceMessageToxReceiver()
-                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 if(isFromScan)
                 {
+                    InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
                     closeProgressDialog()
                     showProgressDialog("wait...")
                     var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
@@ -371,13 +371,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
+                    InterfaceScaleUtil.addFriend( routerId,this)
                     if(isClickLogin)
                     {
                         loginBack = false
                         closeProgressDialog()
                         showProgressDialog("login...")
-                        standaloneCoroutine = launch(CommonPool) {
-                            delay(10000)
+                       standaloneCoroutine = launch(CommonPool) {
+                            delay(15000)
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
@@ -390,7 +391,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                         var baseData = BaseData(2,login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         isClickLogin = false;
                     }
@@ -432,6 +433,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
+                    showProgressDialog("wait...")
                     isClickLogin = true
                     ConstantValue.curreantNetworkType = "TOX"
                     var intent = Intent(this, ToxService::class.java)
