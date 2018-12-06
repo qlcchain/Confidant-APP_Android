@@ -83,7 +83,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 pullFriendCallBack?.firendList(jPullFriendRsp)
                 //userControlleCallBack?.firendList(jPullFriendRsp)
             }
-
+             //拉取用户列表
+            "PullUserList" -> {
+                val jPullUserRsp = gson.fromJson(text, JPullUserRsp::class.java)
+                pullUserCallBack?.userList(jPullUserRsp)
+                //userControlleCallBack?.firendList(jPullFriendRsp)
+            }
 
             //发送消息服务器给的返回，代表消息服务器已经收到
             "SendMsg" -> {
@@ -119,9 +124,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
             }
             "PushFile" -> {
-            val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
-            chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
-            mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
+                val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
+                chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
+                mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
             }
 
         }
@@ -143,6 +148,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var convsationCallBack: CoversationCallBack? = null
 
     var pullFriendCallBack: PullFriendCallBack? = null
+
+    var pullUserCallBack: PullUserCallBack? = null
 
     var userControlleCallBack : UserControlleCallBack? = null
 
@@ -293,7 +300,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface PullFriendCallBack {
         fun firendList(jPullFriendRsp: JPullFriendRsp)
     }
-
+    interface PullUserCallBack {
+        fun userList(jPullUserRsp: JPullUserRsp)
+    }
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)

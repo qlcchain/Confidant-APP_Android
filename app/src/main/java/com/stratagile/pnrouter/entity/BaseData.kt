@@ -18,21 +18,21 @@ open class BaseData() {
 
 
     constructor(apiverion:Int,params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
         this.appid = "MiFi"
         this.apiversion = apiverion
         this.params = params
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any,msgId:Int) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis / 1000).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
@@ -209,6 +209,8 @@ data class DelMsgReq(var UserId : String, var Friendid : String, var MsgId :Int,
 data class DelMsgRsp(var Retcode : Int, var Msg : String,var ToId:String,var Action: String = "PushDelMsg")
 
 data class PullFriendReq(var UserId: String, var Action: String = "PullFriend")
+
+data class PullUserReq(var UserType: Int, var UserNum :Int ,var UserStartSN:String ,var Action: String = "PullUserList")
 
 data class HeartBeatReq(var UserId: String, var Action: String = "HeartBeat")
 

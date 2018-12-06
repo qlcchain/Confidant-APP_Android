@@ -42,6 +42,12 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
     override fun initView() {
         setContentView(R.layout.activity_router_info)
         routerEntity = intent.getParcelableExtra("router")
+        if(routerEntity != null && routerEntity.userSn.indexOf("01")== 0)
+        {
+            llRouterManagement.visibility =  View.VISIBLE
+        }else{
+            llRouterManagement.visibility =  View.GONE
+        }
     }
     override fun initData() {
         llRouterQRCode.setOnClickListener {
@@ -64,6 +70,13 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         }
         llRouterAlias.setOnClickListener {
             var intent = Intent(this, EditNickNameActivity::class.java)
+            intent.putExtra("flag", "Alias")
+            intent.putExtra("hint", "Edit alias")
+            intent.putExtra("alias", routerEntity.routerName)
+            startActivityForResult(intent, 1)
+        }
+        llRouterManagement.setOnClickListener {
+            var intent = Intent(this, RouterAddUserActivity::class.java)
             intent.putExtra("flag", "Alias")
             intent.putExtra("hint", "Edit alias")
             intent.putExtra("alias", routerEntity.routerName)

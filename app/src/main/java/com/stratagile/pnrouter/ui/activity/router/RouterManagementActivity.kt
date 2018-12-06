@@ -51,7 +51,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
     }
 
     override fun initData() {
-        title.text = "Router Management"
+        title.text = getString(R.string.routerManagement)
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         var selectedRouter = RouterEntity()
         routerList.forEach {

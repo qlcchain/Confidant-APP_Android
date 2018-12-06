@@ -405,4 +405,11 @@
     <string name="Press_again">Press again</string>
     <string name="code_error">code error</string>
 
+    <string name="Router_QR_Code">Router QR Code</string>
+    <string name="Router_Alias">Router Alias</string>
+    <string name="Adam_Grason">Adam Grason</string>
+    <string name="User_Management">User Management</string>
+
+
+
 </resources>
