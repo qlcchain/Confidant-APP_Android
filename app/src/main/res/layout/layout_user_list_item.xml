@@ -10,6 +10,21 @@
         style="@style/divide_line"
         app:layout_constraintBottom_toTopOf="parent" />
 
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:layout_marginStart="16dp"
+        android:button="@drawable/checkbox_style"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.51" />
+
     <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/x80"
@@ -17,6 +32,7 @@
         android:layout_marginStart="16dp"
         app:imageButtonTextSize="20"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/checkBox"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout

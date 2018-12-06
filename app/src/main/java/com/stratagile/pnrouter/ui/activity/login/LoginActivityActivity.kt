@@ -381,7 +381,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             delay(15000)
                             if (!loginBack) {
                                 runOnUiThread {
-                                    closeProgressDialog()
+                                    //closeProgressDialog()
                                     //toast("login time out")
                                 }
                             }

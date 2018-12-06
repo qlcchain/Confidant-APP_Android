@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/refreshLayout"
+    android:id="@+id/refreshLayoutUser"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -31,7 +31,7 @@
             </FrameLayout>
 
             <LinearLayout
-                android:id="@+id/newFriend"
+                android:id="@+id/newUser"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x90"
                 android:background="@color/white"
@@ -42,19 +42,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/add_contact" />
+                    android:text="@string/Create_user_accounts" />
 
                 <View
                     android:layout_width="0px"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
-                <View
-                    android:id="@+id/new_contact_dot"
-                    android:layout_width="@dimen/x20"
-                    android:background="@drawable/nick_text_bg"
-                    android:layout_marginRight="@dimen/x10"
-                    android:layout_height="@dimen/x20"/>
 
                 <ImageView
                     android:layout_width="@dimen/x30"
@@ -64,6 +58,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/newTempUser"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x90"
                 android:layout_marginTop="@dimen/x2"
@@ -75,7 +70,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create a Group Chat" />
+                    android:text="@string/Create_temporary_accounts" />
 
                 <View
                     android:layout_width="0px"
@@ -90,6 +85,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/usersTips"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x90"
                 android:layout_marginTop="@dimen/x20"
@@ -99,7 +95,24 @@
                 android:text="Contacts" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/recyclerViewUser"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager">
+            </android.support.v7.widget.RecyclerView>
+            <TextView
+                android:id="@+id/tempUsersTips"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x90"
+                android:layout_marginTop="@dimen/x20"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/x30"
+                android:text="Contacts" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewTempUser"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/white"

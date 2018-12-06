@@ -18,21 +18,21 @@ open class BaseData() {
 
 
     constructor(apiverion:Int,params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
         this.apiversion = apiverion
         this.params = params
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any,msgId:Int) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toInt().toString()
+        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params

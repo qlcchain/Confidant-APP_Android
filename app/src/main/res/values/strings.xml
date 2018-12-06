@@ -409,6 +409,9 @@
     <string name="Router_Alias">Router Alias</string>
     <string name="Adam_Grason">Adam Grason</string>
     <string name="User_Management">User Management</string>
+    <string name="Create_user_accounts">Create user accounts</string>
+    <string name="Create_temporary_accounts">Create temporary accounts</string>
+
 
 
 

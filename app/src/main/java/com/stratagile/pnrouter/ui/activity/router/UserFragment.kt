@@ -1,11 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.router
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
@@ -14,21 +12,19 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullUserRsp
-import com.stratagile.pnrouter.entity.PullFriendReq
+import com.stratagile.pnrouter.entity.PullUserReq
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.UserContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserPresenter
-import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import im.tox.tox4j.core.enums.ToxMessageType
-import kotlinx.android.synthetic.main.fragment_contact.*
+import kotlinx.android.synthetic.main.fragment_user.*
 import javax.inject.Inject
 
 /**
@@ -40,12 +36,32 @@ import javax.inject.Inject
 
 class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageReceiver.PullUserCallBack{
     override fun userList(jPullUserRsp: JPullUserRsp) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        var comUserList = arrayListOf<JPullUserRsp.ParamsBean.PayloadBean>()
+        var tempUserList = arrayListOf<JPullUserRsp.ParamsBean.PayloadBean>()
+        for (i in jPullUserRsp.params.payload) {
+            //是否为本地多余的好友
+            if (i.userType == 2) {
+                comUserList.add(i)
+            } else if (i.userType == 3){
+                tempUserList.add(i)
+            }
+        }
+        contactAdapter = UsertListAdapter(comUserList,false)
+        recyclerViewUser.adapter = contactAdapter
+        usersTips.text = "User("+jPullUserRsp.params.normalUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
+
+        contactTempAdapter = UsertListAdapter(tempUserList,false)
+        recyclerViewTempUser.adapter = contactTempAdapter
+        tempUsersTips.text = "Temporary("+jPullUserRsp.params.tempUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
+        closeProgressDialog()
     }
 
     @Inject
     lateinit internal var mPresenter: UserPresenter
     var contactAdapter : UsertListAdapter? = null
+
+    var contactTempAdapter : UsertListAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view = inflater.inflate(R.layout.fragment_user, null);
@@ -55,26 +71,42 @@ class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageR
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AppConfig.instance.messageReceiver!!.pullUserCallBack = this
+        newUser.setOnClickListener {
 
-        newFriend.setOnClickListener {
-            startActivity(Intent(activity!!, NewFriendActivity::class.java))
+        }
+        newTempUser.setOnClickListener {
+            showDialog()
         }
         initData()
-        refreshLayout.setOnRefreshListener {
-            pullFriendList()
-            KLog.i("拉取好友列表")
+        refreshLayoutUser.setOnRefreshListener {
+            //pullFriendList()
+            KLog.i("拉取用户列表")
         }
         pullFriendList()
     }
+    fun showDialog() {
+        SweetAlertDialog(AppConfig.instance, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.delete_contact_text))
+                .setConfirmClickListener {
+                    showProgressDialog()
+                    closeProgressDialog()
+                    showCode()
+                }
+                .show()
 
+    }
+    fun showCode()
+    {
+
+    }
     fun pullFriendList() {
-        refreshLayout.isRefreshing = false
-        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
-        var pullFriend = PullFriendReq( selfUserId!!)
+        showProgressDialog()
+        refreshLayoutUser.isRefreshing = false
+        var pullFriend = PullUserReq(0,0,"")
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,pullFriend))
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(pullFriend)
+            var baseData = BaseData(2,pullFriend)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
@@ -83,55 +115,8 @@ class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageR
     }
 
     fun initData() {
-        var bundle = getArguments();
-        var hasNewFriendRequest = false
-        var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var contactList = arrayListOf<UserEntity>()
-        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
-        var newFriendCount = 0
-        for (i in list) {
-            if (i.userId.equals(selfUserId)) {
-                continue
-            }
-            if (i.friendStatus == 0) {
-                contactList.add(i)
-            }
-            if (i.friendStatus == 3) {
-                hasNewFriendRequest = true
-                newFriendCount++
-            }
-        }
-        if(bundle == null)
-        {
-            newFriend.visibility = View.VISIBLE
-            contactAdapter = UsertListAdapter(contactList,false)
-        }else{
-            newFriend.visibility = View.GONE
-            contactAdapter = UsertListAdapter(contactList,true)
-        }
 
-        recyclerView.adapter = contactAdapter
-        contactAdapter!!.setOnItemClickListener { adapter, view, position ->
-            if(bundle == null)
-            {
-                var intent = Intent(activity!!, UserInfoActivity::class.java)
-                intent.putExtra("user", contactAdapter!!.getItem(position))
-                startActivity(intent)
-            }else{
-                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
-                checkBox.setChecked(!checkBox.isChecked)
-                var itemCount =  contactAdapter!!.itemCount -1
-                var count :Int = 0;
-                for (i in 0..itemCount) {
-                    var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-                    if(checkBox.isChecked)
-                    {
-                        count ++
-                    }
-                }
-            }
 
-        }
     }
     override fun setupFragmentComponent() {
         DaggerUserComponent
