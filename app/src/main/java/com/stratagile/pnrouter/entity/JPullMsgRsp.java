@@ -29,8 +29,11 @@ public class JPullMsgRsp extends BaseEntity {
          */
 
         private String Action;
+        private String UserId;
+        private String FriendId;
         private int RetCode;
         private int MsgNum;
+
         private List<Message> Payload;
 
         public String getAction() {
@@ -40,7 +43,21 @@ public class JPullMsgRsp extends BaseEntity {
         public void setAction(String Action) {
             this.Action = Action;
         }
+        public String getUserId() {
+            return UserId;
+        }
 
+        public void setUserId(String userId) {
+            UserId = userId;
+        }
+
+        public String getFriendId() {
+            return FriendId;
+        }
+
+        public void setFriendId(String friendId) {
+            FriendId = friendId;
+        }
         public int getRetCode() {
             return RetCode;
         }

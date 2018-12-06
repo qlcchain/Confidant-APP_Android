@@ -186,7 +186,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
         var messageList: List<Message> = pushMsgRsp.params.payload
-        chatFragment?.refreshData(messageList)
+        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {

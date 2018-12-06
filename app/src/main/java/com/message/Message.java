@@ -29,18 +29,10 @@ public class Message {
     private String Msg;
     private Type type;
     private Status status;
+    private int Sender;
     private String FileName;
     private String  FilePath;
     private Long FileSize;
-
-    public String getUserKey() {
-        return UserKey;
-    }
-
-    public void setUserKey(String userKey) {
-        UserKey = userKey;
-    }
-
     private String UserKey;
 
 
@@ -101,7 +93,13 @@ public class Message {
     public void setStatus(Status status) {
         this.status = status;
     }
+    public int getSender() {
+        return Sender;
+    }
 
+    public void setSender(int sender) {
+        Sender = sender;
+    }
     public Type getType() {
         return type;
     }
@@ -173,7 +171,13 @@ public class Message {
             return 0;
         }
     }
+    public String getUserKey() {
+        return UserKey;
+    }
 
+    public void setUserKey(String userKey) {
+        UserKey = userKey;
+    }
     public static enum ChatType {
         Chat,
         GroupChat,
