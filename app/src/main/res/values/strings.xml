@@ -411,8 +411,13 @@
     <string name="User_Management">User Management</string>
     <string name="Create_user_accounts">Create user accounts</string>
     <string name="Create_temporary_accounts">Create temporary accounts</string>
+    <string name="create">Create</string>
+    <string name="adduserTips">*The nickname filling is convenient for users to manage, and the invitation code is set to designate users safely.</string>
 
 
+    <string name="Add_Nickname">Add Nickname</string>
+    <string name="Lnvitation_code">Lnvitation code</string>
 
+    <string name="Createuseraccounts">Create user accounts</string>
 
 </resources>

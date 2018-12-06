@@ -126,19 +126,29 @@
             android:name=".ui.activity.router.RouterAddUserActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.router.RouterCreateUserActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.user.UserInfoActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.main.LogActivity" />
-        <activity android:name=".ui.activity.main.GuestActivity" />
+        <activity android:name=".ui.activity.main.LogActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.main.GuestActivity"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".ui.activity.file.FileChooseActivity"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.activity.selectfriend.selectFriendActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.router.RouterManagementActivity" />
-        <activity android:name=".ui.activity.router.RouterQRCodeActivity" />
-        <activity android:name=".ui.activity.router.RouterInfoActivity" />
-        <activity android:name=".ui.activity.file.PdfViewActivity" />
+        <activity android:name=".ui.activity.router.RouterManagementActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.router.RouterQRCodeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.router.RouterInfoActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.file.PdfViewActivity"
+            android:screenOrientation="portrait"/>
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"

@@ -1,11 +1,13 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -19,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.UserContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserPresenter
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -72,10 +75,13 @@ class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageR
         super.onViewCreated(view, savedInstanceState)
         AppConfig.instance.messageReceiver!!.pullUserCallBack = this
         newUser.setOnClickListener {
-
+            var intent = Intent(activity!!, RouterCreateUserActivity::class.java)
+            //intent.putExtra("user", contactAdapter!!.getItem(position))
+            startActivity(intent)
         }
         newTempUser.setOnClickListener {
-            showDialog()
+            toast("developing")
+            //showDialog()
         }
         initData()
         refreshLayoutUser.setOnRefreshListener {

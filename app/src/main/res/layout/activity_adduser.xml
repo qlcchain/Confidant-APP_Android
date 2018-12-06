@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/adduserbg"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="253dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/black" />
+
+        <android.support.constraint.Group
+            android:id="@+id/noRoutergroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/createName"
+            android:layout_width="300dp"
+            android:layout_height="53dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="36dp"
+            android:ems="10"
+            android:gravity="left"
+            android:hint="@string/Add_Nickname"
+            android:inputType="text"
+            android:paddingBottom="@dimen/x35"
+            android:singleLine="true"
+            android:textColor="@color/regeisetInput"
+            android:textColorHint="@color/color_808080"
+            android:textSize="@dimen/x31"
+            android:theme="@style/MyEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.41"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/adduserbg" />
+
+        <EditText
+            android:id="@+id/IdentifyCode"
+            android:layout_width="300dp"
+            android:layout_height="53dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:ems="10"
+            android:gravity="left"
+            android:hint="@string/Lnvitation_code"
+            android:inputType="text"
+            android:paddingBottom="@dimen/x35"
+            android:singleLine="true"
+            android:textColor="@color/regeisetInput"
+            android:textColorHint="@color/color_808080"
+            android:textSize="@dimen/x31"
+            android:theme="@style/MyEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.41"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/createName" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="301dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/adduserTips"
+            android:textColor="@color/color_b3b3b3"
+            android:textSize="@dimen/x21"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.414"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/IdentifyCode" />
+
+        <TextView
+            android:id="@+id/registerBtn"
+            android:layout_width="313dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="@dimen/x52"
+            android:layout_marginStart="@dimen/x52"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/textview_border"
+            android:gravity="center"
+            android:paddingBottom="@dimen/x16"
+            android:paddingTop="@dimen/x16"
+            android:text="@string/create"
+            android:textColor="@color/color_efefef"
+            android:textSize="@dimen/x40"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/register"
+            android:textColor="@color/white"
+            android:textSize="@dimen/x40"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v4.widget.NestedScrollView>

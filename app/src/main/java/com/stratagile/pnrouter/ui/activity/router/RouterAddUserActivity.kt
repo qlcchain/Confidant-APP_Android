@@ -8,6 +8,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterAddUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterAddUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterAddUserModule
@@ -27,7 +28,7 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
     @Inject
     internal lateinit var mPresenter: RouterAddUserPresenter
     var fragment: UserFragment? = null
-
+    var routerEntity: RouterEntity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -38,8 +39,11 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
        setContentView(R.layout.activity_router_adduser)
     }
     override fun initData() {
+
+        routerEntity = intent.getParcelableExtra("routerEntity")
         fragment = UserFragment();
         val bundle = Bundle()
+        title.text = getString(R.string.User_Management)
         bundle.putString(ConstantValue.selectFriend, "select")
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {

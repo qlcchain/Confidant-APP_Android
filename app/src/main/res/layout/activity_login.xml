@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/pepolebg"
+            android:id="@+id/adduserbg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
@@ -54,7 +54,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/pepolebg"
+            app:layout_constraintTop_toTopOf="@+id/adduserbg"
             app:srcCompat="@mipmap/img_wifi1" />
 
         <TextView
@@ -126,7 +126,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/pepolebg"
+            app:layout_constraintTop_toTopOf="@+id/adduserbg"
             app:srcCompat="@mipmap/icon_headportrai" />
 
         <ImageView

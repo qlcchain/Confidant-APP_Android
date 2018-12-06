@@ -3,7 +3,7 @@ package com.stratagile.pnrouter.constant
 import java.util.HashMap
 
 object ConstantValue {
-        var localPath = "/RouterData6"
+        var localPath = "/RouterData7"
         var isInit = false;
         var isRefeshed = false
         var testValue = "testValue"

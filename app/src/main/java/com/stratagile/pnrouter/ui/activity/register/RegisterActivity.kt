@@ -88,7 +88,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
-            SpUtil.putString(this, ConstantValue.username,registerKey.text.toString())
+            SpUtil.putString(this, ConstantValue.username,createName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
@@ -146,7 +146,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         var newRouterEntity = RouterEntity()
         newRouterEntity.routerId = registerRsp.params.routeId
         newRouterEntity.userSn = registerRsp.params.userSn
-        newRouterEntity.username = registerKey.text.toString()
+        newRouterEntity.username = createName.text.toString()
         newRouterEntity.userId = registerRsp.params.userId
         newRouterEntity.loginKey = userName3.text.toString();
         newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
@@ -212,7 +212,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         if( AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.registerListener = this
         registerBtn.setOnClickListener {
-            if (registerKey.text.toString().equals("") || userName2.text.toString().equals("") || userName3.text.toString().equals("")) {
+            if (createName.text.toString().equals("") || IdentifyCode.text.toString().equals("") || userName3.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
@@ -221,9 +221,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 return@setOnClickListener
             }
             showProgressDialog("waiting...")
-            val NickName = RxEncodeTool.base64Encode2String(registerKey.text.toString().toByteArray())
+            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-            var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, userName2.text.toString(),LoginKey,NickName)
+            var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
             if(ConstantValue.isWebsocketConnected)
             {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,regeister))
