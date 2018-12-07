@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -193,6 +194,12 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     }
     override fun initData() {
         newRouterEntity = RouterEntity()
+        var flag:Int = intent.getIntExtra("flag",0)
+        if(flag != null && flag == 1)
+        {
+            IdentifyCode.visibility = View.GONE
+            IdentifyCode.setText("")
+        }
         EventBus.getDefault().register(this)
         /* miniScanParent.setOnClickListener {
              mPresenter.getScanPermission()

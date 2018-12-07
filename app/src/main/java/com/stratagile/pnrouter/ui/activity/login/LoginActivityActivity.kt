@@ -117,7 +117,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast("error")
             }
             3-> {
-                startActivity(Intent(this, RegisterActivity::class.java))
+                var intent = Intent(this, RegisterActivity::class.java)
+                intent.putExtra("flag", 1)
+                startActivity(intent)
                 finish()
             }
             4 -> {
