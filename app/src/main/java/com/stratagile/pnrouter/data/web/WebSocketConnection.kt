@@ -126,7 +126,19 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             keepAliveSender = null
         }
     }
+    @Synchronized
+    fun close(isShutDown : Boolean) {
+        Log.w(TAG, "WSC disconnect()...")
+        this.isShutDown = isShutDown
+        if (client != null) {
+            client!!.close(1000, "OK")
+            connected = false
+        }
 
+        if (keepAliveSender != null) {
+            keepAliveSender!!.shutdown()
+        }
+    }
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)
     fun readRequest(timeoutMillis: Long): BaseData {

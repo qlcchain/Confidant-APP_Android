@@ -12,6 +12,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MobileSocketClient {
@@ -25,6 +27,7 @@ public class MobileSocketClient {
     private Handler handler;
     private WifiManager.MulticastLock multicastLock;
     private DatagramSocket socket;
+    private List<AsyncTask> asyncList= new ArrayList<>();
     public static final int MSG_UPD_DATA = 104;
 
     private MobileSocketClient() {
@@ -52,7 +55,7 @@ public class MobileSocketClient {
 
     //发送数据
     public void send(final String content) {
-        new AsyncTask<String, Integer, String>() {
+        AsyncTask temp =  new AsyncTask<String, Integer, String>() {
 
             @Override
             protected String doInBackground(String... paramVarArgs) {
@@ -82,20 +85,20 @@ public class MobileSocketClient {
                 msg.obj = result;
                 //handler.sendMessage(msg);
             }
-        }.execute(content);
-
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,content);
+        asyncList.add(temp);
     }
 
     public void receive ()
     {
-        byte[] data = new byte[256];
-        new AsyncTask<String, Integer, String>() {
-
+        new Thread(new Runnable() {
             @Override
-            protected String doInBackground(String... paramVarArgs) {
+            public void run() {
                 String message ="";
-                int count = 0;
-                try {
+                try
+                {
+                    byte[] data = new byte[256];
+                    int count = 0;
                     if(socket == null)
                         socket = new DatagramSocket();
                     DatagramPacket packet = new DatagramPacket(data, data.length);
@@ -117,33 +120,42 @@ public class MobileSocketClient {
                                 socket = null;
                             }
                         }
-
                         System.out.println("ipdizhi:"+message);
+                        break;
                     }
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
+                }catch (Exception e)
+                {
                     e.printStackTrace();
                     System.out.println("ipdizhi:no");
-                    return "";
+                    Message msg = new Message();
+                    msg.what = MSG_UPD_DATA;
+                    msg.obj = "";
+                    handler.sendMessage(msg);
                 }finally {
-                    return message;
+                    Message msg = new Message();
+                    msg.what = MSG_UPD_DATA;
+                    msg.obj = message;
+                    handler.sendMessage(msg);
                 }
-            }
 
-            @Override
-            protected void onPostExecute(String result) {
-                // TODO Auto-generated method stub
-                super.onPostExecute(result);
-                Message msg = new Message();
-                msg.what = MSG_UPD_DATA;
-                msg.obj = result;
-                handler.sendMessage(msg);
             }
-        }.execute();
+        }).start();
     }
     public void destroy()
     {
-
+        for (int i = 0 ; i < asyncList.size() ;i++)
+        {
+            if(asyncList.get(i) != null)
+            {
+                asyncList.get(i).cancel(true);
+            }
+        }
+        for (int i = 0 ; i < asyncList.size() ;i++)
+        {
+            System.out.println("asyncList"+asyncList.get(i).isCancelled());
+        }
+        asyncList = new ArrayList<>();
     }
+
 }
 

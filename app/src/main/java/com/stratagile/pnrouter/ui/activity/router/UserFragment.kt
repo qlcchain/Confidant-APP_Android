@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -50,14 +51,17 @@ class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageR
                 tempUserList.add(i)
             }
         }
-        contactAdapter = UsertListAdapter(comUserList,false)
-        recyclerViewUser.adapter = contactAdapter
-        usersTips.text = "User("+jPullUserRsp.params.normalUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
 
-        contactTempAdapter = UsertListAdapter(tempUserList,false)
-        recyclerViewTempUser.adapter = contactTempAdapter
-        tempUsersTips.text = "Temporary("+jPullUserRsp.params.tempUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
-        closeProgressDialog()
+        runOnUiThread {
+            contactAdapter = UsertListAdapter(comUserList,false)
+            recyclerViewUser.adapter = contactAdapter
+            usersTips.text = "User("+jPullUserRsp.params.normalUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
+            tempUsersTips.text = "Temporary("+jPullUserRsp.params.tempUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
+            contactTempAdapter = UsertListAdapter(tempUserList,false)
+            recyclerViewTempUser.adapter = contactTempAdapter
+            closeProgressDialog()
+        }
+
     }
 
     @Inject

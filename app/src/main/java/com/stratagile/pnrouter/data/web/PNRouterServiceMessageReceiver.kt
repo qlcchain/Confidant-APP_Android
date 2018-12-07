@@ -230,7 +230,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     fun shutdown() {
         pipe!!.shutdown()
     }
-
+    fun close()
+    {
+        pipe!!.close()
+    }
     fun reConnect() {
         pipe!!.reConenct()
     }

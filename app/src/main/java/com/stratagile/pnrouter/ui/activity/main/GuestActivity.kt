@@ -485,24 +485,38 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }else{
-                                            ConstantValue.curreantNetworkType = "TOX"
-                                            if(!ConstantValue.isToxConnected)
+                                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                                            if(httpData.retCode == 0 && httpData.connStatus == 1)
                                             {
-                                                var intent = Intent(this, ToxService::class.java)
-                                                startService(intent)
-                                            }else{
-                                                runOnUiThread {
-                                                    showProgressDialog("wait...")
-                                                }
+                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                ConstantValue.currentRouterIp = httpData.serverHost
+                                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                 AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-                                                InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
-                                                var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                                                var baseData = BaseData(2,recovery)
-                                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                Thread.currentThread().interrupt() //方法调用终止线程
+                                            }else{
+                                                ConstantValue.curreantNetworkType = "TOX"
+                                                if(!ConstantValue.isToxConnected)
+                                                {
+                                                    var intent = Intent(this, ToxService::class.java)
+                                                    startService(intent)
+                                                }else{
+                                                    runOnUiThread {
+                                                        showProgressDialog("wait...")
+                                                    }
+                                                    AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+                                                    InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                                                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                                                    var baseData = BaseData(2,recovery)
+                                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                }
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
                                             }
-                                            Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }
 
@@ -522,21 +536,36 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
                     }else{
 
-                        ConstantValue.curreantNetworkType = "TOX"
-                        if(!ConstantValue.isToxConnected)
+                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                        if(httpData.retCode == 0 && httpData.connStatus == 1)
                         {
-                            var intent = Intent(this, ToxService::class.java)
-                            startService(intent)
-                        }else{
+                            ConstantValue.curreantNetworkType = "WIFI"
+                            ConstantValue.currentRouterIp = httpData.serverHost
+                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                             AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-                            InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
-                            var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                            var baseData = BaseData(2,recovery)
-                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }else{
+                            ConstantValue.curreantNetworkType = "TOX"
+                            if(!ConstantValue.isToxConnected)
+                            {
+                                var intent = Intent(this, ToxService::class.java)
+                                startService(intent)
+                            }else{
+                                runOnUiThread {
+                                    showProgressDialog("wait...")
+                                }
+                                AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+                                InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                                var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                                var baseData = BaseData(2,recovery)
+                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }
                         }
-
                     }
                 }else{
                     toast(R.string.code_error)

@@ -319,22 +319,26 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
                 }else{
-                    loginBack = false
-                    closeProgressDialog()
-                    showProgressDialog("login...")
-                    standaloneCoroutine = launch(CommonPool) {
-                        delay(10000)
-                        if (!loginBack) {
-                            runOnUiThread {
-                                closeProgressDialog()
-                                toast("login time out")
+                    if(isClickLogin)
+                    {
+                        loginBack = false
+                        closeProgressDialog()
+                        showProgressDialog("login...")
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(10000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    toast("login time out")
+                                }
                             }
                         }
-                    }
 //            standaloneCoroutine.cancel()
-                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                        var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                        var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                    }
+
                 }
 
             }
@@ -377,7 +381,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         loginBack = false
                         closeProgressDialog()
                         showProgressDialog("login...")
-                       standaloneCoroutine = launch(CommonPool) {
+                        standaloneCoroutine = launch(CommonPool) {
                             delay(15000)
                             if (!loginBack) {
                                 runOnUiThread {
@@ -444,6 +448,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
 
             }else{
+                isClickLogin = true
                 if(!ConstantValue.isWebsocketConnected)
                 {
                     if (intent.hasExtra("flag")) {
@@ -525,6 +530,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
                                         {
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.port= ":18006"
+                                            ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                             break;
@@ -601,6 +608,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             noRoutergroupLogin.visibility = View.VISIBLE
             scanParentLogin.visibility = View.VISIBLE
         }
+        if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
+        {
+            getServer(routerId,userSn)
+        }
         if (routerList.size > 0) {
             routerNameTips.setOnClickListener { view1 ->
                 PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnRouterSelectListener{
@@ -617,6 +628,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         username = routerList[position].username
                         dataFileVersion = routerList[position].dataFileVersion
                         routerNameTips.text = routerList[position].routerName
+                        ConstantValue.currentRouterIp = ""
+                        ConstantValue.scanRouterId = routerId;
+                        isClickLogin = false
+                       /* if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()*/
+                        getServer(routerId,userSn)
                         //routerList[position].lastCheck = true
                         //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                     }
@@ -723,7 +740,87 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             SpUtil.putString(this, ConstantValue.fingerPassWord, "")
         }
     }
+    private fun getServer(routerId:String ,userSn:String)
+    {
+        MobileSocketClient.getInstance().destroy()
+        showProgressDialog("")
+        if(WiFiUtil.isWifiConnect())
+        {
+            var count =0;
+            KLog.i("测试计时器" + count)
+            Thread(Runnable() {
+                run() {
 
+                    while (true)
+                    {
+                        if(count >=3)
+                        {
+                            if(!ConstantValue.currentRouterIp.equals(""))
+                            {
+                                closeProgressDialog()
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                break;
+                            }else{
+                                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
+                                if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                {
+                                    ConstantValue.curreantNetworkType = "WIFI"
+                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                    ConstantValue.currentRouterId = routerId
+                                    ConstantValue.currentRouterSN =  userSn
+                                    /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                     AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                                    closeProgressDialog()
+                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                }else{
+                                    ConstantValue.curreantNetworkType = "TOX"
+                                    if(!ConstantValue.isToxConnected)
+                                    {
+                                        var intent = Intent(this, ToxService::class.java)
+                                        startService(intent)
+                                    }
+                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                }
+                                break;
+                            }
+
+                        }
+                        count ++;
+                        MobileSocketClient.getInstance().init(handler,this)
+                        var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
+                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                        MobileSocketClient.getInstance().receive()
+                        KLog.i("测试计时器" + count)
+                        Thread.sleep(1000)
+                    }
+
+                }
+            }).start()
+        }else{
+            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+            if(httpData.retCode == 0 && httpData.connStatus == 1)
+            {
+                closeProgressDialog()
+                ConstantValue.curreantNetworkType = "WIFI"
+                ConstantValue.currentRouterIp = httpData.serverHost
+                ConstantValue.port = ":"+httpData.serverPort.toString()
+                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                ConstantValue.currentRouterId = routerId
+                ConstantValue.currentRouterSN =  userSn
+                /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                 AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+            }else{
+                ConstantValue.curreantNetworkType = "TOX"
+                if(!ConstantValue.isToxConnected)
+                {
+                    var intent = Intent(this, ToxService::class.java)
+                    startService(intent)
+                }
+            }
+        }
+    }
     override fun getScanPermissionSuccess() {
         showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
@@ -842,11 +939,38 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             break;
                                         }else{
                                             isFromScan = true
-                                            ConstantValue.curreantNetworkType = "TOX"
-                                            var intent = Intent(this, ToxService::class.java)
-                                            startService(intent)
-
-                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                                            if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                            {
+                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                ConstantValue.currentRouterIp = httpData.serverHost
+                                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                                Thread.currentThread().interrupt() //方法调用终止线程
+                                            }else{
+                                                ConstantValue.curreantNetworkType = "TOX"
+                                                if(!ConstantValue.isToxConnected)
+                                                {
+                                                    var intent = Intent(this, ToxService::class.java)
+                                                    startService(intent)
+                                                }else{
+                                                    runOnUiThread {
+                                                        showProgressDialog("wait...")
+                                                    }
+                                                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                                    InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                                                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                                                    var baseData = BaseData(2,recovery)
+                                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                }
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                            }
                                             break;
                                         }
 
@@ -864,15 +988,42 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }).start()
                     }else{
                         isFromScan = true
-                        ConstantValue.curreantNetworkType = "TOX"
-                        var intent = Intent(this, ToxService::class.java)
-                        startService(intent)
+                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                        if(httpData.retCode == 0 && httpData.connStatus == 1)
+                        {
+                            ConstantValue.curreantNetworkType = "WIFI"
+                            ConstantValue.currentRouterIp = httpData.serverHost
+                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                            AppConfig.instance.messageReceiver!!.loginBackListener = this
+                        }else{
+                            ConstantValue.curreantNetworkType = "TOX"
+                            if(!ConstantValue.isToxConnected)
+                            {
+                                var intent = Intent(this, ToxService::class.java)
+                                startService(intent)
+                            }else{
+                                runOnUiThread {
+                                    showProgressDialog("wait...")
+                                }
+                                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                                var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                                var baseData = BaseData(2,recovery)
+                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }
+                        }
                     }
-                   /* MobileSocketClient.getInstance().init(handler,this)
-                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
-                    var aa = AESCipher.aesDecryptString(toxIdMi,"slph\$%*&^@-78231")
-                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-                    MobileSocketClient.getInstance().receive()*/
+                    /* MobileSocketClient.getInstance().init(handler,this)
+                     var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                     var aa = AESCipher.aesDecryptString(toxIdMi,"slph\$%*&^@-78231")
+                     MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                     MobileSocketClient.getInstance().receive()*/
                 }else{
                     toast(R.string.code_error)
                 }

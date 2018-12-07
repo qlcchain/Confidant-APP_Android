@@ -78,7 +78,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-
         var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -104,6 +103,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                         if( ConstantValue.currentRouterId.equals(udpRouterArray[1]))
                                         {
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.port= ":18006"
+                                            ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                             break;
@@ -147,10 +148,24 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
-                                ConstantValue.curreantNetworkType = "TOX"
-                                var intent = Intent(this, ToxService::class.java)
-                                startService(intent)
-                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                if(!ConstantValue.currentRouterId.equals(""))
+                                {
+                                    var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                                    if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                    {
+                                        ConstantValue.curreantNetworkType = "WIFI"
+                                        ConstantValue.currentRouterIp = httpData.serverHost
+                                        ConstantValue.port = ":"+httpData.serverPort.toString()
+                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                        Thread.currentThread().interrupt() //方法调用终止线程
+                                    }else{
+                                        ConstantValue.curreantNetworkType = "TOX"
+                                        var intent = Intent(this, ToxService::class.java)
+                                        startService(intent)
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+                                }
+
                                 break;
                             }
                         }
@@ -172,11 +187,22 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }).start()
         }else{
-            ConstantValue.curreantNetworkType = "TOX"
-            var intent = Intent(this_, ToxService::class.java)
-            startService(intent)
+            if(!ConstantValue.currentRouterId.equals(""))
+            {
+                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                if(httpData.retCode == 0 && httpData.connStatus == 1)
+                {
+                    ConstantValue.curreantNetworkType = "WIFI"
+                    ConstantValue.currentRouterIp = httpData.serverHost
+                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                }else{
+                    ConstantValue.curreantNetworkType = "TOX"
+                    var intent = Intent(this, ToxService::class.java)
+                    startService(intent)
+                }
+            }
         }
-
         if(rsaData.equals(""))
         {
             val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)

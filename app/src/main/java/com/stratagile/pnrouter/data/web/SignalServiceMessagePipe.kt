@@ -132,7 +132,9 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
     fun shutdown() {
         websocket.disconnect(true)
     }
-
+    fun close() {
+        websocket.close(true)
+    }
     fun reConenct() {
         websocket.connect()
         websocket.isShutDown = false
