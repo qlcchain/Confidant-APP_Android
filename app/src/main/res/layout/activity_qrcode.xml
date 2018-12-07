@@ -47,11 +47,10 @@
                 android:background="@color/color_ebebeb"
                 android:layout_height="@dimen/x1" />
             <ImageView
-                android:id="@+id/ivQrCode"
+                android:id="@+id/ivQrCodeMy"
                 android:layout_width="@dimen/x490"
                 android:layout_marginTop="@dimen/x60"
                 android:layout_marginBottom="@dimen/x60"
-                android:src="@mipmap/icon_twitter"
                 android:layout_height="@dimen/x490" />
             <View
                 android:layout_width="match_parent"

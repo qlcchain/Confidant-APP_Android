@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.utils
 import android.graphics.Bitmap
 import android.os.AsyncTask
 import android.widget.ImageView
+import android.widget.Toast
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.stratagile.pnrouter.R
@@ -19,9 +20,11 @@ class ThreadUtil {
                 if (bitmap != null) {
                     view.setImageBitmap(bitmap)
                 } else {
-//                    Toast.makeText(AppConfig.instance, "生成英文二维码失败", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(AppConfig.instance, "Generation failure", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
+
+
 }

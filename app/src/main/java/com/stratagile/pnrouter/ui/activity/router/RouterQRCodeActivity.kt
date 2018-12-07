@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
+import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
+import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.longToast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -18,6 +20,7 @@ import com.stratagile.pnrouter.ui.activity.router.presenter.RouterQRCodePresente
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.ThreadUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
+import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_router_qrcode.*
 import java.io.File
 import java.io.FileOutputStream
@@ -36,7 +39,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
     @Inject
     internal lateinit var mPresenter: RouterQRCodePresenter
     lateinit var routerEntity: RouterEntity
-    lateinit var createEnglishQRCode : ThreadUtil.Companion.CreateEnglishQRCode
+    //lateinit var createEnglishQRCode : ThreadUtil.Companion.CreateEnglishQRCode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +52,20 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerEntity = intent.getParcelableExtra("router")
         tvRouterName.text = routerEntity.routerName
-        tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
-        createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerEntity.routerId, ivQrCode)
-        createEnglishQRCode.execute()
-        tvSaveToPhone.setOnClickListener {
+        tvShare2.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare2) }
+       /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerEntity.routerId, ivQrCode2)
+        createEnglishQRCode.execute()*/
+        Thread(Runnable() {
+            run() {
+
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(routerEntity.routerId, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                runOnUiThread {
+                    ivQrCode2.setImageBitmap(bitmap)
+                }
+
+            }
+        }).start()
+        tvSaveToPhone2.setOnClickListener {
             saveQrCodeToPhone()
         }
     }
@@ -80,7 +93,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
     fun saveQrCodeToPhone() {
         showProgressDialog()
         thread {
-            val dView = cardView
+            val dView = cardView2
             dView.isDrawingCacheEnabled = true
             dView.buildDrawingCache()
             val bitmap = Bitmap.createBitmap(dView.drawingCache)
@@ -109,7 +122,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.share) {
-            PopWindowUtil.showSharePopWindow(this, tvShare)
+            PopWindowUtil.showSharePopWindow(this, tvShare2)
         }
         return super.onOptionsItemSelected(item)
     }

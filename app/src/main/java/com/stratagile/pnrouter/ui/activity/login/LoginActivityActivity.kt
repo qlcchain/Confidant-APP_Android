@@ -416,6 +416,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             {
                 if(ConstantValue.isToxConnected)
                 {
+                    runOnUiThread {
+                        showProgressDialog("login...")
+                    }
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                     var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                     var baseData = BaseData(2,login)
@@ -426,7 +429,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         delay(10000)
                         if (!loginBack) {
                             runOnUiThread {
-                                closeProgressDialog()
+                                //closeProgressDialog()
                                 //toast("login time out")
                             }
                         }

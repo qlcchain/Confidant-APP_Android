@@ -284,7 +284,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         {
             var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS, userInfo!!.publicKey,0)
             userInfo?.friendStatus = 0
-            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(addFriendDealReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+
             showProgressDialog()
         }
 
@@ -299,7 +307,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         {
             var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS, userInfo!!.publicKey, 0)
             userInfo?.friendStatus = 1
-            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(addFriendDealReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+
             showProgressDialog()
         }
     }

@@ -6,7 +6,7 @@
     android:background="@color/color_efefef"
     android:layout_height="match_parent">
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
+        android:id="@+id/cardView2"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x28"
         android:layout_marginLeft="@dimen/x50"
@@ -47,11 +47,10 @@
                 android:background="@color/color_ebebeb"
                 android:layout_height="@dimen/x1" />
             <ImageView
-                android:id="@+id/ivQrCode"
+                android:id="@+id/ivQrCode2"
                 android:layout_width="@dimen/x490"
                 android:layout_marginTop="@dimen/x60"
                 android:layout_marginBottom="@dimen/x60"
-                android:src="@mipmap/icon_twitter"
                 android:layout_height="@dimen/x490" />
             <View
                 android:layout_width="match_parent"
@@ -75,7 +74,7 @@
         android:orientation="horizontal"
         android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/tvSaveToPhone"
+            android:id="@+id/tvSaveToPhone2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textColor="@color/main_color"
@@ -88,7 +87,7 @@
             android:layout_height="@dimen/x2"/>
 
         <TextView
-            android:id="@+id/tvShare"
+            android:id="@+id/tvShare2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"

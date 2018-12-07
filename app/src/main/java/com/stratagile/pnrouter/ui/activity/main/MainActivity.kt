@@ -233,7 +233,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
+                }else if (ConstantValue.isToxConnected) {
+                    var baseData = BaseData(delFriendPushReq)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }
+
                 EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
                 return
             }

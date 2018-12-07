@@ -286,21 +286,46 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     fun deleteFriend(selfUserId : String, toUserId: String) {
         var delFriendCmdReq = DelFriendCmdReq(selfUserId, toUserId)
-        AppConfig.instance.messageSender!!.send(BaseData(delFriendCmdReq))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.messageSender!!.send(BaseData(delFriendCmdReq))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(delFriendCmdReq)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
+
     }
 
     fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
         var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS, friendKey,0)
-        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(addFriendDealReq)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
         var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
-        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(addFriendDealReq)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     interface FriendOperateListener {

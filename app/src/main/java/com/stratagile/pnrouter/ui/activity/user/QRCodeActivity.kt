@@ -13,18 +13,18 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.QRCodeContract
 import com.stratagile.pnrouter.ui.activity.user.module.QRCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_qrcode.*
 
 import javax.inject.Inject;
 import android.graphics.Bitmap
 import android.os.Environment
+import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
+import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.longToast
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
-import com.stratagile.pnrouter.utils.ThreadUtil
+import com.stratagile.pnrouter.utils.*
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
@@ -47,7 +47,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
     @Inject
     internal lateinit var mPresenter: QRCodePresenter
 
-    lateinit var createEnglishQRCode : ThreadUtil.Companion.CreateEnglishQRCode
+    //lateinit var CreateEnglishUserQRCode : ScanCodeTask
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,16 +68,26 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         var userId = FileUtil.getLocalUserData("userid")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
-        createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(userId, ivQrCode)
-        createEnglishQRCode.execute()
+        /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
+        CreateEnglishUserQRCode.execute()*/
         tvSaveToPhone.setOnClickListener {
             saveQrCodeToPhone()
         }
+        Thread(Runnable() {
+            run() {
+
+               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                runOnUiThread {
+                    ivQrCodeMy.setImageBitmap(bitmap)
+                }
+
+            }
+        }).start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        createEnglishQRCode.cancel(true)
+        //CreateEnglishUserQRCode.cancel(true)
     }
 
     fun saveQrCodeToPhone() {
