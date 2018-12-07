@@ -220,10 +220,19 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         if( AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.registerListener = this
         registerBtn.setOnClickListener {
-            if (createName.text.toString().equals("") || IdentifyCode.text.toString().equals("") || userName3.text.toString().equals("")) {
-                toast(getString(R.string.Cannot_be_empty))
-                return@setOnClickListener
+            if(flag != null && flag == 1)
+            {
+                if (createName.text.toString().equals("") || userName3.text.toString().equals("")) {
+                    toast(getString(R.string.Cannot_be_empty))
+                    return@setOnClickListener
+                }
+            }else{
+                if (createName.text.toString().equals("") || IdentifyCode.text.toString().equals("") || userName3.text.toString().equals("")) {
+                    toast(getString(R.string.Cannot_be_empty))
+                    return@setOnClickListener
+                }
             }
+
             if (!userName3.text.toString().equals(userName4.text.toString())) {
                 toast(getString(R.string.Password_inconsistent))
                 return@setOnClickListener

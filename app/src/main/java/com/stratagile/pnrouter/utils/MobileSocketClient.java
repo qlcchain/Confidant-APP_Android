@@ -135,7 +135,8 @@ public class MobileSocketClient {
                     Message msg = new Message();
                     msg.what = MSG_UPD_DATA;
                     msg.obj = message;
-                    handler.sendMessage(msg);
+                    if(handler!=null)
+                        handler.sendMessage(msg);
                 }
 
             }

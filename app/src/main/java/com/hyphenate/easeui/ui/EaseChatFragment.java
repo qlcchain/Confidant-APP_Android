@@ -45,6 +45,8 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.chat.EMVideoMessageBody;
+import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.chat.adapter.EMAChatRoomManagerListener;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.EaseUI;
@@ -956,7 +958,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
             forward_msg.addBody(var3);
             if(conversation !=null )
-                conversation.updateMessage(forward_msg);
+                conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
             //conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
             //refresh ui
             if(isMessageListInited) {
@@ -969,12 +971,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 FileUtil.deleteFile(localUrl);
             }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
             {
-                EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+                EMVideoMessageBody imgBody = (EMVideoMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
             }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
             {
-                EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
+                EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
             }

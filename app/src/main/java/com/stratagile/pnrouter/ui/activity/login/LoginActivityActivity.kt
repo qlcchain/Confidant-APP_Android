@@ -117,10 +117,34 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast("error")
             }
             3-> {
-                var intent = Intent(this, RegisterActivity::class.java)
-                intent.putExtra("flag", 1)
-                startActivity(intent)
-                finish()
+                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
+                if (routerEntityList != null && routerEntityList!!.size != 0) {
+                    for( i in routerEntityList)
+                    {
+
+                        if(i!= null && !i.userId.equals(""))
+                        {
+                            routerId = i.routerId
+                            userSn = i.userSn
+                            userId = i.userId
+                            username = i.username
+                            dataFileVersion = i.dataFileVersion
+                            routerNameTips.text = i.routerName
+                            ConstantValue.currentRouterIp = ""
+                            ConstantValue.scanRouterId = routerId;
+                            isClickLogin = false
+                            /* if(AppConfig.instance.messageReceiver != null)
+                                 AppConfig.instance.messageReceiver!!.close()*/
+                            getServer(routerId,userSn)
+                        }
+                    }
+                }else{
+                    var intent = Intent(this, RegisterActivity::class.java)
+                    intent.putExtra("flag", 1)
+                    startActivity(intent)
+                    finish()
+                }
+
             }
             4 -> {
 
