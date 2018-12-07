@@ -132,6 +132,10 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        initData()
+    }
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

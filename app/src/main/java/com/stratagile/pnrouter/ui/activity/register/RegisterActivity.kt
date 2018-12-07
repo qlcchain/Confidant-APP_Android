@@ -93,6 +93,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.loginKey = userName3.text.toString();
+            newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true

@@ -211,7 +211,44 @@ object LocalRouterUtils {
 
         }
     }
+    fun deleteLocalAssets(deleteUserSn: String):RouterEntity {
+        var userId = "routerData"
+        if(deleteUserSn == null && deleteUserSn.equals(""))
+        {
+            return RouterEntity()
+        }
+        val gson = Gson()
+        val localRouterArrayList: ArrayList<MyRouter>
+        val newRouterArrayList = ArrayList<MyRouter>()
+        var deleteRouterEntity:RouterEntity = RouterEntity()
+        try {
+            //开始读取sd卡的路由器数据
+            var assetStr = FileUtil.readRoutersData(userId)
+            if (assetStr != "") {
+                localRouterArrayList = gson.fromJson<ArrayList<MyRouter>>(assetStr, object : TypeToken<ArrayList<MyRouter>>() {
 
+                }.type)
+                for (myRouter in localRouterArrayList) {
+
+                    if (myRouter.getType() == 0)
+                    {
+                        if (!myRouter.getRouterEntity().userSn.equals(deleteUserSn)) {
+                            newRouterArrayList.add(myRouter)
+                        } else{
+                            deleteRouterEntity = myRouter.getRouterEntity()
+                        }
+                    }
+                }
+                FileUtil.saveRouterData(userId, gson.toJson(newRouterArrayList))
+            }
+
+        } catch (e: Exception) {
+
+        } finally {
+
+        }
+        return deleteRouterEntity
+    }
     /**
      * 批量更新
      *

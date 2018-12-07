@@ -196,6 +196,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if(loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
+            newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.loginKey = loginKey.text.toString();
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId

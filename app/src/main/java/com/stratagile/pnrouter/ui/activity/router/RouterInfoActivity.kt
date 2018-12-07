@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.router.contract.RouterInfoContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterInfoModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterInfoPresenter
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
+import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import kotlinx.android.synthetic.main.activity_router_info.*
 import org.greenrobot.eventbus.EventBus
@@ -59,11 +60,18 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         title.text = routerEntity.routerName
         if (routerEntity.lastCheck) {
             tvLogOut.visibility = View.VISIBLE
+            tvDeleteRouter.visibility = View.GONE
             tvSwitchRouter.visibility = View.GONE
+        }else{
+            tvDeleteRouter.visibility = View.VISIBLE
         }
         tvLogOut.setOnClickListener {
 //            onLogOutSuccess()
             showDialog()
+        }
+        tvDeleteRouter.setOnClickListener {
+            //            onLogOutSuccess()
+            showDeleteDialog()
         }
         tvSwitchRouter.setOnClickListener {
 
@@ -105,7 +113,21 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
                 .show()
 
     }
+    fun showDeleteDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setTitleText(getString(R.string.delete)).
+                setContentText(getString(R.string.askdelete))
+                .setConfirmClickListener {
+                    onDeleteSuccess()
+                }
+                .show()
 
+    }
+    fun onDeleteSuccess() {
+        var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(routerEntity.userSn)
+        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(deleteRouterEntity)
+        finish()
+    }
     fun onLogOutSuccess() {
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(this, LoginActivityActivity::class.java)

@@ -420,4 +420,6 @@
 
     <string name="Createuseraccounts">Create user accounts</string>
 
+    <string name="askdelete">Are you sure you want to delete it?</string>
+
 </resources>
