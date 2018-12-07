@@ -105,7 +105,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
                 .setTitleText("Log Out")
                 .setConfirmClickListener {
                     showProgressDialog()
-                    AppConfig.instance.messageReceiver!!.shutdown()
+                    AppConfig.instance.messageReceiver!!.close()
                     MessageRetrievalService.registerActivityStopped(this)
                     closeProgressDialog()
                     onLogOutSuccess()

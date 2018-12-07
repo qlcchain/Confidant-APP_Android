@@ -43,6 +43,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var retryInterval = arrayListOf<Int>(1000, 2000, 3000, 5000, 8000)
     private var ipAddress = ""
     private var filledUri = ""
+    private var isNeedReConnect = true;  //客户端主动关闭不要重连
 
     init {
         this.attempts = 0
@@ -106,6 +107,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             this.connected = false
             this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
+
+            Log.i("websocket：this.client1",""+ (this.client == null))
         }
     }
 
@@ -130,6 +133,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     fun close(isShutDown : Boolean) {
         Log.w(TAG, "WSC disconnect()...")
         this.isShutDown = isShutDown
+        isNeedReConnect = false;
         if (client != null) {
             client!!.close(1000, "OK")
             connected = false
@@ -138,6 +142,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         if (keepAliveSender != null) {
             keepAliveSender!!.shutdown()
         }
+
     }
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)
@@ -272,8 +277,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         listener?.onDisconnected()
 
-        reConnectThread = ReConnectThread()
-
+            reConnectThread = ReConnectThread()
 //        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
         if (client != null) {
@@ -282,7 +286,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             client = null
             connected = false
         }
-        if (reConnectThread != null && !isShutDown && !isLocalLogin) {
+        if (reConnectThread != null && !isShutDown && !isLocalLogin && isNeedReConnect) {
             isLocalLogin = false;
             reConnectThread?.reStart()
         }else{
@@ -293,7 +297,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 client = null
                 connected = false
             }
-            reConnect()
+            if(isNeedReConnect)
+            {
+                reConnect()
+                isNeedReConnect = true
+            }
+
         }
 
 //        notifyAll()
@@ -328,6 +337,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             this.connected = false
             this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
+            Log.i("websocket：this.client2",""+ (this.client == null))
         }
     }
 

@@ -79,18 +79,7 @@ class AppConfig : MultiDexApplication() {
         return messageReceiver!!
     }
 
-    fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
-        if (messageReceiver == null) {
-            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
-                    APIModule.DynamicCredentialsProvider(this),
-                    BuildConfig.USER_AGENT,
-                    APIModule.PipeConnectivityListener())
-            MessageRetrievalService.registerActivityStarted(this)
-//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
-            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
-        }
-        return messageReceiver!!
-    }
+
 
 
     fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
@@ -107,7 +96,18 @@ class AppConfig : MultiDexApplication() {
         }
         return messageReceiver!!
     }
-
+    fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
+        if (messageReceiver == null) {
+            this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+                    APIModule.DynamicCredentialsProvider(this),
+                    BuildConfig.USER_AGENT,
+                    APIModule.PipeConnectivityListener())
+            MessageRetrievalService.registerActivityStarted(this)
+//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
+            messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
+        }
+        return messageReceiver!!
+    }
     fun getPNRouterServiceMessageSender() :  PNRouterServiceMessageSender{
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))

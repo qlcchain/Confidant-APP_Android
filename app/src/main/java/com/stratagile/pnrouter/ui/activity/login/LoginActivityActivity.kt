@@ -129,12 +129,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             userId = i.userId
                             username = i.username
                             dataFileVersion = i.dataFileVersion
-                            routerNameTips.text = i.routerName
+                            runOnUiThread()
+                            {
+                                routerNameTips.text = i.routerName
+                            }
                             ConstantValue.currentRouterIp = ""
                             ConstantValue.scanRouterId = routerId;
                             isClickLogin = false
-                            /* if(AppConfig.instance.messageReceiver != null)
-                                 AppConfig.instance.messageReceiver!!.close()*/
                             getServer(routerId,userSn)
                         }
                     }
@@ -159,6 +160,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var loginBack = false
     var isFromScan = false
     var isClickLogin = false
+    var isHasConnect = false
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
@@ -341,12 +343,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         when (connectStatus.status) {
             0 -> {
+                isHasConnect = true
                 if(isFromScan)
                 {
                     closeProgressDialog()
                     showProgressDialog("wait...")
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                    isFromScan = false
                 }else{
                     if(isClickLogin)
                     {
@@ -404,6 +408,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    isFromScan = false
                 }else{
                     InterfaceScaleUtil.addFriend( routerId,this)
                     if(isClickLogin)
@@ -490,7 +495,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
 //                onWebSocketConnected(ConnectStatus(0))
                     } else {
-                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                        if(isHasConnect)
+                        {
+                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                        }else{
+                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                        }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
                         runOnUiThread {
                             closeProgressDialog()
@@ -669,9 +679,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         routerNameTips.text = routerList[position].routerName
                         ConstantValue.currentRouterIp = ""
                         ConstantValue.scanRouterId = routerId;
+                        //MessageRetrievalService.registerActivityFinished(this_)
+                        if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()
+                        ConstantValue.isWebsocketConnected = false
                         isClickLogin = false
-                       /* if(AppConfig.instance.messageReceiver != null)
-                            AppConfig.instance.messageReceiver!!.close()*/
+                        /* if(AppConfig.instance.messageReceiver != null)
+                             AppConfig.instance.messageReceiver!!.close()*/
                         getServer(routerId,userSn)
                         //routerList[position].lastCheck = true
                         //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
