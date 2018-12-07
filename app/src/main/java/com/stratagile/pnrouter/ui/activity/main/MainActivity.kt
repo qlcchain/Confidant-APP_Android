@@ -168,6 +168,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 userEntity.userId = i.id
                 userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
+                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
             }
 
@@ -310,6 +312,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
+        var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+        newFriend.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
@@ -398,6 +402,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 userEntity.userId = toAddUserId
                 userEntity.nickName = ""
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
+
+                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
                 intent.putExtra("user", userEntity)
                 startActivity(intent)

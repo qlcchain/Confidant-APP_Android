@@ -92,6 +92,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.publicKey = i.userKey
                 userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
             }
         }
@@ -180,16 +182,20 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
         for (i in list) {
+
             if (i.userId.equals(selfUserId)) {
                 continue
             }
-            if (i.friendStatus == 0) {
-                contactList.add(i)
+            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
+                if (i.friendStatus == 0) {
+                    contactList.add(i)
+                }
+                if (i.friendStatus == 3) {
+                    hasNewFriendRequest = true
+                    newFriendCount++
+                }
             }
-            if (i.friendStatus == 3) {
-                hasNewFriendRequest = true
-                newFriendCount++
-            }
+
         }
         if (hasNewFriendRequest) {
             new_contact_dot.visibility = View.VISIBLE

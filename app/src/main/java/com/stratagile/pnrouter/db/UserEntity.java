@@ -16,6 +16,9 @@ public class UserEntity implements Parcelable{
     //用户id
     private String userId;
 
+    //路由器用户id
+    private String routerUserId;
+
     private String publicKey;
 
     //昵称
@@ -31,31 +34,14 @@ public class UserEntity implements Parcelable{
     //第一次通信的时间戳
     private long timestamp;
 
-    public UserEntity()
-    {
 
-    }
-    protected UserEntity(Parcel in) {
-        if (in.readByte() == 0) {
-            id = null;
-        } else {
-            id = in.readLong();
-        }
-        userId = in.readString();
-        publicKey = in.readString();
-        nickName = in.readString();
-        avatar = in.readString();
-        noteName = in.readString();
-        friendStatus = in.readInt();
-        addFromMe = in.readByte() != 0;
-        timestamp = in.readLong();
-    }
-    @Generated(hash = 1253064024)
-    public UserEntity(Long id, String userId, String publicKey, String nickName,
-            String avatar, String noteName, int friendStatus, boolean addFromMe,
-            long timestamp) {
+    @Generated(hash = 164714430)
+    public UserEntity(Long id, String userId, String routerUserId, String publicKey,
+            String nickName, String avatar, String noteName, int friendStatus,
+            boolean addFromMe, long timestamp) {
         this.id = id;
         this.userId = userId;
+        this.routerUserId = routerUserId;
         this.publicKey = publicKey;
         this.nickName = nickName;
         this.avatar = avatar;
@@ -63,6 +49,26 @@ public class UserEntity implements Parcelable{
         this.friendStatus = friendStatus;
         this.addFromMe = addFromMe;
         this.timestamp = timestamp;
+    }
+    public UserEntity() {
+    }
+
+
+    protected UserEntity(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        userId = in.readString();
+        routerUserId = in.readString();
+        publicKey = in.readString();
+        nickName = in.readString();
+        avatar = in.readString();
+        noteName = in.readString();
+        friendStatus = in.readInt();
+        addFromMe = in.readByte() != 0;
+        timestamp = in.readLong();
     }
 
     @Override
@@ -74,6 +80,7 @@ public class UserEntity implements Parcelable{
             dest.writeLong(id);
         }
         dest.writeString(userId);
+        dest.writeString(routerUserId);
         dest.writeString(publicKey);
         dest.writeString(nickName);
         dest.writeString(avatar);
@@ -156,5 +163,11 @@ public class UserEntity implements Parcelable{
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+    }
+    public String getRouterUserId() {
+        return this.routerUserId;
+    }
+    public void setRouterUserId(String routerUserId) {
+        this.routerUserId = routerUserId;
     }
 }

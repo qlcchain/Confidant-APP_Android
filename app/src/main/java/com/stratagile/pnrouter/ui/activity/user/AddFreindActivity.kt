@@ -44,6 +44,8 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         if (hasUserInfo) {
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(newFriend)
         } else {
+            var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+            newFriend!!.routerUserId = selfUserId
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         }
         KLog.i(addFriendRsp.baseDataToJson())

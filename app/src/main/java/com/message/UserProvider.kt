@@ -83,6 +83,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.friendStatus = 3
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.publicKey = jAddFriendPushRsp.params.userKey
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
@@ -107,6 +109,9 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.noteName = ""
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
         userList.add(newFriend)
+
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        newFriend.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
@@ -176,6 +181,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         } else if (jAddFriendReplyRsp.params.result == 1) {
             userEntity.friendStatus = 2
         }
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        userEntity.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")

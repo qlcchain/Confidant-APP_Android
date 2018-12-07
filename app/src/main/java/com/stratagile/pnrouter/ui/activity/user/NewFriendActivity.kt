@@ -80,11 +80,15 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
             userIDStr = i.userId+","
         }
         list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
         var showlist = arrayListOf<UserEntity>()
         for (i in list) {
-            if (i.friendStatus != 7) {
-                showlist.add(i)
+            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
+                if (i.friendStatus != 7) {
+                    showlist.add(i)
+                }
             }
+
         }
         newFriendListAdapter = NewFriendListAdapter(showlist)
         newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
