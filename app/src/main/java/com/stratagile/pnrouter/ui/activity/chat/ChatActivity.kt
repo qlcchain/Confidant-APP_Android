@@ -206,23 +206,29 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
-        var aesKey =  RxEncryptTool.generateAESKey()
-        var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-        var friend = RxEncodeTool.base64Decode(FriendPublicKey)
-        var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
-        var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
-        var aa = RxEncodeTool.base64Encode2String(DstKey);
-        var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
-        var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
-        var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgData)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        try {
+            var aesKey =  RxEncryptTool.generateAESKey()
+            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+            var friend = RxEncodeTool.base64Decode(FriendPublicKey)
+            var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
+            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+            var aa = RxEncodeTool.base64Encode2String(DstKey);
+            var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
+            var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
+            var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+        }catch (e:Exception)
+        {
+            toast(R.string.Encryptionerror)
         }
+
 
     }
 

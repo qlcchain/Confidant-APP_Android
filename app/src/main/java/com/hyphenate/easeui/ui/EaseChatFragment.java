@@ -513,7 +513,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         {
             String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
             EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
-            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
         }
     }
     /**

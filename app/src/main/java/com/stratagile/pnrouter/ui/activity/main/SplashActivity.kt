@@ -124,9 +124,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-        var rsaData = FileUtil.readRSAData();
-        val localRSAArrayList: ArrayList<RSAData>
-        val gson = Gson()
 
         var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
         var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
@@ -203,33 +200,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-        if(rsaData.equals(""))
-        {
-            val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
-            val aahh = KeyPair!!.private.format
-            val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
-            val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
-            ConstantValue.privateRAS = strBase64Private
-            ConstantValue.publicRAS = strBase64Public
-            localRSAArrayList = ArrayList()
-            var RSAData:RSAData = RSAData()
-            RSAData.privateKey = strBase64Private
-            RSAData.publicKey = strBase64Public
-            localRSAArrayList.add(RSAData)
-            FileUtil.saveRSAData(gson.toJson(localRSAArrayList))
-        }else{
-            var rsaStr = FileUtil.readRSAData()
-            if (rsaStr != "") {
-                localRSAArrayList = gson.fromJson<ArrayList<RSAData>>(rsaStr, object : TypeToken<ArrayList<RSAData>>() {
 
-                }.type)
-                if(localRSAArrayList.size > 0)
-                {
-                    ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
-                    ConstantValue.publicRAS =  localRSAArrayList.get(0).publicKey
-                }
-            }
-        }
         var secret = Base58.encode("123456".toByteArray())
         var aastrs = String(Base58.decode(secret))
         var miMsg = AESCipher.aesEncryptString("aa","welcometoqlc0101")
