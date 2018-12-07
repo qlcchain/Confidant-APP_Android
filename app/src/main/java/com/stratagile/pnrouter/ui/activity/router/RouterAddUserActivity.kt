@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -14,6 +15,7 @@ import com.stratagile.pnrouter.ui.activity.router.contract.RouterAddUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterAddUserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterAddUserPresenter
 import kotlinx.android.synthetic.main.activity_select_friend.*
+import kotlinx.android.synthetic.main.fragment_user.*
 import javax.inject.Inject
 
 /**
@@ -41,10 +43,11 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
     override fun initData() {
 
         routerEntity = intent.getParcelableExtra("routerEntity")
-        fragment = UserFragment();
+        fragment = UserFragment()
         val bundle = Bundle()
         title.text = getString(R.string.User_Management)
         bundle.putString(ConstantValue.selectFriend, "select")
+        bundle.putParcelable("routerEntity",routerEntity)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
@@ -56,6 +59,8 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
             }
         }
         viewPager.offscreenPageLimit = 1
+
+
     }
 
     override fun setupActivityComponent() {

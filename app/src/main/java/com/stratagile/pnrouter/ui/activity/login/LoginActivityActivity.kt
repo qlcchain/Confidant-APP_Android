@@ -70,7 +70,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
         when (recoveryRsp.params.retCode) {
-            0 -> {
+            0 ->{
                 val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
                     var routerEntity:RouterEntity = routerEntityList[0]
@@ -116,8 +116,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             2 -> {
                 toast("error")
             }
-            3 -> {
-
+            3-> {
+                startActivity(Intent(this, RegisterActivity::class.java))
+                finish()
             }
             4 -> {
 
@@ -506,6 +507,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             startActivity(Intent(this, LogActivity::class.java))
         }
         var this_ = this
+        var isStartWebsocket = false
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
@@ -552,12 +554,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 index ++
 
                             }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals("") && !isStartWebsocket)
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
                                 isFromScan = true
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                isStartWebsocket = true
                             }
                         }
 

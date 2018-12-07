@@ -15,6 +15,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullUserRsp
 import com.stratagile.pnrouter.entity.PullUserReq
@@ -38,7 +39,7 @@ import javax.inject.Inject
  * @date 2018/12/06 14:25:44
  */
 
-class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageReceiver.PullUserCallBack{
+class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageReceiver.PullUserCallBack{
     override fun userList(jPullUserRsp: JPullUserRsp) {
 
         var comUserList = arrayListOf<JPullUserRsp.ParamsBean.PayloadBean>()
@@ -67,10 +68,11 @@ class UserFragment : BaseFragment(), UserContract.View , PNRouterServiceMessageR
     @Inject
     lateinit internal var mPresenter: UserPresenter
     var contactAdapter : UsertListAdapter? = null
-
+    var routerEntity: RouterEntity? = null
     var contactTempAdapter : UsertListAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        routerEntity = arguments!!.get("routerEntity") as RouterEntity
         var view = inflater.inflate(R.layout.fragment_user, null);
         return view
     }

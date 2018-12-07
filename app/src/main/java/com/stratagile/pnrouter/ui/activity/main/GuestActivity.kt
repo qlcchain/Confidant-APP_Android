@@ -324,6 +324,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
     override fun initData() {
         var this_ = this
+        var isStartWebsocket = false
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
@@ -357,11 +358,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                 }
                                 index ++
                             }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals("") && !isStartWebsocket)
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
                                 AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
+                                isStartWebsocket = true
                             }
                         }
 
