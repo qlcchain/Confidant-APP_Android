@@ -163,7 +163,10 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         intent.setAction(MessageRetrievalService.ACTION_ACTIVITY_FINISHED);
         activity.startService(intent);
     }
-
+    public static void registerActivityFinished(Context activity) {
+        Intent intent = new Intent(activity, MessageRetrievalService.class);
+        activity.stopService(intent);
+    }
     public static @Nullable
     SignalServiceMessagePipe getPipe() {
         return pipe;

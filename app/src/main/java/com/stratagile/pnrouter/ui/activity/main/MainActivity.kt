@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
@@ -739,8 +740,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .show()
             exitTime = System.currentTimeMillis()
         } else {
-            finish()
-            System.exit(0)
+            MessageRetrievalService.registerActivityFinished(this)
+            //android进程完美退出方法。
+            var intent = Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+            this.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            //System.runFinalizersOnExit(true);
+            System.exit(0);
         }
         return false
     }
