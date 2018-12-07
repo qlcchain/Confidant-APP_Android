@@ -8,8 +8,10 @@ import android.os.Handler
 import android.os.Message
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
+import android.view.KeyEvent
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
@@ -24,6 +26,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
@@ -45,6 +48,7 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_guest.*
+import kotlinx.android.synthetic.main.activity_login.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -71,7 +75,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     protected var screenW: Int = 0
     protected var screenH: Int = 0
     val REQUEST_SELECT_ROUTER = 2
+    private var exitTime: Long = 0
     val REQUEST_SCAN_QRCODE = 1
+    var isHasConnect = false
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
         closeProgressDialog();
@@ -116,7 +122,6 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
             }
             1 -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
-                finish()
             }
             2 -> {
                 runOnUiThread {
@@ -124,7 +129,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 }
             }
             3 -> {
-
+                var intent = Intent(this, RegisterActivity::class.java)
+                intent.putExtra("flag", 1)
+                startActivity(intent)
             }
             4 -> {
 
@@ -193,7 +200,35 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
         })
     }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitToast()
+        }
+        return false
+    }
 
+    fun exitToast(): Boolean {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            Toast.makeText(this, R.string.Press_again, Toast.LENGTH_SHORT)
+                    .show()
+            exitTime = System.currentTimeMillis()
+        } else {
+
+            MessageRetrievalService.registerActivityFinished(this)
+            //android进程完美退出方法。
+            var intent = Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+            this.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            //System.runFinalizersOnExit(true);
+            System.exit(0);
+        }
+        return false
+    }
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         addAnimations()
@@ -361,7 +396,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                             if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals("") && !isStartWebsocket)
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
-                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                if(isHasConnect)
+                                {
+                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                }else{
+                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                }
                                 AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
                                 isStartWebsocket = true
                             }
@@ -412,6 +452,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         when (connectStatus.status) {
             0 -> {
+                isHasConnect = true
                 var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
 
@@ -451,6 +492,13 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         }
 
     }
+    override fun onResume() {
+        exitTime = System.currentTimeMillis() - 2001
+        if(AppConfig.instance.messageReceiver != null)
+            AppConfig.instance.messageReceiver!!.close()
+        ConstantValue.isWebsocketConnected = false
+        super.onResume()
+    }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
@@ -470,7 +518,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 ConstantValue.scanRouterSN = UserSnStr
                 if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
                 {
-
+                    ConstantValue.currentRouterIp = ""
                     if(WiFiUtil.isWifiConnect())
                     {
                         var count =0;
@@ -496,7 +544,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                 ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                if(isHasConnect)
+                                                {
+                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                }else{
+                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                }
                                                 AppConfig.instance.messageReceiver!!.recoveryBackListener = this
                                                 Thread.currentThread().interrupt() //方法调用终止线程
                                             }else{
@@ -547,7 +600,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                             ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                            if(isHasConnect)
+                            {
+                                AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                            }else{
+                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                            }
                             AppConfig.instance.messageReceiver!!.recoveryBackListener = this
                         }else{
                             ConstantValue.curreantNetworkType = "TOX"

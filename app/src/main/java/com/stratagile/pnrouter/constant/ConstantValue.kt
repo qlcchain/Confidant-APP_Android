@@ -3,7 +3,7 @@ package com.stratagile.pnrouter.constant
 import java.util.HashMap
 
 object ConstantValue {
-        var localPath = "/RouterData11"
+        var localPath = "/RouterData13"
         var httpUrl ="http://47.96.76.184:9000/v1/pprmap/Check?rid="
         var isInit = false;
         var isRefeshed = false
