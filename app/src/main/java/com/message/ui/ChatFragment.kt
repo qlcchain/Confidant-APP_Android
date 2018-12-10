@@ -224,7 +224,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         message.to = userEntity.userId
         message.from = SpUtil.getString(activity!!, ConstantValue.userId, "")
         message.msg = content
-        message.status = Message.Status.CREATE
+        message.status = 4
         message.timeStatmp = Calendar.getInstance().timeInMillis
         messageListAdapter.addData(message)
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
@@ -234,6 +234,11 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
 
     fun sendMsg(FromId: String, ToId: String,FriendPublicKey :String, Msg: String) {
         try {
+            if(Msg.length >264)
+            {
+                toast(R.string.nomorecharacters)
+                return
+            }
             var aesKey =  RxEncryptTool.generateAESKey()
             var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)

@@ -46,6 +46,22 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
+
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = ReadMsgPushReq(0, "", userId!!)
+        var msgId:String = ""
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2,msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+        chatFragment?.refreshReadData("")
+    }
+
     var statusBarHeight: Int = 0
     var receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
     override fun onGlobalLayout() {
@@ -187,19 +203,54 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         var messageList: List<Message> = pushMsgRsp.params.payload
         chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
+        val size = messageList.size
+        var msgIdStr:String = "";
+        for (mesage in messageList)
+        {
+            if(mesage.sender == 1)//对方发的消息
+            {
+                if(mesage.status == 0 || mesage.status == 1)//未读
+                {
+                    msgIdStr += (mesage.msgId.toString() + ",")
+                }
+            }
+
+        }
+        if(!msgIdStr.equals(""))
+        {
+            val userId = SpUtil.getString(this, ConstantValue.userId, "")
+            var readMsgReq  =  ReadMsgReq(userId!!,pushMsgRsp.params.friendId,msgIdStr)
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(2,readMsgReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
+        }
+
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
+            var msgId:String = pushMsgRsp?.params.msgId.toString()
+            var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(msgData,pushMsgRsp?.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+
+                var baseData2 = BaseData(2,readMsgReq)
+                var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
+                var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
             }
             chatFragment?.receiveTxtMessage(pushMsgRsp)
         }
@@ -207,6 +258,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
         try {
+            if(Msg.length >264)
+            {
+                toast(R.string.nomorecharacters)
+                return
+            }
             var aesKey =  RxEncryptTool.generateAESKey()
             var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)

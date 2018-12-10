@@ -75,7 +75,7 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
         getChatRow().updateView(message);
 
         if (message.status() == EMMessage.Status.INPROGRESS) {
-            EMLog.i("handleSendMessage", "Message is INPROGRESS");
+            EMLog.i("handleSendMessage", "Message is LOOKED");
             if (this.itemClickListener != null) {
                 this.itemClickListener.onMessageInProgress(message);
             }

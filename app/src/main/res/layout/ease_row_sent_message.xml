@@ -55,6 +55,15 @@
               	android:textColor="#FFFFFF"
                 android:maxWidth="225.0dip"
                 android:textSize="15sp" />
+            <ImageView
+                android:id="@+id/msg_sendstatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/tv_chatcontent"
+                android:layout_below="@+id/tv_chatcontent"
+                android:clickable="true"
+                android:src="@drawable/send"
+                android:visibility="visible" />
         </RelativeLayout>
 
        <!--  <TextView

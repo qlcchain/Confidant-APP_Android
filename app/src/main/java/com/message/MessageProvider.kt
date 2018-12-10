@@ -26,7 +26,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         }
         messages.forEachIndexed { index, message ->
             if (message.msg.equals(sendMsgRsp.params.msg)) {
-                message.status = Message.Status.SUCCESS
+                message.status = 1
                 message.msgId = sendMsgRsp.params.msgId
                 receivedMessageListener?.receivedMessage(index, message)
                 return
@@ -76,7 +76,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         var messageList: ArrayList<Message> = pushMsgRsp.params.payload.MutableListToArrayList()
         if (messageList.size != 0) {
             messageList.forEach {
-                it.status = Message.Status.SUCCESS
+                it.status = 1
                 it.setType()
                 it.isUnRead = false
                 val msgSouce = RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())

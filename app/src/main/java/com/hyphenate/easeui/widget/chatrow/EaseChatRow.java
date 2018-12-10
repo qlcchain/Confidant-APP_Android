@@ -67,6 +67,8 @@ public abstract class EaseChatRow extends LinearLayout {
     protected TextView ackedView;
     protected TextView deliveredView;
 
+    protected ImageView sendStatusView;
+
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
 
@@ -109,6 +111,7 @@ public abstract class EaseChatRow extends LinearLayout {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         statusView = (ImageView) findViewById(R.id.msg_status);
         ackedView = (TextView) findViewById(R.id.tv_ack);
+        sendStatusView = (ImageView) findViewById(R.id.msg_sendstatus);
         deliveredView = (TextView) findViewById(R.id.tv_delivered);
 
         onFindViewById();
@@ -189,8 +192,16 @@ public abstract class EaseChatRow extends LinearLayout {
                     ackedView.setVisibility(View.INVISIBLE);
                 }
             }
+            if (sendStatusView != null) {
+                if (message.isAcked()) {
+                    sendStatusView.setImageResource(R.drawable.sendout);
+                    sendStatusView.setVisibility(View.VISIBLE);
+                } else {
+                    sendStatusView.setImageResource(R.drawable.send);
+                    sendStatusView.setVisibility(View.VISIBLE);
+                }
+            }
         }
-
         if (itemStyle != null) {
             if (userAvatarView != null) {
                 if (itemStyle.isShowAvatar()) {

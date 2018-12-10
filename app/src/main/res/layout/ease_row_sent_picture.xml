@@ -43,6 +43,15 @@
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
                 />
+            <ImageView
+                android:id="@+id/msg_sendstatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/image"
+                android:layout_below="@+id/image"
+                android:clickable="true"
+                android:src="@drawable/send"
+                android:visibility="visible" />
         </RelativeLayout>	
         <LinearLayout
             android:id="@+id/ll_loading"

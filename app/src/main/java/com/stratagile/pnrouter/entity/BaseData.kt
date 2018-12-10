@@ -237,3 +237,20 @@ data class PushFileReq(var FromId :String, var ToId : String, var FilePath : Str
  * (2)	响应（APP->Router）
  */
 data class PushFileRespone(var Retcode :Int, var FromId : String, var ToId : String,var MsgId : Int,  var Action : String = "PushFile")
+
+
+/**
+ * 12.	18.	已阅消息
+ * (2)	响应（APP->Router）
+ */
+data class ReadMsgReq(var UserId :String, var FriendId : String, var MsgId : String,  var Action : String = "ReadMsg")
+
+
+/**
+ * 12.	18.	19.	已阅消息推送反馈
+ * (2)	响应（APP->Router）
+ */
+data class ReadMsgPushReq(var RetCode :Int, var Msg : String, var ToId : String,  var Action : String = "ReadMsgPush")
+
+
+

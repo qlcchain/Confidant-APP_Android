@@ -812,6 +812,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             FileUtil.deleteFile(localUrl);
         }
     }
+    public void  refreshReadData(String readMsgs)
+    {
+        String [] readMsgsArray =  readMsgs.split(",");
+        int length = readMsgsArray.length;
+        for(int i = 0 ; i < length ;i++)
+        {
+            EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(readMsgsArray[i]);
+            forward_msg.setAcked(true);
+            if(conversation !=null )
+                conversation.updateMessage(forward_msg);
+        }
+        //refresh ui
+        messageList.refresh();
+    }
     public void  refreshData(List<Message> messageList,String UserId,String FriendId)
     {
         if(conversation == null)
@@ -930,6 +944,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             {
                 message.setFrom(userId);
                 message.setTo(toChatUserId);
+                switch (Message.getStatus())
+                {
+                    case 0:
+                    case 1:
+                        message.setAcked(false);
+                        break;
+                    case 2:
+                        message.setAcked(true);
+                        break;
+                    default:
+                        break;
+                }
                 message.setDirection(EMMessage.Direct.SEND );
             }else {
                 message.setFrom(toChatUserId);

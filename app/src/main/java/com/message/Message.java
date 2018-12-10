@@ -28,7 +28,7 @@ public class Message {
     private String To;
     private String Msg;
     private Type type;
-    private Status status;
+    private int status;
     private int Sender;
     private String FileName;
     private String  FilePath;
@@ -86,11 +86,11 @@ public class Message {
 
     private boolean unRead;
 
-    public Status getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(int status) {
         this.status = status;
     }
     public int getSender() {
@@ -188,10 +188,11 @@ public class Message {
     }
 
     public static enum Status {
-        SUCCESS,
-        FAIL,
-        INPROGRESS,
-        CREATE;
+        SUCCESS,//发送成功
+        SENDED,//表示消息已推送到对端
+        LOOKED,//表示消息对端已阅
+        FAIL,//发送失败
+        CREATE;//本地创建成功，为了显示
 
         private Status() {
         }
@@ -239,7 +240,7 @@ public class Message {
         message.setType(Type.TXT);
         message.MsgType = 0;
         message.From = fromId;
-        message.status = Status.SUCCESS;
+        message.status = 1;
         message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;
@@ -258,7 +259,7 @@ public class Message {
         message.setType(Type.TXT);
         message.MsgType = 0;
         message.From = fromId;
-        message.status = Status.CREATE;
+        message.status = 0;
         message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;

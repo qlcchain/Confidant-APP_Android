@@ -96,6 +96,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 chatCallBack?.sendMsgRsp(JSendMsgRsp)
                 convsationCallBack?.sendMsgRsp(JSendMsgRsp)
             }
+            //发送消息对方已读
+            "ReadMsgPush" -> {
+                val JReadMsgPushRsp = gson.fromJson(text, JReadMsgPushRsp::class.java)
+                chatCallBack?.readMsgPushRsp(JReadMsgPushRsp)
+            }
             //服务器推送过来的别人的消息
             "PushMsg" -> {
                 val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
@@ -314,6 +319,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delMsgRsp(delMsgRsp: JDelMsgRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
+        fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
     }
 
     interface CoversationCallBack {

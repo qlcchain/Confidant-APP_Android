@@ -423,5 +423,6 @@
     <string name="askdelete">Are you sure you want to delete it?</string>
 
     <string name="Encryptionerror">encryption error</string>
+    <string name="nomorecharacters">No more than 264 characters</string>
 
 </resources>

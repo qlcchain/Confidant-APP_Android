@@ -68,6 +68,15 @@
                     android:gravity="right"
                     android:textColor="@android:color/white"
                     android:textSize="12.0sp" />
+                <ImageView
+                    android:id="@+id/msg_sendstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/chatting_length_iv"
+                    android:layout_below="@+id/chatting_length_iv"
+                    android:clickable="true"
+                    android:src="@drawable/send"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <ImageView
