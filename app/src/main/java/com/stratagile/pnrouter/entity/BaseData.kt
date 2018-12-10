@@ -252,5 +252,12 @@ data class ReadMsgReq(var UserId :String, var FriendId : String, var MsgId : Str
  */
 data class ReadMsgPushReq(var RetCode :Int, var Msg : String, var ToId : String,  var Action : String = "ReadMsgPush")
 
+/**
+ * 31.	派生账户创建一个普通账户
+ * (2)	响应（APP->Router）
+ */
+data class CreateNormalUserReq(var RouterId :String, var AdminUserId : String, var Mnemonic : String,var IdentifyCode : String,  var Action : String = "CreateNormalUser")
+
+
 
 

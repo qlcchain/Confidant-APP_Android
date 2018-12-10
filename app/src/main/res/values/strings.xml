@@ -424,5 +424,6 @@
 
     <string name="Encryptionerror">encryption error</string>
     <string name="nomorecharacters">No more than 264 characters</string>
+    <string name="needs8">It needs 8 characters.</string>
 
 </resources>

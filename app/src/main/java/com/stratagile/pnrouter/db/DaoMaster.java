@@ -22,12 +22,14 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
         RouterEntityDao.createTable(db, ifNotExists);
+        RouterUserEntityDao.createTable(db, ifNotExists);
         UserEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
         RouterEntityDao.dropTable(db, ifExists);
+        RouterUserEntityDao.dropTable(db, ifExists);
         UserEntityDao.dropTable(db, ifExists);
     }
 
@@ -48,6 +50,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(RouterEntityDao.class);
+        registerDaoClass(RouterUserEntityDao.class);
         registerDaoClass(UserEntityDao.class);
     }
 

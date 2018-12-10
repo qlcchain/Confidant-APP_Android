@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/createName"
+            android:id="@+id/mnemonic"
             android:layout_width="300dp"
             android:layout_height="53dp"
             android:layout_marginEnd="8dp"
@@ -69,6 +69,7 @@
             android:inputType="text"
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
+            android:maxLength="8"
             android:textColor="@color/regeisetInput"
             android:textColorHint="@color/color_808080"
             android:textSize="@dimen/x31"
@@ -76,7 +77,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.41"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/createName" />
+            app:layout_constraintTop_toBottomOf="@+id/mnemonic" />
 
         <TextView
             android:id="@+id/textView5"
@@ -94,7 +95,7 @@
             app:layout_constraintTop_toBottomOf="@+id/IdentifyCode" />
 
         <TextView
-            android:id="@+id/registerBtn"
+            android:id="@+id/registerUserBtn"
             android:layout_width="313dp"
             android:layout_height="50dp"
             android:layout_marginEnd="@dimen/x52"

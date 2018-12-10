@@ -145,6 +145,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.router.RouterQRCodeActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.router.UserQRCodeActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.router.RouterInfoActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.file.PdfViewActivity"

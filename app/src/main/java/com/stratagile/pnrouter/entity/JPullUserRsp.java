@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
 import com.google.gson.annotations.SerializedName;
+import com.stratagile.pnrouter.db.RouterUserEntity;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class JPullUserRsp extends BaseEntity {
         private int RetCode;
         private int NormalUserNum;
         private int TempUserNum;
-        private List<PayloadBean> Payload;
+        private List<RouterUserEntity> Payload;
 
         public String getAction() {
             return Action;
@@ -77,108 +78,14 @@ public class JPullUserRsp extends BaseEntity {
             this.TempUserNum = TempUserNum;
         }
 
-        public List<PayloadBean> getPayload() {
+        public List<RouterUserEntity> getPayload() {
             return Payload;
         }
 
-        public void setPayload(List<PayloadBean> Payload) {
+        public void setPayload(List<RouterUserEntity> Payload) {
             this.Payload = Payload;
         }
 
-        public static class PayloadBean {
-            /**
-             * UserSN : 03F00001B827EBD4703000005B752CFA
-             * UserType : 3
-             * Active : 0
-             * IdentifyCode :
-             * Mnemonic :
-             * NickName :
-             * UserId :
-             * LastLoginTime : 0
-             * Qrcode : MVmz1Y+j7E6XXm98gH71ZKxrmLXDeC+HeexGtqnYZTlz8GlRZTWOYsQzOlOzBY1Zs5golCeA2wZoQqhG64II5cUv5zc75RwZQZSXsZgChUqXoK7kpi6tux3nEHeqRp/J2CjjbiZ0gzfE+8CpPM1Y5SE59XhyLM6mUWZkc7L4TAk=
-             */
 
-            private String UserSN;
-            private int UserType;
-            private int Active;
-            private String IdentifyCode;
-            private String Mnemonic;
-            private String NickName;
-            private String UserId;
-            private int LastLoginTime;
-            private String Qrcode;
-
-            public String getUserSN() {
-                return UserSN;
-            }
-
-            public void setUserSN(String UserSN) {
-                this.UserSN = UserSN;
-            }
-
-            public int getUserType() {
-                return UserType;
-            }
-
-            public void setUserType(int UserType) {
-                this.UserType = UserType;
-            }
-
-            public int getActive() {
-                return Active;
-            }
-
-            public void setActive(int Active) {
-                this.Active = Active;
-            }
-
-            public String getIdentifyCode() {
-                return IdentifyCode;
-            }
-
-            public void setIdentifyCode(String IdentifyCode) {
-                this.IdentifyCode = IdentifyCode;
-            }
-
-            public String getMnemonic() {
-                return Mnemonic;
-            }
-
-            public void setMnemonic(String Mnemonic) {
-                this.Mnemonic = Mnemonic;
-            }
-
-            public String getNickName() {
-                return NickName;
-            }
-
-            public void setNickName(String NickName) {
-                this.NickName = NickName;
-            }
-
-            public String getUserId() {
-                return UserId;
-            }
-
-            public void setUserId(String UserId) {
-                this.UserId = UserId;
-            }
-
-            public int getLastLoginTime() {
-                return LastLoginTime;
-            }
-
-            public void setLastLoginTime(int LastLoginTime) {
-                this.LastLoginTime = LastLoginTime;
-            }
-
-            public String getQrcode() {
-                return Qrcode;
-            }
-
-            public void setQrcode(String Qrcode) {
-                this.Qrcode = Qrcode;
-            }
-        }
     }
 }

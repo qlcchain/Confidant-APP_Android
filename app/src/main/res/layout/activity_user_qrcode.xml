@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/color_efefef"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardViewUser"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x28"
+        android:layout_marginLeft="@dimen/x50"
+        app:cardCornerRadius="@dimen/x5"
+        android:elevation="@dimen/x5"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/x40"
+                android:layout_marginBottom="@dimen/x40"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvRouterNameUser"
+                    android:layout_width="wrap_content"
+                    android:textSize="17sp"
+                    android:text="Hzp"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/color_2c2c2c"
+                    android:layout_marginLeft="@dimen/x40"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="@dimen/x60"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/x40"
+                    android:src="@mipmap/userdefault"
+                    android:layout_height="@dimen/x60"
+                    android:id="@+id/ivAvatarUser" />
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/color_ebebeb"
+                android:layout_height="@dimen/x1" />
+            <ImageView
+                android:id="@+id/ivQrCodeUser"
+                android:layout_width="@dimen/x490"
+                android:layout_marginTop="@dimen/x60"
+                android:layout_marginBottom="@dimen/x60"
+                android:layout_height="@dimen/x490" />
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/color_ebebeb"
+                android:layout_height="@dimen/x1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/x20"
+                android:layout_marginBottom="@dimen/x20"
+                android:textSize="12sp"
+                android:textColor="@color/color_b3b3b3"
+                android:layout_height="wrap_content"
+                android:text="Scan code registration account"
+                />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/x50"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvSaveToPhoneUser"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/main_color"
+            android:background="@color/white"
+            android:text="Delete User"
+            android:gravity="center"
+            android:layout_height="@dimen/x85" />
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2"/>
+
+        <TextView
+            android:id="@+id/tvShareUser"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@color/main_color"
+            android:text="Invitation code"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
+</LinearLayout>

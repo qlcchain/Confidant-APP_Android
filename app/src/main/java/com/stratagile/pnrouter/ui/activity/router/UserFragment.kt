@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullUserRsp
 import com.stratagile.pnrouter.entity.PullUserReq
@@ -42,13 +43,15 @@ import javax.inject.Inject
 class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageReceiver.PullUserCallBack{
     override fun userList(jPullUserRsp: JPullUserRsp) {
 
-        var comUserList = arrayListOf<JPullUserRsp.ParamsBean.PayloadBean>()
-        var tempUserList = arrayListOf<JPullUserRsp.ParamsBean.PayloadBean>()
+        var comUserList = arrayListOf<RouterUserEntity>()
+        var tempUserList = arrayListOf<RouterUserEntity>()
         for (i in jPullUserRsp.params.payload) {
             //是否为本地多余的好友
             if (i.userType == 2) {
                 comUserList.add(i)
             } else if (i.userType == 3){
+                if(i.nickName == null || i.nickName.equals(""))
+                    i.nickName ="dGVtcFVzZXI="
                 tempUserList.add(i)
             }
         }
@@ -60,6 +63,17 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
             tempUsersTips.text = "Temporary("+jPullUserRsp.params.tempUserNum.toString() +"/"+ (jPullUserRsp.params.normalUserNum + jPullUserRsp.params.tempUserNum ).toString()+")"
             contactTempAdapter = UsertListAdapter(tempUserList,false)
             recyclerViewTempUser.adapter = contactTempAdapter
+
+            contactAdapter!!.setOnItemClickListener { adapter, view, position ->
+                var intent = Intent(activity!!, UserQRCodeActivity::class.java)
+                intent.putExtra("user", contactAdapter!!.getItem(position))
+                startActivity(intent)
+            }
+            contactTempAdapter!!.setOnItemClickListener { adapter, view, position ->
+                var intent = Intent(activity!!, UserQRCodeActivity::class.java)
+                intent.putExtra("user", contactTempAdapter!!.getItem(position))
+                startActivity(intent)
+            }
             closeProgressDialog()
         }
 
@@ -82,7 +96,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
         AppConfig.instance.messageReceiver!!.pullUserCallBack = this
         newUser.setOnClickListener {
             var intent = Intent(activity!!, RouterCreateUserActivity::class.java)
-            //intent.putExtra("user", contactAdapter!!.getItem(position))
+            intent.putExtra("routerUserEntity", routerEntity)
             startActivity(intent)
         }
         newTempUser.setOnClickListener {
@@ -95,6 +109,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
             KLog.i("拉取用户列表")
         }
         pullFriendList()
+
     }
     fun showDialog() {
         SweetAlertDialog(AppConfig.instance, SweetAlertDialog.BUTTON_NEUTRAL)
