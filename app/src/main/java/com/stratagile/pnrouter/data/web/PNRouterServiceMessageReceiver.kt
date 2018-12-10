@@ -89,7 +89,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 pullUserCallBack?.userList(jPullUserRsp)
                 //userControlleCallBack?.firendList(jPullFriendRsp)
             }
-
+            //创建用户
+            "CreateNormalUser" -> {
+                val JCreateNormalUserRsp = gson.fromJson(text, JCreateNormalUserRsp::class.java)
+                createUserCallBack?.createUser(JCreateNormalUserRsp)
+                //userControlleCallBack?.firendList(jPullFriendRsp)
+            }
             //发送消息服务器给的返回，代表消息服务器已经收到
             "SendMsg" -> {
                 val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
@@ -155,6 +160,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var pullFriendCallBack: PullFriendCallBack? = null
 
     var pullUserCallBack: PullUserCallBack? = null
+
+    var createUserCallBack: CreateUserCallBack? = null
 
     var userControlleCallBack : UserControlleCallBack? = null
 
@@ -310,6 +317,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface PullUserCallBack {
         fun userList(jPullUserRsp: JPullUserRsp)
+    }
+    interface CreateUserCallBack {
+        fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp)
     }
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);

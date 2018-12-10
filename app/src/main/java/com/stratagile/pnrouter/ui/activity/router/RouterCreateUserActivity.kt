@@ -9,9 +9,11 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.CreateNormalUserReq
+import com.stratagile.pnrouter.entity.JCreateNormalUserRsp
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterCreateUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterCreateUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterCreateUserModule
@@ -30,7 +32,14 @@ import javax.inject.Inject;
  * @date 2018/12/06 17:59:39
  */
 
-class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View {
+class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, PNRouterServiceMessageReceiver.CreateUserCallBack {
+    override fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp) {
+        runOnUiThread {
+
+            closeProgressDialog()
+            finish()
+        }
+    }
 
     @Inject
     internal lateinit var mPresenter: RouterCreateUserPresenter
@@ -46,6 +55,9 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View {
     override fun initData() {
         title.text = getString(R.string.Createuseraccounts)
         routerEntity = intent.getParcelableExtra("routerUserEntity")
+
+        AppConfig.instance.messageReceiver!!.createUserCallBack = this
+
         registerUserBtn.setOnClickListener {
             if (mnemonic.text.toString().equals("") || IdentifyCode.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
@@ -93,5 +105,8 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        AppConfig.instance.messageReceiver!!.createUserCallBack = null
+    }
 }
