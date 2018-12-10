@@ -148,7 +148,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                 if(!ConstantValue.currentRouterId.equals(""))
                                 {
                                     var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
-                                    if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                     {
                                         ConstantValue.curreantNetworkType = "WIFI"
                                         ConstantValue.currentRouterIp = httpData.serverHost
@@ -186,18 +186,23 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         }else{
             if(!ConstantValue.currentRouterId.equals(""))
             {
-                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
-                if(httpData.retCode == 0 && httpData.connStatus == 1)
-                {
-                    ConstantValue.curreantNetworkType = "WIFI"
-                    ConstantValue.currentRouterIp = httpData.serverHost
-                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                }else{
-                    ConstantValue.curreantNetworkType = "TOX"
-                    var intent = Intent(this, ToxService::class.java)
-                    startService(intent)
-                }
+                Thread(Runnable() {
+                    run() {
+                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                        {
+                            ConstantValue.curreantNetworkType = "WIFI"
+                            ConstantValue.currentRouterIp = httpData.serverHost
+                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                        }else{
+                            ConstantValue.curreantNetworkType = "TOX"
+                            var intent = Intent(this, ToxService::class.java)
+                            startService(intent)
+                        }
+                    }
+                }).start()
+
             }
         }
 

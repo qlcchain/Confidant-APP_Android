@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -15,6 +17,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.UserEntity
@@ -45,6 +48,7 @@ import javax.inject.Inject
 
 class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterServiceMessageReceiver.RegisterMessageCallback{
     var newRouterEntity = RouterEntity()
+    private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         if (loginRsp.params.retCode != 0) {
@@ -301,6 +305,38 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
 
     override fun closeProgressDialog() {
         progressDialog.hide()
+    }
+    override fun onResume() {
+        exitTime = System.currentTimeMillis() - 2001
+        super.onResume()
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exitToast()
+        }
+        return false
+    }
+
+    fun exitToast(): Boolean {
+        if (System.currentTimeMillis() - exitTime > 2000) {
+            Toast.makeText(this, R.string.Press_again, Toast.LENGTH_SHORT)
+                    .show()
+            exitTime = System.currentTimeMillis()
+        } else {
+            MessageRetrievalService.registerActivityFinished(this)
+            //android进程完美退出方法。
+            var intent = Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+            this.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            //System.runFinalizersOnExit(true);
+            System.exit(0);
+        }
+        return false
     }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

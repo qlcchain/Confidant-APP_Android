@@ -16,13 +16,25 @@ public class HttpClient {
     public static final MediaType type = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
     public static final OkHttpClient httpClient = new OkHttpClient();
     //Get方法调用服务
-    public static HttpData httpGet(String url) throws IOException{
+    public static HttpData httpGet(String url){
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        Response response = httpClient.newCall(request).execute();
+        Response response = null;
+        HttpData httpData = null;
         Gson gson = GsonUtil.getIntGson();
-        HttpData httpData = gson.fromJson(response.body().string(), HttpData.class);
+        try{
+            response = httpClient.newCall(request).execute();
+            httpData = gson.fromJson(response.body().string(), HttpData.class);
+            if(response != null)
+            {
+                httpData = gson.fromJson(response.body().string(), HttpData.class);
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
         return httpData;
     }
     //Post方法调用服务

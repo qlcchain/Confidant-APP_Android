@@ -813,7 +813,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 break;
                             }else{
                                 var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
-                                if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                 {
                                     ConstantValue.curreantNetworkType = "WIFI"
                                     ConstantValue.currentRouterIp = httpData.serverHost
@@ -850,26 +850,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }).start()
         }else{
-            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
-            if(httpData.retCode == 0 && httpData.connStatus == 1)
-            {
-                closeProgressDialog()
-                ConstantValue.curreantNetworkType = "WIFI"
-                ConstantValue.currentRouterIp = httpData.serverHost
-                ConstantValue.port = ":"+httpData.serverPort.toString()
-                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                ConstantValue.currentRouterId = routerId
-                ConstantValue.currentRouterSN =  userSn
-                /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                 AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-            }else{
-                ConstantValue.curreantNetworkType = "TOX"
-                if(!ConstantValue.isToxConnected)
-                {
-                    var intent = Intent(this, ToxService::class.java)
-                    startService(intent)
+
+            Thread(Runnable() {
+                run() {
+
+                    var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
+                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                    {
+                        closeProgressDialog()
+                        ConstantValue.curreantNetworkType = "WIFI"
+                        ConstantValue.currentRouterIp = httpData.serverHost
+                        ConstantValue.port = ":"+httpData.serverPort.toString()
+                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                        ConstantValue.currentRouterId = routerId
+                        ConstantValue.currentRouterSN =  userSn
+                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                    }else{
+                        ConstantValue.curreantNetworkType = "TOX"
+                        if(!ConstantValue.isToxConnected)
+                        {
+                            var intent = Intent(this, ToxService::class.java)
+                            startService(intent)
+                        }
+                    }
                 }
-            }
+            }).start()
+
         }
     }
     override fun getScanPermissionSuccess() {
@@ -1002,7 +1009,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }else{
                                             isFromScan = true
                                             var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
-                                            if(httpData.retCode == 0 && httpData.connStatus == 1)
+                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                             {
                                                 ConstantValue.curreantNetworkType = "WIFI"
                                                 ConstantValue.currentRouterIp = httpData.serverHost
@@ -1049,37 +1056,41 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }).start()
                     }else{
-                        isFromScan = true
-                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
-                        if(httpData.retCode == 0 && httpData.connStatus == 1)
-                        {
-                            ConstantValue.curreantNetworkType = "WIFI"
-                            ConstantValue.currentRouterIp = httpData.serverHost
-                            ConstantValue.port = ":"+httpData.serverPort.toString()
-                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                            AppConfig.instance.messageReceiver!!.loginBackListener = this
-                        }else{
-                            ConstantValue.curreantNetworkType = "TOX"
-                            if(!ConstantValue.isToxConnected)
-                            {
-                                var intent = Intent(this, ToxService::class.java)
-                                startService(intent)
-                            }else{
-                                runOnUiThread {
-                                    showProgressDialog("wait...")
+                        Thread(Runnable() {
+                            run() {
+                                isFromScan = true
+                                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                {
+                                    ConstantValue.curreantNetworkType = "WIFI"
+                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                }else{
+                                    ConstantValue.curreantNetworkType = "TOX"
+                                    if(!ConstantValue.isToxConnected)
+                                    {
+                                        var intent = Intent(this, ToxService::class.java)
+                                        startService(intent)
+                                    }else{
+                                        runOnUiThread {
+                                            showProgressDialog("wait...")
+                                        }
+                                        AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                        InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
+                                        var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+                                        var baseData = BaseData(2,recovery)
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                        MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    }
                                 }
-                                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
-                                var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                                var baseData = BaseData(2,recovery)
-                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                             }
-                        }
+                        }).start()
                     }
                     /* MobileSocketClient.getInstance().init(handler,this)
                      var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
