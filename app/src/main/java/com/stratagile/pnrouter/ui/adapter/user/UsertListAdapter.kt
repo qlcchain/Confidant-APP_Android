@@ -27,8 +27,12 @@ class UsertListAdapter(arrayList: ArrayList<RouterUserEntity>, isSelect: Boolean
         }
 
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
-        if (item!!.nickName != null) {
-            imagebutton.setText(item?.nickName)
+        if (item!!.nickName != null && !item!!.nickName.equals("")) {
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+            imagebutton.setText(nickNameSouce)
+        }else{
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.mnemonic))
+            imagebutton.setText(nickNameSouce)
         }
     }
      fun setCheckBox(positon:Int)

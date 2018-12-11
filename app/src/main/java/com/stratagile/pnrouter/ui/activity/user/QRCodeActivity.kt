@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.user
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -25,6 +26,7 @@ import com.pawegio.kandroid.longToast
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.concurrent.thread
@@ -63,9 +65,29 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         } else {
             title.text = nickName
         }
-        tvShare.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare) }
-        tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
         var userId = FileUtil.getLocalUserData("userid")
+        tvShare.setOnClickListener {
+
+            ivQrCodeMy.setDrawingCacheEnabled(true);
+            ivQrCodeMy.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(ivQrCodeMy.getDrawingCache())
+            if(bitmapPic != null)
+            {
+                var dir = ConstantValue.localPath + "/RouterList/" + userId + ".jpg"
+                var share_intent = Intent()
+                share_intent.action = Intent.ACTION_SEND//设置分享行为
+                share_intent.type = "image/*"  //设置分享内容的类型
+                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                //创建分享的Dialog
+                share_intent = Intent.createChooser(share_intent, "share")
+                startActivity(share_intent)
+            }
+            //PopWindowUtil.showSharePopWindow(this, tvShare)
+
+        }
+        tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
+
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)

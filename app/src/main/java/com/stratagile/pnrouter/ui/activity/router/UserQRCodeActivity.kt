@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
@@ -19,6 +20,12 @@ import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
+import android.content.Intent.ACTION_SEND
+import android.net.Uri
+import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
+import com.stratagile.pnrouter.utils.ShareUtil
+import java.io.File
+
 
 /**
  * @author zl
@@ -43,7 +50,25 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerUserEntity = intent.getParcelableExtra("user")
 
-        tvShareUser.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShareUser) }
+        tvShareUser.setOnClickListener {
+
+            ivQrCodeUser.setDrawingCacheEnabled(true);
+            ivQrCodeUser.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(ivQrCodeUser.getDrawingCache())
+            if(bitmapPic != null)
+            {
+                var dir = ConstantValue.localPath + "/RouterList/" + routerUserEntity.userSN + ".jpg"
+                var share_intent = Intent()
+                share_intent.action = Intent.ACTION_SEND//设置分享行为
+                share_intent.type = "image/*"  //设置分享内容的类型
+                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                //创建分享的Dialog
+                share_intent = Intent.createChooser(share_intent, "share")
+                startActivity(share_intent)
+            }
+            //PopWindowUtil.showSharePopWindow(this, tvShareUser)
+        }
         if(routerUserEntity.nickName !=null  &&  !routerUserEntity.nickName.equals(""))
         {
             tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.nickName))

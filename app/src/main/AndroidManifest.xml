@@ -151,6 +151,15 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.file.PdfViewActivity"
             android:screenOrientation="portrait"/>
+        <provider
+            android:name=".utils.MyFileProvider"
+            android:authorities="com.stratagile.pnrouter.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
+        </provider>
         <!-- 设置环信应用的appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
@@ -196,18 +205,6 @@
             </intent-filter>
         </receiver>
 
-        <provider
-            android:name=".utils.MyFileProvider"
-            android:authorities="com.stratagile.pnrouter.utils.MyFileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <!--<meta-data-->
-                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
-                <!--android:resource="@xml/file_path" />-->
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
-    </application>
+   </application>
 
 </manifest>

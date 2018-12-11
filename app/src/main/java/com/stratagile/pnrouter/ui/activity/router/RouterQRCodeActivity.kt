@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
@@ -13,6 +14,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.RouterCodeData
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterQRCodeComponent
@@ -21,10 +23,12 @@ import com.stratagile.pnrouter.ui.activity.router.module.RouterQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterQRCodePresenter
 import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.PopWindowUtil
+import com.stratagile.pnrouter.utils.ShareUtil
 import com.stratagile.pnrouter.utils.ThreadUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_router_qrcode.*
+import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -55,7 +59,26 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerEntity = intent.getParcelableExtra("router")
         tvRouterName.text = routerEntity.routerName
-        tvShare2.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare2) }
+        tvShare2.setOnClickListener {
+
+            ivQrCode2.setDrawingCacheEnabled(true);
+            ivQrCode2.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(ivQrCode2.getDrawingCache())
+            if(bitmapPic != null)
+            {
+                var dir = ConstantValue.localPath + "/RouterList/" + routerEntity.userSn + ".jpg"
+                var share_intent = Intent()
+                share_intent.action = Intent.ACTION_SEND//设置分享行为
+                share_intent.type = "image/*"  //设置分享内容的类型
+                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                //创建分享的Dialog
+                share_intent = Intent.createChooser(share_intent, "share")
+                startActivity(share_intent)
+            }
+            //PopWindowUtil.showSharePopWindow(this, tvShare2)
+
+        }
        /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerEntity.routerId, ivQrCode2)
         createEnglishQRCode.execute()*/
         var routerCodeData: RouterCodeData = RouterCodeData();

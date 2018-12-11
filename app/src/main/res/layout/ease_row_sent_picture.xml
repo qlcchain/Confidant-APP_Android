@@ -48,7 +48,9 @@
             android:id="@+id/bubble2"
             android:layout_width="33px"
             android:layout_height="33px"
-            android:layout_marginRight="@dimen/x18"
+            android:layout_marginTop="@dimen/x5"
+            android:layout_marginRight="@dimen/x22"
+            android:background="@color/black"
             android:layout_toLeftOf="@id/iv_userhead" >
             <ImageView
                 android:id="@+id/msg_sendstatus"
