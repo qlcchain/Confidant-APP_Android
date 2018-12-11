@@ -124,7 +124,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-
         var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
         var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         ConstantValue.currentRouterId = lastLoginRouterId;

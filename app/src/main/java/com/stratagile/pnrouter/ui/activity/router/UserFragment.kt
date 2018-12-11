@@ -105,7 +105,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
         }
         initData()
         refreshLayoutUser.setOnRefreshListener {
-            //pullFriendList()
+            pullFriendList()
             KLog.i("拉取用户列表")
         }
         pullFriendList()

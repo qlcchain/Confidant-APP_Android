@@ -162,7 +162,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.qr_code, menu)
+       // menuInflater.inflate(R.menu.qr_code, menu)
         return true
     }
 

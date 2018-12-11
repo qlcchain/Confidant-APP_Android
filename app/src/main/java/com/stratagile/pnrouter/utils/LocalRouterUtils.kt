@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.utils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.MyRouter
@@ -15,6 +16,8 @@ import java.util.*
 object LocalRouterUtils {
 
     val vpnList: ArrayList<Map<*, *>> = ArrayList()
+
+
     /**
      * 获取全部本地路由器
      * @return
@@ -48,7 +51,32 @@ object LocalRouterUtils {
             }
             return localAssetArrayList
         }
+    //检查本地数据合法性
+    fun inspectionLocalData()
+    {
+        var userId = "routerData"
+        if(userId.equals(""))
+        {
+            return
+        }
+        val gson = Gson()
+        val localAssetArrayList: ArrayList<MyRouter>
+        try {
+            //开始读取sd卡的路由器数据
+            var routerStr = FileUtil.readRoutersData(userId)
+            if (routerStr != "") {
+                localAssetArrayList = gson.fromJson<ArrayList<MyRouter>>(routerStr, object : TypeToken<ArrayList<MyRouter>>() {
 
+                }.type)
+            }
+
+        } catch (e: Exception) {
+            FileUtil.deleteFile(ConstantValue.localPath + "/RouterList/" + userId + ".json")
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+        } finally {
+
+        }
+    }
     /**
      * 同步sd上的路由器数据到greenDao
      */
