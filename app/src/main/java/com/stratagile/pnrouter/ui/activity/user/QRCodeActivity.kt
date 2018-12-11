@@ -68,9 +68,9 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         var userId = FileUtil.getLocalUserData("userid")
         tvShare.setOnClickListener {
 
-            ivQrCodeMy.setDrawingCacheEnabled(true);
-            ivQrCodeMy.buildDrawingCache();
-            val bitmapPic = Bitmap.createBitmap(ivQrCodeMy.getDrawingCache())
+            cardView.setDrawingCacheEnabled(true);
+            cardView.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(cardView.getDrawingCache())
             if(bitmapPic != null)
             {
                 var dir = ConstantValue.localPath + "/RouterList/" + userId + ".jpg"

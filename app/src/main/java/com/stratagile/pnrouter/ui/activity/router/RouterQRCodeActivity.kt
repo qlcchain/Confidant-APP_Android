@@ -61,9 +61,9 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         tvRouterName.text = routerEntity.routerName
         tvShare2.setOnClickListener {
 
-            ivQrCode2.setDrawingCacheEnabled(true);
-            ivQrCode2.buildDrawingCache();
-            val bitmapPic = Bitmap.createBitmap(ivQrCode2.getDrawingCache())
+            cardView2.setDrawingCacheEnabled(true);
+            cardView2.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(cardView2.getDrawingCache())
             if(bitmapPic != null)
             {
                 var dir = ConstantValue.localPath + "/RouterList/" + routerEntity.userSn + ".jpg"

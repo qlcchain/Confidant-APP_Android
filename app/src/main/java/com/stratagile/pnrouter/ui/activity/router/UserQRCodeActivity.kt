@@ -52,9 +52,9 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
 
         tvShareUser.setOnClickListener {
 
-            ivQrCodeUser.setDrawingCacheEnabled(true);
-            ivQrCodeUser.buildDrawingCache();
-            val bitmapPic = Bitmap.createBitmap(ivQrCodeUser.getDrawingCache())
+            cardViewUser.setDrawingCacheEnabled(true);
+            cardViewUser.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(cardViewUser.getDrawingCache())
             if(bitmapPic != null)
             {
                 var dir = ConstantValue.localPath + "/RouterList/" + routerUserEntity.userSN + ".jpg"
