@@ -1,11 +1,8 @@
 package com.message;
 
-import android.util.Base64;
-
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.Base58;
-import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.util.Calendar;
@@ -28,7 +25,7 @@ public class Message {
     private String To;
     private String Msg;
     private Type type;
-    private int status;
+    private int Status;
     private int Sender;
     private String FileName;
     private String  FilePath;
@@ -71,7 +68,7 @@ public class Message {
                 ", To='" + To + '\'' +
                 ", Msg='" + Msg + '\'' +
                 ", type=" + type +
-                ", status=" + status +
+                ", Status=" + Status +
                 ", unRead=" + unRead +
                 '}';
     }
@@ -87,11 +84,11 @@ public class Message {
     private boolean unRead;
 
     public int getStatus() {
-        return status;
+        return Status;
     }
 
     public void setStatus(int status) {
-        this.status = status;
+        this.Status = status;
     }
     public int getSender() {
         return Sender;
@@ -240,7 +237,7 @@ public class Message {
         message.setType(Type.TXT);
         message.MsgType = 0;
         message.From = fromId;
-        message.status = 1;
+        message.Status = 1;
         message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;
@@ -259,7 +256,7 @@ public class Message {
         message.setType(Type.TXT);
         message.MsgType = 0;
         message.From = fromId;
-        message.status = 0;
+        message.Status = 0;
         message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;

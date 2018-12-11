@@ -24,6 +24,19 @@ open class BaseData() {
         this.params = params
         this.msgid =  ConstantValue.msgIndex++
     }
+    constructor(apiverion:Int,params : Any,msgId:Int) : this() {
+        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
+        this.appid = "MiFi"
+        this.apiversion = apiverion
+        this.params = params
+        if(msgId != null)
+        {
+            this.msgid =  msgId
+        }
+        else{
+            this.msgid =  ConstantValue.msgIndex++
+        }
+    }
     constructor(params : Any) : this() {
         this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
@@ -243,7 +256,7 @@ data class PushFileRespone(var Retcode :Int, var FromId : String, var ToId : Str
  * 12.	18.	已阅消息
  * (2)	响应（APP->Router）
  */
-data class ReadMsgReq(var UserId :String, var FriendId : String, var MsgId : String,  var Action : String = "ReadMsg")
+data class ReadMsgReq(var UserId :String, var FriendId : String, var ReadMsgs : String,  var Action : String = "ReadMsg")
 
 
 /**

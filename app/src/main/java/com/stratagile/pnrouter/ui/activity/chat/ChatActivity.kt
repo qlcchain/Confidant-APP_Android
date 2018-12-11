@@ -52,14 +52,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var msgData = ReadMsgPushReq(0, "", userId!!)
         var msgId:String = ""
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jReadMsgPushRsp.msgid))
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData)
+            var baseData = BaseData(2,msgData,jReadMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
-        chatFragment?.refreshReadData("")
+        chatFragment?.refreshReadData(jReadMsgPushRsp.params.readMsgs)
     }
 
     var statusBarHeight: Int = 0
@@ -166,14 +166,29 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
+        var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
+        var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
+            if(!msgId.equals(""))
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+            }
         } else if (ConstantValue.isToxConnected) {
             var baseData = BaseData(msgData,jPushFileMsgRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+
+            var baseData2 = BaseData(2,readMsgReq)
+            var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
+            var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            if(!msgId.equals(""))
+            {
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
+            }
         }
 
         var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
@@ -240,7 +255,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                if(!msgId.equals(""))
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                }
+
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(msgData,pushMsgRsp?.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -250,7 +269,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var baseData2 = BaseData(2,readMsgReq)
                 var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
                 var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
+                if(!msgId.equals(""))
+                {
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
+                }
             }
             chatFragment?.receiveTxtMessage(pushMsgRsp)
         }

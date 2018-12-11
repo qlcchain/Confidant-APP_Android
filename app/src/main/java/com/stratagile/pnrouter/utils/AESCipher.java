@@ -65,7 +65,9 @@ public class AESCipher {
     public static byte[] aesEncryptBytes(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return cipherOperation(contentBytes, keyBytes, Cipher.ENCRYPT_MODE);
     }
-
+    public static String aesEncryptBytesToBase64(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+        return RxEncodeTool.base64Encode2String(cipherOperation(contentBytes, keyBytes, Cipher.ENCRYPT_MODE));
+    }
     public static byte[] aesDecryptBytes(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return cipherOperation(contentBytes, keyBytes, Cipher.DECRYPT_MODE);
     }

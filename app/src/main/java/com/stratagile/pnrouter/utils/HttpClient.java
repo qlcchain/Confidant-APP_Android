@@ -33,9 +33,10 @@ public class HttpClient {
         }catch (Exception e)
         {
             e.printStackTrace();
+        }finally {
+            return httpData;
         }
 
-        return httpData;
     }
     //Post方法调用服务
     public static String httpPost(String url,String content) throws IOException{

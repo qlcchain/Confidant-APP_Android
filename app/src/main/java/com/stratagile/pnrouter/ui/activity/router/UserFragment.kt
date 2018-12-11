@@ -24,11 +24,9 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.UserContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserPresenter
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
-import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
-import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.pnrouter.view.TempRouterAlertDialog
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_user.*
 import javax.inject.Inject
@@ -70,9 +68,11 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
                 startActivity(intent)
             }
             contactTempAdapter!!.setOnItemClickListener { adapter, view, position ->
-                var intent = Intent(activity!!, UserQRCodeActivity::class.java)
-                intent.putExtra("user", contactTempAdapter!!.getItem(position))
-                startActivity(intent)
+                showDialog()
+                routerUserTempEntity = contactTempAdapter!!.getItem(position) as RouterUserEntity
+                /* var intent = Intent(activity!!, UserQRCodeActivity::class.java)
+                 intent.putExtra("user", contactTempAdapter!!.getItem(position))
+                 startActivity(intent)*/
             }
             closeProgressDialog()
         }
@@ -83,6 +83,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     lateinit internal var mPresenter: UserPresenter
     var contactAdapter : UsertListAdapter? = null
     var routerEntity: RouterEntity? = null
+    var routerUserTempEntity: RouterUserEntity? = null
     var contactTempAdapter : UsertListAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -112,12 +113,12 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
 
     }
     fun showDialog() {
-        SweetAlertDialog(AppConfig.instance, SweetAlertDialog.BUTTON_NEUTRAL)
-                .setContentText(getString(R.string.delete_contact_text))
+        TempRouterAlertDialog(activity!!, TempRouterAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.fixedtwo))
                 .setConfirmClickListener {
-                    showProgressDialog()
-                    closeProgressDialog()
-                    showCode()
+                    var intent = Intent(activity!!, UserQRCodeActivity::class.java)
+                    intent.putExtra("user", routerUserTempEntity)
+                    startActivity(intent)
                 }
                 .show()
 
@@ -125,6 +126,11 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     fun showCode()
     {
 
+    }
+   override fun onResume()
+    {
+        super.onResume()
+        pullFriendList();
     }
     fun pullFriendList() {
         showProgressDialog()

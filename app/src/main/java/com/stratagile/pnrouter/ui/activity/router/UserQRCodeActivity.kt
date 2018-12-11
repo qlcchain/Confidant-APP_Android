@@ -7,6 +7,7 @@ import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.UserQRCodeContract
@@ -14,6 +15,8 @@ import com.stratagile.pnrouter.ui.activity.router.module.UserQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserQRCodePresenter
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
+import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
 
@@ -39,8 +42,19 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
     override fun initData() {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerUserEntity = intent.getParcelableExtra("user")
-        tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.nickName))
+
         tvShareUser.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShareUser) }
+        if(routerUserEntity.nickName !=null  &&  !routerUserEntity.nickName.equals(""))
+        {
+            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.nickName))
+            ivAvatarUser.setText(String(RxEncodeTool.base64Decode(routerUserEntity.nickName)))
+            ivAvatarUser.setImageFile(String(RxEncodeTool.base64Decode(routerUserEntity.nickName)))
+        }else if(routerUserEntity.mnemonic !=null  &&  !routerUserEntity.mnemonic.equals(""))
+        {
+            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic))
+            ivAvatarUser.setText(String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic)))
+            ivAvatarUser.setImageFile(String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic)))
+        }
         /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerUserEntity.routerId, ivQrCode2)
          createEnglishQRCode.execute()*/
         Thread(Runnable() {

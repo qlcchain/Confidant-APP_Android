@@ -17,8 +17,15 @@ class UsertListAdapter(arrayList: ArrayList<RouterUserEntity>, isSelect: Boolean
         helperItem = helper;
 
 
-        var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
-        helper!!.setText(R.id.tvNickName,nickNameSouce)
+        if(!item!!.nickName.equals(""))
+        {
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+            helper!!.setText(R.id.tvNickName,nickNameSouce)
+        }else{
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.mnemonic))
+            helper!!.setText(R.id.tvNickName,nickNameSouce)
+        }
+
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
         if (item!!.nickName != null) {
             imagebutton.setText(item?.nickName)

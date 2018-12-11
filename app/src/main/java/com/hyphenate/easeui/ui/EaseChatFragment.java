@@ -814,14 +814,25 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void  refreshReadData(String readMsgs)
     {
+        if(readMsgs == null || readMsgs.equals(""))
+        {
+            return;
+        }
         String [] readMsgsArray =  readMsgs.split(",");
         int length = readMsgsArray.length;
         for(int i = 0 ; i < length ;i++)
         {
-            EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(readMsgsArray[i]);
-            forward_msg.setAcked(true);
-            if(conversation !=null )
-                conversation.updateMessage(forward_msg);
+            if(!readMsgsArray[i].equals(""))
+            {
+                EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(readMsgsArray[i]);
+                if(forward_msg != null)
+                {
+                    forward_msg.setAcked(true);
+                    if(conversation !=null )
+                        conversation.updateMessage(forward_msg);
+                }
+
+            }
         }
         //refresh ui
         messageList.refresh();

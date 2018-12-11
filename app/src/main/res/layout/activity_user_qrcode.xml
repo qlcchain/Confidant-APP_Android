@@ -34,12 +34,12 @@
                     android:layout_marginLeft="@dimen/x40"
                     android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:layout_width="@dimen/x60"
+                <com.stratagile.pnrouter.view.ImageButtonWithText
+                    android:layout_width="@dimen/x75"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="@dimen/x40"
-                    android:src="@mipmap/userdefault"
-                    android:layout_height="@dimen/x60"
+                    app:imageButtonTextSize="20"
+                    android:layout_height="@dimen/x75"
                     android:id="@+id/ivAvatarUser" />
             </RelativeLayout>
             <View

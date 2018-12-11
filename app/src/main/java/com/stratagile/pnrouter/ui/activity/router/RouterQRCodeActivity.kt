@@ -7,16 +7,19 @@ import android.view.Menu
 import android.view.MenuItem
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
+import com.pawegio.kandroid.i
 import com.pawegio.kandroid.longToast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.RouterCodeData
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterQRCodeContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterQRCodePresenter
+import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import com.stratagile.pnrouter.utils.ThreadUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -55,10 +58,16 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         tvShare2.setOnClickListener { PopWindowUtil.showSharePopWindow(this, tvShare2) }
        /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerEntity.routerId, ivQrCode2)
         createEnglishQRCode.execute()*/
+        var routerCodeData: RouterCodeData = RouterCodeData();
+        routerCodeData.id = "010001".toByteArray()
+        routerCodeData.routerId = routerEntity.routerId.toByteArray()
+        routerCodeData.userSn = routerEntity.userSn.toByteArray()
+        var routerCodeDataByte = routerCodeData.toByteArray();
+        var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
         Thread(Runnable() {
             run() {
 
-                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(routerEntity.routerId, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(base64Str, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
                     ivQrCode2.setImageBitmap(bitmap)
                 }
