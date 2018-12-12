@@ -35,13 +35,6 @@ public class ShareUtil {
             Uri uri;
             if (!f.exists()) {
                 f.createNewFile();
-            }else{
-                if (Build.VERSION.SDK_INT >= 24) {
-                    uri = FileProvider.getUriForFile(context, "com.stratagile.pnrouter.fileprovider", f);
-                } else {
-                    uri = Uri.fromFile(f);
-                }
-                return uri;
             }
             FileOutputStream out = new FileOutputStream(f);
             bm.compress(Bitmap.CompressFormat.JPEG, 90, out);

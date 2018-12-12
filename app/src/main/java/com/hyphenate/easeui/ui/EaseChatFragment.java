@@ -268,61 +268,44 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         switch (fileTransformEntity.getMessage())
         {
             case 1:
-                EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
-                String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
-                String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
-                File file = new File(filePath);
-                if(file.exists())
-                {
-                    long fileSize = file.length();
-                    String fileMD5 = FileUtil.getFileMD5(file);
-                   /*  SendStrMsg SendStrMsg = new SendStrMsg(EMMessage.getFrom(),EMMessage.getTo(),fileName,fileSize,fileMD5,"SendFile");
-                    String jsonData = JSONObject.toJSON(new BaseData(SendStrMsg)).toString();
-                    EventBus.getDefault().post(new TransformStrMessage(fileTransformEntity.getToId(),jsonData));*/
-                    byte[] fileBuffer= FileUtil.file2Byte(filePath);
-                    int fileId = (int)System.currentTimeMillis()/1000;
-                    String aesKey =  RxEncryptTool.generateAESKey();
-                  /*  new AsyncTask<String, Integer, String>() {
+                new Thread(new Runnable(){
+                    public void run(){
 
-                        @Override
-                        protected String doInBackground(String... paramVarArgs) {
+                        try
+                        {
+                            EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
+                            String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
+                            String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                            File file = new File(filePath);
+                            if(file.exists())
+                            {
+                                long fileSize = file.length();
+                                String fileMD5 = FileUtil.getFileMD5(file);
+                                byte[] fileBuffer= FileUtil.file2Byte(filePath);
+                                int fileId = (int)System.currentTimeMillis()/1000;
+                                String aesKey =  RxEncryptTool.generateAESKey();
+                                byte[] fileBufferMi = new byte[0];
+                                try{
+                                    long  miBegin = System.currentTimeMillis();
+                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                                    long miend  = System.currentTimeMillis();
+                                    KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
+                                    faBegin = System.currentTimeMillis();
+                                    sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
+                                }catch (Exception e)
+                                {
+                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                    EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
+                                    Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }catch (Exception e)
+                        {
 
-                            return "1";
                         }
-
-                        @Override
-                        protected void onPostExecute(String result) {
-
-                        }
-                    }.execute();*/
-
-                    byte[] fileBufferMi = new byte[0];
-                    try{
-                        //String sourFile = RxEncodeTool.base64Encode2String(fileBuffer);
-                        //String miStringScouce  = RxEncodeTool.base64Encode2String(fileBuffer);
-                        //KLog.i("miStringScouce:"+miStringScouce.substring(0,100));
-                        long  miBegin = System.currentTimeMillis();
-                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
-                        long miend  = System.currentTimeMillis();
-                        KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
-                        //String miString2  = RxEncodeTool.base64Encode2String(fileBufferMi);
-                        //KLog.i("miString:"+miString2.substring(0,100));
-                         /* InputStream aabb = FileUtil.byteTOInputStream(fileBufferMi);
-
-                        fileBufferMi =  FileUtil.InputStreamTOByte(aabb);*/
-
-                        //String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
-                        //byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
-
-                        faBegin = System.currentTimeMillis();
-                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
-                    }catch (Exception e)
-                    {
-                        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                        EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
-                        Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                     }
-                }
+                }).start();
+
                 break;
             case 2:
                 break;
@@ -412,10 +395,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 String msgId = sendMsgIdMap.get(FileIdResult+"");
                 if(leftSize >0)
                 {
-                    byte[] fileLeftBuffer = new byte[leftSize];
-                    System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
-                    String fileName = sendFileNameMap.get(FileIdResult+"");
-                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
+                    new Thread(new Runnable(){
+                        public void run(){
+
+                            try
+                            {
+                                byte[] fileLeftBuffer = new byte[leftSize];
+                                System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
+                                String fileName = sendFileNameMap.get(FileIdResult+"");
+                                sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
+                            }catch (Exception e)
+                            {
+
+                            }
+                        }
+                    }).start();
+
                 }else{
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
                     conversation.removeMessage(msgId);
@@ -1546,25 +1541,38 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendImageMessage(String imagePath) {
-        File file = new File(imagePath);
-        boolean isHas = file.exists();
-        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
-        EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
-        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-        message.setFrom(userId);
-        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-        message.setUnread(false);
-        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        message.setMsgId(uuid);
-        currentSendMsg = message;
-        sendMsgMap.put(uuid,message);
-        sendMsgLocalMap.put(uuid,false);
-        sendFilePathMap.put(uuid,files_dir);
-        sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
-        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-        EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-        FileUtil.copySdcardFile(imagePath,files_dir);
-        sendMessageTo(message);
+
+        new Thread(new Runnable(){
+            public void run(){
+
+                try
+                {
+                    File file = new File(imagePath);
+                    boolean isHas = file.exists();
+                    String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
+                    EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
+                    String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                    message.setFrom(userId);
+                    message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                    message.setUnread(false);
+                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    message.setMsgId(uuid);
+                    currentSendMsg = message;
+                    sendMsgMap.put(uuid,message);
+                    sendMsgLocalMap.put(uuid,false);
+                    sendFilePathMap.put(uuid,files_dir);
+                    sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                    FileUtil.copySdcardFile(imagePath,files_dir);
+                    sendMessageTo(message);
+                }catch (Exception e)
+                {
+
+                }
+            }
+
+        }).start();
 
     }
     protected void sendCameraImageMessage(String imagePath) {
