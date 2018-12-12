@@ -73,7 +73,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
             val bitmapPic = Bitmap.createBitmap(cardView.getDrawingCache())
             if(bitmapPic != null)
             {
-                var dir = ConstantValue.localPath + "/RouterList/" + userId + ".jpg"
+                var dir = ConstantValue.localPath + "/RA/" + userId + ".jpg"
                 var share_intent = Intent()
                 share_intent.action = Intent.ACTION_SEND//设置分享行为
                 share_intent.type = "image/*"  //设置分享内容的类型

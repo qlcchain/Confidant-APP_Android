@@ -62,8 +62,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
             jumpToGuest = true
         }*/
-        var localData:ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-        if(localData.size == 0)
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        if(routerList.size == 0)
         {
             jumpToGuest = true
         }

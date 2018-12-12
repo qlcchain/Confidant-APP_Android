@@ -4,7 +4,7 @@ import java.util.HashMap
 
 object ConstantValue {
         var localPath = "/RouterData13"
-        var httpUrl ="http://47.96.76.184:9000/v1/pprmap/Check?rid="
+        var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
         var isRefeshed = false
         var testValue = "testValue"

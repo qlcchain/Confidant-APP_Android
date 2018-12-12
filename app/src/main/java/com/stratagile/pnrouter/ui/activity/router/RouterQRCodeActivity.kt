@@ -66,7 +66,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
             val bitmapPic = Bitmap.createBitmap(cardView2.getDrawingCache())
             if(bitmapPic != null)
             {
-                var dir = ConstantValue.localPath + "/RouterList/" + routerEntity.userSn + ".jpg"
+                var dir = ConstantValue.localPath + "/RA/" + routerEntity.userSn + ".jpg"
                 var share_intent = Intent()
                 share_intent.action = Intent.ACTION_SEND//设置分享行为
                 share_intent.type = "image/*"  //设置分享内容的类型

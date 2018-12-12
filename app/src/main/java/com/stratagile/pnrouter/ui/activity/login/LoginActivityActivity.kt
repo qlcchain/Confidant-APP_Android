@@ -110,6 +110,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             1 -> {
+                AppConfig.instance.messageReceiver!!.loginBackListener = null
                 startActivity(Intent(this, RegisterActivity::class.java))
             }
             2 -> {
@@ -139,6 +140,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                 }else{
+                    AppConfig.instance.messageReceiver!!.loginBackListener = null
                     var intent = Intent(this, RegisterActivity::class.java)
                     intent.putExtra("flag", 1)
                     startActivity(intent)
@@ -305,6 +307,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 //        CrashReport.testNativeCrash()
     }
     override fun onResume() {
+        if(AppConfig.instance.messageReceiver != null)
+        {
+            AppConfig.instance.messageReceiver!!.loginBackListener = this
+        }
         exitTime = System.currentTimeMillis() - 2001
         super.onResume()
     }
@@ -393,14 +399,27 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             1 -> {
+                isHasConnect = true
+                runOnUiThread {
+                    closeProgressDialog()
+                    //toast("login time out")
+                }
                 ConstantValue.isToxConnected = true
                 AppConfig.instance.getPNRouterServiceMessageToxReceiver()
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 if(isFromScan)
                 {
                     InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-                    closeProgressDialog()
                     showProgressDialog("wait...")
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(60000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("time out")
+                            }
+                        }
+                    }
                     var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
                     var baseData = BaseData(2,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -412,14 +431,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     if(isClickLogin)
                     {
                         loginBack = false
-                        closeProgressDialog()
                         showProgressDialog("login...")
                         standaloneCoroutine = launch(CommonPool) {
-                            delay(15000)
+                            delay(60000)
                             if (!loginBack) {
                                 runOnUiThread {
-                                    //closeProgressDialog()
-                                    //toast("login time out")
+                                    closeProgressDialog()
+                                    toast("login time out")
                                 }
                             }
                         }
@@ -439,6 +457,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+        standaloneCoroutine = launch(CommonPool) {
+            delay(10000)
+        }
         newRouterEntity = RouterEntity()
         lastLoginUserId = FileUtil.getLocalUserData("userid")
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
@@ -463,11 +484,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     standaloneCoroutine = launch(CommonPool) {
-                        delay(10000)
+                        delay(60000)
                         if (!loginBack) {
                             runOnUiThread {
-                                //closeProgressDialog()
-                                //toast("login time out")
+                                closeProgressDialog()
+                                toast("login time out")
                             }
                         }
                     }
@@ -485,7 +506,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(!ConstantValue.isWebsocketConnected)
                 {
                     if (intent.hasExtra("flag")) {
-                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                        if(isHasConnect)
+                        {
+                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                        }else{
+                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                        }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
                         runOnUiThread {
                             closeProgressDialog()
@@ -592,7 +618,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
                                 isFromScan = true
-                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                if(isHasConnect)
+                                {
+                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                }else{
+                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                }
                                 AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                 isStartWebsocket = true
                             }
@@ -675,10 +706,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         username = routerList[position].username
                         dataFileVersion = routerList[position].dataFileVersion
                         routerNameTips.text = routerList[position].routerName
+                        if(routerList[position].loginKey != null){
+                            loginKey.setText(routerList[position].loginKey)
+                        }else{
+                            loginKey.setText("")
+                        }
                         ConstantValue.currentRouterIp = ""
                         ConstantValue.scanRouterId = routerId;
                         //MessageRetrievalService.registerActivityFinished(this_)
-                        if(AppConfig.instance.messageReceiver != null)
+                        if(AppConfig.instance.messageReceiver != null && ConstantValue.isWebsocketConnected == true)
                             AppConfig.instance.messageReceiver!!.close()
                         ConstantValue.isWebsocketConnected = false
                         isClickLogin = false
@@ -829,6 +865,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ConstantValue.curreantNetworkType = "TOX"
                                     if(!ConstantValue.isToxConnected)
                                     {
+                                        runOnUiThread {
+                                            showProgressDialog("connecting...")
+                                        }
                                         var intent = Intent(this, ToxService::class.java)
                                         startService(intent)
                                     }
@@ -870,6 +909,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.curreantNetworkType = "TOX"
                         if(!ConstantValue.isToxConnected)
                         {
+                            runOnUiThread {
+                                showProgressDialog("connecting...")
+                            }
                             var intent = Intent(this, ToxService::class.java)
                             startService(intent)
                         }
@@ -1017,7 +1059,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                if(isHasConnect)
+                                                {
+                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                }else{
+                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                }
                                                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                                                 Thread.currentThread().interrupt() //方法调用终止线程
                                             }else{
@@ -1068,7 +1115,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                     ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                    if(isHasConnect)
+                                    {
+                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                    }else{
+                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                    }
                                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                                 }else{
                                     ConstantValue.curreantNetworkType = "TOX"
