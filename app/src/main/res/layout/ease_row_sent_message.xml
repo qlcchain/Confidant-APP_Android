@@ -31,7 +31,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity" />
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,12 +59,12 @@
                 android:id="@+id/msg_sendstatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_chatcontent"
-                android:layout_below="@+id/tv_chatcontent"
                 android:clickable="true"
                 android:src="@drawable/send"
-                android:visibility="visible" />
-        </RelativeLayout>
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_chatcontent"
+                app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent" />
+        </android.support.constraint.ConstraintLayout>
 
        <!--  <TextView
             android:id="@+id/tv_userid"

@@ -28,7 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity" />
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/x55"
@@ -47,14 +47,14 @@
 	            android:src="@drawable/ease_chatto_voice_playing" />
             <ImageView
                 android:id="@+id/msg_sendstatus"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_toRightOf="@id/iv_voice"
-                android:layout_below="@+id/iv_voice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:clickable="true"
                 android:src="@drawable/send"
-                android:visibility="visible" />
-		</RelativeLayout>
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/bubble"
+                app:layout_constraintEnd_toEndOf="@+id/bubble" />
+		</android.support.constraint.ConstraintLayout>
         <TextView
             android:id="@+id/tv_length"
             style="@style/chat_text_name_style"
@@ -64,7 +64,7 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/bubble"
             android:gravity="center" />
-        
+
         <ImageView
             android:id="@+id/msg_status"
             android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
             android:clickable="true"
             android:src="@drawable/ease_msg_state_failed_resend"
             android:visibility="gone" />
-        
+
         <TextView
             android:id="@+id/tv_ack"
             style="@style/chat_text_name_style"
@@ -97,7 +97,7 @@
             android:layout_toLeftOf="@id/tv_length"
             android:visibility="invisible"
             />
-          <ProgressBar 
+          <ProgressBar
             android:visibility="invisible"
             android:id="@+id/progress_bar"
             android:layout_width="25dp"
