@@ -541,12 +541,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                         standaloneCoroutine = launch(CommonPool) {
                             delay(10000)
-                            if (!loginBack) {
-                                runOnUiThread {
-                                    closeProgressDialog()
+                            runOnUiThread {
+                                closeProgressDialog()
+                                if (!ConstantValue.isWebsocketConnected) {
                                     if(AppConfig.instance.messageReceiver != null)
                                         AppConfig.instance.messageReceiver!!.close()
-                                    toast("The server is not online")
+                                    toast("Server connection timeout")
                                 }
                             }
                         }
@@ -566,12 +566,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                         standaloneCoroutine = launch(CommonPool) {
                             delay(10000)
-                            if (!loginBack) {
-                                runOnUiThread {
-                                    closeProgressDialog()
+                            runOnUiThread {
+                                closeProgressDialog()
+                                if (!ConstantValue.isWebsocketConnected) {
                                     if(AppConfig.instance.messageReceiver != null)
                                         AppConfig.instance.messageReceiver!!.close()
-                                    toast("The server is not online")
+                                    toast("Server connection timeout")
                                 }
                             }
                         }
