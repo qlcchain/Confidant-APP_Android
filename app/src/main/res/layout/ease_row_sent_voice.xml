@@ -28,7 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity" />
 
-        <RelativeLayout 
+        <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/x55"
@@ -45,6 +45,15 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:src="@drawable/ease_chatto_voice_playing" />
+            <ImageView
+                android:id="@+id/msg_sendstatus"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_toRightOf="@id/iv_voice"
+                android:layout_below="@+id/iv_voice"
+                android:clickable="true"
+                android:src="@drawable/send"
+                android:visibility="visible" />
 		</RelativeLayout>
         <TextView
             android:id="@+id/tv_length"

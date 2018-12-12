@@ -422,7 +422,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     EMMessage.setMsgId(LogIdIdResult+"");
                     sendMessageTo(EMMessage);
                     String aabbcc = EMMessage.getMsgId();
-
                     conversation.updateMessage(EMMessage);
                     EMMessage bb = conversation.getMessage(LogIdIdResult+"",true);
                     EMMessage EMMessagenew = EMClient.getInstance().chatManager().getMessage(msgId);
@@ -1532,8 +1531,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
         message.setUnread(false);
-        currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        message.setMsgId(uuid);
+        currentSendMsg = message;
         sendMsgMap.put(uuid,message);
         sendMsgLocalMap.put(uuid,false);
         sendFilePathMap.put(uuid,filePath);
@@ -1602,8 +1602,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
         message.setUnread(false);
-        currentSendMsg = message;
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        message.setMsgId(uuid);
+        currentSendMsg = message;
         sendMsgMap.put(uuid,message);
         sendMsgLocalMap.put(uuid,false);
         sendFilePathMap.put(uuid,videoPath);

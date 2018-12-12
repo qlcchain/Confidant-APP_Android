@@ -29,7 +29,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/margin_chat_activity" />
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,25 +43,35 @@
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
                 />
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/bubble2"
-            android:layout_width="33px"
-            android:layout_height="33px"
-            android:layout_marginTop="@dimen/x5"
-            android:layout_marginRight="@dimen/x22"
-            android:background="@color/black"
-            android:layout_toLeftOf="@id/iv_userhead" >
+
             <ImageView
                 android:id="@+id/msg_sendstatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:layout_alignParentRight ="true"
-                android:layout_alignParentBottom ="true"
                 android:src="@drawable/send"
-                android:visibility="visible" />
-        </RelativeLayout>
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/image"
+                app:layout_constraintEnd_toEndOf="@+id/image" />
+        </android.support.constraint.ConstraintLayout>
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/bubble2"-->
+            <!--android:layout_width="33px"-->
+            <!--android:layout_height="33px"-->
+            <!--android:layout_marginTop="@dimen/x5"-->
+            <!--android:layout_marginRight="@dimen/x22"-->
+            <!--android:background="@color/black"-->
+            <!--android:layout_toLeftOf="@id/iv_userhead" >-->
+            <!--<ImageView-->
+                <!--android:id="@+id/msg_sendstatus"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:clickable="true"-->
+                <!--android:layout_alignParentRight ="true"-->
+                <!--android:layout_alignParentBottom ="true"-->
+                <!--android:src="@drawable/send"-->
+                <!--android:visibility="visible" />-->
+        <!--</RelativeLayout>-->
         <LinearLayout
             android:id="@+id/ll_loading"
             android:layout_width="wrap_content"

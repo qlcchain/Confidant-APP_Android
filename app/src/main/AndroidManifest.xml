@@ -152,7 +152,7 @@
         <activity android:name=".ui.activity.file.PdfViewActivity"
             android:screenOrientation="portrait"/>
         <provider
-            android:name=".utils.MyFileProvider"
+            android:name=".utils.MyShareFileProvider"
             android:authorities="com.stratagile.pnrouter.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -204,7 +204,17 @@
                 <action android:name="org.thoughtcrime.securesms.RESTART" />
             </intent-filter>
         </receiver>
-
+        <provider
+            android:name=".utils.MyFileProvider"
+            android:authorities="com.stratagile.pnrouter.utils.MyFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <!--<meta-data-->
+            <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+            <!--android:resource="@xml/file_path" />-->
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
    </application>
 
 </manifest>

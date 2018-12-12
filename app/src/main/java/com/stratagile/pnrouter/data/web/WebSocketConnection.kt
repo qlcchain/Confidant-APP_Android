@@ -434,6 +434,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         reConnectTimeOut = true
                         return
                     }
+                    if(retryTime > retryInterval.size -1)
+                    {
+                        retryTime = 0;
+                    }
                     Log.w(TAG, "reConnect1..." + retryInterval[retryTime])
                     Thread.sleep(retryInterval[retryTime].toLong())
                     retryTime++

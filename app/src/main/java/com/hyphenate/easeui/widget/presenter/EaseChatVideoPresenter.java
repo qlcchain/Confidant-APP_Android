@@ -76,6 +76,8 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
     @Override
     public void onBubbleLongClick(EMMessage message, View view) {
         super.onBubbleLongClick(message,view);
+        if(!message.isAcked())
+            return;
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
