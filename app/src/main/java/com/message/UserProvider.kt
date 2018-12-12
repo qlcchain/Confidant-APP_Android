@@ -83,6 +83,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.friendStatus = 3
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.publicKey = jAddFriendPushRsp.params.userKey
+                it.timestamp = jAddFriendPushRsp.timestamp
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
@@ -105,7 +106,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.friendStatus = 3
         newFriend.userId = jAddFriendPushRsp.params.friendId
         newFriend.addFromMe = false
-        newFriend.timestamp = Calendar.getInstance().timeInMillis
+        newFriend.timestamp = jAddFriendPushRsp.timestamp
         newFriend.noteName = ""
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
         userList.add(newFriend)

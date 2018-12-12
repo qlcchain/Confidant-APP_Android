@@ -161,6 +161,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isFromScan = false
     var isClickLogin = false
     var isHasConnect = false
+    var isDebug = false
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
@@ -399,6 +400,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             1 -> {
+                if(isDebug)
+                {
+                    runOnUiThread {
+                        toast("onToxConnected")
+                    }
+                }
+
                 isHasConnect = true
                 runOnUiThread {
                     closeProgressDialog()
@@ -470,10 +478,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
+            if(isDebug)
+            {
+                runOnUiThread {
+                    toast(ConstantValue.curreantNetworkType)
+                }
+            }
             if( ConstantValue.curreantNetworkType.equals("TOX"))
             {
+
                 if(ConstantValue.isToxConnected)
                 {
+                    if(isDebug)
+                    {
+                        runOnUiThread {
+                            toast("loginTox")
+                        }
+                    }
                     runOnUiThread {
                         showProgressDialog("login...")
                     }
@@ -510,12 +531,24 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                         }else{
+                            isHasConnect = true
                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                         }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
                         runOnUiThread {
                             closeProgressDialog()
                             showProgressDialog("connecting...")
+                        }
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(10000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    if(AppConfig.instance.messageReceiver != null)
+                                        AppConfig.instance.messageReceiver!!.close()
+                                    toast("The server is not online")
+                                }
+                            }
                         }
 //                onWebSocketConnected(ConnectStatus(0))
                     } else {
@@ -523,6 +556,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                         }else{
+                            isHasConnect = true
                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                         }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -530,7 +564,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             closeProgressDialog()
                             showProgressDialog("connecting...")
                         }
-
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(10000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    if(AppConfig.instance.messageReceiver != null)
+                                        AppConfig.instance.messageReceiver!!.close()
+                                    toast("The server is not online")
+                                }
+                            }
+                        }
                     }
                 }else{
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
@@ -622,6 +666,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 {
                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                 }else{
+                                    isHasConnect = true
                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 }
                                 AppConfig.instance.messageReceiver!!.loginBackListener = this_
@@ -714,7 +759,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.currentRouterIp = ""
                         ConstantValue.scanRouterId = routerId;
                         //MessageRetrievalService.registerActivityFinished(this_)
-                        if(AppConfig.instance.messageReceiver != null && ConstantValue.isWebsocketConnected == true)
+                        if(AppConfig.instance.messageReceiver != null)
                             AppConfig.instance.messageReceiver!!.close()
                         ConstantValue.isWebsocketConnected = false
                         isClickLogin = false
@@ -829,10 +874,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     private fun getServer(routerId:String ,userSn:String)
     {
+        if(isDebug)
+        {
+            runOnUiThread {
+                toast("getServer")
+            }
+        }
         MobileSocketClient.getInstance().destroy()
         showProgressDialog("")
         if(WiFiUtil.isWifiConnect())
         {
+            if(isDebug)
+            {
+                runOnUiThread {
+                    toast("wifi")
+                }
+            }
             var count =0;
             KLog.i("测试计时器" + count)
             Thread(Runnable() {
@@ -844,6 +901,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
+                                if(isDebug)
+                                {
+                                    runOnUiThread {
+                                        toast("local")
+                                    }
+                                }
                                 closeProgressDialog()
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
@@ -851,6 +914,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                 {
+                                    if(isDebug)
+                                    {
+                                        runOnUiThread {
+                                            toast("http")
+                                        }
+                                    }
                                     ConstantValue.curreantNetworkType = "WIFI"
                                     ConstantValue.currentRouterIp = httpData.serverHost
                                     ConstantValue.port = ":"+httpData.serverPort.toString()
@@ -867,6 +936,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     {
                                         runOnUiThread {
                                             showProgressDialog("connecting...")
+                                        }
+                                        if(isDebug)
+                                        {
+                                            runOnUiThread {
+                                                toast("starttox")
+                                            }
                                         }
                                         var intent = Intent(this, ToxService::class.java)
                                         startService(intent)
@@ -1063,6 +1138,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 {
                                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                                 }else{
+                                                    isHasConnect = true
                                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                 }
                                                 AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -1119,6 +1195,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     {
                                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                     }else{
+                                        isHasConnect = true
                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                     }
                                     AppConfig.instance.messageReceiver!!.loginBackListener = this

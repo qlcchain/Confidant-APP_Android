@@ -9,7 +9,7 @@ public class BaseEntity {
      */
 
     private String appid;
-    private int timestamp;
+    private long timestamp;
     private int apiversion;
     private int msgid;
     private int offset;
@@ -23,11 +23,11 @@ public class BaseEntity {
         this.appid = appid;
     }
 
-    public int getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
