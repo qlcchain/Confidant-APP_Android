@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.NameChange
+import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
@@ -354,6 +355,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         routerNameTips.text = nameChange.name
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onStopTox(stopTox: StopTox) {
+        var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+        try {
+            MessageHelper.clearAllMessage(friendKey)
+        }catch (e:Exception)
+        {
+
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
 
         when (connectStatus.status) {
@@ -417,12 +428,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     closeProgressDialog()
                     //toast("login time out")
                 }
+                ConstantValue.isToxConnected = true
+
+                if(ConstantValue.curreantNetworkType.equals("TOX"))
+                {
+                    ConstantValue.isHasWebsocketInit = true
+                    AppConfig.instance.getPNRouterServiceMessageToxReceiver()
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                }
                 if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
                     return
-                ConstantValue.isHasWebsocketInit = true
-                ConstantValue.isToxConnected = true
-                AppConfig.instance.getPNRouterServiceMessageToxReceiver()
-                AppConfig.instance.messageReceiver!!.loginBackListener = this
                 if(isFromScan)
                 {
                     var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
@@ -442,7 +457,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
-                                MessageHelper.clearAllMessage(friendKey)
+                                EventBus.getDefault().post(StopTox())
                                 false
                             } else false
                         })
@@ -474,7 +489,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                                     if(standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
-                                    MessageHelper.clearAllMessage(friendKey)
+                                    EventBus.getDefault().post(StopTox())
                                     false
                                 } else false
                             })
@@ -551,7 +566,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
-                                MessageHelper.clearAllMessage(friendKey)
+                                EventBus.getDefault().post(StopTox())
                                 false
                             } else false
                         })
@@ -559,6 +574,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     isClickLogin = true
+                    stopTox = false
                     ConstantValue.curreantNetworkType = "TOX"
                     runOnUiThread {
                         showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
@@ -981,6 +997,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     Thread.currentThread().interrupt() //方法调用终止线程
                                 }else{
                                     ConstantValue.curreantNetworkType = "TOX"
+                                    stopTox = false
                                     if(!ConstantValue.isToxConnected)
                                     {
                                         runOnUiThread {
@@ -1030,6 +1047,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                          AppConfig.instance.messageReceiver!!.loginBackListener = this*/
                     }else{
                         ConstantValue.curreantNetworkType = "TOX"
+                        stopTox = false
                         if(!ConstantValue.isToxConnected)
                         {
                             runOnUiThread {
@@ -1207,6 +1225,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 Thread.currentThread().interrupt() //方法调用终止线程
                                             }else{
                                                 ConstantValue.curreantNetworkType = "TOX"
+                                                stopTox = false
                                                 if(!ConstantValue.isToxConnected)
                                                 {
                                                     runOnUiThread {
@@ -1224,7 +1243,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     runOnUiThread {
                                                         showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                                             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                                MessageHelper.clearAllMessage(friendKey)
+                                                                EventBus.getDefault().post(StopTox())
                                                                 false
                                                             } else false
                                                         })
@@ -1277,6 +1296,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                                 }else{
                                     ConstantValue.curreantNetworkType = "TOX"
+                                    stopTox = false
                                     if(!ConstantValue.isToxConnected)
                                     {
                                         runOnUiThread {
@@ -1294,7 +1314,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         runOnUiThread {
                                             showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                    MessageHelper.clearAllMessage(friendKey)
+                                                    EventBus.getDefault().post(StopTox())
                                                     false
                                                 } else false
                                             })
