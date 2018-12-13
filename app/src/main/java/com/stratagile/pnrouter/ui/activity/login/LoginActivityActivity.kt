@@ -71,6 +71,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         closeProgressDialog()
         when (recoveryRsp.params.retCode) {
             0 ->{
+                if( !ConstantValue.isWebsocketConnected && !ConstantValue.isToxConnected)
+                    return
                 val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
                     var routerEntity:RouterEntity = routerEntityList[0]
@@ -747,6 +749,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         if(AppConfig.instance.messageReceiver != null)
                             AppConfig.instance.messageReceiver!!.close()
                         ConstantValue.isWebsocketConnected = false
+                        ConstantValue.isToxConnected = false;
                         isClickLogin = false
                         /* if(AppConfig.instance.messageReceiver != null)
                              AppConfig.instance.messageReceiver!!.close()*/
@@ -952,7 +955,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun getScanPermissionSuccess() {
-        showProgressDialog("wait...")
+        showProgressDialog("wait...",false)
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
