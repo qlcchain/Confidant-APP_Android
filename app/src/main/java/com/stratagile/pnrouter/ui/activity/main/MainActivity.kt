@@ -196,8 +196,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
-            var message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+            val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
+            var message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
             if (msgSouce != null && msgSouce != "") {
                 message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
             }
@@ -463,7 +463,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+                        val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
+                        val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
                         message.msgId = pushMsgRsp?.params.msgId.toString()
                         message.from = pushMsgRsp.params.fromId
@@ -493,7 +494,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
 
                         var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                        val message = EMMessage.createTxtSendMessage(pushMsgRsp.params.msg, pushMsgRsp.params.fromId)
+                        val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
+                        val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
                         message.setDirection(EMMessage.Direct.RECEIVE)
                         message.msgId = pushMsgRsp.params.msgId.toString()
                         message.from = pushMsgRsp.params.fromId
