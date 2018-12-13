@@ -12,7 +12,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
@@ -47,7 +46,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
 
         if(jLogOutRsp.params.retCode == 0)
         {
-            ConstantValue.isHasConnect = true
+            ConstantValue.isHasWebsocketInit = true
             if(AppConfig.instance.messageReceiver != null)
                 AppConfig.instance.messageReceiver!!.close()
             ConstantValue.isWebsocketConnected = false
@@ -144,7 +143,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }
-                    /*ConstantValue.isHasConnect = true
+                    /*ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)
                         AppConfig.instance.messageReceiver!!.close()
                     ConstantValue.isWebsocketConnected = false*/

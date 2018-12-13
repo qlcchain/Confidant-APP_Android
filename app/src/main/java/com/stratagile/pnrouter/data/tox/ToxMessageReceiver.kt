@@ -7,21 +7,25 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.web.WebSocketConnection
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import events.ToxMessageEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ToxMessageReceiver(){
 
-
+    private var keepAliveSender: ToxMessageReceiver.KeepAliveSender? = null
     var segmentContent = ""
     init {
         EventBus.getDefault().register(this)
@@ -91,5 +95,40 @@ class ToxMessageReceiver(){
     }
     interface OnMessageReceiveListener {
         fun onMessage(message : BaseData, text: String?)
+    }
+    private inner class KeepAliveSender : Thread() {
+
+        private val stop = AtomicBoolean(false)
+
+        override fun run() {
+            while (!stop.get()) {
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(ToxMessageReceiver.KEEPALIVE_TIMEOUT_SECONDS.toLong()))
+
+                    //Log.w(TAG, "Sending keep alive...")
+                    sendKeepAlive()
+                } catch (e: Throwable) {
+                    Log.w(ToxMessageReceiver.TAG, e)
+                }
+
+            }
+        }
+
+        fun shutdown() {
+            stop.set(true)
+        }
+    }
+    @Synchronized
+    @Throws(IOException::class)
+    private fun sendKeepAlive() {
+        if (keepAliveSender != null && ConstantValue.isToxConnected) {
+            //todo keepalive message
+            var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
+            LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
+            var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
+            LogUtil.addLog("发送结果：${baseDataJson}")
+            var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
     }
 }

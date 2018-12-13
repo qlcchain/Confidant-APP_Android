@@ -157,7 +157,14 @@ object MessageHelper {
 
     result.toArray
   }
-
+  def clearAllMessage(contactKey :FriendKey)
+  {
+    val db = State.db
+    val unsentMessageList = db.getUnsentMessageList(contactKey)
+    for (unsentMessage <- unsentMessageList) {
+      db.deleteMessage(unsentMessage.id)
+    }
+  }
   def sendUnsentMessages(contactKey: ContactKey, ctx: Context) {
     val db = State.db
     val unsentMessageList = db.getUnsentMessageList(contactKey)

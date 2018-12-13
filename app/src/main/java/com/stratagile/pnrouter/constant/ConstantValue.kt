@@ -37,6 +37,12 @@ object ConstantValue {
         var shouEnd:Long = 0;
         var curreantNetworkType = "TOX"   //   WIFI 或者 TOX
         var isToxConnected = false
-        var isHasConnect = false  //是否走过websocket连接
+        var lastNetworkType= "" //路由器最后可走的网络类型
+        var lastRouterIp= "" //路由器最后可走的网络RouterIp
+        var lastRouterId= "" //路由器最后可走的网络RouterId
+        var lastRouterSN= "" //路由器最后可走的网络RouterSN
+        var lastPort= ""     //路由器最后可走的网络Port=
+        var lastFilePort= "" //路由器最后可走的网络FilePort
+        var isHasWebsocketInit = false  //是否走过websocket连接初始化
 
 }

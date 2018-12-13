@@ -76,13 +76,27 @@ public class RxDialogLoading {
         return mDialog;
     }
 
-    public void setCanceledOnTouchOutside(boolean cancel) {
+    public void setOnTouchOutside(boolean cancel) {
         mDialog.setCanceledOnTouchOutside(cancel);
         mDialog.setCancelable(true);
     }
-    public void setCanceledOnBack(boolean cancel) {
-        mDialog.setCanceledOnTouchOutside(false);
-        mDialog.setCancelable(cancel);
-
+    public void setNoCanceledOnTouchOutside(boolean cancel) {
+        mDialog.setCanceledOnTouchOutside(cancel);
+        mDialog.setCancelable(false);
     }
+    public void setCanceledOnBack(boolean cancel,DialogInterface.OnKeyListener onKeyListener) {
+        mDialog.setCanceledOnTouchOutside(cancel);
+        mDialog.setCancelable(true);
+        mDialog.setOnKeyListener(onKeyListener);
+        /*mDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK ) {
+                    return true;
+                }
+                return false;
+            }
+        });*/
+    }
+
 }

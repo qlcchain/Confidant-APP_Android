@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.base
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Point
 import android.os.Build
@@ -290,11 +291,16 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     fun  showProgressDialog(text: String) {
         progressDialog.setDialogText(text)
         progressDialog.show()
-        progressDialog.setCanceledOnTouchOutside(false)
-    }
-    fun showProgressDialog(text: String,cancel:Boolean) {
+        progressDialog.setOnTouchOutside(false)
+   }
+    fun showProgressNoCanelDialog(text: String) {
         progressDialog.setDialogText(text)
         progressDialog.show()
-        progressDialog.setCanceledOnBack(false)
+        progressDialog.setNoCanceledOnTouchOutside(false)
+    }
+    fun showProgressDialog(text: String,onKeyListener: DialogInterface.OnKeyListener ) {
+        progressDialog.setDialogText(text)
+        progressDialog.show()
+        progressDialog.setCanceledOnBack(false,onKeyListener)
     }
 }
