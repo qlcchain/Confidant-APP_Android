@@ -4,11 +4,20 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JLogOutRsp
+import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterInfoComponent
@@ -17,7 +26,9 @@ import com.stratagile.pnrouter.ui.activity.router.module.RouterInfoModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterInfoPresenter
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.utils.LocalRouterUtils
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_router_info.*
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -31,7 +42,24 @@ import javax.inject.Inject
  * @date 2018/09/27 16:07:17
  */
 
-class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
+class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterServiceMessageReceiver.LogOutCallBack {
+    override fun logOutBack(jLogOutRsp: JLogOutRsp) {
+
+        if(jLogOutRsp.params.retCode == 0)
+        {
+            ConstantValue.isHasConnect = true
+            if(AppConfig.instance.messageReceiver != null)
+                AppConfig.instance.messageReceiver!!.close()
+            ConstantValue.isWebsocketConnected = false
+            runOnUiThread()
+            {
+                closeProgressDialog()
+                onLogOutSuccess()
+            }
+        }else{
+            toast(R.string.logoutfailed)
+        }
+    }
 
     @Inject
     internal lateinit var mPresenter: RouterInfoPresenter
@@ -51,6 +79,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         }
     }
     override fun initData() {
+        AppConfig.instance.messageReceiver?.logOutBack = this
         llRouterQRCode.setOnClickListener {
             var intent = Intent(this, RouterQRCodeActivity::class.java)
             intent.putExtra("router", routerEntity)
@@ -66,7 +95,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
             tvDeleteRouter.visibility = View.VISIBLE
         }
         tvLogOut.setOnClickListener {
-//            onLogOutSuccess()
+            //            onLogOutSuccess()
             showDialog()
         }
         tvDeleteRouter.setOnClickListener {
@@ -104,11 +133,22 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                 .setTitleText("Log Out")
                 .setConfirmClickListener {
-                    showProgressDialog()
-                    AppConfig.instance.messageReceiver!!.close()
-                    MessageRetrievalService.registerActivityStopped(this)
-                    closeProgressDialog()
-                    onLogOutSuccess()
+                    showProgressDialog("log out")
+                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                    var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                    } else if (ConstantValue.isToxConnected) {
+                        val baseData = BaseData(2,msgData)
+                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                        val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }
+                    /*ConstantValue.isHasConnect = true
+                    if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()
+                    ConstantValue.isWebsocketConnected = false*/
+                    //onLogOutSuccess()
                 }
                 .show()
 
@@ -116,7 +156,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
     fun showDeleteDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                 .setTitleText(getString(R.string.delete)).
-                setContentText(getString(R.string.askdelete))
+                        setContentText(getString(R.string.askdelete))
                 .setConfirmClickListener {
                     onDeleteSuccess()
                 }
@@ -137,16 +177,16 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
     }
 
     override fun setupActivityComponent() {
-       DaggerRouterInfoComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .routerInfoModule(RouterInfoModule(this))
-               .build()
-               .inject(this)
+        DaggerRouterInfoComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .routerInfoModule(RouterInfoModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: RouterInfoContract.RouterInfoContractPresenter) {
-            mPresenter = presenter as RouterInfoPresenter
-        }
+        mPresenter = presenter as RouterInfoPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -156,4 +196,8 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View {
         progressDialog.hide()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        AppConfig.instance.messageReceiver?.logOutBack = null
+    }
 }

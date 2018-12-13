@@ -37,5 +37,6 @@ object ConstantValue {
         var shouEnd:Long = 0;
         var curreantNetworkType = "TOX"   //   WIFI 或者 TOX
         var isToxConnected = false
+        var isHasConnect = false  //是否走过websocket连接
 
 }

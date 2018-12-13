@@ -271,6 +271,10 @@ data class ReadMsgPushReq(var RetCode :Int, var Msg : String, var ToId : String,
  */
 data class CreateNormalUserReq(var RouterId :String, var AdminUserId : String, var Mnemonic : String,var IdentifyCode : String,  var Action : String = "CreateNormalUser")
 
-
+/**
+ * 退出登录
+ * (2)	响应（APP->Router）
+ */
+data class LogOutReq(var RouterId :String, var UserId : String, var UserSN : String,  var Action : String = "LogOut")
 
 

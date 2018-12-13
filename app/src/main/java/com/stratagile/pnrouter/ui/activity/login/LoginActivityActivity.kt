@@ -160,7 +160,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var loginBack = false
     var isFromScan = false
     var isClickLogin = false
-    var isHasConnect = false
+   
     var isDebug = false
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
@@ -348,7 +348,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         when (connectStatus.status) {
             0 -> {
-                isHasConnect = true
+                ConstantValue.isHasConnect = true
                 if(isFromScan)
                 {
                     closeProgressDialog()
@@ -407,7 +407,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                 }
 
-                isHasConnect = true
+                ConstantValue.isHasConnect = true
                 runOnUiThread {
                     closeProgressDialog()
                     //toast("login time out")
@@ -527,11 +527,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(!ConstantValue.isWebsocketConnected)
                 {
                     if (intent.hasExtra("flag")) {
-                        if(isHasConnect)
+                        if(ConstantValue.isHasConnect)
                         {
                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                         }else{
-                            isHasConnect = true
+                            ConstantValue.isHasConnect = true
                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                         }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -552,11 +552,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
 //                onWebSocketConnected(ConnectStatus(0))
                     } else {
-                        if(isHasConnect)
+                        if(ConstantValue.isHasConnect)
                         {
                             AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                         }else{
-                            isHasConnect = true
+                            ConstantValue.isHasConnect = true
                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                         }
                         AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -662,11 +662,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
                                 isFromScan = true
-                                if(isHasConnect)
+                                if(ConstantValue.isHasConnect)
                                 {
                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                 }else{
-                                    isHasConnect = true
+                                    ConstantValue.isHasConnect = true
                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                 }
                                 AppConfig.instance.messageReceiver!!.loginBackListener = this_
@@ -1134,11 +1134,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                if(isHasConnect)
+                                                if(ConstantValue.isHasConnect)
                                                 {
                                                     AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                                 }else{
-                                                    isHasConnect = true
+                                                    ConstantValue.isHasConnect = true
                                                     AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                 }
                                                 AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -1191,11 +1191,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                     ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                     ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                    if(isHasConnect)
+                                    if(ConstantValue.isHasConnect)
                                     {
                                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                                     }else{
-                                        isHasConnect = true
+                                        ConstantValue.isHasConnect = true
                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                     }
                                     AppConfig.instance.messageReceiver!!.loginBackListener = this

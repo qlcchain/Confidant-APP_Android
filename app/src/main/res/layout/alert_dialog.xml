@@ -40,7 +40,7 @@
         android:textSize="14sp"
         android:textAlignment="center"
         android:gravity="center"
-        android:text="Confirm to log out the router? Please be aware that your chatting history, files and contacts will be erased."
+        android:text="Confirm to log out the router?"
         android:textColor="@color/mainColor"
         android:visibility="visible" />
 

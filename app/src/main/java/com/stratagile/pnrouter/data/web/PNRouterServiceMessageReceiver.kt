@@ -47,6 +47,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 //                addfrendCallBack?.addFriendBack(addFreindRsp)
                 userControlleCallBack?.addFriendBack(addFreindRsp)
             }
+            "LogOut" -> {
+                val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
+                logOutBack?.logOutBack(JLogOutRsp)
+            }
+
             //对方要加我为好友，服务器给我推送的好友请求
             "AddFriendPush" -> {
                 val addFreindPusRsp = gson.fromJson(text, JAddFriendPushRsp::class.java)
@@ -152,6 +157,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var registerListener: RegisterMessageCallback? = null
     var loginBackListener: LoginMessageCallback? = null
     var addfrendCallBack: AddfrendCallBack? = null
+    var logOutBack: LogOutCallBack? = null
     var mainInfoBack: MainInfoBack? = null
     var addFriendDealCallBack: AddFriendDealCallBack? = null
     var chatCallBack: ChatCallBack? = null
@@ -283,7 +289,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface AddfrendCallBack {
         fun addFriendBack(addFriendRsp: JAddFreindRsp)
     }
-
+    interface LogOutCallBack {
+        fun logOutBack(jLogOutRsp: JLogOutRsp)
+    }
     interface MainInfoBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
