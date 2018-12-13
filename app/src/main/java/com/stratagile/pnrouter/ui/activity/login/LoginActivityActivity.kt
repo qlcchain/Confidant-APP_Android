@@ -253,6 +253,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = loginKey.text.toString();
+            ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -348,6 +349,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         when (connectStatus.status) {
             0 -> {
+                if(standaloneCoroutine != null)
+                    standaloneCoroutine.cancel()
                 ConstantValue.isHasConnect = true
                 if(isFromScan)
                 {

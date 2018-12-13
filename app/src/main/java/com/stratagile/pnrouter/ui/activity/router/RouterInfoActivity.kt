@@ -71,7 +71,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
     override fun initView() {
         setContentView(R.layout.activity_router_info)
         routerEntity = intent.getParcelableExtra("router")
-        if(routerEntity != null && routerEntity.userSn.indexOf("01")== 0)
+        if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
         {
             llRouterManagement.visibility =  View.VISIBLE
         }else{
