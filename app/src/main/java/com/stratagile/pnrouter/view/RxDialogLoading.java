@@ -2,10 +2,12 @@ package com.stratagile.pnrouter.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -76,5 +78,11 @@ public class RxDialogLoading {
 
     public void setCanceledOnTouchOutside(boolean cancel) {
         mDialog.setCanceledOnTouchOutside(cancel);
+        mDialog.setCancelable(true);
+    }
+    public void setCanceledOnBack(boolean cancel) {
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setCancelable(cancel);
+
     }
 }

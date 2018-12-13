@@ -161,7 +161,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isFromScan = false
     var isClickLogin = false
    
-    var isDebug = false
     private var exitTime: Long = 0
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
@@ -403,13 +402,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             1 -> {
-                if(isDebug)
-                {
-                    runOnUiThread {
-                        toast("onToxConnected")
-                    }
-                }
-
                 ConstantValue.isHasConnect = true
                 runOnUiThread {
                     closeProgressDialog()
@@ -481,23 +473,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast(getString(R.string.please_type_your_password))
                 return@setOnClickListener
             }
-            if(isDebug)
-            {
-                runOnUiThread {
-                    toast(ConstantValue.curreantNetworkType)
-                }
-            }
             if( ConstantValue.curreantNetworkType.equals("TOX"))
             {
 
                 if(ConstantValue.isToxConnected)
                 {
-                    if(isDebug)
-                    {
-                        runOnUiThread {
-                            toast("loginTox")
-                        }
-                    }
                     runOnUiThread {
                         showProgressDialog("login...")
                     }
@@ -518,9 +498,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
-                    showProgressDialog("wait...")
                     isClickLogin = true
                     ConstantValue.curreantNetworkType = "TOX"
+                    runOnUiThread {
+                        showProgressDialog("tox connecting...",false)
+                    }
                     var intent = Intent(this, ToxService::class.java)
                     startService(intent)
                 }
@@ -877,22 +859,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     private fun getServer(routerId:String ,userSn:String)
     {
-        if(isDebug)
-        {
-            runOnUiThread {
-                toast("getServer")
-            }
-        }
         MobileSocketClient.getInstance().destroy()
-        showProgressDialog("")
+        showProgressDialog("",false)
         if(WiFiUtil.isWifiConnect())
         {
-            if(isDebug)
-            {
-                runOnUiThread {
-                    toast("wifi")
-                }
-            }
             var count =0;
             KLog.i("测试计时器" + count)
             Thread(Runnable() {
@@ -904,12 +874,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
-                                if(isDebug)
-                                {
-                                    runOnUiThread {
-                                        toast("local")
-                                    }
-                                }
                                 closeProgressDialog()
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
@@ -917,12 +881,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                 {
-                                    if(isDebug)
-                                    {
-                                        runOnUiThread {
-                                            toast("http")
-                                        }
-                                    }
                                     ConstantValue.curreantNetworkType = "WIFI"
                                     ConstantValue.currentRouterIp = httpData.serverHost
                                     ConstantValue.port = ":"+httpData.serverPort.toString()
@@ -938,13 +896,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     if(!ConstantValue.isToxConnected)
                                     {
                                         runOnUiThread {
-                                            showProgressDialog("connecting...")
-                                        }
-                                        if(isDebug)
-                                        {
-                                            runOnUiThread {
-                                                toast("starttox")
-                                            }
+                                            showProgressDialog("tox connecting...",false)
                                         }
                                         var intent = Intent(this, ToxService::class.java)
                                         startService(intent)
@@ -988,7 +940,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         if(!ConstantValue.isToxConnected)
                         {
                             runOnUiThread {
-                                showProgressDialog("connecting...")
+                                showProgressDialog("tox connecting...",false)
                             }
                             var intent = Intent(this, ToxService::class.java)
                             startService(intent)
@@ -1150,6 +1102,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 ConstantValue.curreantNetworkType = "TOX"
                                                 if(!ConstantValue.isToxConnected)
                                                 {
+                                                    runOnUiThread {
+                                                        showProgressDialog("tox connecting...",false)
+                                                    }
                                                     var intent = Intent(this, ToxService::class.java)
                                                     startService(intent)
                                                 }else{
@@ -1206,6 +1161,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ConstantValue.curreantNetworkType = "TOX"
                                     if(!ConstantValue.isToxConnected)
                                     {
+                                        runOnUiThread {
+                                            showProgressDialog("tox connecting...",false)
+                                        }
                                         var intent = Intent(this, ToxService::class.java)
                                         startService(intent)
                                     }else{
