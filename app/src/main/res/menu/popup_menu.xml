@@ -2,14 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        app:menu_title="@string/collection" app:icon = "@mipmap/icon_collection">
-    </item>
-    <item
         app:menu_title="@string/copy" app:icon = "@mipmap/icon_copy"/>
     <item
         app:menu_title="@string/forward" app:icon = "@mipmap/icon_forward"/>
     <item
-        app:menu_title="@string/multiSelect" app:icon = "@mipmap/icon_little_scan"/>
-    <item
-        app:menu_title="@string/withDraw" app:icon = "@mipmap/icon_withdraw"/>
+        app:menu_title="@string/recall" app:icon = "@mipmap/icon_withdraw"/>
 </menu>

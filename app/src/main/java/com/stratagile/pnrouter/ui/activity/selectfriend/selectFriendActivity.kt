@@ -5,10 +5,12 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.widget.LinearLayout
 import butterknife.ButterKnife
+import com.hyphenate.chat.EMMessage
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
@@ -36,7 +38,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     @Inject
     internal lateinit var mPresenter: selectFriendPresenter
     var fragment: ContactFragment? = null
-
+    var  userEntity: UserEntity? = null
+    var fromId:String? = null
+    var message: EMMessage? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -46,6 +50,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         //        setContentView(R.layout.activity_selectFriend);
         ButterKnife.bind(this)
         setToorBar(false)
+        fromId = intent.getStringExtra("fromId")
+        message = intent.getParcelableExtra("message")
         //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
         tvTitle.text = getString(R.string.Contacts)
@@ -58,6 +64,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         fragment = ContactFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
+        bundle.putString("fromId", fromId)
+        bundle.putParcelable("message",message)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
@@ -75,6 +83,10 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         }
         send.setOnClickListener {
             showSendDialog()
+        }
+        multiSelectBtn.setOnClickListener {
+
+            fragment!!.selectOrCancelAll()
         }
     }
 

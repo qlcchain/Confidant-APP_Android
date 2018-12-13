@@ -24,7 +24,7 @@
     <string name="details">Details</string>
     <string name="help">Help</string>
     <string name="shareApp">Share App</string>
-    <string name="collection">Collection</string>
+    <string name="collection">Save</string>
     <string name="routerManagement">Router management</string>
     <string name="addRecentStatus">Add to my status</string>
     <string name="qr_code_business_card">QR code business Card</string>
@@ -368,7 +368,7 @@
     <string name="chats">Chats</string>
     <string name="private_faith">PP Messager</string>
     <string name="nomore">No more data</string>
-    <string name="withDraw">withDraw</string>
+    <string name="recall">Recall</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
     <string name="wait_for_verification">Wait for verification</string>
@@ -382,7 +382,7 @@
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
     <string name="continue_">continue</string>
-    <string name="multiSelect">MultiSelect</string>
+    <string name="multiple">Multiple</string>
     <string name="Contacts">Contacts</string>
     <string name="selected">selected:</string>
     <string name="SELECT_PROFILE">SELECT PROFILE</string>

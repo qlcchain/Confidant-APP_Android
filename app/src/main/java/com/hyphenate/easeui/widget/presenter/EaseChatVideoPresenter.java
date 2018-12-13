@@ -22,6 +22,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import chat.tox.antox.tox.MessageHelper;
@@ -97,10 +98,12 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
                     switch (position)
                     {
                         case 0:
+                            Intent intent = new Intent(getContext(), selectFriendActivity.class);
+                            intent.putExtra("fromId", message.getTo());
+                            intent.putExtra("message",message);
+                            getContext().startActivity(intent);
                             break;
                         case 1:
-                            break;
-                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {

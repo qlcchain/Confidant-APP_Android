@@ -154,7 +154,22 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.share) {
-            PopWindowUtil.showSharePopWindow(this, tvShare2)
+            cardView2.setDrawingCacheEnabled(true);
+            cardView2.buildDrawingCache();
+            val bitmapPic = Bitmap.createBitmap(cardView2.getDrawingCache())
+            if(bitmapPic != null)
+            {
+                var dir = ConstantValue.localPath + "/RA/" + routerEntity.userSn + ".jpg"
+                var share_intent = Intent()
+                share_intent.action = Intent.ACTION_SEND//设置分享行为
+                share_intent.type = "image/*"  //设置分享内容的类型
+                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                //创建分享的Dialog
+                share_intent = Intent.createChooser(share_intent, "share")
+                startActivity(share_intent)
+            }
+            //PopWindowUtil.showSharePopWindow(this, tvShare2)
         }
         return super.onOptionsItemSelected(item)
     }

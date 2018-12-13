@@ -77,15 +77,13 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(110,loc1[1]-200));
+            floatMenu.show(new Point(380,loc1[1]-200));
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {
                     switch (position)
                     {
                         case 0:
-                            break;
-                        case 1:
                             ClipboardManager cm = (ClipboardManager) AppConfig.instance.getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                             // 创建普通字符型ClipData
                             ClipData mClipData = ClipData.newPlainText("Label", EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(message, getContext())));
@@ -93,13 +91,13 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                             cm.setPrimaryClip(mClipData);
                             Toast.makeText(AppConfig.instance.getApplicationContext(), R.string.copy_success, Toast.LENGTH_SHORT).show();
                             break;
-                        case 2:
-                            break;
-                        case 3:
+                        case 1:
                             Intent intent = new Intent(getContext(), selectFriendActivity.class);
+                            intent.putExtra("fromId", message.getTo());
+                            intent.putExtra("message",message);
                             getContext().startActivity(intent);
-                            break;
-                        case 4:
+                             break;
+                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {

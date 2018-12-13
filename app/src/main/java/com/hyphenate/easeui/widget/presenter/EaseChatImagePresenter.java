@@ -139,17 +139,19 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(350,loc1[1]-200));
+            floatMenu.show(new Point(450,loc1[1]-200));
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {
                     switch (position)
                     {
                         case 0:
+                            Intent intent = new Intent(getContext(), selectFriendActivity.class);
+                            intent.putExtra("fromId", message.getTo());
+                            intent.putExtra("message",message);
+                            getContext().startActivity(intent);
                             break;
                         case 1:
-                            break;
-                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {

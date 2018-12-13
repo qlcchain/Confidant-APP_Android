@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.hyphenate.chat.EMMessage
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 
@@ -129,7 +130,18 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     lateinit var viewModel : MainViewModel
 
+    var  fromId:String? = null
+    var message: EMMessage? = null
+    var onViewCreated = false;
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fromId = null
+        if(arguments != null && arguments!!.get("fromId") != null)
+        {
+            fromId = arguments!!.get("fromId") as String
+            message = arguments!!.get("message") as EMMessage
+        }
+
         var view = inflater.inflate(R.layout.fragment_contact, null);
         return view
     }
@@ -137,6 +149,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         EventBus.getDefault().register(this)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
         AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
@@ -173,7 +186,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
 
     }
-
+    fun updata()
+    {
+        pullFriendList()
+    }
     fun initData() {
         var bundle = getArguments();
         var hasNewFriendRequest = false
@@ -185,6 +201,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
             if (i.userId.equals(selfUserId)) {
                 continue
+            }
+            if(fromId != null && !fromId.equals(""))
+            {
+                if (i.userId.equals(fromId)) {
+                    continue
+                }
             }
             if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
                 if (i.friendStatus == 0) {
@@ -225,7 +247,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 intent.putExtra("user", contactAdapter!!.getItem(position))
                 startActivity(intent)
             }else{
-               var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
+                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
                 checkBox.setChecked(!checkBox.isChecked)
                 var itemCount =  contactAdapter!!.itemCount -1
                 var count :Int = 0;
@@ -241,7 +263,24 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         }
     }
+    fun selectOrCancelAll()
+    {
+        var itemCount =  contactAdapter!!.itemCount -1
 
+        for (i in 0..itemCount) {
+            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+            checkBox.setChecked(!checkBox.isChecked)
+        }
+        var count :Int = 0;
+        for (i in 0..itemCount) {
+            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+            if(checkBox.isChecked)
+            {
+                count ++
+            }
+        }
+        EventBus.getDefault().post(SelectFriendChange(count,0))
+    }
     override fun setupFragmentComponent() {
         DaggerContactComponent
                 .builder()

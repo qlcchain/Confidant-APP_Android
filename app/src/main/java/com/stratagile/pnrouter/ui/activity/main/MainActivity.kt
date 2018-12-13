@@ -334,6 +334,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var exitTime: Long = 0
     lateinit var viewModel: MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
+    private var contactFragment: ContactFragment? = null
     private var contactListFragment: EaseContactListFragment? = null
 
     override fun showToast() {
@@ -523,7 +524,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 when (position) {
                     0 -> return conversationListFragment!!
                     1 -> return FileFragment()
-                    2 -> return ContactFragment()
+                    2 -> return contactFragment!!
                     else -> return MyFragment()
                 }
             }
@@ -673,6 +674,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
         llSort.visibility = View.GONE
+        contactFragment?.updata()
     }
 
     fun setToMy() {
@@ -691,6 +693,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         conversationListFragment?.hideTitleBar()
         contactListFragment = EaseContactListFragment()
         contactListFragment?.hideTitleBar()
+        contactFragment  = ContactFragment()
     }
 
     override fun setupActivityComponent() {

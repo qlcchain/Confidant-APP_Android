@@ -121,23 +121,19 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
         if(fromID.equals(userId))
         {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
-            floatMenu.inflate(R.menu.popup_menu_file);
+            floatMenu.inflate(R.menu.popup_menu_voice);
             //floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
             int[] loc1=new int[2];
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(350,loc1[1]-200));
+            floatMenu.show(new Point(650,loc1[1]-200));
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {
                     switch (position)
                     {
                         case 0:
-                            break;
-                        case 1:
-                            break;
-                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {
