@@ -203,31 +203,31 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 2) {
+            else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
                     toast("rid error")
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 3) {
+            else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
                     toast("uid error")
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 4) {
+            else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
                     toast("password error")
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 5) {
+            else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
                     toast("Verification code error")
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 5) {
+            else{
                 runOnUiThread {
                     toast("other error")
                     closeProgressDialog()
@@ -356,12 +356,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
-        var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
         try {
-            MessageHelper.clearAllMessage(friendKey)
+            MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
-
+              e.printStackTrace()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -422,7 +421,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
-            1 -> {
+            0 -> {
 
                 runOnUiThread {
                     closeProgressDialog()
@@ -852,6 +851,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.lastRouterSN=""
                         ConstantValue.lastNetworkType =""
                         isClickLogin = false
+                        try {
+                            MessageHelper.clearAllMessage()
+                        }catch (e:Exception)
+                        {
+                            e.printStackTrace()
+                        }
                         /* if(AppConfig.instance.messageReceiver != null)
                              AppConfig.instance.messageReceiver!!.close()*/
                         getServer(routerId,userSn)
@@ -1068,7 +1073,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun getScanPermissionSuccess() {
-        showProgressDialog("wait...")
+        showProgressNoCanelDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }

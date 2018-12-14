@@ -476,7 +476,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
-            1 -> {
+            0 -> {
                 ConstantValue.isToxConnected = true
                 AppConfig.instance.getPNRouterServiceMessageToxReceiver()
 

@@ -72,11 +72,8 @@ object MessageHelper {
             hasBeenRead = false, successfullySent = false, messageType)
         }
       }
-      AntoxLog.debug(s"SendMessage failed. friendKey = $friendKey")
-      AntoxLog.debug(s"SendMessage failed. msg = $msg")
       Observable[Boolean](subscriber => {
         val mId = Try(ToxSingleton.tox.friendSendMessage(friendKey, ToxFriendMessage.unsafeFromValue(msg.getBytes), messageType)).toOption
-        AntoxLog.debug(s"SendMessage failed. mId = $mId")
         mId match {
           case Some(id) => db.updateUnsentMessage(id, databaseMessageId)
           case None => AntoxLog.debug(s"SendMessage failed. dbId = $databaseMessageId")
@@ -157,13 +154,10 @@ object MessageHelper {
 
     result.toArray
   }
-  def clearAllMessage(contactKey :FriendKey)
+  def clearAllMessage()
   {
-    val db = State.db
-    val unsentMessageList = db.getUnsentMessageList(contactKey)
-    for (unsentMessage <- unsentMessageList) {
-      db.deleteMessage(unsentMessage.id)
-    }
+    var db = State.db
+    db.deleteAllMessage()
   }
   def sendUnsentMessages(contactKey: ContactKey, ctx: Context) {
     val db = State.db

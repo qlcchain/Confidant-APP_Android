@@ -591,7 +591,10 @@ class AntoxDB(ctx: Context, activeDatabase: String, selfKey: SelfKey) {
     mDb.delete(TABLE_MESSAGES, where)
     AntoxLog.debug(s"Deleted message: $id", AntoxDB.TAG)
   }
-
+  def deleteAllMessage() {
+    val where = s""
+    mDb.delete(TABLE_MESSAGES, where)
+  }
   private val friendList: Observable[Seq[FriendInfo]] = {
     val selectQuery =
       s"SELECT * FROM $TABLE_CONTACTS WHERE $COLUMN_NAME_CONTACT_TYPE == ${ContactType.FRIEND.id}"

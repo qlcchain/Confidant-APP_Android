@@ -63,7 +63,7 @@ class ToxService extends Service {
               if (reconnection != null && !reconnection.isUnsubscribed) {
                 reconnection.unsubscribe()
               }
-              EventBus.getDefault().post(new ToxStatusEvent(1))
+              EventBus.getDefault().post(new ToxStatusEvent(0))
               AntoxLog.debug("Tox connected. Stopping reconnection")
             } else {
               reconnection = Observable

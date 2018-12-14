@@ -71,7 +71,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = wsUri
-        ConstantValue.currentIp = wsUri.substring(wsUri.indexOf("//")+2,wsUri.lastIndexOf(":"))
+        ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
         if (client == null) {
             if (isWifiConnect()) {
                 isLocalLogin = true;
