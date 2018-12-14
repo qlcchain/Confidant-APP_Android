@@ -3,6 +3,7 @@ package chat.tox.antox.callbacks
 import android.content.Context
 import chat.tox.antox.data.State
 import chat.tox.antox.tox.ToxSingleton
+import chat.tox.antox.utils.AntoxLog
 import im.tox.tox4j.core.callbacks.ToxCoreEventListener
 import im.tox.tox4j.core.data._
 import im.tox.tox4j.core.enums.{ToxConnection, ToxFileControl, ToxMessageType, ToxUserStatus}
@@ -58,6 +59,10 @@ class ToxCallbackListener(ctx: Context) extends ToxCoreEventListener[Unit] {
 
   override def fileChunkRequest(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long, length: Int)(state: Unit): Unit = {
     val friendInfo = State.db.getFriendInfo(ToxSingleton.tox.getFriendKey(friendNumber))
+    AntoxLog.debug("fileChunkRequest:"+friendInfo.key.toString)
+    AntoxLog.debug("fileChunkRequest:"+fileNumber)
+    AntoxLog.debug("fileChunkRequest:"+position)
+    AntoxLog.debug("fileChunkRequest:"+length)
     fileChunkRequestCallback.fileChunkRequest(friendInfo, fileNumber, position, length)(Unit)
   }
 

@@ -22,12 +22,16 @@ open class BaseData() {
         this.appid = "MiFi"
         this.apiversion = apiverion
         this.params = params
+        this.offset = 0
+        this.more = 0
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(apiverion:Int,params : Any,msgId:Int) : this() {
         this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
         this.apiversion = apiverion
+        this.offset = 0
+        this.more = 0
         this.params = params
         if(msgId != null)
         {
@@ -42,12 +46,16 @@ open class BaseData() {
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
+        this.offset = 0
+        this.more = 0
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any,msgId:Int) : this() {
         this.timestamp = (Calendar.getInstance().timeInMillis).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
+        this.offset = 0
+        this.more = 0
         this.params = params
         if(msgId != null)
         {
@@ -253,6 +261,12 @@ data class PushFileRespone(var Retcode :Int, var FromId : String, var ToId : Str
 
 
 /**
+ * 12.	向服务器要tox文件
+ * (2)	响应（APP->Router）
+ */
+data class PullFileReq(var FromId : String, var ToId : String,var FilePath : String,var MsgId : Int, var Action : String = "PullFile")
+
+/**
  * 12.	18.	已阅消息
  * (2)	响应（APP->Router）
  */
@@ -276,5 +290,11 @@ data class CreateNormalUserReq(var RouterId :String, var AdminUserId : String, v
  * (2)	响应（APP->Router）
  */
 data class LogOutReq(var RouterId :String, var UserId : String, var UserSN : String,  var Action : String = "LogOut")
+
+/**
+ * 24.	发送文件_Tox消息
+ * (2)	响应（APP->Router）
+ */
+data class SendToxFileNotice(var FromId :String, var ToId : String, var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int, var FileId : Int, var SrcKey : String, var DstKey : String,  var Action : String = "SendFile")
 
 

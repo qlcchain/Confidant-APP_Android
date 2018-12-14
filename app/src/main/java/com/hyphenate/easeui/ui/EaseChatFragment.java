@@ -82,8 +82,11 @@ import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JDelMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
+import com.stratagile.pnrouter.entity.JSendToxFileRsp;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
+import com.stratagile.pnrouter.entity.SendToxFileNotice;
+import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.TransformFileMessage;
@@ -119,6 +122,7 @@ import java.util.concurrent.Executors;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
+import scala.Unit;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -209,6 +213,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
+    private HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, String> sendFileNameMap = new HashMap<>();
@@ -282,7 +287,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 long fileSize = file.length();
                                 String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
-                                int fileId = (int)System.currentTimeMillis()/1000;
+                                int fileId = (int)(System.currentTimeMillis()/1000);
                                 String aesKey =  RxEncryptTool.generateAESKey();
                                 byte[] fileBufferMi = new byte[0];
                                 try{
@@ -417,11 +422,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     EMMessage.setMsgId(LogIdIdResult+"");
                     EMMessage.setAcked(true);
                     sendMessageTo(EMMessage);
-                    String aabbcc = EMMessage.getMsgId();
                     conversation.updateMessage(EMMessage);
-                    EMMessage bb = conversation.getMessage(LogIdIdResult+"",true);
-                    EMMessage EMMessagenew = EMClient.getInstance().chatManager().getMessage(msgId);
-                    EMMessage EMMessagenew2 = EMClient.getInstance().chatManager().getMessage(LogIdIdResult+"");
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -832,6 +833,39 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         //refresh ui
         messageList.refresh();
+    }
+    public void  onToxFileSendFinished(int fileNumber,String key)
+    {
+        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
+        if(toxFileData != null)
+        {
+            SendToxFileNotice sendToxFileNotice = new SendToxFileNotice( toxFileData.getFromId(),toxFileData.getToId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getFileId(),toxFileData.getSrcKey(),toxFileData.getDstKey(),"SendFile");
+            BaseData baseData = new BaseData(sendToxFileNotice);
+            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+        }
+    }
+    public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
+    {
+        if(jSendToxFileRsp.getParams().getRetCode() == 0)
+        {
+            String msgId = jSendToxFileRsp.getParams().getFileId()+"";
+            String msgServerId = jSendToxFileRsp.getParams().getMsgId()+"";
+            EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
+            conversation.removeMessage(msgId);
+            EMMessage.setMsgId(msgServerId);
+            EMMessage.setAcked(true);
+            sendMessageTo(EMMessage);
+            conversation.updateMessage(EMMessage);
+
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
+        }else{
+            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+        }
+
     }
     public void  refreshData(List<Message> messageList,String UserId,String FriendId)
     {
@@ -1556,25 +1590,82 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
-                    String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + imagePath.substring(imagePath.lastIndexOf("/")+1);
-                    EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
-                    String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-                    message.setFrom(userId);
-                    message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-                    message.setDelivered(true);
-                    message.setAcked(false);
-                    message.setUnread(true);
-                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                    message.setMsgId(uuid);
-                    currentSendMsg = message;
-                    sendMsgMap.put(uuid,message);
-                    sendMsgLocalMap.put(uuid,false);
-                    sendFilePathMap.put(uuid,files_dir);
-                    sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
-                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                    EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-                    FileUtil.copySdcardFile(imagePath,files_dir);
-                    sendMessageTo(message);
+                    if(isHas)
+                    {
+                        String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+imagePath.substring(imagePath.lastIndexOf("/")+1);
+                        long fileSize = file.length();
+                        String fileMD5 = FileUtil.getFileMD5(file);
+                        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + fileName;
+                        EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
+                        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                        message.setFrom(userId);
+                        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                        message.setDelivered(true);
+                        message.setAcked(false);
+                        message.setUnread(true);
+
+
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                            message.setMsgId(uuid);
+                            currentSendMsg = message;
+                            sendMsgMap.put(uuid,message);
+                            sendMsgLocalMap.put(uuid,false);
+                            sendFilePathMap.put(uuid,files_dir);
+                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                        }else{
+                            String strBase58 = Base58.encode(fileName.getBytes());
+                            String base58files_dir = getActivity().getFilesDir().getAbsolutePath() + "/temp/" + strBase58;
+                            String aesKey =  RxEncryptTool.generateAESKey();
+                            int code =  FileUtil.copySdcardToxFile(imagePath,base58files_dir,aesKey);
+                            if(code == 1)
+                            {
+                                int uuid = (int)(System.currentTimeMillis()/1000);
+                                message.setMsgId(uuid+"");
+                                currentSendMsg = message;
+                                sendMsgMap.put(uuid+"",message);
+                                sendMsgLocalMap.put(uuid+"",false);
+                                sendFilePathMap.put(uuid+"",files_dir);
+                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                                ToxFileData toxFileData = new ToxFileData();
+                                toxFileData.setFromId(userId);
+                                toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
+
+                                toxFileData.setFileName(strBase58);
+                                toxFileData.setFileMD5(fileMD5);
+                                toxFileData.setFileSize((int)fileSize);
+                                toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
+                                toxFileData.setFileId(uuid);
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                                byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
+                                byte[] SrcKey = new byte[256];
+                                byte[] DstKey = new byte[256];
+                                try {
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                                }catch (Exception e)
+                                {
+
+                                }
+                                toxFileData.setSrcKey(new String(SrcKey));
+                                toxFileData.setDstKey(new String(DstKey));
+                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                sendToxFileDataMap.put(fileNumber,toxFileData);
+                            }
+
+                        }
+                        FileUtil.copySdcardFile(imagePath,files_dir);
+                        sendMessageTo(message);
+                    }else{
+                        Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
+                    }
+
                 }catch (Exception e)
                 {
 

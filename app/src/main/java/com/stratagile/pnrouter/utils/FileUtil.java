@@ -925,7 +925,7 @@ public class FileUtil {
      * @param fileName   转换后的文件名
      * @return
      */
-        public static File drawableToFile(Context mContext,int drawableId,String fileName,int fileType){
+    public static File drawableToFile(Context mContext,int drawableId,String fileName,int fileType){
 //        InputStream is = view.getContext().getResources().openRawResource(R.drawable.logo);
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId);
 //        Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -997,6 +997,37 @@ public class FileUtil {
         }).start();
 
     }
+
+    /**
+     * 拷贝本地文件
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copySdcardToxFile(String fromFile, String toFile,String aesKey)
+    {
+        try
+        {
+            InputStream fosfrom = new FileInputStream(fromFile);
+            byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+            byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            fosfrom = FileUtil.byteTOInputStream(miFile);
+            OutputStream fosto = new FileOutputStream(toFile);
+            byte bt[] = new byte[1024];
+            int c;
+            while ((c = fosfrom.read(bt)) > 0)
+            {
+                fosto.write(bt, 0, c);
+            }
+            fosfrom.close();
+            fosto.close();
+
+        } catch (Exception ex)
+        {
+            return 0;
+        }
+        return 1;
+    }
     /**
      * 得到amr的时长
      *
@@ -1042,7 +1073,7 @@ public class FileUtil {
                     randomAccessFile.close();
                 }catch (IOException e)
                 {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 }
 
             }

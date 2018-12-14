@@ -24,6 +24,7 @@ public class PathUtils {
     private File historyPath = null;
     private File videoPath = null;
     private File filePath;
+    private File tempPath = null;
 
     private PathUtils() {
     }
@@ -48,7 +49,10 @@ public class PathUtils {
         if(!this.imagePath.exists()) {
             this.imagePath.mkdirs();
         }
-
+        this.tempPath = generateTempPath(var1, var2, var3);
+        if(!this.tempPath.exists()) {
+            this.tempPath.mkdirs();
+        }
         this.historyPath = generateHistoryPath(var1, var2, var3);
         if(!this.historyPath.exists()) {
             this.historyPath.mkdirs();
@@ -109,7 +113,16 @@ public class PathUtils {
 
         return new File(var3);
     }
+    private static File generateTempPath(String var0, String var1, Context var2) {
+        String var3 = null;
+        if(var0 == null) {
+            var3 = pathPrefix + var1 + "/temp/";
+        } else {
+            var3 = pathPrefix + var0 + "/" + var1 + "/temp/";
+        }
 
+        return new File(var3);
+    }
     private static File generateVoicePath(String var0, String var1, Context var2) {
         String var3 = null;
         if(var0 == null) {

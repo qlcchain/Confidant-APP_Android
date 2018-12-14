@@ -33,8 +33,13 @@ import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
 import com.stratagile.pnrouter.utils.*
+import events.ToxFileFinishedEvent
+import events.ToxMessageEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_chat.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.HashMap
 import javax.inject.Inject
 
@@ -46,6 +51,11 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
+        chatFragment?.onToxFileSendRsp(jSendToxFileRsp)
+
+    }
+
     override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
 
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -93,7 +103,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 //        }
         getSupportSoftInputHeight()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxFileFinishedEvent: ToxFileFinishedEvent) {
+       var fileNumber=  toxFileFinishedEvent.fileNumber
+        var key = toxFileFinishedEvent.key
+        chatFragment?.onToxFileSendFinished(fileNumber,key)
+    }
     /**
      * 获取软件盘的高度
      * @return
@@ -354,13 +369,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
-
+        EventBus.getDefault().register(this)
         var intent = Intent(this, FileTransformService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
+        startService(intent)
     }
 
     override fun onDestroy() {
@@ -368,6 +379,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         AppConfig.instance.messageReceiver!!.chatCallBack = null
         AppConfig.instance.isChatWithFirend = null;
         activityInstance = null
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -6,7 +6,7 @@ import chat.tox.antox.data.State
 import chat.tox.antox.utils._
 import chat.tox.antox.wrapper._
 import events.ToxMessageEvent
-import im.tox.tox4j.core.data.{ToxFriendMessage, ToxNickname}
+import im.tox.tox4j.core.data.{ToxFileId, ToxFriendMessage, ToxNickname}
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.scaloid.common.LoggerTag
@@ -29,7 +29,7 @@ object MessageHelper {
       val chatActive = State.isChatActive(friendInfo.key)
       db.addMessage(friendInfo.key, friendInfo.key, ToxNickname.unsafeFromValue(friendInfo.getDisplayName.getBytes), new String(message.value), hasBeenReceived = true,
         hasBeenRead = chatActive, successfullySent = true, messageType)
-      EventBus.getDefault().post(new ToxMessageEvent(new String(message.value)))
+      EventBus.getDefault().post(new ToxMessageEvent(new String(message.value),friendInfo.key.toString()))
       if (!chatActive) {
         val unreadCount = db.getUnreadCounts(friendInfo.key)
         //AntoxNotificationManager.createMessageNotification(ctx, classOf[ChatActivity], friendInfo, new String(message.value), unreadCount)
@@ -49,7 +49,11 @@ object MessageHelper {
       //AntoxNotificationManager.createMessageNotification(ctx, classOf[GroupChatActivity], groupInfo, message)
     }
   }
-
+  def getFriendOnline(ctx: Context, friendKey: FriendKey): Boolean =
+  {
+    val friendInfo = State.db.getFriendInfo(friendKey)
+    return friendInfo.online
+  }
   /**
     * 专门为kotlin调用的发送接口
     * @param ctx
@@ -81,6 +85,17 @@ object MessageHelper {
         subscriber.onCompleted()
       }).subscribeOn(IOScheduler()).subscribe()
     }
+  }
+
+  /**
+    * 发送文件
+    * @param filePath
+    * @param key
+    * @param context
+    */
+  def sendFileSendRequestFromKotlin( context: Context,filePath: String, key: FriendKey): String = {
+    var fileNumber:Int = State.transfers.sendFileSendRequest(filePath, key, FileKind.DATA, ToxFileId.empty, context)
+    return fileNumber.toString()
   }
   def sendMessage(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType, mDbId: Option[Long]): Unit = {
     State.setLastIncomingMessageAction()

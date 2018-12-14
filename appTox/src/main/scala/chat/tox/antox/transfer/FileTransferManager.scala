@@ -11,9 +11,11 @@ import chat.tox.antox.tox.{IntervalLevels, Intervals, ToxSingleton}
 import chat.tox.antox.utils.{AntoxLog, BitmapManager, Constants}
 import chat.tox.antox.wrapper.FileKind.AVATAR
 import chat.tox.antox.wrapper.{ContactKey, FileKind, FriendKey}
+import events.{ToxFileFinishedEvent, ToxMessageEvent}
 import im.tox.tox4j.core.data.{ToxFileId, ToxFilename, ToxNickname}
 import im.tox.tox4j.core.enums.ToxFileControl
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
+import org.greenrobot.eventbus.EventBus
 import org.scaloid.common.LoggerTag
 
 class FileTransferManager extends Intervals {
@@ -74,7 +76,7 @@ class FileTransferManager extends Intervals {
   }
 
 
-  def sendFileSendRequest(path2: String, key: FriendKey, fileKind: FileKind, fileId2: ToxFileId, context: Context): Unit = {
+  def sendFileSendRequest(path2: String, key: FriendKey, fileKind: FileKind, fileId2: ToxFileId, context: Context): Int = {
     val stripExif = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("strip_exif", true)
     val path = new File(path2).getAbsolutePath // use absolutepath, just to be sure
     val file = new File(path)
@@ -122,13 +124,15 @@ class FileTransferManager extends Intervals {
         e.printStackTrace()
         None
     }
-
+    var thisFileNumber = 0
     mFileNumber.foreach(fileNumber => {
       val db = State.db
+      thisFileNumber = fileNumber
       AntoxLog.debug("adding File Transfer", TAG)
       val id = db.addFileTransfer(fileNumber, key, ToxSingleton.tox.getSelfKey, ToxSingleton.tox.getName, path, hasBeenRead = true, length.toInt, fileKind)
       State.transfers.add(new FileTransfer(key, file, fileNumber, length, 0, true, FileStatus.REQUEST_SENT, id, fileKind, stripExif))
     })
+    thisFileNumber
   }
 
   def sendFileDeleteRequest(key: FriendKey, fileKind: FileKind, context: Context): Unit = {
@@ -254,7 +258,7 @@ class FileTransferManager extends Intervals {
 
   def fileFinished(key: ContactKey, fileNumber: Integer, context: Context) {
     AntoxLog.debug("fileFinished", TAG)
-
+    EventBus.getDefault().post(new ToxFileFinishedEvent(key.toString,fileNumber))
     val transfer = State.transfers.get(key, fileNumber)
     transfer match {
       case Some(t) =>

@@ -152,7 +152,13 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         EventBus.getDefault().register(this)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
-        AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
+
+        try {
+            AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
+        }catch (e :Exception )
+        {
+            var aa = ""
+        }
         viewModel.freindChange.observe(this, Observer<Long> { friendChange ->
             initData()
         })
