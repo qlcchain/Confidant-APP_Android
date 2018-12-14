@@ -136,34 +136,41 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             iv.setImageBitmap(bitmap);
         } else {
             imageView.setImageResource(R.drawable.ease_default_image);
-            new AsyncTask<Void, Void, Bitmap>() {
 
-                @Override
-                protected Bitmap doInBackground(Void... params) {
-                    if (new File(localThumb).exists()) {
-                        return ImageUtils.decodeScaleImage(localThumb, 160, 160);
-                    } else {
-                        return null;
-                    }
-                }
-                
-                @Override
-                protected void onPostExecute(Bitmap result) {
-                    super.onPostExecute(result);
-                    if (result != null) {
-                        EaseImageCache.getInstance().put(localThumb, result);
-                        iv.setImageBitmap(result);
+            try {
+                new AsyncTask<Void, Void, Bitmap>() {
 
-                    } else {
-                        if (message.status() == EMMessage.Status.FAIL) {
-                            if (EaseCommonUtils.isNetWorkConnected(activity)) {
-                                EMClient.getInstance().chatManager().downloadThumbnail(message);
-                            }
+                    @Override
+                    protected Bitmap doInBackground(Void... params) {
+                        if (new File(localThumb).exists()) {
+                            return ImageUtils.decodeScaleImage(localThumb, 160, 160);
+                        } else {
+                            return null;
                         }
-
                     }
-                }
-            }.execute();
+
+                    @Override
+                    protected void onPostExecute(Bitmap result) {
+                        super.onPostExecute(result);
+                        if (result != null) {
+                            EaseImageCache.getInstance().put(localThumb, result);
+                            iv.setImageBitmap(result);
+
+                        } else {
+                            if (message.status() == EMMessage.Status.FAIL) {
+                                if (EaseCommonUtils.isNetWorkConnected(activity)) {
+                                    EMClient.getInstance().chatManager().downloadThumbnail(message);
+                                }
+                            }
+
+                        }
+                    }
+                }.execute();
+            }catch (Exception e)
+            {
+
+            }
+
         }
         
     }

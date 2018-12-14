@@ -827,41 +827,48 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                  AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
                              }
                          }*/
-                        routerId = routerList[position].routerId
-                        userSn = routerList[position].userSn
-                        userId = routerList[position].userId
-                        username = routerList[position].username
-                        dataFileVersion = routerList[position].dataFileVersion
-                        routerNameTips.text = routerList[position].routerName
-                        if(routerList[position].loginKey != null){
-                            loginKey.setText(routerList[position].loginKey)
-                        }else{
-                            loginKey.setText("")
-                        }
-                        ConstantValue.currentRouterIp = ""
-                        ConstantValue.scanRouterId = routerId;
-                        //MessageRetrievalService.registerActivityFinished(this_)
-                        if(AppConfig.instance.messageReceiver != null)
-                            AppConfig.instance.messageReceiver!!.close()
-                        ConstantValue.isWebsocketConnected = false
-                        ConstantValue.lastRouterId=""
-                        ConstantValue.lastPort=""
-                        ConstantValue.lastFilePort=""
-                        ConstantValue.lastRouterId=""
-                        ConstantValue.lastRouterSN=""
-                        ConstantValue.lastNetworkType =""
-                        isClickLogin = false
-                        try {
-                            MessageHelper.clearAllMessage()
+                        try
+                        {
+                            routerId = routerList[position].routerId
+                            userSn = routerList[position].userSn
+                            userId = routerList[position].userId
+                            username = routerList[position].username
+                            dataFileVersion = routerList[position].dataFileVersion
+                            routerNameTips.text = routerList[position].routerName
+                            if(routerList[position].loginKey != null){
+                                loginKey.setText(routerList[position].loginKey)
+                            }else{
+                                loginKey.setText("")
+                            }
+                            ConstantValue.currentRouterIp = ""
+                            ConstantValue.scanRouterId = routerId;
+                            //MessageRetrievalService.registerActivityFinished(this_)
+                            if(AppConfig.instance.messageReceiver != null)
+                                AppConfig.instance.messageReceiver!!.close()
+                            ConstantValue.isWebsocketConnected = false
+                            ConstantValue.lastRouterId=""
+                            ConstantValue.lastPort=""
+                            ConstantValue.lastFilePort=""
+                            ConstantValue.lastRouterId=""
+                            ConstantValue.lastRouterSN=""
+                            ConstantValue.lastNetworkType =""
+                            isClickLogin = false
+                            try {
+                                MessageHelper.clearAllMessage()
+                            }catch (e:Exception)
+                            {
+                                e.printStackTrace()
+                            }
+                            /* if(AppConfig.instance.messageReceiver != null)
+                                 AppConfig.instance.messageReceiver!!.close()*/
+                            getServer(routerId,userSn)
+                            //routerList[position].lastCheck = true
+                            //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)
                         {
-                            e.printStackTrace()
+
                         }
-                        /* if(AppConfig.instance.messageReceiver != null)
-                             AppConfig.instance.messageReceiver!!.close()*/
-                        getServer(routerId,userSn)
-                        //routerList[position].lastCheck = true
-                        //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
+
                     }
                 })
             }
