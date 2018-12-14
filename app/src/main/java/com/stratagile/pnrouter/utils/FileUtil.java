@@ -1191,7 +1191,17 @@ public class FileUtil {
         ByteArrayInputStream is = new ByteArrayInputStream(in);
         return is;
     }
+    /**
+     * 将byte数组转换成InputStream
+     * @param in
+     * @return
+     * @throws Exception
+     */
+    public static InputStream byteTOFileInputStream(byte[] in) throws Exception{
 
+        FileInputStream is = new FileInputStream(new String(in));
+        return is;
+    }
     /**
      * 将byte数组转换成String
      * @param in
