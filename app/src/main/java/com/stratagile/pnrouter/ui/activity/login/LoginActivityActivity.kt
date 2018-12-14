@@ -990,7 +990,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
-                                closeProgressDialog()
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                }
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
@@ -1005,7 +1007,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ConstantValue.currentRouterSN =  userSn
                                     /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                      AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-                                    closeProgressDialog()
+                                    runOnUiThread {
+                                        closeProgressDialog()
+                                    }
                                     Thread.currentThread().interrupt() //方法调用终止线程
                                 }else{
                                     ConstantValue.curreantNetworkType = "TOX"
@@ -1022,6 +1026,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
                                         startService(intent)
+                                    }else{
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                        }
                                     }
                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                 }
@@ -1048,7 +1056,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
                     if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                     {
-                        closeProgressDialog()
+                        runOnUiThread {
+                            closeProgressDialog()
+                        }
                         ConstantValue.curreantNetworkType = "WIFI"
                         ConstantValue.currentRouterIp = httpData.serverHost
                         ConstantValue.port = ":"+httpData.serverPort.toString()
@@ -1072,6 +1082,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             var intent = Intent(AppConfig.instance, ToxService::class.java)
                             startService(intent)
+                        }else{
+                            runOnUiThread {
+                                closeProgressDialog()
+                            }
                         }
                     }
                 }
