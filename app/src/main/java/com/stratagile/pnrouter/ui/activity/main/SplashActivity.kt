@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -71,6 +72,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        AppConfig.instance.stopAllService()
         super.onCreate(savedInstanceState)
     }
 
@@ -156,8 +158,12 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                         Thread.currentThread().interrupt() //方法调用终止线程
                                     }else{
                                         ConstantValue.curreantNetworkType = "TOX"
-                                        var intent = Intent(this, ToxService::class.java)
-                                        startService(intent)
+                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            startForegroundService(intent)
+                                        } else {
+                                            startService(intent)
+                                        }
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
                                 }
@@ -196,8 +202,12 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                             ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                         }else{
                             ConstantValue.curreantNetworkType = "TOX"
-                            var intent = Intent(this, ToxService::class.java)
-                            startService(intent)
+                            var intent = Intent(AppConfig.instance, ToxService::class.java)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                startForegroundService(intent)
+                            } else {
+                                startService(intent)
+                            }
                         }
                     }
                 }).start()

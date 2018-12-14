@@ -1,9 +1,9 @@
 
 package chat.tox.antox.tox
 
-import android.app.Service
+import android.app.{Notification, Service}
 import android.content.Intent
-import android.os.IBinder
+import android.os.{Build, IBinder}
 import android.preference.PreferenceManager
 import chat.tox.antox.av.CallService
 import chat.tox.antox.callbacks.{AntoxOnSelfConnectionStatusCallback, ToxCallbackListener, ToxavCallbackListener}
@@ -38,6 +38,7 @@ class ToxService extends Service {
       ToxSingleton.initTox(getApplicationContext)
       AntoxLog.debug("Initting ToxSingleton")
     }
+    if (Build.VERSION.SDK_INT >= 26) startForeground(Integer.MAX_VALUE, new Notification) //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
     reconnectionCount = 1
     keepRunning = true
     val thisService = this

@@ -356,7 +356,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
 
         var intent = Intent(this, FileTransformService::class.java)
-        startService(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
     }
 
     override fun onDestroy() {

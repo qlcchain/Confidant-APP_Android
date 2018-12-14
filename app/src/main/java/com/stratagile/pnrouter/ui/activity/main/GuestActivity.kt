@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -48,7 +49,6 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_guest.*
-import kotlinx.android.synthetic.main.activity_login.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -216,7 +216,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
             exitTime = System.currentTimeMillis()
         } else {
 
-            MessageRetrievalService.registerActivityFinished(this)
+            AppConfig.instance.stopAllService()
             //android进程完美退出方法。
             var intent = Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
@@ -558,8 +558,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                 ConstantValue.curreantNetworkType = "TOX"
                                                 if(!ConstantValue.isToxConnected)
                                                 {
-                                                    var intent = Intent(this, ToxService::class.java)
-                                                    startService(intent)
+                                                    var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                        startForegroundService(intent)
+                                                    } else {
+                                                        startService(intent)
+                                                    }
                                                 }else{
                                                     runOnUiThread {
                                                         showProgressDialog("wait...")
@@ -614,8 +618,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     ConstantValue.curreantNetworkType = "TOX"
                                     if(!ConstantValue.isToxConnected)
                                     {
-                                        var intent = Intent(this, ToxService::class.java)
-                                        startService(intent)
+                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            startForegroundService(intent)
+                                        } else {
+                                            startService(intent)
+                                        }
                                     }else{
                                         runOnUiThread {
                                             showProgressDialog("wait...")

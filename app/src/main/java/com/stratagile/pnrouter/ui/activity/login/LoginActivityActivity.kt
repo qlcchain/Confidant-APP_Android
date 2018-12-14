@@ -583,8 +583,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } else false
                         })
                     }
-                    var intent = Intent(this, ToxService::class.java)
-                    startService(intent)
+                    var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(intent)
+                    } else {
+                        startService(intent)
+                    }
                 }
 
             }else{
@@ -842,7 +846,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             ConstantValue.currentRouterIp = ""
                             ConstantValue.scanRouterId = routerId;
-                            //MessageRetrievalService.registerActivityFinished(this_)
+                            //MessageRetrievalService.stopThisService(this_)
                             if(AppConfig.instance.messageReceiver != null)
                                 AppConfig.instance.messageReceiver!!.close()
                             ConstantValue.isWebsocketConnected = false
@@ -1020,8 +1024,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 } else false
                                             })
                                         }
-                                        var intent = Intent(this, ToxService::class.java)
-                                        startService(intent)
+                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            startForegroundService(intent)
+                                        } else {
+                                            startService(intent)
+                                        }
                                     }
                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                 }
@@ -1070,8 +1078,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     } else false
                                 })
                             }
-                            var intent = Intent(this, ToxService::class.java)
-                            startService(intent)
+                            var intent = Intent(AppConfig.instance, ToxService::class.java)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                startForegroundService(intent)
+                            } else {
+                                startService(intent)
+                            }
                         }
                     }
                 }
@@ -1153,7 +1165,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             exitTime = System.currentTimeMillis()
         } else {
 
-            MessageRetrievalService.registerActivityFinished(this)
+            AppConfig.instance.stopAllService()
             //android进程完美退出方法。
             var intent = Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
@@ -1248,8 +1260,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                             } else false
                                                         })
                                                     }
-                                                    var intent = Intent(this, ToxService::class.java)
-                                                    startService(intent)
+                                                    var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                        startForegroundService(intent)
+                                                    } else {
+                                                        startService(intent)
+                                                    }
                                                 }else{
                                                     var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                                                     runOnUiThread {
@@ -1319,8 +1335,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 } else false
                                             })
                                         }
-                                        var intent = Intent(this, ToxService::class.java)
-                                        startService(intent)
+                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            startForegroundService(intent)
+                                        } else {
+                                            startService(intent)
+                                        }
                                     }else{
                                         var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                                         runOnUiThread {

@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.application
 
+import android.content.Intent
 import android.support.multidex.MultiDexApplication
+import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -129,7 +131,14 @@ class AppConfig : MultiDexApplication() {
                 .build()
         applicationComponent!!.inject(this)
     }
+    fun stopAllService()
+    {
+        val intent = Intent(this, MessageRetrievalService::class.java)
+        this.stopService(intent)
 
+        val intentTox = Intent(this, ToxService::class.java)
+        this.stopService(intentTox)
+    }
     companion object {
         lateinit var instance: AppConfig
     }

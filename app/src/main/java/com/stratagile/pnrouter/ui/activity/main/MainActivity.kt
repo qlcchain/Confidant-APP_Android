@@ -752,7 +752,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .show()
             exitTime = System.currentTimeMillis()
         } else {
-            MessageRetrievalService.registerActivityFinished(this)
+            AppConfig.instance.stopAllService()
             //android进程完美退出方法。
             var intent = Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);

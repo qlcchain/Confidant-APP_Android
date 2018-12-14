@@ -1,8 +1,10 @@
 package com.stratagile.pnrouter.data.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -41,7 +43,11 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
+        }
         receiver = AppConfig.instance.getMessageReceiver();
+
 //        networkRequirement         = new NetworkRequirement(this);
 //        networkRequirementProvider = new NetworkRequirementProvider(this);
 //
@@ -155,15 +161,23 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     public static void registerActivityStarted(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);
         intent.setAction(MessageRetrievalService.ACTION_ACTIVITY_STARTED);
-        activity.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(intent);
+        } else {
+            activity.startService(intent);
+        }
     }
 
     public static void registerActivityStopped(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);
         intent.setAction(MessageRetrievalService.ACTION_ACTIVITY_FINISHED);
-        activity.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(intent);
+        } else {
+            activity.startService(intent);
+        }
     }
-    public static void registerActivityFinished(Context activity) {
+    public static void stopThisService(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);
         activity.stopService(intent);
     }
