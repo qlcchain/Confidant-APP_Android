@@ -23,8 +23,10 @@ object ConstantValue {
         var filePort =":18007"
         var status = "status"
         var msgIndex:Int = 1 //客户端的消息ID
-        var privateRAS:String = ""
-        var publicRAS:String = ""
+        var privateRASSp ="privateRAS"
+        var publicRASSp ="publicRAS"
+        var privateRAS:String? = ""
+        var publicRAS:String? = ""
         var updRouterData: HashMap<String,String> = HashMap()
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn

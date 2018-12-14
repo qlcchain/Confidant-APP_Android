@@ -38,7 +38,8 @@ class ToxService extends Service {
       ToxSingleton.initTox(getApplicationContext)
       AntoxLog.debug("Initting ToxSingleton")
     }
-    if (Build.VERSION.SDK_INT >= 26) startForeground(Integer.MAX_VALUE, new Notification) //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
+    /* if (Build.VERSION.SDK_INT >= 26) startForeground(Integer.MAX_VALUE-1, new Notification)*/
+    //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
     reconnectionCount = 1
     keepRunning = true
     val thisService = this
@@ -70,11 +71,11 @@ class ToxService extends Service {
               reconnection = Observable
                 .interval((reconnectionIntervalSeconds * reconnectionCount) seconds)
                 .subscribe(x => {
-                    AntoxLog.debug("Reconnecting")
-                    Observable[Boolean](_ => ToxSingleton.bootstrap(getApplicationContext)).subscribe()
-                  })
-              AntoxLog.debug(s"Tox disconnected. Scheduled reconnection every "+ (reconnectionIntervalSeconds * reconnectionCount) +" seconds")
-              reconnectionCount = reconnectionCount +1;
+                  AntoxLog.debug("Reconnecting")
+                  Observable[Boolean](_ => ToxSingleton.bootstrap(getApplicationContext)).subscribe()
+                })
+              AntoxLog.debug(s"Tox disconnected. Scheduled reconnection every " + (reconnectionIntervalSeconds * reconnectionCount) + " seconds")
+              reconnectionCount = reconnectionCount + 1;
             }
           })
 

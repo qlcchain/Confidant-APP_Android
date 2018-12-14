@@ -240,7 +240,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                 return
             }
             var aesKey =  RxEncryptTool.generateAESKey()
-            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS!!)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)
             var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
             var DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))

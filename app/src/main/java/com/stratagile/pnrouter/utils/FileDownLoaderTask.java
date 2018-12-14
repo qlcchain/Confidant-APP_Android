@@ -193,8 +193,8 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	}
 	private int copy(InputStream input, OutputStream output){
 		InputStream newInput = input;
-		String aesKey =  RxEncodeTool.getAESKey(keyStr);
 		try {
+			String aesKey =  RxEncodeTool.getAESKey(keyStr);
 			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
 			/*String miString  = RxEncodeTool.base64Encode2String(fileBufferMi);
 			KLog.i("miString:"+miString.substring(0,100));*/

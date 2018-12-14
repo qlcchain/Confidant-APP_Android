@@ -159,11 +159,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                     }else{
                                         ConstantValue.curreantNetworkType = "TOX"
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            startForegroundService(intent)
-                                        } else {
-                                            startService(intent)
-                                        }
+                                        startService(intent)
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
                                 }
@@ -203,11 +199,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                         }else{
                             ConstantValue.curreantNetworkType = "TOX"
                             var intent = Intent(AppConfig.instance, ToxService::class.java)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                startForegroundService(intent)
-                            } else {
-                                startService(intent)
-                            }
+                            startService(intent)
                         }
                     }
                 }).start()

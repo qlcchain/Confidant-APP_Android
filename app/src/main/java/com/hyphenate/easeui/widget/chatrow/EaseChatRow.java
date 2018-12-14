@@ -193,13 +193,21 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             }
             if (sendStatusView != null) {
-                if (message.isAcked()) {
-                    sendStatusView.setImageResource(R.drawable.sendout);
+                if(message.isDelivered())
+                {
+                    sendStatusView.setImageResource(R.drawable.senddelivered);
                     sendStatusView.setVisibility(View.VISIBLE);
-                } else {
-                    sendStatusView.setImageResource(R.drawable.send);
-                    sendStatusView.setVisibility(View.VISIBLE);
+                    if (message.isAcked()) {
+                        sendStatusView.setImageResource(R.drawable.send);
+                        sendStatusView.setVisibility(View.VISIBLE);
+                        if(message.isUnread() == false)
+                        {
+                            sendStatusView.setImageResource(R.drawable.sendout);
+                            sendStatusView.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
+
             }
         }
         if (itemStyle != null) {

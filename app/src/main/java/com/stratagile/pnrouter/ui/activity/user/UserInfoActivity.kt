@@ -282,7 +282,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.publicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS, userInfo!!.publicKey,0)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.publicKey,0)
             userInfo?.friendStatus = 0
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
@@ -305,7 +305,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.publicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS, userInfo!!.publicKey, 0)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.publicKey, 0)
             userInfo?.friendStatus = 1
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))

@@ -11,11 +11,7 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent != null && Intent.ACTION_BOOT_COMPLETED == intent.action) {
             val messageRetrievalService = Intent(context, MessageRetrievalService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(messageRetrievalService)
-            } else {
-                context.startService(messageRetrievalService)
-            }
+            context.startService(messageRetrievalService)
         }
     }
 }

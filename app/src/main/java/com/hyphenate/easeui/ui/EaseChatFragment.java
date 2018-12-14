@@ -415,6 +415,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
                     conversation.removeMessage(msgId);
                     EMMessage.setMsgId(LogIdIdResult+"");
+                    EMMessage.setAcked(true);
                     sendMessageTo(EMMessage);
                     String aabbcc = EMMessage.getMsgId();
                     conversation.updateMessage(EMMessage);
@@ -822,6 +823,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if(forward_msg != null)
                 {
                     forward_msg.setAcked(true);
+                    forward_msg.setUnread(false);
                     if(conversation !=null )
                         conversation.updateMessage(forward_msg);
                 }
@@ -1478,7 +1480,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
             message.setFrom(userId);
             message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-            message.setUnread(false);
+            message.setDelivered(true);
+            message.setAcked(false);
+            message.setUnread(true);
             currentSendMsg = message;
             sendMessageTo(message);
         }
@@ -1489,6 +1493,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         {
             conversation.removeMessage(currentSendMsg.getMsgId());
             currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+            currentSendMsg.setAcked(true);
             conversation.insertMessage(currentSendMsg);
         }
     }
@@ -1525,7 +1530,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-        message.setUnread(false);
+        message.setDelivered(true);
+        message.setAcked(false);
+        message.setUnread(true);
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         message.setMsgId(uuid);
         currentSendMsg = message;
@@ -1554,7 +1561,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
                     message.setFrom(userId);
                     message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-                    message.setUnread(false);
+                    message.setDelivered(true);
+                    message.setAcked(false);
+                    message.setUnread(true);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     message.setMsgId(uuid);
                     currentSendMsg = message;
@@ -1609,7 +1618,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
         message.setFrom(userId);
         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-        message.setUnread(false);
+        message.setDelivered(true);
+        message.setAcked(false);
+        message.setUnread(true);
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         message.setMsgId(uuid);
         currentSendMsg = message;
@@ -2212,12 +2223,40 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 messageData.setFrom(message.getFrom());
                                 messageData.setTo(message.getTo());
                                 messageData.setUnread(false);
-                                if(message.getFrom().equals(userId))
+
+                                if(message.getFrom() == null)
                                 {
-                                    messageData.setDirection(EMMessage.Direct.SEND );
-                                }else {
-                                    messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                    if(message.getSender() == 0)
+                                    {
+                                        messageData.setFrom(userId);
+                                        messageData.setTo(toChatUserId);
+                                        switch (message.getStatus())
+                                        {
+                                            case 0:
+                                            case 1:
+                                                messageData.setAcked(false);
+                                                break;
+                                            case 2:
+                                                messageData.setAcked(true);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        messageData.setDirection(EMMessage.Direct.SEND );
+                                    }else {
+                                        messageData.setFrom(toChatUserId);
+                                        messageData.setTo(userId);
+                                        messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                    }
+                                }else{
+                                    if(message.getFrom()!= null && message.getFrom().equals(userId))
+                                    {
+                                        messageData.setDirection(EMMessage.Direct.SEND );
+                                    }else {
+                                        messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                    }
                                 }
+
                                 messageData.setMsgTime(message.getTimeStatmp()* 1000);
                                 messageData.setMsgId( message.getMsgId()+"");
                                 sendMessageTo(messageData);

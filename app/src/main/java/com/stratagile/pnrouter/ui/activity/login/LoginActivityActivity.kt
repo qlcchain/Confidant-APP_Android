@@ -432,7 +432,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(ConstantValue.curreantNetworkType.equals("TOX"))
                 {
                     ConstantValue.isHasWebsocketInit = true
-                    AppConfig.instance.getPNRouterServiceMessageToxReceiver()
+                    AppConfig.instance.getPNRouterServiceMessageReceiver()
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                 }
                 if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
@@ -584,11 +584,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         })
                     }
                     var intent = Intent(AppConfig.instance, ToxService::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(intent)
-                    } else {
-                        startService(intent)
-                    }
+                    startService(intent)
                 }
 
             }else{
@@ -1025,11 +1021,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             })
                                         }
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            startForegroundService(intent)
-                                        } else {
-                                            startService(intent)
-                                        }
+                                        startService(intent)
                                     }
                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                 }
@@ -1079,11 +1071,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 })
                             }
                             var intent = Intent(AppConfig.instance, ToxService::class.java)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                startForegroundService(intent)
-                            } else {
-                                startService(intent)
-                            }
+                            startService(intent)
                         }
                     }
                 }
@@ -1261,11 +1249,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                         })
                                                     }
                                                     var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                        startForegroundService(intent)
-                                                    } else {
-                                                        startService(intent)
-                                                    }
+                                                    startService(intent)
                                                 }else{
                                                     var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                                                     runOnUiThread {
@@ -1336,11 +1320,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             })
                                         }
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            startForegroundService(intent)
-                                        } else {
-                                            startService(intent)
-                                        }
+                                        startService(intent)
                                     }else{
                                         var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                                         runOnUiThread {

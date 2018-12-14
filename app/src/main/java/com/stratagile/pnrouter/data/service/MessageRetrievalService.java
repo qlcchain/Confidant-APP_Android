@@ -44,7 +44,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     public void onCreate() {
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
+           // startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
         }
         receiver = AppConfig.instance.getMessageReceiver();
 
@@ -161,21 +161,13 @@ public class MessageRetrievalService extends Service implements InjectableType, 
     public static void registerActivityStarted(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);
         intent.setAction(MessageRetrievalService.ACTION_ACTIVITY_STARTED);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity.startForegroundService(intent);
-        } else {
-            activity.startService(intent);
-        }
+        activity.startService(intent);
     }
 
     public static void registerActivityStopped(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);
         intent.setAction(MessageRetrievalService.ACTION_ACTIVITY_FINISHED);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity.startForegroundService(intent);
-        } else {
-            activity.startService(intent);
-        }
+        activity.startService(intent);
     }
     public static void stopThisService(Context activity) {
         Intent intent = new Intent(activity, MessageRetrievalService.class);

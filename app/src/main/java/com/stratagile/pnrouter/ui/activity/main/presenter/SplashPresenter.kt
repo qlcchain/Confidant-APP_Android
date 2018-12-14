@@ -17,10 +17,7 @@ import com.stratagile.pnrouter.data.api.HttpAPIWrapper
 import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.RxEncryptTool
+import com.stratagile.pnrouter.utils.*
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import io.reactivex.Observable
@@ -158,33 +155,42 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     FileUtil.saveUserData2Local(toxId,"toxId")
                 }
             }
-            val gson = Gson()
-            var rsaData = FileUtil.readRSAData();
-            val localRSAArrayList: ArrayList<RSAData>
-            if(rsaData.equals(""))
+            ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
+            ConstantValue.publicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.publicRASSp, "")
+            if(ConstantValue.privateRAS.equals("") && ConstantValue.publicRAS.equals(""))
             {
-                val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
-                val aahh = KeyPair!!.private.format
-                val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
-                val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
-                ConstantValue.privateRAS = strBase64Private
-                ConstantValue.publicRAS = strBase64Public
-                localRSAArrayList = ArrayList()
-                var RSAData: RSAData = RSAData()
-                RSAData.privateKey = strBase64Private
-                RSAData.publicKey = strBase64Public
-                localRSAArrayList.add(RSAData)
-                FileUtil.saveRSAData(gson.toJson(localRSAArrayList))
-            }else{
-                var rsaStr = FileUtil.readRSAData()
-                if (rsaStr != "") {
-                    localRSAArrayList = gson.fromJson<ArrayList<RSAData>>(rsaStr, object : TypeToken<ArrayList<RSAData>>() {
+                val gson = Gson()
+                var rsaData = FileUtil.readRSAData();
+                val localRSAArrayList: ArrayList<RSAData>
+                if(rsaData.equals(""))
+                {
+                    val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
+                    val aahh = KeyPair!!.private.format
+                    val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
+                    val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
+                    ConstantValue.privateRAS = strBase64Private
+                    ConstantValue.publicRAS = strBase64Public
+                    SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                    localRSAArrayList = ArrayList()
+                    var RSAData: RSAData = RSAData()
+                    RSAData.privateKey = strBase64Private
+                    RSAData.publicKey = strBase64Public
+                    localRSAArrayList.add(RSAData)
+                    FileUtil.saveRSAData(gson.toJson(localRSAArrayList))
+                }else{
+                    var rsaStr = rsaData
+                    if (rsaStr != "") {
+                        localRSAArrayList = gson.fromJson<ArrayList<RSAData>>(rsaStr, object : TypeToken<ArrayList<RSAData>>() {
 
-                    }.type)
-                    if(localRSAArrayList.size > 0)
-                    {
-                        ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
-                        ConstantValue.publicRAS =  localRSAArrayList.get(0).publicKey
+                        }.type)
+                        if(localRSAArrayList.size > 0)
+                        {
+                            ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
+                            ConstantValue.publicRAS =  localRSAArrayList.get(0).publicKey
+                            SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                        }
                     }
                 }
             }

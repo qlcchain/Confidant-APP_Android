@@ -85,7 +85,7 @@ class AppConfig : MultiDexApplication() {
 
 
     fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
-        if (reStart) {
+        if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
                     BuildConfig.USER_AGENT,

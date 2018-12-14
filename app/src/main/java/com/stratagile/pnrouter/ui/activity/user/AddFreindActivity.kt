@@ -93,7 +93,7 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         bbtAdd.setOnClickListener {
             val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-            var login = AddFriendReq( selfUserId!!, strBase64!!, intent.getStringExtra("toUserId"),ConstantValue.publicRAS,"")
+            var login = AddFriendReq( selfUserId!!, strBase64!!, intent.getStringExtra("toUserId"),ConstantValue.publicRAS!!,"")
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
             } else if (ConstantValue.isToxConnected) {

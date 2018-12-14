@@ -372,7 +372,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
-        AppConfig.instance.messageReceiver!!.mainInfoBack = this
+        try {
+            AppConfig.instance.messageReceiver!!.mainInfoBack = this
+        }catch (e : Exception) {
+            e.printStackTrace()
+        }
         MessageProvider.getInstance().messageListenter = this
         EventBus.getDefault().register(this)
         tvTitle.setOnClickListener {

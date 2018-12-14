@@ -559,11 +559,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                 if(!ConstantValue.isToxConnected)
                                                 {
                                                     var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                        startForegroundService(intent)
-                                                    } else {
-                                                        startService(intent)
-                                                    }
+                                                    startService(intent)
                                                 }else{
                                                     runOnUiThread {
                                                         showProgressDialog("wait...")
@@ -619,11 +615,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     if(!ConstantValue.isToxConnected)
                                     {
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            startForegroundService(intent)
-                                        } else {
-                                            startService(intent)
-                                        }
+                                        startService(intent)
                                     }else{
                                         runOnUiThread {
                                             showProgressDialog("wait...")
