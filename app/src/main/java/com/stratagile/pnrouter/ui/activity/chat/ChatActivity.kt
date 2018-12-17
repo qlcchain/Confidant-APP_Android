@@ -1,14 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.chat
 
 import android.annotation.TargetApi
-import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
-import android.util.Base64
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
@@ -33,8 +30,9 @@ import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
 import com.stratagile.pnrouter.utils.*
-import events.ToxFileFinishedEvent
-import events.ToxMessageEvent
+import events.ToxReceiveFileFinishedEvent
+import events.ToxReceiveFileNoticeEvent
+import events.ToxSendFileFinishedEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
@@ -111,11 +109,26 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         getSupportSoftInputHeight()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onToxConnected(toxFileFinishedEvent: ToxFileFinishedEvent) {
-       var fileNumber=  toxFileFinishedEvent.fileNumber
-        var key = toxFileFinishedEvent.key
+    fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
+       var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var key = toxSendFileFinishedEvent.key
         chatFragment?.onToxFileSendFinished(fileNumber,key)
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun OnToxReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxReceiveFileNoticeEvent) {
+        var fileNumber=  toxReceiveFileNoticeEvent.fileNumber
+        var key = toxReceiveFileNoticeEvent.key
+        var fileName = toxReceiveFileNoticeEvent.filename
+        chatFragment?.onAgreeReceivwFileStart(fileNumber,key,fileName)
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxReceiveFileFinishedEvent) {
+        var fileNumber=  toxReceiveFileFinishedEvent.fileNumber
+        var key = toxReceiveFileFinishedEvent.key
+        chatFragment?.onToxReceiveFileFinished(fileNumber,key)
+    }
+
     /**
      * 获取软件盘的高度
      * @return

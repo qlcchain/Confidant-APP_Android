@@ -4,9 +4,11 @@ import android.content.Context
 import chat.tox.antox.data.State
 import chat.tox.antox.tox.ToxSingleton
 import chat.tox.antox.utils.AntoxLog
+import events.ToxReceiveFileNoticeEvent
 import im.tox.tox4j.core.callbacks.ToxCoreEventListener
 import im.tox.tox4j.core.data._
 import im.tox.tox4j.core.enums.{ToxConnection, ToxFileControl, ToxMessageType, ToxUserStatus}
+import org.greenrobot.eventbus.EventBus
 
 class ToxCallbackListener(ctx: Context) extends ToxCoreEventListener[Unit] {
   val selfConnectionStatusCallback = new AntoxOnSelfConnectionStatusCallback(ctx)
@@ -83,6 +85,7 @@ class ToxCallbackListener(ctx: Context) extends ToxCoreEventListener[Unit] {
 
   override def fileRecv(friendNumber: ToxFriendNumber, fileNumber: Int, kind: Int, fileSize: Long, filename: ToxFilename)(state: Unit): Unit = {
     val friendInfo = State.db.getFriendInfo(ToxSingleton.tox.getFriendKey(friendNumber))
+    EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(friendInfo.key.toString,fileNumber,filename.toString()))
     fileRecvCallback.fileRecv(friendInfo, fileNumber, kind, fileSize, filename)(Unit)
   }
 

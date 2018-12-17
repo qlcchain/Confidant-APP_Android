@@ -1,12 +1,10 @@
 package events;
 
-import chat.tox.antox.wrapper.ContactKey;
-
-public class ToxFileFinishedEvent {
+public class ToxReceiveFileFinishedEvent {
 
     private String key;
     private Integer fileNumber;
-    public ToxFileFinishedEvent(String key, Integer fileNumber) {
+    public ToxReceiveFileFinishedEvent(String key, Integer fileNumber) {
         this.fileNumber = fileNumber;
         this.key = key;
     }

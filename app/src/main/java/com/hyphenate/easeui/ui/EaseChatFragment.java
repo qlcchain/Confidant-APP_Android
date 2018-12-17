@@ -214,6 +214,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
     private HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
+    private HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, String> sendFileNameMap = new HashMap<>();
@@ -845,6 +846,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
         }
+    }
+    public void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
+    {
+        FriendKey friendKey = new FriendKey(key);
+        if(friendKey != null)
+        {
+            receiveToxFileNameMap.put(fileNumber+"",fileName);
+            MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
+        }
+    }
+    public void  onToxReceiveFileFinished(int fileNumber,String key)
+    {
+        String fileName = receiveToxFileNameMap.get(fileNumber+"");
     }
     public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
     {

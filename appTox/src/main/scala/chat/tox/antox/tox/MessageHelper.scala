@@ -89,7 +89,9 @@ object MessageHelper {
       }).subscribeOn(IOScheduler()).subscribe()
     }
   }
-
+  def sendAgreeReceiveFileFromKotlin(context: Context,fileNumber: Int, key: FriendKey): Unit = {
+    State.transfers.acceptFile(key, fileNumber, context)
+  }
   /**
     * 发送文件
     * @param filePath

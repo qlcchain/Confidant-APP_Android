@@ -10,7 +10,7 @@ class AntoxOnFileRecvChunkCallback(private var ctx: Context) {
     val size = State.transfers.get(friendInfo.key, fileNumber).get.size
 
     if (position == size) {
-      State.transfers.fileFinished(friendInfo.key, fileNumber, ctx)
+      State.transfers.fileReceiveFinished(friendInfo.key, fileNumber, ctx)
     } else {
       State.transfers.receiveFileData(friendInfo.key, fileNumber, data, ctx)
     }

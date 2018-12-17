@@ -11,7 +11,7 @@ import chat.tox.antox.tox.{IntervalLevels, Intervals, ToxSingleton}
 import chat.tox.antox.utils.{AntoxLog, BitmapManager, Constants}
 import chat.tox.antox.wrapper.FileKind.AVATAR
 import chat.tox.antox.wrapper.{ContactKey, FileKind, FriendKey}
-import events.{ToxFileFinishedEvent, ToxMessageEvent}
+import events.{ToxMessageEvent, ToxReceiveFileFinishedEvent, ToxReceiveFileNoticeEvent, ToxSendFileFinishedEvent}
 import im.tox.tox4j.core.data.{ToxFileId, ToxFilename, ToxNickname}
 import im.tox.tox4j.core.enums.ToxFileControl
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
@@ -258,7 +258,7 @@ class FileTransferManager extends Intervals {
 
   def fileFinished(key: ContactKey, fileNumber: Integer, context: Context) {
     AntoxLog.debug("fileFinished", TAG)
-    EventBus.getDefault().post(new ToxFileFinishedEvent(key.toString,fileNumber))
+    EventBus.getDefault().post(new ToxSendFileFinishedEvent(key.toString,fileNumber))
     val transfer = State.transfers.get(key, fileNumber)
     transfer match {
       case Some(t) =>
@@ -280,7 +280,30 @@ class FileTransferManager extends Intervals {
       case None => AntoxLog.debug("fileFinished: No transfer found", TAG)
     }
   }
+  def fileReceiveFinished(key: ContactKey, fileNumber: Integer, context: Context) {
+    AntoxLog.debug("fileFinished", TAG)
+    EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(key.toString,fileNumber))
+    val transfer = State.transfers.get(key, fileNumber)
+    transfer match {
+      case Some(t) =>
+        t.status = FileStatus.FINISHED
+        State.db.fileTransferFinished(key, fileNumber)
+        State.db.clearFileNumber(key, fileNumber)
+        State.setLastFileTransferAction()
+        if (t.fileKind == FileKind.AVATAR) {
+          if (t.sending) {
+            onSelfAvatarSendFinished(key, context)
+          } else {
+            // Set current avatar as invalid in avatar cache in order to get it updated to new avatar
+            BitmapManager.setAvatarInvalid(t.file)
+            val db = State.db
+            db.updateFriendAvatar(key, Some(t.file.getName))
+          }
+        }
 
+      case None => AntoxLog.debug("fileFinished: No transfer found", TAG)
+    }
+  }
   def cancelFile(key: ContactKey, fileNumber: Int, context: Context) {
     AntoxLog.debug("cancelFile", TAG)
 
