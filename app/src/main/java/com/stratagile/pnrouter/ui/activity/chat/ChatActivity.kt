@@ -51,6 +51,13 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
+         if(jJToxPullFileRsp.params.retCode != 0)
+         {
+             toast(R.string.acceptanceerror)
+         }
+    }
+
     override fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
         chatFragment?.onToxFileSendRsp(jSendToxFileRsp)
 

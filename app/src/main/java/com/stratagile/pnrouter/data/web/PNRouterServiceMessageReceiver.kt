@@ -148,7 +148,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
                 mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
             }
-
+            "PullFile" -> {
+                val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
+                chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
+            }
         }
         messageListner?.onMessage(baseData)
     }
@@ -344,6 +347,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
+        fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
     }
 
     interface CoversationCallBack {
