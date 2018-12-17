@@ -50,6 +50,7 @@ class ToxMessageReceiver(){
                         //KLog.i("心跳监测和服务器的连接正常~~~")
                     }
                 } else {
+                    text = text.replace("\\\\n", "").replace("\\n", "")
                     AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, text)
                 }
             }else{
@@ -60,7 +61,7 @@ class ToxMessageReceiver(){
                     baseData.params = ""
                     baseData.offset =  baseData.offset!! + 1100
                     var aa = 110
-                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    var baseDataJson = baseData.baseDataToJson().replace("\\\\n", "").replace("\\n", "")
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
@@ -72,7 +73,7 @@ class ToxMessageReceiver(){
                     else{
                         var test =  JSON.toJSONString(baseData)
                         baseData.params = segmentContent
-                        baseData.params = segmentContent.replace("\\", "")
+                        baseData.params = segmentContent.replace("\\\\n", "").replace("\\", "")
                         val newText = gson.toJson(baseData)
                         var newText2 = newText.replace("\\\"", "\"").replace("\"params\":\"","\"params\":").replace("\",\"timestamp\"",",\"timestamp\"")
                         segmentContent = ""

@@ -1010,7 +1010,7 @@ public class FileUtil {
         {
             InputStream fosfrom = new FileInputStream(fromFile);
             byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-            byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
             fosfrom = FileUtil.byteTOInputStream(miFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];
