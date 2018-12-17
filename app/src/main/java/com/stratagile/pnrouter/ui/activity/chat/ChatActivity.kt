@@ -220,7 +220,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }//goMain();
         receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-       FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
+        if (ConstantValue.isWebsocketConnected) {
+            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
+        }else{
+            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.filePath,jPushFileMsgRsp.params.msgId)
+            var baseData = BaseData(msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
     }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {

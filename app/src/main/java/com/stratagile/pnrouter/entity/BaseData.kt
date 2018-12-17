@@ -261,12 +261,6 @@ data class PushFileRespone(var Retcode :Int, var FromId : String, var ToId : Str
 
 
 /**
- * 12.	向服务器要tox文件
- * (2)	响应（APP->Router）
- */
-data class PullFileReq(var FromId : String, var ToId : String,var FilePath : String,var MsgId : Int, var Action : String = "PullFile")
-
-/**
  * 12.	18.	已阅消息
  * (2)	响应（APP->Router）
  */
@@ -297,4 +291,8 @@ data class LogOutReq(var RouterId :String, var UserId : String, var UserSN : Str
  */
 data class SendToxFileNotice(var FromId :String, var ToId : String, var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int, var FileId : Int, var SrcKey : String, var DstKey : String,  var Action : String = "SendFile")
 
-
+/**
+ * 12.	向服务器要tox文件
+ * (2)	响应（APP->Router）
+ */
+data class PullFileReq(var FromId : String, var ToId : String,var FilePath : String,var MsgId : Int, var Action : String = "PullFile")
