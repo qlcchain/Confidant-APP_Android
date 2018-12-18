@@ -25,7 +25,6 @@ public class HttpClient {
         Gson gson = GsonUtil.getIntGson();
         try{
             response = httpClient.newCall(request).execute();
-            httpData = gson.fromJson(response.body().string(), HttpData.class);
             if(response != null)
             {
                 httpData = gson.fromJson(response.body().string(), HttpData.class);

@@ -135,6 +135,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             FileUtil.init()
             LocalRouterUtils.inspectionLocalData();
             LocalRouterUtils.updateGreanDaoFromLocal()
+            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"
+            RxFileTool.deleteFilesInDir(tempFile)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var abvc = ""
             routerList.forEach {

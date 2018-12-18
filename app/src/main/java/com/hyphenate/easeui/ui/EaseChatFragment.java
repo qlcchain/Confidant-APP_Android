@@ -1042,7 +1042,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),"PullFile");
                             }else{
                                 msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
                             }
@@ -1077,7 +1077,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),"PullFile");
                             }else{
                                 msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
                             }
@@ -1117,7 +1117,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),"PullFile");
                             }else{
                                 msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
                             }
