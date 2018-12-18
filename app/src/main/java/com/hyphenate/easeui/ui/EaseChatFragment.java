@@ -218,6 +218,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, String> sendMsgIdMap = new HashMap<>();
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
     private HashMap<String, Message> receiveToxFileDataMap = new HashMap<>();
+    private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
     private long  faBegin;
     private long faEnd;
 
@@ -860,7 +861,93 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void  onToxReceiveFileFinished(String fileName)
     {
         Message message = receiveToxFileDataMap.get(fileName);
+        String msgId = receiveToxFileIdMap.get(fileName);
+        if(message != null)
+        {
+            conversation.removeMessage(msgId);
+            String files_dir = "";
+            EMMessage messageData = null;
+            if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
+            {
+                if(message != null)
+                {
+                    String fileNameTemp = message.getFileName();
+                    String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameTemp;
+                    String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileNameTemp;
+                    String aesKey = RxEncodeTool.getAESKey(message.getUserKey());
+                    int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,aesKey);
+                    if(code == 1)
+                    {
+                        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        switch (message.getMsgType())
+                        {
+                            case 1:
+                                files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                                break;
+                            case 2:
+                                files_dir = PathUtils.getInstance().getVoicePath()+"/" +message.getFileName();
+                                int longTime = FileUtil.getAmrDuration(new File(files_dir));
+                                messageData = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
+                                break;
+                            case 4:
+                                files_dir = PathUtils.getInstance().getVideoPath()+"/" +message.getFileName();
+                                String videoName = files_dir.substring(files_dir.lastIndexOf("/")+1,files_dir.lastIndexOf(".")+1);
+                                String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                                Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
+                                FileUtil.saveBitmpToFile(bitmap,thumbPath);
+                                messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
+                                break;
+                        }
+                        if(messageData != null)
+                        {
+                            messageData.setFrom(message.getFrom());
+                            messageData.setTo(message.getTo());
+                            messageData.setUnread(false);
 
+                            if(message.getFrom() == null)
+                            {
+                                if(message.getSender() == 0)
+                                {
+                                    messageData.setFrom(userId);
+                                    messageData.setTo(toChatUserId);
+                                    switch (message.getStatus())
+                                    {
+                                        case 0:
+                                        case 1:
+                                            messageData.setAcked(false);
+                                            break;
+                                        case 2:
+                                            messageData.setAcked(true);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    messageData.setDirection(EMMessage.Direct.SEND );
+                                }else {
+                                    messageData.setFrom(toChatUserId);
+                                    messageData.setTo(userId);
+                                    messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                }
+                            }else{
+                                if(message.getFrom()!= null && message.getFrom().equals(userId))
+                                {
+                                    messageData.setDirection(EMMessage.Direct.SEND );
+                                }else {
+                                    messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                }
+                            }
+
+                            messageData.setMsgTime(message.getTimeStatmp()* 1000);
+                            messageData.setMsgId( message.getMsgId()+"");
+                            sendMessageTo(messageData);
+                        }
+                    }
+
+                }
+            }
+
+        }
     }
     public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
     {
@@ -950,8 +1037,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                         }else{
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
                             String base58Name =  Base58.encode(Message.getFileName().getBytes());
-                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            PullFileReq msgData;
+                            if(Message.getSender() == 0)
+                            {
+                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                            }else{
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
+                            }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -978,8 +1072,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                         }else{
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
                             String base58Name =  Base58.encode(Message.getFileName().getBytes());
-                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            PullFileReq msgData;
+                            if(Message.getSender() == 0)
+                            {
+                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                            }else{
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
+                            }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -1011,8 +1112,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
                         }else{
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
                             String base58Name =  Base58.encode(Message.getFileName().getBytes());
-                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            PullFileReq msgData;
+                            if(Message.getSender() == 0)
+                            {
+                                msgData = new PullFileReq(userId, userId,base58Name,Message.getMsgId(),"PullFile");
+                            }else{
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),"PullFile");
+                            }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));

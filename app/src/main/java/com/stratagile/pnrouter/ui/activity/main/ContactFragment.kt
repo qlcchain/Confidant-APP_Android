@@ -316,6 +316,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
+        if(AppConfig.instance.messageReceiver != null)
+            AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
     }
 }
