@@ -999,18 +999,48 @@ public class FileUtil {
     }
 
     /**
-     * 拷贝本地文件
+     * 拷贝本地文件并加密存储
      * @param fromFile
      * @param toFile
      * @return
      */
-    public static int copySdcardToxFile(String fromFile, String toFile,String aesKey)
+    public static int copySdcardToxFileAndEncrypt(String fromFile, String toFile, String aesKey)
     {
         try
         {
             InputStream fosfrom = new FileInputStream(fromFile);
             byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
             byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+            fosfrom = FileUtil.byteTOInputStream(miFile);
+            OutputStream fosto = new FileOutputStream(toFile);
+            byte bt[] = new byte[1024];
+            int c;
+            while ((c = fosfrom.read(bt)) > 0)
+            {
+                fosto.write(bt, 0, c);
+            }
+            fosfrom.close();
+            fosto.close();
+
+        } catch (Exception ex)
+        {
+            return 0;
+        }
+        return 1;
+    }
+    /**
+     * 拷贝本地文件并解密存储
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copySdcardToxFileAndDecrypt(String fromFile, String toFile, String aesKey)
+    {
+        try
+        {
+            InputStream fosfrom = new FileInputStream(fromFile);
+            byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+            byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
             fosfrom = FileUtil.byteTOInputStream(miFile);
             OutputStream fosto = new FileOutputStream(toFile);
             byte bt[] = new byte[1024];

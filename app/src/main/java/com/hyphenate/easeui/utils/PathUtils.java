@@ -71,20 +71,22 @@ public class PathUtils {
     }
 
     public File getImagePath() {
-        return this.imagePath;
+        return this.filePath;//统一一个文件夹，方便tox处理
     }
 
     public File getVoicePath() {
-        return this.voicePath;
+        return this.filePath;//统一一个文件夹，方便tox处理
     }
 
     public File getFilePath() {
-        return this.filePath;
+        return this.filePath;//统一一个文件夹，方便tox处理
     }
-
+    public File getTempPath() {
+        return this.tempPath;
+    }
     public File getVideoPath() {
-        return this.videoPath;
-    }
+        return this.filePath;
+    } //统一一个文件夹，方便tox处理
 
     public File getHistoryPath() {
         return this.historyPath;

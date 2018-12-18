@@ -64,8 +64,9 @@ object MessageHelper {
   def sendMessageFromKotlin(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType): Unit = {
     if(msg.indexOf("HeartBeat") <0)
       {
-        AntoxLog.debug("SendMessage:"+msg)
+
       }
+    AntoxLog.debug("SendMessage:"+msg)
     State.setLastIncomingMessageAction()
     val db = State.db
     var mDbIdd: Option[Long] = None

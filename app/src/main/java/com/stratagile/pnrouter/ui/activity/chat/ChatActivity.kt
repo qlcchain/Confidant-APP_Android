@@ -50,10 +50,10 @@ import javax.inject.Inject
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
-         if(jJToxPullFileRsp.params.retCode != 0)
-         {
-             toast(R.string.acceptanceerror)
-         }
+        if(jJToxPullFileRsp.params.retCode != 0)
+        {
+            toast(R.string.acceptanceerror)
+        }
     }
 
     override fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
@@ -79,6 +79,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     var statusBarHeight: Int = 0
     var receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
+    var receiveToxFileDataMap = HashMap<String, JPushFileMsgRsp>()
     override fun onGlobalLayout() {
         var myLayout = getWindow().getDecorView();
         val r = Rect()
@@ -110,7 +111,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
-       var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var fileNumber=  toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key
         chatFragment?.onToxFileSendFinished(fileNumber,key)
     }
@@ -126,7 +127,26 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     fun onToxReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxReceiveFileFinishedEvent) {
         var fileNumber=  toxReceiveFileFinishedEvent.fileNumber
         var key = toxReceiveFileFinishedEvent.key
-        chatFragment?.onToxReceiveFileFinished(fileNumber,key)
+        var fileNameSouce =  chatFragment?.getToxReceiveFileName(fileNumber,key)
+        var fileMiName = fileNameSouce!!.substring(fileNameSouce.indexOf(":")+1)
+        var jPushFileMsgRsp = receiveToxFileDataMap.get(fileMiName)
+        if(jPushFileMsgRsp != null)
+        {
+            var fileName:String = jPushFileMsgRsp!!.params.fileName;
+            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + fileName
+            val files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileName
+            val aesKey = RxEncodeTool.getAESKey(jPushFileMsgRsp!!.params.dstKey)
+            var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dir,aesKey)
+            if(code == 1)
+            {
+                var fromId = jPushFileMsgRsp!!.params.fromId;
+                var toId = jPushFileMsgRsp!!.params.toId
+                var FileType = jPushFileMsgRsp!!.params.fileType
+                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType)
+                receiveFileDataMap.remove(fileMiName)
+            }
+        }
+
     }
 
     /**
@@ -239,11 +259,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 files_dir = PathUtils.getInstance().videoPath.toString()+"/"
             }
         }//goMain();
-        receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
         if (ConstantValue.isWebsocketConnected) {
+            receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
         }else{
-            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.filePath,jPushFileMsgRsp.params.msgId)
+
+            var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
+            receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
+            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId)
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -368,6 +391,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
+        receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
+        receiveToxFileDataMap = HashMap<String, JPushFileMsgRsp>()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         activityInstance = this

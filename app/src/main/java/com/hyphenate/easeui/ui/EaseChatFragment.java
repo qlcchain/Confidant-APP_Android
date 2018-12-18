@@ -9,14 +9,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,7 +29,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baidu.platform.comapi.map.E;
 import com.google.gson.Gson;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
@@ -103,7 +100,6 @@ import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
-import com.stratagile.pnrouter.utils.WiFiUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
 
@@ -112,7 +108,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -122,7 +117,6 @@ import java.util.concurrent.Executors;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
-import scala.Unit;
 
 /**
  * you can new an EaseChatFragment to use or you can inherit it to expand.
@@ -856,9 +850,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
         }
     }
+    public String getToxReceiveFileName(int fileNumber,String key)
+    {
+        String fileName = receiveToxFileNameMap.get(fileNumber+"");
+        return fileName;
+    }
     public void  onToxReceiveFileFinished(int fileNumber,String key)
     {
         String fileName = receiveToxFileNameMap.get(fileNumber+"");
+        Toast.makeText(getActivity(), "收到文件:"+fileName, Toast.LENGTH_SHORT).show();
+        String aa = "";
     }
     public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
     {
@@ -934,7 +935,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     break;
                 case 1:
                     String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
-                    String files_dir =  PathUtils.getInstance().getImagePath()+"/" +Message.getFileName();
+                    String files_dir =  PathUtils.getInstance().getImagePath().toString()+"/" +Message.getFileName();
                     File filesFile = new File(files_dir);
                     if(filesFile.exists())
                     {
@@ -1601,9 +1602,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
-                    String base58files_dir = getActivity().getFilesDir().getAbsolutePath() + "/temp/" + strBase58;
+                    String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                     String aesKey =  RxEncryptTool.generateAESKey();
-                    int code =  FileUtil.copySdcardToxFile(filePath,base58files_dir,aesKey);
+                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,aesKey);
                     if(code == 1)
                     {
                         int uuid = (int)(System.currentTimeMillis()/1000);
@@ -1666,7 +1667,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     {
                         String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+imagePath.substring(imagePath.lastIndexOf("/")+1);
 
-                        String files_dir = getActivity().getFilesDir().getAbsolutePath() + "/image/" + fileName;
+                        String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
                         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
                         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
                         message.setFrom(userId);
@@ -1689,9 +1690,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = getActivity().getFilesDir().getAbsolutePath() + "/temp/" + strBase58;
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFile(imagePath,base58files_dir,aesKey);
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,aesKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -1778,9 +1779,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = getActivity().getFilesDir().getAbsolutePath() + "/temp/" + strBase58;
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFile(imagePath,base58files_dir,aesKey);
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,aesKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -1876,9 +1877,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                         }else{
                             String strBase58 = Base58.encode(videoFileName.getBytes());
-                            String base58files_dir = getActivity().getFilesDir().getAbsolutePath() + "/temp/" + strBase58;
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFile(videoPath,base58files_dir,aesKey);
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,aesKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);

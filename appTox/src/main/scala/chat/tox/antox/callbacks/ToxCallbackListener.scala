@@ -3,7 +3,7 @@ package chat.tox.antox.callbacks
 import android.content.Context
 import chat.tox.antox.data.State
 import chat.tox.antox.tox.ToxSingleton
-import chat.tox.antox.utils.AntoxLog
+import chat.tox.antox.utils.{AntoxLog, Base58}
 import events.ToxReceiveFileNoticeEvent
 import im.tox.tox4j.core.callbacks.ToxCoreEventListener
 import im.tox.tox4j.core.data._
@@ -34,6 +34,7 @@ class ToxCallbackListener(ctx: Context) extends ToxCoreEventListener[Unit] {
     typingChangeCallback.friendTyping(friendInfo, isTyping)(Unit)
   }
 
+  //接受文件片段
   override def fileRecvChunk(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long, data: Array[Byte])(state: Unit): Unit = {
     val friendInfo = State.db.getFriendInfo(ToxSingleton.tox.getFriendKey(friendNumber))
     fileRecvChunkCallback.fileRecvChunk(friendInfo, fileNumber, position, data)(Unit)
@@ -83,10 +84,13 @@ class ToxCallbackListener(ctx: Context) extends ToxCoreEventListener[Unit] {
     messageCallback.friendMessage(friendInfo, messageType, timeDelta, message)(Unit)
   }
 
+  //收到文件发送请求
   override def fileRecv(friendNumber: ToxFriendNumber, fileNumber: Int, kind: Int, fileSize: Long, filename: ToxFilename)(state: Unit): Unit = {
     val friendInfo = State.db.getFriendInfo(ToxSingleton.tox.getFriendKey(friendNumber))
     EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(friendInfo.key.toString,fileNumber,filename.toString()))
-    fileRecvCallback.fileRecv(friendInfo, fileNumber, kind, fileSize, filename)(Unit)
+    var filenameStr = filename.toString()
+    var sourceName = Base58.decode(filenameStr.substring(filenameStr.indexOf(":")+1))
+    fileRecvCallback.fileRecv(friendInfo, fileNumber, kind, fileSize, ToxFilename(sourceName))(Unit)
   }
 
   override def selfConnectionStatus(connectionStatus: ToxConnection)(state: Unit): Unit = {

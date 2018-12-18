@@ -182,7 +182,7 @@ class FileTransferManager extends Intervals {
       }
     }
 
-    var file = new File(fileKind.getStorageDir(context).getPath, fileN)
+    var file = new File(fileKind.getPPMFileTempDir(context).getPath, fileN)
     if (replaceExisting) file.delete()
 
     if (file.exists()) {
@@ -191,7 +191,7 @@ class FileTransferManager extends Intervals {
         fileN = filePre + "(" + java.lang.Integer.toString(i) + ")" +
           "." +
           fileExt
-        file = new File(fileKind.getStorageDir(context).getPath, fileN)
+        file = new File(fileKind.getPPMFileTempDir(context).getPath, fileN)
         i += 1
       } while (file.exists())
     }

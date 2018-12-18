@@ -30,7 +30,12 @@ sealed trait FileKind extends FileKind.Value {
     dir.mkdirs()
     dir
   }
-
+  def getPPMFileTempDir(context: Context): File = {
+    var ppmDirectory = context.getFilesDir.getAbsoluteFile.toString +"/temp/"
+    val dir = FileUtils.getDirectory(ppmDirectory, storageType, context)
+    dir.mkdirs()
+    dir
+  }
   def autoAccept: Boolean
 
   def replaceExisting: Boolean
