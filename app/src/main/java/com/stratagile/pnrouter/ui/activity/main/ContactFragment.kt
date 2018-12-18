@@ -179,7 +179,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     }
 
     fun pullFriendList() {
-        refreshLayout.isRefreshing = false
+        if(refreshLayout != null)
+            refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var pullFriend = PullFriendReq( selfUserId!!)
         if (ConstantValue.isWebsocketConnected) {

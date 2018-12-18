@@ -145,6 +145,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType)
                 receiveFileDataMap.remove(fileMiName)
             }
+        }else{
+            chatFragment?.onToxReceiveFileFinished(fileMiName)
         }
 
     }

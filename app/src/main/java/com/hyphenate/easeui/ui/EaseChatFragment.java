@@ -80,6 +80,7 @@ import com.stratagile.pnrouter.entity.JDelMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
+import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
@@ -216,6 +217,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
     private HashMap<String, String> sendMsgIdMap = new HashMap<>();
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
+    private HashMap<String, Message> receiveToxFileDataMap = new HashMap<>();
     private long  faBegin;
     private long faEnd;
 
@@ -855,11 +857,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String fileName = receiveToxFileNameMap.get(fileNumber+"");
         return fileName;
     }
-    public void  onToxReceiveFileFinished(int fileNumber,String key)
+    public void  onToxReceiveFileFinished(String fileName)
     {
-        String fileName = receiveToxFileNameMap.get(fileNumber+"");
-        Toast.makeText(getActivity(), "收到文件:"+fileName, Toast.LENGTH_SHORT).show();
-        String aa = "";
+        Message message = receiveToxFileDataMap.get(fileName);
+
     }
     public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
     {
@@ -942,9 +943,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                     }else{
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
-                        String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                        String save_dir = PathUtils.getInstance().getImagePath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
+                            String save_dir = PathUtils.getInstance().getImagePath()+"/";
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        }else{
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            BaseData baseData = new BaseData(msgData);
+                            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                        }
+
                     }
                     break;
                 case 2:
@@ -958,9 +971,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message = EMMessage.createVoiceSendMessage(files_dir_amr, longTime, toChatUserId);
                     }else{
                         message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
-                        String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                        String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
+                            String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        }else{
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            BaseData baseData = new BaseData(msgData);
+                            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                        }
+
                     }
                     break;
                 case 3:
@@ -979,9 +1004,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }else{
                         String videoPath =  PathUtils.getInstance().getVideoPath()+"/" + "ease_default_vedio.mp4";
                         message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
-                        String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                        String save_dir =  PathUtils.getInstance().getVideoPath()+"/";
-                        FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
+                            String save_dir =  PathUtils.getInstance().getVideoPath()+"/";
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getUserKey());
+                        }else{
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
+                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                            PullFileReq msgData = new PullFileReq(userId, toChatUserId,base58Name,Message.getMsgId(),"PullFile");
+                            BaseData baseData = new BaseData(msgData);
+                            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                        }
+
                     }
                     break;
                 case 5:
