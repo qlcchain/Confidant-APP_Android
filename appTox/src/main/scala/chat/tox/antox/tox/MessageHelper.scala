@@ -63,9 +63,9 @@ object MessageHelper {
     */
   def sendMessageFromKotlin(ctx: Context, friendKey: FriendKey, msg: String, messageType: ToxMessageType): Unit = {
     if(msg.indexOf("HeartBeat") <0)
-      {
+    {
 
-      }
+    }
     AntoxLog.debug("SendMessage:"+msg)
     State.setLastIncomingMessageAction()
     val db = State.db
@@ -178,7 +178,8 @@ object MessageHelper {
   def clearAllMessage()
   {
     var db = State.db
-    db.deleteAllMessage()
+    if(db !=null)
+      db.deleteAllMessage()
   }
   def sendUnsentMessages(contactKey: ContactKey, ctx: Context) {
     val db = State.db
