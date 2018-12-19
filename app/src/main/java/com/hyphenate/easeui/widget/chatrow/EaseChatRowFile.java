@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMMessage;
@@ -20,6 +21,7 @@ public class EaseChatRowFile extends EaseChatRow{
     protected TextView fileNameView;
 	protected TextView fileSizeView;
     protected TextView fileStateView;
+    protected LinearLayout ll_loading;
     
     private EMNormalFileMessageBody fileMessageBody;
 
@@ -39,6 +41,7 @@ public class EaseChatRowFile extends EaseChatRow{
         fileSizeView = (TextView) findViewById(R.id.tv_file_size);
         fileStateView = (TextView) findViewById(R.id.tv_file_state);
         percentageView = (TextView) findViewById(R.id.percentage);
+        ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
 	}
 
 
@@ -47,6 +50,12 @@ public class EaseChatRowFile extends EaseChatRow{
 	    fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
+       /* if(filePath.contains("ease_default_file"))
+        {
+            ll_loading.setVisibility(View.VISIBLE);
+        }else{
+            ll_loading.setVisibility(View.INVISIBLE);
+        }*/
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             File file = new File(filePath);
@@ -78,31 +87,31 @@ public class EaseChatRowFile extends EaseChatRow{
     }
 
     private void onMessageCreate() {
-        if (percentageView != null)
-            percentageView.setVisibility(View.INVISIBLE);
+       /* if (percentageView != null)
+            percentageView.setVisibility(View.INVISIBLE);*/
         if (statusView != null)
             statusView.setVisibility(View.INVISIBLE);
     }
 
     private void onMessageSuccess() {
-        if (percentageView != null)
-            percentageView.setVisibility(View.INVISIBLE);
+       /* if (percentageView != null)
+            percentageView.setVisibility(View.INVISIBLE);*/
         if (statusView != null)
             statusView.setVisibility(View.INVISIBLE);
     }
 
     private void onMessageError() {
-        if (percentageView != null)
-            percentageView.setVisibility(View.INVISIBLE);
+       /* if (percentageView != null)
+            percentageView.setVisibility(View.INVISIBLE);*/
         if (statusView != null)
             statusView.setVisibility(View.VISIBLE);
     }
 
     private void onMessageInProgress() {
-        if (percentageView != null) {
+       /* if (percentageView != null) {
             percentageView.setVisibility(View.VISIBLE);
             percentageView.setText(message.progress() + "%");
-        }
+        }*/
         if (statusView != null)
             statusView.setVisibility(View.INVISIBLE);
     }

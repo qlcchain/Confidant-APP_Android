@@ -388,6 +388,8 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                            ConstantValue.port = ":18006"
+                                            ConstantValue.filePort = ":18007"
                                             break;
                                         }
 

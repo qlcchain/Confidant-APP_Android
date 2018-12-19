@@ -85,6 +85,16 @@
                         android:layout_gravity="center_vertical"
                         android:textColor="#818181"
                         android:textSize="14sp" />
+                    <ImageView
+                        android:id="@+id/msg_sendstatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:src="@drawable/send"
+                        android:layout_alignParentRight="true"
+                        android:visibility="visible"
+                         />
+
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
@@ -128,6 +138,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:gravity="center"
+            android:visibility="invisible"
             android:orientation="vertical" >
 
             <ProgressBar
@@ -142,7 +153,7 @@
                 android:layout_height="wrap_content"
                 android:text="100%"
                 android:textColor="@android:color/black"
-                android:visibility="visible"
+                android:visibility="gone"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
     </RelativeLayout>

@@ -142,7 +142,7 @@ public class EaseVoiceRecorder {
     private String getVoiceFileName(String uid) {
         Time now = new Time();
         now.setToNow();
-        return uid + now.toString().substring(0, 15) + EXTENSION;
+        return "send_" + now.toString().substring(0, 15) + EXTENSION;
     }
 
     public boolean isRecording() {

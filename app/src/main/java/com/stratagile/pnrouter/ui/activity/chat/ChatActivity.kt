@@ -249,18 +249,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
 
         var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
-        var files_dir = this.filesDir.absolutePath + "/image/"
-        when (jPushFileMsgRsp.params.fileType) {
-            1 -> {
-                files_dir = PathUtils.getInstance().imagePath.toString()+"/"
-            }
-            2 -> {
-                files_dir = PathUtils.getInstance().voicePath.toString()+"/"
-            }
-            4 -> {
-                files_dir = PathUtils.getInstance().videoPath.toString()+"/"
-            }
-        }//goMain();
+        var files_dir = PathUtils.getInstance().filePath.toString()+"/"
         if (ConstantValue.isWebsocketConnected) {
             receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
