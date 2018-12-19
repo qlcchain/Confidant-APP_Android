@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
@@ -51,7 +52,13 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         File file = new File(filePath);
         if (file.exists()) {
             // open files if it exist
-            FileUtils.openFile(file, (Activity) getContext());
+            try {
+                FileUtils.openFile(file, (Activity) getContext());
+            }catch (Exception e)
+            {
+
+            }
+
         } else {
             // download the file
             getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
