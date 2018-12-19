@@ -112,7 +112,8 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
 
                     UserDataManger.curreantfriendUserData = friendInfo;
-                    listItemClickListener.onListItemClicked(friendInfo.getUserId());
+                    if(friendInfo !=null)
+                        listItemClickListener.onListItemClicked(friendInfo.getUserId());
                 }
             });
 
@@ -256,12 +257,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             handler.sendEmptyMessage(MSG_REFRESH);
         }
     }
-    public void removeFriend()
+    public int removeFriend()
     {
         conversationList.clear();
-        conversationList.addAll(loadConversationList());
+        List<EMConversation> list = loadConversationList();
+        conversationList.addAll(list);
         conversationListView.init(conversationList);
         refresh();
+        return list.size();
     }
     /**
      * load conversation list

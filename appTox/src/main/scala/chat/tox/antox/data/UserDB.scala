@@ -213,7 +213,7 @@ class UserDB(ctx: Context) {
   }
 
   def getActiveUserDetails: UserInfo =
-    getUserDetails(getActiveUser).get //fail fast
+     getUserDetails(getActiveUser).get //fail fast
 
   def getUserDetails(username: String): Option[UserInfo] = {
     val query = userDetailsQuery(username)

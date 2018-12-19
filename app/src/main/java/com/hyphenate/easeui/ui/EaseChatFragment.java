@@ -914,11 +914,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     switch (message.getStatus())
                                     {
                                         case 0:
-                                        case 1:
+                                            messageData.setDelivered(true);
                                             messageData.setAcked(false);
+                                            messageData.setUnread(true);
+                                            break;
+                                        case 1:
+                                            messageData.setDelivered(true);
+                                            messageData.setAcked(true);
+                                            messageData.setUnread(true);
                                             break;
                                         case 2:
+                                            messageData.setDelivered(true);
                                             messageData.setAcked(true);
+                                            messageData.setUnread(false);
                                             break;
                                         default:
                                             break;
@@ -1148,11 +1156,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 switch (Message.getStatus())
                 {
                     case 0:
-                    case 1:
+                        message.setDelivered(true);
                         message.setAcked(false);
+                        message.setUnread(true);
+                        break;
+                    case 1:
+                        message.setDelivered(true);
+                        message.setAcked(true);
+                        message.setUnread(true);
                         break;
                     case 2:
+                        message.setDelivered(true);
                         message.setAcked(true);
+                        message.setUnread(false);
                         break;
                     default:
                         break;
@@ -2679,11 +2695,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                         switch (message.getStatus())
                                         {
                                             case 0:
-                                            case 1:
+                                                messageData.setDelivered(true);
                                                 messageData.setAcked(false);
+                                                messageData.setUnread(true);
+                                                break;
+                                            case 1:
+                                                messageData.setDelivered(true);
+                                                messageData.setAcked(true);
+                                                messageData.setUnread(true);
                                                 break;
                                             case 2:
+                                                messageData.setDelivered(true);
                                                 messageData.setAcked(true);
+                                                messageData.setUnread(false);
                                                 break;
                                             default:
                                                 break;

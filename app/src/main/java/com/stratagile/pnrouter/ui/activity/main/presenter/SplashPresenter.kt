@@ -2,12 +2,15 @@ package com.stratagile.pnrouter.ui.activity.main.presenter
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.util.Log
+import chat.tox.antox.tox.ToxService
 import chat.tox.antox.toxme.ToxData
 import chat.tox.antox.utils.CreateUserUtils
 import chat.tox.antox.wrapper.ToxAddress
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -146,10 +149,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             }
             routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             getLastVersion()
+
+
+            var toxData: ToxData = CreateUserUtils.createToxData("myRouter",AppConfig.instance)
             var toxId:String =  FileUtil.getLocalUserData("toxId")
-            if(toxId == null && toxId.equals(""))
-            {
-                var toxData: ToxData = CreateUserUtils.createToxData("test",AppConfig.instance)
+            if(toxId == null || toxId.equals(""))            {
+
                 if(toxData != null && toxData.address()!= null)
                 {
                     var toxAddress: ToxAddress = toxData.address()
@@ -196,6 +201,88 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }
+            var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
+            var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
+            ConstantValue.currentRouterId = lastLoginRouterId;
+
+            if(WiFiUtil.isWifiConnect())
+            {
+                var count =0;
+                KLog.i("测试计时器" + count)
+                Thread(Runnable() {
+                    run() {
+
+                        while (true)
+                        {
+                            if(count >=3)
+                            {
+                                if(!ConstantValue.currentRouterIp.equals(""))
+                                {
+                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                    break;
+                                }else{
+                                    if(!ConstantValue.currentRouterId.equals(""))
+                                    {
+                                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                        {
+                                            ConstantValue.curreantNetworkType = "WIFI"
+                                            ConstantValue.currentRouterIp = httpData.serverHost
+                                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                            Thread.currentThread().interrupt() //方法调用终止线程
+                                        }else{
+                                            ConstantValue.curreantNetworkType = "TOX"
+                                            var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                            AppConfig.instance.startService(intent)
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                        }
+                                    }
+
+                                    break;
+                                }
+                            }
+                            count ++;
+                            if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+                            {
+                                var toxIdMi = ""
+                                if(lastLoginRouterId != null && !lastLoginRouterId.equals("")&& lastLoginUserSn != null && !lastLoginUserSn.equals(""))
+                                {
+                                    toxIdMi = AESCipher.aesEncryptString(lastLoginRouterId,"slph\$%*&^@-78231")
+                                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                    MobileSocketClient.getInstance().receive()
+                                }
+                            }
+                            KLog.i("测试计时器" + count)
+                            Thread.sleep(1000);
+                        }
+
+                    }
+                }).start()
+            }else{
+                if(!ConstantValue.currentRouterId.equals(""))
+                {
+                    Thread(Runnable() {
+                        run() {
+                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                            {
+                                ConstantValue.curreantNetworkType = "WIFI"
+                                ConstantValue.currentRouterIp = httpData.serverHost
+                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                            }else{
+                                ConstantValue.curreantNetworkType = "TOX"
+                                var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                AppConfig.instance.startService(intent)
+                            }
+                        }
+                    }).start()
+
+                }
+            }
+            PathUtils.getInstance().initDirs("", "", AppConfig.instance)
+            //System.out.println(ByteOrder.nativeOrder());
             // 权限申请成功回调。
             if (requestCode == 101) {
                 permissionState = 0

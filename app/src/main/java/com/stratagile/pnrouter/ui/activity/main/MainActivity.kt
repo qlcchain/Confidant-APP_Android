@@ -234,21 +234,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     viewModel.freindChange.value = Calendar.getInstance().timeInMillis
                 }
-                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
-                if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
-                }else if (ConstantValue.isToxConnected) {
-                    var baseData = BaseData(delFriendPushReq)
-                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }
-
-                EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
-                return
             }
         }
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(delFriendPushReq)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+
+        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId,jDelFriendPushRsp.params.userId))
     }
 
     /**
@@ -349,7 +348,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                  conversationListFragment?.removeFriend()
+                 var count =  conversationListFragment?.removeFriend()
+                    var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(count!!)
+                    controlleMessageUnReadCount(UnReadMessageCount)
+                    ConstantValue.isRefeshed = true
+                }
+            }
+        }
+        if (friendChange.firendId != null && !friendChange.firendId.equals("")) {
+            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendChange.firendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+            if (conversation != null) {
+                conversation.clearAllMessages()
+                if (ConstantValue.isInit) {
+                    var count=    conversationListFragment?.removeFriend()
+                    var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(count!!)
+                    controlleMessageUnReadCount(UnReadMessageCount)
                     ConstantValue.isRefeshed = true
                 }
             }
@@ -680,7 +693,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
         llSort.visibility = View.GONE
-        contactFragment?.updata()
+        //contactFragment?.updata()
     }
 
     fun setToMy() {

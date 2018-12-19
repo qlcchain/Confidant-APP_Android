@@ -218,7 +218,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
-        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId))
+        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId,jDelFriendPushRsp.params.userId))
     }
 
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {

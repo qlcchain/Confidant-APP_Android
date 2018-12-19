@@ -211,14 +211,18 @@ object ToxSingleton {
 
       db.synchroniseWithTox(tox)
 
-      val details = userDb.getActiveUserDetails
-      tox.setName(details.nickname)
-      tox.setStatusMessage(details.statusMessage)
-      var newStatus: ToxUserStatus = ToxUserStatus.NONE
-      val newStatusString = details.status
-      newStatus = UserStatus.getToxUserStatusFromString(newStatusString)
-      tox.setStatus(newStatus)
-
+      try {
+        val details = userDb.getActiveUserDetails
+        tox.setName(details.nickname)
+        tox.setStatusMessage(details.statusMessage)
+        var newStatus: ToxUserStatus = ToxUserStatus.NONE
+        val newStatusString = details.status
+        newStatus = UserStatus.getToxUserStatusFromString(newStatusString)
+        tox.setStatus(newStatus)
+      } catch {
+        case e: Exception =>
+          e.printStackTrace()
+      }
       Observable[Boolean](_ =>
         if (preferences.getBoolean("enable_custom_node", false)) {
           bootstrapFromCustomNode(preferences)
