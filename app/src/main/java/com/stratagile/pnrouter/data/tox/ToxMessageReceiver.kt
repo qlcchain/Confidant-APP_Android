@@ -10,10 +10,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
-import com.stratagile.pnrouter.utils.GsonUtil
-import com.stratagile.pnrouter.utils.LogUtil
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import events.ToxMessageEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -21,6 +18,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,11 +33,16 @@ class ToxMessageReceiver(){
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             0 -> {
+                LogUtil.addLog("P2P连接成功","ToxMessageReceiver")
                 ConstantValue.isToxConnected = true
                 keepAliveSender = KeepAliveSender()
                 keepAliveSender!!.start()
             }
+            1 -> {
+                LogUtil.addLog("P2P连接中Reconnecting:","ToxMessageReceiver")
+            }
             2-> {
+                LogUtil.addLog("P2P未连接:","ToxMessageReceiver")
                 ConstantValue.isToxConnected = false
                 if (keepAliveSender != null) {
                     keepAliveSender!!.shutdown()
@@ -47,6 +50,7 @@ class ToxMessageReceiver(){
                 }
             }
             3-> {
+                LogUtil.addLog("P2P连接网络错误:","ToxMessageReceiver")
                 ConstantValue.isToxConnected = false
                 if (keepAliveSender != null) {
                     keepAliveSender!!.shutdown()
@@ -61,8 +65,9 @@ class ToxMessageReceiver(){
         if(text!!.indexOf("HeartBeat") < 0)
         {
             Log.w(ToxMessageReceiver.TAG, "onMessage(text)! " + text!!)
+            LogUtil.addLog("TOX接收信息：${text}")
         }
-        LogUtil.addLog("接收信息：${text}")
+
         try {
             val gson = GsonUtil.getIntGson()
             var baseData = gson.fromJson(text, BaseData::class.java)
@@ -152,9 +157,9 @@ class ToxMessageReceiver(){
             if (ConstantValue.curreantNetworkType == "TOX" && ConstantValue.isToxConnected)
             {
                 var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
-                LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
+                //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
-                LogUtil.addLog("发送结果：${baseDataJson}")
+               // LogUtil.addLog("发送结果：${baseDataJson}")
                 var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }

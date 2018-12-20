@@ -227,8 +227,9 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         if(text!!.indexOf("HeartBeat") < 0)
         {
             Log.w(TAG, "onMessage(text)! " + text!!)
+            LogUtil.addLog("websocket接收信息：${text}")
         }
-        LogUtil.addLog("接收信息：${text}")
+
         try {
             val gson = GsonUtil.getIntGson()
             var baseData = gson.fromJson(text, BaseData::class.java)

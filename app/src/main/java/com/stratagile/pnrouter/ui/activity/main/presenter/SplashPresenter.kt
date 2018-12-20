@@ -233,6 +233,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                             Thread.currentThread().interrupt() //方法调用终止线程
                                         }else{
                                             ConstantValue.curreantNetworkType = "TOX"
+                                            LogUtil.addLog("P2P启动连接:","SplashActivity")
                                             var intent = Intent(AppConfig.instance, ToxService::class.java)
                                             AppConfig.instance.startService(intent)
                                             Thread.currentThread().interrupt(); //方法调用终止线程
@@ -273,6 +274,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                             }else{
                                 ConstantValue.curreantNetworkType = "TOX"
+                                LogUtil.addLog("P2P启动连接:","SplashActivity")
                                 var intent = Intent(AppConfig.instance, ToxService::class.java)
                                 AppConfig.instance.startService(intent)
                             }

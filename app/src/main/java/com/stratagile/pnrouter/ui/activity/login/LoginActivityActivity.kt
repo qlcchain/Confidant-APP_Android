@@ -46,6 +46,7 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import events.ToxFriendStatusEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
@@ -57,7 +58,7 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 
@@ -355,6 +356,18 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         routerNameTips.text = nameChange.name
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+
+        if(toxFriendStatusEvent.status == 1)
+        {
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
+        }else{
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
             MessageHelper.clearAllMessage()
@@ -422,7 +435,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             0 -> {
-
+                LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
                 runOnUiThread {
                     closeProgressDialog()
                     //toast("login time out")
@@ -505,6 +518,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                 }
             }
+            1 -> {
+                LogUtil.addLog("P2P连接中Reconnecting:","LoginActivityActivity")
+            }
         }
 
     }
@@ -583,6 +599,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } else false
                         })
                     }
+                    LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                     var intent = Intent(AppConfig.instance, ToxService::class.java)
                     startService(intent)
                 }
@@ -1024,6 +1041,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 } else false
                                             })
                                         }
+                                        LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
                                         startService(intent)
                                     }else{
@@ -1080,6 +1098,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     } else false
                                 })
                             }
+                            LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                             var intent = Intent(AppConfig.instance, ToxService::class.java)
                             startService(intent)
                         }else{
@@ -1262,6 +1281,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                             } else false
                                                         })
                                                     }
+                                                    LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                                                     var intent = Intent(AppConfig.instance, ToxService::class.java)
                                                     startService(intent)
                                                 }else{
@@ -1333,6 +1353,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 } else false
                                             })
                                         }
+                                        LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
                                         startService(intent)
                                     }else{

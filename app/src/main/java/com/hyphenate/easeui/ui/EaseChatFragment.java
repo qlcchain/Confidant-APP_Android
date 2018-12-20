@@ -144,6 +144,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     protected static final int TYPING_SHOW_TIME = 5000;
 
+    protected static final int CHOOSE_PIC = 88; //选择原图还是压缩图
+
     /**
      * params to fragment
      */
@@ -1382,7 +1384,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists())
-                    sendCameraImageMessage(cameraFile.getAbsolutePath());
+                {
+                    chooseOriginalImage(cameraFile.getAbsolutePath());
+                    //sendCameraImageMessage(cameraFile.getAbsolutePath());
+                }
             }else if(requestCode == REQUEST_CODE_VIDEO)
             {
                 if (videoFile != null && videoFile.exists())
@@ -1421,6 +1426,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 {
                     sendFileMessage(filePath);
                 }
+            }else if (requestCode == CHOOSE_PIC )
+            {
+                String filePath = data.getStringExtra("path");
+                Boolean isCheck = data.getBooleanExtra("isCheck",false);
+                sendImageMessage(filePath,!isCheck);
             }
         }
     }
@@ -1849,7 +1859,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     }
 
-    protected void sendImageMessage(String imagePath) {
+    protected void sendImageMessage(String imagePath,boolean isCompress) {
 
         new Thread(new Runnable(){
             public void run(){
@@ -1861,17 +1871,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if(isHas)
                     {
                         String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+imagePath.substring(imagePath.lastIndexOf("/")+1);
-
                         String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
-                        EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
+                        int codeSave = FileUtil.copySdcardPicAndCompress(imagePath,files_dir,isCompress);
+                        EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
                         message.setFrom(userId);
                         message.setTo( UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
-
-
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
@@ -1881,13 +1889,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                            if(codeSave == 1)
+                            {
+                                String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                            }else{
+                                Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                            }
+
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,aesKey);
+                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,aesKey,isCompress);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -1925,10 +1939,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
+                            }else{
+                                Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                             }
 
                         }
-                        FileUtil.copySdcardFile(imagePath,files_dir);
                         sendMessageTo(message);
                     }else{
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
@@ -2397,7 +2412,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 toast.show();
                 return;
             }
-            sendImageMessage(picturePath);
+            chooseOriginalImage(picturePath);
+            //sendImageMessage(picturePath);
         } else {
             File file = new File(selectedImage.getPath());
             if (!file.exists()) {
@@ -2407,11 +2423,26 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 return;
 
             }
-            sendImageMessage(file.getAbsolutePath());
+            chooseOriginalImage(file.getAbsolutePath());
+            //sendImageMessage(file.getAbsolutePath());
         }
 
     }
-
+    protected void chooseOriginalImage(String path)
+    {
+        Intent intent = new Intent(getContext(), EaseShowChooseImageActivity.class);
+        File file = new File(path);
+        if (file.exists()) {
+            Uri uri = Uri.fromFile(file);
+            intent.putExtra("uri", uri);
+            intent.putExtra("path", path);
+            startActivityForResult(intent,CHOOSE_PIC);
+        }else{
+            Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+    }
     /**
      * send file
      * @param uri
@@ -2457,7 +2488,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        cameraFile = new File(PathUtils.getInstance().getImagePath(),  System.currentTimeMillis() + ".jpg");
+        cameraFile = new File(PathUtils.getInstance().getTempPath(),  System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
         startActivityForResult(
@@ -2596,7 +2627,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         // send thumb nail if original image does not exist
                         filePath = ((EMImageMessageBody) forward_msg.getBody()).thumbnailLocalPath();
                     }
-                    sendImageMessage(filePath);
+                    sendImageMessage(filePath,false);
                 }
                 break;
             default:

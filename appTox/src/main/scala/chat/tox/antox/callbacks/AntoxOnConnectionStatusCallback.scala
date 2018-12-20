@@ -4,10 +4,12 @@ import android.content.{Context, SharedPreferences}
 import android.preference.PreferenceManager
 import chat.tox.antox.data.State
 import chat.tox.antox.tox.{MessageHelper, ToxSingleton}
-import chat.tox.antox.utils.{ConnectionManager, ConnectionTypeChangeListener}
+import chat.tox.antox.utils.{AntoxLog, ConnectionManager, ConnectionTypeChangeListener}
 import chat.tox.antox.wrapper.FriendInfo
+import events.{ToxFriendStatusEvent, ToxStatusEvent}
 import im.tox.tox4j.core.callbacks.FriendConnectionStatusCallback
 import im.tox.tox4j.core.enums.ToxConnection
+import org.greenrobot.eventbus.EventBus
 
 class AntoxOnConnectionStatusCallback(private var ctx: Context) extends FriendConnectionStatusCallback[Unit] {
 
@@ -47,9 +49,12 @@ class AntoxOnConnectionStatusCallback(private var ctx: Context) extends FriendCo
     db.updateContactOnline(friendInfo.key, online)
 
     if (online) {
+      EventBus.getDefault().post(new ToxFriendStatusEvent(1))
+      AntoxLog.debug(s"friendConnectionStatus online")
       MessageHelper.sendUnsentMessages(friendInfo.key, ctx)
       State.transfers.updateSelfAvatar(ctx, false)
     } else {
+      EventBus.getDefault().post(new ToxFriendStatusEvent(0))
       ToxSingleton.typingMap.put(friendInfo.key, false)
       State.typing.onNext(true)
       State.callManager.get(friendInfo.key).filter(_.active).foreach(_.end())

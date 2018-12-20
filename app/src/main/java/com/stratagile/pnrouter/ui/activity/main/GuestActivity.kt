@@ -45,6 +45,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.GuestPresenter
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import events.ToxFriendStatusEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
@@ -52,7 +53,7 @@ import kotlinx.android.synthetic.main.activity_guest.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -479,6 +480,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             0 -> {
+                LogUtil.addLog("P2P连接成功:","GuestActivity")
                 ConstantValue.isToxConnected = true
                 AppConfig.instance.getPNRouterServiceMessageToxReceiver()
 
@@ -493,6 +495,20 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
             }
+            1 ->{
+                LogUtil.addLog("P2P连接中Reconnecting:","GuestActivity")
+            }
+        }
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+
+        if(toxFriendStatusEvent.status == 1)
+        {
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
+        }else{
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
         }
 
     }
@@ -560,6 +576,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                 ConstantValue.curreantNetworkType = "TOX"
                                                 if(!ConstantValue.isToxConnected)
                                                 {
+                                                    LogUtil.addLog("P2P启动连接:","GuestActivity")
                                                     var intent = Intent(AppConfig.instance, ToxService::class.java)
                                                     startService(intent)
                                                 }else{
@@ -616,6 +633,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     ConstantValue.curreantNetworkType = "TOX"
                                     if(!ConstantValue.isToxConnected)
                                     {
+                                        LogUtil.addLog("P2P启动连接:","GuestActivity")
                                         var intent = Intent(AppConfig.instance, ToxService::class.java)
                                         startService(intent)
                                     }else{

@@ -74,6 +74,7 @@ class ToxService extends Service {
                   AntoxLog.debug("Reconnecting")
                   Observable[Boolean](_ => ToxSingleton.bootstrap(getApplicationContext)).subscribe()
                 })
+              EventBus.getDefault().post(new ToxStatusEvent(1))
               AntoxLog.debug(s"Tox disconnected. Scheduled reconnection every " + (reconnectionIntervalSeconds * reconnectionCount) + " seconds")
               reconnectionCount = reconnectionCount + 1;
             }

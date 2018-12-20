@@ -205,7 +205,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         if (client != null) {
             KLog.i("onConnected()")
             KLog.i(client!!.request().url())
-            LogUtil.addLog("连接成功：${client!!.request().url()}")
+            LogUtil.addLog("websocket连接成功：${client!!.request().url()}")
             attempts = 0
             connected = true
             retryTime = 0

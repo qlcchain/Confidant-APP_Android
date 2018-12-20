@@ -61,7 +61,7 @@
                     android:layout_gravity="center_vertical"
                     android:ellipsize="middle"
                     android:singleLine="true"
-                    android:textColor="#000"
+                    android:textColor="#FFFFFF"
                     android:textSize="15sp" />
 
                 <RelativeLayout
@@ -84,6 +84,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_gravity="center_vertical"
                         android:textColor="#818181"
+                        android:visibility="invisible"
                         android:textSize="14sp" />
                     <ImageView
                         android:id="@+id/msg_sendstatus"

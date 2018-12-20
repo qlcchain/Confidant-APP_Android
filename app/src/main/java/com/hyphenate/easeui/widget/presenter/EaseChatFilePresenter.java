@@ -13,6 +13,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
+import com.hyphenate.easeui.utils.OpenFileUtil;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
@@ -53,10 +54,12 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         if (file.exists()) {
             // open files if it exist
             try {
-                FileUtils.openFile(file, (Activity) getContext());
+                Intent intent = OpenFileUtil.getInstance((Activity) getContext()).openFile(filePath);
+                ((Activity) getContext()).startActivity(intent);
+                //FileUtils.openFile(file, (Activity) getContext());
             }catch (Exception e)
             {
-
+                e.printStackTrace();
             }
 
         } else {

@@ -430,4 +430,6 @@
     <string name="logoutfailed">Exit failed, please try again</string>
     <string name="nofile">file does not exist</string>
     <string name="acceptanceerror">acceptance error</string>
+    <string name="originalgraph"> original graph</string>
+
 </resources>

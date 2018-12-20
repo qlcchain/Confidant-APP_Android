@@ -104,6 +104,9 @@
             android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.hyphenate.easeui.ui.EaseShowChooseImageActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.hyphenate.easeui.ui.EaseShowNormalFileActivity"
             android:screenOrientation="portrait" />
 

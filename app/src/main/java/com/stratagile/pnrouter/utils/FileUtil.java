@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import okio.ByteString;
+import scalaz.Alpha;
 
 /**
  * Created by huzhipeng on 2018/3/7.
@@ -997,7 +998,104 @@ public class FileUtil {
         }).start();
 
     }
+    /**
+     * 拷贝本地图片并压缩处理
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copySdcardPicAndCompress(String fromFile, String toFile,Boolean isCompress)
+    {
+        if(!isCompress)
+        {
+            try
+            {
+                InputStream fosfrom = new FileInputStream(fromFile);
+                OutputStream fosto = new FileOutputStream(toFile);
+                byte bt[] = new byte[1024];
+                int c;
+                while ((c = fosfrom.read(bt)) > 0)
+                {
+                    fosto.write(bt, 0, c);
+                }
+                fosfrom.close();
+                fosto.close();
+                return 1;
+            } catch (Exception ex)
+            {
 
+            }
+        }else{
+            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(fromFile, bitmapOptions);
+            int code = saveBitmap(bitmap,toFile);
+            return code;
+        }
+        return 0;
+    }
+    /**
+     * 拷贝本地图片压缩并加密存储
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copySdcardToxPicAndEncrypt(String fromFile, String toFile, String aesKey,Boolean isCompress)
+    {
+        if(!isCompress)
+        {
+            try
+            {
+                InputStream fosfrom = new FileInputStream(fromFile);
+                byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+                byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                fosfrom = FileUtil.byteTOInputStream(miFile);
+                OutputStream fosto = new FileOutputStream(toFile);
+                byte bt[] = new byte[1024];
+                int c;
+                while ((c = fosfrom.read(bt)) > 0)
+                {
+                    fosto.write(bt, 0, c);
+                }
+                fosfrom.close();
+                fosto.close();
+                return 1;
+            } catch (Exception ex)
+            {
+
+            }
+        }else{
+            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(fromFile, bitmapOptions);
+            String tempName = fromFile.substring(fromFile.lastIndexOf("/")+1);
+            String tempPath = PathUtils.getInstance().getTempPath().toString()+"/" + tempName;
+            int code = saveBitmap(bitmap,tempPath);
+            if(code == 1)
+            {
+                try
+                {
+                    InputStream fosfrom = new FileInputStream(tempPath);
+                    byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+                    byte [] miFile = AESCipher.aesEncryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                    fosfrom = FileUtil.byteTOInputStream(miFile);
+                    OutputStream fosto = new FileOutputStream(toFile);
+                    byte bt[] = new byte[1024];
+                    int c;
+                    while ((c = fosfrom.read(bt)) > 0)
+                    {
+                        fosto.write(bt, 0, c);
+                    }
+                    fosfrom.close();
+                    fosto.close();
+                    return 1;
+                } catch (Exception exx)
+                {
+
+                }
+            }
+            return 0;
+        }
+        return 0;
+    }
     /**
      * 拷贝本地文件并加密存储
      * @param fromFile
@@ -1261,5 +1359,31 @@ public class FileUtil {
         }
         return false;
     }
-
+    /**
+     * 将图片存到本地
+     */
+    public static int saveBitmap(Bitmap bm,String dir) {
+        try {
+            File f = new File(dir);
+            Uri uri;
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream out = new FileOutputStream(f);
+            if(dir.endsWith(".jpg"))
+            {
+                bm.compress(Bitmap.CompressFormat.JPEG, 70, out);
+            }else if(dir.endsWith(".png")){
+                bm.compress(Bitmap.CompressFormat.PNG, 70, out);
+            }
+            out.flush();
+            out.close();
+            return 1;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
