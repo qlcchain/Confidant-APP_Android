@@ -50,12 +50,15 @@ public class EaseChatRowFile extends EaseChatRow{
 	    fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
-       /* if(filePath.contains("ease_default_file"))
+        if(ll_loading !=null)
         {
-            ll_loading.setVisibility(View.VISIBLE);
-        }else{
-            ll_loading.setVisibility(View.INVISIBLE);
-        }*/
+            if(filePath.contains("ease_default_file"))
+            {
+                ll_loading.setVisibility(View.VISIBLE);
+            }else{
+                ll_loading.setVisibility(View.INVISIBLE);
+            }
+        }
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             File file = new File(filePath);

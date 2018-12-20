@@ -231,6 +231,7 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 		isCheck = chooseCheckBox.isChecked();
 		Intent intent = new Intent();
 		intent.putExtra("isCheck", isCheck);
+		intent.putExtra("path", path);
 		setResult(RESULT_OK,intent);
 		finish();
 	}
