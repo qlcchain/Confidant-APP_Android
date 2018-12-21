@@ -4,6 +4,7 @@ import java.io._
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Environment
 import chat.tox.antox.utils.StorageType._
 
 object FileUtils {
@@ -63,6 +64,17 @@ object FileUtils {
       outputStream.write(write.getBytes)
       outputStream.close()
     } catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
+  }
+  def writeDataJsonFile(fileName: String, write: String, context: Context): Unit = {
+    try {
+      var fw = new FileWriter(Environment.getExternalStorageDirectory().toString()+"/RouterData13/" + fileName);//SD卡中的路径
+      fw.flush();
+      fw.write(write);
+      fw.close();
+    }  catch {
       case e: Exception =>
         e.printStackTrace()
     }

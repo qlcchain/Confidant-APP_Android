@@ -6,6 +6,7 @@ import java.util.Collections
 
 import android.content.{Context, SharedPreferences}
 import android.net.ConnectivityManager
+import android.os.Environment
 import android.preference.PreferenceManager
 import chat.tox.antox.data.{AntoxDB, State}
 import chat.tox.antox.utils._
@@ -67,11 +68,11 @@ object ToxSingleton {
 
     dhtNodes =
       (if (dhtNodes.isEmpty) None else Some(dhtNodes))
-        .orElse(readCachedDhtNodes(ctx))
+        .orElse(readCacheJsondDhtNodes(ctx))
         .orElse({
           // if all else fails, try to pull the nodes from the server again
           updateCachedDhtNodes(ctx)
-          readCachedDhtNodes(ctx)
+          readCacheJsondDhtNodes(ctx)
         })
         .getOrElse(Nil)
 
@@ -110,7 +111,7 @@ object ToxSingleton {
 
     JsonReader.readFromUrl(nodeFileUrl) match {
       case Some(downloadedJson) =>
-        FileUtils.writePrivateFile(nodeFileName, downloadedJson, ctx)
+        FileUtils.writeDataJsonFile(nodeFileName, downloadedJson, ctx)
       case None =>
         AntoxLog.debug("Failed to download nodefile")
     }
@@ -124,7 +125,20 @@ object ToxSingleton {
       nodes <- parseDhtNodes(json)
     ) yield nodes
   }
+  def readCacheJsondDhtNodes(ctx: Context): Option[Seq[DhtNode]] = {
+    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterData13/", nodeFileName)
+    var isExit = savedNodeFile.exists()
+    savedNodeFile.lastModified()
+    for (
+      json <- JsonReader.readJsonFromFile(savedNodeFile);
+      nodes <- parseDhtNodes(json)
+    ) yield nodes
+  }
+  def deleteCacheJsondDhtNodes(ctx: Context): Unit = {
+    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterData13/", nodeFileName)
+    savedNodeFile.lastModified()
 
+  }
   private def parseDhtNodes(json: JSONObject): Option[Seq[DhtNode]] = {
     try {
       var dhtNodes: Array[DhtNode] = Array()
