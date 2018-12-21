@@ -85,6 +85,7 @@ public class OpenFileUtil {
             mapSimple.put(".tar", "application/x-tar");
             mapSimple.put(".tgz", "application/x-compressed");
             mapSimple.put(".txt", "text/plain");
+            mapSimple.put(".ovpn", "text/plain");
             mapSimple.put(".wav", "audio/x-wav");
             mapSimple.put(".wma", "audio/x-ms-wma");
             mapSimple.put(".wmv", "audio/x-ms-wmv");

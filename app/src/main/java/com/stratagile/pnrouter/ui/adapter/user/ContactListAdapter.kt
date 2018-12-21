@@ -18,10 +18,11 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
 
 
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+        //var nickNameSouce = item!!.nickName
         helper!!.setText(R.id.tvNickName,nickNameSouce)
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
-        if (item!!.nickName != null) {
-            imagebutton.setText(item?.nickName)
+        if (nickNameSouce != null) {
+            imagebutton.setText(nickNameSouce)
         }
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(item)
         helper!!.addOnClickListener(R.id.tvRefuse)

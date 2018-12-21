@@ -23,6 +23,9 @@ public class UserEntity implements Parcelable{
 
     //昵称
     private String nickName;
+
+    //昵称
+    private String nickSouceName;
     //头像
     private String avatar;
     //备注名字
@@ -35,21 +38,25 @@ public class UserEntity implements Parcelable{
     private long timestamp;
 
 
-    @Generated(hash = 164714430)
+
+
+    @Generated(hash = 440973856)
     public UserEntity(Long id, String userId, String routerUserId, String publicKey,
-            String nickName, String avatar, String noteName, int friendStatus,
-            boolean addFromMe, long timestamp) {
+            String nickName, String nickSouceName, String avatar, String noteName,
+            int friendStatus, boolean addFromMe, long timestamp) {
         this.id = id;
         this.userId = userId;
         this.routerUserId = routerUserId;
         this.publicKey = publicKey;
         this.nickName = nickName;
+        this.nickSouceName = nickSouceName;
         this.avatar = avatar;
         this.noteName = noteName;
         this.friendStatus = friendStatus;
         this.addFromMe = addFromMe;
         this.timestamp = timestamp;
     }
+    @Generated(hash = 1433178141)
     public UserEntity() {
     }
 
@@ -64,6 +71,7 @@ public class UserEntity implements Parcelable{
         routerUserId = in.readString();
         publicKey = in.readString();
         nickName = in.readString();
+        nickSouceName = in.readString();
         avatar = in.readString();
         noteName = in.readString();
         friendStatus = in.readInt();
@@ -83,6 +91,7 @@ public class UserEntity implements Parcelable{
         dest.writeString(routerUserId);
         dest.writeString(publicKey);
         dest.writeString(nickName);
+        dest.writeString(nickSouceName);
         dest.writeString(avatar);
         dest.writeString(noteName);
         dest.writeInt(friendStatus);
@@ -169,5 +178,11 @@ public class UserEntity implements Parcelable{
     }
     public void setRouterUserId(String routerUserId) {
         this.routerUserId = routerUserId;
+    }
+    public String getNickSouceName() {
+        return this.nickSouceName;
+    }
+    public void setNickSouceName(String nickSouceName) {
+        this.nickSouceName = nickSouceName;
     }
 }

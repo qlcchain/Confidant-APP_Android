@@ -257,7 +257,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
             var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
             receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
-            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId)
+            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,2,jPushFileMsgRsp.params.msgId)
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

@@ -237,6 +237,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             new_contact_dot.visibility = View.GONE
             EventBus.getDefault().post(UnReadContactCount(0))
         }
+        for (i in contactList) {
+            i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+        }
+        contactList.sortBy {
+            it.nickSouceName
+        }
         if(bundle == null)
         {
             newFriend.visibility = View.VISIBLE
