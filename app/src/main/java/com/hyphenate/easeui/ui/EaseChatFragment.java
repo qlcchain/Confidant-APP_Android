@@ -1749,6 +1749,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
             currentSendMsg.setAcked(true);
             conversation.insertMessage(currentSendMsg);
+            if(isMessageListInited) {
+                messageList.refresh();
+            }
         }
     }
     /**
