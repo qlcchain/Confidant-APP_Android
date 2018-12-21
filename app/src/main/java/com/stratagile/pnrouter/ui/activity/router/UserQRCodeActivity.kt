@@ -23,7 +23,11 @@ import javax.inject.Inject
 import android.content.Intent.ACTION_SEND
 import android.net.Uri
 import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.utils.ShareUtil
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 
 
@@ -49,7 +53,7 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
     override fun initData() {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerUserEntity = intent.getParcelableExtra("user")
-
+        EventBus.getDefault().register(this)
         tvShareUser.setOnClickListener {
 
             cardViewUser.setDrawingCacheEnabled(true);
@@ -116,5 +120,35 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 }

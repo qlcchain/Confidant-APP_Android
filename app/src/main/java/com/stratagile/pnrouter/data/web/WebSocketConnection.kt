@@ -215,6 +215,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             keepAliveSender!!.start()
 
             if (listener != null) listener!!.onConnected()
+
+            if(ConstantValue.isWebsocketReConnect && ConstantValue.loginReq != null && ConstantValue.hasLogin)
+            {
+                var loginReq = ConstantValue.loginReq
+                LogUtil.addLog("websocket重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
+                var reslut = send(BaseData(loginReq!!).baseDataToJson().replace("\\", ""))
+            }
         }
     }
 
@@ -338,6 +345,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             this.connected = false
             this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
+            ConstantValue.isWebsocketReConnect = true
             Log.i("websocket：this.client2",""+ (this.client == null))
         }
     }

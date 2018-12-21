@@ -140,7 +140,33 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun setupActivityComponent() {
        DaggerRouterManagementComponent
                .builder()

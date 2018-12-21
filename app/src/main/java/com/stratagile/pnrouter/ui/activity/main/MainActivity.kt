@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -664,7 +665,33 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

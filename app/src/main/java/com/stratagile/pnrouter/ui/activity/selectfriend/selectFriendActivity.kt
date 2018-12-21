@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
@@ -89,7 +90,33 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             fragment!!.selectOrCancelAll()
         }
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     /**
      * 显示转发的弹窗
      */

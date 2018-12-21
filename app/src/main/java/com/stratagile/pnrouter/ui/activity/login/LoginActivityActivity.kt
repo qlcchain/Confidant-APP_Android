@@ -300,6 +300,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             runOnUiThread {
                 closeProgressDialog()
             }
+            ConstantValue.hasLogin = true
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -410,6 +411,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 //            standaloneCoroutine.cancel()
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                         var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        ConstantValue.loginReq = login
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
                     }
 
@@ -508,7 +510,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                         var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-
+                        ConstantValue.loginReq = login
                         var baseData = BaseData(2,login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
@@ -563,6 +565,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                     var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                    ConstantValue.loginReq = login
                     var baseData = BaseData(2,login)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
@@ -678,6 +681,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }else{
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                     var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                    ConstantValue.loginReq = login
                     standaloneCoroutine = launch(CommonPool) {
                         delay(10000)
                         if (!loginBack) {

@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.CreateNormalUserReq
 import com.stratagile.pnrouter.entity.JCreateNormalUserRsp
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterCreateUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterCreateUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterCreateUserModule
@@ -22,6 +23,9 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adduser.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 import javax.inject.Inject;
 
@@ -57,7 +61,7 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
         routerEntity = intent.getParcelableExtra("routerUserEntity")
 
         AppConfig.instance.messageReceiver!!.createUserCallBack = this
-
+        EventBus.getDefault().register(this)
         registerUserBtn.setOnClickListener {
             if (mnemonic.text.toString().equals("") || IdentifyCode.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
@@ -85,7 +89,33 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
 
         }
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun setupActivityComponent() {
        DaggerRouterCreateUserComponent
                .builder()
@@ -108,5 +138,6 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
     override fun onDestroy() {
         super.onDestroy()
         AppConfig.instance.messageReceiver!!.createUserCallBack = null
+        EventBus.getDefault().unregister(this)
     }
 }

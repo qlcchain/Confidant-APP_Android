@@ -143,6 +143,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             runOnUiThread {
                 closeProgressDialog()
             }
+            ConstantValue.hasLogin = true
             ConstantValue.currentRouterId = ConstantValue.scanRouterId
             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
             startActivity(Intent(this, MainActivity::class.java))
@@ -167,6 +168,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
         var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+        ConstantValue.loginReq = login
         if(ConstantValue.isWebsocketConnected)
         {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))

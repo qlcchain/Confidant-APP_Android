@@ -10,6 +10,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewFriendComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
@@ -66,7 +67,33 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         EventBus.getDefault().register(this)
         UserProvider.getInstance().addFriendDelListener = this
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun initData() {
         title.text = getString(R.string.add_contact)
         //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()

@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
@@ -419,7 +420,33 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var intent = Intent(this, FileTransformService::class.java)
         startService(intent)
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         AppConfig.instance.messageReceiver!!.chatCallBack = null

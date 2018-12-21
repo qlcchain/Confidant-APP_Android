@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.RouterCodeData
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterQRCodeContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterQRCodeModule
@@ -29,6 +30,9 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_router_qrcode.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -56,6 +60,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         setContentView(R.layout.activity_router_qrcode)
     }
     override fun initData() {
+        EventBus.getDefault().register(this)
         title.text = resources.getString(R.string.qr_code_business_card)
         routerEntity = intent.getParcelableExtra("router")
         tvRouterName.text = routerEntity.routerName
@@ -101,7 +106,33 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
             saveQrCodeToPhone()
         }
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun setupActivityComponent() {
        DaggerRouterQRCodeComponent
                .builder()
@@ -188,6 +219,9 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         inflater.inflate(R.menu.share_self, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 
 }

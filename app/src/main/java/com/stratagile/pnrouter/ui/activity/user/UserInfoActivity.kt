@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.AddFriendDealReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.DelFriendCmdRsp
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
@@ -171,6 +172,33 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 //        AppConfig.instance.messageReceiver!!.addfrendCallBack = this
         UserProvider.getInstance().friendOperateListener = this
         userInfo = intent.getParcelableExtra("user")
+    }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
+
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
     }
     override fun initData() {
         var nickNameSouce = ""

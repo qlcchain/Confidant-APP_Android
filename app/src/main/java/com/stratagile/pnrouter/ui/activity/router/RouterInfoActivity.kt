@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JLogOutRsp
 import com.stratagile.pnrouter.entity.LogOutReq
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterInfoComponent
@@ -30,6 +31,8 @@ import com.stratagile.pnrouter.view.SweetAlertDialog
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_router_info.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 
@@ -84,6 +87,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             intent.putExtra("router", routerEntity)
             startActivity(intent)
         }
+        EventBus.getDefault().register(this)
         tvRouterAlias.text = routerEntity.routerName
         title.text = routerEntity.routerName
         if (routerEntity.lastCheck) {
@@ -168,6 +172,8 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         finish()
     }
     fun onLogOutSuccess() {
+        ConstantValue.loginReq = null
+        ConstantValue.isWebsocketReConnect = false
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(this, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
@@ -194,9 +200,36 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         AppConfig.instance.messageReceiver?.logOutBack = null
+        EventBus.getDefault().unregister(this)
     }
 }

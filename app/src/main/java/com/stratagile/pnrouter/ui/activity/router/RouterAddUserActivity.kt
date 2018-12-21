@@ -10,12 +10,16 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterAddUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterAddUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterAddUserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterAddUserPresenter
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import kotlinx.android.synthetic.main.fragment_user.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 /**
@@ -42,6 +46,7 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
     }
     override fun initData() {
 
+        EventBus.getDefault().register(this)
         routerEntity = intent.getParcelableExtra("routerEntity")
         fragment = UserFragment()
         val bundle = Bundle()
@@ -78,11 +83,38 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
     override fun showProgressDialog() {
         progressDialog.show()
     }
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                progressDialog.hide()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
 
+            }
+            2 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if(isCanShotNetCoonect)
+                {
+                    showProgressNoCanelDialog("network reconnecting...")
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }

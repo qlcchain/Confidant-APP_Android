@@ -37,8 +37,20 @@ class ToxMessageReceiver(){
                 ConstantValue.isToxConnected = true
                 keepAliveSender = KeepAliveSender()
                 keepAliveSender!!.start()
+                if(ConstantValue.isToxReConnect && ConstantValue.loginReq != null && ConstantValue.hasLogin)
+                {
+                    var loginReq = ConstantValue.loginReq
+                    LogUtil.addLog("Tox重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
+                    var baseDataJson = BaseData(loginReq).baseDataToJson().replace("\\", "")
+                    var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }
             }
             1 -> {
+                if(ConstantValue.isToxConnected)
+                {
+                    ConstantValue.isToxReConnect = true
+                }
                 LogUtil.addLog("P2P连接中Reconnecting:","ToxMessageReceiver")
             }
             2-> {
