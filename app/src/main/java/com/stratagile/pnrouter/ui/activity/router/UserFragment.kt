@@ -130,7 +130,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
    override fun onResume()
     {
         super.onResume()
-        pullFriendList();
+        //pullFriendList();
     }
     fun pullFriendList() {
         showProgressDialog()

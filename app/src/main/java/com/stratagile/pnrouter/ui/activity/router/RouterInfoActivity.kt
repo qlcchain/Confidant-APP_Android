@@ -127,6 +127,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             routerEntity.routerName = data!!.getStringExtra("alias")
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerEntity)
+            EventBus.getDefault().unregister(this)
             initData()
             EventBus.getDefault().post(RouterChange())
         }
