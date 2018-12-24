@@ -32,7 +32,7 @@ public class SendFileData implements Serializable {
 
 
 
-    private byte[] Content = new byte[1024*100];
+    private byte[] Content = new byte[1024 * 1024 *2];
 
     public int getMagic() {
         return Magic;

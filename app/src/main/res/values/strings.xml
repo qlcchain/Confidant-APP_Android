@@ -431,5 +431,6 @@
     <string name="nofile">file does not exist</string>
     <string name="acceptanceerror">acceptance error</string>
     <string name="originalgraph"> original graph</string>
-
+    <string name="DestinationUnreachable">destination unreachable</string>
+    <string name="notFreinds">The other person is not your good friend.</string>
 </resources>

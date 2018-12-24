@@ -184,7 +184,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     static final int ITEM_VIDEOCALL = 7;
     static final int ITEM_PRIVATEFILE = 8;
 
-    protected static final int sendFileSizeMax = 1024 *100;
+    protected static final int sendFileSizeMax = 1024 * 1024 * 2;
     protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file,R.string.attach_location, R.string.attach_Meeting, R.string.attach_Video_call, R.string.attach_Privatefile };
     protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector,R.drawable.ease_chat_location_selector, R.drawable.ease_chat_meeting_selector,
@@ -1743,16 +1743,45 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void upateMessage(JSendMsgRsp jSendMsgRsp)
     {
-        if(conversation !=null )
-        {
-            conversation.removeMessage(currentSendMsg.getMsgId());
-            currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
-            currentSendMsg.setAcked(true);
-            conversation.insertMessage(currentSendMsg);
-            if(isMessageListInited) {
-                messageList.refresh();
-            }
+        if(jSendMsgRsp.getParams().getRetCode() == 0){
+
         }
+        switch (jSendMsgRsp.getParams().getRetCode())
+        {
+            case 0:
+                if(conversation !=null )
+                {
+                    conversation.removeMessage(currentSendMsg.getMsgId());
+                    currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+                    currentSendMsg.setAcked(true);
+                    conversation.insertMessage(currentSendMsg);
+                    if(isMessageListInited) {
+                        messageList.refresh();
+                    }
+                }
+                break;
+            case 1:
+                if(conversation !=null )
+                {
+                    conversation.removeMessage(currentSendMsg.getMsgId());
+                    if(isMessageListInited) {
+                        messageList.refresh();
+                    }
+                }
+                Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                if(conversation !=null )
+                {
+                    conversation.removeMessage(currentSendMsg.getMsgId());
+                    if(isMessageListInited) {
+                        messageList.refresh();
+                    }
+                }
+                Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
     /**
      * send @ message, only support group chat message

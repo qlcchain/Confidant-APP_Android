@@ -80,7 +80,25 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         KLog.i("推送过来了添加好友的请求")
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
-                it.friendStatus = 3
+                if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
+                {
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    val selfNickNameBase64 = it.nickName
+                    //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+                    var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                    }else if (ConstantValue.isToxConnected) {
+                        var baseData = BaseData(addFriendDealReq)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }
+                    it.friendStatus = 0
+                }else
+                {
+                    it.friendStatus = 3
+                }
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.publicKey = jAddFriendPushRsp.params.userKey
                 it.timestamp = jAddFriendPushRsp.timestamp

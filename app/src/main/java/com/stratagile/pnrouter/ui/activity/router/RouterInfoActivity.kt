@@ -53,6 +53,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             if(AppConfig.instance.messageReceiver != null)
                 AppConfig.instance.messageReceiver!!.close()
             ConstantValue.isWebsocketConnected = false
+            isUserExit = true
             runOnUiThread()
             {
                 closeProgressDialog()
@@ -66,11 +67,13 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
     @Inject
     internal lateinit var mPresenter: RouterInfoPresenter
     lateinit var routerEntity: RouterEntity
+    var isUserExit = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
+        isUserExit = false
         setContentView(R.layout.activity_router_info)
         routerEntity = intent.getParcelableExtra("router")
         if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
@@ -204,6 +207,8 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        if(isUserExit)
+            return
         when (statusChange.status) {
             0 -> {
                 progressDialog.hide()

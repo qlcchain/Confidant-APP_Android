@@ -229,7 +229,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
         var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in useEntityList) {
-            if (jDelFriendPushRsp.params.friendId.equals(i.userId)) {
+            if (jDelFriendPushRsp.params.friendId.equals(i.userId) || jDelFriendPushRsp.params.userId.equals(i.userId) ) {
                 i.friendStatus = 4
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 runOnUiThread {
