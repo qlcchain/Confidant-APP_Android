@@ -100,6 +100,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     }
 
     override fun initData() {
+        EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
         fragment = ContactFragment();
         val bundle = Bundle()
@@ -505,7 +506,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                     }
                 }
             }
-
         }
     }
 
@@ -711,7 +711,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     }
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().unregister(this)
+        //EventBus.getDefault().unregister(this)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun selectFriendChange(selectFriendChange: SelectFriendChange) {

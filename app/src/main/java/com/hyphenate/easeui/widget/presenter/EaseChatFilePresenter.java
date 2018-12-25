@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.io.File;
@@ -81,7 +82,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
-       /* if(fromID.equals(userId))
+        if(fromID.equals(userId))
         {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
             floatMenu.inflate(R.menu.popup_menu_file);
@@ -90,17 +91,19 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(350,loc1[1]-200));
+            floatMenu.show(new Point(450,loc1[1]-200));
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {
                     switch (position)
                     {
                         case 0:
+                            Intent intent = new Intent(getContext(), selectFriendActivity.class);
+                            intent.putExtra("fromId", message.getTo());
+                            intent.putExtra("message",message);
+                            getContext().startActivity(intent);
                             break;
                         case 1:
-                            break;
-                        case 2:
                             DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {
@@ -112,6 +115,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             }
+
                             String  aa = message.getMsgId();
                             ConstantValue.INSTANCE.setMsgId(message.getMsgId());
                             break;
@@ -120,6 +124,6 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                     }
                 }
             });
-        }*/
+        }
     }
 }
