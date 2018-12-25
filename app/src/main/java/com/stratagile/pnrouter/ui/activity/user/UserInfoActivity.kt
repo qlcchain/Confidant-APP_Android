@@ -217,7 +217,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 refuseFriend()
             }
         }
-        SpUtil.putString(this, ConstantValue.userFriendname,userInfo!!.nickName)
+        SpUtil.putString(this, ConstantValue.userFriendname, String(RxEncodeTool.base64Decode(userInfo!!.nickName)))
         SpUtil.putString(this, ConstantValue.userFriendId,userInfo!!.userId)
         shareAppFreind.setOnClickListener {
             startActivity(Intent(this, QRFriendCodeActivity::class.java))

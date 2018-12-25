@@ -87,10 +87,10 @@ class QRFriendCodeActivity : BaseActivity(), QRFriendCodeContract.View , View.On
             //PopWindowUtil.showSharePopWindow(this, tvShare)
 
         }
-        tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
+        tvUserName.text = SpUtil.getString(this, ConstantValue.userFriendname, "")
 
-        ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
+        ivAvatar.setText(SpUtil.getString(this, ConstantValue.userFriendname, "")!!)
+        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.userFriendname, "")!!)
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
         CreateEnglishUserQRCode.execute()*/
         tvSaveToPhone.setOnClickListener {
@@ -123,8 +123,8 @@ class QRFriendCodeActivity : BaseActivity(), QRFriendCodeContract.View , View.On
                     // 获取内置SD卡路径
                     val sdCardPath = Environment.getExternalStorageDirectory().getPath() + "/Router"
                     // 图片文件路径
-                    var username = SpUtil.getString(this, ConstantValue.username, "")
-                    val filePath = sdCardPath + File.separator + username + ".png"
+                    var userFriendname = SpUtil.getString(this, ConstantValue.userFriendname, "")
+                    val filePath = sdCardPath + File.separator + userFriendname + ".png"
                     val file = File(filePath)
                     val os = FileOutputStream(file)
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)

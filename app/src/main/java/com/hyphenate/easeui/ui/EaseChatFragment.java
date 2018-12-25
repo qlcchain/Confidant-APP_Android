@@ -213,6 +213,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
+    private HashMap<String, String> sendFileAESKeyByteMap = new HashMap<>();
+    private HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
+    private HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, String> sendFileNameMap = new HashMap<>();
     private HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
@@ -281,6 +284,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
                             String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                            String aesKey = sendFileAESKeyByteMap.get(fileTransformEntity.getToId());
+                            byte[] SrcKey = sendFileMyKeyByteMap.get(fileTransformEntity.getToId());
+                            byte[] DstKey = sendFileFriendKeyByteMap.get(fileTransformEntity.getToId());
                             File file = new File(filePath);
                             if(file.exists())
                             {
@@ -288,7 +294,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
                                 int fileId = (int)(System.currentTimeMillis()/1000);
-                                String aesKey =  RxEncryptTool.generateAESKey();
+                                //String aesKey =  RxEncryptTool.generateAESKey();
                                 byte[] fileBufferMi = new byte[0];
                                 try{
                                     long  miBegin = System.currentTimeMillis();
@@ -296,7 +302,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     long miend  = System.currentTimeMillis();
                                     KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
                                     faBegin = System.currentTimeMillis();
-                                    sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1);
+                                    sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1,aesKey,SrcKey,DstKey);
                                 }catch (Exception e)
                                 {
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -408,7 +414,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
                                 String fileName = sendFileNameMap.get(FileIdResult+"");
-                                sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1);
+                                String aesKey = sendFileAESKeyByteMap.get(FileIdResult+"");
+                                byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult+"");
+                                byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult+"");
+                                sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,aesKey,SrcKey,DstKey);
                             }catch (Exception e)
                             {
 
@@ -439,17 +448,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
         }
     }
-    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq)
+    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq,String aesKey,byte[] SrcKey,byte[] DstKey)
     {
         String FriendPublicKey = sendFileFriendKeyMap.get(msgId);
-        String aesKey =  RxEncryptTool.generateAESKey();
-        byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+        //String aesKey =  RxEncryptTool.generateAESKey();
+      /*  byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
         byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
         byte[] SrcKey = new byte[256];
-        byte[] DstKey = new byte[256];
+        byte[] DstKey = new byte[256];*/
         try {
-            SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),my));
-            DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),friend));
+          /*  SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),my));
+            DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),friend));*/
             KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
             String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
             int action = 1;
@@ -502,6 +511,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendFileLastByteSizeMap.put(fileId+"",segSize);
             sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
             sendMsgIdMap.put(fileId+"",msgId);
+            sendFileAESKeyByteMap.put(fileId+"",aesKey);
+            sendFileMyKeyByteMap.put(fileId+"",SrcKey);
+            sendFileFriendKeyByteMap.put(fileId+"",DstKey);
             EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
             String s = new String(content);
             String aabb =  FileUtil.bytesToHex(content);
@@ -1835,6 +1847,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendMsgLocalMap.put(uuid,false);
                     sendFilePathMap.put(uuid,filePath);
                     sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                    String aesKey =  RxEncryptTool.generateAESKey();
+                    byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                    byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                    byte[] SrcKey = new byte[256];
+                    byte[] DstKey = new byte[256];
+                    try {
+                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                        sendFileAESKeyByteMap.put(uuid,aesKey);
+                        sendFileMyKeyByteMap.put(uuid,SrcKey);
+                        sendFileFriendKeyByteMap.put(uuid,DstKey);
+                    }catch (Exception e){
+                        Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                 } else {
@@ -1921,12 +1951,30 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                            String aesKey =  RxEncryptTool.generateAESKey();
+                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] SrcKey = new byte[256];
+                            byte[] DstKey = new byte[256];
+                            try {
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                                sendFileAESKeyByteMap.put(uuid,aesKey);
+                                sendFileMyKeyByteMap.put(uuid,SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid,DstKey);
+                            }catch (Exception e){
+                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             if(codeSave == 1)
                             {
                                 String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                 EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                             }else{
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                return;
                             }
 
                         }else{
@@ -1973,6 +2021,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
                             }else{
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                return;
                             }
 
                         }
@@ -2017,6 +2066,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,imagePath);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                            String aesKey =  RxEncryptTool.generateAESKey();
+                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] SrcKey = new byte[256];
+                            byte[] DstKey = new byte[256];
+                            try {
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                                sendFileAESKeyByteMap.put(uuid,aesKey);
+                                sendFileMyKeyByteMap.put(uuid,SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid,DstKey);
+                            }catch (Exception e){
+                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
@@ -2114,6 +2180,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                            String aesKey =  RxEncryptTool.generateAESKey();
+                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] SrcKey = new byte[256];
+                            byte[] DstKey = new byte[256];
+                            try {
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                                sendFileAESKeyByteMap.put(uuid,aesKey);
+                                sendFileMyKeyByteMap.put(uuid,SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid,DstKey);
+                            }catch (Exception e){
+                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
 
@@ -2209,6 +2292,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+
+                            String aesKey =  RxEncryptTool.generateAESKey();
+                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] SrcKey = new byte[256];
+                            byte[] DstKey = new byte[256];
+                            try {
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+                                sendFileAESKeyByteMap.put(uuid,aesKey);
+                                sendFileMyKeyByteMap.put(uuid,SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid,DstKey);
+                            }catch (Exception e){
+                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
@@ -2550,7 +2650,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Intent intent;
         if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
+            intent.setType("image/*;video/*");
 
         } else {
             intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
