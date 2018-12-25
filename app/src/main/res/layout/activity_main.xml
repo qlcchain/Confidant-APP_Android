@@ -126,6 +126,7 @@
                 app:av_textColorSelected="@color/main_color" />
 
             <com.lzy.widget.AlphaView
+                android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

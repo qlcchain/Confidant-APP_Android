@@ -13,6 +13,8 @@ object ConstantValue {
         var fingerPassWord = "fingerPassWord" //指纹密码
         var userId = "UserId"
         var username = "username"
+        var userFriendname = "freindrname"
+        var userFriendId = "userFriendId"
         var routerId = "routerId"
         var selfImageName = "selfImageName"
         var msgId = ""

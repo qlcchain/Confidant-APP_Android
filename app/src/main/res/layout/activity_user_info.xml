@@ -48,6 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/avatar" />
 
     <com.stratagile.pnrouter.view.DrawableTextView
+        android:visibility="gone"
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x70"
@@ -62,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="@dimen/x30"
+        android:layout_marginTop="@dimen/x1"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/status">
 
@@ -75,6 +76,7 @@
         </com.stratagile.pnrouter.view.DrawableTextView>
 
         <com.stratagile.pnrouter.view.DrawableTextView
+            android:visibility="gone"
             android:id="@+id/company"
             app:showNext="false"
             android:layout_width="match_parent"
@@ -86,8 +88,15 @@
         </com.stratagile.pnrouter.view.DrawableTextView>
 
         <View style="@style/divide_line" />
-
         <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/shareAppFreind"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="@string/shareApp">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:visibility="gone"
             android:id="@+id/postion"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
@@ -98,6 +107,7 @@
         <View style="@style/divide_line" />
 
         <com.stratagile.pnrouter.view.DrawableTextView
+            android:visibility="gone"
             android:id="@+id/location"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"

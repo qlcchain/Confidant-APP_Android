@@ -67,6 +67,7 @@
     <include layout="@layout/divide_line"/>
 
     <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
         android:id="@+id/company"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
@@ -77,6 +78,7 @@
     <include layout="@layout/divide_line"/>
 
     <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
         android:id="@+id/profession"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
@@ -87,6 +89,7 @@
     <include layout="@layout/divide_line"/>
 
     <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
         android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"

@@ -217,7 +217,11 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 refuseFriend()
             }
         }
-
+        SpUtil.putString(this, ConstantValue.userFriendname,userInfo!!.nickName)
+        SpUtil.putString(this, ConstantValue.userFriendId,userInfo!!.userId)
+        shareAppFreind.setOnClickListener {
+            startActivity(Intent(this, QRFriendCodeActivity::class.java))
+        }
         tvAccept.setOnClickListener {
             if (userInfo!!.friendStatus == 0) {
                 //send message
@@ -367,16 +371,16 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
 
     override fun setupActivityComponent() {
-       DaggerUserInfoComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .userInfoModule(UserInfoModule(this))
-               .build()
-               .inject(this)
+        DaggerUserInfoComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .userInfoModule(UserInfoModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: UserInfoContract.UserInfoContractPresenter) {
-            mPresenter = presenter as UserInfoPresenter
-        }
+        mPresenter = presenter as UserInfoPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

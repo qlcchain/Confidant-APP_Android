@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MyPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterManagementActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
+import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
@@ -48,6 +49,9 @@ class MyFragment : BaseFragment(), MyContract.View {
         EventBus.getDefault().register(this)
         toDetail.setOnClickListener {
             startActivity(Intent(activity, MyDetailActivity::class.java))
+        }
+        shareApp.setOnClickListener {
+            startActivity(Intent(activity, QRCodeActivity::class.java))
         }
         status.text = SpUtil.getString(activity!!, ConstantValue.status, "")
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
