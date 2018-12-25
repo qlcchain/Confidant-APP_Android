@@ -46,6 +46,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author hzp
@@ -293,6 +294,19 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
         }
         EventBus.getDefault().post(SelectFriendChange(count,0))
+    }
+    fun getAllSelectedFriend() : ArrayList<UserEntity>
+    {
+        var contactList = arrayListOf<UserEntity>()
+        var itemCount =  contactAdapter!!.itemCount -1
+        for (i in 0..itemCount) {
+            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+            if(checkBox.isChecked)
+            {
+                contactList.add( contactAdapter!!.getItem(i) as UserEntity)
+            }
+        }
+        return contactList!!
     }
     override fun setupFragmentComponent() {
         DaggerContactComponent

@@ -24,6 +24,7 @@
     <string name="details">Details</string>
     <string name="help">Help</string>
     <string name="shareApp">Share App</string>
+    <string name="shareContact">Share Contact</string>
     <string name="collection">Save</string>
     <string name="routerManagement">Router management</string>
     <string name="addRecentStatus">Add to my status</string>
@@ -430,7 +431,8 @@
     <string name="logoutfailed">Exit failed, please try again</string>
     <string name="nofile">file does not exist</string>
     <string name="acceptanceerror">acceptance error</string>
-    <string name="originalgraph">&#8195;original graph</string>
+    <string name="originalgraph">&#8195;Original graph</string>
     <string name="DestinationUnreachable">destination unreachable</string>
     <string name="notFreinds">The other person is not your good friend.</string>
+    <string name="noSelected">Please choose your friends</string>
 </resources>

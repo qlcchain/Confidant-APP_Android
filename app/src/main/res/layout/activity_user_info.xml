@@ -92,7 +92,7 @@
             android:id="@+id/shareAppFreind"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="@string/shareApp">
+            app:text="@string/shareContact">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
         <com.stratagile.pnrouter.view.DrawableTextView

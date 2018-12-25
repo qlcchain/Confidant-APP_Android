@@ -4,7 +4,7 @@ package com.stratagile.pnrouter.entity;
  * Created by zl on 2018/11/08.
  */
 
-public class ToxFileData {
+public class  ToxFileData {
     private String FromId;
     private String ToId;
     private String FileName;

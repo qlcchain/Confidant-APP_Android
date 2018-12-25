@@ -269,6 +269,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectWebSocket(FileTransformEntity fileTransformEntity){
 
+        EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
+        if(EMMessage == null)
+        {
+            return;
+        }
         if(fileTransformEntity.getMessage() == 0)
         {
             return;
@@ -327,42 +332,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 String retMsg = fileTransformEntity.getRetMsg();
                 byte[] aa = retMsg.getBytes();
                 String aabb = "";
-                /*switch (JSONObject.parseObject((JSONObject.parseObject(retMsg)).get("params").toString()).getString("Action"))
-                {
-                    case "SendFile":
-                        JSendFileRsp jSendFileRsp = gson.fromJson(retMsg, JSendFileRsp.class);
-                        if(fileOk.exists() && jSendFileRsp.getParams().getRetCode()== 0)
-                        {
-                            sendFileResultMap.put(fileTransformEntity.getToId(),false);
-                            //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
-                        }
-                        Timer timer = new Timer();// 实例化Timer类
-                        timer.schedule(new TimerTask() {
-                            public void run() {
-                                Log.i("sendFileTimer","beginCounTimer");
-                                if(!sendFileResultMap.get(fileTransformEntity.getToId()))
-                                {
-                                    //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
-                                }
-                                this.cancel();
-                            }
-                        }, 20000);// 这里百毫秒
-                        break;
-                    case "SendFileEnd":
-                        sendFileResultMap.put(fileTransformEntity.getToId(),true);
-                        JSendFileEndRsp jSendFileEndRsp = gson.fromJson(retMsg, JSendFileEndRsp.class);
-                        if(jSendFileEndRsp.getParams().getRetCode() != 0)
-                        {
-                            //EventBus.getDefault().post(new TransformFileMessage(fileTransformEntity.getToId(),fileOk));
-                        }else {
-                            String pAddress = WiFiUtil.INSTANCE.getGateWay(AppConfig.instance);
-                            String wssUrl = "https://"+pAddress+ ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
-                        }
-                        break;
-                    default:
-                        break;
-                }*/
                 break;
             default:
                 break;
@@ -370,6 +339,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectWebSocket(TransformReceiverFileMessage transformReceiverFileMessage){
+        EMMessage  EMMessageData = sendMsgMap.get(transformReceiverFileMessage.getToId());
+        if(EMMessageData == null)
+        {
+            return;
+        }
         byte[] retMsg = transformReceiverFileMessage.getMessage();
         byte[] Action = new byte[4];
         byte[] FileId = new byte[4];
@@ -1405,13 +1379,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (videoFile != null && videoFile.exists())
                 {
                     //String thumbPath = EaseImageUtils.saveVideoThumb(videoFile,128,128,1);
-                    sendVideoMessage(videoFile.getAbsolutePath());
+                    sendVideoMessage(videoFile.getAbsolutePath(),false);
                 }
             }else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 if (data != null) {
                     Uri selectedImage = data.getData();
+
                     if (selectedImage != null) {
-                        sendPicByUri(selectedImage);
+                        String path = selectedImage.getPath();
+                        if(path.contains(".jpeg")  || path.contains(".jpg") || path.contains(".png"))
+                        {
+                            sendPicByUri(selectedImage);
+                        }
                     }
                 }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
@@ -2148,7 +2127,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         sendMessageTo(message);
     }
 
-    protected void sendVideoMessage(String videoPath) {
+    protected void sendVideoMessage(String videoPath,boolean isLocal) {
         new Thread(new Runnable(){
             public void run() {
 
@@ -2650,7 +2629,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Intent intent;
         if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*;video/*");
+            intent.setType("image/*");
 
         } else {
             intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
