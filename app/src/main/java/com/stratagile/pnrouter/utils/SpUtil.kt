@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import java.util.*
 
 object SpUtil {
     private var sp: SharedPreferences? = null
@@ -63,5 +64,11 @@ object SpUtil {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         return sp!!.getLong(key, defValue)
+    }
+    fun getAll(context: Context, key: String, defValue: Long): Map<String, Object> {
+        if (sp == null) {
+            sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
+        }
+        return sp!!.all as Map<String, Object>
     }
 }

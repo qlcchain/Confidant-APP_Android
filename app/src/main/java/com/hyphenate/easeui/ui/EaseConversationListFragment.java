@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.google.gson.Gson;
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMConversationListener;
 import com.hyphenate.EMError;
@@ -32,6 +33,8 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
+import com.stratagile.pnrouter.utils.GsonUtil;
+import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -223,6 +226,20 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 case MSG_REFRESH:
                 {
                     conversationList.clear();
+                    Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+                    for (EMConversation conversation : conversations.values()) {
+                       String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,conversation.conversationId(),"");
+                       if(!"".equals(cachStr))
+                       {
+                           Gson gson = GsonUtil.getIntGson();
+                           EMMessage eMMessage = gson.fromJson(cachStr,EMMessage.class);
+                           if(eMMessage != null)
+                           {
+                               conversation.insertMessage(eMMessage);
+                           }
+                       }
+                    }
+
                     conversationList.addAll(loadConversationList());
                     if(conversationListView != null)
                         conversationListView.refresh();

@@ -626,12 +626,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onResume()
         var localFriendList: List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var hasUnReadMsg: Boolean = false;
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         for (friendData in localFriendList) {
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             if (conversation != null) {
                 val msgs: List<EMMessage> = conversation.allMessages
                 for (msg in msgs) {
-                    if (msg.isUnread) {
+                    if (msg.isUnread && !userId.equals(msg.from)) {
                         hasUnReadMsg = true
                     }
                 }

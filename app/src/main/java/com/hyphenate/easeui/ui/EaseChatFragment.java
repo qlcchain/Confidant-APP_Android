@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcel;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -100,6 +101,7 @@ import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
+import com.stratagile.pnrouter.utils.SharedPreferenceUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
@@ -2438,6 +2440,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(conversation != null)
         {
             conversation.insertMessage(message);
+            SharedPreferenceUtil.putParcelable(AppConfig.instance,conversation.conversationId(),message);
+            Parcel aa = SharedPreferenceUtil.getBean(AppConfig.instance,conversation.conversationId());
+
             //refresh ui
             if(isMessageListInited) {
                 messageList.refresh();
