@@ -47,6 +47,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 //                addfrendCallBack?.addFriendBack(addFreindRsp)
                 userControlleCallBack?.addFriendBack(addFreindRsp)
             }
+            "UserInfoUpdate" -> {
+                val jUserInfoUpdateRsp = gson.fromJson(text, JUserInfoUpdateRsp::class.java)
+                KLog.i(jUserInfoUpdateRsp.toString())
+                uerInfoUpdateCallBack?.UserInfoUpdateCallBack(jUserInfoUpdateRsp)
+            }
+            "UserInfoPush" -> {
+                val jUserInfoPushRsp = gson.fromJson(text, JUserInfoPushRsp::class.java)
+                KLog.i(jUserInfoPushRsp.toString())
+                mainInfoBack?.userInfoPushRsp(jUserInfoPushRsp)
+            }
             "LogOut" -> {
                 val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
                 logOutBack?.logOutBack(JLogOutRsp)
@@ -165,6 +175,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var registerListener: RegisterMessageCallback? = null
     var loginBackListener: LoginMessageCallback? = null
     var addfrendCallBack: AddfrendCallBack? = null
+    var uerInfoUpdateCallBack: UserInfoUpdateCallBack? = null
     var logOutBack: LogOutCallBack? = null
     var mainInfoBack: MainInfoBack? = null
     var addFriendDealCallBack: AddFriendDealCallBack? = null
@@ -297,6 +308,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface AddfrendCallBack {
         fun addFriendBack(addFriendRsp: JAddFreindRsp)
     }
+    interface UserInfoUpdateCallBack {
+        fun UserInfoUpdateCallBack(jUserInfoUpdateRsp: JUserInfoUpdateRsp)
+    }
     interface LogOutCallBack {
         fun logOutBack(jLogOutRsp: JLogOutRsp)
     }
@@ -308,6 +322,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
+        fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
 
     interface UserControlleCallBack {
@@ -318,6 +333,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun addFriendBack(addFriendRsp: JAddFreindRsp)
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
         fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
+
     }
 
     interface AddFriendDealCallBack {

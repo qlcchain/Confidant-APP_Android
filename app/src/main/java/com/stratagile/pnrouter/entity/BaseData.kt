@@ -302,3 +302,9 @@ data class PullFileReq(var FromId : String, var ToId : String,var FileName : Str
  * (2)	响应（APP->Router）
  */
 data class UserInfoUpdateReq(var UserId :String, var NickName : String,  var Action : String = "UserInfoUpdate")
+
+/**
+ * 个人信息修改推送回馈
+ * (2)	响应（APP->Router）
+ */
+data class UserInfoPushReq(var RetCode :Int, var ToId : String, var Msg : String,  var Action : String = "UserInfoPush")

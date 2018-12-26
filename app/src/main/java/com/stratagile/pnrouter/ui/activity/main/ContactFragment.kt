@@ -203,6 +203,46 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     {
         pullFriendList()
     }
+    fun updataUI()
+    {
+        var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        var  contactList = arrayListOf<UserEntity>()
+        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+        var newFriendCount = 0
+        for (i in list) {
+
+            if (i.userId.equals(selfUserId)) {
+                continue
+            }
+            if(fromId != null && !fromId.equals(""))
+            {
+                if (i.userId.equals(fromId)) {
+                    continue
+                }
+            }
+            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
+                if (i.friendStatus == 0) {
+                    contactList.add(i)
+                }
+                if (i.friendStatus == 3) {
+                    newFriendCount++
+                }
+            }else{
+                if (i.friendStatus == 0) {
+                    contactList.add(i)
+                }
+            }
+
+        }
+
+        for (i in contactList) {
+            i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+        }
+        contactList.sortBy {
+            it.nickSouceName
+        }
+        contactAdapter!!.setNewData(contactList);
+    }
     fun initData() {
         var bundle = getArguments();
         var hasNewFriendRequest = false

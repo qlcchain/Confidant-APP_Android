@@ -57,6 +57,32 @@ import javax.inject.Inject
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+
+        for (j in localFriendList) {
+            if (jUserInfoPushRsp.params.friendId.equals(j.userId)) {
+                j.friendStatus = 0
+                j.nickName = jUserInfoPushRsp.params.nickName
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
+                break
+            }
+        }
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = UserInfoPushReq(0, userId!!,"")
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jUserInfoPushRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2,msgData,jUserInfoPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+        runOnUiThread {
+            contactFragment?.updataUI()
+        }
+    }
+
     override fun unReadCount(unReadCOunt: Int) {
         runOnUiThread {
             if (unread_count != null) {

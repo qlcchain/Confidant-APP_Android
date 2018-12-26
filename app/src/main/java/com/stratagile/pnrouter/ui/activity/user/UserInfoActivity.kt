@@ -2,7 +2,6 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -21,7 +20,7 @@ import com.stratagile.pnrouter.entity.DelFriendCmdRsp
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
-import com.stratagile.pnrouter.ui.activity.conversation.ConversationActivity
+import com.stratagile.pnrouter.ui.activity.router.UserQRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
@@ -29,7 +28,9 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.pnrouter.view.TempRouterAlertDialog
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -216,6 +217,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             } else if (userInfo!!.friendStatus == 3) {
                 refuseFriend()
             }
+        }
+        setNoteName.setOnClickListener {
+            EditBoxAlertDialog(this, EditBoxAlertDialog.BUTTON_NEUTRAL)
+                    .setContentText(getString(R.string.fixedtwo))
+                    .setConfirmClickListener {
+
+                        var content = it;
+                    }
+                    .show()
         }
         SpUtil.putString(this, ConstantValue.userFriendname, String(RxEncodeTool.base64Decode(userInfo!!.nickName)))
         SpUtil.putString(this, ConstantValue.userFriendId,userInfo!!.userId)
