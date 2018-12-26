@@ -345,11 +345,17 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 return
             }
             var aesKey =  RxEncryptTool.generateAESKey()
+            LogUtil.addLog("sendMsg aesKey:",aesKey)
             var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+            LogUtil.addLog("sendMsg myKey:",ConstantValue.publicRAS)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)
+            LogUtil.addLog("sendMsg friendKey:",FriendPublicKey)
             var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
+            LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
             var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+            LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
             var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
+            LogUtil.addLog("sendMsg miMsg:",miMsg)
             var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
@@ -361,6 +367,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }catch (e:Exception)
         {
+            LogUtil.addLog("sendMsg 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }
 

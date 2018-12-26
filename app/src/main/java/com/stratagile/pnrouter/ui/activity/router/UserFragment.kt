@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.router
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,9 +27,11 @@ import com.stratagile.pnrouter.ui.activity.router.contract.UserContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserPresenter
 import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.TempRouterAlertDialog
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_user.*
 import javax.inject.Inject
 
@@ -41,8 +45,8 @@ import javax.inject.Inject
 class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageReceiver.PullUserCallBack{
     override fun userList(jPullUserRsp: JPullUserRsp) {
 
-        var comUserList = arrayListOf<RouterUserEntity>()
-        var tempUserList = arrayListOf<RouterUserEntity>()
+        comUserList = arrayListOf<RouterUserEntity>()
+        tempUserList = arrayListOf<RouterUserEntity>()
         for (i in jPullUserRsp.params.payload) {
             //是否为本地多余的好友
             if (i.userType == 2) {
@@ -53,7 +57,29 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
                 tempUserList.add(i)
             }
         }
+        for (i in comUserList) {
+            if(!i.nickName.equals(""))
+            {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            }else{
+                i.nickSouceName = i.mnemonic
+            }
 
+        }
+        comUserList.sortBy {
+            it.nickSouceName
+        }
+        for (i in tempUserList) {
+            if(!i.nickName.equals(""))
+            {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            }else{
+                i.nickSouceName = i.mnemonic
+            }
+        }
+        tempUserList.sortBy {
+            it.nickSouceName
+        }
         runOnUiThread {
             contactAdapter = UsertListAdapter(comUserList,false)
             recyclerViewUser.adapter = contactAdapter
@@ -85,6 +111,9 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     var routerEntity: RouterEntity? = null
     var routerUserTempEntity: RouterUserEntity? = null
     var contactTempAdapter : UsertListAdapter? = null
+
+    var comUserList = arrayListOf<RouterUserEntity>()
+    var tempUserList = arrayListOf<RouterUserEntity>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         routerEntity = arguments!!.get("routerEntity") as RouterEntity
@@ -149,7 +178,45 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
 
     fun initData() {
 
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                fiter(s.toString(),comUserList,tempUserList)
+                if (s.length > 0) {
+                    search_clear.setVisibility(View.VISIBLE)
+                } else {
+                    search_clear.setVisibility(View.INVISIBLE)
+                }
+            }
 
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+        search_clear.setOnClickListener(View.OnClickListener {
+            query.getText().clear()
+            //hideSoftKeyboard()
+        })
+    }
+    fun fiter(key:String,comUserList:ArrayList<RouterUserEntity>,tempUserList:ArrayList<RouterUserEntity>)
+    {
+        var comUserListTemp:ArrayList<RouterUserEntity> = arrayListOf<RouterUserEntity>()
+        var tempUserListTemp:ArrayList<RouterUserEntity> = arrayListOf<RouterUserEntity>()
+        for (i in comUserList) {
+            if(i.nickSouceName.toLowerCase().contains(key))
+            {
+                comUserListTemp.add(i)
+            }
+        }
+        for (i in tempUserList) {
+            if(i.nickSouceName.toLowerCase().contains(key))
+            {
+                tempUserListTemp.add(i)
+            }
+        }
+        contactAdapter!!.setNewData(comUserListTemp)
+        contactTempAdapter!!.setNewData(tempUserListTemp)
     }
     override fun setupFragmentComponent() {
         DaggerUserComponent

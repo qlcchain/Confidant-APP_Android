@@ -60,7 +60,12 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                 onLogOutSuccess()
             }
         }else{
-            toast(R.string.logoutfailed)
+            runOnUiThread()
+            {
+                closeProgressDialog()
+                toast(R.string.logoutfailed)
+            }
+
         }
     }
 
@@ -142,13 +147,13 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                 .setConfirmClickListener {
                     showProgressDialog("log out")
                     var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                    var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                    var msgData = LogOutReq(routerEntity.routerId,selfUserId!!,routerEntity.userSn)
                     if (ConstantValue.isWebsocketConnected) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
                     } else if (ConstantValue.isToxConnected) {
                         val baseData = BaseData(2,msgData)
                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-                        val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        val friendKey = FriendKey(routerEntity.routerId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }
                     /*ConstantValue.isHasWebsocketInit = true

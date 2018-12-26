@@ -20,6 +20,7 @@ public class Message {
 
     private int MsgId;
     private int MsgType;
+    private int DbId;
     private long TimeStatmp;
     private String From;
     private String To;
@@ -62,6 +63,7 @@ public class Message {
     public String toString() {
         return "Message{" +
                 "MsgId=" + MsgId +
+                "DbId=" + DbId +
                 ", MsgType=" + MsgType +
                 ", TimeStatmp=" + TimeStatmp +
                 ", From='" + From + '\'' +
@@ -119,6 +121,13 @@ public class Message {
 
     public void setMsgType(int MsgType) {
         this.MsgType = MsgType;
+    }
+    public int getDbId() {
+        return DbId;
+    }
+
+    public void setDbId(int dbId) {
+        DbId = dbId;
     }
 
     public long getTimeStatmp() {

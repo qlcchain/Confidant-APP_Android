@@ -1208,7 +1208,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setMsgTime(Message.getTimeStatmp()* 1000);
             if(i == 0)
             {
-                MsgStartId = Message.getMsgId();
+                MsgStartId = Message.getDbId();
             }
             message.setMsgId( Message.getMsgId()+"");
             if(Message.getMsgType() != 0)
@@ -2455,6 +2455,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         if(conversation != null)
                         {
                             conversation.insertMessage(message);
+                            //SpUtil.INSTANCE.putString(conversation.conversationId());
                             //refresh ui
                             if(isMessageListInited) {
                                 messageList.refresh();

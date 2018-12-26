@@ -20,11 +20,15 @@ public class RouterUserEntity implements Parcelable{
     private String UserId;
     private int LastLoginTime;
     private String Qrcode;
+    //昵称
+    private String nickSouceName;
 
-    @Generated(hash = 1781115910)
+
+
+    @Generated(hash = 1938675895)
     public RouterUserEntity(Long id, String UserSN, int UserType, int Active,
             String IdentifyCode, String Mnemonic, String NickName, String UserId,
-            int LastLoginTime, String Qrcode) {
+            int LastLoginTime, String Qrcode, String nickSouceName) {
         this.id = id;
         this.UserSN = UserSN;
         this.UserType = UserType;
@@ -35,11 +39,13 @@ public class RouterUserEntity implements Parcelable{
         this.UserId = UserId;
         this.LastLoginTime = LastLoginTime;
         this.Qrcode = Qrcode;
+        this.nickSouceName = nickSouceName;
     }
 
     @Generated(hash = 893520339)
     public RouterUserEntity() {
     }
+
 
     protected RouterUserEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -56,6 +62,7 @@ public class RouterUserEntity implements Parcelable{
         UserId = in.readString();
         LastLoginTime = in.readInt();
         Qrcode = in.readString();
+        nickSouceName = in.readString();
     }
 
     @Override
@@ -75,6 +82,7 @@ public class RouterUserEntity implements Parcelable{
         dest.writeString(UserId);
         dest.writeInt(LastLoginTime);
         dest.writeString(Qrcode);
+        dest.writeString(nickSouceName);
     }
 
     @Override
@@ -172,6 +180,14 @@ public class RouterUserEntity implements Parcelable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getNickSouceName() {
+        return this.nickSouceName;
+    }
+
+    public void setNickSouceName(String nickSouceName) {
+        this.nickSouceName = nickSouceName;
     }
 
 

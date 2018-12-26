@@ -169,6 +169,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
             }
 
             public void afterTextChanged(Editable s) {
+
             }
         });
         clearSearch.setOnClickListener(new OnClickListener() {

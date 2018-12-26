@@ -4,9 +4,13 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -41,6 +45,7 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -202,7 +207,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var bundle = getArguments();
         var hasNewFriendRequest = false
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var contactList = arrayListOf<UserEntity>()
+        var  contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
         for (i in list) {
@@ -252,7 +257,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             newFriend.visibility = View.GONE
             contactAdapter = ContactListAdapter(contactList,true)
         }
-
         recyclerView.adapter = contactAdapter
         contactAdapter!!.setOnItemClickListener { adapter, view, position ->
             if(bundle == null)
@@ -276,7 +280,41 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
 
         }
+
+
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                fiter(s.toString(),contactList)
+                if (s.length > 0) {
+                    search_clear.setVisibility(View.VISIBLE)
+                } else {
+                    search_clear.setVisibility(View.INVISIBLE)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+        search_clear.setOnClickListener(View.OnClickListener {
+            query.getText().clear()
+            //hideSoftKeyboard()
+        })
     }
+    fun fiter(key:String,contactList:ArrayList<UserEntity>)
+    {
+       var contactListTemp:ArrayList<UserEntity> = arrayListOf<UserEntity>()
+        for (i in contactList) {
+            if(i.nickSouceName.toLowerCase().contains(key))
+            {
+                contactListTemp.add(i)
+            }
+        }
+        contactAdapter!!.setNewData(contactListTemp)
+    }
+
     fun selectOrCancelAll()
     {
         var itemCount =  contactAdapter!!.itemCount -1

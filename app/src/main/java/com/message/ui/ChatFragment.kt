@@ -240,12 +240,17 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                 return
             }
             var aesKey =  RxEncryptTool.generateAESKey()
-            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS!!)
+            LogUtil.addLog("sendMsg2 aesKey:",aesKey)
+            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+            LogUtil.addLog("sendMsg2 myKey:",ConstantValue.publicRAS)
             var friend = RxEncodeTool.base64Decode(FriendPublicKey)
+            LogUtil.addLog("sendMsg2 friendKey:",FriendPublicKey)
             var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
-            var DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+            LogUtil.addLog("sendMsg2 SrcKey:",SrcKey.toString())
+            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
+            LogUtil.addLog("sendMsg2 SrcKey:",SrcKey.toString())
             var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
-            var sourceMsg = AESCipher.aesDecryptString(miMsg,aesKey)
+            LogUtil.addLog("sendMsg2 miMsg:",miMsg)
             var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
@@ -257,6 +262,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             }
         }catch (e:Exception)
         {
+            LogUtil.addLog("sendMsg2 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }
 

@@ -204,7 +204,7 @@
                     android:layout_width="@dimen/x22"
                     android:layout_height="@dimen/x22"
                     android:layout_gravity="right"
-                    android:layout_marginRight="@dimen/x57"
+                    android:layout_marginRight="@dimen/x137"
                     android:layout_marginTop="@dimen/x2"
                     android:background="@drawable/new_message_flag_bg"
                     android:gravity="center"

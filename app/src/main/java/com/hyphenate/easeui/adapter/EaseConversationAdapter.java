@@ -219,6 +219,8 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     public Filter getFilter() {
         if (conversationFilter == null) {
             conversationFilter = new ConversationFilter(conversationList);
+        }else{
+            conversationFilter.updata(conversationList);
         }
         return conversationFilter;
     }
@@ -256,6 +258,9 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             mOriginalValues = mList;
         }
 
+        public void  updata(List<EMConversation> mList) {
+            mOriginalValues = mList;
+        }
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();
@@ -275,21 +280,24 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                 final ArrayList<EMConversation> newValues = new ArrayList<EMConversation>();
 
                 for (int i = 0; i < count; i++) {
+
                     final EMConversation value = mOriginalValues.get(i);
-                    String username = value.conversationId();
-
-                    EMGroup group = EMClient.getInstance().groupManager().getGroup(username);
-                    if(group != null){
-                        username = group.getGroupName();
+                    EMMessage lastMessage = value.getLastMessage();
+                    UserEntity friendUser = null;
+                    List<UserEntity> localFriendList = null;
+                    if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
+                    {
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+                        if(localFriendList.size() > 0)
+                            friendUser = localFriendList.get(0);
                     }else{
-                        EaseUser user = EaseUserUtils.getUserInfo(username);
-                        // TODO: not support Nick anymore
-//                        if(user != null && user.getNick() != null)
-//                            username = user.getNick();
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+                        if(localFriendList.size() > 0)
+                            friendUser = localFriendList.get(0);
                     }
-
+                    String username = new  String(RxEncodeTool.base64Decode(friendUser.getNickName()));
                     // First match against the whole ,non-splitted value
-                    if (username.startsWith(prefixString)) {
+                    if (username.toLowerCase().contains(prefixString.toLowerCase())) {
                         newValues.add(value);
                     } else{
                         final String[] words = username.split(" ");
@@ -297,7 +305,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 
                         // Start at index 0, in case valueText starts with space(s)
                         for (String word : words) {
-                            if (word.startsWith(prefixString)) {
+                            if (word.toLowerCase().contains(prefixString.toLowerCase())) {
                                 newValues.add(value);
                                 break;
                             }
