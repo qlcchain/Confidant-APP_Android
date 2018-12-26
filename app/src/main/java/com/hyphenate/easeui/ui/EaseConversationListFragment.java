@@ -110,7 +110,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                             friendInfo = localFriendList.get(0);
                     }
 
-
+                    lastMessage.setUnread(false);
                     UserDataManger.curreantfriendUserData = friendInfo;
                     if(friendInfo !=null)
                         listItemClickListener.onListItemClicked(friendInfo.getUserId());

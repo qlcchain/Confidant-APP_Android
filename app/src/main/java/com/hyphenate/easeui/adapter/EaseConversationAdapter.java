@@ -25,16 +25,20 @@ import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
+import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import scalaz.Alpha;
 
 /**
  * conversation list adapter
@@ -163,7 +167,8 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 //            if (avatarOptions.getAvatarRadius() != 0)
 //                avatarView.setRadius(avatarOptions.getAvatarRadius());
 //        }
-        if (lastMessage.isUnread()) {
+        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        if (lastMessage.isUnread() && !userId.equals(lastMessage.getFrom())) {
             // show unread message count
             //holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
             holder.unreadLabel.setText("");
