@@ -253,9 +253,9 @@ public class FloatMenu extends PopupWindow{
 		a.recycle();
 	}
 
-	public void show(Point point){
-		clickX = point.x;
-		clickY = point.y;
+	public void show(Point point,int offX,int offY){
+		clickX = point.x - Display.dip2px(context, offX);
+		clickY = point.y -Display.dip2px(context, offY);
 		show();
 	}
 

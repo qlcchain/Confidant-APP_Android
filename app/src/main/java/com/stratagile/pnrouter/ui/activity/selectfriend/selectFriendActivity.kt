@@ -506,6 +506,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                     }
                 }
             }
+            toast(R.string.hasbeensent)
+            super.onBackPressed()
         }
     }
 

@@ -82,7 +82,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
-        if(fromID.equals(userId))
+        if(fromID.equals(userId) && message.getType() != EMMessage.Type.VOICE)
         {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
             floatMenu.inflate(R.menu.popup_menu_file);
@@ -91,7 +91,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(450,loc1[1]-200));
+            floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
                 public void onClick(View v, int position) {

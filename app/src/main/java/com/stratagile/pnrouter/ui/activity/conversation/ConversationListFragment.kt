@@ -83,7 +83,7 @@ class ConversationListFragment : BaseFragment(), ConversationListContract.View, 
         coversationListAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             val floatMenu = FloatMenu(activity)
             floatMenu.items("菜单1", "菜单2", "菜单3")
-            floatMenu.show((activity!! as BaseActivity).point)
+            floatMenu.show((activity!! as BaseActivity).point,0,0)
             true
         }
         recyclerView.adapter = coversationListAdapter
