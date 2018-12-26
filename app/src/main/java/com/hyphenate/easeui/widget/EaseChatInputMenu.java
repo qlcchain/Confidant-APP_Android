@@ -506,6 +506,7 @@ public class EaseChatInputMenu extends LinearLayout {
         }
 
         if (softInputHeight < 0) {
+            softInputHeight = 0;
 //            LogUtils.w("EmotionKeyboard--Warning: value of softInputHeight is below zero!");
         }
         //存一份到本地
