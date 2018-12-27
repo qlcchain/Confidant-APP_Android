@@ -457,11 +457,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
     }
     override fun onDestroy() {
-        super.onDestroy()
-        AppConfig.instance.messageReceiver!!.chatCallBack = null
-        AppConfig.instance.isChatWithFirend = null;
-        activityInstance = null
-        EventBus.getDefault().unregister(this)
+        try {
+            super.onDestroy()
+            AppConfig.instance.messageReceiver!!.chatCallBack = null
+            AppConfig.instance.isChatWithFirend = null
+            activityInstance = null
+            EventBus.getDefault().unregister(this)
+        }catch (e :Exception)
+        {
+
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

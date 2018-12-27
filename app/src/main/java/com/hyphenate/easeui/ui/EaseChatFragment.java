@@ -658,6 +658,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     }
     protected void setUpView() {
+        if(UserDataManger.curreantfriendUserData == null)
+            return;
         String usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getNickName()));
         titleBar.setTitle( usernameSouce);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
@@ -2615,10 +2617,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         cameraFile = new File(PathUtils.getInstance().getTempPath(),  System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
-        cameraFile.getParentFile().mkdirs();
-        startActivityForResult(
-                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)),
-                REQUEST_CODE_CAMERA);
+        try {
+            cameraFile.getParentFile().mkdirs();
+            startActivityForResult(
+                    new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)),
+                    REQUEST_CODE_CAMERA);
+        }catch (Exception e)
+        {
+            Toast.makeText(getActivity(), R.string.Permissionerror, Toast.LENGTH_SHORT).show();
+        }
     }
     /**
      * capture new video
@@ -2933,7 +2940,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 case 0x55:
                     if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
                     {
-                        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         Bundle data = msg.getData();
                         String msgId = data.getInt("msgID")+"";
                         Message message = receiveFileDataMap.get(msgId);
@@ -2955,7 +2962,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     break;
                                 case 4:
                                     files_dir = PathUtils.getInstance().getVideoPath()+"/" +message.getFileName();
-                                    String videoName = files_dir.substring(files_dir.lastIndexOf("/")+1,files_dir.lastIndexOf(".")+1);
+                                    int beginIndex = files_dir.lastIndexOf("/")+1;
+                                    int endIndex = files_dir.lastIndexOf(".")+1;
+                                    if(endIndex < beginIndex)
+                                    {
+                                        return;
+                                    }
+                                    String videoName = files_dir.substring(beginIndex,endIndex);
                                     String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
                                     FileUtil.saveBitmpToFile(bitmap,thumbPath);

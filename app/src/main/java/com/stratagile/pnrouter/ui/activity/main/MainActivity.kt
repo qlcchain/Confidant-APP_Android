@@ -415,6 +415,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             e.printStackTrace()
         }
         MessageProvider.getInstance().messageListenter = this
+        EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
         tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))

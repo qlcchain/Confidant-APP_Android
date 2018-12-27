@@ -66,7 +66,8 @@ public class MobileSocketClient {
                     DatagramPacket sendPack = new DatagramPacket(data,
                             data.length, inetAddress,
                             BROADCAST_PORT);
-                    socket.send(sendPack);
+                    if(socket != null)
+                        socket.send(sendPack);
                     System.out.println("Client send msg complete");
                 } catch (IOException e) {
                     // TODO Auto-generated catch block

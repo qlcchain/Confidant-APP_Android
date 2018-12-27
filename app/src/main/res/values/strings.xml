@@ -444,4 +444,5 @@
     <string name="hasbeensent">has been sent</string>
     <string name="Addnickname">nickname</string>
     <string name="Inputnickname">Input nickname</string>
+    <string name="Permissionerror">Permission error</string>
 </resources>
