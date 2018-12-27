@@ -65,7 +65,7 @@ object SpUtil {
         }
         return sp!!.getLong(key, defValue)
     }
-    fun getAll(context: Context, key: String, defValue: Long): Map<String, Object> {
+    fun getAll(context: Context): Map<String, Object> {
         if (sp == null || context ==null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }

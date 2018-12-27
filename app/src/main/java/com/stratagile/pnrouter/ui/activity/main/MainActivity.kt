@@ -14,12 +14,14 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -99,12 +101,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
-
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            val gson = Gson()
+            val Message = Message()
+            Message.msgType = jPushFileMsgRsp.params.fileType
+            Message.fileName = jPushFileMsgRsp.params.fileName
+            Message.msg = ""
+            Message.from = userId
+            Message.to = jPushFileMsgRsp.params.fromId
+            Message.timeStatmp = System.currentTimeMillis()
+            val baseDataJson = gson.toJson(Message)
+            if (Message.sender == 0) {
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            } else {
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            }
 //        }else{
-           /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
-            var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
-            var files_dir = this.filesDir.absolutePath + "/image/"
-            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)*/
+            /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
+             var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
+             var files_dir = this.filesDir.absolutePath + "/image/"
+             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)*/
         }
     }
 
@@ -132,27 +148,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     }
                 }
                 val lastMessage = conversation.lastMessage
-                 var all = conversation.allMessages
+                var all = conversation.allMessages
 
-                 if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
-                 {
-                     val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
-                     message.setDirection(EMMessage.Direct.RECEIVE)
-                     message.msgId = delMsgPushRsp.params.msgId.toString()
-                     message.from = delMsgPushRsp.params.friendId
-                     message.to = delMsgPushRsp.params.userId
-                     message.isUnread = true
-                     message.isAcked = true
-                     message.setStatus(EMMessage.Status.SUCCESS)
-                     if(conversation != null)
-                     {
-                         conversation.insertMessage(message)
-                         if (ConstantValue.isInit) {
-                             conversationListFragment?.refresh()
-                             ConstantValue.isRefeshed = true
-                         }
-                     }
-                 }
+                if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
+                {
+                    val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
+                    message.setDirection(EMMessage.Direct.RECEIVE)
+                    message.msgId = delMsgPushRsp.params.msgId.toString()
+                    message.from = delMsgPushRsp.params.friendId
+                    message.to = delMsgPushRsp.params.userId
+                    message.isUnread = true
+                    message.isAcked = true
+                    message.setStatus(EMMessage.Status.SUCCESS)
+                    if(conversation != null)
+                    {
+                        conversation.insertMessage(message)
+                        if (ConstantValue.isInit) {
+                            conversationListFragment?.refresh()
+                            ConstantValue.isRefeshed = true
+                        }
+                    }
+                }
                 if (forward_msg.type == EMMessage.Type.IMAGE) {
                     val imgBody = forward_msg.body as EMImageMessageBody
                     val localUrl = imgBody.localUrl
@@ -200,7 +216,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         }
         if (!ConstantValue.isRefeshed) {
-           conversationListFragment?.refresh()
+            conversationListFragment?.refresh()
             ConstantValue.isRefeshed = true
         }
     }
@@ -234,8 +250,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isUnread = true
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
-            if (conversation != null)
+            if (conversation != null){
+                var gson = Gson()
+                var Message = Message()
+                Message.setMsg(pushMsgRsp.getParams().getMsg())
+                Message.setMsgId(pushMsgRsp.getParams().getMsgId())
+                Message.setFrom(pushMsgRsp.getParams().getFromId())
+                Message.setTo(pushMsgRsp.getParams().getToId())
+                var baseDataJson = gson.toJson(Message)
+                var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                if(Message.getSender() == 0)
+                {
+                    SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
+                }else{
+                    SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
+                }
                 conversation.insertMessage(message)
+            }
             if (ConstantValue.isInit) {
                 runOnUiThread {
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
@@ -362,7 +393,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var contactListFragment: EaseContactListFragment? = null
 
     override fun showToast() {
-         showProgressDialog()
+        showProgressDialog()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -372,7 +403,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                 var count =  conversationListFragment?.removeFriend()
+                    var count =  conversationListFragment?.removeFriend()
                     var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(count!!)
                     controlleMessageUnReadCount(UnReadMessageCount)
                     ConstantValue.isRefeshed = true
@@ -420,9 +451,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
-        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_image.png",1)
-        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_amr.amr",2)
-        FileUtil.drawableToFile(this,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)

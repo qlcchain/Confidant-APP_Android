@@ -201,7 +201,17 @@ public class RxFileTool {
     public static boolean deleteFilesInDir(String dirPath) {
         return deleteFilesInDir(getFileByPath(dirPath));
     }
-
+    public static boolean deleteNodefile(String dirPath) {
+        File file = getFileByPath(dirPath);
+        if(file.exists())
+        {
+           if((System.currentTimeMillis() - file.lastModified()) > 7 * 24 * 60 * 60 * 1000)
+           {
+               return deleteFile(getFileByPath(dirPath));
+           }
+        }
+        return  false;
+    }
     /**
      * 删除目录下的所有文件
      *

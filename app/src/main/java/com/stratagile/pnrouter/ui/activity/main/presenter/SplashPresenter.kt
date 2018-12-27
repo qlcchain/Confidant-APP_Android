@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.main.presenter
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.os.Environment
 import android.util.Log
 import chat.tox.antox.tox.ToxService
 import chat.tox.antox.toxme.ToxData
@@ -136,10 +137,17 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
             FileUtil.init()
+            PathUtils.getInstance().initDirs("", "", AppConfig.instance)
             LocalRouterUtils.inspectionLocalData();
             LocalRouterUtils.updateGreanDaoFromLocal()
             var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"
+            val savedNodeFile = Environment.getExternalStorageDirectory().toString()+"/RouterData13/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
+            RxFileTool.deleteNodefile(savedNodeFile)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_file.all",5)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var abvc = ""
             routerList.forEach {
@@ -283,7 +291,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
 
                 }
             }
-            PathUtils.getInstance().initDirs("", "", AppConfig.instance)
+
             //System.out.println(ByteOrder.nativeOrder());
             // 权限申请成功回调。
             if (requestCode == 101) {

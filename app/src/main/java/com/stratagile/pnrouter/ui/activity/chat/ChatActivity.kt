@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.google.gson.Gson
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.message.Message
@@ -228,7 +229,21 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val gson = Gson()
+        val Message = Message()
+        Message.msgType = jPushFileMsgRsp.params.fileType
+        Message.fileName = jPushFileMsgRsp.params.fileName
+        Message.msg = ""
+        Message.from = userId
+        Message.to = jPushFileMsgRsp.params.fromId
+        Message.timeStatmp = System.currentTimeMillis()
+        val baseDataJson = gson.toJson(Message)
+        if (Message.sender == 0) {
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+        } else {
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+        }
         var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
         var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
         var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)

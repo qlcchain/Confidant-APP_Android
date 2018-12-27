@@ -1,8 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.user
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Base64
+import android.view.Menu
+import android.view.MenuItem
 import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -12,13 +16,17 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewFriendComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
 import com.stratagile.pnrouter.ui.activity.user.module.NewFriendModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.NewFriendPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
+import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.ShareUtil
 import com.stratagile.pnrouter.utils.SpUtil
+import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -181,5 +189,16 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.qrCode) {
+            var intent = Intent(this, ScanQrCodeActivity::class.java)
+            startActivityForResult(intent, 1)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.qr_code, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 }

@@ -930,9 +930,8 @@ public class FileUtil {
 //        InputStream is = view.getContext().getResources().openRawResource(R.drawable.logo);
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId);
 //        Bitmap bitmap = BitmapFactory.decodeStream(is);
-        String defaultPath = mContext.getFilesDir()
-                .getAbsolutePath() + "/image";
-        switch (fileType)
+        String defaultPath = PathUtils.getInstance().getFilePath()+"";
+       /* switch (fileType)
         {
             case 1:
                 defaultPath = PathUtils.getInstance().getImagePath()+"";
@@ -943,7 +942,7 @@ public class FileUtil {
             case 3:
                 defaultPath = PathUtils.getInstance().getVideoPath()+"";
                 break;
-        }
+        }*/
         File file = new File(defaultPath);
         if (!file.exists()) {
             file.mkdirs();
