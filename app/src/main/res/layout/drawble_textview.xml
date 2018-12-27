@@ -20,6 +20,15 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         />
+    <TextView
+        android:id="@+id/righttitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/color_2c2c2c"
+        tools:text=""
+        android:layout_marginLeft="15dp"
+        />
     <ImageView
         android:id="@+id/ivNext"
         android:layout_width="@dimen/x30"

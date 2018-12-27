@@ -30,6 +30,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.widget.EaseConversationList;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
@@ -226,7 +227,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 case MSG_REFRESH:
                 {
                     conversationList.clear();
-                    Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+                   /* Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
                     for (EMConversation conversation : conversations.values()) {
                        String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,conversation.conversationId(),"");
                        if(!"".equals(cachStr))
@@ -238,7 +239,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                conversation.insertMessage(eMMessage);
                            }
                        }
-                    }
+                    }*/
 
                     conversationList.addAll(loadConversationList());
                     if(conversationListView != null)
@@ -302,6 +303,12 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 if (conversation.getAllMessages().size() != 0) {
                     sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
                 }
+                /*String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                EMMessage lastMessage = conversation.getLastMessage();
+                if(lastMessage!= null && lastMessage.isUnread() == true && userId!= null &&  !userId.equals(lastMessage.getFrom()))
+                {
+                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
+                }*/
             }
         }
         try {

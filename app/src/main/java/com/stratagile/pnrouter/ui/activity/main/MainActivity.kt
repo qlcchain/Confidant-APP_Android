@@ -2,7 +2,6 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -28,7 +27,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
@@ -69,7 +67,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = UserInfoPushReq(0, userId!!,"")
+        var msgData = UserInfoPushRsp(0, userId!!,"")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jUserInfoPushRsp.msgid))
         }else if (ConstantValue.isToxConnected) {
@@ -364,8 +362,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var contactListFragment: EaseContactListFragment? = null
 
     override fun showToast() {
-        toast("点击啦。。。。哈哈哈")
-        showProgressDialog()
+         showProgressDialog()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

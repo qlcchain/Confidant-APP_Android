@@ -307,4 +307,10 @@ data class UserInfoUpdateReq(var UserId :String, var NickName : String,  var Act
  * 个人信息修改推送回馈
  * (2)	响应（APP->Router）
  */
-data class UserInfoPushReq(var RetCode :Int, var ToId : String, var Msg : String,  var Action : String = "UserInfoPush")
+data class UserInfoPushRsp(var RetCode :Int, var ToId : String, var Msg : String, var Action : String = "UserInfoPush")
+
+/**
+ * 36.	用户添加好友备注
+ * (2)	响应（APP->Router）
+ */
+data class ChangeRemarksReq(var UserId :String, var FriendId : String, var Remarks : String,  var Action : String = "ChangeRemarks")

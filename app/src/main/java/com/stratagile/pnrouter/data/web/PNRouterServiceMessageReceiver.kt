@@ -86,6 +86,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
                 userControlleCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
             }
+            //删除对方，服务器返回是否操作成功
+            "ChangeRemarks" -> {
+                val jChangeRemarksRsp = gson.fromJson(text, JChangeRemarksRsp::class.java)
+                userControlleCallBack!!.changeRemarksRsp(jChangeRemarksRsp)
+            }
             //对方删除我，服务器给我推送消息
             "DelFriendPush" -> {
                 val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
@@ -333,6 +338,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun addFriendBack(addFriendRsp: JAddFreindRsp)
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
         fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
+        fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp)
 
     }
 

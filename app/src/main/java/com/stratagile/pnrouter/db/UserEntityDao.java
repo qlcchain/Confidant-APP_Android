@@ -27,12 +27,13 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         public final static Property RouterUserId = new Property(2, String.class, "routerUserId", false, "ROUTER_USER_ID");
         public final static Property PublicKey = new Property(3, String.class, "publicKey", false, "PUBLIC_KEY");
         public final static Property NickName = new Property(4, String.class, "nickName", false, "NICK_NAME");
-        public final static Property NickSouceName = new Property(5, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
-        public final static Property Avatar = new Property(6, String.class, "avatar", false, "AVATAR");
-        public final static Property NoteName = new Property(7, String.class, "noteName", false, "NOTE_NAME");
-        public final static Property FriendStatus = new Property(8, int.class, "friendStatus", false, "FRIEND_STATUS");
-        public final static Property AddFromMe = new Property(9, boolean.class, "addFromMe", false, "ADD_FROM_ME");
-        public final static Property Timestamp = new Property(10, long.class, "timestamp", false, "TIMESTAMP");
+        public final static Property Remarks = new Property(5, String.class, "remarks", false, "REMARKS");
+        public final static Property NickSouceName = new Property(6, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
+        public final static Property Avatar = new Property(7, String.class, "avatar", false, "AVATAR");
+        public final static Property NoteName = new Property(8, String.class, "noteName", false, "NOTE_NAME");
+        public final static Property FriendStatus = new Property(9, int.class, "friendStatus", false, "FRIEND_STATUS");
+        public final static Property AddFromMe = new Property(10, boolean.class, "addFromMe", false, "ADD_FROM_ME");
+        public final static Property Timestamp = new Property(11, long.class, "timestamp", false, "TIMESTAMP");
     }
 
 
@@ -53,12 +54,13 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
                 "\"ROUTER_USER_ID\" TEXT," + // 2: routerUserId
                 "\"PUBLIC_KEY\" TEXT," + // 3: publicKey
                 "\"NICK_NAME\" TEXT," + // 4: nickName
-                "\"NICK_SOUCE_NAME\" TEXT," + // 5: nickSouceName
-                "\"AVATAR\" TEXT," + // 6: avatar
-                "\"NOTE_NAME\" TEXT," + // 7: noteName
-                "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 8: friendStatus
-                "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 9: addFromMe
-                "\"TIMESTAMP\" INTEGER NOT NULL );"); // 10: timestamp
+                "\"REMARKS\" TEXT," + // 5: remarks
+                "\"NICK_SOUCE_NAME\" TEXT," + // 6: nickSouceName
+                "\"AVATAR\" TEXT," + // 7: avatar
+                "\"NOTE_NAME\" TEXT," + // 8: noteName
+                "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 9: friendStatus
+                "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 10: addFromMe
+                "\"TIMESTAMP\" INTEGER NOT NULL );"); // 11: timestamp
     }
 
     /** Drops the underlying database table. */
@@ -96,23 +98,28 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             stmt.bindString(5, nickName);
         }
  
+        String remarks = entity.getRemarks();
+        if (remarks != null) {
+            stmt.bindString(6, remarks);
+        }
+ 
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(6, nickSouceName);
+            stmt.bindString(7, nickSouceName);
         }
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(7, avatar);
+            stmt.bindString(8, avatar);
         }
  
         String noteName = entity.getNoteName();
         if (noteName != null) {
-            stmt.bindString(8, noteName);
+            stmt.bindString(9, noteName);
         }
-        stmt.bindLong(9, entity.getFriendStatus());
-        stmt.bindLong(10, entity.getAddFromMe() ? 1L: 0L);
-        stmt.bindLong(11, entity.getTimestamp());
+        stmt.bindLong(10, entity.getFriendStatus());
+        stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
+        stmt.bindLong(12, entity.getTimestamp());
     }
 
     @Override
@@ -144,23 +151,28 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             stmt.bindString(5, nickName);
         }
  
+        String remarks = entity.getRemarks();
+        if (remarks != null) {
+            stmt.bindString(6, remarks);
+        }
+ 
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(6, nickSouceName);
+            stmt.bindString(7, nickSouceName);
         }
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(7, avatar);
+            stmt.bindString(8, avatar);
         }
  
         String noteName = entity.getNoteName();
         if (noteName != null) {
-            stmt.bindString(8, noteName);
+            stmt.bindString(9, noteName);
         }
-        stmt.bindLong(9, entity.getFriendStatus());
-        stmt.bindLong(10, entity.getAddFromMe() ? 1L: 0L);
-        stmt.bindLong(11, entity.getTimestamp());
+        stmt.bindLong(10, entity.getFriendStatus());
+        stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
+        stmt.bindLong(12, entity.getTimestamp());
     }
 
     @Override
@@ -176,12 +188,13 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // routerUserId
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // publicKey
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // nickName
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // nickSouceName
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // avatar
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // noteName
-            cursor.getInt(offset + 8), // friendStatus
-            cursor.getShort(offset + 9) != 0, // addFromMe
-            cursor.getLong(offset + 10) // timestamp
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // remarks
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // nickSouceName
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // avatar
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // noteName
+            cursor.getInt(offset + 9), // friendStatus
+            cursor.getShort(offset + 10) != 0, // addFromMe
+            cursor.getLong(offset + 11) // timestamp
         );
         return entity;
     }
@@ -193,12 +206,13 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         entity.setRouterUserId(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setPublicKey(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setNickName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setNickSouceName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setAvatar(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setNoteName(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setFriendStatus(cursor.getInt(offset + 8));
-        entity.setAddFromMe(cursor.getShort(offset + 9) != 0);
-        entity.setTimestamp(cursor.getLong(offset + 10));
+        entity.setRemarks(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setNickSouceName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setAvatar(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setNoteName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setFriendStatus(cursor.getInt(offset + 9));
+        entity.setAddFromMe(cursor.getShort(offset + 10) != 0);
+        entity.setTimestamp(cursor.getLong(offset + 11));
      }
     
     @Override

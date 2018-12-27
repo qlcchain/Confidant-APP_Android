@@ -47,6 +47,9 @@
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
+    <string name="success">success</string>
+    <string name="fail">succefailss</string>
+
     <string name="refuse">Decline</string>
     <string name="accept">Accept</string>
 
@@ -342,8 +345,8 @@
     <string name="dl_cancel">Cancel</string>
     <string name="toast_nick_not_isnull">nick cannot be empty!</string>
     <string name="dl_update_nick">update nickname</string>
-    <string name="dl_update_failed">uUpdate failed</string>
-    <string name="dl_update_success">uUpdate success</string>
+    <string name="dl_update_failed">Update failed</string>
+    <string name="dl_update_success">Update success</string>
     <string name="dl_update_photo">update photo</string>
     <string name="dl_waiting">waiting…</string>
     <string name="toast_updatenick_success">update nickname success!</string>
@@ -419,6 +422,7 @@
 
 
     <string name="Add_Nickname">Add Nickname</string>
+    <string name="Modify_Nickname">Modify nickname</string>
     <string name="Lnvitation_code">Lnvitation code</string>
 
     <string name="Createuseraccounts">Create user accounts</string>
@@ -438,6 +442,6 @@
     <string name="notFreinds">The other person is not your good friend.</string>
     <string name="noSelected">Please choose your friends</string>
     <string name="hasbeensent">has been sent</string>
-    <string name="Addnickname">Add nickname</string>
+    <string name="Addnickname">nickname</string>
     <string name="Inputnickname">Input nickname</string>
 </resources>

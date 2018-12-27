@@ -71,7 +71,7 @@
             android:id="@+id/setNoteName"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="Add Nickname">
+            app:text="@string/Add_Nickname">
 
         </com.stratagile.pnrouter.view.DrawableTextView>
 

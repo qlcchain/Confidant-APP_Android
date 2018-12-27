@@ -41,11 +41,13 @@
         android:hint="@string/Inputnickname"
         android:minHeight="@dimen/x100"
         android:text=""
+        android:textCursorDrawable="@null"
+        android:background="@null"
         android:textAlignment="center"
         android:textColor="@color/mainColor"
         android:textSize="14sp"
         android:visibility="visible" />
-
+    <View style="@style/divide_line_black" />
     <LinearLayout
         android:layout_marginTop="@dimen/x40"
         android:layout_width="match_parent"

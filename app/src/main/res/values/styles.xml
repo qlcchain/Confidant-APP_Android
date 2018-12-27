@@ -44,7 +44,12 @@
         <item name="android:layout_marginLeft">@dimen/x30</item>
         <item name="android:background">@color/color_f2f2f2</item>
     </style>
-
+    <style name="divide_line_black">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/x2</item>
+        <item name="android:layout_marginLeft">@dimen/x30</item>
+        <item name="android:background">@color/black</item>
+    </style>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>

@@ -14,9 +14,8 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.AddFriendDealReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.DelFriendCmdRsp
+import com.stratagile.pnrouter.db.UserEntityDao
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
@@ -101,7 +100,28 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 initData()
                 finish()
             } else {
-                toast("添加失败")
+                toast(getString(R.string.fail))
+            }
+
+        }
+    }
+    override fun changeRemarksRsp(retCode: Int) {
+        runOnUiThread {
+            if (retCode == 0) {
+                userInfo!!.remarks = remark
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
+                closeProgressDialog()
+                if(userInfo!!.remarks != null && !userInfo!!.remarks.equals("")) {
+                    var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
+                    setNoteName.setRightTitleText(getString(R.string.Modify_Nickname))
+                    setNoteName.setTitleText(remarks)
+                } else {
+                    setNoteName.setRightTitleText("")
+                    setNoteName.setTitleText(getString(R.string.Add_Nickname))
+                }
+                toast(getString(R.string.success))
+            } else {
+                toast(getString(R.string.fail))
             }
 
         }
@@ -160,6 +180,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 
     var opreateBack = false
 
+    var remark = ""
     lateinit var standaloneCoroutine : Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,6 +194,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 //        AppConfig.instance.messageReceiver!!.addfrendCallBack = this
         UserProvider.getInstance().friendOperateListener = this
         userInfo = intent.getParcelableExtra("user")
+        if(userInfo != null  && userInfo!!.userId!=null)
+        {
+            val user = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(userInfo!!.userId)).list()
+            if (user.size != 0) {
+                userInfo!!.remarks = user.get(0).remarks
+            }
+        }
+
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -209,6 +238,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         } else {
             title.text = getString(R.string.details)
         }
+        if(userInfo!!.remarks != null && !userInfo!!.remarks.equals("")) {
+            var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
+            setNoteName.setRightTitleText(getString(R.string.Modify_Nickname))
+            setNoteName.setTitleText(remarks)
+        } else {
+            setNoteName.setRightTitleText("")
+            setNoteName.setTitleText(getString(R.string.Add_Nickname))
+        }
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
         tvRefuse.setOnClickListener {
@@ -219,11 +256,25 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             }
         }
         setNoteName.setOnClickListener {
+
+            var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
             EditBoxAlertDialog(this, EditBoxAlertDialog.BUTTON_NEUTRAL)
-                    .setContentText(getString(R.string.fixedtwo))
+                    .setContentText(remarks)
                     .setConfirmClickListener {
 
                         var content = it;
+                        remark = RxEncodeTool.base64Encode2String(content!!.toString().toByteArray())
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var msgData = ChangeRemarksReq(userId!!, userInfo!!.userId,remark)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                        }else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(2,msgData)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }
+                        showProgressDialog("wait...")
                     }
                     .show()
         }

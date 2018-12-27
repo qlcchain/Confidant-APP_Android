@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.R;
 public class DrawableTextView extends LinearLayout {
 
     private TextView titleText;
+    private TextView titleRightText;
     private ImageView ivNext;
     public DrawableTextView(Context context) {
         super(context);
@@ -42,6 +43,7 @@ public class DrawableTextView extends LinearLayout {
     private void init(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.drawble_textview, this, true);
         titleText = view.findViewById(R.id.title);
+        titleRightText = view.findViewById(R.id.righttitle);
         ivNext = view.findViewById(R.id.ivNext);
     }
 
@@ -57,7 +59,10 @@ public class DrawableTextView extends LinearLayout {
         titleText.setText(text);
         invalidate();
     }
-
+    public void setRightTitleText(CharSequence text) {
+        titleRightText.setText(text);
+        invalidate();
+    }
     public void setShowNext(boolean showNext) {
         ivNext.setVisibility(showNext? VISIBLE : INVISIBLE);
     }

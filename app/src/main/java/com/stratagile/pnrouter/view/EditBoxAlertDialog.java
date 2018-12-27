@@ -249,11 +249,11 @@ public class EditBoxAlertDialog extends Dialog implements View.OnClickListener {
     }
 
     public EditBoxAlertDialog setContentText (String text) {
-     /*   mContentText = text;
+        mContentText = text;
         if (mContentTextView != null && mContentText != null) {
             showContentText(true);
             mContentTextView.setText(mContentText);
-        }*/
+        }
         return this;
     }
 

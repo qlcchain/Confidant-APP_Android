@@ -24,6 +24,8 @@ public class UserEntity implements Parcelable{
     //昵称
     private String nickName;
 
+    //用户备注
+    private String remarks;
     //昵称
     private String nickSouceName;
     //头像
@@ -39,16 +41,16 @@ public class UserEntity implements Parcelable{
 
 
 
-
-    @Generated(hash = 440973856)
+    @Generated(hash = 2048124219)
     public UserEntity(Long id, String userId, String routerUserId, String publicKey,
-            String nickName, String nickSouceName, String avatar, String noteName,
-            int friendStatus, boolean addFromMe, long timestamp) {
+            String nickName, String remarks, String nickSouceName, String avatar,
+            String noteName, int friendStatus, boolean addFromMe, long timestamp) {
         this.id = id;
         this.userId = userId;
         this.routerUserId = routerUserId;
         this.publicKey = publicKey;
         this.nickName = nickName;
+        this.remarks = remarks;
         this.nickSouceName = nickSouceName;
         this.avatar = avatar;
         this.noteName = noteName;
@@ -71,6 +73,7 @@ public class UserEntity implements Parcelable{
         routerUserId = in.readString();
         publicKey = in.readString();
         nickName = in.readString();
+        remarks = in.readString();
         nickSouceName = in.readString();
         avatar = in.readString();
         noteName = in.readString();
@@ -91,6 +94,7 @@ public class UserEntity implements Parcelable{
         dest.writeString(routerUserId);
         dest.writeString(publicKey);
         dest.writeString(nickName);
+        dest.writeString(remarks);
         dest.writeString(nickSouceName);
         dest.writeString(avatar);
         dest.writeString(noteName);
@@ -133,6 +137,14 @@ public class UserEntity implements Parcelable{
     }
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
     public String getAvatar() {
         return this.avatar;

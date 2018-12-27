@@ -20,6 +20,9 @@ import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
+    override fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp) {
+        friendOperateListener?.changeRemarksRsp(jChangeRemarksRsp.params.retCode)
+    }
 
     var friendOperateListener : FriendOperateListener? = null
     var addFriendDelListener : AddFriendDelListener? = null
@@ -359,6 +362,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         fun accepteFriendRsp(retCode : Int)
         fun refuseFriendRsp(retCode : Int)
         fun addFriendRsp(retCode : Int)
+        fun changeRemarksRsp(retCode : Int)
     }
 
     interface AddFriendDelListener {
