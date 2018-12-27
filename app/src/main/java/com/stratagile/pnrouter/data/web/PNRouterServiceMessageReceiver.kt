@@ -364,6 +364,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+        fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
 
     interface CoversationCallBack {
