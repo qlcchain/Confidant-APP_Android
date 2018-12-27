@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.user
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -16,6 +17,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.ui.activity.main.MainViewModel
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewFriendComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
@@ -31,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 import javax.inject.Inject
 
 
@@ -57,7 +60,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     internal lateinit var mPresenter: NewFriendPresenter
 
     var newFriendListAdapter: NewFriendListAdapter? = null
-
+    lateinit var viewModel:ScanViewModel
     var handleUser: UserEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,6 +128,36 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
             }
 
         }
+        viewModel = ViewModelProviders.of(this).get(ScanViewModel::class.java)
+        viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
+            KLog.i(toAddUserId)
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+            if (toAddUserId.equals(selfUserId)) {
+                return@Observer
+            }
+            if (!"".equals(toAddUserId)) {
+                var intent = Intent(this, UserInfoActivity::class.java)
+                var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+                for (i in useEntityList) {
+                    if (i.userId.equals(toAddUserId)) {
+                        intent.putExtra("user", i)
+                        startActivity(intent)
+                        return@Observer
+                    }
+                }
+                var userEntity = UserEntity()
+                userEntity.friendStatus = 7
+                userEntity.userId = toAddUserId
+                userEntity.nickName = ""
+                userEntity.timestamp = Calendar.getInstance().timeInMillis
+
+                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                userEntity.routerUserId = selfUserId
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                intent.putExtra("user", userEntity)
+                startActivity(intent)
+            }
+        })
         newFriendListAdapter = NewFriendListAdapter(showlist)
         newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
             handleUser = newFriendListAdapter!!.getItem(position)
@@ -200,5 +233,12 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         val inflater = menuInflater
         inflater.inflate(R.menu.qr_code, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            viewModel.toAddUserId.value = data!!.getStringExtra("result")
+            return
+        }
     }
 }
