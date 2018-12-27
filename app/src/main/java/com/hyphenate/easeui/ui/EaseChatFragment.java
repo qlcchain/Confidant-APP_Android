@@ -80,6 +80,7 @@ import com.stratagile.pnrouter.entity.JDelMsgRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
+import com.stratagile.pnrouter.entity.JUserInfoPushRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
@@ -952,6 +953,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }
     }
+    public void updatFriendName(JUserInfoPushRsp jUserInfoPushRsp)
+    {
+        if(jUserInfoPushRsp.getParams().getFriendId().equals(toChatUserId))
+        {
+
+        }
+    }
     public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
     {
         if(jSendToxFileRsp.getParams().getRetCode() == 0)
@@ -1384,14 +1392,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 if (data != null) {
                     Uri selectedImage = data.getData();
-
-                    if (selectedImage != null) {
+                    sendPicByUri(selectedImage);
+                   /* if (selectedImage != null) {
                         String path = selectedImage.getPath();
                         if(path.contains(".jpeg")  || path.contains(".jpg") || path.contains(".png"))
                         {
-                            sendPicByUri(selectedImage);
+
                         }
-                    }
+                    }*/
                 }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
                 double latitude = data.getDoubleExtra("latitude", 0);
@@ -2620,7 +2628,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //noinspection ResultOfMethodCallIgnored
         videoFile.getParentFile().mkdirs();
         startActivityForResult(
-                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10).putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0),
+                new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30).putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0),
                 REQUEST_CODE_VIDEO);
     }
     /**

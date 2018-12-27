@@ -50,6 +50,10 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
+        chatFragment?.updatFriendName(jUserInfoPushRsp)
+    }
+
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
         if(jJToxPullFileRsp.params.retCode != 0)
         {
