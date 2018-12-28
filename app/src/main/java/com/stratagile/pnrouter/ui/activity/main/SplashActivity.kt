@@ -64,7 +64,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        var aa =  android.os.Build.BRAND;
         var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {

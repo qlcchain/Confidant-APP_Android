@@ -535,11 +535,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 map.put("usersn",lastLoginUserSn)
                 OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
                     override fun onFailure( e :Exception) {
-                        Toast.makeText(AppConfig.instance,"失败",Toast.LENGTH_SHORT).show()
+                        LogUtil.addLog("小米推送注册失败:","MainActivity")
                     }
 
                     override fun  onResponse(json:String ) {
-                        Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
+                        LogUtil.addLog("小米推送注册成功:","MainActivity")
+                        //Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
                     }
                 });
             }
