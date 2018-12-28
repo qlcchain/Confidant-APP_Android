@@ -37,6 +37,8 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.FriendEntity;
+import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.utils.GsonUtil;
@@ -301,6 +303,16 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                     List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
                     if(localFriendList.size() == 0)//如果找不到用户
                     {
+                        SpUtil.INSTANCE.putString(getActivity(),key,"");
+                        continue;
+                    }
+                    FriendEntity freindStatusData = new FriendEntity();
+                    List<FriendEntity>  localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+                    if (localFriendStatusList.size() > 0)
+                        freindStatusData = localFriendStatusList.get(0);
+                    if(freindStatusData.getFriendLocalStatus() != 0)
+                    {
+                        SpUtil.INSTANCE.putString(getActivity(),key,"");
                         continue;
                     }
                     String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,key,"");

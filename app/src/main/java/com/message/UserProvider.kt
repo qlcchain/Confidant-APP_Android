@@ -67,7 +67,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         j.friendLocalStatus = 2
                     }
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-                    return
+                    break
                 }
 
             }
@@ -100,7 +100,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         j.friendLocalStatus = 6
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
                         refreshFriend(jDelFriendCmdRsp.params.friendId)
-                        return
+                        break
                     }
 
                 }
@@ -122,7 +122,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             if (j.userId.equals(userId)) {
                 if (jAddFriendPushRsp.params.friendId.equals(j.friendId)) {
 
-                    if(j.friendLocalStatus == 0)
+                    if(j.friendLocalStatus == 0)//自动同意
                     {
                         var it = UserEntity()
                         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
@@ -131,8 +131,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         if(it.nickName == null)
                             return
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                        val selfNickNameBase64 = it.nickName
-                        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                        val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
                         var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
                         if (ConstantValue.isWebsocketConnected) {
                             AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
@@ -148,7 +148,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         j.friendLocalStatus = 3
                     }
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-                    return
+                    break
                 }
 
             }
@@ -356,7 +356,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     j.friendLocalStatus = 6
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
                     MessageProvider.getInstance().deletConversationByDeleteFriend(jDelFriendPushRsp.params.friendId)
-                    return
+                    break
                 }
 
             }

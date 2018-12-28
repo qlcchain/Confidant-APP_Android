@@ -337,6 +337,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
      * 目标好友处理完成好友请求操作，由router推送消息给好友请求发起方，本次好友请求的结果
      */
     override fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId) && jAddFriendReplyRsp.params.userId.equals(j.friendId)) {
+                if (jAddFriendReplyRsp.params.result == 0) {
+                    j.friendLocalStatus = 0
+                } else if (jAddFriendReplyRsp.params.result == 1) {
+                    j.friendLocalStatus = 2
+                }
+                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                runOnUiThread {
+                    viewModel.freindChange.value = Calendar.getInstance().timeInMillis
+                }
+                break
+            }
+        }
+
         var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in useEntityList) {
             //jAddFriendReplyRsp.params.userId==对方的id
@@ -365,22 +382,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 return
             }
         }
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-        for (j in localFriendStatusList) {
-            if (j.userId.equals(userId) && jAddFriendReplyRsp.params.userId.equals(j.friendId)) {
-                if (jAddFriendReplyRsp.params.result == 0) {
-                    j.friendLocalStatus = 0
-                } else if (jAddFriendReplyRsp.params.result == 1) {
-                    j.friendLocalStatus = 2
-                }
-                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-                runOnUiThread {
-                    viewModel.freindChange.value = Calendar.getInstance().timeInMillis
-                }
-                return
-            }
-        }
+
     }
 
     /**
