@@ -12,7 +12,9 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.AddFriendReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JAddFreindRsp
@@ -40,13 +42,17 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
         com.pawegio.kandroid.runOnUiThread {
             toast(addFriendRsp.baseDataToJson())
         }
-        newFriend!!.friendStatus = 1
+        //newFriend!!.friendStatus = 1
+        newFriendStatus!!.friendLocalStatus = 1
+
         if (hasUserInfo) {
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(newFriend)
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(newFriendStatus)
         } else {
             var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
             newFriend!!.routerUserId = selfUserId
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
         }
         KLog.i(addFriendRsp.baseDataToJson())
     }
@@ -60,18 +66,27 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
     }
 
     var newFriend : UserEntity? = null
+    var newFriendStatus : FriendEntity? = null
     override fun initView() {
         setContentView(R.layout.activity_add_freind)
     }
     override fun initData() {
         newFriend = UserEntity()
         newFriend!!.nickName = ""
-        newFriend!!.friendStatus = 1
+        //newFriend!!.friendStatus = 1
         newFriend!!.userId = intent.getStringExtra("toUserId")
         newFriend!!.addFromMe = true
         newFriend!!.timestamp = Calendar.getInstance().timeInMillis
         newFriend!!.noteName = ""
-        var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+
+        var selfId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        newFriendStatus = FriendEntity()
+        newFriendStatus!!.userId = selfId;
+        newFriendStatus!!.friendId = intent.getStringExtra("toUserId")
+        newFriendStatus!!.friendLocalStatus = 1
+        newFriendStatus!!.timestamp = Calendar.getInstance().timeInMillis
+
+       /* var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in useEntityList) {
             if (i.userId.equals(intent.getStringExtra("toUserId"))) {
                 hasUserInfo = true
@@ -86,7 +101,27 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
                 }
                 break
             }
+        }*/
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(selfId) && intent.getStringExtra("toUserId").equals(j.friendId)) {
+                hasUserInfo = true
+                if (j.friendLocalStatus == 0) {
+                    newFriendStatus = j
+                } else {
+                    var intent = Intent(this, UserInfoActivity::class.java)
+                    var it = UserEntity()
+                    var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
+                    if (localFriendList.size > 0)
+                        it = localFriendList.get(0)
+                    intent.putExtra("user", it)
+                    startActivity(intent)
+                    finish()
+                    return
+                }
+            }
         }
+
         AppConfig.instance.messageReceiver!!.addfrendCallBack = this
         userId.text = intent.getStringExtra("toUserId")
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")

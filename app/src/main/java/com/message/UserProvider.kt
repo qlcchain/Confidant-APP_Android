@@ -7,7 +7,9 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
@@ -42,8 +44,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
      * 第三步，我处理对方给我的好友请求
      */
     override fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp) {
-        userList.forEach {
-            if (it.userId.equals(jAddFriendDealRsp.params.friendName)) {
+        /*userList.forEach {
+            if (it.userId.equals(jAddFriendDealRsp.params.friendId)) {
                 if (jAddFriendDealRsp.params.result == 0) {
                     it.friendStatus = 0
                 } else if (jAddFriendDealRsp.params.result == 1) {
@@ -52,7 +54,25 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 return@forEach
             }
+        }*/
+
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)) {
+                if (jAddFriendDealRsp.params.friendId.equals(j.friendId)) {
+                    if (jAddFriendDealRsp.params.result == 0) {
+                        j.friendLocalStatus = 0
+                    } else if (jAddFriendDealRsp.params.result == 1) {
+                        j.friendLocalStatus = 2
+                    }
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                    return
+                }
+
+            }
         }
+
         addFriendDelListener?.addFriendDealRsp(jAddFriendDealRsp.params.retCode)
         refreshFriend("")
     }
@@ -63,12 +83,26 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
      */
     override fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp) {
         if (jDelFriendCmdRsp.params.retCode == 0) {
-            userList.forEach {
+           /* userList.forEach {
                 if (it.userId.equals(jDelFriendCmdRsp.params.friendId)) {
                     it.friendStatus = 6
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                     refreshFriend(jDelFriendCmdRsp.params.friendId)
                     return@forEach
+                }
+            }*/
+
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+            for (j in localFriendStatusList) {
+                if (j.userId.equals(userId)) {
+                    if (jDelFriendCmdRsp.params.friendId.equals(j.friendId)) {
+                        j.friendLocalStatus = 6
+                        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                        refreshFriend(jDelFriendCmdRsp.params.friendId)
+                        return
+                    }
+
                 }
             }
             friendOperateListener?.delFriendRsp(jDelFriendCmdRsp.params.retCode)
@@ -81,9 +115,48 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
      */
     override fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp) {
         KLog.i("推送过来了添加好友的请求")
+
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)) {
+                if (jAddFriendPushRsp.params.friendId.equals(j.friendId)) {
+
+                    if(j.friendLocalStatus == 0)
+                    {
+                        var it = UserEntity()
+                        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
+                        if (localFriendList.size > 0)
+                            it = localFriendList.get(0)
+                        if(it.nickName == null)
+                            return
+                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        val selfNickNameBase64 = it.nickName
+                        //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                        }else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(addFriendDealReq)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }
+                        j.friendLocalStatus = 0
+                    }else
+                    {
+                        j.friendLocalStatus = 3
+                    }
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                    return
+                }
+
+            }
+        }
+
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
-                if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
+               /* if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
                 {
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     val selfNickNameBase64 = it.nickName
@@ -101,13 +174,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 }else
                 {
                     it.friendStatus = 3
-                }
+                }*/
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.publicKey = jAddFriendPushRsp.params.userKey
                 it.timestamp = jAddFriendPushRsp.timestamp
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+
+
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
                 if (ConstantValue.isWebsocketConnected) {
@@ -122,9 +197,10 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 return
             }
         }
+
         var newFriend = UserEntity();
         newFriend.nickName = jAddFriendPushRsp.params.nickName
-        newFriend.friendStatus = 3
+        //newFriend.friendStatus = 3
         newFriend.userId = jAddFriendPushRsp.params.friendId
         newFriend.addFromMe = false
         newFriend.timestamp = jAddFriendPushRsp.timestamp
@@ -135,7 +211,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         newFriend.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+        var newFriendStatus = FriendEntity()
+        newFriendStatus.userId = selfUserId;
+        newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
+        newFriendStatus.friendLocalStatus = 3
+        newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+
         var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
@@ -152,12 +235,21 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     fun refreshFriend(friendId:String) {
         userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll().MutableListToArrayList()
         var newFriendCount = 0
-        for (i in userList) {
+        /*for (i in userList) {
             if (i.userId.equals(selfUserId)) {
                 continue
             }
             if (i.friendStatus == 3) {
                 newFriendCount++
+            }
+        }*/
+
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(selfUserId)) {
+                if (j.friendLocalStatus == 3) {
+                    newFriendCount++
+                }
             }
         }
         EventBus.getDefault().post(UnReadContactCount(newFriendCount))
@@ -172,14 +264,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     override fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp) {
         userList.forEach {
             if (it.userId.equals(jAddFriendReplyRsp.params.friendId)) {
-                if (jAddFriendReplyRsp.params.result == 0) {
+                /*if (jAddFriendReplyRsp.params.result == 0) {
                     it.friendStatus = 0
                 } else if (jAddFriendReplyRsp.params.result == 1) {
                     it.friendStatus = 2
-                }
+                }*/
                 it.nickName = jAddFriendReplyRsp.params.nickname
                 it.publicKey = jAddFriendReplyRsp.params.userKey
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
                 if (ConstantValue.isWebsocketConnected) {
@@ -194,19 +287,46 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 return
             }
         }
-
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)) {
+                if (jAddFriendReplyRsp.params.friendId.equals(j.friendId)) {
+                    if (jAddFriendReplyRsp.params.result == 0) {
+                        j.friendLocalStatus = 0
+                    } else if (jAddFriendReplyRsp.params.result == 1) {
+                        j.friendLocalStatus = 2
+                    }
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                    refreshFriend("")
+                    return
+                }
+            }
+        }
         var userEntity = UserEntity()
         userEntity.userId = jAddFriendReplyRsp.params.friendId
         userEntity.nickName = jAddFriendReplyRsp.params.friendName
-        if (jAddFriendReplyRsp.params.result == 0) {
+       /* if (jAddFriendReplyRsp.params.result == 0) {
             userEntity.friendStatus = 0
         } else if (jAddFriendReplyRsp.params.result == 1) {
             userEntity.friendStatus = 2
-        }
+        }*/
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         userEntity.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+        var newFriendStatus = FriendEntity()
+        newFriendStatus.userId = userId;
+        newFriendStatus.friendId = jAddFriendReplyRsp.params.friendId
+        if (jAddFriendReplyRsp.params.result == 0) {
+            newFriendStatus.friendLocalStatus = 0
+        } else if (jAddFriendReplyRsp.params.result == 1) {
+            newFriendStatus.friendLocalStatus = 2
+        }
+        newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+
+
         var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
@@ -220,15 +340,27 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
-        userList.forEach {
+       /* userList.forEach {
             if (it.userId.equals(jDelFriendPushRsp.params.friendId)) {
                 it.friendStatus = 6
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
                 MessageProvider.getInstance().deletConversationByDeleteFriend(jDelFriendPushRsp.params.friendId)
                 return@forEach
             }
-        }
+        }*/
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)) {
+                if (jDelFriendPushRsp.params.friendId.equals(j.friendId)) {
+                    j.friendLocalStatus = 6
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                    MessageProvider.getInstance().deletConversationByDeleteFriend(jDelFriendPushRsp.params.friendId)
+                    return
+                }
+
+            }
+        }
         var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq,jDelFriendPushRsp.msgid))

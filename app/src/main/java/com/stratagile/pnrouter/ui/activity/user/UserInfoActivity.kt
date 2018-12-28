@@ -94,7 +94,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         runOnUiThread {
             if (retCode == 0) {
                 standaloneCoroutine.cancel()
-                userInfo!!.friendStatus = 1
+                friendStatus = 1
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
                 closeProgressDialog()
                 initData()
@@ -129,7 +129,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 
 //    override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
 //        standaloneCoroutine.cancel()
-//        userInfo!!.friendStatus = 1
+//        friendStatus = 1
 //        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
 //        KLog.i(addFriendRsp.baseDataToJson())
 //        runOnUiThread {
@@ -143,7 +143,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 //
 //    override fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp) {
 //        if (jDelFriendCmdRsp.params.retCode == 0) {
-//            userInfo!!.friendStatus = 6
+//            friendStatus = 6
 //            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
 //            EventBus.getDefault().post(FriendChange(userInfo!!.userId))
 //        }
@@ -177,7 +177,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     internal lateinit var mPresenter: UserInfoPresenter
 
     var userInfo : UserEntity? = null
-
+    var friendStatus = 0
     var opreateBack = false
 
     var remark = ""
@@ -249,9 +249,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
         tvRefuse.setOnClickListener {
-            if (userInfo!!.friendStatus == 0) {
+            if (friendStatus == 0) {
                 showDialog()
-            } else if (userInfo!!.friendStatus == 3) {
+            } else if (friendStatus == 3) {
                 refuseFriend()
             }
         }
@@ -284,14 +284,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             startActivity(Intent(this, QRFriendCodeActivity::class.java))
         }
         tvAccept.setOnClickListener {
-            if (userInfo!!.friendStatus == 0) {
+            if (friendStatus == 0) {
                 //send message
                 /*var intent = Intent(this, ConversationActivity::class.java)
                 intent.putExtra("user", userInfo!!)
                 startActivity(intent)*/
                 UserDataManger.curreantfriendUserData = userInfo
                 startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo?.userId))
-            } else if (userInfo!!.friendStatus == 3) {
+            } else if (friendStatus == 3) {
                 acceptFriend()
             }
         }
@@ -304,7 +304,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         }
 
 
-        when (userInfo!!.friendStatus) {
+        when (friendStatus) {
             //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方, 7 什么都不是，等待发起加好友
             0-> {
                 tvRefuse.text = getString(R.string.delete_contact)
@@ -376,7 +376,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         if(userInfo!!.publicKey != null)
         {
             var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.publicKey,0)
-            userInfo?.friendStatus = 0
+            friendStatus = 0
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
             }else if (ConstantValue.isToxConnected) {
@@ -399,7 +399,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         if(userInfo!!.publicKey != null)
         {
             var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.publicKey, 1)
-            userInfo?.friendStatus = 1
+            friendStatus = 1
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
             }else if (ConstantValue.isToxConnected) {

@@ -30,7 +30,9 @@ import javax.inject.Inject;
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.AddFriendReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
@@ -63,8 +65,10 @@ import kotlin.collections.ArrayList
 class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMessageReceiver.PullFriendCallBack {
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size ==0) {
-            for (i in localFriendList) {
+            /*for (i in localFriendList) {
                 //是否为本地多余的好友
                 if (i.friendStatus == 3 || i.friendStatus == 1) {
                     //等待验证的好友，不能处理
@@ -72,6 +76,19 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 } else {
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.delete(i)
                 }
+            }*/
+            var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            for (i in localFriendStatusList) {
+                if (i.userId.equals(userId)) {
+                    if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
+                        continue
+                    }else{
+                        i.friendLocalStatus = 7
+                        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
+                    }
+                }
+
             }
             runOnUiThread {
                 initData()
@@ -85,7 +102,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             for (j in localFriendList) {
                 if (i.id.equals(j.userId)) {
                     isLocalFriend = true
-                    j.friendStatus = 0
+                    //j.friendStatus = 0
                     j.nickName = i.name
                     j.remarks = i.remarks
                     j.publicKey = i.userKey
@@ -99,15 +116,34 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.userId = i.id
                 userEntity.publicKey = i.userKey
                 userEntity.remarks =i.remarks
-                userEntity.friendStatus = 0
+                //userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
             }
+
+
+            var isLocalFriendStatus = false
+            for (j in localFriendStatusList) {
+                if (i.id.equals(j.friendId) && j.userId.equals(userId)) {
+                    isLocalFriendStatus = true
+                    j.friendLocalStatus = 0
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                    break
+                }
+            }
+            if (!isLocalFriendStatus) {
+                var friendEntity = FriendEntity()
+                friendEntity.userId = userId
+                friendEntity.friendId = i.id
+                friendEntity.friendLocalStatus = 0
+                friendEntity.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(friendEntity)
+            }
         }
         //把本地的多余好友清除
-        localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+      /*  localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         for (i in localFriendList) {
             //是否为本地多余的好友
             if (i.friendStatus == 3 || i.friendStatus == 1) {
@@ -124,8 +160,30 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 i.friendStatus = 7
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
             }
-        }
+        }*/
+        //把本地的多余好友清除
+        localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
 
+        for (i in localFriendStatusList) {
+            if (i.userId.equals(userId)) {
+                //是否为本地多余的好友
+                if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
+                    //等待验证的S好友，不能处理
+                    continue
+                }
+                var isLocalDeletedFriend = true
+                for (j in jPullFriendRsp.params.payload) {
+                    if (i.friendId.equals(j.id)) {
+                        isLocalDeletedFriend = false
+                    }
+                }
+                if (isLocalDeletedFriend) {
+                    i.friendLocalStatus = 7
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
+                }
+            }
+
+        }
         runOnUiThread {
             initData()
         }
@@ -211,7 +269,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var  contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
-        for (i in list) {
+        /*for (i in list) {
 
             if (i.userId.equals(selfUserId)) {
                 continue
@@ -235,8 +293,24 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 }
             }
 
-        }
+        }*/
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        for (i in localFriendStatusList) {
+            if (i.userId.equals(userId)) {
+                if (i.friendLocalStatus == 0) {
+                    var it = UserEntity()
+                    var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(i.friendId)).list()
+                    if (localFriendList.size > 0)
+                        it = localFriendList.get(0)
+                    contactList.add(it)
+                }
+                if (i.friendLocalStatus == 3) {
+                    newFriendCount++
+                }
+            }
 
+        }
         for (i in contactList) {
             i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
         }
@@ -252,7 +326,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var  contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
-        for (i in list) {
+       /* for (i in list) {
 
             if (i.userId.equals(selfUserId)) {
                 continue
@@ -274,6 +348,23 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }else{
                 if (i.friendStatus == 0) {
                     contactList.add(i)
+                }
+            }
+
+        }*/
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        for (i in localFriendStatusList) {
+            if (i.userId.equals(userId)) {
+                if (i.friendLocalStatus == 0) {
+                    var it = UserEntity()
+                    var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(i.friendId)).list()
+                    if (localFriendList.size > 0)
+                        it = localFriendList.get(0)
+                    contactList.add(it)
+                }
+                if (i.friendLocalStatus == 3) {
+                    newFriendCount++
                 }
             }
 

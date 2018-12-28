@@ -14,7 +14,9 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.main.MainViewModel
@@ -49,6 +51,15 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     override fun addFriendDealRsp(retCode: Int) {
         KLog.i("NewFriendActivity 收到好友处理的回调")
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(handleUser)
+
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)&& handleUser!!.userId.equals(j.friendId)) {
+                j.friendLocalStatus = friendStatus
+                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+            }
+        }
         runOnUiThread {
             closeProgressDialog()
             initData()
@@ -62,6 +73,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     var newFriendListAdapter: NewFriendListAdapter? = null
     lateinit var viewModel:ScanViewModel
     var handleUser: UserEntity? = null
+    var friendStatus = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +122,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var userIDStr:String = "";
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         for (i in list) {
             if (userIDStr.indexOf(i.userId+",") > -1) {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.delete(i)
@@ -120,13 +133,26 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
         var showlist = arrayListOf<UserEntity>()
-        for (i in list) {
-            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
-                if (i.friendStatus != 7) {
-                    showlist.add(i)
+        /* for (i in list) {
+             if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
+                 if (i.friendStatus != 7) {
+                     showlist.add(i)
+                 }
+             }
+
+         }*/
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+        for (j in localFriendStatusList) {
+            if (j.userId.equals(userId)) {
+
+                if (j.friendLocalStatus != 7) {
+                    var it = UserEntity()
+                    var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
+                    if (localFriendList.size > 0)
+                        it = localFriendList.get(0)
+                    showlist.add(it)
                 }
             }
-
         }
         viewModel = ViewModelProviders.of(this).get(ScanViewModel::class.java)
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
@@ -146,7 +172,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     }
                 }
                 var userEntity = UserEntity()
-                userEntity.friendStatus = 7
+                //userEntity.friendStatus = 7
                 userEntity.userId = toAddUserId
                 userEntity.nickName = ""
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
@@ -154,6 +180,16 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+
+
+                var userId = SpUtil.getString(this, ConstantValue.userId, "")
+                var newFriendStatus = FriendEntity()
+                newFriendStatus.userId = userId;
+                newFriendStatus.friendId = toAddUserId
+                newFriendStatus.friendLocalStatus = 3
+                newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+
                 intent.putExtra("user", userEntity)
                 startActivity(intent)
             }
@@ -172,7 +208,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     var nickName = SpUtil.getString(this, ConstantValue.username, "")
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
-                    handleUser?.friendStatus = 0
+                    friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
                     if(newFriendListAdapter!!.getItem(position)!!.publicKey != null)
@@ -187,7 +223,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     var userId = SpUtil.getString(this, ConstantValue.userId, "")
                     UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
-                    handleUser?.friendStatus = 5
+                    friendStatus = 5
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
 //                    UserProvider.getInstance().refreshFriend()
                     showProgressDialog()

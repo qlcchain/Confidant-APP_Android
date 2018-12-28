@@ -1,13 +1,15 @@
 package com.stratagile.pnrouter.ui.adapter.user
 
-import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<UserEntity, BaseViewHolder>(R.layout.layout_new_friend_list_item, arrayList) {
@@ -18,7 +20,12 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
         imagebutton.setText(item!!.nickName)
         helper!!.addOnClickListener(R.id.tvRefuse)
         helper!!.addOnClickListener(R.id.tvAccept)
-        when (item!!.friendStatus) {
+        var it = FriendEntity()
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(item.userId)).list()
+        if (localFriendStatusList.size > 0)
+            it = localFriendStatusList.get(0)
+        when (it.friendLocalStatus) {
             //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方
             0-> {
                 helper.setGone(R.id.llOperate, false)

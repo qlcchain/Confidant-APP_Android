@@ -299,7 +299,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 if(toChatUserId != null && !toChatUserId.equals("")&& !toChatUserId.equals("null"))
                 {
                     List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
-                    if(localFriendList.size() == 0)
+                    if(localFriendList.size() == 0)//如果找不到用户
                     {
                         continue;
                     }

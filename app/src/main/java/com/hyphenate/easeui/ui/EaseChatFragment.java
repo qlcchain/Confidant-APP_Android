@@ -2403,12 +2403,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
                         String baseDataJson = gson.toJson(Message);
-                        if(Message.getSender() == 0)
-                        {
-                            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-                        }else{
-                            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-                        }
+                        SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
                         sendMessageTo(message);
                     }else{
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
