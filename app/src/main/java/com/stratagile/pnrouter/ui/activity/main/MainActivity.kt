@@ -514,7 +514,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }catch (e : Exception) {
             e.printStackTrace()
         }
-
+        if(!ConstantValue.mRegId.equals(""))
+        {
+            FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
+        }else{
+            ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
+        }
         Thread(Runnable() {
             run() {
 

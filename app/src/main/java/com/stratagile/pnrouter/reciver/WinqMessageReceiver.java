@@ -81,7 +81,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
-                ConstantValue.INSTANCE.getMRegId() = mRegId
+                ConstantValue.INSTANCE.setMRegId(mRegId);
                 KLog.i("RegId= " + mRegId);
             }
         } else if (MiPushClient.COMMAND_SET_ALIAS.equals(command)) {
@@ -116,7 +116,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
-                ConstantValue.INSTANCE.getMRegId() = mRegId
+                ConstantValue.INSTANCE.setMRegId(mRegId);
             }
         }
     }
