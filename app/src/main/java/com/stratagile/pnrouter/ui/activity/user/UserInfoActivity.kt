@@ -52,7 +52,7 @@ import javax.inject.Inject
 
 class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener {
     override fun delFriendRsp(retCode: Int) {
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+       /* var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
@@ -61,7 +61,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-        }
+        }*/
 
         runOnUiThread {
             //            toast(addFriendRsp.baseDataToJson())

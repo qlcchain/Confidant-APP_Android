@@ -1751,24 +1751,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            if (UserDataManger.curreantfriendUserData.getPublicKey() != null)
+            if ( AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getPublicKey() != null)
+            {
                 AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
-            message.setFrom(userId);
-            message.setTo( UserDataManger.curreantfriendUserData.getUserId());
-            message.setDelivered(true);
-            message.setAcked(false);
-            message.setUnread(true);
-            currentSendMsg = message;
+                message.setFrom(userId);
+                message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                message.setDelivered(true);
+                message.setAcked(false);
+                message.setUnread(true);
+                currentSendMsg = message;
 
-            Gson gson = new Gson();
-            Message Message = new Message();
-            Message.setMsg(content);
-            Message.setFrom(userId);
-            Message.setTo(toChatUserId);
-            Message.setTimeStatmp(System.currentTimeMillis());
-            String baseDataJson = gson.toJson(Message);
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-            sendMessageTo(message);
+                Gson gson = new Gson();
+                Message Message = new Message();
+                Message.setMsg(content);
+                Message.setFrom(userId);
+                Message.setTo(toChatUserId);
+                Message.setTimeStatmp(System.currentTimeMillis());
+                String baseDataJson = gson.toJson(Message);
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                sendMessageTo(message);
+            }
+
         }
     }
     public void upateMessage(JSendMsgRsp jSendMsgRsp)
