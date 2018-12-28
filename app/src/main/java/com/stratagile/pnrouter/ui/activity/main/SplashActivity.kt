@@ -1,38 +1,22 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.util.Base64
-import chat.tox.antox.tox.ToxService
-import chat.tox.antox.toxme.ToxData
-import chat.tox.antox.utils.AntoxLog
-import chat.tox.antox.utils.CreateUserUtils
-import chat.tox.antox.wrapper.ToxAddress
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.hyphenate.easeui.utils.PathUtils
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.db.RouterEntity
-import com.stratagile.pnrouter.entity.MyRouter
-import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.utils.*
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_register.*
-import java.nio.ByteOrder
-import java.util.*
+import com.stratagile.pnrouter.utils.AESCipher
+import com.stratagile.pnrouter.utils.CountDownTimerUtils
+import com.stratagile.pnrouter.utils.MobileSocketClient
 import javax.inject.Inject
 
 /**
@@ -80,7 +64,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        mPresenter.getPermission()
         var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -127,7 +110,8 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                 }
             }
         }
-
+        MobileSocketClient.getInstance().init(handler,this)
+        mPresenter.getPermission()
        /* var aesKey = "0F578ED5897A958A"
 
         LogUtil.addLog("sendMsg aesKey:",aesKey)
@@ -140,10 +124,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var aa = RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend)
         var DstKey = RxEncodeTool.base64Encode(aa)
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
-
-
-
-        MobileSocketClient.getInstance().init(handler,this)
         //mPresenter.getLastVersion()
         mPresenter.observeJump()
     }

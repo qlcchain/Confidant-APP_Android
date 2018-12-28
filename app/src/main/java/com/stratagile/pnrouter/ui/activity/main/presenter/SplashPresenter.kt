@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
+import com.stratagile.pnrouter.entity.HttpData
 import com.stratagile.pnrouter.entity.MyRouter
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
@@ -231,7 +232,39 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 }else{
                                     if(!ConstantValue.currentRouterId.equals(""))
                                     {
-                                        var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.currentRouterId,  object : OkHttpUtils.OkCallback {
+                                            override fun onFailure( e :Exception) {
+                                                startTox()
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                            }
+
+                                            override fun  onResponse(json:String ) {
+
+                                                val gson = GsonUtil.getIntGson()
+                                                var httpData: HttpData? = null
+                                                try {
+                                                    if (json != null) {
+                                                        var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                        {
+                                                            ConstantValue.curreantNetworkType = "WIFI"
+                                                            ConstantValue.currentRouterIp = httpData.serverHost
+                                                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                            Thread.currentThread().interrupt() //方法调用终止线程
+                                                        }else{
+                                                            startTox()
+                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                        }
+
+                                                    }
+                                                } catch (e: Exception) {
+                                                    startTox()
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                }
+                                            }
+                                        })
+                                       /* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
                                         if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                         {
                                             ConstantValue.curreantNetworkType = "WIFI"
@@ -245,9 +278,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                             var intent = Intent(AppConfig.instance, ToxService::class.java)
                                             AppConfig.instance.startService(intent)
                                             Thread.currentThread().interrupt(); //方法调用终止线程
-                                        }
+                                        }*/
                                     }
-
                                     break;
                                 }
                             }
@@ -273,7 +305,38 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 {
                     Thread(Runnable() {
                         run() {
-                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+
+
+                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.currentRouterId,  object : OkHttpUtils.OkCallback {
+                                override fun onFailure( e :Exception) {
+                                    startTox()
+                                }
+
+                                override fun  onResponse(json:String ) {
+
+                                    val gson = GsonUtil.getIntGson()
+                                    var httpData: HttpData? = null
+                                    try {
+                                        if (json != null) {
+                                            var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                            {
+                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                ConstantValue.currentRouterIp = httpData.serverHost
+                                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                            }else{
+                                                startTox()
+                                            }
+
+                                        }
+                                    } catch (e: Exception) {
+                                        startTox()
+                                    }
+                                }
+                            })
+                           /* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+
                             if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
@@ -285,7 +348,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 LogUtil.addLog("P2P启动连接:","SplashActivity")
                                 var intent = Intent(AppConfig.instance, ToxService::class.java)
                                 AppConfig.instance.startService(intent)
-                            }
+                            }*/
                         }
                     }).start()
 
@@ -318,4 +381,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             }
         }
     }
+    private fun startTox()
+    {
+        ConstantValue.curreantNetworkType = "TOX"
+        LogUtil.addLog("P2P启动连接:","SplashActivity")
+        var intent = Intent(AppConfig.instance, ToxService::class.java)
+        AppConfig.instance.startService(intent)
+    }
+
 }

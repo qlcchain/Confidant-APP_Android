@@ -373,7 +373,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
-              e.printStackTrace()
+            e.printStackTrace()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -534,6 +534,21 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
+
+            /* var  url="http://47.96.76.184:9000/v1/pareg"
+             var map:HashMap<String, String>  =  HashMap()
+             map.put("os","2")
+             map.put("appversion","1.0.1")
+
+             OkHttpUtils.getInstance().doPost(url, map,  object : OkHttpUtils.OkCallback {
+                 override fun onFailure( e :Exception) {
+                     Toast.makeText(AppConfig.instance,"失败",Toast.LENGTH_SHORT).show()
+                 }
+
+                 override fun  onResponse(json:String ) {
+                     Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
+                 }
+             });*/
 
             if(!ConstantValue.lastNetworkType.equals(""))
             {
@@ -1016,45 +1031,46 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
-                                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
-                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                {
-                                    ConstantValue.curreantNetworkType = "WIFI"
-                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                    ConstantValue.currentRouterId = routerId
-                                    ConstantValue.currentRouterSN =  userSn
-                                    /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                                     AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-                                    runOnUiThread {
-                                        closeProgressDialog()
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                    override fun onFailure( e :Exception) {
+                                        startTox()
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
-                                    Thread.currentThread().interrupt() //方法调用终止线程
-                                }else{
-                                    ConstantValue.curreantNetworkType = "TOX"
-                                    stopTox = false
-                                    if(!ConstantValue.isToxConnected)
-                                    {
-                                        runOnUiThread {
-                                            showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                    stopTox = true
-                                                    false
-                                                } else false
-                                            })
-                                        }
-                                        LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        startService(intent)
-                                    }else{
-                                        runOnUiThread {
-                                            closeProgressDialog()
+
+                                    override fun  onResponse(json:String ) {
+
+                                        val gson = GsonUtil.getIntGson()
+                                        var httpData: HttpData? = null
+                                        try {
+                                            if (json != null) {
+                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                {
+                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                    ConstantValue.currentRouterId = routerId
+                                                    ConstantValue.currentRouterSN =  userSn
+                                                    /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                     AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                                                    runOnUiThread {
+                                                        closeProgressDialog()
+                                                    }
+                                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                                }else{
+                                                    startTox()
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                }
+
+                                            }
+                                        } catch (e: Exception) {
+                                            startTox()
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
                                         }
                                     }
-                                    Thread.currentThread().interrupt(); //方法调用终止线程
-                                }
-                                break;
+                                })
+                                break
                             }
 
                         }
@@ -1074,45 +1090,71 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             Thread(Runnable() {
                 run() {
 
-                    var httpData = HttpClient.httpGet(ConstantValue.httpUrl + routerId)
-                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                    {
-                        runOnUiThread {
-                            closeProgressDialog()
+                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                        override fun onFailure( e :Exception) {
+                            startTox()
+                            Thread.currentThread().interrupt(); //方法调用终止线程
                         }
-                        ConstantValue.curreantNetworkType = "WIFI"
-                        ConstantValue.currentRouterIp = httpData.serverHost
-                        ConstantValue.port = ":"+httpData.serverPort.toString()
-                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                        ConstantValue.currentRouterId = routerId
-                        ConstantValue.currentRouterSN =  userSn
-                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-                    }else{
-                        ConstantValue.curreantNetworkType = "TOX"
-                        stopTox = false
-                        if(!ConstantValue.isToxConnected)
-                        {
-                            runOnUiThread {
-                                showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                        stopTox = true
-                                        false
-                                    } else false
-                                })
-                            }
-                            LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-                            var intent = Intent(AppConfig.instance, ToxService::class.java)
-                            startService(intent)
-                        }else{
-                            runOnUiThread {
-                                closeProgressDialog()
+
+                        override fun  onResponse(json:String ) {
+
+                            val gson = GsonUtil.getIntGson()
+                            var httpData: HttpData? = null
+                            try {
+                                if (json != null) {
+                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                    {
+                                        ConstantValue.curreantNetworkType = "WIFI"
+                                        ConstantValue.currentRouterIp = httpData.serverHost
+                                        ConstantValue.port = ":"+httpData.serverPort.toString()
+                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                        ConstantValue.currentRouterId = routerId
+                                        ConstantValue.currentRouterSN =  userSn
+                                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                        }
+                                        Thread.currentThread().interrupt() //方法调用终止线程
+                                    }else{
+                                        startTox()
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+
+                                }
+                            } catch (e: Exception) {
+                                startTox()
+                                Thread.currentThread().interrupt(); //方法调用终止线程
                             }
                         }
-                    }
+                    })
                 }
             }).start()
 
+        }
+    }
+    private fun startTox()
+    {
+        ConstantValue.curreantNetworkType = "TOX"
+        stopTox = false
+        if(!ConstantValue.isToxConnected)
+        {
+            runOnUiThread {
+                showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        stopTox = true
+                        false
+                    } else false
+                })
+            }
+            LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+            var intent = Intent(AppConfig.instance, ToxService::class.java)
+            startService(intent)
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+            }
         }
     }
     override fun getScanPermissionSuccess() {
@@ -1206,6 +1248,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        var this_ = this
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             hasRouterParentLogin.visibility = View.VISIBLE
             noRoutergroupLogin.visibility = View.INVISIBLE
@@ -1226,6 +1269,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 ConstantValue.scanRouterSN = UserSnStr
                 if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
                 {
+                    if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()
                     ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
                     ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
@@ -1253,60 +1298,47 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             break;
                                         }else{
                                             isFromScan = true
-                                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
-                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                            {
-                                                ConstantValue.curreantNetworkType = "WIFI"
-                                                ConstantValue.currentRouterIp = httpData.serverHost
-                                                ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                if(ConstantValue.isHasWebsocketInit)
-                                                {
-                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                }else{
-                                                    ConstantValue.isHasWebsocketInit = true
-                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                                override fun onFailure( e :Exception) {
+                                                    startToxAndRecovery()
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
                                                 }
-                                                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                                Thread.currentThread().interrupt() //方法调用终止线程
-                                            }else{
-                                                ConstantValue.curreantNetworkType = "TOX"
-                                                stopTox = false
-                                                if(!ConstantValue.isToxConnected)
-                                                {
-                                                    runOnUiThread {
-                                                        showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                                stopTox = true
-                                                                false
-                                                            } else false
-                                                        })
-                                                    }
-                                                    LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-                                                    var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                                    startService(intent)
-                                                }else{
-                                                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                                    runOnUiThread {
-                                                        showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                                EventBus.getDefault().post(StopTox())
-                                                                false
-                                                            } else false
-                                                        })
-                                                    }
-                                                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                                    InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
-                                                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                                                    var baseData = BaseData(2,recovery)
-                                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                override fun  onResponse(json:String ) {
 
-                                                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                    val gson = GsonUtil.getIntGson()
+                                                    var httpData: HttpData? = null
+                                                    try {
+                                                        if (json != null) {
+                                                            httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                            {
+                                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                                ConstantValue.currentRouterIp = httpData.serverHost
+                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                if(ConstantValue.isHasWebsocketInit)
+                                                                {
+                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                }else{
+                                                                    ConstantValue.isHasWebsocketInit = true
+                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                }
+                                                                AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                Thread.currentThread().interrupt() //方法调用终止线程
+                                                            }else{
+                                                                startToxAndRecovery()
+                                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                            }
+
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        startToxAndRecovery()
+                                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                                    }
                                                 }
-                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                            }
+                                            })
                                             break;
                                         }
 
@@ -1326,58 +1358,44 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         Thread(Runnable() {
                             run() {
                                 isFromScan = true
-                                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
-                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                {
-                                    ConstantValue.curreantNetworkType = "WIFI"
-                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                    if(ConstantValue.isHasWebsocketInit)
-                                    {
-                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                    }else{
-                                        ConstantValue.isHasWebsocketInit = true
-                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                    override fun onFailure( e :Exception) {
+                                        startToxAndRecovery()
                                     }
-                                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                }else{
-                                    ConstantValue.curreantNetworkType = "TOX"
-                                    stopTox = false
-                                    if(!ConstantValue.isToxConnected)
-                                    {
-                                        runOnUiThread {
-                                            showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                    stopTox = true
-                                                    false
-                                                } else false
-                                            })
-                                        }
-                                        LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-                                        var intent = Intent(AppConfig.instance, ToxService::class.java)
-                                        startService(intent)
-                                    }else{
-                                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                                        runOnUiThread {
-                                            showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                                    EventBus.getDefault().post(StopTox())
-                                                    false
-                                                } else false
-                                            })
-                                        }
-                                        AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                        InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId,this)
-                                        var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                                        var baseData = BaseData(2,recovery)
-                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
-                                        MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    override fun  onResponse(json:String ) {
+
+                                        val gson = GsonUtil.getIntGson()
+                                        var httpData: HttpData? = null
+                                        try {
+                                            if (json != null) {
+                                               var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                {
+                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                    if(ConstantValue.isHasWebsocketInit)
+                                                    {
+                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                    }else{
+                                                        ConstantValue.isHasWebsocketInit = true
+                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                    }
+                                                    AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                }else{
+                                                    startToxAndRecovery()
+                                                 }
+
+                                            }
+                                        } catch (e: Exception) {
+                                            startToxAndRecovery()
+                                        }
                                     }
-                                }
+                                })
                             }
                         }).start()
                     }
@@ -1396,6 +1414,40 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             runOnUiThread {
                 closeProgressDialog()
             }
+        }
+    }
+    private fun startToxAndRecovery() {
+        ConstantValue.curreantNetworkType = "TOX"
+        stopTox = false
+        if (!ConstantValue.isToxConnected) {
+            runOnUiThread {
+                showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        stopTox = true
+                        false
+                    } else false
+                })
+            }
+            LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
+            var intent = Intent(AppConfig.instance, ToxService::class.java)
+            startService(intent)
+        } else {
+            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            runOnUiThread {
+                showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        EventBus.getDefault().post(StopTox())
+                        false
+                    } else false
+                })
+            }
+            AppConfig.instance.messageReceiver!!.loginBackListener = this
+            InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId, this)
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+            var baseData = BaseData(2, recovery)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+
+            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
     }
 }

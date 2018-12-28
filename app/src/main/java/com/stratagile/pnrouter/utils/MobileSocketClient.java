@@ -1,3 +1,4 @@
+
 package com.stratagile.pnrouter.utils;
 
 import android.content.Context;
@@ -131,7 +132,8 @@ public class MobileSocketClient {
                     Message msg = new Message();
                     msg.what = MSG_UPD_DATA;
                     msg.obj = "";
-                    handler.sendMessage(msg);
+                    if(handler != null )
+                        handler.sendMessage(msg);
                 }finally {
                     Message msg = new Message();
                     msg.what = MSG_UPD_DATA;

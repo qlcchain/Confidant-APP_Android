@@ -13,7 +13,6 @@ import java.io.IOException;
  * @created by androidsutido
  */
 public class HttpClient {
-    public static final MediaType type = MediaType.parse("application/x-www-form-urlencoded;charset=utf-8");
     public static final OkHttpClient httpClient = new OkHttpClient();
     //Get方法调用服务
     public static HttpData httpGet(String url){
@@ -36,15 +35,5 @@ public class HttpClient {
             return httpData;
         }
 
-    }
-    //Post方法调用服务
-    public static String httpPost(String url,String content) throws IOException{
-        RequestBody requestBody = RequestBody.create(type,content);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Response response = httpClient.newCall(request).execute();
-        return response.body().string();
     }
 }

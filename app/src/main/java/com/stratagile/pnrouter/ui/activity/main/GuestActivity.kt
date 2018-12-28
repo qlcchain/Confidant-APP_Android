@@ -31,10 +31,7 @@ import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JRecoveryRsp
-import com.stratagile.pnrouter.entity.MyRouter
-import com.stratagile.pnrouter.entity.RecoveryReq
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -521,6 +518,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     }
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        var this_ = this
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result");
             try {
@@ -555,7 +553,48 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }else{
-                                            var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.scanRouterId,  object : OkHttpUtils.OkCallback {
+                                                override fun onFailure( e :Exception) {
+                                                    startToxAndRecovery()
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                }
+
+                                                override fun  onResponse(json:String ) {
+
+                                                    val gson = GsonUtil.getIntGson()
+                                                    var httpData: HttpData? = null
+                                                    try {
+                                                        if (json != null) {
+                                                            var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                            {
+                                                                ConstantValue.curreantNetworkType = "WIFI"
+                                                                ConstantValue.currentRouterIp = httpData.serverHost
+                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                if(isHasConnect)
+                                                                {
+                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                }else{
+                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                }
+                                                                AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
+                                                                Thread.currentThread().interrupt() //方法调用终止线程
+                                                            }else{
+                                                                startToxAndRecovery()
+                                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                            }
+
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        startToxAndRecovery()
+                                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                                    }
+                                                }
+                                            })
+                                            /*var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
                                             if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                             {
                                                 ConstantValue.curreantNetworkType = "WIFI"
@@ -592,7 +631,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                                 }
                                                 Thread.currentThread().interrupt(); //方法调用终止线程
-                                            }
+                                            }*/
                                             break;
                                         }
 
@@ -613,7 +652,47 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     }else{
                         Thread(Runnable() {
                             run() {
-                                var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
+
+
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.scanRouterId,  object : OkHttpUtils.OkCallback {
+                                    override fun onFailure( e :Exception) {
+                                        startToxAndRecovery()
+                                    }
+
+                                    override fun  onResponse(json:String ) {
+
+                                        val gson = GsonUtil.getIntGson()
+                                        var httpData: HttpData? = null
+                                        try {
+                                            if (json != null) {
+                                                var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                {
+                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                    if(isHasConnect)
+                                                    {
+                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                    }else{
+                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                    }
+                                                    AppConfig.instance.messageReceiver!!.recoveryBackListener = this_
+                                                }else{
+                                                    startToxAndRecovery()
+                                                   }
+
+                                            }
+                                        } catch (e: Exception) {
+                                            startToxAndRecovery()
+                                         }
+                                    }
+                                })
+
+                               /* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.scanRouterId)
                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                 {
                                     ConstantValue.curreantNetworkType = "WIFI"
@@ -648,7 +727,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                         var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                                         MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                     }
-                                }
+                                }*/
                             }
                         }).start()
 
@@ -684,6 +763,27 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 closeProgressDialog()
             }
 
+        }
+    }
+    private fun startToxAndRecovery()
+    {
+        ConstantValue.curreantNetworkType = "TOX"
+        if(!ConstantValue.isToxConnected)
+        {
+            LogUtil.addLog("P2P启动连接:","GuestActivity")
+            var intent = Intent(AppConfig.instance, ToxService::class.java)
+            startService(intent)
+        }else {
+            runOnUiThread {
+                showProgressDialog("wait...")
+            }
+            AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+            InterfaceScaleUtil.addFriend(ConstantValue.scanRouterId, this)
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+            var baseData = BaseData(2, recovery)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
     }
 }
