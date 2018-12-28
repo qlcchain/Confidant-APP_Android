@@ -1,6 +1,9 @@
 package com.stratagile.pnrouter.application
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
+import android.os.Process
 import android.support.multidex.MultiDexApplication
 import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
@@ -31,6 +34,9 @@ import com.tencent.bugly.crashreport.CrashReport
 
 
 class AppConfig : MultiDexApplication() {
+
+    val MI_PUSH_APP_ID = "2882303761517914075"
+    val MI_PUSH_APP_KEY = "5221791411075"
     var applicationComponent: AppComponent? = null
 
     var onToxMessageReceiveListener : WebSocketConnection.OnMessageReceiveListener? = null
@@ -165,5 +171,40 @@ class AppConfig : MultiDexApplication() {
         //        db = mHelper.getWritableDatabase();
         //        // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         //        mDaoMaster = new DaoMaster(db);
+    }
+
+    private fun initMiPush() {
+        if (shouldInit()) {
+            MiPushClient.registerPush(this, MI_PUSH_APP_ID, MI_PUSH_APP_KEY)
+        }
+        val newLogger = object : LoggerInterface() {
+            fun setTag(tag: String) {
+                // ignore
+            }
+
+            fun log(content: String, t: Throwable) {
+                KLog.i(content, t)
+            }
+
+            fun log(content: String) {
+                KLog.i(content)
+            }
+        }
+
+    }
+
+    private fun shouldInit(): Boolean {
+        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val processInfos = am.runningAppProcesses
+        val mainProcessName = packageName
+        val myPid = Process.myPid()
+        if (processInfos != null) {
+            for (info in processInfos) {
+                if (info.pid == myPid && mainProcessName == info.processName) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }

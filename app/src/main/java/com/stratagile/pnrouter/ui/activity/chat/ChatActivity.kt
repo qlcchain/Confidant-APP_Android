@@ -372,7 +372,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
             LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
             var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
-            LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
+            LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())
             var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
             LogUtil.addLog("sendMsg miMsg:",miMsg)
             var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
