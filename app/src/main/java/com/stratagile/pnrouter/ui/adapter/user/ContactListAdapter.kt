@@ -17,13 +17,25 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
         helperItem = helper;
 
 
-        var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
-        //var nickNameSouce = item!!.nickName
-        helper!!.setText(R.id.tvNickName,nickNameSouce)
-        var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
-        if (nickNameSouce != null) {
-            imagebutton.setText(nickNameSouce)
+        if(item!!.remarks == null || item!!.remarks.equals(""))
+        {
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
+            //var nickNameSouce = item!!.nickName
+            helper!!.setText(R.id.tvNickName,nickNameSouce)
+            var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
+            if (nickNameSouce != null) {
+                imagebutton.setText(nickNameSouce)
+            }
+        }else{
+            var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.remarks))
+            //var nickNameSouce = item!!.nickName
+            helper!!.setText(R.id.tvNickName,nickNameSouce)
+            var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
+            if (nickNameSouce != null) {
+                imagebutton.setText(nickNameSouce)
+            }
         }
+
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(item)
         helper!!.addOnClickListener(R.id.tvRefuse)
         helper!!.addOnClickListener(R.id.tvAccept)

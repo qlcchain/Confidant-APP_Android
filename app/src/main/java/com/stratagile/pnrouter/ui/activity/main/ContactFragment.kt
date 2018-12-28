@@ -312,7 +312,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         }
         for (i in contactList) {
-            i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            if (i?.remarks != null && i?.remarks != "") {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.remarks)).toLowerCase()
+            }else{
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            }
         }
         contactList.sortBy {
             it.nickSouceName
@@ -378,7 +382,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             EventBus.getDefault().post(UnReadContactCount(0))
         }
         for (i in contactList) {
-            i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            if (i?.remarks != null && i?.remarks != "") {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.remarks)).toLowerCase()
+            }else{
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
+            }
         }
         contactList.sortBy {
             it.nickSouceName

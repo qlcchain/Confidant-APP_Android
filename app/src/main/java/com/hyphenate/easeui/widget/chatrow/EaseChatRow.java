@@ -166,6 +166,10 @@ public abstract class EaseChatRow extends LinearLayout {
                 List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
                 if (user.size() != 0) {
                     String usernameSouce = new String(RxEncodeTool.base64Decode(user.get(0).getNickName()));
+                    if(user.get(0).getRemarks() != null && !user.get(0).getRemarks().equals(""))
+                    {
+                        usernameSouce = new  String(RxEncodeTool.base64Decode(user.get(0).getRemarks()));
+                    }
                     EaseUserUtils.setUserAvatar(usernameSouce, userAvatarView);
                 } else {
                     EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView);

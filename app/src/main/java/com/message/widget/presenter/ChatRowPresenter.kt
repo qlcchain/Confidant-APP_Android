@@ -63,7 +63,10 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
                 progress_bar.visibility = View.VISIBLE
             }*/
         }
-        val usernameSouce = String(RxEncodeTool.base64Decode(userEntity?.nickName))
+        var usernameSouce = String(RxEncodeTool.base64Decode(userEntity?.nickName))
+        if (userEntity != null && userEntity?.remarks != null && userEntity?.remarks != "") {
+            usernameSouce = String(RxEncodeTool.base64Decode(userEntity?.remarks))
+        }
         avatar.setText(usernameSouce)
     }
 

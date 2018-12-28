@@ -130,6 +130,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             return convertView;
         }
         String username = friendUser.getNickName();
+        if(friendUser.getRemarks() != null && !friendUser.getRemarks().equals(""))
+        {
+            username = friendUser.getRemarks();
+        }
         String usernameSouce = new  String(RxEncodeTool.base64Decode(username));
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
@@ -301,6 +305,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
                             friendUser = localFriendList.get(0);
                     }
                     String username = new  String(RxEncodeTool.base64Decode(friendUser.getNickName()));
+                    if(friendUser.getRemarks() != null && !friendUser.getRemarks().equals(""))
+                    {
+                        username = new  String(RxEncodeTool.base64Decode(friendUser.getRemarks()));
+                    }
                     // First match against the whole ,non-splitted value
                     if (username.toLowerCase().contains(prefixString.toLowerCase())) {
                         newValues.add(value);

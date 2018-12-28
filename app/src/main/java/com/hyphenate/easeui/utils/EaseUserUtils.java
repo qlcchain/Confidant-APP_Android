@@ -83,6 +83,10 @@ public class EaseUserUtils {
             for (int i = 0; i < userEntityList.size(); i++) {
                 if (userEntityList.get(i).getUserId().equals(username)) {
                     String usernameSouce = new String(RxEncodeTool.base64Decode(userEntityList.get(i).getNickName()));
+                    if(userEntityList.get(i).getRemarks() != null && !userEntityList.get(i).getRemarks().equals(""))
+                    {
+                        usernameSouce = new  String(RxEncodeTool.base64Decode(userEntityList.get(i).getRemarks()));
+                    }
                     textView.setText(usernameSouce);
                     return;
                 }
