@@ -25,6 +25,8 @@ import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.tencent.bugly.crashreport.CrashReport
+import com.xiaomi.channel.commonutils.logger.LoggerInterface
+import com.xiaomi.mipush.sdk.MiPushClient
 
 /**
  * 作者：Android on 2017/8/1
@@ -177,17 +179,17 @@ class AppConfig : MultiDexApplication() {
         if (shouldInit()) {
             MiPushClient.registerPush(this, MI_PUSH_APP_ID, MI_PUSH_APP_KEY)
         }
-        val newLogger = object : LoggerInterface() {
-            fun setTag(tag: String) {
+        val newLogger = object : LoggerInterface {
+            override fun setTag(tag: String) {
                 // ignore
             }
 
-            fun log(content: String, t: Throwable) {
-                KLog.i(content, t)
+          override  fun log(content: String, t: Throwable) {
+                //KLog.i(content, t)
             }
 
-            fun log(content: String) {
-                KLog.i(content)
+            override  fun log(content: String) {
+                //KLog.i(content)
             }
         }
 
