@@ -13,6 +13,8 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
@@ -248,10 +250,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         }
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
+        var itStatus = FriendEntity()
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(userInfo!!.userId)).list()
+        if (localFriendStatusList.size > 0)
+            itStatus = localFriendStatusList.get(0)
         tvRefuse.setOnClickListener {
-            if (friendStatus == 0) {
+            if (itStatus.friendLocalStatus == 0) {
                 showDialog()
-            } else if (friendStatus == 3) {
+            } else if (itStatus.friendLocalStatus == 3) {
                 refuseFriend()
             }
         }
@@ -284,14 +291,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             startActivity(Intent(this, QRFriendCodeActivity::class.java))
         }
         tvAccept.setOnClickListener {
-            if (friendStatus == 0) {
+            if (itStatus.friendLocalStatus == 0) {
                 //send message
                 /*var intent = Intent(this, ConversationActivity::class.java)
                 intent.putExtra("user", userInfo!!)
                 startActivity(intent)*/
                 UserDataManger.curreantfriendUserData = userInfo
                 startActivity(Intent(this@UserInfoActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userInfo?.userId))
-            } else if (friendStatus == 3) {
+            } else if (itStatus.friendLocalStatus == 3) {
                 acceptFriend()
             }
         }
@@ -302,9 +309,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         company.setOnClickListener {
             //startActivity(Intent(this@UserInfoActivity, ConversationActivity::class.java).putExtra("user", userInfo))
         }
-
-
-        when (friendStatus) {
+        when (itStatus.friendLocalStatus) {
             //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方, 7 什么都不是，等待发起加好友
             0-> {
                 tvRefuse.text = getString(R.string.delete_contact)

@@ -316,7 +316,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 {
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
-                                    Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
                             }
                         }catch (Exception e)
@@ -982,7 +987,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 messageList.refresh();
             }
         }else{
-            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
     }
@@ -1788,7 +1798,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         messageList.refresh();
                     }
                 }
-                Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case 2:
                 if(conversation !=null )
@@ -1798,7 +1813,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         messageList.refresh();
                     }
                 }
-                Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 break;
         }
 
