@@ -43,9 +43,13 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
         {
             SpUtil.putString(this, ConstantValue.username, etNickName.text.toString().trim())
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             routerList.forEach {
-                it.username = etNickName.text.toString().trim()
-                AppConfig.instance.mDaoMaster!!.newSession().update(it)
+                if(it.userId.equals(selfUserId))
+                {
+                    it.username = etNickName.text.toString().trim()
+                    AppConfig.instance.mDaoMaster!!.newSession().update(it)
+                }
             }
             EventBus.getDefault().post(EditNickName())
             runOnUiThread()
