@@ -73,6 +73,7 @@ class AppConfig : MultiDexApplication() {
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
+        initMiPush()
         messageToxReceiver = ToxMessageReceiver()
 //        MessageProvider.init()
     }

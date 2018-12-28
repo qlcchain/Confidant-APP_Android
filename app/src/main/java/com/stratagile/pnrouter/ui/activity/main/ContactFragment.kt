@@ -37,6 +37,7 @@ import com.stratagile.pnrouter.entity.AddFriendReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.PullFriendReq
+import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
@@ -49,6 +50,7 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
+import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -243,7 +245,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     fun friendChange(friendChange: FriendChange) {
         initData()
     }
-
     fun pullFriendList() {
         if(refreshLayout != null)
             refreshLayout.isRefreshing = false

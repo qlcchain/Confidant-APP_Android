@@ -35,10 +35,7 @@ import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.entity.events.UnReadContactCount
-import com.stratagile.pnrouter.entity.events.UnReadMessageCount
+import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
@@ -464,7 +461,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun showToast() {
         showProgressDialog()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onNikNameChange(editnickName : EditNickName) {
+        contactFragment?.initData()
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendChange(friendChange: FriendChange) {
         if (friendChange.userId != null && !friendChange.userId.equals("")) {
@@ -514,6 +514,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }catch (e : Exception) {
             e.printStackTrace()
         }
+
+        Thread(Runnable() {
+            run() {
+
+                var map:HashMap<String, String>  =  HashMap()
+                map.put("os","2")
+                map.put("appversion","1.0.1")
+                map.put("regid",ConstantValue.mRegId)
+                map.put("topicid","")
+                var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+                map.put("routerid",ConstantValue.currentRouterId)
+                map.put("userid",selfUserId!!)
+                var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
+                map.put("usersn",lastLoginUserSn)
+                OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
+                    override fun onFailure( e :Exception) {
+                        Toast.makeText(AppConfig.instance,"失败",Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun  onResponse(json:String ) {
+                        Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
+                    }
+                });
+            }
+        }).start()
         MessageProvider.getInstance().messageListenter = this
         EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
@@ -745,17 +770,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var localFriendList: List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var hasUnReadMsg: Boolean = false;
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-       /* for (friendData in localFriendList) {
-            var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            if (conversation != null) {
-                val msgs: List<EMMessage> = conversation.allMessages
-                for (msg in msgs) {
-                    if (msg.isUnread && !userId.equals(msg.from)) {
-                        hasUnReadMsg = true
-                    }
-                }
-            }
-        }*/
+        /* for (friendData in localFriendList) {
+             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+             if (conversation != null) {
+                 val msgs: List<EMMessage> = conversation.allMessages
+                 for (msg in msgs) {
+                     if (msg.isUnread && !userId.equals(msg.from)) {
+                         hasUnReadMsg = true
+                     }
+                 }
+             }
+         }*/
         val keyMap = SpUtil.getAll(AppConfig.instance)
         var hasLinShi = ""
         for (key in keyMap.keys) {

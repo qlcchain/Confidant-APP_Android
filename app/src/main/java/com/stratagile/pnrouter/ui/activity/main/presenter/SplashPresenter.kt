@@ -145,6 +145,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             val savedNodeFile = Environment.getExternalStorageDirectory().toString()+"/RouterData13/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
             RxFileTool.deleteNodefile(savedNodeFile)
+            if(!ConstantValue.mRegId.equals(""))
+            {
+                FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
+            }else{
+                ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
+            }
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)

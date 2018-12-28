@@ -534,22 +534,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-
-            /* var  url="http://47.96.76.184:9000/v1/pareg"
-             var map:HashMap<String, String>  =  HashMap()
-             map.put("os","2")
-             map.put("appversion","1.0.1")
-
-             OkHttpUtils.getInstance().doPost(url, map,  object : OkHttpUtils.OkCallback {
-                 override fun onFailure( e :Exception) {
-                     Toast.makeText(AppConfig.instance,"失败",Toast.LENGTH_SHORT).show()
-                 }
-
-                 override fun  onResponse(json:String ) {
-                     Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
-                 }
-             });*/
-
             if(!ConstantValue.lastNetworkType.equals(""))
             {
                 isFromScan = false

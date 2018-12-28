@@ -54,5 +54,7 @@ object ConstantValue {
         var loginReq:LoginReq? = null  //登录过的账号数据
         var isWebsocketReConnect = false  //websocket是否重连过
         var isToxReConnect = false  //tox是否重连过
+        var mRegId = ""
+        var pushURL = "http://47.96.76.184:9000/v1/pareg"
 
 }

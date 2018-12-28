@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushCommandMessage;
@@ -80,6 +81,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
+                ConstantValue.INSTANCE.getMRegId() = mRegId
                 KLog.i("RegId= " + mRegId);
             }
         } else if (MiPushClient.COMMAND_SET_ALIAS.equals(command)) {
@@ -114,6 +116,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
+                ConstantValue.INSTANCE.getMRegId() = mRegId
             }
         }
     }
