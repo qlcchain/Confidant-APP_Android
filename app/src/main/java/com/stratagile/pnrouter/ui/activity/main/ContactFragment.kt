@@ -364,6 +364,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     contactList.add(it)
                 }
                 if (i.friendLocalStatus == 3) {
+                    hasNewFriendRequest = true
                     newFriendCount++
                 }
             }
