@@ -533,6 +533,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 map.put("userid",selfUserId!!)
                 var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
                 map.put("usersn",lastLoginUserSn)
+                LogUtil.addLog("小米推送注册regid:"+ConstantValue.mRegId,"MainActivity")
                 OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
                     override fun onFailure( e :Exception) {
                         LogUtil.addLog("小米推送注册失败:","MainActivity")

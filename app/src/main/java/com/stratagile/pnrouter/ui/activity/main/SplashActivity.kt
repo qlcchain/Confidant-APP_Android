@@ -91,8 +91,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
-                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                             break;
                                         }
 

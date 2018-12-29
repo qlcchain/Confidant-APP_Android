@@ -64,7 +64,7 @@ class AppConfig : MultiDexApplication() {
         super.onCreate()
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", true)
         EaseUI.getInstance().init(this, null)
-        EMClient.getInstance().setDebugMode(true)
+        //EMClient.getInstance().setDebugMode(true)
         instance = this
         setupApplicationComponent()
         setDatabase()
