@@ -117,6 +117,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
                 ConstantValue.INSTANCE.setMRegId(mRegId);
+                KLog.i("RegId= " + mRegId);
             }
         }
     }
