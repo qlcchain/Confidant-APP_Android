@@ -307,6 +307,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                         continue;
                     }
                     FriendEntity freindStatusData = new FriendEntity();
+                    freindStatusData.setFriendLocalStatus(7);
                     List<FriendEntity>  localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
                     if (localFriendStatusList.size() > 0)
                         freindStatusData = localFriendStatusList.get(0);

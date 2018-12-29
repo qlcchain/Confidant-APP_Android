@@ -258,6 +258,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
         var itStatus = FriendEntity()
+        itStatus.friendLocalStatus = 7
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(userInfo!!.userId)).list()
         if (localFriendStatusList.size > 0)

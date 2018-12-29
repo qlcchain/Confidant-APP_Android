@@ -166,7 +166,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         LogUtil.addLog("localFriendStatusList:"+localFriendStatusList.size,"ContactFragment")
         for (i in localFriendStatusList) {
             if (i.userId.equals(userId)) {
-                LogUtil.addLog("freindStatus:"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
+                LogUtil.addLog("freindStatus:"+i.userId+"_"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
                 //是否为本地多余的好友
                 if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
                     //等待验证的S好友，不能处理
@@ -185,6 +185,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     i.friendLocalStatus = 7
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
                 }
+            }else{
+                LogUtil.addLog("freindStatusOther:"+i.userId+"_"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
             }
 
         }

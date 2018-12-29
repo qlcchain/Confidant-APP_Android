@@ -21,6 +21,7 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
         helper!!.addOnClickListener(R.id.tvRefuse)
         helper!!.addOnClickListener(R.id.tvAccept)
         var it = FriendEntity()
+        it.friendLocalStatus = 7
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(item.userId)).list()
         if (localFriendStatusList.size > 0)

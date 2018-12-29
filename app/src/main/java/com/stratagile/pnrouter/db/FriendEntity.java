@@ -18,7 +18,7 @@ public class FriendEntity implements Parcelable{
     private String friendId;
 
     //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方 7 什么都不是，等待发起加好友
-    private int friendLocalStatus;
+    private int friendLocalStatus = 7;
 
     //是否为我加对方
     private boolean addFromMe;
