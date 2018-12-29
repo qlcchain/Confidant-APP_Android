@@ -317,6 +317,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
         var newFriendStatus = FriendEntity()
         newFriendStatus.userId = userId;
+        newFriendStatus.friendLocalStatus =7;
         newFriendStatus.friendId = jAddFriendReplyRsp.params.friendId
         if (jAddFriendReplyRsp.params.result == 0) {
             newFriendStatus.friendLocalStatus = 0
