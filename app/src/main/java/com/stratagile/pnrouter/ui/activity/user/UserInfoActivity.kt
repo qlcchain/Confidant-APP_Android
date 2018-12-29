@@ -26,6 +26,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponen
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -234,7 +235,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
     override fun initData() {
         var nickNameSouce = ""
-        if(userInfo!!.remarks == null && !userInfo!!.remarks.equals(""))
+        if(userInfo!!.remarks != null && !userInfo!!.remarks.equals(""))
         {
             nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
             title.text = nickNameSouce
@@ -315,6 +316,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         company.setOnClickListener {
             //startActivity(Intent(this@UserInfoActivity, ConversationActivity::class.java).putExtra("user", userInfo))
         }
+        LogUtil.addLog("freindId:"+ itStatus.friendId+"_"+itStatus.friendLocalStatus,"UserInfoActivity")
         when (itStatus.friendLocalStatus) {
             //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方, 7 什么都不是，等待发起加好友
             0-> {

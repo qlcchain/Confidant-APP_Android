@@ -47,7 +47,7 @@ import javax.inject.Inject
 class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterServiceMessageReceiver.LogOutCallBack {
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
 
-        if(jLogOutRsp.params.retCode == 0)
+       /* if(jLogOutRsp.params.retCode == 0)
         {
             ConstantValue.isHasWebsocketInit = true
             if(AppConfig.instance.messageReceiver != null)
@@ -66,7 +66,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                 toast(R.string.logoutfailed)
             }
 
-        }
+        }*/
     }
 
     @Inject
@@ -145,7 +145,6 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
                 .setTitleText("Log Out")
                 .setConfirmClickListener {
-                    showProgressDialog("log out")
                     var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                     var msgData = LogOutReq(routerEntity.routerId,selfUserId!!,routerEntity.userSn)
                     if (ConstantValue.isWebsocketConnected) {
@@ -156,6 +155,13 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         val friendKey = FriendKey(routerEntity.routerId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }
+
+                    ConstantValue.isHasWebsocketInit = true
+                    if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()
+                    ConstantValue.isWebsocketConnected = false
+                    isUserExit = true
+                    onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)
                         AppConfig.instance.messageReceiver!!.close()

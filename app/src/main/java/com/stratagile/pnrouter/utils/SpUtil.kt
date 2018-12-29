@@ -7,15 +7,23 @@ import java.util.*
 object SpUtil {
     private var sp: SharedPreferences? = null
 
-    fun putBoolean(context: Context, checkOnOff: String, value: Boolean?) {
-        if (sp == null || context ==null) {
+    fun putBoolean(context: Context, key: String, value: Boolean?) {
+        if(context ==null  ||  key == null)
+        {
+            return
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
-        sp!!.edit().putBoolean(checkOnOff, value!!).commit()
+        sp!!.edit().putBoolean(key, value!!).commit()
     }
 
     fun getBoolean(context: Context, key: String, defValue: Boolean?): Boolean {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return false
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
 
         }
@@ -23,14 +31,22 @@ object SpUtil {
     }
 
     fun putString(context: Context, key: String, value: String) {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         sp!!.edit().putString(key, value).commit()
     }
 
     fun getString(context: Context, key: String, defValue: String): String? {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return ""
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
 
         }
@@ -38,14 +54,22 @@ object SpUtil {
     }
 
     fun putInt(context: Context, key: String, value: Int) {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         sp!!.edit().putInt(key, value).commit()
     }
 
     fun getInt(context: Context, key: String, defValue: Int): Int {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return 0
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
 
         }
@@ -53,20 +77,28 @@ object SpUtil {
     }
 
     fun putLong(context: Context, key: String, value: Long) {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         sp!!.edit().putLong(key, value).commit()
     }
 
     fun getLong(context: Context, key: String, defValue: Long): Long {
-        if (sp == null || context ==null) {
+        if(context ==null  ||  key == null)
+        {
+            return 1
+        }
+        if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         return sp!!.getLong(key, defValue)
     }
     fun getAll(context: Context): Map<String, Object> {
-        if (sp == null || context ==null) {
+        if (sp == null && context !=null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }
         return sp!!.all as Map<String, Object>

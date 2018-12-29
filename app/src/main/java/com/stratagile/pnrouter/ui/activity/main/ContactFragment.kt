@@ -44,6 +44,7 @@ import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -80,7 +81,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 }
             }*/
             var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             for (i in localFriendStatusList) {
                 if (i.userId.equals(userId)) {
                     if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
@@ -124,8 +124,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
             }
-
-
             var isLocalFriendStatus = false
             for (j in localFriendStatusList) {
                 if (i.id.equals(j.friendId) && j.userId.equals(userId)) {
@@ -165,21 +163,25 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }*/
         //把本地的多余好友清除
         localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-
+        LogUtil.addLog("localFriendStatusList:"+localFriendStatusList.size,"ContactFragment")
         for (i in localFriendStatusList) {
             if (i.userId.equals(userId)) {
+                LogUtil.addLog("freindStatus:"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
                 //是否为本地多余的好友
                 if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
                     //等待验证的S好友，不能处理
                     continue
                 }
+
                 var isLocalDeletedFriend = true
                 for (j in jPullFriendRsp.params.payload) {
                     if (i.friendId.equals(j.id)) {
+                        LogUtil.addLog("freindName:"+ j.name,"ContactFragment")
                         isLocalDeletedFriend = false
                     }
                 }
                 if (isLocalDeletedFriend) {
+                    LogUtil.addLog("deletefreindName:"+ i.friendId,"ContactFragment")
                     i.friendLocalStatus = 7
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
                 }

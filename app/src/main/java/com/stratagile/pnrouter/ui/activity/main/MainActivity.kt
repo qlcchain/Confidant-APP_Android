@@ -719,14 +719,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             override fun getItem(position: Int): Fragment {
                 when (position) {
                     0 -> return conversationListFragment!!
-                    1 -> return FileFragment()
-                    2 -> return contactFragment!!
+                    /*1 -> return FileFragment()*/
+                    1 -> return contactFragment!!
                     else -> return MyFragment()
                 }
             }
 
             override fun getCount(): Int {
-                return 4
+                return 3
             }
         }
         // 为ViewPager添加页面改变事件
@@ -740,9 +740,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //                bottomNavigation.getMenu().getItem(position).setChecked(true)
                 when (position) {
                     0 -> setToNews()
-                    1 -> setToFile()
-                    2 -> setToContact()
-                    3 -> setToMy()
+                   /* 1 -> setToFile()*/
+                    1 -> setToContact()
+                    2 -> setToMy()
                 }
             }
 
@@ -767,7 +767,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            startActivity(Intent(this, TestActivity::class.java))
 //        }
 //        tv_hello.typeface.style
-        viewPager.offscreenPageLimit = 4
+        viewPager.offscreenPageLimit = 3
 
     }
 
