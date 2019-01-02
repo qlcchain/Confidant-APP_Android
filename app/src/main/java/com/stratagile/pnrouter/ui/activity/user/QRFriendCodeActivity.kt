@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.ui.activity.user.module.QRFriendCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRFriendCodePresenter
 import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.ShareUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -98,8 +99,8 @@ class QRFriendCodeActivity : BaseActivity(), QRFriendCodeContract.View , View.On
         }
         Thread(Runnable() {
             run() {
-
-                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId+","+nickName, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
                     ivQrCodeMy.setImageBitmap(bitmap)
                 }

@@ -98,7 +98,8 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         Thread(Runnable() {
             run() {
 
-               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId+","+nickName, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
+               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
                     ivQrCodeMy.setImageBitmap(bitmap)
                 }
