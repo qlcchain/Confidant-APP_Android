@@ -1,6 +1,5 @@
 package com.message
 
-import android.util.Base64
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
@@ -124,16 +123,16 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                     if(j.friendLocalStatus == 0)//自动同意
                     {
-                        var it = UserEntity()
+                        var itUserEntity = UserEntity()
                         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
                         if (localFriendList.size > 0)
-                            it = localFriendList.get(0)
-                        if(it.nickName == null)
+                            itUserEntity = localFriendList.get(0)
+                        if(itUserEntity.nickName == null)
                             return
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
+                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.publicKey,0)
                         if (ConstantValue.isWebsocketConnected) {
                             AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
                         }else if (ConstantValue.isToxConnected) {
