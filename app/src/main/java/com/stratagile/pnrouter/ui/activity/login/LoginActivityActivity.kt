@@ -250,6 +250,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
         } else {
+            ConstantValue.loginOut = false
             LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")

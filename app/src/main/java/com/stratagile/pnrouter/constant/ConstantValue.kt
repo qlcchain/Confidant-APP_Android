@@ -56,5 +56,6 @@ object ConstantValue {
         var isToxReConnect = false  //tox是否重连过
         var mRegId = ""
         var pushURL = "http://47.96.76.184:9000/v1/pareg"
+        var loginOut = false
 
 }

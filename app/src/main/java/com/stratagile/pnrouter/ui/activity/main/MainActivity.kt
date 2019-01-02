@@ -117,6 +117,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             } else {
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
             }
+            if (ConstantValue.isInit) {
+                runOnUiThread {
+                    var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
+                    controlleMessageUnReadCount(UnReadMessageCount)
+                }
+                conversationListFragment?.refresh()
+                ConstantValue.isRefeshed = true
+            }
 //        }else{
             /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
              var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
@@ -284,10 +292,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
-                if (ConstantValue.isInit) {
-                    conversationListFragment?.refresh()
-                    ConstantValue.isRefeshed = true
-                }
+                conversationListFragment?.refresh()
+                ConstantValue.isRefeshed = true
             }
         }
     }
@@ -891,7 +897,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
         when (statusChange.status) {
             0 -> {
-                progressDialog.hide()
+                closeProgressDialog()
                 isCanShotNetCoonect = true
             }
             1 -> {
@@ -900,6 +906,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             2 -> {
                 if(isCanShotNetCoonect)
                 {
+                    closeProgressDialog()
                     showProgressNoCanelDialog("network reconnecting...")
                     isCanShotNetCoonect = false
                 }
@@ -907,6 +914,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             3 -> {
                 if(isCanShotNetCoonect)
                 {
+                    closeProgressDialog()
                     showProgressNoCanelDialog("network reconnecting...")
                     isCanShotNetCoonect = false
                 }

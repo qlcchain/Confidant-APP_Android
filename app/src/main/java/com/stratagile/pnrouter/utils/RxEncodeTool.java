@@ -107,13 +107,19 @@ public class RxEncodeTool {
      * @return Base64解码后的字符串
      */
     public static byte[] base64Decode(String input) {
+        if(input == null)
+        {
+            byte[] data = Base64.decode("null", Base64.NO_WRAP);
+            return data;
+        }
         input =  input.replace("\\n", "");
         try {
             byte[] data = Base64.decode(input, Base64.NO_WRAP);
             return data;
         }catch (Exception e)
         {
-            return new byte[0];
+            byte[] data = Base64.decode("Unknown", Base64.NO_WRAP);
+            return data;
         }
     }
 

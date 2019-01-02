@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.data.web
 import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.LogUtil
@@ -24,152 +25,186 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 //        KLog.i(baseData.params.toString())
         var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
-        when (JSONObject.parseObject(paramsStr).getString("Action")) {
-            "Recovery" -> {
-                val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
-                KLog.i(jRecoveryRsp)
-                recoveryBackListener?.recoveryBack(jRecoveryRsp)
-                loginBackListener?.recoveryBack(jRecoveryRsp)
-            }
-            "Register" -> {
-                val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
-                KLog.i(JRegisterRsp)
-                registerListener?.registerBack(JRegisterRsp)
-            }
-            "Login" -> {
-                val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
-                LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
-                KLog.i(loginRsp)
-                loginBackListener?.loginBack(loginRsp)
-                registerListener?.loginBack(loginRsp)
-            }
-            "AddFriendReq" -> {
-                val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
-                KLog.i(addFreindRsp.toString())
-//                addfrendCallBack?.addFriendBack(addFreindRsp)
-                userControlleCallBack?.addFriendBack(addFreindRsp)
-            }
-            "UserInfoUpdate" -> {
-                val jUserInfoUpdateRsp = gson.fromJson(text, JUserInfoUpdateRsp::class.java)
-                KLog.i(jUserInfoUpdateRsp.toString())
-                uerInfoUpdateCallBack?.UserInfoUpdateCallBack(jUserInfoUpdateRsp)
-            }
-            "UserInfoPush" -> {
-                val jUserInfoPushRsp = gson.fromJson(text, JUserInfoPushRsp::class.java)
-                KLog.i(jUserInfoPushRsp.toString())
-                mainInfoBack?.userInfoPushRsp(jUserInfoPushRsp)
-            }
-            "LogOut" -> {
-                val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
-                logOutBack?.logOutBack(JLogOutRsp)
+        var action = JSONObject.parseObject(paramsStr).getString("Action")
+        if( ConstantValue.loginOut)
+        {
+            if(action.toString().contains("Recovery") || action.toString().contains("Register")|| action.toString().contains("Login")|| action.toString().contains("LogOut"))
+            {
+                when (action) {
+                    "Recovery" -> {
+                        val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
+                        KLog.i(jRecoveryRsp)
+                        recoveryBackListener?.recoveryBack(jRecoveryRsp)
+                        loginBackListener?.recoveryBack(jRecoveryRsp)
+                    }
+                    "Register" -> {
+                        val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
+                        KLog.i(JRegisterRsp)
+                        registerListener?.registerBack(JRegisterRsp)
+                    }
+                    "Login" -> {
+                        val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
+                        LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
+                        KLog.i(loginRsp)
+                        loginBackListener?.loginBack(loginRsp)
+                        registerListener?.loginBack(loginRsp)
+                    }
+                    "LogOut" -> {
+                        val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
+                        logOutBack?.logOutBack(JLogOutRsp)
+                    }
+                }
             }
 
-            //对方要加我为好友，服务器给我推送的好友请求
-            "AddFriendPush" -> {
-                val addFreindPusRsp = gson.fromJson(text, JAddFriendPushRsp::class.java)
-                KLog.i(addFreindPusRsp.toString())
-                //mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
-                userControlleCallBack?.addFriendPushRsp(addFreindPusRsp)
-            }
-            //添加好友，对方处理的结果的推送
-            "AddFriendDeal" -> {
-                val addFriendDealRsp = gson.fromJson(text, JAddFriendDealRsp::class.java)
-                addFriendDealCallBack?.addFriendDealRsp(addFriendDealRsp)
-                userControlleCallBack?.addFriendDealRsp(addFriendDealRsp)
-            }
-            //添加好友的返回
-            "AddFriendReply" -> {
-                val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
-                mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
-                userControlleCallBack?.addFriendReplyRsp(jAddFriendReplyRsp)
-            }
-            //删除对方，服务器返回是否操作成功
-            "DelFriendCmd" -> {
-                val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
-                userControlleCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
-            }
-            //删除对方，服务器返回是否操作成功
-            "ChangeRemarks" -> {
-                val jChangeRemarksRsp = gson.fromJson(text, JChangeRemarksRsp::class.java)
-                userControlleCallBack!!.changeRemarksRsp(jChangeRemarksRsp)
-            }
-            //对方删除我，服务器给我推送消息
-            "DelFriendPush" -> {
-                val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
-                mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
-                //userControlleCallBack?.delFriendPushRsp(jDelFriendPushRsp)
-            }
-            //拉取好友列表
-            "PullFriend" -> {
-                val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
-                pullFriendCallBack?.firendList(jPullFriendRsp)
-                //userControlleCallBack?.firendList(jPullFriendRsp)
-            }
-             //拉取用户列表
-            "PullUserList" -> {
-                val jPullUserRsp = gson.fromJson(text, JPullUserRsp::class.java)
-                pullUserCallBack?.userList(jPullUserRsp)
-                //userControlleCallBack?.firendList(jPullFriendRsp)
-            }
-            //创建用户
-            "CreateNormalUser" -> {
-                val JCreateNormalUserRsp = gson.fromJson(text, JCreateNormalUserRsp::class.java)
-                createUserCallBack?.createUser(JCreateNormalUserRsp)
-                //userControlleCallBack?.firendList(jPullFriendRsp)
-            }
-            //发送消息服务器给的返回，代表消息服务器已经收到
-            "SendMsg" -> {
-                val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
-                chatCallBack?.sendMsgRsp(JSendMsgRsp)
-                convsationCallBack?.sendMsgRsp(JSendMsgRsp)
-            }
-            //发送消息对方已读
-            "ReadMsgPush" -> {
-                val JReadMsgPushRsp = gson.fromJson(text, JReadMsgPushRsp::class.java)
-                chatCallBack?.readMsgPushRsp(JReadMsgPushRsp)
-            }
-            //发送文件_Tox消息回馈
-            "SendFile" -> {
-                val jSendToxFileRsp = gson.fromJson(text, JSendToxFileRsp::class.java)
-                chatCallBack?.sendToxFileRsp(jSendToxFileRsp)
-            }
-            //服务器推送过来的别人的消息
-            "PushMsg" -> {
-                val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
-                chatCallBack?.pushMsgRsp(JPushMsgRsp)
-                convsationCallBack?.pushMsgRsp(JPushMsgRsp)
-                if (mainInfoBack == null) {
-                    AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
+        }else{
+            when (action) {
+                "Recovery" -> {
+                    val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
+                    KLog.i(jRecoveryRsp)
+                    recoveryBackListener?.recoveryBack(jRecoveryRsp)
+                    loginBackListener?.recoveryBack(jRecoveryRsp)
                 }
-                mainInfoBack?.pushMsgRsp(JPushMsgRsp)
-            }
-            //拉取某个好友的消息,一次十条
-            "PullMsg" -> {
-                val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
-                chatCallBack?.pullMsgRsp(JPullMsgRsp)
-                convsationCallBack?.pullMsgRsp(JPullMsgRsp)
-            }
-            "DelMsg" -> {
-                val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
-                chatCallBack?.delMsgRsp(JDelMsgRsp)
-                convsationCallBack?.delMsgRsp(JDelMsgRsp)
-            }
-            "PushDelMsg" -> {
-                val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
-                chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
-                convsationCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
-                mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
-            }
-            "PushFile" -> {
-                val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
-                chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
-                mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
-            }
-            "PullFile" -> {
-                val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
-                chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
+                "Register" -> {
+                    val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
+                    KLog.i(JRegisterRsp)
+                    registerListener?.registerBack(JRegisterRsp)
+                }
+                "Login" -> {
+                    val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
+                    LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
+                    KLog.i(loginRsp)
+                    loginBackListener?.loginBack(loginRsp)
+                    registerListener?.loginBack(loginRsp)
+                }
+                "AddFriendReq" -> {
+                    val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
+                    KLog.i(addFreindRsp.toString())
+//                addfrendCallBack?.addFriendBack(addFreindRsp)
+                    userControlleCallBack?.addFriendBack(addFreindRsp)
+                }
+                "UserInfoUpdate" -> {
+                    val jUserInfoUpdateRsp = gson.fromJson(text, JUserInfoUpdateRsp::class.java)
+                    KLog.i(jUserInfoUpdateRsp.toString())
+                    uerInfoUpdateCallBack?.UserInfoUpdateCallBack(jUserInfoUpdateRsp)
+                }
+                "UserInfoPush" -> {
+                    val jUserInfoPushRsp = gson.fromJson(text, JUserInfoPushRsp::class.java)
+                    KLog.i(jUserInfoPushRsp.toString())
+                    mainInfoBack?.userInfoPushRsp(jUserInfoPushRsp)
+                }
+                "LogOut" -> {
+                    val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
+                    logOutBack?.logOutBack(JLogOutRsp)
+                }
+
+                //对方要加我为好友，服务器给我推送的好友请求
+                "AddFriendPush" -> {
+                    val addFreindPusRsp = gson.fromJson(text, JAddFriendPushRsp::class.java)
+                    KLog.i(addFreindPusRsp.toString())
+                    //mainInfoBack?.addFriendPushRsp(addFreindPusRsp)
+                    userControlleCallBack?.addFriendPushRsp(addFreindPusRsp)
+                }
+                //添加好友，对方处理的结果的推送
+                "AddFriendDeal" -> {
+                    val addFriendDealRsp = gson.fromJson(text, JAddFriendDealRsp::class.java)
+                    addFriendDealCallBack?.addFriendDealRsp(addFriendDealRsp)
+                    userControlleCallBack?.addFriendDealRsp(addFriendDealRsp)
+                }
+                //添加好友的返回
+                "AddFriendReply" -> {
+                    val jAddFriendReplyRsp = gson.fromJson(text, JAddFriendReplyRsp::class.java)
+                    mainInfoBack?.addFriendReplyRsp(jAddFriendReplyRsp)
+                    userControlleCallBack?.addFriendReplyRsp(jAddFriendReplyRsp)
+                }
+                //删除对方，服务器返回是否操作成功
+                "DelFriendCmd" -> {
+                    val jDelFriendCmdRsp = gson.fromJson(text, JDelFriendCmdRsp::class.java)
+                    userControlleCallBack!!.delFriendCmdRsp(jDelFriendCmdRsp)
+                }
+                //删除对方，服务器返回是否操作成功
+                "ChangeRemarks" -> {
+                    val jChangeRemarksRsp = gson.fromJson(text, JChangeRemarksRsp::class.java)
+                    userControlleCallBack!!.changeRemarksRsp(jChangeRemarksRsp)
+                }
+                //对方删除我，服务器给我推送消息
+                "DelFriendPush" -> {
+                    val jDelFriendPushRsp = gson.fromJson(text, JDelFriendPushRsp::class.java)
+                    mainInfoBack?.delFriendPushRsp(jDelFriendPushRsp)
+                    //userControlleCallBack?.delFriendPushRsp(jDelFriendPushRsp)
+                }
+                //拉取好友列表
+                "PullFriend" -> {
+                    val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
+                    pullFriendCallBack?.firendList(jPullFriendRsp)
+                    //userControlleCallBack?.firendList(jPullFriendRsp)
+                }
+                //拉取用户列表
+                "PullUserList" -> {
+                    val jPullUserRsp = gson.fromJson(text, JPullUserRsp::class.java)
+                    pullUserCallBack?.userList(jPullUserRsp)
+                    //userControlleCallBack?.firendList(jPullFriendRsp)
+                }
+                //创建用户
+                "CreateNormalUser" -> {
+                    val JCreateNormalUserRsp = gson.fromJson(text, JCreateNormalUserRsp::class.java)
+                    createUserCallBack?.createUser(JCreateNormalUserRsp)
+                    //userControlleCallBack?.firendList(jPullFriendRsp)
+                }
+                //发送消息服务器给的返回，代表消息服务器已经收到
+                "SendMsg" -> {
+                    val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
+                    chatCallBack?.sendMsgRsp(JSendMsgRsp)
+                    convsationCallBack?.sendMsgRsp(JSendMsgRsp)
+                }
+                //发送消息对方已读
+                "ReadMsgPush" -> {
+                    val JReadMsgPushRsp = gson.fromJson(text, JReadMsgPushRsp::class.java)
+                    chatCallBack?.readMsgPushRsp(JReadMsgPushRsp)
+                }
+                //发送文件_Tox消息回馈
+                "SendFile" -> {
+                    val jSendToxFileRsp = gson.fromJson(text, JSendToxFileRsp::class.java)
+                    chatCallBack?.sendToxFileRsp(jSendToxFileRsp)
+                }
+                //服务器推送过来的别人的消息
+                "PushMsg" -> {
+                    val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
+                    chatCallBack?.pushMsgRsp(JPushMsgRsp)
+                    convsationCallBack?.pushMsgRsp(JPushMsgRsp)
+                    if (mainInfoBack == null) {
+                        AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
+                    }
+                    mainInfoBack?.pushMsgRsp(JPushMsgRsp)
+                }
+                //拉取某个好友的消息,一次十条
+                "PullMsg" -> {
+                    val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
+                    chatCallBack?.pullMsgRsp(JPullMsgRsp)
+                    convsationCallBack?.pullMsgRsp(JPullMsgRsp)
+                }
+                "DelMsg" -> {
+                    val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
+                    chatCallBack?.delMsgRsp(JDelMsgRsp)
+                    convsationCallBack?.delMsgRsp(JDelMsgRsp)
+                }
+                "PushDelMsg" -> {
+                    val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
+                    chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
+                    convsationCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
+                    mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
+                }
+                "PushFile" -> {
+                    val JPushFileMsgRsp = gson.fromJson(text, JPushFileMsgRsp::class.java)
+                    chatCallBack?.pushFileMsgRsp(JPushFileMsgRsp)
+                    mainInfoBack?.pushFileMsgRsp(JPushFileMsgRsp)
+                }
+                "PullFile" -> {
+                    val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
+                    chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
+                }
             }
         }
+
         messageListner?.onMessage(baseData)
     }
 

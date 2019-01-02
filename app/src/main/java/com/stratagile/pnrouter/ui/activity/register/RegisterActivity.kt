@@ -87,6 +87,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             runOnUiThread {
                 closeProgressDialog()
             }
+            ConstantValue.loginOut = false
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
