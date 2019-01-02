@@ -524,7 +524,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             run() {
 
                 var map:HashMap<String, String>  =  HashMap()
-                map.put("os","2")
+                var os = VersionUtil.getDeviceBrand()
+                map.put("os",os.toString())
                 map.put("appversion","1.0.1")
                 map.put("regid",ConstantValue.mRegId)
                 map.put("topicid","")
@@ -560,10 +561,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 return@Observer
             }
             if (!"".equals(toAddUserId)) {
+                var toAddUserIdTemp = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
                 var intent = Intent(this, UserInfoActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
-                    if (i.userId.equals(toAddUserId)) {
+                    if (i.userId.equals(toAddUserIdTemp)) {
                         intent.putExtra("user", i)
                         startActivity(intent)
                         return@Observer
@@ -571,8 +573,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId
-                userEntity.nickName = ""
+                userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
+                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
 
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -608,7 +610,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
-
 
             ConstantValue.isInit = true
         }

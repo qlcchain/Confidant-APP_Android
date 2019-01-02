@@ -445,4 +445,9 @@
     <string name="Addnickname">nickname</string>
     <string name="Inputnickname">Input nickname</string>
     <string name="Permissionerror">Permission error</string>
+    <string name="Validationinformation">Validation information</string>
+    <string name="Send_request">Send request</string>
+
+
+
 </resources>

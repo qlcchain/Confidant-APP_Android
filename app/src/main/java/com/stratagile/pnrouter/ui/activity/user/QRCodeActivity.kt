@@ -98,7 +98,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         Thread(Runnable() {
             run() {
 
-               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(userId+","+nickName, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
                     ivQrCodeMy.setImageBitmap(bitmap)
                 }

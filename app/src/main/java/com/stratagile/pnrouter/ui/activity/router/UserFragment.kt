@@ -116,7 +116,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     var tempUserList = arrayListOf<RouterUserEntity>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        routerEntity = arguments!!.get("routerEntity") as RouterEntity
+        routerEntity = arguments!!.get("userEntity") as RouterEntity
         var view = inflater.inflate(R.layout.fragment_user, null);
         return view
     }

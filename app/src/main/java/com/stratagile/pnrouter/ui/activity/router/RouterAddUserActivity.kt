@@ -47,12 +47,12 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
     override fun initData() {
 
         EventBus.getDefault().register(this)
-        routerEntity = intent.getParcelableExtra("routerEntity")
+        routerEntity = intent.getParcelableExtra("userEntity")
         fragment = UserFragment()
         val bundle = Bundle()
         title.text = getString(R.string.User_Management)
         bundle.putString(ConstantValue.selectFriend, "select")
-        bundle.putParcelable("routerEntity",routerEntity)
+        bundle.putParcelable("userEntity",routerEntity)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {

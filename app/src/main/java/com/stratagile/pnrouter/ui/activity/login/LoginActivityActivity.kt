@@ -98,6 +98,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isFromScan = false
     var isClickLogin = false
     var stopTox = false;
+    var loginOk = false
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
@@ -299,6 +300,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             runOnUiThread {
                 closeProgressDialog()
             }
+            loginOk = true
             ConstantValue.hasLogin = true
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -360,6 +362,36 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         if(toxFriendStatusEvent.status == 1)
         {
+            Thread(Runnable() {
+                run() {
+
+                    while (true)
+                    {
+                        Thread.sleep(1000)
+                        if(!loginOk && isClickLogin)
+                        {
+                            if(ConstantValue.isToxConnected)
+                            {
+                                var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                                ConstantValue.loginReq = login
+                                var baseData = BaseData(2,login)
+                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }else{
+                                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                                ConstantValue.loginReq = login
+                                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                            }
+                        }
+                    }
+
+                }
+            }).start()
+
             LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
         }else{
             LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")

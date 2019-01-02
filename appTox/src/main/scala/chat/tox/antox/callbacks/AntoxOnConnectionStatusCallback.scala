@@ -49,10 +49,15 @@ class AntoxOnConnectionStatusCallback(private var ctx: Context) extends FriendCo
     db.updateContactOnline(friendInfo.key, online)
 
     if (online) {
-      EventBus.getDefault().post(new ToxFriendStatusEvent(1))
-      AntoxLog.debug(s"friendConnectionStatus online")
-      MessageHelper.sendUnsentMessages(friendInfo.key, ctx)
-      State.transfers.updateSelfAvatar(ctx, false)
+      new Thread(new Runnable {
+        override def run(): Unit = {
+          Thread.sleep(1500)
+          EventBus.getDefault().post(new ToxFriendStatusEvent(1))
+          AntoxLog.debug(s"friendConnectionStatus online")
+          MessageHelper.sendUnsentMessages(friendInfo.key, ctx)
+          State.transfers.updateSelfAvatar(ctx, false)
+        }
+      }).start()
     } else {
       EventBus.getDefault().post(new ToxFriendStatusEvent(0))
       ToxSingleton.typingMap.put(friendInfo.key, false)

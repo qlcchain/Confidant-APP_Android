@@ -125,7 +125,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         }
         llRouterManagement.setOnClickListener {
             var intent = Intent(this, RouterAddUserActivity::class.java)
-            intent.putExtra("routerEntity", routerEntity)
+            intent.putExtra("userEntity", routerEntity)
             startActivityForResult(intent, 1)
         }
     }

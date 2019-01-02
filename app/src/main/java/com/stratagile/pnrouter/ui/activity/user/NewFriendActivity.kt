@@ -162,10 +162,11 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 return@Observer
             }
             if (!"".equals(toAddUserId)) {
+                var toAddUserIdTemp = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
                 var intent = Intent(this, UserInfoActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
-                    if (i.userId.equals(toAddUserId)) {
+                    if (i.userId.equals(toAddUserIdTemp)) {
                         intent.putExtra("user", i)
                         startActivity(intent)
                         return@Observer
@@ -173,8 +174,8 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 }
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId
-                userEntity.nickName = ""
+                userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
+                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
 
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -185,7 +186,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 var userId = SpUtil.getString(this, ConstantValue.userId, "")
                 var newFriendStatus = FriendEntity()
                 newFriendStatus.userId = userId;
-                newFriendStatus.friendId = toAddUserId
+                newFriendStatus.friendId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
                 newFriendStatus.friendLocalStatus = 3
                 newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
                 AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)

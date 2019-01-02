@@ -140,6 +140,8 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
                         onBackPressed()
                     }
 
+                }else{
+                    onBackPressed()
                 }
             }
             else -> {

@@ -90,7 +90,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         newRouterEntity.routerName = "Router " + (localData.size + 1)
         val myRouter = MyRouter()
         myRouter.setType(0)
-        myRouter.setRouterEntity(newRouterEntity)
+        myRouter.setUserEntity(newRouterEntity)
         LocalRouterUtils.insertLocalAssets(myRouter)
         LocalRouterUtils.updateGreanDaoFromLocal();*/
         when (recoveryRsp.params.retCode) {

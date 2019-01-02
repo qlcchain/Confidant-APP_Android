@@ -84,7 +84,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
             //PopWindowUtil.showSharePopWindow(this, tvShare2)
 
         }
-       /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerEntity.routerId, ivQrCode2)
+       /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(userEntity.routerId, ivQrCode2)
         createEnglishQRCode.execute()*/
         var routerCodeData: RouterCodeData = RouterCodeData();
         routerCodeData.id = "010001".toByteArray()

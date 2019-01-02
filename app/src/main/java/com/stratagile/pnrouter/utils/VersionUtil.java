@@ -40,4 +40,40 @@ public class VersionUtil {
         }
         return versionName;
     }
+    /**
+     * 品牌索引
+     */
+    public static int getDeviceBrand() {
+        int type = 0;
+        switch (android.os.Build.BRAND.toLowerCase())
+        {
+            case "xiaomi":
+                type = 2;
+                break;
+            case "huawei":
+                type = 3;
+                break;
+            case "zhongxing":
+                type = 4;
+                break;
+            case "oppo":
+                type = 5;
+                break;
+            case "vivo":
+                type = 5;
+                break;
+            case "meizhu":
+                type = 7;
+                break;
+            case "onejia":
+                type = 8;
+                break;
+            default:
+                type = 0;
+                break;
+
+        }
+        return type;
+    }
+
 }

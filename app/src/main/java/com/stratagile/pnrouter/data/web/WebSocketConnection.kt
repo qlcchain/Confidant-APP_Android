@@ -195,7 +195,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
             var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送结果：${reslut}")
-            //KLog.i("心跳消息为：：")
+            KLog.i("发送心跳消息")
             //KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }
