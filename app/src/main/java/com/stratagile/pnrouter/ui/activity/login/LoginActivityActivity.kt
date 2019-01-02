@@ -147,7 +147,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             1 -> {
                 AppConfig.instance.messageReceiver!!.loginBackListener = null
                 startActivity(Intent(this, RegisterActivity::class.java))
-            }on
+            }
             2 -> {
                 toast("error")
             }

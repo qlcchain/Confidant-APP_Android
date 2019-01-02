@@ -82,7 +82,11 @@ object MessageHelper {
       Observable[Boolean](subscriber => {
         val mId = Try(ToxSingleton.tox.friendSendMessage(friendKey, ToxFriendMessage.unsafeFromValue(msg.getBytes), messageType)).toOption
         mId match {
-          case Some(id) => db.updateUnsentMessage(id, databaseMessageId)
+          case Some(id) =>
+            {
+              db.updateUnsentMessage(id, databaseMessageId)
+              EventBus.getDefault().post(new ToxSendInfoEvent(msg))
+            }
           case None => AntoxLog.debug(s"SendMessage failed. dbId = $databaseMessageId")
         }
         subscriber.onCompleted()
