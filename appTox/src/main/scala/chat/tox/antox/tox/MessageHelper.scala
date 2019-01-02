@@ -5,7 +5,7 @@ import chat.tox.antox.activities.{ChatActivity, GroupChatActivity}
 import chat.tox.antox.data.State
 import chat.tox.antox.utils._
 import chat.tox.antox.wrapper._
-import events.ToxMessageEvent
+import events.{ToxMessageEvent, ToxSendInfoEvent}
 import im.tox.tox4j.core.data.{ToxFileId, ToxFriendMessage, ToxNickname}
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
@@ -19,7 +19,6 @@ import scala.util.Try
 object MessageHelper {
 
   val TAG = LoggerTag("MessageHelper")
-
   def handleMessage(ctx: Context, friendInfo: FriendInfo, message: ToxFriendMessage, messageType: ToxMessageType): Unit = {
     val db = State.db
 
@@ -190,9 +189,11 @@ object MessageHelper {
     for (unsentMessage <- unsentMessageList) {
       contactKey match {
         case key: FriendKey =>
+          EventBus.getDefault().post(new ToxSendInfoEvent(unsentMessage.message))
           sendMessage(ctx, key, unsentMessage.message,
             MessageType.toToxMessageType(unsentMessage.`type`), Some(unsentMessage.id))
         case key: GroupKey =>
+          EventBus.getDefault().post(new ToxSendInfoEvent(unsentMessage.message))
           sendGroupMessage(ctx, key, unsentMessage.message,
             MessageType.toToxMessageType(unsentMessage.`type`), Some(unsentMessage.id))
       }

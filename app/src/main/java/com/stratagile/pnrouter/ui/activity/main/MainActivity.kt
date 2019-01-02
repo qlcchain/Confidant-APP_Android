@@ -44,6 +44,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.*
+import events.ToxSendInfoEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -460,6 +461,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun showToast() {
         showProgressDialog()
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNikNameChange(editnickName : EditNickName) {

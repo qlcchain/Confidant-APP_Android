@@ -46,6 +46,7 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import events.ToxFriendStatusEvent
+import events.ToxSendInfoEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
@@ -146,7 +147,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             1 -> {
                 AppConfig.instance.messageReceiver!!.loginBackListener = null
                 startActivity(Intent(this, RegisterActivity::class.java))
-            }
+            }on
             2 -> {
                 toast("error")
             }
@@ -356,6 +357,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNameChange(nameChange: NameChange) {
         routerNameTips.text = nameChange.name
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
