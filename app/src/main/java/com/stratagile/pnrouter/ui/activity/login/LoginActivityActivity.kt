@@ -367,7 +367,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     while (true)
                     {
-                        Thread.sleep(1000)
+                        Thread.sleep(3000)
                         if(!loginOk && isClickLogin)
                         {
                             if(ConstantValue.isToxConnected)
