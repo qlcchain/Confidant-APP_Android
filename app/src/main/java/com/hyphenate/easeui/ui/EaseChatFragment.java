@@ -1820,6 +1820,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         messageList.refresh();
                     }
                 }
+                String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jSendMsgRsp.getParams().getToId(),"");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
