@@ -150,7 +150,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 startActivity(Intent(this, RegisterActivity::class.java))
             }
             2 -> {
-                toast("error")
+                runOnUiThread {
+                    toast("error")
+                }
+
             }
             3-> {
                 ConstantValue.lastNetworkType = "";
@@ -1332,7 +1335,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             break;
                                         }else{
                                             isFromScan = true
-                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
                                                 override fun onFailure( e :Exception) {
                                                     startToxAndRecovery()
                                                     Thread.currentThread().interrupt(); //方法调用终止线程
@@ -1392,7 +1395,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         Thread(Runnable() {
                             run() {
                                 isFromScan = true
-                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
                                         startToxAndRecovery()
                                     }
