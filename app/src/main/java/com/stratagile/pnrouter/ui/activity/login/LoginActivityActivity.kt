@@ -195,8 +195,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
 
     private var exitTime: Long = 0
+    private var loginGoMain:Boolean = false
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
+        LogUtil.addLog("loginBack:"+loginRsp.params.retCode,"LoginActivityActivity")
         if(standaloneCoroutine != null)
             standaloneCoroutine.cancel()
         if (loginRsp.params.retCode != 0) {
@@ -244,9 +246,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
         } else {
+            LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
+            LogUtil.addLog("loginBack:"+"b","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
+            LogUtil.addLog("loginBack:"+"c","LoginActivityActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
@@ -273,6 +279,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     break
                 }
             }
+            LogUtil.addLog("loginBack:"+"d","LoginActivityActivity")
             var needUpdate :ArrayList<MyRouter> = ArrayList();
             routerList.forEach {
                 it.lastCheck = false
@@ -293,7 +300,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-
+            LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -302,16 +309,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             runOnUiThread {
                 closeProgressDialog()
             }
+            LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
             loginOk = true
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
+            if(loginGoMain)
+                return
             startActivity(Intent(this, MainActivity::class.java))
+            loginGoMain  = true
+            LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
             finish()
         }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loginGoMain = false
         needFront = true
         isFromScan = false
         isClickLogin = false
@@ -330,6 +343,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             AppConfig.instance.messageReceiver!!.loginBackListener = this
         }
         exitTime = System.currentTimeMillis() - 2001
+
         super.onResume()
     }
     override fun onDestroy() {
@@ -1030,6 +1044,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean)
     {
         MobileSocketClient.getInstance().destroy()
+        closeProgressDialog()
         showProgressNoCanelDialog("")
         if(WiFiUtil.isWifiConnect())
         {

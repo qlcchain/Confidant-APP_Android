@@ -10,6 +10,7 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
@@ -20,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.router.presenter.RouterManagementPres
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.MutableListToArrayList
+import events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_router_management.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -74,27 +76,40 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             intent.putExtra("router", selectedRouter)
             startActivity(intent)
         }
-        if (ConnectStatus.currentStatus == 0) {
+        if(ConstantValue.curreantNetworkType.equals("TOX"))
+        {
             ivConnectStatus.visibility = View.VISIBLE
             llReConnect.visibility = View.GONE
             tvConnectStatus.text = resources.getString(R.string.successful_connection)
             ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
             avi.smoothToHide()
-        } else if (ConnectStatus.currentStatus  == 1){
-            ivConnectStatus.visibility = View.GONE
-            llReConnect.visibility = View.GONE
-            ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
-            tvConnectStatus.text = resources.getString(R.string.connection)
-            avi.smoothToShow()
-        } else if (ConnectStatus.currentStatus  == 2){
-            avi.hide()
-            ivConnectStatus.visibility = View.GONE
-            llReConnect.visibility = View.VISIBLE
-            tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+        }else{
+            if (ConnectStatus.currentStatus == 0) {
+                ivConnectStatus.visibility = View.VISIBLE
+                llReConnect.visibility = View.GONE
+                tvConnectStatus.text = resources.getString(R.string.successful_connection)
+                ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+                avi.smoothToHide()
+            } else if (ConnectStatus.currentStatus  == 1){
+                ivConnectStatus.visibility = View.GONE
+                llReConnect.visibility = View.GONE
+                ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+                tvConnectStatus.text = resources.getString(R.string.connection)
+                avi.smoothToShow()
+            } else if (ConnectStatus.currentStatus  == 2){
+                avi.hide()
+                ivConnectStatus.visibility = View.GONE
+                llReConnect.visibility = View.VISIBLE
+                tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+            }
         }
+
         llReConnect.setOnClickListener {
             thread {
-                AppConfig.instance.messageReceiver!!.reConnect()
+                if(ConstantValue.curreantNetworkType.equals("TOX"))
+                {
+                    AppConfig.instance.messageReceiver!!.reConnect()
+                }
             }
         }
     }
@@ -103,7 +118,38 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
     fun routerChange(routerChange: RouterChange) {
         initData()
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
+        when (toxStatusEvent.status) {
+            0 -> {
+                ivConnectStatus.visibility = View.VISIBLE
+                llReConnect.visibility = View.GONE
+                avi.smoothToHide()
+                tvConnectStatus.text = resources.getString(R.string.successful_connection)
+                ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+            }
+            1 -> {
+                ivConnectStatus.visibility = View.GONE
+                llReConnect.visibility = View.GONE
+                avi.smoothToShow()
+                ivConnectStatus.setImageDrawable(resources.getDrawable(R.mipmap.icon_connected))
+                tvConnectStatus.text = resources.getString(R.string.connection)
+            }
+            2 -> {
+                ivConnectStatus.visibility = View.GONE
+                avi.hide()
+                tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
+                llReConnect.visibility = View.GONE
+            }
+            3 -> {
+                ivConnectStatus.visibility = View.GONE
+                avi.hide()
+                tvConnectStatus.text = resources.getString(R.string.Network_error)
+                llReConnect.visibility = View.GONE
+            }
+        }
 
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectStatusChange(statusChange: ConnectStatus) {
         //连接状态，0已经连接，1正在连接，2未连接

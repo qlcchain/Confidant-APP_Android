@@ -5,6 +5,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
 
@@ -37,6 +38,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
             }
             "Login" -> {
                 val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
+                LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
                 KLog.i(loginRsp)
                 loginBackListener?.loginBack(loginRsp)
                 registerListener?.loginBack(loginRsp)

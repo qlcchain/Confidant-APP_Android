@@ -289,16 +289,19 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     }
 
     fun  showProgressDialog(text: String) {
+        progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setOnTouchOutside(false)
    }
     fun showProgressNoCanelDialog(text: String) {
+        progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setNoCanceledOnTouchOutside(false)
     }
     fun showProgressDialog(text: String,onKeyListener: DialogInterface.OnKeyListener ) {
+        progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setCanceledOnBack(false,onKeyListener)
