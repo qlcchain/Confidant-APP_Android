@@ -33,6 +33,7 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.pnrouter.view.TempRouterAlertDialog
+import events.ToxSendInfoEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -167,7 +168,10 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             }
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+    }
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

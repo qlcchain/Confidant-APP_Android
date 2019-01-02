@@ -101,6 +101,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var stopTox = false;
     var loginOk = false
     var isToxLoginOverTime = false;
+    var maxLogin = 0
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
@@ -257,12 +258,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
             LogUtil.addLog("loginBack:"+"c","LoginActivityActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
+            ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             SpUtil.putString(this, ConstantValue.username,username)
-            SpUtil.putString(this, ConstantValue.routerId, routerId)
+            SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            newRouterEntity.routerId = routerId
+            newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.routerName = "Router " + (routerList.size + 1)
             if(loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
@@ -327,6 +329,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        maxLogin = 0
         loginGoMain = false
         needFront = true
         isFromScan = false
@@ -388,11 +391,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         {
             Thread(Runnable() {
                 run() {
-
+                    Thread.sleep(3000)
                     while (true)
                     {
-                        Thread.sleep(3000)
-                        if(!loginOk && isToxLoginOverTime)
+
+                        if(!loginOk && isToxLoginOverTime && maxLogin < 5)
                         {
                             if(ConstantValue.isToxConnected)
                             {
@@ -403,6 +406,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 var baseData = BaseData(2,login)
                                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                 MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                maxLogin ++;
                             }
                         }
                     }

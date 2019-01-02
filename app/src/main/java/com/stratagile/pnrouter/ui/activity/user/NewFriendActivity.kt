@@ -177,7 +177,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
                 userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
-
+                userEntity.nickName = String(RxEncodeTool.base64Decode( userEntity.nickName))
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
