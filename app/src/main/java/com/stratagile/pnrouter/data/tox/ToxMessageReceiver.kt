@@ -93,7 +93,8 @@ class ToxMessageReceiver(){
                     }
                 } else {
                     text = text.replace("\\\\n", "").replace("\\n", "")
-                    AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, text)
+                    if(AppConfig.instance.onToxMessageReceiveListener != null)
+                        AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, text)
                 }
             }else{
 
@@ -110,7 +111,8 @@ class ToxMessageReceiver(){
                     segmentContent +=baseData.params;
                     if(segmentContent.equals(""))
                     {
-                        AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, text)
+                        if(AppConfig.instance.onToxMessageReceiveListener != null)
+                            AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, text)
                     }
                     else{
                         var test =  JSON.toJSONString(baseData)
@@ -119,7 +121,8 @@ class ToxMessageReceiver(){
                         val newText = gson.toJson(baseData)
                         var newText2 = newText.replace("\\\"", "\"").replace("\"params\":\"","\"params\":").replace("\",\"timestamp\"",",\"timestamp\"")
                         segmentContent = ""
-                        AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, newText2)
+                        if(AppConfig.instance.onToxMessageReceiveListener != null)
+                            AppConfig.instance.onToxMessageReceiveListener!!.onMessage(baseData, newText2)
                     }
 
                 }
@@ -171,7 +174,7 @@ class ToxMessageReceiver(){
                 var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
-               // LogUtil.addLog("发送结果：${baseDataJson}")
+                // LogUtil.addLog("发送结果：${baseDataJson}")
                 var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }

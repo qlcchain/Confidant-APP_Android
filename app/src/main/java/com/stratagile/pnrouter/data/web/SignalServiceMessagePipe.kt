@@ -23,6 +23,7 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
             this.websocket.onMessageReceiveListener = this
         }else{
             this.websocket.connect()
+            AppConfig.instance.onToxMessageReceiveListener = this
             this.websocket.onMessageReceiveListener = this
         }
     }
