@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.*
 import events.ToxSendInfoEvent
@@ -576,6 +577,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         return@Observer
                     }
                 }
+                intent = Intent(this, UserInfoActivity::class.java)
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
                 userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))

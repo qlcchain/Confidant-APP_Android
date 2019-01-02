@@ -100,6 +100,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isClickLogin = false
     var stopTox = false;
     var loginOk = false
+    var isToxLoginOverTime = false;
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
@@ -172,7 +173,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             ConstantValue.currentRouterIp = ""
                             ConstantValue.scanRouterId = routerId;
                             isClickLogin = false
-                            getServer(routerId,userSn)
+                            getServer(routerId,userSn,true)
                         }
                     }
                 }else{
@@ -302,6 +303,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
             loginOk = true
+            isToxLoginOverTime = false
             ConstantValue.hasLogin = true
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -373,7 +375,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     while (true)
                     {
                         Thread.sleep(3000)
-                        if(!loginOk && isClickLogin)
+                        if(!loginOk && isToxLoginOverTime)
                         {
                             if(ConstantValue.isToxConnected)
                             {
@@ -384,12 +386,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 var baseData = BaseData(2,login)
                                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                 MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            }else{
-                                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                                ConstantValue.loginReq = login
-                                AppConfig.instance.messageReceiver!!.loginBackListener = this
-                                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
                             }
                         }
                     }
@@ -596,6 +592,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                 if(ConstantValue.isToxConnected)
                 {
+                    isToxLoginOverTime = true
                     var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
@@ -626,6 +623,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
+                    isToxLoginOverTime = true
                     isClickLogin = true
                     stopTox = false
                     ConstantValue.curreantNetworkType = "TOX"
@@ -871,7 +869,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
         {
-            getServer(routerId,userSn)
+            getServer(routerId,userSn,false)
         }
         if (routerList.size > 0) {
             routerNameTips.setOnClickListener { view1 ->
@@ -917,7 +915,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             /* if(AppConfig.instance.messageReceiver != null)
                                  AppConfig.instance.messageReceiver!!.close()*/
-                            getServer(routerId,userSn)
+                            getServer(routerId,userSn,false)
                             //routerList[position].lastCheck = true
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)
@@ -1029,7 +1027,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             SpUtil.putString(this, ConstantValue.fingerPassWord, "")
         }
     }
-    private fun getServer(routerId:String ,userSn:String)
+    private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean)
     {
         MobileSocketClient.getInstance().destroy()
         showProgressNoCanelDialog("")
@@ -1054,7 +1052,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }else{
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
-                                        startTox()
+                                        startTox(startToxFlag)
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
 
@@ -1080,13 +1078,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     }
                                                     Thread.currentThread().interrupt() //方法调用终止线程
                                                 }else{
-                                                    startTox()
+                                                    startTox(startToxFlag)
                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                 }
 
                                             }
                                         } catch (e: Exception) {
-                                            startTox()
+                                            startTox(startToxFlag)
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                         }
                                     }
@@ -1113,7 +1111,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                         override fun onFailure( e :Exception) {
-                            startTox()
+                            startTox(startToxFlag)
                             Thread.currentThread().interrupt(); //方法调用终止线程
                         }
 
@@ -1139,13 +1137,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }
                                         Thread.currentThread().interrupt() //方法调用终止线程
                                     }else{
-                                        startTox()
+                                        startTox(startToxFlag)
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
 
                                 }
                             } catch (e: Exception) {
-                                startTox()
+                                startTox(startToxFlag)
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                             }
                         }
@@ -1155,11 +1153,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         }
     }
-    private fun startTox()
+    private fun startTox(startToxFlag:Boolean)
     {
         ConstantValue.curreantNetworkType = "TOX"
         stopTox = false
-        if(!ConstantValue.isToxConnected)
+        if(!ConstantValue.isToxConnected && startToxFlag)
         {
             runOnUiThread {
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
@@ -1390,7 +1388,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         var httpData: HttpData? = null
                                         try {
                                             if (json != null) {
-                                               var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
                                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                                 {
                                                     ConstantValue.curreantNetworkType = "WIFI"
@@ -1409,7 +1407,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                                 }else{
                                                     startToxAndRecovery()
-                                                 }
+                                                }
 
                                             }
                                         } catch (e: Exception) {

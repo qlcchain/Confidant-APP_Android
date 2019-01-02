@@ -390,9 +390,9 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     private fun startTox()
     {
         ConstantValue.curreantNetworkType = "TOX"
-        LogUtil.addLog("P2P启动连接:","SplashActivity")
+       /* LogUtil.addLog("P2P启动连接:","SplashActivity")
         var intent = Intent(AppConfig.instance, ToxService::class.java)
-        AppConfig.instance.startService(intent)
+        AppConfig.instance.startService(intent)*/
     }
 
 }
