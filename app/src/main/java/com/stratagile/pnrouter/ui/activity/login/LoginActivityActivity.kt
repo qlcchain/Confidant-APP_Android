@@ -394,16 +394,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             ConstantValue.freindStatus = 1;
             Thread(Runnable() {
                 run() {
-                    Thread.sleep(3000)
+
                     while (true)
                     {
-
+                        Thread.sleep(3000)
                         if(!loginOk && isToxLoginOverTime && maxLogin < 5)
                         {
                             if(ConstantValue.isToxConnected)
                             {
-                                closeProgressDialog()
-                                showProgressDialog("login...")
                                 var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                                 var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
@@ -415,6 +413,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }else{
                             closeProgressDialog()
+                            break
                         }
                     }
 
