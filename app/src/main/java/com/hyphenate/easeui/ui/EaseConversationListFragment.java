@@ -285,126 +285,129 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     +    */
     protected List<EMConversation> loadConversationList(){
         // get all conversations
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
-        /**
-         * lastMsgTime will change if there is new message during sorting
-         * so use synchronized to make sure timestamp of last message won't change.
-         */
-        Map<String, Object> keyMap  = SpUtil.INSTANCE.getAll(AppConfig.instance);
-        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        for (String key : keyMap.keySet()) {
+        List<EMConversation> list = new ArrayList<EMConversation>();
+        try
+        {
+            Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+            List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
+            /**
+             * lastMsgTime will change if there is new message during sorting
+             * so use synchronized to make sure timestamp of last message won't change.
+             */
+            Map<String, Object> keyMap  = SpUtil.INSTANCE.getAll(AppConfig.instance);
+            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            for (String key : keyMap.keySet()) {
 
-            if(key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId +"_"))
-            {
-                String toChatUserId = key.substring(key.lastIndexOf("_")+1,key.length());
-                if(toChatUserId != null && !toChatUserId.equals("")&& !toChatUserId.equals("null"))
+                if(key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId +"_"))
                 {
-                    List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
-                    if(localFriendList.size() == 0)//如果找不到用户
+                    String toChatUserId = key.substring(key.lastIndexOf("_")+1,key.length());
+                    if(toChatUserId != null && !toChatUserId.equals("")&& !toChatUserId.equals("null"))
                     {
-                        SpUtil.INSTANCE.putString(getActivity(),key,"");
-                        continue;
-                    }
-                    FriendEntity freindStatusData = new FriendEntity();
-                    freindStatusData.setFriendLocalStatus(7);
-                    List<FriendEntity>  localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
-                    if (localFriendStatusList.size() > 0)
-                        freindStatusData = localFriendStatusList.get(0);
-                    if(freindStatusData.getFriendLocalStatus() != 0)
-                    {
-                        SpUtil.INSTANCE.putString(getActivity(),key,"");
-                        continue;
-                    }
-                    String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,key,"");
-
-                    if(!"".equals(cachStr))
-                    {
-                        Gson gson = GsonUtil.getIntGson();
-                        Message Message = gson.fromJson(cachStr,Message.class);
-                        EMMessage message = null;
-                        if(Message != null)
+                        List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
+                        if(localFriendList.size() == 0)//如果找不到用户
                         {
-                            switch (Message.getMsgType()) {
-                                case 0:
-                                    message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
-                                    break;
-                                case 1:
-                                    String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
-                                    message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
-                                    break;
-                                case 2:
-                                    String ease_default_amr =  PathUtils.getInstance().getVoicePath()+"/" + "ease_default_amr.amr";
-                                    message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
-                                    break;
-                                case 3:
-                                    break;
-                                case 4:
-                                    String thumbPath =  PathUtils.getInstance().getImagePath()+"/" + "ease_default_image.png";
-                                    String videoPath =  PathUtils.getInstance().getVideoPath()+"/" + "ease_default_vedio.mp4";
-                                    message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
-                                    break;
-                                case 5:
-                                    String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_file.all";
-                                    message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
-                                    break;
-                            }
-                            if(message == null)
-                            {
-                                continue;
-                            }
+                            SpUtil.INSTANCE.putString(getActivity(),key,"");
+                            continue;
+                        }
+                        FriendEntity freindStatusData = new FriendEntity();
+                        freindStatusData.setFriendLocalStatus(7);
+                        List<FriendEntity>  localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+                        if (localFriendStatusList.size() > 0)
+                            freindStatusData = localFriendStatusList.get(0);
+                        if(freindStatusData.getFriendLocalStatus() != 0)
+                        {
+                            SpUtil.INSTANCE.putString(getActivity(),key,"");
+                            continue;
+                        }
+                        String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,key,"");
 
-                            //message.setTo(Message.getTo());
-                            message.setUnread(false);
-                            if(Message.getSender() == 0)
+                        if(!"".equals(cachStr))
+                        {
+                            Gson gson = GsonUtil.getIntGson();
+                            Message Message = gson.fromJson(cachStr,Message.class);
+                            EMMessage message = null;
+                            if(Message != null)
                             {
-                                message.setFrom(userId);
-                                message.setTo(toChatUserId);
-                                switch (Message.getStatus())
-                                {
+                                switch (Message.getMsgType()) {
                                     case 0:
-                                        message.setDelivered(true);
-                                        message.setAcked(false);
-                                        message.setUnread(true);
+                                        message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                                         break;
                                     case 1:
-                                        message.setDelivered(true);
-                                        message.setAcked(true);
-                                        message.setUnread(true);
+                                        String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
+                                        message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                                         break;
                                     case 2:
-                                        message.setDelivered(true);
-                                        message.setAcked(true);
-                                        message.setUnread(false);
+                                        String ease_default_amr =  PathUtils.getInstance().getVoicePath()+"/" + "ease_default_amr.amr";
+                                        message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
                                         break;
-                                    default:
+                                    case 3:
+                                        break;
+                                    case 4:
+                                        String thumbPath =  PathUtils.getInstance().getImagePath()+"/" + "ease_default_image.png";
+                                        String videoPath =  PathUtils.getInstance().getVideoPath()+"/" + "ease_default_vedio.mp4";
+                                        message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
+                                        break;
+                                    case 5:
+                                        String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_file.all";
+                                        message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                         break;
                                 }
-                                message.setDirection(EMMessage.Direct.SEND );
-                            }else {
-                                message.setFrom(toChatUserId);
-                                message.setTo(userId);
-                                message.setDirection(EMMessage.Direct.RECEIVE );
-                            }
-                            message.setMsgTime(Message.getTimeStatmp());
-                            message.setMsgId( Message.getMsgId()+"");
+                                if(message == null)
+                                {
+                                    continue;
+                                }
 
-                        }
-                        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true);
-                        if(conversation != null)
-                        {
-                            conversation.insertMessage(message);
-                            int size = conversation.getAllMessages().size();
-                            EMMessage EMMessage = conversation.getLastMessage();
-                            if (conversation.getAllMessages().size() != 0) {
-                                sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
+                                //message.setTo(Message.getTo());
+                                message.setUnread(false);
+                                if(Message.getSender() == 0)
+                                {
+                                    message.setFrom(userId);
+                                    message.setTo(toChatUserId);
+                                    switch (Message.getStatus())
+                                    {
+                                        case 0:
+                                            message.setDelivered(true);
+                                            message.setAcked(false);
+                                            message.setUnread(true);
+                                            break;
+                                        case 1:
+                                            message.setDelivered(true);
+                                            message.setAcked(true);
+                                            message.setUnread(true);
+                                            break;
+                                        case 2:
+                                            message.setDelivered(true);
+                                            message.setAcked(true);
+                                            message.setUnread(false);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    message.setDirection(EMMessage.Direct.SEND );
+                                }else {
+                                    message.setFrom(toChatUserId);
+                                    message.setTo(userId);
+                                    message.setDirection(EMMessage.Direct.RECEIVE );
+                                }
+                                message.setMsgTime(Message.getTimeStatmp());
+                                message.setMsgId( Message.getMsgId()+"");
+
+                            }
+                            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true);
+                            if(conversation != null)
+                            {
+                                conversation.insertMessage(message);
+                                int size = conversation.getAllMessages().size();
+                                EMMessage EMMessage = conversation.getLastMessage();
+                                if (conversation.getAllMessages().size() != 0) {
+                                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
+                                }
                             }
                         }
                     }
-                }
 
+                }
             }
-        }
         /*synchronized (conversations) {
             for (EMConversation conversation : conversations.values()) {
                 if (conversation.getAllMessages().size() != 0) {
@@ -412,15 +415,20 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 }
             }
         }*/
-        try {
-            // Internal is TimSort algorithm, has bug
-            sortConversationByLastChatTime(sortList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<EMConversation> list = new ArrayList<EMConversation>();
-        for (Pair<Long, EMConversation> sortItem : sortList) {
-            list.add(sortItem.second);
+            try {
+                // Internal is TimSort algorithm, has bug
+                sortConversationByLastChatTime(sortList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            for (Pair<Long, EMConversation> sortItem : sortList) {
+                list.add(sortItem.second);
+            }
+
+        }catch (Exception e)
+        {
+
         }
         return list;
     }

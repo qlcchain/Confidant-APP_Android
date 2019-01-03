@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.AESCipher
 import com.stratagile.pnrouter.utils.CountDownTimerUtils
 import com.stratagile.pnrouter.utils.MobileSocketClient
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import javax.inject.Inject
 
 /**
@@ -64,7 +65,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        val brand = android.os.Build.BRAND
+        var nickSouceName = String(RxEncodeTool.base64Decode("")).toLowerCase()
         var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {

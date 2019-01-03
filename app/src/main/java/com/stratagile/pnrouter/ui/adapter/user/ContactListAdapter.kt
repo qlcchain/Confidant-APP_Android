@@ -35,8 +35,12 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
                 imagebutton.setText(nickNameSouce)
             }
         }
+        try {
+            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(item)
+        }catch (e: Exception)
+        {
 
-        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(item)
+        }
         helper!!.addOnClickListener(R.id.tvRefuse)
         helper!!.addOnClickListener(R.id.tvAccept)
         helper!!.setGone(R.id.checkBox,isSelect)

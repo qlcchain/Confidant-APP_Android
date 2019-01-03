@@ -77,6 +77,10 @@ class AppConfig : MultiDexApplication() {
         messageToxReceiver = ToxMessageReceiver()
 //        MessageProvider.init()
     }
+    fun getMessageReceiverInstance():  PNRouterServiceMessageReceiver{
+
+        return messageReceiver!!
+    }
     fun getPNRouterServiceMessageToxReceiver() :  PNRouterServiceMessageReceiver{
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
