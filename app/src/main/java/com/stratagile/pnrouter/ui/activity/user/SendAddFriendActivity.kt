@@ -84,17 +84,19 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         setContentView(R.layout.activity_sendaddfriend)
     }
     override fun initData() {
-        title.text = getString(R.string.Createuseraccounts)
+        UserProvider.getInstance().friendOperateListener = this
+        title.text = getString(R.string.FriendRequest)
         userEntity = intent.getParcelableExtra("user")
-        sendNickName.setText(userEntity.nickName)
+        sendNickName.setText(String(RxEncodeTool.base64Decode(userEntity.nickName)))
         EventBus.getDefault().register(this)
         sendRequestBtn.setOnClickListener {
-            if (validation.text.toString().equals("") || sendNickName.text.toString().equals("")) {
+            if (sendNickName.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if ( sendNickName.text.toString().length <8) {
-                toast(getString(R.string.needs8))
+            if(validation.text.toString().length >35)
+            {
+                toast(getString(R.string.needs35))
                 return@setOnClickListener
             }
             showProgressDialog("waiting...")
@@ -162,5 +164,6 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+        UserProvider.getInstance().friendOperateListener = null
     }
 }

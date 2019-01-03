@@ -84,13 +84,17 @@ object ToxSingleton {
 
     var bootstrapped = false
     for (i <- dhtNodes.indices) {
-      try {
-        AntoxLog.debug(s"Bootstrapping to ${dhtNodes(i).ipv4}:${dhtNodes(i).port.value}", TAG)
-        tox.bootstrap(dhtNodes(i).ipv4, dhtNodes(i).port, dhtNodes(i).key)
-        bootstrapped = true
-      } catch {
-        case _: Exception =>
-          AntoxLog.error(s"Couldn't bootstrap to node ${dhtNodes(i).ipv4}:${dhtNodes(i).port.value}")
+      if ("tox.novg.net".equals(dhtNodes(i).ipv4)) {
+        AntoxLog.info("避开 比较难连接的tox节点")
+      } else {
+        try {
+          AntoxLog.info(s"Bootstrapping to ${dhtNodes(i).ipv4}:${dhtNodes(i).port.value}", TAG)
+          tox.bootstrap(dhtNodes(i).ipv4, dhtNodes(i).port, dhtNodes(i).key)
+          bootstrapped = true
+        } catch {
+          case _: Exception =>
+            AntoxLog.error(s"Couldn't bootstrap to node ${dhtNodes(i).ipv4}:${dhtNodes(i).port.value}")
+        }
       }
     }
 

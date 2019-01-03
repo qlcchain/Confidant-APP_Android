@@ -39,12 +39,16 @@ public class UserEntity implements Parcelable{
     //第一次通信的时间戳
     private long timestamp;
 
+    private String validationInfo;//添加好友附言
 
 
-    @Generated(hash = 2048124219)
+
+
+    @Generated(hash = 906349994)
     public UserEntity(Long id, String userId, String routerUserId, String publicKey,
             String nickName, String remarks, String nickSouceName, String avatar,
-            String noteName, int friendStatus, boolean addFromMe, long timestamp) {
+            String noteName, int friendStatus, boolean addFromMe, long timestamp,
+            String validationInfo) {
         this.id = id;
         this.userId = userId;
         this.routerUserId = routerUserId;
@@ -57,6 +61,7 @@ public class UserEntity implements Parcelable{
         this.friendStatus = friendStatus;
         this.addFromMe = addFromMe;
         this.timestamp = timestamp;
+        this.validationInfo = validationInfo;
     }
     @Generated(hash = 1433178141)
     public UserEntity() {
@@ -80,6 +85,7 @@ public class UserEntity implements Parcelable{
         friendStatus = in.readInt();
         addFromMe = in.readByte() != 0;
         timestamp = in.readLong();
+        validationInfo = in.readString();
     }
 
     @Override
@@ -101,6 +107,7 @@ public class UserEntity implements Parcelable{
         dest.writeInt(friendStatus);
         dest.writeByte((byte) (addFromMe ? 1 : 0));
         dest.writeLong(timestamp);
+        dest.writeString(validationInfo);
     }
 
     @Override
@@ -196,5 +203,11 @@ public class UserEntity implements Parcelable{
     }
     public void setNickSouceName(String nickSouceName) {
         this.nickSouceName = nickSouceName;
+    }
+    public String getValidationInfo() {
+        return this.validationInfo;
+    }
+    public void setValidationInfo(String validationInfo) {
+        this.validationInfo = validationInfo;
     }
 }

@@ -432,6 +432,7 @@
     <string name="Encryptionerror">encryption error</string>
     <string name="nomorecharacters">No more than 264 characters</string>
     <string name="needs8">Lnvitation code needs 8 characters.</string>
+    <string name="needs35">at most 35 characters.</string>
     <string name="fixedtwo">fixed two-dimensional code sharing out, users scan the two-dimensional code can automatically generate a temporary account, login, temporary account does not support recovery, default to a router to support up to 20 temporary accounts.</string>
     <string name="temporaryaccounts"> Temporary accounts</string>
     <string name="logoutfailed">Exit failed, please try again</string>
@@ -447,7 +448,7 @@
     <string name="Permissionerror">Permission error</string>
     <string name="Validationinformation">Validation information</string>
     <string name="Send_request">Send request</string>
-
+    <string name="FriendRequest">Friend Request</string>
 
 
 </resources>

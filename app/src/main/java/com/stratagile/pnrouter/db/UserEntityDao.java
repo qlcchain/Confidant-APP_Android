@@ -34,6 +34,7 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         public final static Property FriendStatus = new Property(9, int.class, "friendStatus", false, "FRIEND_STATUS");
         public final static Property AddFromMe = new Property(10, boolean.class, "addFromMe", false, "ADD_FROM_ME");
         public final static Property Timestamp = new Property(11, long.class, "timestamp", false, "TIMESTAMP");
+        public final static Property ValidationInfo = new Property(12, String.class, "validationInfo", false, "VALIDATION_INFO");
     }
 
 
@@ -60,7 +61,8 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
                 "\"NOTE_NAME\" TEXT," + // 8: noteName
                 "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 9: friendStatus
                 "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 10: addFromMe
-                "\"TIMESTAMP\" INTEGER NOT NULL );"); // 11: timestamp
+                "\"TIMESTAMP\" INTEGER NOT NULL ," + // 11: timestamp
+                "\"VALIDATION_INFO\" TEXT);"); // 12: validationInfo
     }
 
     /** Drops the underlying database table. */
@@ -120,6 +122,11 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         stmt.bindLong(10, entity.getFriendStatus());
         stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
         stmt.bindLong(12, entity.getTimestamp());
+ 
+        String validationInfo = entity.getValidationInfo();
+        if (validationInfo != null) {
+            stmt.bindString(13, validationInfo);
+        }
     }
 
     @Override
@@ -173,6 +180,11 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         stmt.bindLong(10, entity.getFriendStatus());
         stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
         stmt.bindLong(12, entity.getTimestamp());
+ 
+        String validationInfo = entity.getValidationInfo();
+        if (validationInfo != null) {
+            stmt.bindString(13, validationInfo);
+        }
     }
 
     @Override
@@ -194,7 +206,8 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // noteName
             cursor.getInt(offset + 9), // friendStatus
             cursor.getShort(offset + 10) != 0, // addFromMe
-            cursor.getLong(offset + 11) // timestamp
+            cursor.getLong(offset + 11), // timestamp
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12) // validationInfo
         );
         return entity;
     }
@@ -213,6 +226,7 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         entity.setFriendStatus(cursor.getInt(offset + 9));
         entity.setAddFromMe(cursor.getShort(offset + 10) != 0);
         entity.setTimestamp(cursor.getLong(offset + 11));
+        entity.setValidationInfo(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
      }
     
     @Override

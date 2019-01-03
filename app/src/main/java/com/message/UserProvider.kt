@@ -128,7 +128,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         if (localFriendList.size > 0)
                             itUserEntity = localFriendList.get(0)
                         if(itUserEntity.nickName == null)
-                            return
+                            break
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
@@ -177,6 +177,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.publicKey = jAddFriendPushRsp.params.userKey
                 it.timestamp = jAddFriendPushRsp.timestamp
+                it.validationInfo = jAddFriendPushRsp.params.msg
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
@@ -204,6 +205,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.addFromMe = false
         newFriend.timestamp = jAddFriendPushRsp.timestamp
         newFriend.noteName = ""
+        newFriend.validationInfo = jAddFriendPushRsp.params.msg
         newFriend.publicKey = jAddFriendPushRsp.params.userKey
         userList.add(newFriend)
 

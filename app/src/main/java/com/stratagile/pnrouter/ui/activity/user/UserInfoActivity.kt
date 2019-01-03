@@ -239,12 +239,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
     override fun initData() {
         var nickNameSouce = ""
-        if(userInfo!!.remarks != null && !userInfo!!.remarks.equals(""))
-        {
-            nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
-            title.text = nickNameSouce
-        }
-        else if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
+        if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
 
             nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.nickName))
             title.text = nickNameSouce

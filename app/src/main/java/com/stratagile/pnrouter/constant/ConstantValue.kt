@@ -57,5 +57,6 @@ object ConstantValue {
         var mRegId = ""
         var pushURL = "http://47.96.76.184:9000/v1/pareg"
         var loginOut = false
+        var freindStatus = 0
 
 }

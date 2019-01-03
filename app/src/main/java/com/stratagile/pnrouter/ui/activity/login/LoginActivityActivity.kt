@@ -102,6 +102,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var loginOk = false
     var isToxLoginOverTime = false;
     var maxLogin = 0
+   
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
@@ -390,6 +391,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         if(toxFriendStatusEvent.status == 1)
         {
+            ConstantValue.freindStatus = 1;
             Thread(Runnable() {
                 run() {
                     Thread.sleep(3000)
@@ -400,6 +402,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(ConstantValue.isToxConnected)
                             {
+                                closeProgressDialog()
+                                showProgressDialog("login...")
                                 var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                                 var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
@@ -409,6 +413,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                                 maxLogin ++;
                             }
+                        }else{
+                            closeProgressDialog()
                         }
                     }
 
@@ -417,6 +423,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
         }else{
+            ConstantValue.freindStatus = 0;
             LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
         }
 
@@ -553,7 +560,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }
                         runOnUiThread {
-                            showProgressDialog("login...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            var tips = "login..."
+                            if(ConstantValue.freindStatus == 1)
+                            {
+                                tips = "login..."
+                            }else{
+                                tips = "router connecting..."
+                            }
+                            showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                                     if(standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
@@ -634,7 +648,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                     runOnUiThread {
-                        showProgressDialog("login...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                        var tips = "login..."
+                        if(ConstantValue.freindStatus == 1)
+                        {
+                            tips = "login..."
+                        }else{
+                            tips = "router connecting..."
+                        }
+                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()

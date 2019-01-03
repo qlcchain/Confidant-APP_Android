@@ -16,6 +16,12 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
     override fun convert(helper: BaseViewHolder?, item: UserEntity?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
         helper!!.setText(R.id.tvNickName, nickNameSouce)
+
+        if(item!!.validationInfo != null)
+        {
+            var validationInfo = String(RxEncodeTool.base64Decode(item!!.validationInfo))
+            helper!!.setText(R.id.validation, validationInfo)
+        }
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
         imagebutton.setText(item!!.nickName)
         helper!!.addOnClickListener(R.id.tvRefuse)

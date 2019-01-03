@@ -15,6 +15,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -167,17 +168,30 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
                     if (i.userId.equals(toAddUserIdTemp)) {
-                        intent.putExtra("user", i)
-                        startActivity(intent)
+                        var freindStatusData = FriendEntity()
+                        freindStatusData.friendLocalStatus = 7
+                        val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
+                        if (localFriendStatusList.size > 0)
+                            freindStatusData = localFriendStatusList[0]
+
+                        if(freindStatusData.friendLocalStatus == 0)
+                        {
+                            intent.putExtra("user", i)
+                            startActivity(intent)
+                        }else{
+                            intent = Intent(this, SendAddFriendActivity::class.java)
+                            intent.putExtra("user", i)
+                            startActivity(intent)
+                        }
                         return@Observer
                     }
                 }
+                intent = Intent(this, SendAddFriendActivity::class.java)
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
                 userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
                 userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
-                var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
 
