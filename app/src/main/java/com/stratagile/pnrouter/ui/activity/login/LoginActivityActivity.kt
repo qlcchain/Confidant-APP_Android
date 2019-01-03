@@ -397,7 +397,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     while (true)
                     {
-                        Thread.sleep(3000)
+
                         if(!loginOk && isToxLoginOverTime && maxLogin < 5)
                         {
                             if(ConstantValue.isToxConnected)
@@ -415,6 +415,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             closeProgressDialog()
                             break
                         }
+                        Thread.sleep(2000)
                     }
 
                 }

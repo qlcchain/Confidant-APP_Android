@@ -72,57 +72,61 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/status">
 
-        <com.stratagile.pnrouter.view.DrawableTextView
+        <com.stratagile.pnrouter.view.DrawableMyTextView
             android:id="@+id/routerManagement"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="@string/routerManagement">
+            app:srcmy="@mipmap/rouermanagement"
+            app:textmy="@string/routerManagement">
 
-        </com.stratagile.pnrouter.view.DrawableTextView>
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
 
         <View
             android:id="@+id/view3"
             style="@style/divide_line" />
 
-        <com.stratagile.pnrouter.view.DrawableTextView
+        <com.stratagile.pnrouter.view.DrawableMyTextView
             android:visibility="gone"
             android:id="@+id/collection"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:layout_constraintTop_toBottomOf="@+id/view3"
-            app:text="@string/collection">
 
-        </com.stratagile.pnrouter.view.DrawableTextView>
+            app:textmy="@string/collection">
+
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
 
         <View style="@style/divide_line" />
 
-        <com.stratagile.pnrouter.view.DrawableTextView
+        <com.stratagile.pnrouter.view.DrawableMyTextView
             android:id="@+id/shareApp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="@string/shareApp">
+            app:srcmy="@mipmap/shareapp"
+            app:textmy="@string/shareApp">
 
-        </com.stratagile.pnrouter.view.DrawableTextView>
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
 
         <View style="@style/divide_line" />
 
-        <com.stratagile.pnrouter.view.DrawableTextView
+        <com.stratagile.pnrouter.view.DrawableMyTextView
             android:visibility="gone"
             android:id="@+id/help"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:text="@string/help">
+            app:textmy="@string/help">
 
-        </com.stratagile.pnrouter.view.DrawableTextView>
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
     </LinearLayout>
 
-    <com.stratagile.pnrouter.view.DrawableTextView
+    <com.stratagile.pnrouter.view.DrawableMyTextView
         android:id="@+id/settings"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
         android:layout_marginTop="@dimen/x1"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:text="@string/setting_">
+        app:srcmy="@mipmap/settings"
+        app:textmy="@string/setting_">
 
-    </com.stratagile.pnrouter.view.DrawableTextView>
+    </com.stratagile.pnrouter.view.DrawableMyTextView>
 </android.support.constraint.ConstraintLayout>

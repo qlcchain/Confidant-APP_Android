@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="DrawableMyTextView">
+        <attr name="textmy" format="string"/>
+        <attr name="textSizemy" format="dimension"/>
+        <attr name="textColormy" format="reference"/>
+        <attr name="showNextmy" format="boolean"/>
+        <attr name="srcmy" format="reference"/>
+    </declare-styleable>
     <declare-styleable name="DrawableTextView">
         <attr name="text" format="string"/>
         <attr name="textSize" format="dimension"/>
