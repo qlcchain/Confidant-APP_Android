@@ -6,6 +6,7 @@ import chat.tox.antox.wrapper.FriendKey
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.R.id.sendRequestBtn
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -23,9 +24,11 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_sendaddfriend.*
+import kotlinx.android.synthetic.main.fragment_my.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -84,8 +87,10 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         setContentView(R.layout.activity_sendaddfriend)
     }
     override fun initData() {
+        var nickName = SpUtil.getString(this, ConstantValue.username, "")
         UserProvider.getInstance().friendOperateListener = this
         title.text = getString(R.string.FriendRequest)
+        validation.setText("I'm "+getText(nickName))
         userEntity = intent.getParcelableExtra("user")
         sendNickName.setText(String(RxEncodeTool.base64Decode(userEntity.nickName)))
         EventBus.getDefault().register(this)
@@ -102,7 +107,8 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
             showProgressDialog("waiting...")
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var msg= RxEncodeTool.base64Encode2String(validation.text.toString().toByteArray())
-            val strBase64 = RxEncodeTool.base64Encode2String(sendNickName.text.toString().toByteArray())
+
+            val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
             var login = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
@@ -165,5 +171,26 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         super.onDestroy()
         EventBus.getDefault().unregister(this)
         UserProvider.getInstance().friendOperateListener = null
+    }
+
+    fun getText(buttonText: CharSequence?):String {
+//        KLog.i(buttonText)
+        val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val stringArrayList = Arrays.asList(*strings)
+        val itTemp = stringArrayList.iterator()
+        val realList = ArrayList<String>()
+        while (itTemp.hasNext()) {
+            val next = itTemp.next() as String
+            if ("" != next) {
+                realList.add(next)
+            }
+        }
+        var showText = ""
+        for (i in realList.indices) {
+            if (i < 2) {
+                showText += realList[i].substring(0, 1)
+            }
+        }
+         return showText
     }
 }
