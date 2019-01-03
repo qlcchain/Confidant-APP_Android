@@ -409,8 +409,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 var baseData = BaseData(2,login)
                                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                 MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                maxLogin ++;
                             }
+                            maxLogin ++;
                         }else{
                             closeProgressDialog()
                             break
