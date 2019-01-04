@@ -173,6 +173,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     if(conversation != null)
                     {
                         conversation.insertMessage(message)
+                        KLog.i("insertMessage:" + "MainActivity"+"_pushDelMsgRsp")
                         if (ConstantValue.isInit) {
                             conversationListFragment?.refresh()
                             ConstantValue.isRefeshed = true
@@ -286,6 +287,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var baseDataJson = gson.toJson(Message)
                 var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
+                KLog.i("insertMessage:" + "MainActivity"+"_pushMsgRsp")
                 conversation.insertMessage(message)
             }
             if (ConstantValue.isInit) {
@@ -575,7 +577,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             if (!"".equals(toAddUserId)) {
                 var toAddUserIdTemp = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
-                var intent = Intent(this, UserInfoActivity::class.java)
+                var intent = Intent(this, SendAddFriendActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
                     if (i.userId.equals(toAddUserIdTemp)) {
@@ -616,8 +618,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 newFriendStatus.friendLocalStatus = 7
                 newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
                 AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
-
-
                 intent.putExtra("user", userEntity)
                 startActivity(intent)
             }
@@ -683,37 +683,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         message.isAcked = true
                         message.setStatus(EMMessage.Status.SUCCESS)
                         if(conversation !=null)
-                            conversation.insertMessage(message)
-                        if (ConstantValue.isInit) {
-                            conversationListFragment?.refresh()
-                            ConstantValue.isRefeshed = true
-                        }
-                    }
-                    AppConfig.instance.tempPushMsgList = ArrayList<JPushMsgRsp>()
-                    for (pushMsgRsp in AppConfig.instance.tempPushMsgList)
-                    {
-                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                        var msgData = PushMsgReq( Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0,"")
-                        if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
-                        }else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
-                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }
-
-                        var  conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                        val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
-                        val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
-                        message.setDirection(EMMessage.Direct.RECEIVE)
-                        message.msgId = pushMsgRsp.params.msgId.toString()
-                        message.from = pushMsgRsp.params.fromId
-                        message.to = pushMsgRsp.params.toId
-                        message.isUnread = true
-                        message.isAcked = true
-                        message.setStatus(EMMessage.Status.SUCCESS)
-                        if(conversation !=null)
                         {
                             var gson = Gson()
                             var Message = Message()
@@ -724,20 +693,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             var baseDataJson = gson.toJson(Message)
                             var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                             SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
+                            KLog.i("insertMessage:" + "MainActivity"+"_tempPushMsgList")
                             conversation.insertMessage(message)
                         }
 
-                        runOnUiThread {
-                            var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(1);
-                            controlleMessageUnReadCount(UnReadMessageCount)
-                        }
-                        if(ConstantValue.isInit)
-                        {
+                        if (ConstantValue.isInit) {
                             conversationListFragment?.refresh()
                             ConstantValue.isRefeshed = true
                         }
                     }
-                    AppConfig.instance.tempPushMsgList =  ArrayList<JPushMsgRsp>()
+                    AppConfig.instance.tempPushMsgList = ArrayList<JPushMsgRsp>()
                 }
             }).start()
 

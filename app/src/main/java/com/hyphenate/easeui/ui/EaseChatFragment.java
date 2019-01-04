@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcel;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -68,7 +67,6 @@ import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallba
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
-import com.message.CacheMessage;
 import com.message.Message;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -103,7 +101,6 @@ import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
-import com.stratagile.pnrouter.utils.SharedPreferenceUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
@@ -113,7 +110,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -158,7 +154,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected int chatType;
     protected String toChatUserId;
     protected int friendStatus = 0;
-    protected EaseChatMessageList messageList;
+    protected EaseChatMessageList easeChatMessageList;
     protected EaseChatInputMenu inputMenu;
 
     protected EMConversation conversation;
@@ -269,8 +265,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         toChatUserId = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
 
         this.turnOnTyping = turnOnTyping();
-
         super.onActivityCreated(savedInstanceState);
+    }
+    public void setChatUserId(String id)
+    {
+        toChatUserId = id;
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectWebSocket(FileTransformEntity fileTransformEntity){
@@ -468,7 +467,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         {
                             conversation.removeMessage(currentSendMsg.getMsgId());
                             if(isMessageListInited) {
-                                messageList.refresh();
+                                easeChatMessageList.refresh();
                             }
                         }
                     }
@@ -561,11 +560,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void lockContentHeight(ChatKeyboard chatKeyboard){
 //        if (chatKeyboard.isLock()) {
-//            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) messageList.getLayoutParams();
-//            params.height = messageList.getHeight();
+//            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) easeChatMessageList.getLayoutParams();
+//            params.height = easeChatMessageList.getHeight();
 //            params.weight = 0.0F;
 //        } else {
-//            ((LinearLayout.LayoutParams) messageList.getLayoutParams()).weight = 1.0F;
+//            ((LinearLayout.LayoutParams) easeChatMessageList.getLayoutParams()).weight = 1.0F;
 //        }
     }
 
@@ -573,7 +572,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * 释放被锁定的内容高度
      */
 //    private void unLockContentHeight() {
-//        ((LinearLayout.LayoutParams) messageList.getLayoutParams()).weight = 1.0F;
+//        ((LinearLayout.LayoutParams) easeChatMessageList.getLayoutParams()).weight = 1.0F;
 //    }
 //
 
@@ -591,11 +590,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         currentPage = 0;
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         // message list layout
-        messageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
+        easeChatMessageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
         if(chatType != EaseConstant.CHATTYPE_SINGLE)
-            messageList.setShowUserNick(true);
-//        messageList.setAvatarShape(1);
-        listView = messageList.getListView();
+            easeChatMessageList.setShowUserNick(true);
+//        easeChatMessageList.setAvatarShape(1);
+        listView = easeChatMessageList.getListView();
         kickedForOfflineLayout = getView().findViewById(R.id.layout_alert_kicked_off);
         kickedForOfflineLayout.setOnClickListener(new OnClickListener() {
             @Override
@@ -606,7 +605,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
-        inputMenu.bindContentView(messageList);
+        inputMenu.bindContentView(easeChatMessageList);
         registerExtendMenuItem();
         // init input menu
         inputMenu.init(null);
@@ -640,7 +639,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         });
 
-        swipeRefreshLayout = messageList.getSwipeRefreshLayout();
+        swipeRefreshLayout = easeChatMessageList.getSwipeRefreshLayout();
 //        swipeRefreshLayout.setColorSchemeResources(R.color.holo_blue_bright, R.color.holo_green_light,
 //                R.color.holo_orange_light, R.color.holo_red_light);
 
@@ -747,7 +746,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             onConversationInit();
             onMessageListInit();
         }
-
         titleBar.setLeftLayoutClickListener(new OnClickListener() {
 
             @Override
@@ -823,7 +821,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             }
                             conversation.loadMoreMsgFromDB(msgId, pagesize - msgCount);
                         }
-                        messageList.refreshSelectLast();
+                        easeChatMessageList.refreshSelectLast();
                     } catch (HyphenateException e) {
                         e.printStackTrace();
                     }
@@ -838,7 +836,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
         //refresh ui
         if(isMessageListInited) {
-            messageList.refresh();
+            easeChatMessageList.refresh();
         }
         if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
         {
@@ -881,7 +879,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         }
         //refresh ui
-        messageList.refresh();
+        easeChatMessageList.refresh();
     }
     public void setFriendStatus(int status)
     {
@@ -1037,7 +1035,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             conversation.updateMessage(EMMessage);
 
             if(isMessageListInited) {
-                messageList.refresh();
+                easeChatMessageList.refresh();
             }
         }else{
             getActivity().runOnUiThread(new Runnable() {
@@ -1051,14 +1049,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
     public void  refreshData(List<Message> messageList,String UserId,String FriendId)
     {
+        toChatUserId = FriendId;
         if(conversation == null)
-            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+            conversation = EMClient.getInstance().chatManager().getConversation(FriendId, EaseCommonUtils.getConversationType(chatType), true);
+        KLog.i("insertMessage:" + "EaseChatFragment"+"_refreshData1_"+conversation+"_"+toChatUserId);
         if (conversation != null) {
             if(currentPage == 0)
             {
                 conversation.clearAllMessages();
+                KLog.i("insertMessage:" + "EaseChatFragment"+"_refreshData2"+conversation.getAllMessages().size());
             }
-
+            if(isMessageListInited) {
+                easeChatMessageList.refresh();
+            }
         }
         int size = messageList.size();
         handler.postDelayed(new Runnable() {
@@ -1314,7 +1317,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             //conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
             //refresh ui
             if(isMessageListInited) {
-                messageList.refresh();
+                easeChatMessageList.refresh();
             }
             if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
             {
@@ -1339,11 +1342,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
     }
     protected void onMessageListInit(){
-        messageList.init(toChatUserId, chatType, chatFragmentHelper != null ?
+        easeChatMessageList.init(toChatUserId, chatType, chatFragmentHelper != null ?
                 chatFragmentHelper.onSetCustomChatRowProvider() : null);
         setListItemClickListener();
 
-        messageList.getListView().setOnTouchListener(new OnTouchListener() {
+        easeChatMessageList.getListView().setOnTouchListener(new OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -1357,7 +1360,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void setListItemClickListener() {
-        messageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
+        easeChatMessageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
 
             @Override
             public void onUserAvatarClick(String username) {
@@ -1514,7 +1517,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void onResume() {
         super.onResume();
         if(isMessageListInited)
-            messageList.refresh();
+            easeChatMessageList.refresh();
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
         EMClient.getInstance().chatManager().addMessageListener(this);
@@ -1627,7 +1630,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             // if the message is for current conversation
             if (username.equals(toChatUserId) || message.getTo().equals(toChatUserId) || message.conversationId().equals(toChatUserId)) {
-                messageList.refreshSelectLast();
+                easeChatMessageList.refreshSelectLast();
                 //conversation.markMessageAsRead(message.getMsgId());
             }
             EaseUI.getInstance().getNotifier().vibrateAndPlayTone(message);
@@ -1655,28 +1658,28 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onMessageRead(List<EMMessage> messages) {
         if(isMessageListInited) {
-            messageList.refresh();
+            easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageDelivered(List<EMMessage> messages) {
         if(isMessageListInited) {
-            messageList.refresh();
+            easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageRecalled(List<EMMessage> messages) {
         if(isMessageListInited) {
-            messageList.refresh();
+            easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageChanged(EMMessage emMessage, Object change) {
         if(isMessageListInited) {
-            messageList.refresh();
+            easeChatMessageList.refresh();
         }
     }
 
@@ -1861,8 +1864,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
                     currentSendMsg.setAcked(true);
                     conversation.insertMessage(currentSendMsg);
+                    KLog.i("insertMessage:" + "EaseChatFragment"+"_upateMessage");
                     if(isMessageListInited) {
-                        messageList.refresh();
+                        easeChatMessageList.refresh();
                     }
                 }
                 break;
@@ -1871,7 +1875,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 {
                     conversation.removeMessage(currentSendMsg.getMsgId());
                     if(isMessageListInited) {
-                        messageList.refresh();
+                        easeChatMessageList.refresh();
                     }
                 }
                 getActivity().runOnUiThread(new Runnable() {
@@ -1886,7 +1890,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 {
                     conversation.removeMessage(currentSendMsg.getMsgId());
                     if(isMessageListInited) {
-                        messageList.refresh();
+                        easeChatMessageList.refresh();
                     }
                 }
                 friendStatus = 1;
@@ -2645,10 +2649,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         if(conversation != null)
         {
+            KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo1");
             conversation.insertMessage(message);
             //refresh ui
             if(isMessageListInited) {
-                messageList.refresh();
+                KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2_"+conversation.getAllMessages().size());
+                easeChatMessageList.refresh();
             }
         }else{
             new Thread(new Runnable(){
@@ -2662,11 +2668,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
                         if(conversation != null)
                         {
+                            KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2");
                             conversation.insertMessage(message);
                             //SpUtil.INSTANCE.putString(conversation.conversationId());
                             //refresh ui
                             if(isMessageListInited) {
-                                messageList.refresh();
+                                easeChatMessageList.refresh();
                             }
                         }
                     }catch (Exception e)
@@ -2679,7 +2686,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         /*if(isMessageListInited) {
-            messageList.refreshSelectLast();
+            easeChatMessageList.refreshSelectLast();
         }*/
     }
 
@@ -2690,7 +2697,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         @Override
         public void onSuccess() {
             if(isMessageListInited) {
-                messageList.refresh();
+                easeChatMessageList.refresh();
             }
         }
 
@@ -2698,7 +2705,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         public void onError(int code, String error) {
             Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
             if(isMessageListInited) {
-                messageList.refresh();
+                easeChatMessageList.refresh();
             }
         }
 
@@ -2706,7 +2713,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         public void onProgress(int progress, String status) {
             Log.i(TAG, "onProgress: " + progress);
             if(isMessageListInited) {
-                messageList.refresh();
+                easeChatMessageList.refresh();
             }
         }
     };
@@ -2885,7 +2892,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if (conversation != null) {
                         conversation.clearAllMessages();
                     }
-                    messageList.refresh();
+                    easeChatMessageList.refresh();
                     haveMoreData = true;
                 }
             }

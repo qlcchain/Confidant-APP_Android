@@ -11,6 +11,8 @@ import com.stratagile.pnrouter.R.id.sendRequestBtn
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.AddFriendReq
 import com.stratagile.pnrouter.entity.BaseData
@@ -43,18 +45,34 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
     override fun addFriendRsp(retCode: Int) {
         runOnUiThread {
             if (retCode == 0) {
-
+                var freindStatusData = FriendEntity()
+                freindStatusData.friendLocalStatus = 7
+                val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(userEntity!!.userId)).list()
+                if (localFriendStatusList.size > 0)
+                {
+                    freindStatusData = localFriendStatusList[0]
+                    freindStatusData.friendLocalStatus = 1
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(freindStatusData)
+                }
                 runOnUiThread {
                     closeProgressDialog()
                     toast(getString(R.string.success))
                 }
 
                 finish()
-            } else {
+            } else if (retCode == 2){
                 runOnUiThread {
+                    closeProgressDialog()
+                    toast(getString(R.string.Alreadyagoodfriend))
+                }
+                finish()
+            }else{
+                runOnUiThread {
+                    closeProgressDialog()
                     toast(getString(R.string.fail))
                 }
-
+                finish()
             }
 
         }

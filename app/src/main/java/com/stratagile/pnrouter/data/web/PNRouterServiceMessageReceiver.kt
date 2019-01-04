@@ -183,6 +183,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //拉取某个好友的消息,一次十条
                 "PullMsg" -> {
                     val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
+                    KLog.i("insertMessage:PNRouterServiceMessageReceiver"+chatCallBack)
+                    KLog.i("insertMessage:PNRouterServiceMessageReceiver"+convsationCallBack)
                     chatCallBack?.pullMsgRsp(JPullMsgRsp)
                     convsationCallBack?.pullMsgRsp(JPullMsgRsp)
                 }

@@ -161,6 +161,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         AppConfig.instance.messageReceiver!!.close()
                     ConstantValue.isWebsocketConnected = false
                     ConstantValue.loginOut = true
+                    ConstantValue.isHeart = false
                     isUserExit = true
                     onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true

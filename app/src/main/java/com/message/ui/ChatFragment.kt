@@ -191,14 +191,14 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
 //            } else {
 //                message.from = ""
 //            }
-//            messageList?.add(message)
+//            easeChatMessageList?.add(message)
 //        }
         if (messageList != null) {
             messageListAdapter = MessageListAdapter(activity!!, messageList!!)
         }
         messageRecyclerView.adapter = messageListAdapter
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
-//        messageListAdapter.setNewData(messageList)
+//        messageListAdapter.setNewData(easeChatMessageList)
     }
 
     protected fun registerExtendMenuItem() {

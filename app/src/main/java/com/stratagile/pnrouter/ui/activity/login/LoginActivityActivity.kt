@@ -321,6 +321,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             loginOk = true
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
+            ConstantValue.isHeart = true
+
             if(loginGoMain)
                 return
             startActivity(Intent(this, MainActivity::class.java))

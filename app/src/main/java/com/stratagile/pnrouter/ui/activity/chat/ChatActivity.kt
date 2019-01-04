@@ -310,7 +310,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
+
         var messageList: List<Message> = pushMsgRsp.params.payload
+        KLog.i("insertMessage:ChatActivity"+chatFragment)
         chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
         val size = messageList.size
         var msgIdStr:String = "";
@@ -422,10 +424,15 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        KLog.i("insertMessage:ChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
         receiveToxFileDataMap = HashMap<String, JPushFileMsgRsp>()
         super.onCreate(savedInstanceState)
+
+    }
+
+    override fun initView() {
         setContentView(R.layout.activity_chat)
         activityInstance = this
         //user or group id
@@ -433,16 +440,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         chatFragment = EaseChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)
+        chatFragment?.setChatUserId(toChatUserID)
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment!!).commit()
         val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         view1.setLayoutParams(llp)
         parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(this@ChatActivity)
-
         queryFriend(toChatUserID!!)
-    }
-
-    override fun initView() {
-//        setContentView(R.layout.activity_chat)
     }
 
     override fun initData() {

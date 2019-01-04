@@ -48,7 +48,8 @@
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
     <string name="success">success</string>
-    <string name="fail">succefailss</string>
+    <string name="fail">fail</string>
+    <string name="Alreadyagoodfriend">Already a good friend</string>
 
     <string name="refuse">Decline</string>
     <string name="accept">Accept</string>

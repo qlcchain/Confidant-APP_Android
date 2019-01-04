@@ -164,7 +164,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
             }
             if (!"".equals(toAddUserId)) {
                 var toAddUserIdTemp = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
-                var intent = Intent(this, UserInfoActivity::class.java)
+                var intent = Intent(this, SendAddFriendActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
                     if (i.userId.equals(toAddUserIdTemp)) {

@@ -54,16 +54,16 @@ import javax.inject.Inject
 
 class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener {
     override fun delFriendRsp(retCode: Int) {
-       /* var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(delFriendCmdRsp)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-        }*/
+        /* var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+         var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
+         if (ConstantValue.isWebsocketConnected) {
+             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendCmdRsp))
+         }else if (ConstantValue.isToxConnected) {
+             var baseData = BaseData(delFriendCmdRsp)
+             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+         }*/
 
         runOnUiThread {
             //            toast(addFriendRsp.baseDataToJson())
@@ -100,10 +100,23 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 standaloneCoroutine.cancel()
                 friendStatus = 1
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
+                var freindStatusData = FriendEntity()
+                freindStatusData.friendLocalStatus = 7
+                val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(userInfo!!.userId)).list()
+                if (localFriendStatusList.size > 0)
+                {
+                    freindStatusData = localFriendStatusList[0]
+                    freindStatusData.friendLocalStatus = 1
+                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(freindStatusData)
+                }
                 closeProgressDialog()
                 initData()
                 finish()
-            } else {
+            } else if(retCode == 2){
+                toast(getString(R.string.Alreadyagoodfriend))
+            }
+            else {
                 toast(getString(R.string.fail))
             }
 

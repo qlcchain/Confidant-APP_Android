@@ -33,6 +33,7 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.EaseConversationList;
 import com.message.CacheMessage;
 import com.message.Message;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
@@ -397,11 +398,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                             if(conversation != null)
                             {
                                 conversation.insertMessage(message);
+                                KLog.i("insertMessage:"+"EaseConversationListFragment");
                                 int size = conversation.getAllMessages().size();
+                                int len = conversation.getAllMsgCount();
                                 EMMessage EMMessage = conversation.getLastMessage();
                                 if (conversation.getAllMessages().size() != 0) {
                                     sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
                                 }
+
                             }
                         }
                     }

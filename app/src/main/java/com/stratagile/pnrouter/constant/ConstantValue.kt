@@ -50,6 +50,7 @@ object ConstantValue {
         var lastPort= ""     //路由器最后可走的网络Port=
         var lastFilePort= "" //路由器最后可走的网络FilePort
         var isHasWebsocketInit = false  //是否走过websocket连接初始化
+        var isHeart = false //是否可以发心跳
         var hasLogin = false  //是否登录过
         var loginReq:LoginReq? = null  //登录过的账号数据
         var isWebsocketReConnect = false  //websocket是否重连过

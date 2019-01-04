@@ -142,6 +142,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 closeProgressDialog()
             }
             ConstantValue.hasLogin = true
+            ConstantValue.isHeart = true
             ConstantValue.currentRouterId = ConstantValue.scanRouterId
             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
             startActivity(Intent(this, MainActivity::class.java))
