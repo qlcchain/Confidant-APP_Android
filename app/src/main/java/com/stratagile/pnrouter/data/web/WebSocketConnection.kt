@@ -190,7 +190,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     @Throws(IOException::class)
     private fun sendKeepAlive() {
-        if (keepAliveSender != null && client != null) {
+        if (keepAliveSender != null && client != null && !ConstantValue.loginOut) {
             //todo keepalive message
             var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
             LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")

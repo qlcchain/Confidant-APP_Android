@@ -167,7 +167,7 @@ class ToxMessageReceiver(){
     @Synchronized
     @Throws(IOException::class)
     private fun sendKeepAlive() {
-        if (keepAliveSender != null && ConstantValue.isToxConnected) {
+        if (keepAliveSender != null && ConstantValue.isToxConnected && !ConstantValue.loginOut) {
             //todo keepalive message
             if (ConstantValue.curreantNetworkType == "TOX" && ConstantValue.isToxConnected)
             {
