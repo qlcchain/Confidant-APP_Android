@@ -102,6 +102,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var loginOk = false
     var isToxLoginOverTime = false;
     var maxLogin = 0
+    var threadInit = false
    
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
@@ -391,35 +392,40 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
         if(toxFriendStatusEvent.status == 1)
         {
-            ConstantValue.freindStatus = 1;
-            Thread(Runnable() {
-                run() {
+            ConstantValue.freindStatus = 1
+            if(!threadInit)
+            {
+                Thread(Runnable() {
+                    run() {
 
-                    while (true)
-                    {
-
-                        if(!loginOk && isToxLoginOverTime && maxLogin < 5)
+                        while (true)
                         {
-                            if(ConstantValue.isToxConnected)
-                            {
-                                var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
-                                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                                ConstantValue.loginReq = login
-                                var baseData = BaseData(2,login)
-                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            }
-                            maxLogin ++;
-                        }else{
-                            closeProgressDialog()
-                            break
-                        }
-                        Thread.sleep(2000)
-                    }
 
-                }
-            }).start()
+                            if(!loginOk && isToxLoginOverTime && maxLogin < 5)
+                            {
+                                if(ConstantValue.isToxConnected)
+                                {
+                                    var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                                    ConstantValue.loginReq = login
+                                    var baseData = BaseData(2,login)
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                }
+                                maxLogin ++;
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
+                        }
+
+                    }
+                }).start()
+                threadInit = true
+            }
+
 
             LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
         }else{

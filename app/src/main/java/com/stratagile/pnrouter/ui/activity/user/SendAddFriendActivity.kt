@@ -90,7 +90,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         UserProvider.getInstance().friendOperateListener = this
         title.text = getString(R.string.FriendRequest)
-        validation.setText("I'm "+getText(nickName))
+        validation.setText("I'm "+ nickName)
         userEntity = intent.getParcelableExtra("user")
         sendNickName.setText(String(RxEncodeTool.base64Decode(userEntity.nickName)))
         EventBus.getDefault().register(this)
