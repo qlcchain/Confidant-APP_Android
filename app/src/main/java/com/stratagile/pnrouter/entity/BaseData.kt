@@ -314,3 +314,9 @@ data class UserInfoPushRsp(var RetCode :Int, var ToId : String, var Msg : String
  * (2)	响应（APP->Router）
  */
 data class ChangeRemarksReq(var UserId :String, var FriendId : String, var Remarks : String,  var Action : String = "ChangeRemarks")
+
+/**
+ * 36.	查询好友关系
+ * (2)	响应（APP->Router）
+ */
+data class QueryFriendReq(var UserId :String, var FriendId : String, var Action : String = "QueryFriend")

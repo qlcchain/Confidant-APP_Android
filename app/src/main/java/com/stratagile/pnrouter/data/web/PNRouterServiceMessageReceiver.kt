@@ -156,6 +156,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     chatCallBack?.sendMsgRsp(JSendMsgRsp)
                     convsationCallBack?.sendMsgRsp(JSendMsgRsp)
                 }
+                "QueryFriend" -> {
+                    val jQueryFriendRsp = gson.fromJson(text, JQueryFriendRsp::class.java)
+                    chatCallBack?.QueryFriendRep(jQueryFriendRsp)
+                }
                 //发送消息对方已读
                 "ReadMsgPush" -> {
                     val JReadMsgPushRsp = gson.fromJson(text, JReadMsgPushRsp::class.java)
@@ -408,6 +412,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
+        fun queryFriend(FriendId :String)
+        fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
     }
 
     interface CoversationCallBack {

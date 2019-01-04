@@ -157,6 +157,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected Bundle fragmentArgs;
     protected int chatType;
     protected String toChatUserId;
+    protected int friendStatus = 0;
     protected EaseChatMessageList messageList;
     protected EaseChatInputMenu inputMenu;
 
@@ -240,6 +241,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, boolean roaming) {
+        friendStatus = 0;
         isRoaming = roaming;
         return inflater.inflate(R.layout.ease_fragment_chat, container, false);
     }
@@ -424,10 +426,53 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
                 break;
             case 1:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.CRCerror, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case 2:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.IDerror, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case 3:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.FileOpeningError, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case 4:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.ExcessiveFileBlockLength, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case 5:
+                String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+ToIdResult,"");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                        if(conversation !=null )
+                        {
+                            conversation.removeMessage(currentSendMsg.getMsgId());
+                            if(isMessageListInited) {
+                                messageList.refresh();
+                            }
+                        }
+                    }
+                });
                 break;
         }
     }
@@ -837,6 +882,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         //refresh ui
         messageList.refresh();
+    }
+    public void setFriendStatus(int status)
+    {
+        friendStatus = status;
     }
     public void  onToxFileSendFinished(int fileNumber,String key)
     {
@@ -1646,9 +1695,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
             switch (itemId) {
                 case ITEM_PICTURE:
+                    if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+                        AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+                    }
                     selectPicFromLocal();
                     break;
                 case ITEM_TAKE_PICTURE:
+                    if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+                        AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+                    }
                     AndPermission.with(AppConfig.instance)
                             .requestCode(101)
                             .permission(
@@ -1658,6 +1713,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             .start();
                     break;
                 case ITEM_SHORTVIDEO:
+                    if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+                        AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+                    }
                     AndPermission.with(AppConfig.instance)
                             .requestCode(101)
                             .permission(
@@ -1667,10 +1725,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             .start();
                     break;
                 case ITEM_LOCATION:
+                    if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+                        AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+                    }
                     //startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 case ITEM_FILE:
+                    if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+                        AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+                    }
                     startActivityForResult(new Intent(getActivity(), FileChooseActivity.class), REQUEST_CODE_FILE);
                     break;
                 default:
@@ -1750,6 +1814,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     //send message
     protected void sendTextMessage(String content) {
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         if(EaseAtMessageHelper.get().containsAtUsername(content)){
             sendAtMessage(content);
         }else{
@@ -1820,6 +1889,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         messageList.refresh();
                     }
                 }
+                friendStatus = 1;
                 String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                 SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jSendMsgRsp.getParams().getToId(),"");
                 getActivity().runOnUiThread(new Runnable() {
@@ -1862,6 +1932,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendVoiceMessage(String filePath, int length) {
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
             File file = new File(filePath);
             boolean isHas = file.exists();
@@ -1969,7 +2044,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendImageMessage(String imagePath,boolean isCompress) {
-
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Thread(new Runnable(){
             public void run(){
 
@@ -2097,6 +2176,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     }
     protected void sendCameraImageMessage(String imagePath) {
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Thread(new Runnable(){
             public void run(){
 
@@ -2206,6 +2290,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected void sendVideoMessage(String videoPath,boolean isLocal) {
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Thread(new Runnable(){
             public void run() {
 
@@ -2329,6 +2418,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void sendFileMessage(String filePath) {
        /* EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
         sendMessageTo(message);*/
+        if(friendStatus != 0)
+        {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Thread(new Runnable(){
             public void run(){
 

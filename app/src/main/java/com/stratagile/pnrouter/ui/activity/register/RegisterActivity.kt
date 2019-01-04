@@ -84,9 +84,6 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 closeProgressDialog()
             }
         } else {
-            runOnUiThread {
-                closeProgressDialog()
-            }
             ConstantValue.loginOut = false
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
@@ -152,35 +149,73 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         }
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
-        var newRouterEntity = RouterEntity()
-        newRouterEntity.routerId = registerRsp.params.routeId
-        newRouterEntity.userSn = registerRsp.params.userSn
-        newRouterEntity.username = createName.text.toString()
-        newRouterEntity.userId = registerRsp.params.userId
-        newRouterEntity.loginKey = userName3.text.toString();
-        newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
-        newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
-        var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-        newRouterEntity.routerName = "Router " + (localData.size + 1)
-        val myRouter = MyRouter()
-        myRouter.setType(0)
-        myRouter.setRouterEntity(newRouterEntity)
-        LocalRouterUtils.insertLocalAssets(myRouter)
-        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
-        var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-        var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-        ConstantValue.loginReq = login
-        if(ConstantValue.isWebsocketConnected)
-        {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+        if (registerRsp.params.retCode != 0) {
+            if (registerRsp.params.retCode == 1) {
+                runOnUiThread {
+                    toast("RouterId Error")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 2) {
+                runOnUiThread {
+                    toast("The two-dimensional code has been activated by other users.")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast("Error Verification Code")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast("Other Error")
+                    closeProgressDialog()
+                }
+            }
+            return
         }
-        else if(ConstantValue.isToxConnected)
-        {
-            var baseData = BaseData(2,login)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        if ("".equals(registerRsp.params.userId)) {
+            runOnUiThread {
+                toast("Too many users")
+                closeProgressDialog()
+            }
+        } else {
+            runOnUiThread {
+                closeProgressDialog()
+            }
+            var newRouterEntity = RouterEntity()
+            newRouterEntity.routerId = registerRsp.params.routeId
+            newRouterEntity.userSn = registerRsp.params.userSn
+            newRouterEntity.username = createName.text.toString()
+            newRouterEntity.userId = registerRsp.params.userId
+            newRouterEntity.loginKey = userName3.text.toString();
+            newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
+            newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+            var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+            newRouterEntity.routerName = "Router " + (localData.size + 1)
+            val myRouter = MyRouter()
+            myRouter.setType(0)
+            myRouter.setRouterEntity(newRouterEntity)
+            LocalRouterUtils.insertLocalAssets(myRouter)
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+            var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+            ConstantValue.loginReq = login
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(2,login)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }
         }
+
     }
 
     @Inject

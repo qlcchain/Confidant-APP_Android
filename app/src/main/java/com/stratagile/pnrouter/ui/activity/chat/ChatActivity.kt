@@ -51,6 +51,10 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp) {
+        chatFragment?.setFriendStatus(jQueryFriendRsp.params.retCode)
+    }
+
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         chatFragment?.updatFriendName(jUserInfoPushRsp)
     }
@@ -156,7 +160,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
 
     }
+    override fun queryFriend(FriendId :String) {
 
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = QueryFriendReq(userId!!, FriendId)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2,msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+        }
+    }
     /**
      * 获取软件盘的高度
      * @return
@@ -421,6 +437,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         view1.setLayoutParams(llp)
         parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(this@ChatActivity)
+
+        queryFriend(toChatUserID!!)
     }
 
     override fun initView() {

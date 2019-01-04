@@ -449,6 +449,11 @@
     <string name="Validationinformation">Validation information</string>
     <string name="Send_request">Send request</string>
     <string name="FriendRequest">Friend Request</string>
+    <string name="CRCerror">CRC error</string>
+    <string name="IDerror">ID error</string>
+    <string name="FileOpeningError">File Opening Error</string>
+    <string name="ExcessiveFileBlockLength">Excessive File Block Length</string>
+
 
 
 </resources>
