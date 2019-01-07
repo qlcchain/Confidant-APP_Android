@@ -115,7 +115,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         UserEntity friendUser = null;
         List<UserEntity> localFriendList = null;
-        if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
+        if(UserDataManger.myUserData != null && !lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
         {
             localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
             if(localFriendList.size() > 0)

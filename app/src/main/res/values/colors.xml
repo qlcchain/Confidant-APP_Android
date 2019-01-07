@@ -26,6 +26,7 @@
     <color name="color_efefef">#efefef</color>
     <color name="float_transparent">#00000000</color>
     <color name="regeisetInput"> #414141</color>
+    <color name="btnCenter">#474747</color>
 
 
 </resources>
