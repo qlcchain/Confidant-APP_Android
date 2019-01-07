@@ -130,5 +130,5 @@
         android:text="@string/next"
         android:textColor="@color/color_efefef"
 
-        android:textSize="@dimen/x40"/>
+        android:textSize="23sp"/>
 </RelativeLayout>

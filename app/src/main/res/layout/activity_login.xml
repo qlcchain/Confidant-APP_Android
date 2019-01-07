@@ -205,7 +205,7 @@
             android:paddingTop="@dimen/x36"
             android:text="@string/Login"
             android:textColor="@color/color_efefef"
-            android:textSize="@dimen/x40"
+            android:textSize="23sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

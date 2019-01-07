@@ -253,7 +253,7 @@
             android:paddingTop="@dimen/x16"
             android:text="@string/register"
             android:textColor="@color/color_efefef"
-            android:textSize="@dimen/x40"
+            android:textSize="23sp"
             app:layout_constraintBottom_toBottomOf="@+id/routerbg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
