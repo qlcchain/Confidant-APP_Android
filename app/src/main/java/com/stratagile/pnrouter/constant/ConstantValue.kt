@@ -18,7 +18,7 @@ object ConstantValue {
         var userFriendId = "userFriendId"
         var routerId = "routerId"
         var selfImageName = "selfImageName"
-        var msgId = ""
+        var deleteMsgId = ""
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
         var realKeyboardHeight = "realKeyboardHeight"

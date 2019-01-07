@@ -66,7 +66,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		Uri uri = getIntent().getParcelableExtra("uri");
 		localFilePath = getIntent().getExtras().getString("localUrl");
 		String msgId = getIntent().getExtras().getString("messageId");
-		EMLog.d(TAG, "show big msgId:" + msgId );
+		EMLog.d(TAG, "show big deleteMsgId:" + msgId );
 
 		//show the image if it exist in local path
 		if (uri != null && new File(uri.getPath()).exists()) {

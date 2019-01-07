@@ -24,7 +24,10 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.utils.SpUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -134,19 +137,24 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
                     switch (position)
                     {
                         case 0:
-                            DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
-                            if(ConstantValue.INSTANCE.isWebsocketConnected())
+                            String msgId = message.getMsgId();
+                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
+                            if(message.isAcked())
                             {
-                                AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
-                            }else if(ConstantValue.INSTANCE.isToxConnected())
-                            {
-                                BaseData baseData = new BaseData(msgData);
-                                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
+                                if(ConstantValue.INSTANCE.isWebsocketConnected())
+                                {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
+                                }else if(ConstantValue.INSTANCE.isToxConnected())
+                                {
+                                    BaseData baseData = new BaseData(msgData);
+                                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                }
+                            }else{
+                                EventBus.getDefault().post(new DeleteMsgEvent(msgId));
                             }
-                            String  aa = message.getMsgId();
-                            ConstantValue.INSTANCE.setMsgId(message.getMsgId());
                             break;
                         default:
                             break;

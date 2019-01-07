@@ -110,7 +110,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             }
 
-                            ConstantValue.INSTANCE.setMsgId(message.getMsgId());
+                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             break;
                         default:
                             break;

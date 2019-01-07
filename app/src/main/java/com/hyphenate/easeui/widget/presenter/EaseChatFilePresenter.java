@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
@@ -17,7 +16,6 @@ import com.hyphenate.easeui.utils.OpenFileUtil;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
-import com.hyphenate.util.FileUtils;
 import com.noober.menu.FloatMenu;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -25,8 +23,11 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -104,20 +105,25 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             getContext().startActivity(intent);
                             break;
                         case 1:
-                            DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
-                            if(ConstantValue.INSTANCE.isWebsocketConnected())
+                            String  msgId = message.getMsgId();
+                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
+                            if(message.isAcked())
                             {
-                                AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
-                            }else if(ConstantValue.INSTANCE.isToxConnected())
-                            {
-                                BaseData baseData = new BaseData(msgData);
-                                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                            }
+                                DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
+                                if(ConstantValue.INSTANCE.isWebsocketConnected())
+                                {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
+                                }else if(ConstantValue.INSTANCE.isToxConnected())
+                                {
+                                    BaseData baseData = new BaseData(msgData);
+                                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                }
 
-                            String  aa = message.getMsgId();
-                            ConstantValue.INSTANCE.setMsgId(message.getMsgId());
+                            }else{
+                                EventBus.getDefault().post(new DeleteMsgEvent(msgId));
+                            }
                             break;
                         default:
                             break;

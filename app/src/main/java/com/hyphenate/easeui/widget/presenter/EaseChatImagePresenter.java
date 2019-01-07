@@ -1,14 +1,11 @@
 package com.hyphenate.easeui.widget.presenter;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
 import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.EMCallBack;
@@ -16,10 +13,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMVoiceMessageBody;
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
-import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
 import com.noober.menu.FloatMenu;
@@ -165,7 +159,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
                             }
 
                             String  aa = message.getMsgId();
-                            ConstantValue.INSTANCE.setMsgId(message.getMsgId());
+                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             break;
                         default:
                             break;

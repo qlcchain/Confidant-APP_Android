@@ -116,7 +116,7 @@ public class EaseChatVideoPresenter extends EaseChatFilePresenter {
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                             }
                             String  aa = message.getMsgId();
-                            ConstantValue.INSTANCE.setMsgId(message.getMsgId());
+                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             break;
                         default:
                             break;

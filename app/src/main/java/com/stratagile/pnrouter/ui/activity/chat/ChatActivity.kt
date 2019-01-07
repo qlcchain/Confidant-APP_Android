@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
@@ -304,10 +305,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
         if (delMsgRsp.params.retCode == 0) {
-            chatFragment?.delMyMsg(delMsgRsp)
+            chatFragment?.delMyMsgOnSuccess(delMsgRsp.params.msgId.toString())
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
+        chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
+    }
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
 

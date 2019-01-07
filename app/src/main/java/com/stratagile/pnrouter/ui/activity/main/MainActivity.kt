@@ -130,7 +130,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
              var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
              var files_dir = this.filesDir.absolutePath + "/image/"
-             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.msgId, handler)*/
+             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.deleteMsgId, handler)*/
         }
     }
 

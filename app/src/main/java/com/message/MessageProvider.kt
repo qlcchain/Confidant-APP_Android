@@ -18,7 +18,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
     var conversationChangeListener : ConversationChangeListener? = null
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
         KLog.i(sendMsgRsp)
-//        var message = Message.createSendMessage(sendMsgRsp.params.msg, sendMsgRsp.params.fromId, sendMsgRsp.params.msgId, sendMsgRsp.params.toId)
+//        var message = Message.createSendMessage(sendMsgRsp.params.msg, sendMsgRsp.params.fromId, sendMsgRsp.params.deleteMsgId, sendMsgRsp.params.toId)
         var messages = userMessageList.get(sendMsgRsp.params.toId)
         if (messages == null) {
             messages = arrayListOf()

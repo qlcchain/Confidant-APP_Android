@@ -50,10 +50,10 @@ public class EaseDingMessageHelper {
 
     private static EaseDingMessageHelper instance;
 
-    // Map<msgId, IAckUserUpdateListener>
+    // Map<deleteMsgId, IAckUserUpdateListener>
     private Map<String, WeakReference<IAckUserUpdateListener>> listenerMap;
 
-    // LruCache<conversationId, LruCache<msgId, List<username>>>
+    // LruCache<conversationId, LruCache<deleteMsgId, List<username>>>
     private LruCache<String, LruCache<String, List<String>>> dataCache;
 
     private SharedPreferences dataPrefs;
