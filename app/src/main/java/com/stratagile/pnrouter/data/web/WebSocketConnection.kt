@@ -1,13 +1,18 @@
 package com.stratagile.pnrouter.data.web
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
+import com.stratagile.pnrouter.data.web.java.WsStatus
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
@@ -23,32 +28,44 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import javax.net.ssl.*
 
 class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val credentialsProvider: CredentialsProvider, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
 
     private val incomingRequests = LinkedList<BaseData>()
     private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
-
+    private val RECONNECT_INTERVAL = 1 * 1000    //重连自增步长
     private val wsUri: String
     private var isLocalLogin = false //是否本地路由器登录
-    private var client: WebSocket? = null
+    private var webSocketClient: WebSocket? = null
     private var keepAliveSender: KeepAliveSender? = null
-    private var reConnectThread: ReConnectThread? = null
+    //private var reConnectThread: ReConnectThread? = null
     private var attempts: Int = 0
     private var connected: Boolean = false
     private var reConnectTimeOut = false
     open var onMessageReceiveListener : OnMessageReceiveListener? = null
-    private var retryTime = 0
-    private var retryInterval = arrayListOf<Int>(1000, 2000, 3000, 5000, 8000)
+    private var reconnectCount = 0
+    private var retryInterval = arrayListOf<Int>(1000, 2000, 3000)
     private var ipAddress = ""
     private var filledUri = ""
     private var isNeedReConnect = true;  //客户端主动关闭不要重连
-
+    private var requestBuilder:Request.Builder?= null
+    private var mOkHttpClient: OkHttpClient? = null
+    private var mLock: Lock? = null
+    private var mCurrentStatus = WsStatus.DISCONNECTED     //websocket连接状态
+    private val wsMainHandler = Handler(Looper.getMainLooper())
+    private val reconnectRunnable = Runnable {
+        Log.i("websocket", "服务器重连接中...")
+        buildConnect()
+    }
     init {
         this.attempts = 0
         this.connected = false
-        reConnectThread = ReConnectThread()
+        this.mLock = ReentrantLock()
+        //reConnectThread = ReConnectThread()
+        //reConnectThread!!.begin()
         /*this.wsUri = httpUri.replace("https://", "wss://")
                 .replace("http://", "ws://")*/
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
@@ -73,7 +90,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = "wss://" + ipAddress + port
         ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
-        if (client == null) {
+        if (webSocketClient == null) {
             if (isWifiConnect()) {
                 isLocalLogin = true;
                 ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
@@ -86,30 +103,42 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             KLog.i("连接的地址为：${filledUri}")
             val socketFactory = createTlsSocketFactory(trustStore)
 
-            val okHttpClient = OkHttpClient.Builder()
-                    .sslSocketFactory(socketFactory.first)
-                    .hostnameVerifier(object : HostnameVerifier {
-                        override fun verify(hostname: String, session: SSLSession): Boolean {
-                            return true
-                        }
-                    })
+            if(mOkHttpClient == null)
+            {
+                mOkHttpClient = OkHttpClient.Builder()
+                        .sslSocketFactory(socketFactory.first)
+                        .hostnameVerifier(object : HostnameVerifier {
+                            override fun verify(hostname: String, session: SSLSession): Boolean {
+                                return true
+                            }
+                        })
 //                    .sslSocketFactory(socketFactory.first, socketFactory.second)
-                    .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
-                    .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
-                    .build()
-            val requestBuilder = Request.Builder().url(filledUri)
-
-            if (userAgent != null) {
+                        .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                        .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                        .build()
+                if (requestBuilder == null) {
+                    requestBuilder = Request.Builder().url(filledUri)
+                    if (userAgent != null) {
 //                requestBuilder.addHeader("X-Signal-Agent", userAgent)
-                requestBuilder.addHeader("Sec-WebSocket-Protocol", userAgent)
+                        requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
+                    }
+                }
+
+            }
+            listener?.onConnecting()
+            this.connected = false
+            mOkHttpClient!!.dispatcher().cancelAll()
+            try {
+                mLock!!.lockInterruptibly()
+                try {
+                    this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
+                } finally {
+                    mLock!!.unlock()
+                }
+            } catch (e: InterruptedException) {
             }
 
-            listener?.onConnecting()
-
-            this.connected = false
-            this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
-
-            Log.i("websocket：this.client1",""+ (this.client == null))
+            Log.i("websocket：this.client1",""+ (this.webSocketClient == null))
         }
     }
 
@@ -118,10 +147,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     fun disconnect(isShutDown : Boolean) {
         Log.w(TAG, "WSC disconnect()...")
+        setCurrentStatus(WsStatus.DISCONNECTED)
         this.isShutDown = isShutDown
-        if (client != null) {
-            client!!.close(1000, "OK")
-            client = null
+        if (webSocketClient != null) {
+            webSocketClient!!.close(1000, "OK")
+            webSocketClient = null
             connected = false
         }
 
@@ -135,8 +165,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         Log.w(TAG, "WSC disconnect()...")
         this.isShutDown = isShutDown
         isNeedReConnect = false;
-        if (client != null) {
-            client!!.close(1000, "OK")
+        if (webSocketClient != null) {
+            webSocketClient!!.close(1000, "OK")
             connected = false
         }
 
@@ -148,17 +178,17 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)
     fun readRequest(timeoutMillis: Long): BaseData {
-        if (client == null) {
+        if (webSocketClient == null) {
             throw IOException("Connection closed!")
         }
 
         val startTime = System.currentTimeMillis()
 
-        while (client != null && incomingRequests.isEmpty() && elapsedTime(startTime) < timeoutMillis) {
+        while (webSocketClient != null && incomingRequests.isEmpty() && elapsedTime(startTime) < timeoutMillis) {
 //            Util.wait(Object(), Math.max(1, timeoutMillis - elapsedTime(startTime)))
         }
 
-        return if (incomingRequests.isEmpty() && client == null)
+        return if (incomingRequests.isEmpty() && webSocketClient == null)
             throw IOException("Connection closed!")
         else if (incomingRequests.isEmpty())
             throw TimeoutException("Timeout exceeded")
@@ -171,11 +201,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         {
             //Log.i("websocketConnection", message)
         }
-        if (client == null || !connected) {
+        if (webSocketClient == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
         }
-        if (!client!!.send(message!!)) {
+        if (!webSocketClient!!.send(message!!)) {
 //            throw IOException("Write failed!")
             return false
         } else {
@@ -190,7 +220,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     @Throws(IOException::class)
     private fun sendKeepAlive() {
-        if (keepAliveSender != null && client != null && !ConstantValue.loginOut) {
+        if (keepAliveSender != null && webSocketClient != null && !ConstantValue.loginOut) {
             //todo keepalive message
             var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
             LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
@@ -201,17 +231,21 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         }
     }
 
-//    @Synchronized
+    //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
-        if (client != null && keepAliveSender == null) {
+        if (webSocketClient != null && keepAliveSender == null) {
+            setCurrentStatus(WsStatus.CONNECTED)
+            this.webSocketClient = webSocket
             KLog.i("onConnected()")
-            KLog.i(client!!.request().url())
-            LogUtil.addLog("连接成功：${client!!.request().url()}")
+            KLog.i(webSocketClient!!.request().url())
+            LogUtil.addLog("连接成功：${webSocketClient!!.request().url()}")
             attempts = 0
             connected = true
-            retryTime = 0
+            reconnectCount = 0
+           /* Log.w(TAG, "ReConnectThread_onOpen_id:"+reConnectThread!!.getId())
             reConnectThread!!.shutdown()
             reConnectThread = null
+            Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())*/
             keepAliveSender = KeepAliveSender()
             keepAliveSender!!.start()
 
@@ -268,7 +302,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClosed()...")
+        Log.w(TAG, "onClosed()..."+code+"+"+reason)
         this.connected = false
 
 //        val iterator = outgoingRequests.entries.iterator()
@@ -286,24 +320,44 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         listener?.onDisconnected()
 
+        /*if(reConnectThread == null)
+        {
             reConnectThread = ReConnectThread()
+            Log.w(TAG, "ReConnectThread_"+"new ReConnectThread"+reConnectThread!!.getId())
+        }else{
+            Log.w(TAG, "ReConnectThread_"+"old ReConnectThread"+reConnectThread!!.getId())
+        }*/
+
 //        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
-        if (client != null) {
-            client!!.close(1000, "OK")
-//            client!!.cancel()
-            client = null
+        if (webSocketClient != null) {
+            webSocketClient!!.close(1000, "OK")
+//            webSocketClient!!.cancel()
+            webSocketClient = null
             connected = false
         }
-        if (reConnectThread != null && !isShutDown && !isLocalLogin && isNeedReConnect) {
+        if(isNeedReConnect)
+        {
+            reconnectCount ++
+            Log.i(TAG, "ReConnectThread_"+"reconnectCount:[$reconnectCount]")
+            val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
+            wsMainHandler.postDelayed(reconnectRunnable, delay)
+
+            if(reconnectCount > 2)
+            {
+                reconnectCount = 0
+            }
+        }
+        /*if (reConnectThread != null && isNeedReConnect) {
             isLocalLogin = false;
+            Log.w(TAG, "ReConnectThread_reStart_id:"+reConnectThread!!.getId())
             reConnectThread?.reStart()
         }else{
             filledUri = wsUri  //局域登录不了立即跳转外网
-            if (client != null) {
-//                        client!!.close(1000, "OK")
-                client!!.cancel()
-                client = null
+            if (webSocketClient != null) {
+//                        webSocketClient!!.close(1000, "OK")
+                webSocketClient!!.cancel()
+                webSocketClient = null
                 connected = false
             }
             if(isNeedReConnect)
@@ -312,15 +366,43 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 isNeedReConnect = true
             }
 
-        }
+        }*/
 
 //        notifyAll()
     }
 
-    fun reConnect() {
-        Log.w(TAG, "WSC reConnect()...")
+     fun buildConnect() {
+        if (!isNetworkConnected(AppConfig.instance)) {
+            setCurrentStatus(WsStatus.DISCONNECTED)
+        }
+         reConnect()
+        /*when (getCurrentStatus()) {
+            WsStatus.CONNECTED, WsStatus.CONNECTING -> {
+            }
+            else -> {
+                setCurrentStatus(WsStatus.CONNECTING)
 
-        if (client == null) {
+            }
+        }*/
+    }
+
+    //检查网络是否连接
+    private fun isNetworkConnected(context: Context?): Boolean {
+        if (context != null) {
+            val mConnectivityManager = context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            @SuppressLint("MissingPermission") val mNetworkInfo = mConnectivityManager.activeNetworkInfo
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable
+            }
+        }
+        return false
+    }
+    fun reConnect() {
+        setCurrentStatus(WsStatus.RECONNECT)
+        Log.w(TAG, "WSC reConnect()...")
+        KLog.i("ReConnectThread_websocket_reConnect"+webSocketClient)
+        /*if (webSocketClient == null) {
 //            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
             val socketFactory = createTlsSocketFactory(trustStore)
 
@@ -345,29 +427,66 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             listener?.onConnecting()
 
             this.connected = false
-            this.client = okHttpClient.newWebSocket(requestBuilder.build(), this)
+            this.webSocketClient = okHttpClient.newWebSocket(requestBuilder.build(), this)
             ConstantValue.isWebsocketReConnect = true
-            Log.i("websocket：this.client2",""+ (this.client == null))
+            Log.i("websocket：this.client2",""+ (this.webSocketClient == null))
+        }*/
+        val socketFactory = createTlsSocketFactory(trustStore)
+        if(mOkHttpClient == null)
+        {
+            mOkHttpClient = OkHttpClient.Builder()
+                    .sslSocketFactory(socketFactory.first)
+                    .hostnameVerifier(object : HostnameVerifier {
+                        override fun verify(hostname: String, session: SSLSession): Boolean {
+                            return true
+                        }
+                    })
+//                    .sslSocketFactory(socketFactory.first, socketFactory.second)
+                    .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                    .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
+                    .build()
+            if (requestBuilder == null) {
+                requestBuilder = Request.Builder().url(filledUri)
+                if (userAgent != null) {
+//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
+                    requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
+                }
+            }
+
         }
+        listener?.onConnecting()
+        this.connected = false
+        mOkHttpClient!!.dispatcher().cancelAll()
+        try {
+            mLock!!.lockInterruptibly()
+            try {
+                this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
+            } finally {
+                mLock!!.unlock()
+            }
+        } catch (e: InterruptedException) {
+        }
+
+        Log.i("websocket：this.client1",""+ (this.webSocketClient == null))
     }
 
     @Synchronized
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        KLog.i("onFailure()")
+        KLog.i("ReConnectThread_onFailure()")
         KLog.i( t!!.printStackTrace())
 
         if (response != null && (response.code() == 401 || response.code() == 403)) {
             if (listener != null) listener!!.onAuthenticationFailure()
         }
 
-        if (client != null) {
+        if (webSocketClient != null) {
             onClosed(webSocket, 1000, "OK")
         }
     }
 
     @Synchronized
     override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClosing()!...")
+        Log.w(TAG, "onClosing()!..."+code+"_"+reason)
         webSocket!!.close(1000, "OK")
     }
 
@@ -437,43 +556,53 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         private val stop = AtomicBoolean(false)
 
         override fun run() {
-            Log.w(TAG, "beginreConnect..."+(!stop.get() &&! reConnectTimeOut))
+            Log.w(TAG, "ReConnectThread_"+"beginreConnect..."+(!stop.get() &&! reConnectTimeOut)+"_id:"+this.getId())
             while (!stop.get() &&! reConnectTimeOut) {
                 try {
-                    if (retryTime > retryInterval.size) {
+                    if (reconnectCount > retryInterval.size) {
                         reConnectTimeOut = true
                         return
                     }
-                    if(retryTime > retryInterval.size -1)
+                    if(reconnectCount > retryInterval.size -1)
                     {
-                        retryTime = 0;
+                        KLog.i("ReConnectThread_重新计数……")
+                        reconnectCount = 0;
                     }
-                    Log.w(TAG, "reConnect1..." + retryInterval[retryTime])
-                    Thread.sleep(retryInterval[retryTime].toLong())
-                    retryTime++
-                    Log.w(TAG, "reConnect2...")
+                    Log.w(TAG, "ReConnectThread_reConnect1..." + retryInterval[reconnectCount]+"_id:"+this.getId())
+                    Thread.sleep(retryInterval[reconnectCount].toLong())
+                    Log.w(TAG, "ReConnectThread_afterSleeep..." + retryInterval[reconnectCount]+"_id:"+this.getId()+"_"+this.isInterrupted()+"_"+stop.get())
+                    if (this.isInterrupted() || stop.get()) {
+                        reconnectCount = 0
+                        KLog.i("ReConnectThread_中断任务"+"_id:"+this.getId())
+                        return;
+                    }
+                    reconnectCount++
+                    Log.w(TAG, "ReConnectThread_reConnect2..."+"_id:"+this.getId())
                     if (connected) {
-                        shutdown()
-                        retryTime = 0
-                        KLog.i("websocket已经连接上了，此处将继续重连的逻辑清除")
+                        //shutdown()
+                        reconnectCount = 0
+                        KLog.i("ReConnectThread_websocket已经连接上了，此处将继续重连的逻辑清除")
                         return
                     }
-                    //测试服务器，测试用
-                    if (retryTime >=3) {
+
+                    /*//测试服务器，测试用
+                    if (reconnectCount >=3) {
                         KLog.i("重连次数过多，切换公网服务器连接。。")
                         filledUri = wsUri
-                        /*client!!.cancel()
-                        client = null
+                        *//*webSocketClient!!.cancel()
+                        webSocketClient = null
                         connected = false
                         listener?.onConnectFail()
-                        return*/
-                    }
-                    if (client != null) {
-//                        client!!.close(1000, "OK")
-                        client!!.cancel()
-                        client = null
+                        return*//*
+                    }*/
+                    KLog.i("ReConnectThread_websocket继续重连"+webSocketClient)
+                    if (webSocketClient != null) {
+//                        webSocketClient!!.close(1000, "OK")
+                        webSocketClient!!.cancel()
+                        webSocketClient = null
                         connected = false
                     }
+                    KLog.i("ReConnectThread_websocket继续重连2")
                     reConnect()
                 } catch (e: Throwable) {
                     Log.w(TAG, e)
@@ -483,15 +612,37 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         }
 
         fun shutdown() {
+            Log.w(TAG, "ReConnectThread_shutdown_id:"+this.getId())
             stop.set(true)
+            try {
+                //this.interrupt()
+            }catch (e:Exception)
+            {
+
+            }
+
+        }
+        fun begin()
+        {
+            /*if(!reConnectThread!!.isAlive)
+                reConnectThread!!.start()*/
         }
         fun reStart() {
             stop.set(false)
+            Log.w(TAG, "ReConnectThread_reStart_id:"+this.getId())
             reConnectTimeOut = false
             run()
+
         }
     }
 
+    fun getCurrentStatus(): Int {
+        return mCurrentStatus
+    }
+
+    fun setCurrentStatus(currentStatus: Int) {
+        this.mCurrentStatus = currentStatus
+    }
     companion object {
 
         private val TAG = WebSocketConnection::class.java.simpleName

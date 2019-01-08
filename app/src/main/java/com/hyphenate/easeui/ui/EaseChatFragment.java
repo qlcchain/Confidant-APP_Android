@@ -876,12 +876,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             FileUtil.deleteFile(localUrl);
         }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
         {
-            EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
+            EMVideoMessageBody imgBody = (EMVideoMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
         }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
         {
-            EMVideoMessageBody imgBody = (EMVideoMessageBody) forward_msg.getBody();
+            EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
         }else if(forward_msg.getType().equals(EMMessage.Type.FILE) )
