@@ -63,7 +63,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        LogUtil.addLog("app version :", BuildConfig.VERSION_NAME)
+        LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         var nickSouceName = String(RxEncodeTool.base64Decode("")).toLowerCase()
         var this_ = this
         handler = object : Handler() {
