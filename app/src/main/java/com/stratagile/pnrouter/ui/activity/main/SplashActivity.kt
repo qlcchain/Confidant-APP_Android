@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -14,10 +15,7 @@ import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
-import com.stratagile.pnrouter.utils.AESCipher
-import com.stratagile.pnrouter.utils.CountDownTimerUtils
-import com.stratagile.pnrouter.utils.MobileSocketClient
-import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.*
 import javax.inject.Inject
 
 /**
@@ -65,6 +63,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
+        LogUtil.addLog("app version :", BuildConfig.VERSION_NAME)
         var nickSouceName = String(RxEncodeTool.base64Decode("")).toLowerCase()
         var this_ = this
         handler = object : Handler() {
