@@ -97,14 +97,14 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
             2 -> {
                 if(isCanShotNetCoonect)
                 {
-                    showProgressNoCanelDialog("network reconnecting...")
+                    showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }
             3 -> {
                 if(isCanShotNetCoonect)
                 {
-                    showProgressNoCanelDialog("network reconnecting...")
+                    showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }

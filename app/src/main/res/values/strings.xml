@@ -455,6 +455,8 @@
     <string name="IDerror">ID error</string>
     <string name="FileOpeningError">File Opening Error</string>
     <string name="ExcessiveFileBlockLength">Excessive File Block Length</string>
+    <string name="network_reconnecting">network reconnecting...</string>
+
 
 
 

@@ -886,7 +886,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if(isCanShotNetCoonect)
                 {
                     closeProgressDialog()
-                    showProgressNoCanelDialog("network reconnecting...")
+                    showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }
@@ -894,7 +894,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if(isCanShotNetCoonect)
                 {
                     closeProgressDialog()
-                    showProgressNoCanelDialog("network reconnecting...")
+                    showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }
