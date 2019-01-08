@@ -336,6 +336,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             webSocketClient = null
             connected = false
         }
+        Log.i(TAG, "ReConnectThread_"+"isNeedReConnect:"+isNeedReConnect)
         if(isNeedReConnect)
         {
             reconnectCount ++
@@ -347,6 +348,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             {
                 reconnectCount = 0
             }
+        }else{
+            isNeedReConnect = true
         }
         /*if (reConnectThread != null && isNeedReConnect) {
             isLocalLogin = false;
@@ -480,7 +483,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         if (response != null && (response.code() == 401 || response.code() == 403)) {
             if (listener != null) listener!!.onAuthenticationFailure()
         }
-
+        isNeedReConnect = true;
         if (webSocketClient != null) {
             onClosed(webSocket, 1000, "OK")
         }
