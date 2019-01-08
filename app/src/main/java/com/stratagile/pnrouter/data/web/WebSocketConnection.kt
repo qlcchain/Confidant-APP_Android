@@ -456,10 +456,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         }
         listener?.onConnecting()
         this.connected = false
+        ConstantValue.isWebsocketReConnect = true
         mOkHttpClient!!.dispatcher().cancelAll()
         try {
             mLock!!.lockInterruptibly()
             try {
+
                 this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
             } finally {
                 mLock!!.unlock()
