@@ -220,7 +220,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
             ConstantValue.currentRouterId = lastLoginRouterId;
 
-            if(WiFiUtil.isWifiConnect())
+            /*if(WiFiUtil.isWifiConnect())
             {
                 var count =0;
                 KLog.i("测试计时器" + count)
@@ -270,7 +270,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                                 }
                                             }
                                         })
-                                       /* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                                       *//* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
                                         if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                         {
                                             ConstantValue.curreantNetworkType = "WIFI"
@@ -284,7 +284,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                             var intent = Intent(AppConfig.instance, ToxService::class.java)
                                             AppConfig.instance.startService(intent)
                                             Thread.currentThread().interrupt(); //方法调用终止线程
-                                        }*/
+                                        }*//*
                                     }
                                     break;
                                 }
@@ -341,7 +341,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                     }
                                 }
                             })
-                           /* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
+                           *//* var httpData = HttpClient.httpGet(ConstantValue.httpUrl + ConstantValue.currentRouterId);
 
                             if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                             {
@@ -354,12 +354,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 LogUtil.addLog("P2P启动连接:","SplashActivity")
                                 var intent = Intent(AppConfig.instance, ToxService::class.java)
                                 AppConfig.instance.startService(intent)
-                            }*/
+                            }*//*
                         }
                     }).start()
 
                 }
-            }
+            }*/
 
             //System.out.println(ByteOrder.nativeOrder());
             // 权限申请成功回调。

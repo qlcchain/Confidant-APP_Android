@@ -141,6 +141,7 @@
     <string name="diagnose">Diagnose</string>
     <string name="push_nick">IOS offline push nick</string>
     <string name="Current_version">Current version</string>
+    <string name="version">version:</string>
     <string name="Not_Set">Not set</string>
     <string name="Upload_the_log">Uploading the log</string>
     <string name="The_new_group_chat">Create new group</string>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -54,6 +55,7 @@ class MyFragment : BaseFragment(), MyContract.View {
             startActivity(Intent(activity, QRCodeActivity::class.java))
         }
         status.text = SpUtil.getString(activity!!, ConstantValue.status, "")
+        version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
         avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)

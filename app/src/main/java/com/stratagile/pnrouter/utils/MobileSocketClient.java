@@ -29,6 +29,7 @@ public class MobileSocketClient {
     private WifiManager.MulticastLock multicastLock;
     private DatagramSocket socket;
     private List<AsyncTask> asyncList= new ArrayList<>();
+    private List<Thread> threadList= new ArrayList<>();
     public static final int MSG_UPD_DATA = 104;
 
     private MobileSocketClient() {
@@ -93,7 +94,7 @@ public class MobileSocketClient {
 
     public void receive ()
     {
-        new Thread(new Runnable() {
+        Thread temp = new Thread(new Runnable() {
             @Override
             public void run() {
                 String message ="";
@@ -106,20 +107,39 @@ public class MobileSocketClient {
                     DatagramPacket packet = new DatagramPacket(data, data.length);
                     //receive()是阻塞方法，会等待客户端发送过来的信息
                     while(true){
-                        socket.receive(packet);
+                        try
+                        {
+                            socket.receive(packet);
+                        }catch (Exception e ) {
+                            if(socket != null)
+                            {
+                                socket.close();
+                                socket = null;
+                            }
+                            System.out.println( "Thread interrupted..." );
+                            break;
+                        }
                         String dataStr = new String(packet.getData(), 0, packet.getLength());
                         if(!dataStr.contains("QLC"))
                             message = dataStr;
                         count ++;
                         if(count >= 3)
                         {
-                            socket.close();
-                            socket = null;
-                        }else{
-                            if(!message.equals(""))
+                            if(socket != null)
                             {
                                 socket.close();
                                 socket = null;
+                            }
+
+                        }else{
+                            if(!message.equals(""))
+                            {
+                                if(socket != null)
+                                {
+                                    socket.close();
+                                    socket = null;
+                                }
+
                             }
                         }
                         System.out.println("ipdizhi:"+message);
@@ -143,7 +163,9 @@ public class MobileSocketClient {
                 }
 
             }
-        }).start();
+        });
+        temp.start();
+        threadList.add(temp);
     }
     public void destroy()
     {
@@ -159,6 +181,28 @@ public class MobileSocketClient {
             System.out.println("asyncList"+asyncList.get(i).isCancelled());
         }
         asyncList = new ArrayList<>();
+
+        try{
+            System.out.println("threadList leng"+ threadList.size());
+            for (int i = 0 ; i < threadList.size() ;i++)
+            {
+                if(threadList.get(i) != null)
+                {
+                    threadList.get(i).interrupt();
+                }
+            }
+            for (int i = 0 ; i < threadList.size() ;i++)
+            {
+                System.out.println("threadList"+threadList.get(i).isInterrupted()+"_"+threadList.get(i).isAlive());
+                Thread aa= threadList.get(i);
+                aa = null;
+            }
+            threadList = new ArrayList<>();
+        }catch (Exception e)
+        {
+
+        }
+
     }
 
 }

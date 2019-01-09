@@ -124,7 +124,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     /*runOnUiThread {
                         routerNameTips.text = newRouterEntity.routerName
                     }*/
-                    EventBus.getDefault().post(NameChange(routerEntity.routerName))
+                    EventBus.getDefault().post(NameChange(routerEntity.routerName,routerEntity.loginKey))
                 }else{
                     var newRouterEntity = RouterEntity()
                     newRouterEntity.routerId = recoveryRsp.params.routeId
@@ -178,9 +178,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             runOnUiThread()
                             {
                                 routerNameTips.text = i.routerName
+                                loginKey.setText(i.loginKey)
                             }
                             ConstantValue.currentRouterIp = ""
-                            ConstantValue.scanRouterId = routerId;
+                            //ConstantValue.scanRouterId = routerId;
                             isClickLogin = false
                             getServer(routerId,userSn,true)
                         }
@@ -387,6 +388,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNameChange(nameChange: NameChange) {
         routerNameTips.text = nameChange.name
+        loginKey.setText(nameChange.loginkey)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
@@ -833,13 +835,21 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     {
                                         println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
                                         //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                        if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
                                         {
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                             ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                            break;
+                                        }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
+                                        {
+                                            ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.port= ":18006"
+                                            ConstantValue.filePort = ":18007"
+                                            ConstantValue.currentRouterId = routerId
+                                            ConstantValue.currentRouterSN =  userSn
                                             break;
                                         }
 
@@ -848,19 +858,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 index ++
 
                             }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals("") && !isStartWebsocket)
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
-                                isFromScan = true
-                                if(ConstantValue.isHasWebsocketInit)
+                                if(isFromScan)
                                 {
-                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                }else{
-                                    ConstantValue.isHasWebsocketInit = true
-                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                    if(ConstantValue.isHasWebsocketInit)
+                                    {
+                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                    }else{
+                                        ConstantValue.isHasWebsocketInit = true
+                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                    }
+                                    isStartWebsocket = true
+                                    AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                 }
-                                AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                isStartWebsocket = true
+
                             }
                         }
 
@@ -949,7 +962,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 loginKey.setText("")
                             }
                             ConstantValue.currentRouterIp = ""
-                            ConstantValue.scanRouterId = routerId;
+                            //ConstantValue.scanRouterId = routerId;
                             //MessageRetrievalService.stopThisService(this_)
                             if(AppConfig.instance.messageReceiver != null)
                                 AppConfig.instance.messageReceiver!!.close()
@@ -1083,9 +1096,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean)
     {
-        MobileSocketClient.getInstance().destroy()
-        closeProgressDialog()
-        showProgressNoCanelDialog("")
+        runOnUiThread {
+            closeProgressDialog()
+            showProgressNoCanelDialog("")
+        }
         if(WiFiUtil.isWifiConnect())
         {
             var count =0;
@@ -1102,6 +1116,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 runOnUiThread {
                                     closeProgressDialog()
                                 }
+                                KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
@@ -1126,6 +1141,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
+                                                    KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                      AppConfig.instance.messageReceiver!!.loginBackListener = this*/
                                                     runOnUiThread {
@@ -1151,6 +1167,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         count ++;
                         MobileSocketClient.getInstance().init(handler,this)
                         var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
+                        MobileSocketClient.getInstance().destroy()
                         MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                         MobileSocketClient.getInstance().receive()
                         KLog.i("测试计时器" + count)
@@ -1185,6 +1202,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                         ConstantValue.currentRouterId = routerId
                                         ConstantValue.currentRouterSN =  userSn
+                                        KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                         /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                          AppConfig.instance.messageReceiver!!.loginBackListener = this*/
                                         runOnUiThread {
@@ -1232,7 +1250,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun getScanPermissionSuccess() {
-        showProgressNoCanelDialog("wait...")
+        showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
@@ -1353,7 +1371,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     ConstantValue.lastRouterId =   ConstantValue.currentRouterId
                     ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
 
-
+                    isFromScan = true
                     ConstantValue.currentRouterIp = ""
                     if(WiFiUtil.isWifiConnect())
                     {
@@ -1371,7 +1389,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }else{
-                                            isFromScan = true
+
                                             OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
                                                 override fun onFailure( e :Exception) {
                                                     startToxAndRecovery()
@@ -1420,6 +1438,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     count ++;
                                     MobileSocketClient.getInstance().init(handler,this)
                                     var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                    MobileSocketClient.getInstance().destroy()
                                     MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                     MobileSocketClient.getInstance().receive()
                                     KLog.i("测试计时器" + count)
@@ -1431,7 +1450,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }else{
                         Thread(Runnable() {
                             run() {
-                                isFromScan = true
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
                                         startToxAndRecovery()

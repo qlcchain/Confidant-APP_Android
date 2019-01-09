@@ -395,7 +395,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                 }
                                 index ++
                             }
-                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals("") && !isStartWebsocket)
+                            if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
                                 if(isHasConnect)
@@ -639,6 +639,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     count ++;
                                     MobileSocketClient.getInstance().init(handler,this)
                                     var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                    MobileSocketClient.getInstance().destroy()
                                     MobileSocketClient.getInstance().send("QLC"+toxIdMi)
                                     MobileSocketClient.getInstance().receive()
                                     KLog.i("测试计时器" + count)

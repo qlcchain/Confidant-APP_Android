@@ -116,28 +116,26 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                         .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                         .build()
-                if (requestBuilder == null) {
-                    requestBuilder = Request.Builder().url(filledUri)
-                    if (userAgent != null) {
+            }
+            requestBuilder = Request.Builder().url(filledUri)
+            if (userAgent != null) {
 //                requestBuilder.addHeader("X-Signal-Agent", userAgent)
-                        requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
-                    }
-                }
-
+                requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
             }
             listener?.onConnecting()
             this.connected = false
             mOkHttpClient!!.dispatcher().cancelAll()
-            try {
+            /*try {
                 mLock!!.lockInterruptibly()
                 try {
-                    this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
+
                 } finally {
                     mLock!!.unlock()
                 }
             } catch (e: InterruptedException) {
-            }
-
+                e.printStackTrace()
+            }*/
+            this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
             Log.i("websocket：this.client1",""+ (this.webSocketClient == null))
         }
     }
@@ -242,10 +240,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             attempts = 0
             connected = true
             reconnectCount = 0
-           /* Log.w(TAG, "ReConnectThread_onOpen_id:"+reConnectThread!!.getId())
-            reConnectThread!!.shutdown()
-            reConnectThread = null
-            Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())*/
+            /* Log.w(TAG, "ReConnectThread_onOpen_id:"+reConnectThread!!.getId())
+             reConnectThread!!.shutdown()
+             reConnectThread = null
+             Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())*/
             keepAliveSender = KeepAliveSender()
             keepAliveSender!!.start()
 
@@ -374,11 +372,11 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 //        notifyAll()
     }
 
-     fun buildConnect() {
+    fun buildConnect() {
         if (!isNetworkConnected(AppConfig.instance)) {
             setCurrentStatus(WsStatus.DISCONNECTED)
         }
-         reConnect()
+        reConnect()
         /*when (getCurrentStatus()) {
             WsStatus.CONNECTED, WsStatus.CONNECTING -> {
             }
@@ -448,30 +446,29 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .build()
-            if (requestBuilder == null) {
-                requestBuilder = Request.Builder().url(filledUri)
-                if (userAgent != null) {
-//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
-                    requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
-                }
-            }
 
+
+        }
+        requestBuilder = Request.Builder().url(filledUri)
+        if (userAgent != null) {
+//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
+            requestBuilder!!.addHeader("Sec-WebSocket-Protocol", userAgent)
         }
         listener?.onConnecting()
         this.connected = false
         ConstantValue.isWebsocketReConnect = true
         mOkHttpClient!!.dispatcher().cancelAll()
-        try {
+        /*try {
             mLock!!.lockInterruptibly()
             try {
 
-                this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
+
             } finally {
                 mLock!!.unlock()
             }
         } catch (e: InterruptedException) {
-        }
-
+        }*/
+        this.webSocketClient = mOkHttpClient!!.newWebSocket(requestBuilder!!.build(), this)
         Log.i("websocket：this.client1",""+ (this.webSocketClient == null))
     }
 
