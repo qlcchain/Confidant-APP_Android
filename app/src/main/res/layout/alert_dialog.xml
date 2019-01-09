@@ -4,7 +4,7 @@
     android:id="@+id/loading"
     android:layout_width="290dp"
     android:layout_height="wrap_content"
-    android:background="@color/color_f2f2f2"
+    android:background="@drawable/btn_color_f2f2f2"
     android:gravity="center"
     android:layout_gravity="center"
     android:orientation="vertical"
@@ -56,18 +56,20 @@
             android:id="@+id/cancel_button"
             android:layout_width="0px"
             android:layout_weight="1"
-            android:background="@color/mainColor"
-            android:textColor="@color/white"
+            android:background="@drawable/btn_white"
+            android:textColor="@color/mainColor"
             android:layout_height="31dp"
             android:layout_marginRight="10dp"
+            android:textAllCaps="false"
             android:text="Cancel" />
 
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="20dp"
             android:layout_weight="1"
-            android:background="@color/white"
+            android:background="@drawable/btn_white"
             android:textColor="@color/mainColor"
+            android:textAllCaps="false"
             android:layout_height="31dp"
             android:text="Confirm" />
     </LinearLayout>

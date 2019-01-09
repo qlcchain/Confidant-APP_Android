@@ -78,7 +78,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:textColor="@color/main_color"
-            android:background="@color/white"
+            android:background="@drawable/btn_white"
             android:text="Save to Phone"
             android:gravity="center"
             android:layout_height="@dimen/x85" />
@@ -92,7 +92,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="@color/white"
-            android:background="@color/main_color"
+            android:background="@drawable/btn_maincolor"
             android:text="Share"
             android:layout_height="@dimen/x85" />
     </LinearLayout>
