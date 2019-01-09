@@ -185,7 +185,7 @@
             android:textColor="@color/white"
             android:textColorHint="@color/color_808080"
             android:textSize="@dimen/x31"
-            android:theme="@style/MyEditText"
+            android:background="@drawable/edittext_bg_selector"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.494"
             app:layout_constraintStart_toStartOf="parent"
