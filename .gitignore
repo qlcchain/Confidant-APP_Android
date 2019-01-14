@@ -21,3 +21,6 @@
 /app/release/output.json
 /.idea
 /appTox/build
+/qrcodecore/build
+/zbar/build
+/zxing/build
