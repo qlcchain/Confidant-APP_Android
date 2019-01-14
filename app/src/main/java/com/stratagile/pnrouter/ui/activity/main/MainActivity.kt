@@ -25,6 +25,7 @@ import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
 import com.message.MessageProvider
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -977,6 +978,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            var result = data!!.getStringExtra("result")
+            if(!result.contains(","))
+            {
+                toast(getString(R.string.codeerror))
+                return;
+            }
             viewModel.toAddUserId.value = data!!.getStringExtra("result")
             return
         }

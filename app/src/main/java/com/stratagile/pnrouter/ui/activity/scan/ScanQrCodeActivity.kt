@@ -24,7 +24,7 @@ import com.stratagile.pnrouter.ui.activity.scan.contract.ScanQrCodeContract
 import com.stratagile.pnrouter.ui.activity.scan.module.ScanQrCodeModule
 import com.stratagile.pnrouter.ui.activity.scan.presenter.ScanQrCodePresenter
 import com.stratagile.pnrouter.utils.RxPhotoTool
-import kotlinx.android.synthetic.main.activity_scan_qr_code.*
+import kotlinx.android.synthetic.main.activity_scan_zbar_code.*
 import java.io.IOException
 import javax.inject.Inject
 
@@ -36,6 +36,9 @@ import javax.inject.Inject
  */
 
 class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.Delegate {
+    override fun onCameraAmbientBrightnessChanged(isDark: Boolean) {
+
+    }
 
     @Inject
     internal lateinit var mPresenter: ScanQrCodePresenter
@@ -44,7 +47,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
     }
 
     override fun initView() {
-        setContentView(R.layout.activity_scan_qr_code)
+        setContentView(R.layout.activity_scan_zbar_code)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         mZXingView.setDelegate(this)
         //请求Camera权限 与 文件读写 权限

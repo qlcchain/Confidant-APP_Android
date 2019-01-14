@@ -9,6 +9,7 @@ import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import com.message.UserProvider
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -287,6 +288,12 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            var result = data!!.getStringExtra("result")
+            if(!result.contains(","))
+            {
+                toast(getString(R.string.codeerror))
+                return;
+            }
             viewModel.toAddUserId.value = data!!.getStringExtra("result")
             return
         }

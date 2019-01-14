@@ -1,0 +1,52 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion ANDROID_BUILD_SDK_VERSION as int
+
+    defaultConfig {
+        minSdkVersion ANDROID_BUILD_MIN_SDK_VERSION as int
+        targetSdkVersion ANDROID_BUILD_TARGET_SDK_VERSION as int
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+    }
+
+
+    def isBuildSo = false
+    if (isBuildSo) { // 构建生成 so 文件
+        sourceSets {
+            main {
+                jniLibs.srcDirs = []
+            }
+        }
+        externalNativeBuild {
+            ndkBuild {
+                path 'src/main/jni/Android.mk'
+            }
+        }
+    } else { // 生成 so 文件后，打包时直接使用生成的 so
+        sourceSets {
+            main {
+                jni.srcDirs = []
+            }
+        }
+        delete(file('.externalNativeBuild'), file('src/main/libs'), file('src/main/obj'))
+    }
+}
+
+dependencies {
+    if (hasProperty("publishAar")) {
+        compile "cn.bingoogolapple:bga-qrcode-core:${VERSION_NAME}"
+    } else {
+        api project(':qrcodecore')
+    }
+}
+
+// ./gradlew :zbar:clean :zbar:build :zbar:bintrayUpload -PpublishAar
+if (hasProperty("publishAar")) {
+    apply from: 'https://raw.githubusercontent.com/bingoogolapple/PublishAar/master/jcenter-release.gradle'
+}
+
+tasks.whenTaskAdded {
+    if (it.name == 'releaseAndroidJavadocs') {
+        it.enabled = false
+    }
+}

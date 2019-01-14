@@ -1498,6 +1498,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }catch (e:Exception)
             {
                 runOnUiThread {
+                    closeProgressDialog()
                     toast(R.string.code_error)
                 }
             }
