@@ -55,7 +55,7 @@ class MyFragment : BaseFragment(), MyContract.View {
             startActivity(Intent(activity, QRCodeActivity::class.java))
         }
         status.text = SpUtil.getString(activity!!, ConstantValue.status, "")
-        version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"(Builder"+BuildConfig.VERSION_CODE+")"
+        version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
         avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)

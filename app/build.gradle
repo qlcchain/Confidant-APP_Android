@@ -227,7 +227,7 @@ def getSelfDefinedVersion(type) {
     int cccc = process.getText().toInteger()
 
     if ("code".equals(type)) {
-        aa * 1000000 + bb * 10000 + cccc
+        cccc
     } else if ("name".equals(type)) {
         String today = new Date().format("yyMMdd")
         process = "git describe --always".execute()

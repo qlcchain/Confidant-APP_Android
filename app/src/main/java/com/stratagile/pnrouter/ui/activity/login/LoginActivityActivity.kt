@@ -1510,7 +1510,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     private fun startToxAndRecovery() {
-        
+
         ConstantValue.curreantNetworkType = "TOX"
         stopTox = false
         if (!ConstantValue.isToxConnected) {
