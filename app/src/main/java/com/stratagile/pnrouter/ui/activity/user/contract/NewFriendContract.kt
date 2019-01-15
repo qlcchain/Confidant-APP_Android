@@ -19,6 +19,8 @@ interface NewFriendContract {
          *
          */
         fun closeProgressDialog()
+
+        fun getScanPermissionSuccess()
     }
 
     interface NewFriendContractPresenter : BasePresenter {
@@ -26,5 +28,7 @@ interface NewFriendContract {
 //         *
 //         */
 //        fun getBusinessInfo(map : Map)
+
+        fun getScanPermission()
     }
 }

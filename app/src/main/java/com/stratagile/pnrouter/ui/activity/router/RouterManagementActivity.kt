@@ -241,15 +241,17 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.qrCode -> {
-                var intent = Intent(this, ScanQrCodeActivity::class.java)
-                startActivityForResult(intent, 1)
+                mPresenter.getScanPermission()
             }
             else -> {
             }
         }
         return super.onOptionsItemSelected(item)
     }
-
+    override fun getScanPermissionSuccess() {
+        var intent = Intent(this, ScanQrCodeActivity::class.java)
+        startActivityForResult(intent, 1)
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()

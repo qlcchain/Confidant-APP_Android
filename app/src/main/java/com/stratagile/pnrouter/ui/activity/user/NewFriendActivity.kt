@@ -275,10 +275,14 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.qrCode) {
-            var intent = Intent(this, ScanQrCodeActivity::class.java)
-            startActivityForResult(intent, 1)
+            mPresenter.getScanPermission()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun getScanPermissionSuccess() {
+        var intent = Intent(this, ScanQrCodeActivity::class.java)
+        startActivityForResult(intent, 1)
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater

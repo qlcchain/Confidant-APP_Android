@@ -19,6 +19,8 @@ interface RouterManagementContract {
          *
          */
         fun closeProgressDialog()
+
+        fun getScanPermissionSuccess()
     }
 
     interface RouterManagementContractPresenter : BasePresenter {
@@ -26,5 +28,7 @@ interface RouterManagementContract {
 //         *
 //         */
 //        fun getBusinessInfo(map : Map)
+
+        fun getScanPermission()
     }
 }
