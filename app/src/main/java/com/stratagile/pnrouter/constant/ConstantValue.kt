@@ -4,6 +4,7 @@ import com.stratagile.pnrouter.entity.LoginReq
 import java.util.HashMap
 
 object ConstantValue {
+        var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
         var localPath = "/RouterData13"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
@@ -31,6 +32,12 @@ object ConstantValue {
         var publicRASSp ="publicRAS"
         var privateRAS:String? = ""
         var publicRAS:String? = ""
+
+        var libsodiumprivateRASSp ="libsodiumprivateRAS"
+        var libsodiumpublicRASSp ="libsodiumpublicRAS"
+        var libsodiumprivateRAS:String? = ""
+        var libsodiumpublicRAS:String? = ""
+
         var updRouterData: HashMap<String,String> = HashMap()
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn

@@ -60,6 +60,7 @@ import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

@@ -276,8 +276,8 @@ public class FileUtil {
      *
      * @param jsonStr 数据
      */
-    public static void saveRSAData(String jsonStr) {
-        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RA/data.json";
+    public static void saveKeyData(String jsonStr,String fileName) {
+        String jsonPath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/RA/"+fileName+".json";
         File jsonFile = new File(jsonPath);
 
         FileWriter fw = null;
@@ -309,12 +309,12 @@ public class FileUtil {
      *
      * @return
      */
-    public static String readRSAData() {
+    public static String readKeyData(String fileName) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             FileInputStream fis = null;
             ObjectInputStream ois = null;
             try {
-                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/RA/data.json");
+                File file = new File(Environment.getExternalStorageDirectory(), ConstantValue.INSTANCE.getLocalPath()+"/RA/"+fileName+".json");
                 if (!file.exists()) {
                     return "";
                 }

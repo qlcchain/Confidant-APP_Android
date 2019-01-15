@@ -2,10 +2,8 @@ package com.stratagile.pnrouter.ui.activity.main.presenter
 
 import android.Manifest
 import android.app.Activity
-import android.content.Intent
 import android.os.Environment
 import android.util.Log
-import chat.tox.antox.tox.ToxService
 import chat.tox.antox.toxme.ToxData
 import chat.tox.antox.utils.CreateUserUtils
 import chat.tox.antox.wrapper.ToxAddress
@@ -18,8 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
-import com.stratagile.pnrouter.entity.HttpData
-import com.stratagile.pnrouter.entity.MyRouter
+import com.stratagile.pnrouter.entity.CryptoBoxKeypair
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.utils.*
@@ -30,6 +27,7 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import org.libsodium.jni.Sodium
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -177,45 +175,90 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     FileUtil.saveUserData2Local(toxId,"toxId")
                 }
             }
-            ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
-            ConstantValue.publicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.publicRASSp, "")
-            if(ConstantValue.privateRAS.equals("") && ConstantValue.publicRAS.equals(""))
+            if(ConstantValue.encryptionType.equals("0"))
             {
-                val gson = Gson()
-                var rsaData = FileUtil.readRSAData();
-                val localRSAArrayList: ArrayList<RSAData>
-                if(rsaData.equals(""))
+                ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
+                ConstantValue.publicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.publicRASSp, "")
+                if(ConstantValue.privateRAS.equals("") && ConstantValue.publicRAS.equals(""))
                 {
-                    val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
-                    val aahh = KeyPair!!.private.format
-                    val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
-                    val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
-                    ConstantValue.privateRAS = strBase64Private
-                    ConstantValue.publicRAS = strBase64Public
-                    SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
-                    localRSAArrayList = ArrayList()
-                    var RSAData: RSAData = RSAData()
-                    RSAData.privateKey = strBase64Private
-                    RSAData.publicKey = strBase64Public
-                    localRSAArrayList.add(RSAData)
-                    FileUtil.saveRSAData(gson.toJson(localRSAArrayList))
-                }else{
-                    var rsaStr = rsaData
-                    if (rsaStr != "") {
-                        localRSAArrayList = gson.fromJson<ArrayList<RSAData>>(rsaStr, object : TypeToken<ArrayList<RSAData>>() {
+                    val gson = Gson()
+                    var rsaData = FileUtil.readKeyData("data");
+                    val localRSAArrayList: ArrayList<RSAData>
+                    if(rsaData.equals(""))
+                    {
+                        val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
+                        val aahh = KeyPair!!.private.format
+                        val strBase64Private:String = RxEncodeTool.base64Encode2String(KeyPair.private.encoded)
+                        val strBase64Public = RxEncodeTool.base64Encode2String(KeyPair.public.encoded)
+                        ConstantValue.privateRAS = strBase64Private
+                        ConstantValue.publicRAS = strBase64Public
+                        SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                        localRSAArrayList = ArrayList()
+                        var RSAData: RSAData = RSAData()
+                        RSAData.privateKey = strBase64Private
+                        RSAData.publicKey = strBase64Public
+                        localRSAArrayList.add(RSAData)
+                        FileUtil.saveKeyData(gson.toJson(localRSAArrayList),"data")
+                    }else{
+                        var rsaStr = rsaData
+                        if (rsaStr != "") {
+                            localRSAArrayList = gson.fromJson<ArrayList<RSAData>>(rsaStr, object : TypeToken<ArrayList<RSAData>>() {
 
-                        }.type)
-                        if(localRSAArrayList.size > 0)
-                        {
-                            ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
-                            ConstantValue.publicRAS =  localRSAArrayList.get(0).publicKey
-                            SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
-                            SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                            }.type)
+                            if(localRSAArrayList.size > 0)
+                            {
+                                ConstantValue.privateRAS = localRSAArrayList.get(0).privateKey
+                                ConstantValue.publicRAS =  localRSAArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.privateRASSp, ConstantValue.privateRAS!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.publicRASSp, ConstantValue.publicRAS!!)
+                            }
+                        }
+                    }
+                }
+            }else{
+                ConstantValue.libsodiumprivateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, "")
+                ConstantValue.libsodiumpublicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, "")
+                if(ConstantValue.libsodiumprivateRAS.equals("") && ConstantValue.libsodiumpublicRAS.equals(""))
+                {
+                    val gson = Gson()
+                    var rsaData = FileUtil.readKeyData("libsodiumdata");
+                    val localRSAArrayList: ArrayList<CryptoBoxKeypair>
+                    if(rsaData.equals(""))
+                    {
+                        var dst_public_Key = ByteArray(32)
+                        var dst_private_key = ByteArray(32)
+                        var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
+                        val strBase64Private:String = RxEncodeTool.base64Encode2String(dst_private_key)
+                        val strBase64Public = RxEncodeTool.base64Encode2String(dst_public_Key)
+                        ConstantValue.libsodiumprivateRAS = strBase64Private
+                        ConstantValue.libsodiumpublicRAS = strBase64Public
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, ConstantValue.libsodiumprivateRAS!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, ConstantValue.libsodiumpublicRAS!!)
+                        localRSAArrayList = ArrayList()
+                        var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
+                        RSAData.privateKey = strBase64Private
+                        RSAData.publicKey = strBase64Public
+                        localRSAArrayList.add(RSAData)
+                        FileUtil.saveKeyData(gson.toJson(localRSAArrayList),"libsodiumdata")
+                    }else{
+                        var rsaStr = rsaData
+                        if (rsaStr != "") {
+                            localRSAArrayList = gson.fromJson<ArrayList<CryptoBoxKeypair>>(rsaStr, object : TypeToken<ArrayList<CryptoBoxKeypair>>() {
+
+                            }.type)
+                            if(localRSAArrayList.size > 0)
+                            {
+                                ConstantValue.libsodiumprivateRAS = localRSAArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicRAS =  localRSAArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, ConstantValue.libsodiumprivateRAS!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, ConstantValue.libsodiumpublicRAS!!)
+                            }
                         }
                     }
                 }
             }
+
             var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
             var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
             ConstantValue.currentRouterId = lastLoginRouterId;

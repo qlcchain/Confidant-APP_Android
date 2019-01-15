@@ -17,6 +17,9 @@ import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
 import javax.inject.Inject
+import org.libsodium.jni.NaCl
+import org.libsodium.jni.NaCl.sodium
+import org.libsodium.jni.Sodium
 
 /**
  * @author hzp
@@ -63,6 +66,27 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
+        var sodium: Sodium = NaCl.sodium()
+
+        var dst_public_Key = ByteArray(32)
+        var dst_private_key = ByteArray(32)
+        var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
+
+        var dst_public_KeyFriend = ByteArray(32)
+        var dst_private_key_KeyFriend = ByteArray(32)
+        var crypto_box_keypair_resultFriend = Sodium.crypto_box_keypair(dst_public_KeyFriend,dst_private_key_KeyFriend)
+        var dst_shared_key  = ByteArray(32)
+        var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_KeyFriend,dst_private_key)
+        var src_msg = "123456".toByteArray()
+        var dst_cipher = ByteArray(1024)
+        val random = org.libsodium.jni.crypto.Random()
+        var src_nonce =  random.randomBytes(24)
+        var crypto_box_afternm_result = Sodium.crypto_box_afternm(dst_cipher,src_msg,src_msg.size+Sodium.crypto_box_macbytes(),src_nonce,dst_shared_key)
+
+        var dst_msg = ByteArray(1024)
+        var crypto_box_open_afternm_result = Sodium.crypto_box_open_afternm(dst_msg,dst_cipher,dst_cipher.size+Sodium.crypto_box_macbytes(),src_nonce,dst_shared_key)
+
+        var dst_msgStr = String(dst_msg)
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         var nickSouceName = String(RxEncodeTool.base64Decode("")).toLowerCase()
         var this_ = this
