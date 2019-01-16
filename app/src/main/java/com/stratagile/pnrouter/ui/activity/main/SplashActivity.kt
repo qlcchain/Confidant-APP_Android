@@ -133,6 +133,22 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_public_Key = ByteArray(32)
         var dst_private_key = ByteArray(32)
         var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
+        var src_seed = "123456".toByteArray()
+
+        var dst_public_Key2 = ByteArray(32)
+        var dst_private_key2= ByteArray(32)
+        var crypto_sign_seed_keypair = Sodium.crypto_box_seed_keypair(dst_public_Key2,dst_private_key2,src_seed)
+
+        var aaabb =  StringUitl.bytesToString(dst_public_Key2)
+
+
+        var dst_public_Key3 = ByteArray(32)
+        var dst_private_key3= ByteArray(32)
+        var crypto_sign_seed_keypair3 = Sodium.crypto_box_seed_keypair(dst_public_Key3,dst_private_key3,src_seed)
+
+        var aaabb3 =  StringUitl.bytesToString(dst_public_Key3)
+
+
 
         var  aabb = RxEncodeTool.base64Encode2String(dst_public_Key)
         var dst_public_KeyFriend = ByteArray(32)

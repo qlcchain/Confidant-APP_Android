@@ -3042,8 +3042,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Intent intent;
         if (Build.VERSION.SDK_INT < 19) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-
+            //intent.setType("image/*");
+            intent.setType("*/*");
         } else {
             intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         }

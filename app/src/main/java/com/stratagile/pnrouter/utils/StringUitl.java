@@ -39,6 +39,8 @@ public class StringUitl {
      */
     public static final String REGEX_ID_CARD18 = "^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9Xx])$";
 
+    private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     /**
      * @param str
      * @return boolean
@@ -736,5 +738,53 @@ public class StringUitl {
         }
         return false;
     }
+    /**
+     * 方法二：
+     * byte[] to hex string
+     *
+     * @param bytes
+     * @return
+     */
+    public static String bytesToHexFun2(byte[] bytes) {
+        char[] buf = new char[bytes.length * 2];
+        int index = 0;
+        for(byte b : bytes) { // 利用位运算进行转换，可以看作方法一的变种
+            buf[index++] = HEX_CHAR[b >>> 4 & 0xf];
+            buf[index++] = HEX_CHAR[b & 0xf];
+        }
 
+        return new String(buf);
+    }
+    /**
+     * 将byte数组转换为字符串形式表示的十六进制数方便查看
+     */
+    public static StringBuffer bytesToString(byte[] bytes) {
+        StringBuffer sBuffer = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            String s = Integer.toHexString(bytes[i] & 0xff);
+            if (s.length() < 2)
+                sBuffer.append('0');
+            sBuffer.append(s + " ");
+        }
+        return sBuffer;
+    }
+    /**
+     * 将16进制字符串转换为byte[]
+     *
+     * @param str
+     * @return
+     */
+    public static byte[] toBytes(String str) {
+        if(str == null || str.trim().replace(" ","").equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        return bytes;
+    }
 }

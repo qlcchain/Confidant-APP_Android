@@ -30,8 +30,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
 
     fun send(message: BaseData){
-        toSendMessage.offer(message)
         Log.i("sender", "添加")
+        toSendMessage.offer(message)
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         if (thread.state == Thread.State.NEW) {
             thread.start()
         }

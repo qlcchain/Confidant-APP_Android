@@ -17,7 +17,7 @@ object LibsodiumUtil {
         return dst_shared_key
     }
     /**
-     * 生成对称秘钥，参数都是String
+     * 生成对称秘钥，参数都是ByteArray
      */
     fun crypto_box_beforenm_string(remote_public_keyStr:String, local_private_keyStr:String):String
     {

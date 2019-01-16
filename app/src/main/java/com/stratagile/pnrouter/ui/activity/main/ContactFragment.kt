@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -255,8 +256,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var pullFriend = PullFriendReq( selfUserId!!)
         if (ConstantValue.isWebsocketConnected) {
+            Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
         }else if (ConstantValue.isToxConnected) {
+            Log.i("pullFriendList", "tox")
             var baseData = BaseData(pullFriend)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
