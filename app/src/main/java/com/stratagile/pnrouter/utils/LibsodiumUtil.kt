@@ -6,6 +6,9 @@ import org.libsodium.jni.Sodium
 import java.util.*
 
 object LibsodiumUtil {
+    /**
+     * 加密，参数都是ByteArray
+     */
     fun encrypt_data_symmetric(src_msg:ByteArray, src_nonce:ByteArray, src_key:ByteArray):ByteArray
     {
         val temp_plain = ByteArray(src_msg.size+ Sodium.crypto_box_zerobytes())
@@ -27,6 +30,10 @@ object LibsodiumUtil {
             return ByteArray(0)
         }
     }
+
+    /**
+     * 加密，参数都是String
+     */
     fun encrypt_data_symmetric_string(src_msgStr:String, src_nonceStr:String, src_keyStr:String):String
     {
         var src_msg = src_msgStr.toByteArray()
@@ -51,6 +58,9 @@ object LibsodiumUtil {
             return ""
         }
     }
+    /**
+     *解密，参数都是ByteArray
+     */
     fun decrypt_data_symmetric(encrypted:ByteArray, src_nonce:ByteArray, src_key:ByteArray):String
     {
         var temp_plainafter = ByteArray(encrypted.size+Sodium.crypto_box_zerobytes())
@@ -73,7 +83,9 @@ object LibsodiumUtil {
             return ""
         }
     }
-
+    /**
+     *解密，参数都是String
+     */
     fun decrypt_data_symmetric_string(encryptedStr:String, src_nonceStr:String, src_keyStr:String):String
     {
         var encrypted =  RxEncodeTool.base64Decode(encryptedStr)
