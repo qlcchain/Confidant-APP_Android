@@ -121,7 +121,20 @@ class FileInfosFragment : BaseFragment(), FileInfosContract.View {
             activity!!.runOnUiThread {
                 val loadingLayout = getView()!!.findViewById<View>(R.id.loadingLayout) as LoadingLayout
                 loadingLayout.setStatus(LoadingLayout.SUCCESS)
-                fileInfosAdapter.setNewData(fileInfos)
+                for (i in fileInfos)
+                {
+                }
+                var it = fileInfos.iterator();
+                var fileInfosNew = ArrayList<FileInfo>()
+
+                while (it.hasNext())
+                {
+                    val x = it.next()
+                    if (x.absolutePath.indexOf(".png") < 0 && x.absolutePath.indexOf(".jpg") < 0 && x.absolutePath.indexOf(".jpeg") < 0 && x.absolutePath.indexOf(".mp4") < 0 && x.absolutePath.indexOf(".amr") < 0&& x.absolutePath.indexOf("DCIM") < 0) {
+                        fileInfosNew.add(x)
+                    }
+                }
+                fileInfosAdapter.setNewData(fileInfosNew)
                 fileInfosAdapter.notifyDataSetChanged()
             }
         } catch (e: Exception) {
