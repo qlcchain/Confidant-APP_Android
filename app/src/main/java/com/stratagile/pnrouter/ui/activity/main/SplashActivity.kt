@@ -67,28 +67,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         setContentView(R.layout.activity_splash)
     }
     override fun initData() {
-        var sodium: Sodium = NaCl.sodium()
-
-        var dst_public_Key = ByteArray(32)
-        var dst_private_key = ByteArray(32)
-        var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
-
-        var  aabb = RxEncodeTool.base64Encode2String(dst_public_Key)
-        var dst_public_KeyFriend = ByteArray(32)
-        var dst_private_key_KeyFriend = ByteArray(32)
-        var crypto_box_keypair_resultFriend = Sodium.crypto_box_keypair(dst_public_KeyFriend,dst_private_key_KeyFriend)
-        var dst_shared_key  = ByteArray(32)
-        var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_KeyFriend,dst_private_key)
-        var src_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
-
-        val random = org.libsodium.jni.crypto.Random()
-        var src_nonce =  random.randomBytes(24)
-
-        var encrypted = LibsodiumUtil.encrypt_data_symmetric(src_msg,src_nonce,dst_shared_key)
-        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key)
-
-        var encryptedStr = LibsodiumUtil.encrypt_data_symmetric_string("123456聚隆科技构建我国借我个偶就给我个饿哦go额外", String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key))
-        var souceStr2  = LibsodiumUtil.decrypt_data_symmetric_string(encryptedStr,String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key))
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         var this_ = this
         handler = object : Handler() {
@@ -149,6 +127,32 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var DstKey = RxEncodeTool.base64Encode(aa)
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
+
+        var sodium: Sodium = NaCl.sodium()
+
+        var dst_public_Key = ByteArray(32)
+        var dst_private_key = ByteArray(32)
+        var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
+
+        var  aabb = RxEncodeTool.base64Encode2String(dst_public_Key)
+        var dst_public_KeyFriend = ByteArray(32)
+        var dst_private_key_KeyFriend = ByteArray(32)
+        var crypto_box_keypair_resultFriend = Sodium.crypto_box_keypair(dst_public_KeyFriend,dst_private_key_KeyFriend)
+        var dst_shared_key  = ByteArray(32)
+        var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_KeyFriend,dst_private_key)
+        var src_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
+
+        val random = org.libsodium.jni.crypto.Random()
+        var src_nonce =  random.randomBytes(24)
+
+        var encrypted = LibsodiumUtil.encrypt_data_symmetric(src_msg,src_nonce,dst_shared_key)
+        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key)
+
+        var dst_shared_key2  = ByteArray(32)
+        var crypto_box_beforenm_result2 = Sodium.crypto_box_beforenm(dst_shared_key2,ConstantValue.libsodiumpublicKey!!.toByteArray(),dst_private_key)
+
+        var encryptedStr = LibsodiumUtil.encrypt_data_symmetric_string("123456聚隆科技构建我国借我个偶就给我个饿哦go额外", String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key2))
+        var souceStr2  = LibsodiumUtil.decrypt_data_symmetric_string(encryptedStr,String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key2))
         mPresenter.observeJump()
     }
 

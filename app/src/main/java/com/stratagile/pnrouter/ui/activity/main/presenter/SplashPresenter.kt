@@ -217,9 +217,9 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }else{
-                ConstantValue.libsodiumprivateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, "")
-                ConstantValue.libsodiumpublicRAS = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, "")
-                if(ConstantValue.libsodiumprivateRAS.equals("") && ConstantValue.libsodiumpublicRAS.equals(""))
+                ConstantValue.libsodiumprivateKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, "")
+                ConstantValue.libsodiumpublicKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, "")
+                if(ConstantValue.libsodiumprivateKey.equals("") && ConstantValue.libsodiumpublicKey.equals(""))
                 {
                     val gson = Gson()
                     var rsaData = FileUtil.readKeyData("libsodiumdata");
@@ -231,10 +231,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                         var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
                         val strBase64Private:String = RxEncodeTool.base64Encode2String(dst_private_key)
                         val strBase64Public = RxEncodeTool.base64Encode2String(dst_public_Key)
-                        ConstantValue.libsodiumprivateRAS = strBase64Private
-                        ConstantValue.libsodiumpublicRAS = strBase64Public
-                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, ConstantValue.libsodiumprivateRAS!!)
-                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, ConstantValue.libsodiumpublicRAS!!)
+                        ConstantValue.libsodiumprivateKey = strBase64Private
+                        ConstantValue.libsodiumpublicKey = strBase64Public
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, ConstantValue.libsodiumprivateKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, ConstantValue.libsodiumpublicKey!!)
                         localRSAArrayList = ArrayList()
                         var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
                         RSAData.privateKey = strBase64Private
@@ -249,10 +249,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                             }.type)
                             if(localRSAArrayList.size > 0)
                             {
-                                ConstantValue.libsodiumprivateRAS = localRSAArrayList.get(0).privateKey
-                                ConstantValue.libsodiumpublicRAS =  localRSAArrayList.get(0).publicKey
-                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateRASSp, ConstantValue.libsodiumprivateRAS!!)
-                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicRASSp, ConstantValue.libsodiumpublicRAS!!)
+                                ConstantValue.libsodiumprivateKey = localRSAArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicKey =  localRSAArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, ConstantValue.libsodiumprivateKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, ConstantValue.libsodiumpublicKey!!)
                             }
                         }
                     }

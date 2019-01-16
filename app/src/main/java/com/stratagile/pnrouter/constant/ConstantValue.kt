@@ -33,10 +33,10 @@ object ConstantValue {
         var privateRAS:String? = ""
         var publicRAS:String? = ""
 
-        var libsodiumprivateRASSp ="libsodiumprivateRAS"
-        var libsodiumpublicRASSp ="libsodiumpublicRAS"
-        var libsodiumprivateRAS:String? = ""
-        var libsodiumpublicRAS:String? = ""
+        var libsodiumprivateKeySp ="libsodiumprivateKeySp"
+        var libsodiumpublicKeySp ="libsodiumpublicKeySp"
+        var libsodiumprivateKey:String? = ""
+        var libsodiumpublicKey:String? = ""
 
         var updRouterData: HashMap<String,String> = HashMap()
         var scanRouterId:String =""//二维码扫出来的路由id
