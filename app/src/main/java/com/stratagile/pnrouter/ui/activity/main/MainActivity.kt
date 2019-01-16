@@ -161,7 +161,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val lastMessage = conversation.lastMessage
                 var all = conversation.allMessages
 
-                if(lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
+                if(lastMessage != null&&lastMessage.msgId.contains(delMsgPushRsp.params.msgId.toString()))
                 {
                     val message = EMMessage.createTxtSendMessage(resources.getString(R.string.withdrawn), delMsgPushRsp.params.friendId)
                     message.setDirection(EMMessage.Direct.RECEIVE)
@@ -186,15 +186,50 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     val localUrl = imgBody.localUrl
                     FileUtil.deleteFile(localUrl)
                 } else if (forward_msg.type == EMMessage.Type.VIDEO) {
-                    val imgBody = forward_msg.body as EMImageMessageBody
+                    val imgBody = forward_msg.body as EMVideoMessageBody
                     val localUrl = imgBody.localUrl
                     FileUtil.deleteFile(localUrl)
                 } else if (forward_msg.type == EMMessage.Type.VOICE) {
-                    val imgBody = forward_msg.body as EMImageMessageBody
+                    val imgBody = forward_msg.body as EMVoiceMessageBody
+                    val localUrl = imgBody.localUrl
+                    FileUtil.deleteFile(localUrl)
+                }else if (forward_msg.type == EMMessage.Type.FILE) {
+                    val imgBody = forward_msg.body as EMNormalFileMessageBody
                     val localUrl = imgBody.localUrl
                     FileUtil.deleteFile(localUrl)
                 }
 
+
+                val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                val eMMessage = conversation.lastMessage
+                val gson = Gson()
+                val Message = Message()
+                Message.msg = ""
+                if(eMMessage != null)
+                {
+                    when (eMMessage.type) {
+                        EMMessage.Type.LOCATION -> {
+                        }
+                        EMMessage.Type.IMAGE -> Message.msgType = 1
+                        EMMessage.Type.VOICE -> Message.msgType = 2
+                        EMMessage.Type.VIDEO -> Message.msgType = 4
+                        EMMessage.Type.TXT -> {
+                            Message.msgType = 0
+                            Message.msg = (eMMessage.body as EMTextMessageBody).message
+                        }
+                        EMMessage.Type.FILE -> Message.msgType = 5
+                        else -> {
+                        }
+                    }
+                    Message.fileName = "abc"
+                    Message.from = userId
+                    Message.to = delMsgPushRsp.params.userId
+                    Message.timeStatmp = System.currentTimeMillis()
+                    val baseDataJson = gson.toJson(Message)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId, baseDataJson)
+                }else{
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId, "")
+                }
             }
 
         }

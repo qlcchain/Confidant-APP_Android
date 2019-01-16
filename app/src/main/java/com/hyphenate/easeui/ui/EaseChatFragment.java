@@ -897,36 +897,41 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg("");
-            switch (eMMessage.getType())
+            if(eMMessage != null)
             {
-                case LOCATION:
-                    break;
-                case IMAGE:
-                    Message.setMsgType(1);
-                    break;
-                case VOICE:
-                    Message.setMsgType(2);
-                    break;
-                case VIDEO:
-                    Message.setMsgType(4);
-                    break;
-                case TXT:
-                    Message.setMsgType(0);
-                    Message.setMsg(((EMTextMessageBody) eMMessage.getBody()).getMessage());
-                    break;
-                case FILE:
-                    Message.setMsgType(5);
-                    break;
-                default:
-                    break;
+                switch (eMMessage.getType())
+                {
+                    case LOCATION:
+                        break;
+                    case IMAGE:
+                        Message.setMsgType(1);
+                        break;
+                    case VOICE:
+                        Message.setMsgType(2);
+                        break;
+                    case VIDEO:
+                        Message.setMsgType(4);
+                        break;
+                    case TXT:
+                        Message.setMsgType(0);
+                        Message.setMsg(((EMTextMessageBody) eMMessage.getBody()).getMessage());
+                        break;
+                    case FILE:
+                        Message.setMsgType(5);
+                        break;
+                    default:
+                        break;
+                }
+                Message.setFileName("abc");
+                Message.setFrom(userId);
+                Message.setTo(toChatUserId);
+                Message.setTimeStatmp(System.currentTimeMillis());
+                String baseDataJson = gson.toJson(Message);
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+            }else{
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
             }
-            Message.setFileName("abc");
 
-            Message.setFrom(userId);
-            Message.setTo(toChatUserId);
-            Message.setTimeStatmp(System.currentTimeMillis());
-            String baseDataJson = gson.toJson(Message);
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
         }
 
     }
@@ -1441,8 +1446,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     {
         try {
             EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
-            EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
-            forward_msg.addBody(var3);
+            /*EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
+            forward_msg.addBody(var3);*/
             if(conversation !=null )
                 conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
             //conversation.removeMessage(jDelMsgRsp.getParams().getDeleteMsgId()+"");
@@ -1465,7 +1470,53 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
+            }else if(forward_msg.getType().equals(EMMessage.Type.FILE) )
+            {
+                EMNormalFileMessageBody imgBody = (EMNormalFileMessageBody) forward_msg.getBody();
+                String localUrl = imgBody.getLocalUrl();
+                FileUtil.deleteFile(localUrl);
             }
+
+            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage =  conversation.getLastMessage();
+            Gson gson = new Gson();
+            Message Message = new Message();
+            Message.setMsg("");
+            if(eMMessage != null)
+            {
+                switch (eMMessage.getType())
+                {
+                    case LOCATION:
+                        break;
+                    case IMAGE:
+                        Message.setMsgType(1);
+                        break;
+                    case VOICE:
+                        Message.setMsgType(2);
+                        break;
+                    case VIDEO:
+                        Message.setMsgType(4);
+                        break;
+                    case TXT:
+                        Message.setMsgType(0);
+                        Message.setMsg(((EMTextMessageBody) eMMessage.getBody()).getMessage());
+                        break;
+                    case FILE:
+                        Message.setMsgType(5);
+                        break;
+                    default:
+                        break;
+                }
+                Message.setFileName("abc");
+                Message.setFrom(userId);
+                Message.setTo(toChatUserId);
+                Message.setTimeStatmp(System.currentTimeMillis());
+                String baseDataJson = gson.toJson(Message);
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+            }else{
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+            }
+
 
         }catch (Exception e)
         {
