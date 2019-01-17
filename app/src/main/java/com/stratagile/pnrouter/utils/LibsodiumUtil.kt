@@ -73,7 +73,7 @@ object LibsodiumUtil {
         {
             var encrypted = ByteArray(src_msg.size+ Sodium.crypto_box_macbytes())
             System.arraycopy(temp_encrypted, Sodium.crypto_box_boxzerobytes(), encrypted,0 , src_msg.size+ Sodium.crypto_box_macbytes())
-            return RxEncodeTool.base64Encode2String(encrypted)
+            return StringUitl.bytesToString(encrypted)
         }else
         {
             return ""
@@ -109,9 +109,9 @@ object LibsodiumUtil {
      */
     fun decrypt_data_symmetric_string(encryptedStr:String, src_nonceStr:String, src_keyStr:String):String
     {
-        var encrypted =  RxEncodeTool.base64Decode(encryptedStr)
+        var encrypted =  StringUitl.toBytes(encryptedStr)
         var src_nonce = src_nonceStr.toByteArray()
-        var src_key = RxEncodeTool.base64Decode(src_keyStr)
+        var src_key = StringUitl.toBytes(src_keyStr)
         var temp_plainafter = ByteArray(encrypted.size+Sodium.crypto_box_zerobytes())
         val temp_encryptedAfter = ByteArray(encrypted.size+Sodium.crypto_box_boxzerobytes())
         var temp_plainInitAfter = ByteArray(Sodium.crypto_box_boxzerobytes())

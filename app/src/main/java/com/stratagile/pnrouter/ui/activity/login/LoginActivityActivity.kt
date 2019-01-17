@@ -619,52 +619,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-
-            var dst_public_Key = ByteArray(32)
-            var dst_private_key = ByteArray(32)
-            var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_Key,dst_private_key)
-
-            var dst_public_KeyStr =  StringUitl.bytesToString(dst_public_Key)
-            var dst_private_keyStr =  StringUitl.bytesToString(dst_private_key)
-            var src_seedbefore = "123456".toByteArray()
-            var src_seed = ByteArray(32)
-            Arrays.fill(src_seed,0)
-            //System.arraycopy(src_seedbefore, 0, src_seed, 0, src_seedbefore.size)
-            var dst_public_Key2 = ByteArray(32)
-            var dst_private_key2= ByteArray(64)
-            var crypto_sign_seed_keypair = Sodium.crypto_box_seed_keypair(dst_public_Key2,dst_private_key2,src_seed)
-
-            var aaabb =  StringUitl.bytesToString(dst_public_Key2)
-            var ccdd =  StringUitl.bytesToString(dst_private_key2)
-            Log.i("dst_public_Key2",aaabb.toString())
-            Log.i("dst_private_key2",ccdd.toString())
-            var  aabb = RxEncodeTool.base64Encode2String(dst_public_Key)
-            var dst_public_KeyFriendKuang = StringUitl.toBytes("39 98 b7 2 1 45 6d a8 bc 24 fd 8d 90 4d e 71 ba 8e 41 37 dd 9e 89 38 35 8c 3f 3 96 cd 87 1b")
-            var dst_public_KeyFriend = ByteArray(32)
-            var dst_private_key_KeyFriend = ByteArray(64)
-            var crypto_box_keypair_resultFriend = Sodium.crypto_box_keypair(dst_public_KeyFriend,dst_private_key_KeyFriend)
-            var dst_shared_key  = ByteArray(32)
-            var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_KeyFriendKuang,dst_private_key)
-            var src_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
-
-            val random = org.libsodium.jni.crypto.Random()
-            var src_nonce =  random.randomBytes(24)
-
-            var encrypted = LibsodiumUtil.encrypt_data_symmetric(src_msg,src_nonce,dst_shared_key)
-
-
-            var dst_shared_keyOPEN  = ByteArray(32)
-            var dst_private_keyOPEN =  StringUitl.toBytes("51 5f 70 d2 aa d4 11 e2 b8 3b 5d 45 be 83 d8 f0 42 b0 47 67 79 37 ca 5d 89 7b 3b 5c 73 8f 21 34")
-            var crypto_box_beforenm_resultOPEN = Sodium.crypto_box_beforenm(dst_shared_keyOPEN,dst_public_Key,dst_private_keyOPEN)
-            var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_keyOPEN)
-
-            var dst_shared_key2  = ByteArray(32)
-            var crypto_box_beforenm_result2 = Sodium.crypto_box_beforenm(dst_shared_key2,ConstantValue.libsodiumpublicKey!!.toByteArray(),dst_private_key)
-
-            var encryptedStr = LibsodiumUtil.encrypt_data_symmetric_string("123456聚隆科技构建我国借我个偶就给我个饿哦go额外", String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key2))
-            var souceStr2  = LibsodiumUtil.decrypt_data_symmetric_string(encryptedStr,String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key2))
-
-           /* if(!ConstantValue.lastNetworkType.equals(""))
+            if(!ConstantValue.lastNetworkType.equals(""))
             {
                 isFromScan = false
                 ConstantValue.curreantNetworkType = ConstantValue.lastNetworkType
@@ -834,7 +789,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
                 }
-            }*/
+            }
 
 
 //            mThread = CustomThread(routerId, userId)

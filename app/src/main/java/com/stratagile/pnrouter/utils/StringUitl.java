@@ -741,26 +741,9 @@ public class StringUitl {
         return false;
     }
     /**
-     * 方法二：
-     * byte[] to hex string
-     *
-     * @param bytes
-     * @return
-     */
-    public static String bytesToHexFun2(byte[] bytes) {
-        char[] buf = new char[bytes.length * 2];
-        int index = 0;
-        for(byte b : bytes) { // 利用位运算进行转换，可以看作方法一的变种
-            buf[index++] = HEX_CHAR[b >>> 4 & 0xf];
-            buf[index++] = HEX_CHAR[b & 0xf];
-        }
-
-        return new String(buf);
-    }
-    /**
      * 将byte数组转换为字符串形式表示的十六进制数方便查看
      */
-    public static StringBuffer bytesToString(byte[] bytes) {
+    public static String bytesToString(byte[] bytes) {
         StringBuffer sBuffer = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             String s = Integer.toHexString(bytes[i] & 0xff);
@@ -768,7 +751,7 @@ public class StringUitl {
                 sBuffer.append('0');*/
             sBuffer.append(s + " ");
         }
-        return sBuffer;
+        return sBuffer.toString();
     }
     /**
      * 将16进制字符串转换为byte[]
@@ -798,6 +781,6 @@ public class StringUitl {
         byte[] dst_private_key2= new byte[32];
         int crypto_sign_seed_keypair = Sodium.crypto_box_seed_keypair(dst_public_Key2,dst_private_key2,src_seed);
 
-        String aaabb =  bytesToString(dst_public_Key2).toString();
+        String aaabb =  bytesToString(dst_public_Key2);
     }
 }

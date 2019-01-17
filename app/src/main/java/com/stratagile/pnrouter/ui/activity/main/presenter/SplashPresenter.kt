@@ -217,42 +217,80 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }else{
-                ConstantValue.libsodiumprivateKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, "")
-                ConstantValue.libsodiumpublicKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, "")
-                if(ConstantValue.libsodiumprivateKey.equals("") && ConstantValue.libsodiumpublicKey.equals(""))
+                ConstantValue.libsodiumprivateSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, "")
+                ConstantValue.libsodiumpublicSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, "")
+                if(ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals(""))
                 {
                     val gson = Gson()
-                    var rsaData = FileUtil.readKeyData("libsodiumdata");
-                    val localRSAArrayList: ArrayList<CryptoBoxKeypair>
-                    if(rsaData.equals(""))
+                    var signData = FileUtil.readKeyData("libsodiumdata_sign")
+                    var miData = FileUtil.readKeyData("libsodiumdata_mi")
+                    val localSignArrayList: ArrayList<CryptoBoxKeypair>
+                    val localMiArrayList: ArrayList<CryptoBoxKeypair>
+                    if(signData.equals(""))
                     {
-                        var dst_public_Key = ByteArray(32)
-                        var dst_private_key = ByteArray(32)
-                        var crypto_box_keypair_result = Sodium.crypto_box_keypair(dst_public_Key,dst_private_key)
-                        val strBase64Private:String = RxEncodeTool.base64Encode2String(dst_private_key)
-                        val strBase64Public = RxEncodeTool.base64Encode2String(dst_public_Key)
-                        ConstantValue.libsodiumprivateKey = strBase64Private
-                        ConstantValue.libsodiumpublicKey = strBase64Public
-                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, ConstantValue.libsodiumprivateKey!!)
-                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, ConstantValue.libsodiumpublicKey!!)
-                        localRSAArrayList = ArrayList()
+                        var dst_public_SignKey = ByteArray(32)
+                        var dst_private_Signkey = ByteArray(32)
+                        var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
+
+                        val strSignPrivate:String = StringUitl.bytesToString(dst_private_Signkey)
+                        val strSignPublic = StringUitl.bytesToString(dst_public_SignKey)
+                        ConstantValue.libsodiumprivateSignKey = strSignPrivate
+                        ConstantValue.libsodiumpublicSignKey = strSignPublic
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                        localSignArrayList = ArrayList()
+                        var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
+                        SignData.privateKey = strSignPrivate
+                        SignData.publicKey = strSignPublic
+                        localSignArrayList.add(SignData)
+                        FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+
+
+                        var dst_public_MiKey = ByteArray(32)
+                        var dst_private_Mikey = ByteArray(32)
+                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+                        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+
+                        val strMiPrivate:String = StringUitl.bytesToString(dst_private_Mikey)
+                        val strMiPublic = StringUitl.bytesToString(dst_public_MiKey)
+                        ConstantValue.libsodiumprivateMiKey = strMiPrivate
+                        ConstantValue.libsodiumpublicMiKey = strMiPublic
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                        localMiArrayList = ArrayList()
                         var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
-                        RSAData.privateKey = strBase64Private
-                        RSAData.publicKey = strBase64Public
-                        localRSAArrayList.add(RSAData)
-                        FileUtil.saveKeyData(gson.toJson(localRSAArrayList),"libsodiumdata")
+                        RSAData.privateKey = strMiPrivate
+                        RSAData.publicKey = strMiPublic
+                        localMiArrayList.add(RSAData)
+                        FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+
+
                     }else{
-                        var rsaStr = rsaData
-                        if (rsaStr != "") {
-                            localRSAArrayList = gson.fromJson<ArrayList<CryptoBoxKeypair>>(rsaStr, object : TypeToken<ArrayList<CryptoBoxKeypair>>() {
+                        var signStr = signData
+                        if (signStr != "") {
+                            localSignArrayList = gson.fromJson<ArrayList<CryptoBoxKeypair>>(signStr, object : TypeToken<ArrayList<CryptoBoxKeypair>>() {
 
                             }.type)
-                            if(localRSAArrayList.size > 0)
+                            if(localSignArrayList.size > 0)
                             {
-                                ConstantValue.libsodiumprivateKey = localRSAArrayList.get(0).privateKey
-                                ConstantValue.libsodiumpublicKey =  localRSAArrayList.get(0).publicKey
-                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateKeySp, ConstantValue.libsodiumprivateKey!!)
-                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicKeySp, ConstantValue.libsodiumpublicKey!!)
+                                ConstantValue.libsodiumprivateSignKey = localSignArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicSignKey =  localSignArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                            }
+                        }
+
+                        var miStr = miData
+                        if (miStr != "") {
+                            localMiArrayList = gson.fromJson<ArrayList<CryptoBoxKeypair>>(miStr, object : TypeToken<ArrayList<CryptoBoxKeypair>>() {
+
+                            }.type)
+                            if(localMiArrayList.size > 0)
+                            {
+                                ConstantValue.libsodiumprivateMiKey = localMiArrayList.get(0).privateKey
+                                ConstantValue.libsodiumpublicMiKey =  localMiArrayList.get(0).publicKey
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
                             }
                         }
                     }
