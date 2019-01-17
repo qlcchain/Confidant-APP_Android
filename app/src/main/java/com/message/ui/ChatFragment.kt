@@ -112,8 +112,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         }
         toolbar_parent.findViewById<TextView>(R.id.title).text = usernameSouce
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar_parent.findViewById<android.support.v7.widget.Toolbar>(R.id.toolbar).setOnMenuItemClickListener {
-                if (it.itemId == R.id.home) {
+            toolbar_parent.findViewById<android.support.v7.widget.Toolbar>(R.id.toolbar).setNavigationOnClickListener {
+                if (it.id == -1) {
                     activity!!.finish()
                 }
                 true

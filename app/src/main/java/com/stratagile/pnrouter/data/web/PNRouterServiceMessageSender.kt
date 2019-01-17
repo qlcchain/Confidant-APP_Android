@@ -1,18 +1,11 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
-import com.google.protobuf.ByteString
-import com.google.protobuf.InvalidProtocolBufferException
-import com.stratagile.pnrouter.data.service.MessageRetrievalService.pipe
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
-import io.reactivex.annotations.SchedulerSupport.CUSTOM
 import java.io.IOException
-import java.security.InvalidKeyException
-import java.security.SecureRandom
 import java.util.*
-import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.concurrent.thread

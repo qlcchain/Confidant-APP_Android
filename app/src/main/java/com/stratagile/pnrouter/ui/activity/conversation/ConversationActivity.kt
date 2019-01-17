@@ -43,7 +43,7 @@ class ConversationActivity : BaseActivity(), ConversationContract.View {
         fragment = ChatFragment.newInstance(userEntity!!)
         var transaction = getSupportFragmentManager ().beginTransaction();
         transaction.add(R.id.fragment, fragment, "tag")
-        transaction.commit();
+        transaction.commit()
     }
 
     override fun onBackPressed() {
