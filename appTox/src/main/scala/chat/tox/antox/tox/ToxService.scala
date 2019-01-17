@@ -61,6 +61,7 @@ class ToxService extends Service {
           .observeOn(AndroidMainThreadScheduler())
           .distinctUntilChanged
           .subscribe(toxConnection => {
+            AntoxLog.info("状态改变")
             if (toxConnection != ToxConnection.NONE) {
               if (reconnection != null && !reconnection.isUnsubscribed) {
                 reconnection.unsubscribe()
@@ -71,7 +72,7 @@ class ToxService extends Service {
               reconnection = Observable
                 .interval((reconnectionIntervalSeconds * reconnectionCount) seconds)
                 .subscribe(x => {
-                  AntoxLog.debug("Reconnecting")
+                  AntoxLog.info("Reconnecting")
                   Observable[Boolean](_ => ToxSingleton.bootstrap(getApplicationContext)).subscribe()
                 })
               EventBus.getDefault().post(new ToxStatusEvent(1))

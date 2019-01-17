@@ -34,7 +34,9 @@ class ToxCore(groupList: GroupList, options: ToxOptions) extends Intervals {
   def getSaveData: Array[Byte] = tox.getSavedata
 
   def bootstrap(address: String, port: Port, publicKey: ToxPublicKey): Unit = {
+    AntoxLog.info("1")
     tox.bootstrap(address, port, publicKey)
+    AntoxLog.info("2")
     tox.addTcpRelay(address, port, publicKey)
   }
 

@@ -16,7 +16,7 @@ public final class WebSocketProtos {
         /**
          * <code>optional string verb = 1;</code>
          */
-        java.lang.String getVerb();
+        String getVerb();
         /**
          * <code>optional string verb = 1;</code>
          */
@@ -31,7 +31,7 @@ public final class WebSocketProtos {
         /**
          * <code>optional string path = 2;</code>
          */
-        java.lang.String getPath();
+        String getPath();
         /**
          * <code>optional string path = 2;</code>
          */
@@ -52,7 +52,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        java.util.List<java.lang.String>
+        java.util.List<String>
         getHeadersList();
         /**
          * <code>repeated string headers = 5;</code>
@@ -61,7 +61,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        java.lang.String getHeaders(int index);
+        String getHeaders(int index);
         /**
          * <code>repeated string headers = 5;</code>
          */
@@ -101,7 +101,7 @@ public final class WebSocketProtos {
         }
 
         private final com.google.protobuf.UnknownFieldSet unknownFields;
-        @java.lang.Override
+        @Override
         public final com.google.protobuf.UnknownFieldSet
         getUnknownFields() {
             return this.unknownFields;
@@ -174,14 +174,14 @@ public final class WebSocketProtos {
         }
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
+            return WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
         }
 
-        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_fieldAccessorTable
+            return WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_fieldAccessorTable
                     .ensureFieldAccessorsInitialized(
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder.class);
+                            WebSocketRequestMessage.class, Builder.class);
         }
 
         public static com.google.protobuf.Parser<WebSocketRequestMessage> PARSER =
@@ -194,7 +194,7 @@ public final class WebSocketProtos {
                     }
                 };
 
-        @java.lang.Override
+        @Override
         public com.google.protobuf.Parser<WebSocketRequestMessage> getParserForType() {
             return PARSER;
         }
@@ -202,7 +202,7 @@ public final class WebSocketProtos {
         private int bitField0_;
         // optional string verb = 1;
         public static final int VERB_FIELD_NUMBER = 1;
-        private java.lang.Object verb_;
+        private Object verb_;
         /**
          * <code>optional string verb = 1;</code>
          */
@@ -212,14 +212,14 @@ public final class WebSocketProtos {
         /**
          * <code>optional string verb = 1;</code>
          */
-        public java.lang.String getVerb() {
-            java.lang.Object ref = verb_;
-            if (ref instanceof java.lang.String) {
-                return (java.lang.String) ref;
+        public String getVerb() {
+            Object ref = verb_;
+            if (ref instanceof String) {
+                return (String) ref;
             } else {
                 com.google.protobuf.ByteString bs =
                         (com.google.protobuf.ByteString) ref;
-                java.lang.String s = bs.toStringUtf8();
+                String s = bs.toStringUtf8();
                 if (bs.isValidUtf8()) {
                     verb_ = s;
                 }
@@ -231,11 +231,11 @@ public final class WebSocketProtos {
          */
         public com.google.protobuf.ByteString
         getVerbBytes() {
-            java.lang.Object ref = verb_;
-            if (ref instanceof java.lang.String) {
+            Object ref = verb_;
+            if (ref instanceof String) {
                 com.google.protobuf.ByteString b =
                         com.google.protobuf.ByteString.copyFromUtf8(
-                                (java.lang.String) ref);
+                                (String) ref);
                 verb_ = b;
                 return b;
             } else {
@@ -245,7 +245,7 @@ public final class WebSocketProtos {
 
         // optional string path = 2;
         public static final int PATH_FIELD_NUMBER = 2;
-        private java.lang.Object path_;
+        private Object path_;
         /**
          * <code>optional string path = 2;</code>
          */
@@ -255,14 +255,14 @@ public final class WebSocketProtos {
         /**
          * <code>optional string path = 2;</code>
          */
-        public java.lang.String getPath() {
-            java.lang.Object ref = path_;
-            if (ref instanceof java.lang.String) {
-                return (java.lang.String) ref;
+        public String getPath() {
+            Object ref = path_;
+            if (ref instanceof String) {
+                return (String) ref;
             } else {
                 com.google.protobuf.ByteString bs =
                         (com.google.protobuf.ByteString) ref;
-                java.lang.String s = bs.toStringUtf8();
+                String s = bs.toStringUtf8();
                 if (bs.isValidUtf8()) {
                     path_ = s;
                 }
@@ -274,11 +274,11 @@ public final class WebSocketProtos {
          */
         public com.google.protobuf.ByteString
         getPathBytes() {
-            java.lang.Object ref = path_;
-            if (ref instanceof java.lang.String) {
+            Object ref = path_;
+            if (ref instanceof String) {
                 com.google.protobuf.ByteString b =
                         com.google.protobuf.ByteString.copyFromUtf8(
-                                (java.lang.String) ref);
+                                (String) ref);
                 path_ = b;
                 return b;
             } else {
@@ -308,7 +308,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        public java.util.List<java.lang.String>
+        public java.util.List<String>
         getHeadersList() {
             return headers_;
         }
@@ -321,7 +321,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        public java.lang.String getHeaders(int index) {
+        public String getHeaders(int index) {
             return headers_.get(index);
         }
         /**
@@ -422,59 +422,59 @@ public final class WebSocketProtos {
         }
 
         private static final long serialVersionUID = 0L;
-        @java.lang.Override
-        protected java.lang.Object writeReplace()
+        @Override
+        protected Object writeReplace()
                 throws java.io.ObjectStreamException {
             return super.writeReplace();
         }
 
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 com.google.protobuf.ByteString data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 com.google.protobuf.ByteString data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(byte[] data)
+        public static WebSocketRequestMessage parseFrom(byte[] data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 byte[] data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(java.io.InputStream input)
+        public static WebSocketRequestMessage parseFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseDelimitedFrom(java.io.InputStream input)
+        public static WebSocketRequestMessage parseDelimitedFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseDelimitedFrom(
+        public static WebSocketRequestMessage parseDelimitedFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 com.google.protobuf.CodedInputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parseFrom(
+        public static WebSocketRequestMessage parseFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
@@ -483,14 +483,14 @@ public final class WebSocketProtos {
 
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage prototype) {
+        public static Builder newBuilder(WebSocketRequestMessage prototype) {
             return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
 
-        @java.lang.Override
+        @Override
         protected Builder newBuilderForType(
-                com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                BuilderParent parent) {
             Builder builder = new Builder(parent);
             return builder;
         }
@@ -499,17 +499,17 @@ public final class WebSocketProtos {
          */
         public static final class Builder extends
                 com.google.protobuf.GeneratedMessage.Builder<Builder>
-                implements com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder {
+                implements WebSocketRequestMessageOrBuilder {
             public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
             }
 
-            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            protected FieldAccessorTable
             internalGetFieldAccessorTable() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_fieldAccessorTable
+                return WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_fieldAccessorTable
                         .ensureFieldAccessorsInitialized(
-                                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder.class);
+                                WebSocketRequestMessage.class, Builder.class);
             }
 
             // Construct using com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.newBuilder()
@@ -518,7 +518,7 @@ public final class WebSocketProtos {
             }
 
             private Builder(
-                    com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                    BuilderParent parent) {
                 super(parent);
                 maybeForceBuilderInitialization();
             }
@@ -551,23 +551,23 @@ public final class WebSocketProtos {
 
             public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketRequestMessage_descriptor;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage getDefaultInstanceForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance();
+            public WebSocketRequestMessage getDefaultInstanceForType() {
+                return WebSocketRequestMessage.getDefaultInstance();
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage build() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage result = buildPartial();
+            public WebSocketRequestMessage build() {
+                WebSocketRequestMessage result = buildPartial();
                 if (!result.isInitialized()) {
                     throw newUninitializedMessageException(result);
                 }
                 return result;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage buildPartial() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage result = new com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage(this);
+            public WebSocketRequestMessage buildPartial() {
+                WebSocketRequestMessage result = new WebSocketRequestMessage(this);
                 int from_bitField0_ = bitField0_;
                 int to_bitField0_ = 0;
                 if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -598,16 +598,16 @@ public final class WebSocketProtos {
             }
 
             public Builder mergeFrom(com.google.protobuf.Message other) {
-                if (other instanceof com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage) {
-                    return mergeFrom((com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage)other);
+                if (other instanceof WebSocketRequestMessage) {
+                    return mergeFrom((WebSocketRequestMessage)other);
                 } else {
                     super.mergeFrom(other);
                     return this;
                 }
             }
 
-            public Builder mergeFrom(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage other) {
-                if (other == com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance()) return this;
+            public Builder mergeFrom(WebSocketRequestMessage other) {
+                if (other == WebSocketRequestMessage.getDefaultInstance()) return this;
                 if (other.hasVerb()) {
                     bitField0_ |= 0x00000001;
                     verb_ = other.verb_;
@@ -646,11 +646,11 @@ public final class WebSocketProtos {
                     com.google.protobuf.CodedInputStream input,
                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                     throws java.io.IOException {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage parsedMessage = null;
+                WebSocketRequestMessage parsedMessage = null;
                 try {
                     parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
                 } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                    parsedMessage = (com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage) e.getUnfinishedMessage();
+                    parsedMessage = (WebSocketRequestMessage) e.getUnfinishedMessage();
                     throw e;
                 } finally {
                     if (parsedMessage != null) {
@@ -662,7 +662,7 @@ public final class WebSocketProtos {
             private int bitField0_;
 
             // optional string verb = 1;
-            private java.lang.Object verb_ = "";
+            private Object verb_ = "";
             /**
              * <code>optional string verb = 1;</code>
              */
@@ -672,15 +672,15 @@ public final class WebSocketProtos {
             /**
              * <code>optional string verb = 1;</code>
              */
-            public java.lang.String getVerb() {
-                java.lang.Object ref = verb_;
-                if (!(ref instanceof java.lang.String)) {
-                    java.lang.String s = ((com.google.protobuf.ByteString) ref)
+            public String getVerb() {
+                Object ref = verb_;
+                if (!(ref instanceof String)) {
+                    String s = ((com.google.protobuf.ByteString) ref)
                             .toStringUtf8();
                     verb_ = s;
                     return s;
                 } else {
-                    return (java.lang.String) ref;
+                    return (String) ref;
                 }
             }
             /**
@@ -688,11 +688,11 @@ public final class WebSocketProtos {
              */
             public com.google.protobuf.ByteString
             getVerbBytes() {
-                java.lang.Object ref = verb_;
+                Object ref = verb_;
                 if (ref instanceof String) {
                     com.google.protobuf.ByteString b =
                             com.google.protobuf.ByteString.copyFromUtf8(
-                                    (java.lang.String) ref);
+                                    (String) ref);
                     verb_ = b;
                     return b;
                 } else {
@@ -703,7 +703,7 @@ public final class WebSocketProtos {
              * <code>optional string verb = 1;</code>
              */
             public Builder setVerb(
-                    java.lang.String value) {
+                    String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -736,7 +736,7 @@ public final class WebSocketProtos {
             }
 
             // optional string path = 2;
-            private java.lang.Object path_ = "";
+            private Object path_ = "";
             /**
              * <code>optional string path = 2;</code>
              */
@@ -746,15 +746,15 @@ public final class WebSocketProtos {
             /**
              * <code>optional string path = 2;</code>
              */
-            public java.lang.String getPath() {
-                java.lang.Object ref = path_;
-                if (!(ref instanceof java.lang.String)) {
-                    java.lang.String s = ((com.google.protobuf.ByteString) ref)
+            public String getPath() {
+                Object ref = path_;
+                if (!(ref instanceof String)) {
+                    String s = ((com.google.protobuf.ByteString) ref)
                             .toStringUtf8();
                     path_ = s;
                     return s;
                 } else {
-                    return (java.lang.String) ref;
+                    return (String) ref;
                 }
             }
             /**
@@ -762,11 +762,11 @@ public final class WebSocketProtos {
              */
             public com.google.protobuf.ByteString
             getPathBytes() {
-                java.lang.Object ref = path_;
+                Object ref = path_;
                 if (ref instanceof String) {
                     com.google.protobuf.ByteString b =
                             com.google.protobuf.ByteString.copyFromUtf8(
-                                    (java.lang.String) ref);
+                                    (String) ref);
                     path_ = b;
                     return b;
                 } else {
@@ -777,7 +777,7 @@ public final class WebSocketProtos {
              * <code>optional string path = 2;</code>
              */
             public Builder setPath(
-                    java.lang.String value) {
+                    String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -856,7 +856,7 @@ public final class WebSocketProtos {
             /**
              * <code>repeated string headers = 5;</code>
              */
-            public java.util.List<java.lang.String>
+            public java.util.List<String>
             getHeadersList() {
                 return java.util.Collections.unmodifiableList(headers_);
             }
@@ -869,7 +869,7 @@ public final class WebSocketProtos {
             /**
              * <code>repeated string headers = 5;</code>
              */
-            public java.lang.String getHeaders(int index) {
+            public String getHeaders(int index) {
                 return headers_.get(index);
             }
             /**
@@ -883,7 +883,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder setHeaders(
-                    int index, java.lang.String value) {
+                    int index, String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -896,7 +896,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder addHeaders(
-                    java.lang.String value) {
+                    String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -909,7 +909,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder addAllHeaders(
-                    java.lang.Iterable<java.lang.String> values) {
+                    Iterable<String> values) {
                 ensureHeadersIsMutable();
                 super.addAll(values, headers_);
                 onChanged();
@@ -1013,7 +1013,7 @@ public final class WebSocketProtos {
         /**
          * <code>optional string message = 3;</code>
          */
-        java.lang.String getMessage();
+        String getMessage();
         /**
          * <code>optional string message = 3;</code>
          */
@@ -1024,7 +1024,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        java.util.List<java.lang.String>
+        java.util.List<String>
         getHeadersList();
         /**
          * <code>repeated string headers = 5;</code>
@@ -1033,7 +1033,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        java.lang.String getHeaders(int index);
+        String getHeaders(int index);
         /**
          * <code>repeated string headers = 5;</code>
          */
@@ -1073,7 +1073,7 @@ public final class WebSocketProtos {
         }
 
         private final com.google.protobuf.UnknownFieldSet unknownFields;
-        @java.lang.Override
+        @Override
         public final com.google.protobuf.UnknownFieldSet
         getUnknownFields() {
             return this.unknownFields;
@@ -1146,14 +1146,14 @@ public final class WebSocketProtos {
         }
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
+            return WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
         }
 
-        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_fieldAccessorTable
+            return WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_fieldAccessorTable
                     .ensureFieldAccessorsInitialized(
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder.class);
+                            WebSocketResponseMessage.class, Builder.class);
         }
 
         public static com.google.protobuf.Parser<WebSocketResponseMessage> PARSER =
@@ -1166,7 +1166,7 @@ public final class WebSocketProtos {
                     }
                 };
 
-        @java.lang.Override
+        @Override
         public com.google.protobuf.Parser<WebSocketResponseMessage> getParserForType() {
             return PARSER;
         }
@@ -1206,7 +1206,7 @@ public final class WebSocketProtos {
 
         // optional string message = 3;
         public static final int MESSAGE_FIELD_NUMBER = 3;
-        private java.lang.Object message_;
+        private Object message_;
         /**
          * <code>optional string message = 3;</code>
          */
@@ -1216,14 +1216,14 @@ public final class WebSocketProtos {
         /**
          * <code>optional string message = 3;</code>
          */
-        public java.lang.String getMessage() {
-            java.lang.Object ref = message_;
-            if (ref instanceof java.lang.String) {
-                return (java.lang.String) ref;
+        public String getMessage() {
+            Object ref = message_;
+            if (ref instanceof String) {
+                return (String) ref;
             } else {
                 com.google.protobuf.ByteString bs =
                         (com.google.protobuf.ByteString) ref;
-                java.lang.String s = bs.toStringUtf8();
+                String s = bs.toStringUtf8();
                 if (bs.isValidUtf8()) {
                     message_ = s;
                 }
@@ -1235,11 +1235,11 @@ public final class WebSocketProtos {
          */
         public com.google.protobuf.ByteString
         getMessageBytes() {
-            java.lang.Object ref = message_;
-            if (ref instanceof java.lang.String) {
+            Object ref = message_;
+            if (ref instanceof String) {
                 com.google.protobuf.ByteString b =
                         com.google.protobuf.ByteString.copyFromUtf8(
-                                (java.lang.String) ref);
+                                (String) ref);
                 message_ = b;
                 return b;
             } else {
@@ -1253,7 +1253,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        public java.util.List<java.lang.String>
+        public java.util.List<String>
         getHeadersList() {
             return headers_;
         }
@@ -1266,7 +1266,7 @@ public final class WebSocketProtos {
         /**
          * <code>repeated string headers = 5;</code>
          */
-        public java.lang.String getHeaders(int index) {
+        public String getHeaders(int index) {
             return headers_.get(index);
         }
         /**
@@ -1367,59 +1367,59 @@ public final class WebSocketProtos {
         }
 
         private static final long serialVersionUID = 0L;
-        @java.lang.Override
-        protected java.lang.Object writeReplace()
+        @Override
+        protected Object writeReplace()
                 throws java.io.ObjectStreamException {
             return super.writeReplace();
         }
 
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 com.google.protobuf.ByteString data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 com.google.protobuf.ByteString data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(byte[] data)
+        public static WebSocketResponseMessage parseFrom(byte[] data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 byte[] data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(java.io.InputStream input)
+        public static WebSocketResponseMessage parseFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseDelimitedFrom(java.io.InputStream input)
+        public static WebSocketResponseMessage parseDelimitedFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseDelimitedFrom(
+        public static WebSocketResponseMessage parseDelimitedFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 com.google.protobuf.CodedInputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parseFrom(
+        public static WebSocketResponseMessage parseFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
@@ -1428,14 +1428,14 @@ public final class WebSocketProtos {
 
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage prototype) {
+        public static Builder newBuilder(WebSocketResponseMessage prototype) {
             return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
 
-        @java.lang.Override
+        @Override
         protected Builder newBuilderForType(
-                com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                BuilderParent parent) {
             Builder builder = new Builder(parent);
             return builder;
         }
@@ -1444,17 +1444,17 @@ public final class WebSocketProtos {
          */
         public static final class Builder extends
                 com.google.protobuf.GeneratedMessage.Builder<Builder>
-                implements com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder {
+                implements WebSocketResponseMessageOrBuilder {
             public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
             }
 
-            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            protected FieldAccessorTable
             internalGetFieldAccessorTable() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_fieldAccessorTable
+                return WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_fieldAccessorTable
                         .ensureFieldAccessorsInitialized(
-                                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder.class);
+                                WebSocketResponseMessage.class, Builder.class);
             }
 
             // Construct using com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.newBuilder()
@@ -1463,7 +1463,7 @@ public final class WebSocketProtos {
             }
 
             private Builder(
-                    com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                    BuilderParent parent) {
                 super(parent);
                 maybeForceBuilderInitialization();
             }
@@ -1496,23 +1496,23 @@ public final class WebSocketProtos {
 
             public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketResponseMessage_descriptor;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage getDefaultInstanceForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance();
+            public WebSocketResponseMessage getDefaultInstanceForType() {
+                return WebSocketResponseMessage.getDefaultInstance();
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage build() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage result = buildPartial();
+            public WebSocketResponseMessage build() {
+                WebSocketResponseMessage result = buildPartial();
                 if (!result.isInitialized()) {
                     throw newUninitializedMessageException(result);
                 }
                 return result;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage buildPartial() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage result = new com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage(this);
+            public WebSocketResponseMessage buildPartial() {
+                WebSocketResponseMessage result = new WebSocketResponseMessage(this);
                 int from_bitField0_ = bitField0_;
                 int to_bitField0_ = 0;
                 if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -1543,16 +1543,16 @@ public final class WebSocketProtos {
             }
 
             public Builder mergeFrom(com.google.protobuf.Message other) {
-                if (other instanceof com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage) {
-                    return mergeFrom((com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage)other);
+                if (other instanceof WebSocketResponseMessage) {
+                    return mergeFrom((WebSocketResponseMessage)other);
                 } else {
                     super.mergeFrom(other);
                     return this;
                 }
             }
 
-            public Builder mergeFrom(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage other) {
-                if (other == com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance()) return this;
+            public Builder mergeFrom(WebSocketResponseMessage other) {
+                if (other == WebSocketResponseMessage.getDefaultInstance()) return this;
                 if (other.hasId()) {
                     setId(other.getId());
                 }
@@ -1589,11 +1589,11 @@ public final class WebSocketProtos {
                     com.google.protobuf.CodedInputStream input,
                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                     throws java.io.IOException {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage parsedMessage = null;
+                WebSocketResponseMessage parsedMessage = null;
                 try {
                     parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
                 } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                    parsedMessage = (com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage) e.getUnfinishedMessage();
+                    parsedMessage = (WebSocketResponseMessage) e.getUnfinishedMessage();
                     throw e;
                 } finally {
                     if (parsedMessage != null) {
@@ -1671,7 +1671,7 @@ public final class WebSocketProtos {
             }
 
             // optional string message = 3;
-            private java.lang.Object message_ = "";
+            private Object message_ = "";
             /**
              * <code>optional string message = 3;</code>
              */
@@ -1681,15 +1681,15 @@ public final class WebSocketProtos {
             /**
              * <code>optional string message = 3;</code>
              */
-            public java.lang.String getMessage() {
-                java.lang.Object ref = message_;
-                if (!(ref instanceof java.lang.String)) {
-                    java.lang.String s = ((com.google.protobuf.ByteString) ref)
+            public String getMessage() {
+                Object ref = message_;
+                if (!(ref instanceof String)) {
+                    String s = ((com.google.protobuf.ByteString) ref)
                             .toStringUtf8();
                     message_ = s;
                     return s;
                 } else {
-                    return (java.lang.String) ref;
+                    return (String) ref;
                 }
             }
             /**
@@ -1697,11 +1697,11 @@ public final class WebSocketProtos {
              */
             public com.google.protobuf.ByteString
             getMessageBytes() {
-                java.lang.Object ref = message_;
+                Object ref = message_;
                 if (ref instanceof String) {
                     com.google.protobuf.ByteString b =
                             com.google.protobuf.ByteString.copyFromUtf8(
-                                    (java.lang.String) ref);
+                                    (String) ref);
                     message_ = b;
                     return b;
                 } else {
@@ -1712,7 +1712,7 @@ public final class WebSocketProtos {
              * <code>optional string message = 3;</code>
              */
             public Builder setMessage(
-                    java.lang.String value) {
+                    String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -1755,7 +1755,7 @@ public final class WebSocketProtos {
             /**
              * <code>repeated string headers = 5;</code>
              */
-            public java.util.List<java.lang.String>
+            public java.util.List<String>
             getHeadersList() {
                 return java.util.Collections.unmodifiableList(headers_);
             }
@@ -1768,7 +1768,7 @@ public final class WebSocketProtos {
             /**
              * <code>repeated string headers = 5;</code>
              */
-            public java.lang.String getHeaders(int index) {
+            public String getHeaders(int index) {
                 return headers_.get(index);
             }
             /**
@@ -1782,7 +1782,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder setHeaders(
-                    int index, java.lang.String value) {
+                    int index, String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -1795,7 +1795,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder addHeaders(
-                    java.lang.String value) {
+                    String value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -1808,7 +1808,7 @@ public final class WebSocketProtos {
              * <code>repeated string headers = 5;</code>
              */
             public Builder addAllHeaders(
-                    java.lang.Iterable<java.lang.String> values) {
+                    Iterable<String> values) {
                 ensureHeadersIsMutable();
                 super.addAll(values, headers_);
                 onChanged();
@@ -1895,7 +1895,7 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
          */
-        com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type getType();
+        WebSocketMessage.Type getType();
 
         // optional .signalservice.WebSocketRequestMessage request = 2;
         /**
@@ -1905,11 +1905,11 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
          */
-        com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage getRequest();
+        WebSocketRequestMessage getRequest();
         /**
          * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
          */
-        com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder getRequestOrBuilder();
+        WebSocketRequestMessageOrBuilder getRequestOrBuilder();
 
         // optional .signalservice.WebSocketResponseMessage response = 3;
         /**
@@ -1919,11 +1919,11 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
          */
-        com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage getResponse();
+        WebSocketResponseMessage getResponse();
         /**
          * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
          */
-        com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder getResponseOrBuilder();
+        WebSocketResponseMessageOrBuilder getResponseOrBuilder();
     }
     /**
      * Protobuf type {@code signalservice.WebSocketMessage}
@@ -1948,7 +1948,7 @@ public final class WebSocketProtos {
         }
 
         private final com.google.protobuf.UnknownFieldSet unknownFields;
-        @java.lang.Override
+        @Override
         public final com.google.protobuf.UnknownFieldSet
         getUnknownFields() {
             return this.unknownFields;
@@ -1978,7 +1978,7 @@ public final class WebSocketProtos {
                         }
                         case 8: {
                             int rawValue = input.readEnum();
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type value = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type.valueOf(rawValue);
+                            Type value = Type.valueOf(rawValue);
                             if (value == null) {
                                 unknownFields.mergeVarintField(1, rawValue);
                             } else {
@@ -1988,11 +1988,11 @@ public final class WebSocketProtos {
                             break;
                         }
                         case 18: {
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder subBuilder = null;
+                            WebSocketRequestMessage.Builder subBuilder = null;
                             if (((bitField0_ & 0x00000002) == 0x00000002)) {
                                 subBuilder = request_.toBuilder();
                             }
-                            request_ = input.readMessage(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.PARSER, extensionRegistry);
+                            request_ = input.readMessage(WebSocketRequestMessage.PARSER, extensionRegistry);
                             if (subBuilder != null) {
                                 subBuilder.mergeFrom(request_);
                                 request_ = subBuilder.buildPartial();
@@ -2001,11 +2001,11 @@ public final class WebSocketProtos {
                             break;
                         }
                         case 26: {
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder subBuilder = null;
+                            WebSocketResponseMessage.Builder subBuilder = null;
                             if (((bitField0_ & 0x00000004) == 0x00000004)) {
                                 subBuilder = response_.toBuilder();
                             }
-                            response_ = input.readMessage(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.PARSER, extensionRegistry);
+                            response_ = input.readMessage(WebSocketResponseMessage.PARSER, extensionRegistry);
                             if (subBuilder != null) {
                                 subBuilder.mergeFrom(response_);
                                 response_ = subBuilder.buildPartial();
@@ -2027,14 +2027,14 @@ public final class WebSocketProtos {
         }
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
+            return WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
         }
 
-        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-            return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketMessage_fieldAccessorTable
+            return WebSocketProtos.internal_static_signalservice_WebSocketMessage_fieldAccessorTable
                     .ensureFieldAccessorsInitialized(
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Builder.class);
+                            WebSocketMessage.class, Builder.class);
         }
 
         public static com.google.protobuf.Parser<WebSocketMessage> PARSER =
@@ -2047,7 +2047,7 @@ public final class WebSocketProtos {
                     }
                 };
 
-        @java.lang.Override
+        @Override
         public com.google.protobuf.Parser<WebSocketMessage> getParserForType() {
             return PARSER;
         }
@@ -2118,7 +2118,7 @@ public final class WebSocketProtos {
             }
             public static final com.google.protobuf.Descriptors.EnumDescriptor
             getDescriptor() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.getDescriptor().getEnumTypes().get(0);
+                return WebSocketMessage.getDescriptor().getEnumTypes().get(0);
             }
 
             private static final Type[] VALUES = values();
@@ -2126,7 +2126,7 @@ public final class WebSocketProtos {
             public static Type valueOf(
                     com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
                 if (desc.getType() != getDescriptor()) {
-                    throw new java.lang.IllegalArgumentException(
+                    throw new IllegalArgumentException(
                             "EnumValueDescriptor is not for this type.");
                 }
                 return VALUES[desc.getIndex()];
@@ -2146,7 +2146,7 @@ public final class WebSocketProtos {
         private int bitField0_;
         // optional .signalservice.WebSocketMessage.Type type = 1;
         public static final int TYPE_FIELD_NUMBER = 1;
-        private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type type_;
+        private Type type_;
         /**
          * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
          */
@@ -2156,13 +2156,13 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
          */
-        public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type getType() {
+        public Type getType() {
             return type_;
         }
 
         // optional .signalservice.WebSocketRequestMessage request = 2;
         public static final int REQUEST_FIELD_NUMBER = 2;
-        private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage request_;
+        private WebSocketRequestMessage request_;
         /**
          * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
          */
@@ -2172,19 +2172,19 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
          */
-        public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage getRequest() {
+        public WebSocketRequestMessage getRequest() {
             return request_;
         }
         /**
          * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
          */
-        public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder getRequestOrBuilder() {
+        public WebSocketRequestMessageOrBuilder getRequestOrBuilder() {
             return request_;
         }
 
         // optional .signalservice.WebSocketResponseMessage response = 3;
         public static final int RESPONSE_FIELD_NUMBER = 3;
-        private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage response_;
+        private WebSocketResponseMessage response_;
         /**
          * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
          */
@@ -2194,20 +2194,20 @@ public final class WebSocketProtos {
         /**
          * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
          */
-        public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage getResponse() {
+        public WebSocketResponseMessage getResponse() {
             return response_;
         }
         /**
          * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
          */
-        public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder getResponseOrBuilder() {
+        public WebSocketResponseMessageOrBuilder getResponseOrBuilder() {
             return response_;
         }
 
         private void initFields() {
-            type_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type.UNKNOWN;
-            request_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance();
-            response_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance();
+            type_ = Type.UNKNOWN;
+            request_ = WebSocketRequestMessage.getDefaultInstance();
+            response_ = WebSocketResponseMessage.getDefaultInstance();
         }
         private byte memoizedIsInitialized = -1;
         public final boolean isInitialized() {
@@ -2257,59 +2257,59 @@ public final class WebSocketProtos {
         }
 
         private static final long serialVersionUID = 0L;
-        @java.lang.Override
-        protected java.lang.Object writeReplace()
+        @Override
+        protected Object writeReplace()
                 throws java.io.ObjectStreamException {
             return super.writeReplace();
         }
 
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 com.google.protobuf.ByteString data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 com.google.protobuf.ByteString data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(byte[] data)
+        public static WebSocketMessage parseFrom(byte[] data)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 byte[] data,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return PARSER.parseFrom(data, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(java.io.InputStream input)
+        public static WebSocketMessage parseFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseDelimitedFrom(java.io.InputStream input)
+        public static WebSocketMessage parseDelimitedFrom(java.io.InputStream input)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseDelimitedFrom(
+        public static WebSocketMessage parseDelimitedFrom(
                 java.io.InputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input, extensionRegistry);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 com.google.protobuf.CodedInputStream input)
                 throws java.io.IOException {
             return PARSER.parseFrom(input);
         }
-        public static com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parseFrom(
+        public static WebSocketMessage parseFrom(
                 com.google.protobuf.CodedInputStream input,
                 com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws java.io.IOException {
@@ -2318,14 +2318,14 @@ public final class WebSocketProtos {
 
         public static Builder newBuilder() { return Builder.create(); }
         public Builder newBuilderForType() { return newBuilder(); }
-        public static Builder newBuilder(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage prototype) {
+        public static Builder newBuilder(WebSocketMessage prototype) {
             return newBuilder().mergeFrom(prototype);
         }
         public Builder toBuilder() { return newBuilder(this); }
 
-        @java.lang.Override
+        @Override
         protected Builder newBuilderForType(
-                com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                BuilderParent parent) {
             Builder builder = new Builder(parent);
             return builder;
         }
@@ -2334,17 +2334,17 @@ public final class WebSocketProtos {
          */
         public static final class Builder extends
                 com.google.protobuf.GeneratedMessage.Builder<Builder>
-                implements com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessageOrBuilder {
+                implements WebSocketMessageOrBuilder {
             public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
             }
 
-            protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            protected FieldAccessorTable
             internalGetFieldAccessorTable() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketMessage_fieldAccessorTable
+                return WebSocketProtos.internal_static_signalservice_WebSocketMessage_fieldAccessorTable
                         .ensureFieldAccessorsInitialized(
-                                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.class, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Builder.class);
+                                WebSocketMessage.class, Builder.class);
             }
 
             // Construct using com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.newBuilder()
@@ -2353,7 +2353,7 @@ public final class WebSocketProtos {
             }
 
             private Builder(
-                    com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+                    BuilderParent parent) {
                 super(parent);
                 maybeForceBuilderInitialization();
             }
@@ -2369,16 +2369,16 @@ public final class WebSocketProtos {
 
             public Builder clear() {
                 super.clear();
-                type_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type.UNKNOWN;
+                type_ = Type.UNKNOWN;
                 bitField0_ = (bitField0_ & ~0x00000001);
                 if (requestBuilder_ == null) {
-                    request_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance();
+                    request_ = WebSocketRequestMessage.getDefaultInstance();
                 } else {
                     requestBuilder_.clear();
                 }
                 bitField0_ = (bitField0_ & ~0x00000002);
                 if (responseBuilder_ == null) {
-                    response_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance();
+                    response_ = WebSocketResponseMessage.getDefaultInstance();
                 } else {
                     responseBuilder_.clear();
                 }
@@ -2392,23 +2392,23 @@ public final class WebSocketProtos {
 
             public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
+                return WebSocketProtos.internal_static_signalservice_WebSocketMessage_descriptor;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage getDefaultInstanceForType() {
-                return com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.getDefaultInstance();
+            public WebSocketMessage getDefaultInstanceForType() {
+                return WebSocketMessage.getDefaultInstance();
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage build() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage result = buildPartial();
+            public WebSocketMessage build() {
+                WebSocketMessage result = buildPartial();
                 if (!result.isInitialized()) {
                     throw newUninitializedMessageException(result);
                 }
                 return result;
             }
 
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage buildPartial() {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage result = new com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage(this);
+            public WebSocketMessage buildPartial() {
+                WebSocketMessage result = new WebSocketMessage(this);
                 int from_bitField0_ = bitField0_;
                 int to_bitField0_ = 0;
                 if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -2437,16 +2437,16 @@ public final class WebSocketProtos {
             }
 
             public Builder mergeFrom(com.google.protobuf.Message other) {
-                if (other instanceof com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage) {
-                    return mergeFrom((com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage)other);
+                if (other instanceof WebSocketMessage) {
+                    return mergeFrom((WebSocketMessage)other);
                 } else {
                     super.mergeFrom(other);
                     return this;
                 }
             }
 
-            public Builder mergeFrom(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage other) {
-                if (other == com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.getDefaultInstance()) return this;
+            public Builder mergeFrom(WebSocketMessage other) {
+                if (other == WebSocketMessage.getDefaultInstance()) return this;
                 if (other.hasType()) {
                     setType(other.getType());
                 }
@@ -2468,11 +2468,11 @@ public final class WebSocketProtos {
                     com.google.protobuf.CodedInputStream input,
                     com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                     throws java.io.IOException {
-                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage parsedMessage = null;
+                WebSocketMessage parsedMessage = null;
                 try {
                     parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
                 } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-                    parsedMessage = (com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage) e.getUnfinishedMessage();
+                    parsedMessage = (WebSocketMessage) e.getUnfinishedMessage();
                     throw e;
                 } finally {
                     if (parsedMessage != null) {
@@ -2484,7 +2484,7 @@ public final class WebSocketProtos {
             private int bitField0_;
 
             // optional .signalservice.WebSocketMessage.Type type = 1;
-            private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type type_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type.UNKNOWN;
+            private Type type_ = Type.UNKNOWN;
             /**
              * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
              */
@@ -2494,13 +2494,13 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type getType() {
+            public Type getType() {
                 return type_;
             }
             /**
              * <code>optional .signalservice.WebSocketMessage.Type type = 1;</code>
              */
-            public Builder setType(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type value) {
+            public Builder setType(Type value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -2514,15 +2514,15 @@ public final class WebSocketProtos {
              */
             public Builder clearType() {
                 bitField0_ = (bitField0_ & ~0x00000001);
-                type_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketMessage.Type.UNKNOWN;
+                type_ = Type.UNKNOWN;
                 onChanged();
                 return this;
             }
 
             // optional .signalservice.WebSocketRequestMessage request = 2;
-            private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage request_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance();
+            private WebSocketRequestMessage request_ = WebSocketRequestMessage.getDefaultInstance();
             private com.google.protobuf.SingleFieldBuilder<
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder> requestBuilder_;
+                    WebSocketRequestMessage, WebSocketRequestMessage.Builder, WebSocketRequestMessageOrBuilder> requestBuilder_;
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
@@ -2532,7 +2532,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage getRequest() {
+            public WebSocketRequestMessage getRequest() {
                 if (requestBuilder_ == null) {
                     return request_;
                 } else {
@@ -2542,7 +2542,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
-            public Builder setRequest(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage value) {
+            public Builder setRequest(WebSocketRequestMessage value) {
                 if (requestBuilder_ == null) {
                     if (value == null) {
                         throw new NullPointerException();
@@ -2559,7 +2559,7 @@ public final class WebSocketProtos {
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
             public Builder setRequest(
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder builderForValue) {
+                    WebSocketRequestMessage.Builder builderForValue) {
                 if (requestBuilder_ == null) {
                     request_ = builderForValue.build();
                     onChanged();
@@ -2572,12 +2572,12 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
-            public Builder mergeRequest(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage value) {
+            public Builder mergeRequest(WebSocketRequestMessage value) {
                 if (requestBuilder_ == null) {
                     if (((bitField0_ & 0x00000002) == 0x00000002) &&
-                            request_ != com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance()) {
+                            request_ != WebSocketRequestMessage.getDefaultInstance()) {
                         request_ =
-                                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.newBuilder(request_).mergeFrom(value).buildPartial();
+                                WebSocketRequestMessage.newBuilder(request_).mergeFrom(value).buildPartial();
                     } else {
                         request_ = value;
                     }
@@ -2593,7 +2593,7 @@ public final class WebSocketProtos {
              */
             public Builder clearRequest() {
                 if (requestBuilder_ == null) {
-                    request_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.getDefaultInstance();
+                    request_ = WebSocketRequestMessage.getDefaultInstance();
                     onChanged();
                 } else {
                     requestBuilder_.clear();
@@ -2604,7 +2604,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder getRequestBuilder() {
+            public WebSocketRequestMessage.Builder getRequestBuilder() {
                 bitField0_ |= 0x00000002;
                 onChanged();
                 return getRequestFieldBuilder().getBuilder();
@@ -2612,7 +2612,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder getRequestOrBuilder() {
+            public WebSocketRequestMessageOrBuilder getRequestOrBuilder() {
                 if (requestBuilder_ != null) {
                     return requestBuilder_.getMessageOrBuilder();
                 } else {
@@ -2623,11 +2623,11 @@ public final class WebSocketProtos {
              * <code>optional .signalservice.WebSocketRequestMessage request = 2;</code>
              */
             private com.google.protobuf.SingleFieldBuilder<
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder>
+                    WebSocketRequestMessage, WebSocketRequestMessage.Builder, WebSocketRequestMessageOrBuilder>
             getRequestFieldBuilder() {
                 if (requestBuilder_ == null) {
                     requestBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketRequestMessageOrBuilder>(
+                            WebSocketRequestMessage, WebSocketRequestMessage.Builder, WebSocketRequestMessageOrBuilder>(
                             request_,
                             getParentForChildren(),
                             isClean());
@@ -2637,9 +2637,9 @@ public final class WebSocketProtos {
             }
 
             // optional .signalservice.WebSocketResponseMessage response = 3;
-            private com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage response_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance();
+            private WebSocketResponseMessage response_ = WebSocketResponseMessage.getDefaultInstance();
             private com.google.protobuf.SingleFieldBuilder<
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder> responseBuilder_;
+                    WebSocketResponseMessage, WebSocketResponseMessage.Builder, WebSocketResponseMessageOrBuilder> responseBuilder_;
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
@@ -2649,7 +2649,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage getResponse() {
+            public WebSocketResponseMessage getResponse() {
                 if (responseBuilder_ == null) {
                     return response_;
                 } else {
@@ -2659,7 +2659,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
-            public Builder setResponse(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage value) {
+            public Builder setResponse(WebSocketResponseMessage value) {
                 if (responseBuilder_ == null) {
                     if (value == null) {
                         throw new NullPointerException();
@@ -2676,7 +2676,7 @@ public final class WebSocketProtos {
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
             public Builder setResponse(
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder builderForValue) {
+                    WebSocketResponseMessage.Builder builderForValue) {
                 if (responseBuilder_ == null) {
                     response_ = builderForValue.build();
                     onChanged();
@@ -2689,12 +2689,12 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
-            public Builder mergeResponse(com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage value) {
+            public Builder mergeResponse(WebSocketResponseMessage value) {
                 if (responseBuilder_ == null) {
                     if (((bitField0_ & 0x00000004) == 0x00000004) &&
-                            response_ != com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance()) {
+                            response_ != WebSocketResponseMessage.getDefaultInstance()) {
                         response_ =
-                                com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.newBuilder(response_).mergeFrom(value).buildPartial();
+                                WebSocketResponseMessage.newBuilder(response_).mergeFrom(value).buildPartial();
                     } else {
                         response_ = value;
                     }
@@ -2710,7 +2710,7 @@ public final class WebSocketProtos {
              */
             public Builder clearResponse() {
                 if (responseBuilder_ == null) {
-                    response_ = com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.getDefaultInstance();
+                    response_ = WebSocketResponseMessage.getDefaultInstance();
                     onChanged();
                 } else {
                     responseBuilder_.clear();
@@ -2721,7 +2721,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder getResponseBuilder() {
+            public WebSocketResponseMessage.Builder getResponseBuilder() {
                 bitField0_ |= 0x00000004;
                 onChanged();
                 return getResponseFieldBuilder().getBuilder();
@@ -2729,7 +2729,7 @@ public final class WebSocketProtos {
             /**
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
-            public com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder getResponseOrBuilder() {
+            public WebSocketResponseMessageOrBuilder getResponseOrBuilder() {
                 if (responseBuilder_ != null) {
                     return responseBuilder_.getMessageOrBuilder();
                 } else {
@@ -2740,11 +2740,11 @@ public final class WebSocketProtos {
              * <code>optional .signalservice.WebSocketResponseMessage response = 3;</code>
              */
             private com.google.protobuf.SingleFieldBuilder<
-                    com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder>
+                    WebSocketResponseMessage, WebSocketResponseMessage.Builder, WebSocketResponseMessageOrBuilder>
             getResponseFieldBuilder() {
                 if (responseBuilder_ == null) {
                     responseBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-                            com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessage.Builder, com.stratagile.pnrouter.data.web.message.WebSocketProtos.WebSocketResponseMessageOrBuilder>(
+                            WebSocketResponseMessage, WebSocketResponseMessage.Builder, WebSocketResponseMessageOrBuilder>(
                             response_,
                             getParentForChildren(),
                             isClean());
@@ -2787,7 +2787,7 @@ public final class WebSocketProtos {
     private static com.google.protobuf.Descriptors.FileDescriptor
             descriptor;
     static {
-        java.lang.String[] descriptorData = {
+        String[] descriptorData = {
                 "\n\030WebSocketResources.proto\022\rsignalservic" +
                         "e\"`\n\027WebSocketRequestMessage\022\014\n\004verb\030\001 \001" +
                         "(\t\022\014\n\004path\030\002 \001(\t\022\014\n\004body\030\003 \001(\014\022\017\n\007header" +
@@ -2813,19 +2813,19 @@ public final class WebSocketProtos {
                         internal_static_signalservice_WebSocketRequestMessage_fieldAccessorTable = new
                                 com.google.protobuf.GeneratedMessage.FieldAccessorTable(
                                 internal_static_signalservice_WebSocketRequestMessage_descriptor,
-                                new java.lang.String[] { "Verb", "Path", "Body", "Headers", "Id", });
+                                new String[] { "Verb", "Path", "Body", "Headers", "Id", });
                         internal_static_signalservice_WebSocketResponseMessage_descriptor =
                                 getDescriptor().getMessageTypes().get(1);
                         internal_static_signalservice_WebSocketResponseMessage_fieldAccessorTable = new
                                 com.google.protobuf.GeneratedMessage.FieldAccessorTable(
                                 internal_static_signalservice_WebSocketResponseMessage_descriptor,
-                                new java.lang.String[] { "Id", "Status", "Message", "Headers", "Body", });
+                                new String[] { "Id", "Status", "Message", "Headers", "Body", });
                         internal_static_signalservice_WebSocketMessage_descriptor =
                                 getDescriptor().getMessageTypes().get(2);
                         internal_static_signalservice_WebSocketMessage_fieldAccessorTable = new
                                 com.google.protobuf.GeneratedMessage.FieldAccessorTable(
                                 internal_static_signalservice_WebSocketMessage_descriptor,
-                                new java.lang.String[] { "Type", "Request", "Response", });
+                                new String[] { "Type", "Request", "Response", });
                         return null;
                     }
                 };

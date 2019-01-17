@@ -63,7 +63,6 @@ object ToxSingleton {
 
   def bootstrap(ctx: Context, updateNodes: Boolean = false): Boolean = {
     val TAG = LoggerTag("Bootstrap")
-
     if (updateNodes) updateCachedDhtNodes(ctx)
 
     dhtNodes =
@@ -208,6 +207,8 @@ object ToxSingleton {
     val options = ToxOptions(
       ipv6Enabled = Options.ipv6Enabled,
       proxy = proxyOptions,
+      startPort = 45600,
+      endPort = 45700,
       udpEnabled = true,
       saveData = dataFile.loadAsSaveType())
 
@@ -245,6 +246,7 @@ object ToxSingleton {
         if (preferences.getBoolean("enable_custom_node", false)) {
           bootstrapFromCustomNode(preferences)
         } else {
+          AntoxLog.info("init引导")
           bootstrap(ctx)
         })
         .subscribeOn(IOScheduler())
