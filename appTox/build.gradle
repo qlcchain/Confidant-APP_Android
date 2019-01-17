@@ -148,7 +148,7 @@ dependencies {
     api fileTree(dir: 'libs', include: 'org.xbill.DNS-dnsjava-2.1.6.jar')
     api fileTree(dir: 'libs', include: 'tox4j-api.jar')
     api fileTree(dir: 'libs', include: 'tox4j-c.jar')
-    api 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:1.0.3-SNAPSHOT'
+    api 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.1-SNAPSHOT'
 
    // compileOnly 'com.android.support:multidex:1.0.2' // ???
     api 'org.scala-lang:scala-library:2.11.8' // 2.11.8 -> [2.12.0, 2.12.1] *dont upgrade*

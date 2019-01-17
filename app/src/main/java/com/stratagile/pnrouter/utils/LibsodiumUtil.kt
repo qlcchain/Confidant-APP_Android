@@ -21,8 +21,8 @@ object LibsodiumUtil {
      */
     fun crypto_box_beforenm_string(remote_public_keyStr:String, local_private_keyStr:String):String
     {
-        var remote_public_key = remote_public_keyStr.toByteArray()
-        var local_private_key= local_private_keyStr.toByteArray()
+        var remote_public_key = StringUitl.toBytes(remote_public_keyStr)
+        var local_private_key= StringUitl.toBytes(local_private_keyStr)
         var dst_shared_key  = ByteArray(32)
         var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,remote_public_key,local_private_key)
         return RxEncodeTool.base64Encode2String(dst_shared_key)
