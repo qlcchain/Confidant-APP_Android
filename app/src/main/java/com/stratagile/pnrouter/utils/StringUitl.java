@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.libsodium.jni.Sodium;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -762,8 +764,8 @@ public class StringUitl {
         StringBuffer sBuffer = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             String s = Integer.toHexString(bytes[i] & 0xff);
-            if (s.length() < 2)
-                sBuffer.append('0');
+            /*if (s.length() < 2)
+                sBuffer.append('0');*/
             sBuffer.append(s + " ");
         }
         return sBuffer;
@@ -775,16 +777,27 @@ public class StringUitl {
      * @return
      */
     public static byte[] toBytes(String str) {
-        if(str == null || str.trim().replace(" ","").equals("")) {
+        if(str == null || str.trim().equals("")) {
             return new byte[0];
         }
-
-        byte[] bytes = new byte[str.length() / 2];
-        for(int i = 0; i < str.length() / 2; i++) {
-            String subStr = str.substring(i * 2, i * 2 + 2);
+        String[] strArray = str.split(" ");
+        str = str.replace(" ","");
+        byte[] bytes = new byte[strArray.length];
+        for(int i = 0; i < strArray.length; i++) {
+            String subStr = strArray[i];
             bytes[i] = (byte) Integer.parseInt(subStr, 16);
         }
 
         return bytes;
+    }
+    public static void test()
+    {
+
+        byte[] src_seed = "123456".getBytes();
+        byte[] dst_public_Key2 = new byte[32];
+        byte[] dst_private_key2= new byte[32];
+        int crypto_sign_seed_keypair = Sodium.crypto_box_seed_keypair(dst_public_Key2,dst_private_key2,src_seed);
+
+        String aaabb =  bytesToString(dst_public_Key2).toString();
     }
 }
