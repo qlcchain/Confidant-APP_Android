@@ -24,3 +24,5 @@
 /qrcodecore/build
 /zbar/build
 /zxing/build
+/app/debug/app-debug.apk
+/app/debug/output.json
