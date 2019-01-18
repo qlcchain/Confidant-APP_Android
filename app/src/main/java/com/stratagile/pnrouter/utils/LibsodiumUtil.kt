@@ -98,7 +98,7 @@ object LibsodiumUtil {
             var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
             System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
 
-            var souceStr  = String(plain)
+            var souceStr  = String(Base58.decode(String(plain)))
             return souceStr
         }else{
             return ""
@@ -126,7 +126,7 @@ object LibsodiumUtil {
             var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
             System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
 
-            var souceStr  = String(plain)
+            var souceStr  = String(Base58.decode(String(plain)))
             return souceStr
         }else{
             return ""

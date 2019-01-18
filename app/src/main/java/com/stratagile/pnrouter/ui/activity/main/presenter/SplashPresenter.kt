@@ -219,6 +219,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             }else{
                 ConstantValue.libsodiumprivateSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, "")
                 ConstantValue.libsodiumpublicSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, "")
+                ConstantValue.libsodiumprivateMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, "")
+                ConstantValue.libsodiumpublicMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, "")
                 if(ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals(""))
                 {
                     val gson = Gson()
@@ -229,7 +231,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     if(signData.equals(""))
                     {
                         var dst_public_SignKey = ByteArray(32)
-                        var dst_private_Signkey = ByteArray(32)
+                        var dst_private_Signkey = ByteArray(64)
                         var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
 
                         val strSignPrivate:String = StringUitl.bytesToString(dst_private_Signkey)

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -129,58 +128,70 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
 
-
-
-        var dst_public_SignKey = ByteArray(32)
-        var dst_private_Signkey = ByteArray(32)
-        var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
-
-
+        var dst_public_SignKeya = StringUitl.toBytes("f5 44 40 55 46 a0 6f 96 5c 42 14 ba 3d 79 7 7f e8 22 8d 4b 67 af 14 20 4f 54 66 25 5b 37 6d d6")
+        var dst_private_Signkeyd = StringUitl.toBytes("34 4c b0 74 1c f4 2c 8c e8 93 73 3b 1 41 e4 b3 c4 c5 24 eb 9e 19 81 d9 41 5e 3c 49 53 4e b9 25 f5 44 40 55 46 a0 6f 96 5c 42 14 ba 3d 79 7 7f e8 22 8d 4b 67 af 14 20 4f 54 66 25 5b 37 6d d6")
         var dst_public_MiKey = ByteArray(32)
         var dst_private_Mikey = ByteArray(32)
-        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+        var crypto_sign_ed25519_pk_to_curve25519_resulta = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKeya)
+        var crypto_sign_ed25519_sk_to_curve25519_resultb = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkeyd)
 
-        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+        var  dst_public_MiKeyStr = StringUitl.bytesToString(dst_public_MiKey)
+        var  dst_private_SignkeydStr = StringUitl.bytesToString(dst_private_Mikey)
 
-        var dst_public_KeyStr =  StringUitl.bytesToString(dst_public_SignKey)
-        var dst_private_keyStr =  StringUitl.bytesToString(dst_private_Signkey)
-        var src_seedbefore = "123456".toByteArray()
-        var src_seed = ByteArray(32)
-        Arrays.fill(src_seed,0)
-        //System.arraycopy(src_seedbefore, 0, src_seed, 0, src_seedbefore.size)
-        var dst_public_Key2 = ByteArray(32)
-        var dst_private_key2= ByteArray(64)
-        var crypto_sign_seed_keypair = Sodium.crypto_box_seed_keypair(dst_public_Key2,dst_private_key2,src_seed)
+        var dst_public_TemKey_My = ByteArray(32)
+        var dst_private_Temkey_My = ByteArray(32)
 
-        var aaabb =  StringUitl.bytesToString(dst_public_Key2)
-        var ccdd =  StringUitl.bytesToString(dst_private_key2)
-        Log.i("dst_public_Key2",aaabb.toString())
-        Log.i("dst_private_key2",ccdd.toString())
-        var  aabb = RxEncodeTool.base64Encode2String(dst_public_SignKey)
-        var dst_public_KeyFriendKuang = StringUitl.toBytes("39 98 b7 2 1 45 6d a8 bc 24 fd 8d 90 4d e 71 ba 8e 41 37 dd 9e 89 38 35 8c 3f 3 96 cd 87 1b")
-        var dst_public_KeyFriend = ByteArray(32)
-        var dst_private_key_KeyFriend = ByteArray(64)
-        var crypto_box_keypair_resultFriend = Sodium.crypto_box_keypair(dst_public_KeyFriend,dst_private_key_KeyFriend)
+        var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
+
+        ConstantValue.libsodiumprivateTemKey = StringUitl.bytesToString(dst_private_Temkey_My)
+        ConstantValue.libsodiumpublicTemKey =  StringUitl.bytesToString(dst_public_TemKey_My)
+
+
+        //模拟生成好友的加解密公钥
+        var dst_public_SignKey_Friend = ByteArray(32)
+        var dst_private_Signkey_Friend = ByteArray(64)
+        var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey_Friend,dst_private_Signkey_Friend)
+        var dst_public_MiKey_Friend = ByteArray(32)
+        var dst_private_Mikey_Friend = ByteArray(32)
+        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,dst_public_SignKey_Friend)
+        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey_Friend,dst_private_Signkey_Friend)
+
+        //开始加密
         var dst_shared_key  = ByteArray(32)
-        var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_KeyFriendKuang,dst_private_Signkey)
-        var src_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
+        var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_MiKey_Friend,dst_private_Temkey_My)
+
+        var src_msg = Base58.encode("123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()).toByteArray()
 
         val random = org.libsodium.jni.crypto.Random()
         var src_nonce =  random.randomBytes(24)
-
         var encrypted = LibsodiumUtil.encrypt_data_symmetric(src_msg,src_nonce,dst_shared_key)
 
 
-        var dst_shared_keyOPEN  = ByteArray(32)
-        var dst_private_keyOPEN =  StringUitl.toBytes("51 5f 70 d2 aa d4 11 e2 b8 3b 5d 45 be 83 d8 f0 42 b0 47 67 79 37 ca 5d 89 7b 3b 5c 73 8f 21 34")
-        var crypto_box_beforenm_resultOPEN = Sodium.crypto_box_beforenm(dst_shared_keyOPEN,dst_public_SignKey,dst_private_keyOPEN)
-        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_keyOPEN)
+        var dst_public_SignKey = ByteArray(32)
+        var dst_private_Signkey = ByteArray(64)
+        var crypto_box_keypair_resultaa = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
+        //签名
+        var dst_signed_msg = ByteArray(96)
+        var signed_msg_len = IntArray(1)
+        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,dst_public_TemKey_My,dst_public_TemKey_My.size,StringUitl.toBytes(ConstantValue.libsodiumprivateSignKey))
+        var dst_msg = ByteArray(32)
+        var msg_len = IntArray(1)
+        var crypto_sign_open = Sodium.crypto_sign_open(dst_msg,msg_len,dst_signed_msg,dst_signed_msg.size,StringUitl.toBytes(ConstantValue.libsodiumpublicSignKey))
 
-        var dst_shared_key2  = ByteArray(32)
-        var crypto_box_beforenm_result2 = Sodium.crypto_box_beforenm(dst_shared_key2,ConstantValue.libsodiumpublicSignKey!!.toByteArray(),dst_private_Signkey)
 
-        var encryptedStr = LibsodiumUtil.encrypt_data_symmetric_string("123456聚隆科技构建我国借我个偶就给我个饿哦go额外", String(src_nonce),StringUitl.bytes2HexString(dst_shared_key2))
-        var souceStr2  = LibsodiumUtil.decrypt_data_symmetric_string(encryptedStr,String(src_nonce),StringUitl.bytes2HexString(dst_shared_key2))
+        var dst_shared_keyStr = StringUitl.bytesToString(dst_shared_key)
+        //非对称加密方式crypto_box_seal加密对称密钥
+        var dst_shared_key_Mi_My = ByteArray(32 + 48)
+        var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,StringUitl.toBytes(ConstantValue.libsodiumpublicMiKey))
+
+        var dst_shared_key_Mi_MyStr = StringUitl.bytesToString(dst_shared_key_Mi_My)
+        //非对称解密方式crypto_box_seal_open解密出对称密钥
+        var dst_shared_key_Soucre_My = ByteArray(32)
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,StringUitl.toBytes(ConstantValue.libsodiumpublicMiKey),StringUitl.toBytes(ConstantValue.libsodiumprivateMiKey))
+        //解密自己的消息
+        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key_Soucre_My)
+
+
         mPresenter.observeJump()
     }
 
