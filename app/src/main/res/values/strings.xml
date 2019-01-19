@@ -421,6 +421,8 @@
     <string name="Press_again">Press again</string>
     <string name="code_error">code error</string>
     <string name="Please_connect_to_WiFi">Please connect to WiFi</string>
+    <string name="Unable_to_connect_to_router">Unable to connect to the router</string>
+
 
     <string name="Router_QR_Code">Router QR Code</string>
     <string name="Router_Alias">Router Alias</string>

@@ -113,7 +113,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var threadInit = false
     var RouterMacStr = ""
     var scanType = 0 // 0 admin   1 其他
-   
+
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
@@ -1587,6 +1587,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     {
                                         if(count >=3)
                                         {
+                                            if(ConstantValue.currentRouterMac.equals(""))
+                                            {
+                                                runOnUiThread {
+                                                    closeProgressDialog()
+                                                    toast(R.string.Unable_to_connect_to_router)
+                                                }
+                                            }
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }else if(!ConstantValue.currentRouterMac.equals(""))

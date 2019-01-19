@@ -712,6 +712,13 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     {
                                         if(count >=3)
                                         {
+                                            if(ConstantValue.currentRouterMac.equals(""))
+                                            {
+                                                runOnUiThread {
+                                                    closeProgressDialog()
+                                                    toast(R.string.Unable_to_connect_to_router)
+                                                }
+                                            }
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                             break;
                                         }else if(!ConstantValue.currentRouterMac.equals(""))
