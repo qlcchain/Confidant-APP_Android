@@ -163,7 +163,7 @@
     <string name="user_name">User name</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
-    <string name="LoginAdmin">Log in</string>
+    <string name="LoginAdmin">Log in to PPM</string>
     <string name="Administrator_account">Administrator’s account</string>
     <string name="Modify_Activation_Code">Modify Activation Code</string>
     <string name="Modify_Router_Password">Modify Router Password</string>
