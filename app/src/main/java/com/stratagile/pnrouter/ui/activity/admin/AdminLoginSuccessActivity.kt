@@ -73,10 +73,10 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
                 }
                 var intent = Intent(this, LoginActivityActivity::class.java)
-                intent.putExtra("adminRouterId",recoveryRsp.params.routeId)
-                intent.putExtra("adminUserSn",recoveryRsp.params.userSn)
-                intent.putExtra("adminUserId",recoveryRsp.params.userId)
-                intent.putExtra("adminUserName",String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName)))
+                intent.putExtra("adminRouterIdOK",recoveryRsp.params.routeId)
+                intent.putExtra("adminUserSnOK",recoveryRsp.params.userSn)
+                intent.putExtra("adminUserIdOK",recoveryRsp.params.userId)
+                intent.putExtra("adminUserNameOK",String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName)))
                 startActivity(intent)
                 finish()
             }
@@ -151,7 +151,6 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             intent.putExtra("adminIdentifyCode",adminIdentifyCode)
             intent.putExtra("adminQrcode",adminQrcode)
             startActivity(intent)
-            finish()
         }
         Routerpassword.setOnClickListener {
             var intent = Intent(this, AdminUpPasswordActivity::class.java)
@@ -160,7 +159,6 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             intent.putExtra("adminIdentifyCode",adminIdentifyCode)
             intent.putExtra("adminQrcode",adminQrcode)
             startActivity(intent)
-            finish()
         }
         LoginInBtn.setOnClickListener {
             showProgressDialog("wait...")

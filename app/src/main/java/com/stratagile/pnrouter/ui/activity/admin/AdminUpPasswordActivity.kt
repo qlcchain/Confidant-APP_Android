@@ -38,12 +38,12 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
         when (jAdminUpdataPasswordRsp.params.retCode) {
             0 -> {
                 runOnUiThread {
-                    toast("update successfully")
+                    toast("update success")
                 }
                 var intent = Intent(this, AdminLoginSuccessActivity::class.java)
                 intent.putExtra("adminRouterId",adminRouterId)
                 intent.putExtra("adminUserSn",adminUserSn)
-                intent.putExtra("adminIdentifyCode",adminQrcode)
+                intent.putExtra("adminIdentifyCode",adminIdentifyCode)
                 intent.putExtra("adminQrcode",adminQrcode)
                 startActivity(intent)
                 finish()

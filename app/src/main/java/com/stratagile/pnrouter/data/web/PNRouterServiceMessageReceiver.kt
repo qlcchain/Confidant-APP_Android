@@ -28,7 +28,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         var action = JSONObject.parseObject(paramsStr).getString("Action")
         if( ConstantValue.loginOut)
         {
-            if(action.toString().contains("Recovery") || action.toString().contains("Register")|| action.toString().contains("Login")|| action.toString().contains("LogOut"))
+            if(action.toString().contains("Recovery") || action.toString().contains("Register")|| action.toString().contains("Login")|| action.toString().contains("LogOut")|| action.toString().contains("RouterLogin")|| action.toString().contains("ResetRouterKey")|| action.toString().contains("ResetUserIdcode"))
             {
                 when (action) {
                     "Recovery" -> {
@@ -36,6 +36,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         KLog.i(jRecoveryRsp)
                         recoveryBackListener?.recoveryBack(jRecoveryRsp)
                         loginBackListener?.recoveryBack(jRecoveryRsp)
+                        adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
                     }
                     "Register" -> {
                         val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -52,6 +53,24 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     "LogOut" -> {
                         val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
                         logOutBack?.logOutBack(JLogOutRsp)
+                    }
+                    //admin登陆
+                    "RouterLogin" -> {
+                        val JAdminLoginRsp = gson.fromJson(text, JAdminLoginRsp::class.java)
+                        adminLoginCallBack?.login(JAdminLoginRsp)
+
+                    }
+                    //admin修改密码
+                    "ResetRouterKey" -> {
+                        val JAdminUpdataPasswordRsp = gson.fromJson(text, JAdminUpdataPasswordRsp::class.java)
+                        adminUpdataPassWordCallBack?.updataPassWord(JAdminUpdataPasswordRsp)
+
+                    }
+                    //admin修改code
+                    "ResetUserIdcode" -> {
+                        val JAdminUpdataCodeRsp = gson.fromJson(text, JAdminUpdataCodeRsp::class.java)
+                        adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
+
                     }
                 }
             }

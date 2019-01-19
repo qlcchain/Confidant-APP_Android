@@ -356,6 +356,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         stopTox = false
         RouterMacStr = ""
         ConstantValue.lastNetworkType = ""
+        ConstantValue.currentRouterMac = ""
         super.onCreate(savedInstanceState)
     }
 
@@ -637,10 +638,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
-        var adminRouterId = intent.getStringExtra("adminRouterId")
-        var adminUserSn = intent.getStringExtra("adminUserSn")
-        var adminUserId = intent.getStringExtra("adminUserId")
-        var adminUserName = intent.getStringExtra("adminUserName")
+        var adminRouterId = intent.getStringExtra("adminRouterIdOK")
+        var adminUserSn = intent.getStringExtra("adminUserSnOK")
+        var adminUserId = intent.getStringExtra("adminUserIdOK")
+        var adminUserName = intent.getStringExtra("adminUserNameOK")
 
         newRouterEntity = RouterEntity()
         lastLoginUserId = FileUtil.getLocalUserData("userid")
@@ -891,6 +892,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterMac = RouterMacStr
+                                            break;
                                         }
 
 
@@ -1317,7 +1319,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun getScanPermissionSuccess() {
-        showProgressDialog("wait...")
+        //showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
@@ -1574,6 +1576,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             AppConfig.instance.messageReceiver!!.close()
                         if(WiFiUtil.isWifiConnect())
                         {
+                            ConstantValue.currentRouterMac  = ""
                             isFromScanAdmim = true
                             var count =0;
                             KLog.i("测试计时器Mac" + count)
@@ -1626,9 +1629,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
 
         }else{
-            runOnUiThread {
-                closeProgressDialog()
-            }
         }
     }
     private fun startToxAndRecovery() {

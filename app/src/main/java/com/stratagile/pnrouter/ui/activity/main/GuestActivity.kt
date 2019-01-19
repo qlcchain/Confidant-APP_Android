@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerGuestComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.GuestContract
@@ -74,6 +75,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     private var exitTime: Long = 0
     val REQUEST_SCAN_QRCODE = 1
     var isHasConnect = false
+    var RouterMacStr = ""
+    var scanType = 0 // 0 admin   1 其他
+    var isFromScanAdmim = false
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
         closeProgressDialog();
@@ -139,7 +143,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        RouterMacStr = ""
         needFront = true
+        isFromScanAdmim = false
         window.requestFeature(Window.FEATURE_ACTION_BAR)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         super.onCreate(savedInstanceState)
@@ -153,7 +159,6 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         return arrayOf(R.color.white, R.color.white, R.color.white)
     }
     override fun getScanPermissionSuccess() {
-        showProgressDialog("wait...")
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
     }
@@ -379,15 +384,26 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     {
                                         println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
                                         //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                        if(scanType == 1)//不是admin二维码
                                         {
+                                            if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                            {
+                                                ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                ConstantValue.port = ":18006"
+                                                ConstantValue.filePort = ":18007"
+                                                break;
+                                            }
+                                        }else{
+                                            ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
-                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                            ConstantValue.port = ":18006"
+                                            ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
+                                            ConstantValue.currentRouterMac = RouterMacStr
                                             break;
                                         }
+
 
                                     }
                                 }
@@ -452,9 +468,24 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         when (connectStatus.status) {
             0 -> {
-                isHasConnect = true
-                var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                if(isFromScanAdmim)
+                {
+                    runOnUiThread {
+                        closeProgressDialog()
+                    }
+                    var intent = Intent(this, AdminLoginActivity::class.java)
+                    startActivity(intent)
+                    /*closeProgressDialog()
+                    showProgressDialog("wait...")
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
+                    isFromScanAdmim = false
+                }else{
+                    isHasConnect = true
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                }
+
 
             }
             1 -> {
@@ -523,6 +554,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
                 if(soureData.size == 114)
                 {
+                    scanType = 1
                     val keyId:ByteArray = ByteArray(6) //密钥ID
                     val RouterId:ByteArray = ByteArray(76) //路由器id
                     val UserSn:ByteArray = ByteArray(32)  //用户SN
@@ -663,11 +695,14 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     }
                 }else if(soureData.size == 17)
                 {
-                    var RouterMacStr = String(soureData)
+                    scanType = 0
+                    RouterMacStr = String(soureData)
                     if(RouterMacStr != null && !RouterMacStr.equals(""))
                     {
                         if(WiFiUtil.isWifiConnect())
                         {
+                            ConstantValue.currentRouterMac  = ""
+                            isFromScanAdmim = true
                             var count =0;
                             KLog.i("测试计时器Mac" + count)
                             Thread(Runnable() {
@@ -677,17 +712,18 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                     {
                                         if(count >=3)
                                         {
-                                            if(!ConstantValue.currentRouterMac.equals(""))
-                                            {
-                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                                break;
-                                            }
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
+                                        }else if(!ConstantValue.currentRouterMac.equals(""))
+                                        {
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
                                         }
                                         count ++;
                                         MobileSocketClient.getInstance().init(handler,this)
                                         var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
                                         MobileSocketClient.getInstance().destroy()
-                                        MobileSocketClient.getInstance().send("QLC"+toMacMi)
+                                        MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                         MobileSocketClient.getInstance().receive()
                                         KLog.i("测试计时器Mac" + count)
                                         Thread.sleep(1000)
@@ -718,9 +754,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
             }
 
         }else{
-            runOnUiThread {
-                closeProgressDialog()
-            }
+
 
         }
     }

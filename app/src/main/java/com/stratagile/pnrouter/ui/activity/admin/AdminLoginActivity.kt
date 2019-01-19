@@ -37,7 +37,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
         when (jAdminLoginRsp.params.retCode) {
             0 -> {
                 runOnUiThread {
-                             toast("Login successfully")
+                             toast("Login success")
                 }
                 var intent = Intent(this, AdminLoginSuccessActivity::class.java)
                 intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
@@ -84,11 +84,11 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
     }
     override fun initData() {
         title.text = getString(R.string.LoginAdmin)
-        if(AppConfig.instance.messageReceiver != null)
-        {
-            AppConfig.instance.messageReceiver!!.adminLoginCallBack = this
-        }
         loginBtn.setOnClickListener {
+            if(AppConfig.instance.messageReceiver != null)
+            {
+                AppConfig.instance.messageReceiver!!.adminLoginCallBack = this
+            }
             if (adminPassWord.text.toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener

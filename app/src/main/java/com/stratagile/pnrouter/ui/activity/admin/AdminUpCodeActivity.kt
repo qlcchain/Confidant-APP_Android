@@ -35,7 +35,7 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
         when (jAdminUpdataCodeRsp.params.retCode) {
             0 -> {
                 runOnUiThread {
-                    toast("update successfully")
+                    toast("update success")
                 }
                 var intent = Intent(this, AdminLoginSuccessActivity::class.java)
                 intent.putExtra("adminRouterId",adminRouterId)
