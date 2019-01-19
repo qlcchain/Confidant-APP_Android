@@ -78,6 +78,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 intent.putExtra("adminUserId",recoveryRsp.params.userId)
                 intent.putExtra("adminUserName",String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName)))
                 startActivity(intent)
+                finish()
             }
             1 -> {
                 ConstantValue.scanRouterId = recoveryRsp.params.routeId
