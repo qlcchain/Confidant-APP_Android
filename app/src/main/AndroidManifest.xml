@@ -62,9 +62,19 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.activity.test.TestActivity"
-            android:screenOrientation="portrait" >
-
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.admin.AdminLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.admin.AdminUpCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.admin.AdminUpPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.admin.AdminLoginSuccessActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.main.SplashActivity"
             android:screenOrientation="portrait"

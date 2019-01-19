@@ -2032,6 +2032,57 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }
     }
+    public void deleteMessage()
+    {
+        if(conversation !=null )
+        {
+            conversation.removeMessage(currentSendMsg.getMsgId());
+            KLog.i("insertMessage:" + "EaseChatFragment"+"_upateMessage");
+            if(isMessageListInited) {
+                easeChatMessageList.refresh();
+            }
+            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage =  conversation.getLastMessage();
+            Gson gson = new Gson();
+            Message Message = new Message();
+            Message.setMsg("");
+            if(eMMessage != null)
+            {
+                switch (eMMessage.getType())
+                {
+                    case LOCATION:
+                        break;
+                    case IMAGE:
+                        Message.setMsgType(1);
+                        break;
+                    case VOICE:
+                        Message.setMsgType(2);
+                        break;
+                    case VIDEO:
+                        Message.setMsgType(4);
+                        break;
+                    case TXT:
+                        Message.setMsgType(0);
+                        Message.setMsg(((EMTextMessageBody) eMMessage.getBody()).getMessage());
+                        break;
+                    case FILE:
+                        Message.setMsgType(5);
+                        break;
+                    default:
+                        break;
+                }
+                Message.setFileName("abc");
+                Message.setFrom(userId);
+                Message.setTo(toChatUserId);
+                Message.setTimeStatmp(System.currentTimeMillis());
+                String baseDataJson = gson.toJson(Message);
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+            }else{
+                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+            }
+        }
+
+    }
     public void upateMessage(JSendMsgRsp jSendMsgRsp)
     {
         if(jSendMsgRsp.getParams().getRetCode() == 0){

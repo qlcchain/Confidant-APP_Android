@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x28"
+        android:layout_marginLeft="@dimen/x50"
+        android:elevation="@dimen/x5"
+        android:layout_marginRight="@dimen/x50"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/x40"
+                android:layout_marginBottom="@dimen/x1"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:text="@string/User_QR_Code"
+                    android:gravity="center"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/color_2c2c2c"
+                     />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivQrCodeAdmin"
+                android:layout_width="@dimen/x490"
+                android:layout_marginTop="@dimen/x20"
+                android:layout_marginBottom="@dimen/x60"
+                android:layout_height="@dimen/x490" />
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x1"
+        android:background="@color/white"
+
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/status">
+
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/Activationcode"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="@string/Activationcode">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+
+       <View style="@style/divide_line" />
+        <com.stratagile.pnrouter.view.DrawableTextView
+            android:id="@+id/Routerpassword"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:text="@string/Routerpassword">
+
+        </com.stratagile.pnrouter.view.DrawableTextView>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x50"
+        android:layout_marginLeft="@dimen/x135"
+        android:layout_marginRight="@dimen/x135"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/LoginInBtn"
+            android:layout_width="@dimen/x450"
+            android:textColor="@color/main_color"
+            android:background="@drawable/textview_whiteborder"
+            android:text="@string/LoginAdmin"
+            android:gravity="center"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
+</LinearLayout>

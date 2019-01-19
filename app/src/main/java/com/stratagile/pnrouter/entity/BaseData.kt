@@ -320,3 +320,24 @@ data class ChangeRemarksReq(var UserId :String, var FriendId : String, var Remar
  * (2)	响应（APP->Router）
  */
 data class QueryFriendReq(var UserId :String, var FriendId : String, var Action : String = "QueryFriend")
+
+/**
+ * 43.	管理员登录
+ * (2)	响应（APP->Router）
+ */
+data class RouterLoginReq(var Mac :String, var LoginKey : String, var Action : String = "RouterLogin")
+
+
+
+/**
+ * 	44.	路由器修改管理密码
+ * (2)	响应（APP->Router）
+ */
+data class ResetRouterKeyReq(var RouterId :String, var OldKey : String,var NewKey : String, var Action : String = "ResetRouterKey")
+
+
+/**
+ * 45.	路由器修改账户激活码
+ * (2)	响应（APP->Router）
+ */
+data class ResetUserIdcodeReq(var RouterId :String, var UserSn : String,var OldCode : String,var NewCode : String, var Action : String = "ResetUserIdcode")

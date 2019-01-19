@@ -120,8 +120,12 @@ public class MobileSocketClient {
                             break;
                         }
                         String dataStr = new String(packet.getData(), 0, packet.getLength());
-                        if(!dataStr.contains("QLC"))
+                        if(dataStr.contains("QLC") || dataStr.contains("MAC"))
+                        {
+
+                        }else{
                             message = dataStr;
+                        }
                         count ++;
                         if(count >= 3)
                         {

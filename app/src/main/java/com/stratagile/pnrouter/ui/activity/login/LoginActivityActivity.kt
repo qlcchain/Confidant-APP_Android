@@ -37,6 +37,7 @@ import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback.*
+import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.component.DaggerLoginActivityComponent
 import com.stratagile.pnrouter.ui.activity.login.contract.LoginActivityContract
 import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
@@ -103,12 +104,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     val REQUEST_SCAN_QRCODE = 1
     var loginBack = false
     var isFromScan = false
+    var isFromScanAdmim = false
     var isClickLogin = false
     var stopTox = false;
     var loginOk = false
     var isToxLoginOverTime = false;
     var maxLogin = 0
     var threadInit = false
+    var RouterMacStr = ""
+    var scanType = 0 // 0 admin   1 其他
    
 
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
@@ -160,7 +164,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             2 -> {
                 runOnUiThread {
-                    toast("error")
+                    toast("Rid error")
                 }
 
             }
@@ -198,7 +202,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             4 -> {
-
+                runOnUiThread {
+                    toast("Other mistakes")
+                }
             }
             else -> {
             }
@@ -345,8 +351,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         loginGoMain = false
         needFront = true
         isFromScan = false
+        isFromScanAdmim = false
         isClickLogin = false
         stopTox = false
+        RouterMacStr = ""
         ConstantValue.lastNetworkType = ""
         super.onCreate(savedInstanceState)
     }
@@ -462,10 +470,25 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(standaloneCoroutine != null)
                     standaloneCoroutine.cancel()
                 ConstantValue.isHasWebsocketInit = true
-                if(isFromScan)
+                if(isFromScanAdmim)
                 {
-                    closeProgressDialog()
+                    runOnUiThread {
+                        closeProgressDialog()
+                    }
+                    var intent = Intent(this, AdminLoginActivity::class.java)
+                    startActivity(intent)
+                    /*closeProgressDialog()
                     showProgressDialog("wait...")
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
+                    isFromScanAdmim = false
+                }
+                else if(isFromScan)
+                {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        showProgressDialog("wait...")
+                    }
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
                     isFromScan = false
@@ -614,6 +637,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
+        var adminRouterId = intent.getStringExtra("adminRouterId")
+        var adminUserSn = intent.getStringExtra("adminUserSn")
+        var adminUserId = intent.getStringExtra("adminUserId")
+        var adminUserName = intent.getStringExtra("adminUserName")
+
         newRouterEntity = RouterEntity()
         lastLoginUserId = FileUtil.getLocalUserData("userid")
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
@@ -838,23 +866,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     {
                                         println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
                                         //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                        if(scanType == 1)//不是admin二维码
                                         {
+                                            if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                            {
+                                                ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.port= ":18006"
+                                                ConstantValue.filePort = ":18007"
+                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                break;
+                                            }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
+                                            {
+                                                ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.port= ":18006"
+                                                ConstantValue.filePort = ":18007"
+                                                ConstantValue.currentRouterId = routerId
+                                                ConstantValue.currentRouterSN =  userSn
+                                                break;
+                                            }
+                                        }else{
+                                            ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
-                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                            break;
-                                        }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
-                                        {
-                                            ConstantValue.currentRouterIp = udpRouterArray[0]
-                                            ConstantValue.port= ":18006"
-                                            ConstantValue.filePort = ":18007"
-                                            ConstantValue.currentRouterId = routerId
-                                            ConstantValue.currentRouterSN =  userSn
-                                            break;
+                                            ConstantValue.currentRouterMac = RouterMacStr
                                         }
+
 
                                     }
                                 }
@@ -864,7 +902,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                             {
                                 ConstantValue.curreantNetworkType = "WIFI"
-                                if(isFromScan)
+                                if(isFromScan || isFromScanAdmim)
                                 {
                                     if(ConstantValue.isHasWebsocketInit)
                                     {
@@ -889,27 +927,53 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var hasCheckedRouter = false
             run breaking@ {
                 routerList.forEach {
-                    if (it.lastCheck) {
-                        routerId = it.routerId
-                        userSn = it.userSn
-                        userId = it.userId
-                        username = it.username
-                        dataFileVersion = it.dataFileVersion
+                    if(adminUserSn != null && !adminUserSn.equals(""))
+                    {
+                        if (it.userSn.equals(adminUserSn)) {
+                            routerId = it.routerId
+                            userSn = it.userSn
+                            userId = it.userId
+                            username = it.username
+                            dataFileVersion = it.dataFileVersion
 
-                        if(it.routerName != null){
-                            routerNameTips.text = it.routerName
-                        }else{
-                            routerNameTips.text =  "Router 1"
-                        }
-                        if(it.loginKey != null){
-                            loginKey.setText(it.loginKey)
-                        }else{
-                            loginKey.setText("")
-                        }
+                            if(it.routerName != null){
+                                routerNameTips.text = it.routerName
+                            }else{
+                                routerNameTips.text =  "Router 1"
+                            }
+                            if(it.loginKey != null){
+                                loginKey.setText(it.loginKey)
+                            }else{
+                                loginKey.setText("")
+                            }
 
-                        hasCheckedRouter = true
-                        return@breaking
+                            hasCheckedRouter = true
+                            return@breaking
+                        }
+                    }else{
+                        if (it.lastCheck) {
+                            routerId = it.routerId
+                            userSn = it.userSn
+                            userId = it.userId
+                            username = it.username
+                            dataFileVersion = it.dataFileVersion
+
+                            if(it.routerName != null){
+                                routerNameTips.text = it.routerName
+                            }else{
+                                routerNameTips.text =  "Router 1"
+                            }
+                            if(it.loginKey != null){
+                                loginKey.setText(it.loginKey)
+                            }else{
+                                loginKey.setText("")
+                            }
+
+                            hasCheckedRouter = true
+                            return@breaking
+                        }
                     }
+
                 }
             }
             if (!hasCheckedRouter) {
@@ -1350,154 +1414,209 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             try {
                 var result = data!!.getStringExtra("result");
                 var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
-                val keyId:ByteArray = ByteArray(6) //密钥ID
-                val RouterId:ByteArray = ByteArray(76) //路由器id
-                val UserSn:ByteArray = ByteArray(32)  //用户SN
-                System.arraycopy(soureData, 0, keyId, 0, 6)
-                System.arraycopy(soureData, 6, RouterId, 0, 76)
-                System.arraycopy(soureData, 82, UserSn, 0, 32)
-                var keyIdStr = String(keyId)
-                var RouterIdStr = String(RouterId)
-                var UserSnStr = String(UserSn)
-
-                ConstantValue.scanRouterId = RouterIdStr
-                ConstantValue.scanRouterSN = UserSnStr
-                if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
+                if(soureData.size == 114)
                 {
-                    if(AppConfig.instance.messageReceiver != null)
-                        AppConfig.instance.messageReceiver!!.close()
-                    ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
+                    scanType = 1
+                    val keyId:ByteArray = ByteArray(6) //密钥ID
+                    val RouterId:ByteArray = ByteArray(76) //路由器id
+                    val UserSn:ByteArray = ByteArray(32)  //用户SN
+                    System.arraycopy(soureData, 0, keyId, 0, 6)
+                    System.arraycopy(soureData, 6, RouterId, 0, 76)
+                    System.arraycopy(soureData, 82, UserSn, 0, 32)
+                    var keyIdStr = String(keyId)
+                    var RouterIdStr = String(RouterId)
+                    var UserSnStr = String(UserSn)
 
-                    ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
-                    ConstantValue.lastPort=  ConstantValue.port
-                    ConstantValue.lastFilePort= ConstantValue.filePort
-                    ConstantValue.lastRouterId =   ConstantValue.currentRouterId
-                    ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
-
-                    isFromScan = true
-                    ConstantValue.currentRouterIp = ""
-                    if(WiFiUtil.isWifiConnect())
+                    ConstantValue.scanRouterId = RouterIdStr
+                    ConstantValue.scanRouterSN = UserSnStr
+                    if(RouterIdStr != null && !RouterIdStr.equals("")&& UserSnStr != null && !UserSnStr.equals(""))
                     {
-                        var count =0;
-                        KLog.i("测试计时器" + count)
-                        Thread(Runnable() {
-                            run() {
+                        if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()
+                        ConstantValue.lastNetworkType = ConstantValue.curreantNetworkType
 
-                                while (true)
-                                {
-                                    if(count >=3)
+                        ConstantValue.lastRouterIp =  ConstantValue.currentRouterIp
+                        ConstantValue.lastPort=  ConstantValue.port
+                        ConstantValue.lastFilePort= ConstantValue.filePort
+                        ConstantValue.lastRouterId =   ConstantValue.currentRouterId
+                        ConstantValue.lastRouterSN =  ConstantValue.currentRouterSN
+
+                        isFromScan = true
+                        ConstantValue.currentRouterIp = ""
+                        if(WiFiUtil.isWifiConnect())
+                        {
+                            var count =0;
+                            KLog.i("测试计时器" + count)
+                            Thread(Runnable() {
+                                run() {
+
+                                    while (true)
                                     {
-                                        if(!ConstantValue.currentRouterIp.equals(""))
+                                        if(count >=3)
                                         {
-                                            Thread.currentThread().interrupt(); //方法调用终止线程
-                                            break;
-                                        }else{
+                                            if(!ConstantValue.currentRouterIp.equals(""))
+                                            {
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                break;
+                                            }else{
 
-                                            OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                                override fun onFailure( e :Exception) {
-                                                    startToxAndRecovery()
-                                                    Thread.currentThread().interrupt(); //方法调用终止线程
-                                                }
-                                                override fun  onResponse(json:String ) {
-
-                                                    val gson = GsonUtil.getIntGson()
-                                                    var httpData: HttpData? = null
-                                                    try {
-                                                        if (json != null) {
-                                                            httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                            if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                                            {
-                                                                ConstantValue.curreantNetworkType = "WIFI"
-                                                                ConstantValue.currentRouterIp = httpData.serverHost
-                                                                ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                                ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                                                ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                                if(ConstantValue.isHasWebsocketInit)
-                                                                {
-                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                }else{
-                                                                    ConstantValue.isHasWebsocketInit = true
-                                                                    AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                                                                }
-                                                                AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                                                Thread.currentThread().interrupt() //方法调用终止线程
-                                                            }else{
-                                                                startToxAndRecovery()
-                                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                                            }
-
-                                                        }
-                                                    } catch (e: Exception) {
+                                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                                    override fun onFailure( e :Exception) {
                                                         startToxAndRecovery()
                                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                                     }
-                                                }
-                                            })
-                                            break;
-                                        }
+                                                    override fun  onResponse(json:String ) {
 
-                                    }
-                                    count ++;
-                                    MobileSocketClient.getInstance().init(handler,this)
-                                    var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
-                                    MobileSocketClient.getInstance().destroy()
-                                    MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-                                    MobileSocketClient.getInstance().receive()
-                                    KLog.i("测试计时器" + count)
-                                    Thread.sleep(1000)
-                                }
+                                                        val gson = GsonUtil.getIntGson()
+                                                        var httpData: HttpData? = null
+                                                        try {
+                                                            if (json != null) {
+                                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                                {
+                                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                                    if(ConstantValue.isHasWebsocketInit)
+                                                                    {
+                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                    }else{
+                                                                        ConstantValue.isHasWebsocketInit = true
+                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                    }
+                                                                    AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                                                }else{
+                                                                    startToxAndRecovery()
+                                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                }
 
-                            }
-                        }).start()
-                    }else{
-                        Thread(Runnable() {
-                            run() {
-                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
-                                    override fun onFailure( e :Exception) {
-                                        startToxAndRecovery()
-                                    }
-
-                                    override fun  onResponse(json:String ) {
-
-                                        val gson = GsonUtil.getIntGson()
-                                        var httpData: HttpData? = null
-                                        try {
-                                            if (json != null) {
-                                                var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                                {
-                                                    ConstantValue.curreantNetworkType = "WIFI"
-                                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                    if(ConstantValue.isHasWebsocketInit)
-                                                    {
-                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                    }else{
-                                                        ConstantValue.isHasWebsocketInit = true
-                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            startToxAndRecovery()
+                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                        }
                                                     }
-                                                    AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                                }else{
-                                                    startToxAndRecovery()
-                                                }
-
+                                                })
+                                                break;
                                             }
-                                        } catch (e: Exception) {
+
+                                        }
+                                        count ++;
+                                        MobileSocketClient.getInstance().init(handler,this)
+                                        var toxIdMi = AESCipher.aesEncryptString(RouterIdStr,"slph\$%*&^@-78231")
+                                        MobileSocketClient.getInstance().destroy()
+                                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                                        MobileSocketClient.getInstance().receive()
+                                        KLog.i("测试计时器" + count)
+                                        Thread.sleep(1000)
+                                    }
+
+                                }
+                            }).start()
+                        }else{
+                            Thread(Runnable() {
+                                run() {
+                                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
+                                        override fun onFailure( e :Exception) {
                                             startToxAndRecovery()
                                         }
-                                    }
-                                })
-                            }
-                        }).start()
-                    }
-                }else{
-                    toast(R.string.code_error)
-                }
 
+                                        override fun  onResponse(json:String ) {
+
+                                            val gson = GsonUtil.getIntGson()
+                                            var httpData: HttpData? = null
+                                            try {
+                                                if (json != null) {
+                                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                    {
+                                                        ConstantValue.curreantNetworkType = "WIFI"
+                                                        ConstantValue.currentRouterIp = httpData.serverHost
+                                                        ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                        ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                        ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                        if(ConstantValue.isHasWebsocketInit)
+                                                        {
+                                                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                        }else{
+                                                            ConstantValue.isHasWebsocketInit = true
+                                                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                        }
+                                                        AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                    }else{
+                                                        startToxAndRecovery()
+                                                    }
+
+                                                }
+                                            } catch (e: Exception) {
+                                                startToxAndRecovery()
+                                            }
+                                        }
+                                    })
+                                }
+                            }).start()
+                        }
+                    }else{
+                        toast(R.string.code_error)
+                    }
+                }else  if(soureData.size == 17)
+                {
+                    scanType = 0;
+                    RouterMacStr = String(soureData)
+                    if(RouterMacStr != null && !RouterMacStr.equals(""))
+                    {
+                        if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()
+                        if(WiFiUtil.isWifiConnect())
+                        {
+                            isFromScanAdmim = true
+                            var count =0;
+                            KLog.i("测试计时器Mac" + count)
+                            Thread(Runnable() {
+                                run() {
+
+                                    while (true)
+                                    {
+                                        if(count >=3)
+                                        {
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
+                                        }else if(!ConstantValue.currentRouterMac.equals(""))
+                                        {
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                            break;
+                                        }
+                                        count ++;
+                                        MobileSocketClient.getInstance().init(handler,this)
+                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                        MobileSocketClient.getInstance().destroy()
+                                        MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                        MobileSocketClient.getInstance().receive()
+                                        KLog.i("测试计时器Mac" + count)
+                                        Thread.sleep(1000)
+                                    }
+
+                                }
+                            }).start()
+
+                        }else{
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast(R.string.Please_connect_to_WiFi)
+                            }
+                        }
+                    }else{
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast(R.string.code_error)
+                        }
+                    }
+                }
             }catch (e:Exception)
             {
                 runOnUiThread {

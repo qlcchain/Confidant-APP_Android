@@ -63,6 +63,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     KLog.i(jRecoveryRsp)
                     recoveryBackListener?.recoveryBack(jRecoveryRsp)
                     loginBackListener?.recoveryBack(jRecoveryRsp)
+                    adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
                 }
                 "Register" -> {
                     val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -208,6 +209,24 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
                     chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
                 }
+                //admin登陆
+                "RouterLogin" -> {
+                    val JAdminLoginRsp = gson.fromJson(text, JAdminLoginRsp::class.java)
+                    adminLoginCallBack?.login(JAdminLoginRsp)
+
+                }
+                //admin修改密码
+                "ResetRouterKey" -> {
+                    val JAdminUpdataPasswordRsp = gson.fromJson(text, JAdminUpdataPasswordRsp::class.java)
+                    adminUpdataPassWordCallBack?.updataPassWord(JAdminUpdataPasswordRsp)
+
+                }
+                //admin修改code
+                "ResetUserIdcode" -> {
+                    val JAdminUpdataCodeRsp = gson.fromJson(text, JAdminUpdataCodeRsp::class.java)
+                    adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
+
+                }
             }
         }
 
@@ -235,6 +254,14 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var pullUserCallBack: PullUserCallBack? = null
 
     var createUserCallBack: CreateUserCallBack? = null
+
+    var adminLoginCallBack: AdminLoginCallBack? = null
+
+    var adminUpdataPassWordCallBack: AdminUpdataPassWordCallBack? = null
+
+    var adminUpdataCodeCallBack: AdminUpdataCodeCallBack? = null
+
+    var adminRecoveryCallBack: AdminRecoveryCallBack? = null
 
     var userControlleCallBack : UserControlleCallBack? = null
 
@@ -401,6 +428,18 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface CreateUserCallBack {
         fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp)
+    }
+    interface AdminLoginCallBack {
+        fun login(jAdminLoginRsp: JAdminLoginRsp)
+    }
+    interface AdminUpdataCodeCallBack {
+        fun updataCode(jAdminUpdataCodeRsp:JAdminUpdataCodeRsp)
+    }
+    interface AdminRecoveryCallBack {
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
+    }
+    interface AdminUpdataPassWordCallBack{
+        fun updataPassWord(jAdminUpdataPasswordRsp:JAdminUpdataPasswordRsp)
     }
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);

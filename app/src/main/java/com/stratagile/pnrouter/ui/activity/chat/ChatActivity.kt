@@ -408,6 +408,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }catch (e:Exception)
         {
+            chatFragment?.deleteMessage()
             LogUtil.addLog("sendMsg 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }

@@ -4,7 +4,7 @@ import com.stratagile.pnrouter.entity.LoginReq
 import java.util.HashMap
 
 object ConstantValue {
-        var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
+        var encryptionType = "0" // 加密方式 0:RSA+AES  ; 1 : libsodium
         var localPath = "/RouterData13"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
@@ -53,6 +53,7 @@ object ConstantValue {
         var currentRouterIp:String = ""//记录组播寻找到的路由器ip
         var currentRouterId:String = ""//记录组播寻找到的路由器id
         var currentRouterSN:String = ""//记录组播寻找到的路由器SN  02000018B827EBD089CB00005BFB70B9     02000006B827EBD4703000005BFDF5E8 华为
+        var currentRouterMac:String = ""//二维码路由Mac
         var isRegister:Boolean = false //记录当前选择路由器是否注册
         var isWebsocketConnected:Boolean = false
         var shouBegin:Long = 0;

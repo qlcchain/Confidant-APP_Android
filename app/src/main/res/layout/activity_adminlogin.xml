@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/mnemonic"
+            android:id="@+id/adminPassWord"
             android:layout_width="300dp"
             android:layout_height="53dp"
             android:layout_marginEnd="8dp"
@@ -42,7 +42,7 @@
             android:layout_marginTop="36dp"
             android:ems="10"
             android:gravity="left"
-            android:hint="@string/Add_Nickname"
+            android:hint="@string/Routerpassword"
             android:inputType="text"
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
@@ -55,30 +55,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/adduserbg" />
 
-        <EditText
-            android:id="@+id/IdentifyCode"
-            android:layout_width="300dp"
-            android:layout_height="53dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:ems="10"
-            android:gravity="left"
-            android:hint="@string/Lnvitation_code"
-            android:inputType="text"
-            android:paddingBottom="@dimen/x35"
-            android:singleLine="true"
-            android:maxLength="8"
-            android:textColor="@color/regeisetInput"
-            android:textColorHint="@color/color_808080"
-            android:textSize="@dimen/x31"
-            android:theme="@style/MyEditText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.41"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mnemonic" />
-
         <TextView
             android:id="@+id/textView5"
             android:layout_width="301dp"
@@ -86,28 +62,28 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@string/adduserTips"
+            android:text="@string/routerpasswordTips"
             android:textColor="@color/color_b3b3b3"
             android:textSize="@dimen/x21"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.414"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/IdentifyCode" />
+            app:layout_constraintTop_toBottomOf="@+id/adminPassWord" />
 
         <TextView
-            android:id="@+id/registerUserBtn"
+            android:id="@+id/loginBtn"
             android:layout_width="313dp"
             android:layout_height="50dp"
             android:layout_marginEnd="@dimen/x52"
             android:layout_marginStart="@dimen/x52"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/textview_border"
             android:gravity="center"
             android:paddingBottom="@dimen/x16"
             android:paddingTop="@dimen/x16"
-            android:text="@string/create"
+            android:text="@string/LoginAdmin"
             android:textColor="@color/color_efefef"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView5" />
