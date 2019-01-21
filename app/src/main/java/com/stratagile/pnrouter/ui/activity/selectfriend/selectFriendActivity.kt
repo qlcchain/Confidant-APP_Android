@@ -4,15 +4,10 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.widget.LinearLayout
-import android.widget.Toast
 import butterknife.ButterKnife
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.hyphenate.chat.*
-import com.hyphenate.easeui.EaseConstant
-import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
@@ -22,7 +17,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -34,17 +28,14 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.selectFriendPr
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxSendFileFinishedEvent
-import im.tox.tox4j.core.enums.ToxMessageType
+import com.stratagile.tox.events.ToxSendFileFinishedEvent
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import scalaz.std.int
 import java.io.File
 import java.util.*
 import javax.inject.Inject
-
 
 
 /**
@@ -280,7 +271,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 toxFileData.srcKey = String(SrcKey)
                                                 toxFileData.dstKey = String(DstKey)
-                                                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 //val fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
                                                 var fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 sendToxFileDataMap.put(fileNumber, toxFileData)
@@ -388,7 +379,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 toxFileData.srcKey = String(SrcKey)
                                                 toxFileData.dstKey = String(DstKey)
-                                                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 //val fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
                                                 var fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 sendToxFileDataMap[fileNumber] = toxFileData
@@ -489,7 +480,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 toxFileData.srcKey = String(SrcKey)
                                                 toxFileData.dstKey = String(DstKey)
-                                                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                //val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 //val fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
                                                 var fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 sendToxFileDataMap[fileNumber] = toxFileData

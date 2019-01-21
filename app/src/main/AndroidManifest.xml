@@ -43,10 +43,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base"
         tools:replace="android:allowBackup">
-        <service
-            android:name="chat.tox.antox.tox.ToxService"
-            android:exported="false"
-            android:label="ToxService" />
         <activity
             android:name=".ui.activity.login.LoginActivityActivity"
             android:screenOrientation="portrait">

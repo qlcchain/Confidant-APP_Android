@@ -1,13 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.user
 
 import android.os.Bundle
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-import com.stratagile.pnrouter.R.id.sendRequestBtn
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -25,15 +21,12 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_sendaddfriend.*
-import kotlinx.android.synthetic.main.fragment_my.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -134,7 +127,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }

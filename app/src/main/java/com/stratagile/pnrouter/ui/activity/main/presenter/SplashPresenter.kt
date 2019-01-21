@@ -4,9 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.os.Environment
 import android.util.Log
-import chat.tox.antox.toxme.ToxData
-import chat.tox.antox.utils.CreateUserUtils
-import chat.tox.antox.wrapper.ToxAddress
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hyphenate.easeui.utils.PathUtils
@@ -164,7 +161,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             getLastVersion()
 
 
-            var toxData: ToxData = CreateUserUtils.createToxData("myRouter",AppConfig.instance)
+           /* var toxData: ToxData = CreateUserUtils.createToxData("myRouter",AppConfig.instance)
             var toxId:String =  FileUtil.getLocalUserData("toxId")
             if(toxId == null || toxId.equals(""))            {
 
@@ -174,7 +171,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     var toxId = toxAddress.toString()
                     FileUtil.saveUserData2Local(toxId,"toxId")
                 }
-            }
+            }*/
             if(ConstantValue.encryptionType.equals("0"))
             {
                 ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")

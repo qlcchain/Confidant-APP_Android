@@ -13,8 +13,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.chat.EMMessage
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
@@ -50,7 +48,6 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import kotlinx.android.synthetic.main.fragment_my.*
@@ -263,7 +260,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             Log.i("pullFriendList", "tox")
             var baseData = BaseData(pullFriend)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }

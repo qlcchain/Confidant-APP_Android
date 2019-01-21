@@ -12,8 +12,6 @@ import android.view.KeyEvent
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.nightonke.wowoviewpager.Animation.ViewAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoPositionAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoTranslationAnimation
@@ -42,10 +40,8 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
-import interfaceScala.InterfaceScaleUtil
+import com.stratagile.tox.events.ToxFriendStatusEvent
+import com.stratagile.tox.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_guest.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe

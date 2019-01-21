@@ -14,8 +14,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -45,12 +43,11 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.tox.events.ToxFriendStatusEvent
+import com.stratagile.tox.events.ToxSendInfoEvent
+import com.stratagile.tox.events.ToxStatusEvent
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxFriendStatusEvent
-import events.ToxSendInfoEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -478,7 +475,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onStopTox(stopTox: StopTox) {
         try {
-            MessageHelper.clearAllMessage()
+            //MessageHelper.clearAllMessage()
         }catch (e:Exception)
         {
             e.printStackTrace()
@@ -576,7 +573,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     return
                 if(isFromScan)
                 {
-                    var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                    //var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                     ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
 
                     standaloneCoroutine = launch(CommonPool) {
@@ -619,7 +616,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     ToxCoreJni.getInstance().addFriend(routerId)
                     if(isClickLogin)
                     {
-                        var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                        //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                         loginBack = false
 
                         standaloneCoroutine = launch(CommonPool) {
@@ -755,7 +752,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(ConstantValue.isToxConnected)
                 {
                     isToxLoginOverTime = true
-                    var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                    //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                     var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
@@ -1129,7 +1126,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             ConstantValue.lastNetworkType =""
                             isClickLogin = false
                             try {
-                                MessageHelper.clearAllMessage()
+                                //MessageHelper.clearAllMessage()
                             }catch (e:Exception)
                             {
                                 e.printStackTrace()
@@ -1743,7 +1740,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             startService(intent)
         } else {
-            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {

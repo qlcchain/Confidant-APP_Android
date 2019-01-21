@@ -178,7 +178,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'com.alibaba:fastjson:1.2.37'
 
-    //implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation files('libs/klogLibrary-release.aar')
 
     // Rx
@@ -198,7 +198,7 @@ dependencies {
 
     //implementation project(':easeui')
     implementation project(':library')
-    implementation project(':appTox')
+    /*implementation project(':appTox')*/
     implementation project(':zxing')
     implementation project(':zbar')
     implementation 'org.greenrobot:greendao:3.2.2'
@@ -212,7 +212,7 @@ dependencies {
     implementation "android.arch.lifecycle:common-java8:$arch_version"
     kapt "android.arch.lifecycle:compiler:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
-
+    implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.1-SNAPSHOT'
     //implementation 'com.noober.floatmenu:common:1.0.4'
     implementation 'com.tencent.bugly:crashreport:2.6.6.1'
     implementation 'com.tencent.bugly:nativecrashreport:3.3.1'

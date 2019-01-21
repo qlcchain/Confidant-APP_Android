@@ -1,8 +1,6 @@
 package com.stratagile.pnrouter.data.tox
 
 import android.util.Log
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.stratagile.pnrouter.application.AppConfig
@@ -10,16 +8,17 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.GsonUtil
+import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.events.ToxMessageEvent
+import com.stratagile.tox.events.ToxStatusEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxMessageEvent
-import events.ToxStatusEvent
-import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -43,7 +42,7 @@ class ToxMessageReceiver(){
                     var loginReq = ConstantValue.loginReq
                     LogUtil.addLog("Tox重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
                     var baseDataJson = BaseData(loginReq).baseDataToJson().replace("\\", "")
-                    var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
@@ -107,7 +106,7 @@ class ToxMessageReceiver(){
                     baseData.offset =  baseData.offset!! + 1100
                     var aa = 110
                     var baseDataJson = baseData.baseDataToJson().replace("\\\\n", "").replace("\\n", "")
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
@@ -177,9 +176,8 @@ class ToxMessageReceiver(){
                 var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
-                // LogUtil.addLog("发送结果：${baseDataJson}")
-//                var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-//                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                 LogUtil.addLog("发送结果：${baseDataJson}")
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 

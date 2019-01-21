@@ -12,14 +12,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
-import com.noober.menu.FloatMenu;
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoice;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoicePlayer;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
+import com.noober.menu.FloatMenu;
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
@@ -31,10 +31,6 @@ import com.stratagile.tox.toxcore.ToxCoreJni;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
 
 /**
  * Created by zhangsong on 17-10-12.

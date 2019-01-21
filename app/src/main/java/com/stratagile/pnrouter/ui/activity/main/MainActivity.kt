@@ -13,8 +13,6 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
@@ -48,8 +46,7 @@ import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxSendInfoEvent
-import im.tox.tox4j.core.enums.ToxMessageType
+import com.stratagile.tox.events.ToxSendInfoEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -297,7 +294,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(msgData,pushMsgRsp?.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
@@ -421,7 +418,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }else if (ConstantValue.isToxConnected) {
                     var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
@@ -676,7 +673,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(pullFriend)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }

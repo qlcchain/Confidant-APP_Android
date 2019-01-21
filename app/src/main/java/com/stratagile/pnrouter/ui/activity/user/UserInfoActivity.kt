@@ -3,8 +3,6 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.EaseConstant
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
@@ -17,11 +15,12 @@ import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
-import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.AddFriendDealReq
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.ChangeRemarksReq
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
-import com.stratagile.pnrouter.ui.activity.router.UserQRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
@@ -32,10 +31,8 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
-import com.stratagile.pnrouter.view.TempRouterAlertDialog
+import com.stratagile.tox.events.ToxSendInfoEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxSendInfoEvent
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
