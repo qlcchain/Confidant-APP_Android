@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.AddFreindPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_add_freind.*
 import java.util.*
@@ -135,7 +136,8 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
                 var baseData = BaseData(login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
         }

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.support.multidex.MultiDexApplication
-import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -24,6 +23,7 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
+import com.stratagile.tox.toxcore.ToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.MiPushClient
@@ -62,6 +62,7 @@ class AppConfig : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashHandler.instance.init(this)
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", true)
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
@@ -74,6 +75,7 @@ class AppConfig : MultiDexApplication() {
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
         initMiPush()
+        loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
 //        MessageProvider.init()
     }
@@ -197,7 +199,6 @@ class AppConfig : MultiDexApplication() {
                 //KLog.i(content)
             }
         }
-
     }
 
     private fun shouldInit(): Boolean {
@@ -213,5 +214,14 @@ class AppConfig : MultiDexApplication() {
             }
         }
         return false
+    }
+
+    fun loadLibrary() {
+        try{
+            KLog.i("load tox库")
+            System.loadLibrary("tox")
+        } catch (exception : java.lang.Exception) {
+            exception.printStackTrace()
+        }
     }
 }

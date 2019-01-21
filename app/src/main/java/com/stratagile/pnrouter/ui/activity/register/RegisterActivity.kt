@@ -31,6 +31,7 @@ import com.stratagile.pnrouter.ui.activity.register.module.RegisterModule
 import com.stratagile.pnrouter.ui.activity.register.presenter.RegisterPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
@@ -213,7 +214,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 var baseData = BaseData(2,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                ToxCoreJni.getInstance().sendMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
+//                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }
 
@@ -294,7 +296,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 var baseData = BaseData(2,regeister)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+//                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
         }

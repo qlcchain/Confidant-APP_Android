@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_router_info.*
 import org.greenrobot.eventbus.EventBus
@@ -153,7 +154,8 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         val baseData = BaseData(2,msgData)
                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                         val friendKey = FriendKey(routerEntity.routerId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        ToxCoreJni.getInstance().sendMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
+//                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }
 
                     ConstantValue.isHasWebsocketInit = true

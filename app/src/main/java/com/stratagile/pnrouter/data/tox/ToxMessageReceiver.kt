@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxMessageEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -43,7 +44,8 @@ class ToxMessageReceiver(){
                     LogUtil.addLog("Tox重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
                     var baseDataJson = BaseData(loginReq).baseDataToJson().replace("\\", "")
                     var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
             }
             1 -> {
@@ -106,7 +108,8 @@ class ToxMessageReceiver(){
                     var aa = 110
                     var baseDataJson = baseData.baseDataToJson().replace("\\\\n", "").replace("\\n", "")
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     segmentContent +=baseData.params;
                     if(segmentContent.equals(""))
@@ -175,8 +178,9 @@ class ToxMessageReceiver(){
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
                 // LogUtil.addLog("发送结果：${baseDataJson}")
-                var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+//                var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+//                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
         }

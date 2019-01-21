@@ -68,7 +68,7 @@ add_library( # Sets the name of the library.
         src/main/cpp/toxcore/util.h
         src/main/cpp/toxcore/ppTox.c
         src/main/cpp/toxcore/ppTox.h
-)
+        )
 
 add_library( sodium
         SHARED

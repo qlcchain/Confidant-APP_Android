@@ -27,14 +27,16 @@ typedef struct {
 static Friend_request pending_requests[256];
 static uint8_t num_requests = 0;
 
-#define NUM_FILE_SENDERS 64
+#define NUM_FILE_SENDERS 100
 typedef struct {
+    uint64_t filesize;
     FILE *file;
     uint32_t friendnum;
     uint32_t filenumber;
 } File_Sender;
 static File_Sender file_senders[NUM_FILE_SENDERS];
 static uint8_t numfilesenders;
+static uint64_t received_file_size;
 
 Tox *mTox = NULL;
 JNIEnv *Env;
@@ -48,7 +50,7 @@ jobject g_obj = NULL;
 
 static const char *data_file_name = NULL;
 char dataPathFile[200] = {0};
-const char *savedata_filename = "savedata.tox";
+const char *savedata_filename = "toxId.json";
 
 #define FRAPUKKEY_TOSTR_BUFSIZE (TOX_PUBLIC_KEY_SIZE * 2 + 1)
 
@@ -57,58 +59,176 @@ tox_self_connection_status_cb self_connection_status_cb;
 tox_friend_request_cb friend_request_cb;
 tox_friend_message_cb friend_message_cb;
 tox_friend_connection_status_cb friend_connection_status_cb;
+//
+tox_file_chunk_request_cb file_chunk_request_cb;
+// 接收到文件的回调
+tox_file_recv_cb file_recv_cb;
+// 接收到文件块的回调
+tox_file_recv_chunk_cb file_recv_chunk_cb;
+//
+tox_file_recv_control_cb file_recv_control_cb;
+
+char recv_filename[200] = {0};
+int recv_filesize = 0;
 
 JNIEXPORT void JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, jstring dataPath) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, jstring dataPath) {
     Env = env;
-    (*env)->GetJavaVM(env, &g_jvm);
-    //不能直接赋值(g_obj = obj)
-    g_obj = (*env)->NewGlobalRef(env, thiz);
+    (*Env)->GetJavaVM(Env, &g_jvm);
+    g_obj = (*Env)->NewGlobalRef(Env, thiz);
 
-    char *dataPath_p = Jstring2CStr(env, dataPath);
+    char *dataPath_p = Jstring2CStr(Env, dataPath);
     // strcat 将两个char连接起来
     data_file_name = strcat(dataPath_p, savedata_filename);
     //strcpy 字符串复制
     strcpy(dataPathFile, dataPath_p);
     mTox = load_data();
-    const char *name = "ppm Tox";
-    tox_self_set_name(mTox, name, strlen(name), NULL);
-    const char *status_message = "ppm your messages";
+//    const char *name = "ppm Tox";
+//    tox_self_set_name(mTox, name, strlen(name), NULL);
+//    const char *status_message = "ppm your messages";
+//    tox_self_set_status_message(mTox, status_message, strlen(status_message), NULL);
     save_data_file(mTox, data_file_name);
-//    deleteFriendAll();
-    tox_self_set_status_message(mTox, status_message, strlen(status_message), NULL);
     tox_callback_friend_connection_status(mTox, friend_connection_status_cb, NULL);
     tox_callback_friend_request(mTox, friend_request_cb, NULL);
     tox_callback_friend_message(mTox, friend_message_cb, NULL);
     tox_callback_self_connection_status(mTox, self_connection_status_cb, NULL);
+
+    tox_callback_file_chunk_request(mTox, file_chunk_request_cb, NULL);
+    tox_callback_file_recv(mTox, file_recv_cb, NULL);
+    tox_callback_file_recv_chunk(mTox, file_recv_chunk_cb, NULL);
+    tox_callback_file_recv_control(mTox, file_recv_control_cb, NULL);
 }
 
+JNIEXPORT void JNICALL
+Java_com_stratagile_tox_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
+//    (*g_jvm)->AttachCurrentThread(g_jvm, Env, NULL);
+    tox_kill(mTox);
+    (*env)->DeleteGlobalRef(env, g_obj);
+//    (*g_jvm)->DestroyJavaVM(g_jvm);
+    free(Env);
+    free(g_jvm);
+    mTox = NULL;
+}
+
+/*
+** >0 file Send ok
+** -1 qlinkNode not valid
+** -2 filename not valid
+** -3 friendnum not valid
+** -4 file open fail
+** -5 file send fail
+*/
 JNIEXPORT jint JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, jstring fileName, jstring friendId) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, jstring fileName,
+                                                    jstring friendId) {
     //Tox *tox, uint32_t friend_number, uint32_t kind, uint64_t file_size, const uint8_t *file_id,
     //                       const uint8_t *filename, size_t filename_length, TOX_ERR_FILE_SEND *error
-    return 0;
+    if (mTox != NULL) {
+        if (fileName == NULL)
+            return -2;
+        char *filename = Jstring2CStr(env, fileName);
+        LOGD("%s", filename);
+        //printf("filename:%s\n",filename);
+        if (filename == NULL) {
+            return -3;
+        }
+/*		if (friend_not_valid_Qlink(qlinkNode, friendnum))
+		{
+        	return -3;
+    	}
+*/
+        if (friendId == NULL) {
+            free(filename);
+            return -4;
+        }
+        char *friendId_P = Jstring2CStr(env, friendId);
+        if (friendId_P == NULL) {
+            free(filename);
+            return -5;
+        }
+        int friendnum = GetFriendNumInFriendlist(friendId_P);
+        if (friendnum < 0) {
+            free(friendId_P);
+            free(filename);
+            return -6;
+        }
+
+        FILE *tempfile = fopen(filename, "rb");
+
+        if (tempfile == 0) {
+            free(friendId_P);
+            free(filename);
+            return -7;
+        }
+
+        fseek(tempfile, 0, SEEK_END);
+        uint64_t filesize = ftell(tempfile);
+        fseek(tempfile, 0, SEEK_SET);
+        LOGD("开始发送文件");
+        uint32_t filenum = tox_file_send(mTox, friendnum, TOX_FILE_KIND_DATA, filesize, 0,
+                                         (uint8_t *) filename,
+                                         strlen(filename), 0);
+
+        if (filenum == -1) {
+            free(friendId_P);
+            free(filename);
+            return -8;
+        }
+        file_senders[numfilesenders].filesize = filesize;
+        file_senders[numfilesenders].file = tempfile;
+        file_senders[numfilesenders].friendnum = friendnum;
+        file_senders[numfilesenders].filenumber = filenum;
+        ++numfilesenders;
+        free(filename);
+        free(friendId_P);
+        return filenum;
+    } else {
+        return -1;
+    }
 }
+
 JNIEXPORT jbyteArray JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_sodiumCryptoSeedKeyPair(JNIEnv *env, jobject thiz, jbyteArray publicKey, jbyteArray privateKey, jbyteArray seed) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_sodiumCryptoSeedKeyPair(JNIEnv *env, jobject thiz,
+                                                                   jbyteArray publicKey,
+                                                                   jbyteArray privateKey,
+                                                                   jbyteArray seed) {
     //unsigned char *pk, unsigned char *sk,
     //                            const unsigned char *seed)
     //            __attribute__ ((nonnull)
-    jbyte* publicKeyBuffer = (*env)->GetByteArrayElements(env,publicKey,0);
-    unsigned char* publicKeyBuf=(unsigned char*)publicKeyBuffer;
+    jbyte *publicKeyBuffer = (*env)->GetByteArrayElements(env, publicKey, 0);
+    jint lenPub = (*env)->GetArrayLength(env, publicKey);
+    unsigned char *publicKeyBuf[32];
+    unsigned char *puchars[lenPub + 1];
+    memset(puchars, 0, lenPub + 1);
+    memcpy(puchars, publicKeyBuffer, lenPub);
+    puchars[lenPub] = 0;
+    (*env)->GetByteArrayRegion(env, publicKey, 0, lenPub, publicKeyBuf);
 
-    jbyte* privateKeyyBuffer = (*env)->GetByteArrayElements(env,privateKey,0);
-    unsigned char* privateKeyBuf=(unsigned char*)privateKeyyBuffer;
+    jbyte *privateKeyyBuffer = (*env)->GetByteArrayElements(env, privateKey, 0);
+    unsigned char *privateKeyBuf[32];
+    unsigned char *prchars[lenPub + 1];
+    memset(prchars, 0, lenPub + 1);
+    memcpy(prchars, publicKeyBuffer, lenPub);
+    prchars[lenPub] = 0;
+    (*env)->GetByteArrayRegion(env, privateKey, 0, lenPub, privateKeyBuf);
 
-    jbyte* seedBuffer = (*env)->GetByteArrayElements(env,seed,0);
-    unsigned char* seedBuf=(unsigned char*)seedBuffer;
-    int result = crypto_box_seed_keypair(publicKeyBuf, privateKeyBuf, seedBuf);
-    LOGD("%s", publicKeyBuf);
-    LOGD("%s", privateKeyBuf);
-    jbyte* resultByte = (jbyte*)publicKeyBuf;
-    jint len = (*env)->GetArrayLength(env, publicKey);
-    jbyteArray  jbarray = (*env)-> NewByteArray(env,len);
-    (*env)->SetByteArrayRegion(env,jbarray, 0, len, resultByte);
+    jbyte *seedBuffer = (*env)->GetByteArrayElements(env, seed, 0);
+    jint lenSeed = (*env)->GetArrayLength(env, seed);
+    unsigned char *seedBuf[6];
+    unsigned char *schars[6 + 1];
+    memset(schars, 0, 6 + 1);
+    memcpy(schars, publicKeyBuffer, lenPub);
+    schars[lenPub] = 0;
+    (*env)->GetByteArrayRegion(env, seed, 0, lenSeed, seedBuf);
+
+
+    int result = crypto_box_seed_keypair((unsigned char *) publicKeyBuf,
+                                         (unsigned char *) privateKeyBuf,
+                                         (const unsigned char *) seedBuf);
+
+    jbyte *resultByte = (jbyte *) publicKeyBuf;
+    jbyteArray jbarray = (*env)->NewByteArray(env, lenPub);
+    (*env)->SetByteArrayRegion(env, jbarray, 0, lenPub, resultByte);
     return jbarray;
 }
 
@@ -124,25 +244,17 @@ void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void 
             show_log(Env, "TOX_CONNECTION_NONE");
             Call_SelfStatusChange_To_Java(Env, 0);
             break;
-        case TOX_CONNECTION_UDP:
-            show_log(Env, "TOX_CONNECTION_UDP");
-            LOGD("TOX_CONNECTION_UDP");
-            Call_SelfStatusChange_To_Java(Env, 2);
-            break;
         case TOX_CONNECTION_TCP:
             show_log(Env, "TOX_CONNECTION_TCP");
             LOGD("TOX_CONNECTION_TCP");
             Call_SelfStatusChange_To_Java(Env, 1);
             break;
+        case TOX_CONNECTION_UDP:
+            show_log(Env, "TOX_CONNECTION_UDP");
+            LOGD("TOX_CONNECTION_UDP");
+            Call_SelfStatusChange_To_Java(Env, 2);
+            break;
     }
-}
-
-JNIEXPORT void JNICALL Java_com_stratagile_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
-    free(Env);
-    free(g_jvm);
-    free(g_obj);
-    tox_kill(mTox);
-    mTox = NULL;
 }
 
 
@@ -216,6 +328,10 @@ static Tox *load_data(void) {
 
         options.savedata_data = data;
 
+        options.udp_enabled = true;
+//        options.start_port = 45600;
+//        options.end_port = 45700;
+
         options.savedata_length = size;
 
         Tox *m = tox_new(&options, NULL);
@@ -267,15 +383,15 @@ void print_tox_id(JNIEnv *env, Tox *tox) {
 
 
 JNIEXPORT jint JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_bootStrap(JNIEnv *env, jobject thiz, jstring address,
-                                                 jstring jport, jstring publicKey) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_bootStrap(JNIEnv *env, jobject thiz, jstring address,
+                                                     jint jport, jstring publicKey) {
     //Tox *tox, const char *address, uint16_t port, const uint8_t *public_key, TOX_ERR_BOOTSTRAP *error
     char *ipv4 = Jstring2CStr(env, address);
     char *key_string = Jstring2CStr(env, publicKey);
-    uint16_t port = 33445;
-//    sodium_hex2bin(dht_node.key_bin, sizeof(dht_node.key_bin), dht_node.key_hex, sizeof(dht_node.key_hex)-1, NULL, NULL, NULL);
     unsigned char *binary_string = hex_string_to_bin(key_string);
-    int result = tox_bootstrap(mTox, ipv4, port, binary_string, NULL);
+    int result = tox_bootstrap(mTox, ipv4, (uint16_t) jport, binary_string, NULL);
+    free(ipv4);
+    free(key_string);
     return result;
 }
 
@@ -293,7 +409,6 @@ int save_data(Tox *tox) {
     size_t size = tox_get_savedata_size(mTox);
     VLA(uint8_t, data, size);
     tox_get_savedata(tox, data);
-
     if (fwrite(data, sizeof(uint8_t), size, data_file) != size) {
         fputs("[!] could not write data file (1)!", stderr);
         res = 1;
@@ -310,42 +425,43 @@ int save_data(Tox *tox) {
  * 显示log到androidstudio控制台
  */
 void show_log(JNIEnv *env, char *string) {
-    if (env == NULL) {
+//    if (env == NULL) {
+//        return;
+//    }
+    JNIEnv *env1;
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &env1, NULL) != JNI_OK) {
         return;
     }
-    if((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL)  !=  JNI_OK) {
-        return;
-    }
-    jmethodID mid_construct = NULL;
-    jobject jobj = NULL;
+//    jmethodID mid_construct = NULL;
+//    jobject jobj = NULL;
     LOGD("log的内容为：%s", string);
     //直接用GetObjectClass找到Class, 也就是Sdk.class.
-    jclass clazz = (*env)->FindClass(env, "com/stratagile/toxcore/ToxCoreJni");
+    jclass clazz = (*env1)->FindClass(env1, "com/stratagile/tox/toxcore/ToxCoreJni");
     if (clazz == NULL) {
-        LOGD("找不到'com/stratagile/toxcore/ToxCoreJni'这个类");
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
         return;
     }
-    // 2、获取类的默认构造方法ID
-    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
-    if (mid_construct == NULL) {
-        LOGD("找不到默认的构造方法");
-        return;
-    }
+//    // 2、获取类的默认构造方法ID
+//    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
+//    if (mid_construct == NULL) {
+//        LOGD("找不到默认的构造方法");
+//        return;
+//    }
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "showLog", "(Ljava/lang/String;)V");
-    //创建该类的实例
-    jobj = (*env)->NewObject(env, clazz, mid_construct);
-    if (jobj == NULL) {
-        LOGD("在com/stratagile/toxcore/ToxCoreJni类中找不到showLog方法");
-        return;
-    }
-    jstring callbackStr = (*env)->NewStringUTF(env, string);
+    jmethodID javaCallback = (*env1)->GetMethodID(env1, clazz, "showLog", "(Ljava/lang/String;)V");
+//    //创建该类的实例
+//    jobj = (*env)->NewObject(env, clazz, mid_construct);
+//    if (jobj == NULL) {
+//        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到showLog方法");
+//        return;
+//    }
+    jstring callbackStr = (*env1)->NewStringUTF(env1, string);
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*env)->CallVoidMethod(env, jobj, javaCallback, callbackStr);
+    (*env1)->CallVoidMethod(env1, g_obj, javaCallback, callbackStr);
 
-    (*env)->DeleteLocalRef(env, clazz);
-    (*env)->DeleteLocalRef(env, jobj);
-    (*env)->DeleteLocalRef(env, callbackStr);
+    (*env1)->DeleteLocalRef(env1, clazz);
+    (*env1)->DeleteLocalRef(env1, callbackStr);
+//    (*g_jvm)->DetachCurrentThread(g_jvm);
 }
 
 /* Call_SelfStatusChange_To_Java
@@ -357,44 +473,45 @@ void show_log(JNIEnv *env, char *string) {
 ** -4 can't Create an instance
 */
 int Call_SelfStatusChange_To_Java(JNIEnv *env, int status) {
-    jmethodID mid_construct = NULL;
-    jobject jobj = NULL;
-    if((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL)  !=  JNI_OK) {
+//    jmethodID mid_construct = NULL;
+//    jobject jobj = NULL;
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
         return -1;
     }
     //直接用GetObjectClass找到Class, 也就是Sdk.class.
-    jclass clazz = (*env)->FindClass(env, "com/stratagile/toxcore/ToxCoreJni");
+    jclass clazz = (*env)->FindClass(env, "com/stratagile/tox/toxcore/ToxCoreJni");
     if (clazz == NULL) {
-        LOGD("找不到'com/stratagile/toxcore/ToxCoreJni'这个类");
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
         return 0;
     }
-    // 2、获取类的默认构造方法ID
-    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
-    if (mid_construct == NULL) {
-        LOGD("找不到默认的构造方法");
-        return 0;
-    }
+//    // 2、获取类的默认构造方法ID
+//    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
+//    if (mid_construct == NULL) {
+//        LOGD("找不到默认的构造方法");
+//        return 0;
+//    }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "callSelfChange", "(I)V");
-    //创建该类的实例
-    jobj = (*env)->NewObject(env, clazz, mid_construct);
-    if (jobj == NULL) {
-        LOGD("在com/stratagile/toxcore/ToxCoreJni类中找不到showLog方法");
-        return 0;
-    }
+//    //创建该类的实例
+//    jobj = (*env)->NewObject(env, clazz, mid_construct);
+//    if (jobj == NULL) {
+//        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到showLog方法");
+//        return 0;
+//    }
     LOGD("开始调用java方法");
 
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*env)->CallVoidMethod(env, jobj, javaCallback, status);
+    (*env)->CallVoidMethod(env, g_obj, javaCallback, status);
 
     (*env)->DeleteLocalRef(env, clazz);
-    (*env)->DeleteLocalRef(env, jobj);
-//    (*env)->DeleteLocalRef(env,callbackStr);
+//    (*Env)->DeleteLocalRef(env,callbackStr);
+//    (*g_jvm)->DetachCurrentThread(g_jvm);
     return 0;
 }
 
 
-JNIEXPORT void JNICALL Java_com_stratagile_toxcore_ToxCoreJni_getToxStatus(JNIEnv *env, jobject thiz) {
+JNIEXPORT void JNICALL
+Java_com_stratagile_tox_toxcore_ToxCoreJni_getToxStatus(JNIEnv *env, jobject thiz) {
     TOX_CONNECTION connection_status = tox_self_get_connection_status(mTox);
     print_tox_id(env, mTox);
     switch (connection_status) {
@@ -403,21 +520,21 @@ JNIEXPORT void JNICALL Java_com_stratagile_toxcore_ToxCoreJni_getToxStatus(JNIEn
             show_log(env, "TOX_CONNECTION_NONE");
             Call_SelfStatusChange_To_Java(env, 0);
             break;
-        case TOX_CONNECTION_UDP:
-            show_log(env, "TOX_CONNECTION_UDP");
-            LOGD("TOX_CONNECTION_UDP");
-            Call_SelfStatusChange_To_Java(env, 2);
-            break;
         case TOX_CONNECTION_TCP:
             show_log(env, "TOX_CONNECTION_TCP");
             LOGD("TOX_CONNECTION_TCP");
             Call_SelfStatusChange_To_Java(env, 1);
             break;
+        case TOX_CONNECTION_UDP:
+            show_log(env, "TOX_CONNECTION_UDP");
+            LOGD("TOX_CONNECTION_UDP");
+            Call_SelfStatusChange_To_Java(env, 2);
+            break;
     }
 }
 
 JNIEXPORT jint JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_addFriend(JNIEnv *env, jobject thiz, jstring friendid) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_addFriend(JNIEnv *env, jobject thiz, jstring friendid) {
     if (mTox != NULL) { // add friend command: /f ID
         int i, delta = 0;
         if (friendid == NULL)
@@ -427,12 +544,20 @@ Java_com_stratagile_toxcore_ToxCoreJni_addFriend(JNIEnv *env, jobject thiz, jstr
             return -3;
         int friendNum = GetFriendNumInFriendlist(friendid_p);
         LOGD("friendNum为：%d", friendNum);
-        if (friendNum > 0) {
-            return friendNum;
+        if (friendNum >= 0) {
+//            int res = tox_friend_delete(mTox, friendNum, NULL);
+//            if (res) {
+//                printf("remove a friend success\n");
+//            } else {
+//                printf("remove a friend fail\n");
+//            }
+            return -1;
         }
         TOX_ERR_FRIEND_ADD error;
         unsigned char *bin_string = hex_string_to_bin(friendid_p);
-        int result =  tox_friend_add(mTox, bin_string, (const uint8_t *) "Hi PPM", sizeof("Hi PPM"), &error);
+
+        int result = tox_friend_add(mTox, bin_string, (const uint8_t *) "Hi PPM", sizeof("Hi PPM"),
+                                    &error);
         char numstring[100];
 
         switch (error) {
@@ -480,7 +605,8 @@ Java_com_stratagile_toxcore_ToxCoreJni_addFriend(JNIEnv *env, jobject thiz, jstr
 }
 
 JNIEXPORT jint JNICALL
-Java_com_stratagile_toxcore_ToxCoreJni_deleteFriend(JNIEnv *env, jobject thiz, jstring friendid) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_deleteFriend(JNIEnv *env, jobject thiz,
+                                                        jstring friendid) {
     if (friendid == NULL)
         return -2;
     char *friendid_p = Jstring2CStr(env, friendid);
@@ -490,7 +616,7 @@ Java_com_stratagile_toxcore_ToxCoreJni_deleteFriend(JNIEnv *env, jobject thiz, j
     return tox_friend_delete(mTox, friendid_p, NULL);
 }
 
-JNIEXPORT void Java_com_stratagile_toxcore_ToxCoreJni_setCallBack(JNIEnv *env, jobject thiz) {
+JNIEXPORT void Java_com_stratagile_tox_toxcore_ToxCoreJni_iterate(JNIEnv *env, jobject thiz) {
     while (1) {
         tox_iterate(mTox);
         usleep(tox_iteration_interval(mTox) * 1000);
@@ -502,8 +628,9 @@ JNIEXPORT void Java_com_stratagile_toxcore_ToxCoreJni_setCallBack(JNIEnv *env, j
  * 返回-2 friendid_p为null
  * 返回-1 好友不存在
  */
-JNIEXPORT jint JNICALL Java_com_stratagile_toxcore_ToxCoreJni_sendMessage(JNIEnv *env, jobject thiz, jstring message,
-                                                   jstring friendId) {
+JNIEXPORT jint JNICALL
+Java_com_stratagile_tox_toxcore_ToxCoreJni_sendMessage(JNIEnv *env, jobject thiz, jstring message,
+                                                       jstring friendId) {
     if (friendId == NULL)
         return -2;
     char *friendid_p = Jstring2CStr(env, friendId);
@@ -514,7 +641,7 @@ JNIEXPORT jint JNICALL Java_com_stratagile_toxcore_ToxCoreJni_sendMessage(JNIEnv
     //Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
     //                                 size_t length, TOX_ERR_FRIEND_SEND_MESSAGE *error
     LOGD("%s", friendid_p);
-    LOGD("%s", message_p);
+    LOGD("要发送的消息：%s", message_p);
     LOGD("%d", tox_self_get_friend_list_size(mTox));
 //    uint32_t *list;
 //    tox_self_get_friend_list(mTox, list);
@@ -524,7 +651,8 @@ JNIEXPORT jint JNICALL Java_com_stratagile_toxcore_ToxCoreJni_sendMessage(JNIEnv
         return -1;
     }
     TOX_ERR_FRIEND_SEND_MESSAGE error;
-    int result =  tox_friend_send_message(mTox, friendNum, TOX_MESSAGE_TYPE_NORMAL, message_p, strlen(message_p), &error);
+    int result = tox_friend_send_message(mTox, friendNum, TOX_MESSAGE_TYPE_NORMAL, message_p,
+                                         strlen(message_p), &error);
     switch (error) {
         case TOX_ERR_FRIEND_SEND_MESSAGE_NULL:
             LOGD("TOX_ERR_FRIEND_SEND_MESSAGE_NULL");
@@ -539,10 +667,6 @@ JNIEXPORT jint JNICALL Java_com_stratagile_toxcore_ToxCoreJni_sendMessage(JNIEnv
             break;
     }
     return result;
-}
-
-int get_friend_num_in_friendlist() {
-
 }
 
 /**
@@ -602,14 +726,199 @@ void friend_message_cb(Tox *m, uint32_t friendnumber, TOX_MESSAGE_TYPE type, con
  */
 void friend_connection_status_cb(Tox *tox, uint32_t friend_number, TOX_CONNECTION connection_status,
                                  void *user_data) {
-    LOGD("好友上线");
+    LOGD("好友状态改变");
     char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
     uint8_t fraddr_bin[TOX_PUBLIC_KEY_SIZE];
     if (tox_friend_get_public_key(tox, friend_number, fraddr_bin, NULL)) {
         frpuk_to_str(fraddr_bin, fraddr_str);
-//        publickey = (*env)->NewStringUTF(env,fraddr_str);
     }
+    int status = 0;
+    switch (connection_status) {
+        case TOX_CONNECTION_NONE:
+            status = 0;
+            break;
+        case TOX_CONNECTION_TCP:
+            status = 1;
+            break;
+        case TOX_CONNECTION_UDP:
+            status = 2;
+            break;
+    }
+    friend_status_callback(Env, status, fraddr_str);
     LOGD("%s", (char *) fraddr_str);
+}
+
+/**
+ * 发送方发送之前
+ */
+void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, TOX_FILE_CONTROL control, void *user_data) {
+    LOGD("file_recv_control_cb");
+    char msg[512] = {0};
+    //  sprintf(msg, "[t] control %u received", control);
+    // printf("[t] control %u received", control);
+    //new_lines(msg);
+
+    if (control == TOX_FILE_CONTROL_CANCEL) {
+        unsigned int i;
+        for (i = 0; i < NUM_FILE_SENDERS; ++i) {
+            /* This is slow */
+            if (file_senders[i].file && file_senders[i].friendnum == friend_number && file_senders[i].filenumber == file_number) {
+                fclose(file_senders[i].file);
+                file_senders[i].file = 0;
+                LOGD("[t] %u file transfer: %u cancelled", file_senders[i].friendnum, file_senders[i].filenumber);
+                //new_lines(msg);
+            }
+        }
+    }
+}
+
+/**
+ * 发送方的片段
+ *
+ */
+void
+file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position, size_t length, void *user_data) {
+//    LOGD("file_chunk_request_cb");
+    unsigned int i;
+
+    for (i = 0; i < NUM_FILE_SENDERS; ++i) {
+        /* This is slow */
+        if (file_senders[i].file && file_senders[i].friendnum == friend_number && file_senders[i].filenumber == file_number) {
+            if (length == 0) {
+                fclose(file_senders[i].file);
+                file_senders[i].file = 0;
+                call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+                LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum, file_senders[i].filenumber);
+                //new_lines(msg);
+                break;
+            }
+
+            fseek(file_senders[i].file, position, SEEK_SET);
+            VLA(uint8_t, data, length);
+            int len = fread(data, 1, length, file_senders[i].file);
+            tox_file_send_chunk(tox, friend_number, file_number, position, data, len, 0);
+            call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+            break;
+        }
+    }
+}
+
+/**
+ * 回调给java发送了文件的多少字节
+ */
+void call_java_sendfile_rate(int position, int filesize) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(II)V");
+    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize);
+    (*Env)->DeleteLocalRef(Env, clazz);
+}
+/**
+ * 回调给java接收了文件的多少字节
+ */
+void call_java_receivedfile_rate(int position, int filesize) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate", "(II)V");
+    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize);
+    (*Env)->DeleteLocalRef(Env, clazz);
+}
+
+
+
+/**
+ * 接收方的片段
+ */
+void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position, const uint8_t *data, size_t length, void *user_data) {
+    LOGD("file_recv_chunk_cb");
+    if (length == 0) {
+        char msg[512];
+        //sprintf(msg, "[t] %u file transfer: %u completed", friendnumber, filenumber);
+        //new_lines(msg);
+        printf("file %s transfer from friendnumber %u completed\n" ,recv_filename, friend_number);
+        LOGD("文件传输完毕");
+        call_java_receivedfile_rate((int) position, (int) received_file_size);
+//        Call_File_Process_Func_From_Java(recv_filename, recv_filesize,friend_number);
+        return;
+    }
+
+//    char filename[256];
+//    sprintf(filename, "%u.%u.bin", friendnumber, filenumber);
+    /*20180129,wenchao,use default filename,begin*/
+    FILE *pFile = fopen(recv_filename, "r+b");
+    /*20180129,wenchao,use default filename,end*/
+
+    if (pFile == NULL) {
+        pFile = fopen(recv_filename, "wb");
+    }
+
+    fseek(pFile, position, SEEK_SET);
+
+    if (fwrite(data, length, 1, pFile) != 1) {
+        //new_lines("Error writing to file");
+        printf("Error writing to file\n");
+    }
+    call_java_receivedfile_rate((int) position, (int) received_file_size);
+    fclose(pFile);
+}
+
+/**
+ * 接收方接收之前
+ */
+void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32_t kind,
+                  uint64_t file_size, const uint8_t *filename, size_t filename_length,
+                  void *user_data) {
+    LOGD("file_recv_cb");
+    received_file_size = file_size;
+    if (filename != NULL) {
+        memset(recv_filename, 0x00, 200);
+//        Call_GetFilePathFromJava(recv_filename,filename);
+        strcat(recv_filename, filename);
+        if (recv_filename == NULL)
+            return;
+    }
+    recv_filesize = (int) file_size;
+    if (kind != TOX_FILE_KIND_DATA) {
+        //new_lines("Refused invalid file type.");
+        printf("Refused invalid file type.\n");
+        tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+        return;
+    }
+
+    char msg[512];
+    // sprintf(msg, "[t] %u is sending us: %s of size %llu", friend_number, filename, (long long unsigned int)file_size);
+    printf("friend_number: %u is sending us: %s of size %llu\n", friend_number, filename,
+           (long long unsigned int) file_size);
+    //new_lines(msg);
+
+    if (tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_RESUME, 0)) {
+        //  sprintf(msg, "Accepted file transfer. (saving file as: %u.%u.bin)", friend_number, file_number);
+        // printf("Accepted file transfer. (saving file as: %s)\n", recv_filename);
+        //new_lines(msg);
+    } else {
+        //new_lines("Could not accept file transfer.");
+        printf("Could not accept file transfer.");
+    }
 }
 
 void frpuk_to_str(uint8_t *id_bin, char *id_str) {
@@ -639,6 +948,47 @@ void frpuk_to_str(uint8_t *id_bin, char *id_str) {
     if (!sum_extra) {
         id_str[pos_extra] = 0;
     }
+}
+
+/**
+ * 接受到消息的处理
+ */
+void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
+//    jmethodID mid_construct = NULL;
+//    jobject jobj = NULL;
+
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*env)->FindClass(env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+//    // 2、获取类的默认构造方法ID
+//    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
+//    if (mid_construct == NULL) {
+//        LOGD("找不到默认的构造方法");
+//        return;
+//    }
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "freindStatus",
+                                                 "(Ljava/lang/String;I)V");
+//    //创建该类的实例
+//    jobj = (*env)->NewObject(env, clazz, mid_construct);
+//    if (jobj == NULL) {
+//        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到freindStatus方法");
+//        return;
+//    }
+    LOGD("开始调用java方法");
+    jstring jfriendNumber = (*env)->NewStringUTF(env, friendNumber);
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*env)->CallVoidMethod(env, g_obj, javaCallback, jfriendNumber, status);
+
+    (*env)->DeleteLocalRef(env, clazz);
+    (*env)->DeleteLocalRef(env, jfriendNumber);
+//    (*g_jvm)->DetachCurrentThread(g_jvm);
 }
 
 void fraddr_to_str(uint8_t *id_bin, char *id_str) {
@@ -727,43 +1077,43 @@ void print_formatted_message(Tox *m, char *message, uint32_t friendnum, uint8_t 
  * 接受到消息的处理
  */
 void received_message(JNIEnv *env, char *string, char *friendNumber) {
-    jmethodID mid_construct = NULL;
-    jobject jobj = NULL;
+//    jmethodID mid_construct = NULL;
+//    jobject jobj = NULL;
 
-    if((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL)  !=  JNI_OK) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
         return;
     }
     //直接用GetObjectClass找到Class, 也就是Sdk.class.
-    jclass clazz = (*env)->FindClass(env, "com/stratagile/toxcore/ToxCoreJni");
+    jclass clazz = (*env)->FindClass(env, "com/stratagile/tox/toxcore/ToxCoreJni");
     if (clazz == NULL) {
-        LOGD("找不到'com/stratagile/toxcore/ToxCoreJni'这个类");
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
         return;
     }
-    // 2、获取类的默认构造方法ID
-    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
-    if (mid_construct == NULL) {
-        LOGD("找不到默认的构造方法");
-        return;
-    }
+//    // 2、获取类的默认构造方法ID
+//    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
+//    if (mid_construct == NULL) {
+//        LOGD("找不到默认的构造方法");
+//        return;
+//    }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "receivedMessage",
                                                  "(Ljava/lang/String;Ljava/lang/String;)V");
-    //创建该类的实例
-    jobj = (*env)->NewObject(env, clazz, mid_construct);
-    if (jobj == NULL) {
-        LOGD("在com/stratagile/toxcore/ToxCoreJni类中找不到receivedMessage方法");
-        return;
-    }
+//    //创建该类的实例
+//    jobj = (*env)->NewObject(env, clazz, mid_construct);
+//    if (jobj == NULL) {
+//        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到receivedMessage方法");
+//        return;
+//    }
     LOGD("开始调用java方法");
     jstring callbackStr = (*env)->NewStringUTF(env, string);
     jstring jfriendNumber = (*env)->NewStringUTF(env, friendNumber);
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*env)->CallVoidMethod(env, jobj, javaCallback, jfriendNumber, callbackStr);
+    (*env)->CallVoidMethod(env, g_obj, javaCallback, jfriendNumber, callbackStr);
 
     (*env)->DeleteLocalRef(env, clazz);
-    (*env)->DeleteLocalRef(env, jobj);
     (*env)->DeleteLocalRef(env, callbackStr);
     (*env)->DeleteLocalRef(env, jfriendNumber);
+//    (*g_jvm)->DetachCurrentThread(g_jvm);
 }
 
 /* GetFriendNumInFriendlist
@@ -776,27 +1126,22 @@ void received_message(JNIEnv *env, char *string, char *friendNumber) {
 ** -4 friend not in list
 ** >=0 the friend num
 */
-int GetFriendNumInFriendlist(uint8_t *friendId_P)
-{
+int GetFriendNumInFriendlist(uint8_t *friendId_P) {
 
-    if(mTox != NULL)
-    {
-        if(friendId_P == NULL)
-        {
+    if (mTox != NULL) {
+        if (friendId_P == NULL) {
             return -2;
         }
         char *friendId_bin = hex_string_to_bin(friendId_P);
-        if(friendId_bin==NULL)
+        if (friendId_bin == NULL)
             return -3;
         int friendLoc = tox_friend_get_Num_in_friendlist(mTox, friendId_bin, NULL);
         //printf("This friend loc is %d\n", friendLoc);
 
         free(friendId_bin);
-        if (friendLoc == -1)
-        {
+        if (friendLoc == -1) {
             return -4;
-        }
-        else
+        } else
             return friendLoc;
     }
     return -1;
@@ -806,8 +1151,7 @@ int GetFriendNumInFriendlist(uint8_t *friendId_P)
 void deleteFriendAll() {
     int friendcounts = tox_self_get_friend_list_size(mTox);
     int i;
-    for(i=0;i<friendcounts;i++)
-    {
+    for (i = 0; i < friendcounts; i++) {
         int res = tox_friend_delete(mTox, friendcounts - 1 - i, NULL);
         if (res) {
             printf("remove a friend success\n");
