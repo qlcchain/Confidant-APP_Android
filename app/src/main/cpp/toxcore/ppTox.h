@@ -6,8 +6,8 @@
 #define TOXCORENEW_PPTOX_H
 
 #include "tox.h"
-//#include "../../../../../../../Library/Android/sdk/ndk-bundle/sysroot/usr/include/jni.h"    //hzp
-#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                                //zl
+#include "../../../../../../../Library/Android/sdk/ndk-bundle/sysroot/usr/include/jni.h"    //hzp
+//#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                                //zl
 
 #endif //TOXCORENEW_PPTOX_H
 
@@ -24,7 +24,9 @@ void print_tox_id(JNIEnv *env, Tox *tox);
 void deleteFriendAll();
 void friend_status_callback(JNIEnv *env, int status, char *friendNumber);
 void call_java_sendfile_rate(int position, int filesize);
-void call_java_receivedfile_rate(int position, int filesize);
+void call_java_receivedfile_rate(int friendNumber, int position, int filesize);
+void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName);
+void call_java_start_send_file(int friendNumber, int fileNumber);
 
 
 

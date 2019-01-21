@@ -166,6 +166,17 @@ public class ToxCoreJni {
         }
     }
 
+    public void startReceiveFile(int fileNumber, String fileName, String routerId) {
+        KLog.i("开始接收的文件序号：" + fileNumber);
+        KLog.i("开始接收的文件名：" + fileName);
+        KLog.i("路由器的Id是：" + routerId);
+    }
+
+    public void starSendFile(int fileNumber, String routerId) {
+        KLog.i("开始发送的文件序号：" + fileNumber);
+        KLog.i("路由器的Id是：" + routerId);
+    }
+
     /**
      * 发送了多少字节的回调
      * @param position
@@ -180,8 +191,9 @@ public class ToxCoreJni {
      * @param position
      * @param filesize
      */
-    public void receivedFileRate(int position, int filesize) {
+    public void receivedFileRate(int position, int filesize, String routerId) {
         KLog.i("接收了：" + position);
         KLog.i("总共：" + filesize);
+        KLog.i("路由Id为：" + routerId);
     }
 }
