@@ -182,7 +182,8 @@ public class ToxCoreJni {
      * @param position
      * @param filesize
      */
-    public void sendFileRate(int position, int filesize) {
+    public void sendFileRate(int fileNumber, int position, int filesize) {
+        KLog.i("fileNumber：" + fileNumber);
         KLog.i("发送了：" + position);
         KLog.i("总共：" + filesize);
     }

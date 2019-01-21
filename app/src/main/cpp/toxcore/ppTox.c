@@ -787,7 +787,7 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
                 LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum, file_senders[i].filenumber);
                 //new_lines(msg);
                 break;
@@ -797,7 +797,7 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             VLA(uint8_t, data, length);
             int len = fread(data, 1, length, file_senders[i].file);
             tox_file_send_chunk(tox, friend_number, file_number, position, data, len, 0);
-            call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+            call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
             break;
         }
     }
@@ -867,7 +867,7 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
 /**
  * 回调给java发送了文件的多少字节
  */
-void call_java_sendfile_rate(int position, int filesize) {
+void call_java_sendfile_rate(int fileNumber, int position, int filesize) {
     if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
         return;
     }
@@ -878,10 +878,10 @@ void call_java_sendfile_rate(int position, int filesize) {
         return;
     }
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(II)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(III)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize);
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, position, filesize);
     (*Env)->DeleteLocalRef(Env, clazz);
 }
 /**
