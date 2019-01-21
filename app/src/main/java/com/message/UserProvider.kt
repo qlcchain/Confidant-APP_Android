@@ -140,7 +140,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                             var baseData = BaseData(addFriendDealReq)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }
                         j.friendLocalStatus = 0
@@ -193,7 +193,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
                 EventBus.getDefault().post(FriendChange())
@@ -230,7 +230,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -286,7 +286,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
                 refreshFriend("")
@@ -341,7 +341,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
         refreshFriend("")
@@ -376,7 +376,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(delFriendPushReq,jDelFriendPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -449,7 +449,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(login)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -463,7 +463,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(delFriendCmdReq)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -480,7 +480,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(addFriendDealReq)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -496,7 +496,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             var baseData = BaseData(addFriendDealReq)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 

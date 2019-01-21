@@ -44,7 +44,7 @@ class ToxMessageReceiver(){
                     LogUtil.addLog("Tox重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
                     var baseDataJson = BaseData(loginReq).baseDataToJson().replace("\\", "")
                     var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }
             }
@@ -78,7 +78,7 @@ class ToxMessageReceiver(){
         var text = toxMessageEvent.message
         if(text!!.indexOf("HeartBeat") < 0)
         {
-            Log.w(ToxMessageReceiver.TAG, "onMessage(text)! " + text!!)
+            //Log.w(ToxMessageReceiver.TAG, "onMessage(text)! " + text!!)
             LogUtil.addLog("TOX接收信息：${text}")
         }
 
@@ -108,7 +108,7 @@ class ToxMessageReceiver(){
                     var aa = 110
                     var baseDataJson = baseData.baseDataToJson().replace("\\\\n", "").replace("\\n", "")
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                 }else{
                     segmentContent +=baseData.params;
@@ -179,7 +179,7 @@ class ToxMessageReceiver(){
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
                 // LogUtil.addLog("发送结果：${baseDataJson}")
 //                var friendKey:FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-//                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 

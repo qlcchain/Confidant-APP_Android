@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.ui.activity.router.module.RouterCreateUserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterCreateUserPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adduser.*
 import org.greenrobot.eventbus.EventBus
@@ -83,8 +84,9 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
             {
                 var baseData = BaseData(2,createNormalUser)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
         }

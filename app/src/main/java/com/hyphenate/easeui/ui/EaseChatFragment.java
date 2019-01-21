@@ -2266,7 +2266,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         toxFileData.setSrcKey(new String(SrcKey));
                         toxFileData.setDstKey(new String(DstKey));
                         FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                        String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                        //String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                        String fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                         sendToxFileDataMap.put(fileNumber,toxFileData);
                     }
                 }
@@ -2391,7 +2392,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                //String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                String fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
                             }else{
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
@@ -2516,7 +2518,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                //String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                String fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
                             }
                         }
@@ -2638,7 +2641,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                //String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                String fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
                             }
                         }
@@ -2766,7 +2770,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
                                 FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                //String fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                String fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
                             }
 

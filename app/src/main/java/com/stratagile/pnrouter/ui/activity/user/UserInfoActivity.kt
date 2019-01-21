@@ -33,6 +33,7 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.pnrouter.view.TempRouterAlertDialog
+import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxSendInfoEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
@@ -298,8 +299,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                         }else if (ConstantValue.isToxConnected) {
                             var baseData = BaseData(2,msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }
                         showProgressDialog("wait...")
                     }
@@ -408,8 +410,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(addFriendDealReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
             showProgressDialog()
@@ -431,8 +434,9 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(addFriendDealReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 
             showProgressDialog()

@@ -8,6 +8,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
@@ -60,8 +61,9 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         } else if (ConstantValue.isToxConnected) {
             var baseData = BaseData(msgData,pushMsgRsp?.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
         calculateUnreadCount()
@@ -224,8 +226,9 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             } else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(pullMsgList)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }
         return messageList

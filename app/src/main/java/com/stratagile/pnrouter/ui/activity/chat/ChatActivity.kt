@@ -84,7 +84,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(2,msgData,jReadMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
         chatFragment?.refreshReadData(jReadMsgPushRsp.params.readMsgs)
@@ -173,7 +173,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(2,msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
     }
@@ -242,7 +242,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(msgData,delMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -278,7 +278,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(msgData,jPushFileMsgRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
 
             var baseData2 = BaseData(2,readMsgReq)
@@ -286,7 +286,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
             if(!msgId.equals(""))
             {
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
             }
         }
@@ -304,7 +304,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
@@ -348,7 +348,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var baseData = BaseData(2,readMsgReq)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }
@@ -372,7 +372,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var baseData = BaseData(msgData,pushMsgRsp?.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
 
                 var baseData2 = BaseData(2,readMsgReq)
@@ -380,7 +380,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 if(!msgId.equals(""))
                 {
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey2, baseDataJson2, ToxMessageType.NORMAL)
                 }
             }
@@ -414,7 +414,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }catch (e:Exception)
@@ -475,7 +475,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var baseData = BaseData(pullMsgList)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
         EventBus.getDefault().register(this)

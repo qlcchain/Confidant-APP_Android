@@ -30,6 +30,7 @@ import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.TempRouterAlertDialog
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_user.*
@@ -170,8 +171,9 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
         }else if (ConstantValue.isToxConnected) {
             var baseData = BaseData(2,pullFriend)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
         }
 
     }

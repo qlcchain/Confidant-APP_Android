@@ -13,7 +13,7 @@ import com.stratagile.tox.toxcallback.ToxConnection
 import java.io.File
 import kotlin.concurrent.thread
 
-class ToxService : Service() {
+class KotlinToxService : Service() {
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }

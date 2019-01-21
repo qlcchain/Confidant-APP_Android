@@ -48,6 +48,9 @@ object ConstantValue {
         var libsodiumpublicTemKey:String? = ""
 
         var updRouterData: HashMap<String,String> = HashMap()
+        var unSendMessage: HashMap<String,String> = HashMap() //待发送消息
+        var unSendMessageFriendId: HashMap<String,String> = HashMap() //待发送消息的路由器id
+        var unSendMessageSendCount: HashMap<String,Int> = HashMap() //待发送消息重发次数
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn
         var currentRouterIp:String = ""//记录组播寻找到的路由器ip

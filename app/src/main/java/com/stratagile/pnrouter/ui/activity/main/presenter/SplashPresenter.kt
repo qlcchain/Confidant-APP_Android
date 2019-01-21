@@ -364,7 +364,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                         }else{
                                             ConstantValue.curreantNetworkType = "TOX"
                                             LogUtil.addLog("P2P启动连接:","SplashActivity")
-                                            var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                            var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                                             AppConfig.instance.startService(intent)
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                         }*//*
@@ -435,7 +435,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                             }else{
                                 ConstantValue.curreantNetworkType = "TOX"
                                 LogUtil.addLog("P2P启动连接:","SplashActivity")
-                                var intent = Intent(AppConfig.instance, ToxService::class.java)
+                                var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
                                 AppConfig.instance.startService(intent)
                             }*//*
                         }
@@ -474,7 +474,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
     {
         ConstantValue.curreantNetworkType = "TOX"
        /* LogUtil.addLog("P2P启动连接:","SplashActivity")
-        var intent = Intent(AppConfig.instance, ToxService::class.java)
+        var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
         AppConfig.instance.startService(intent)*/
     }
 

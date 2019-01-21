@@ -135,7 +135,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
                 var baseData = BaseData(login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }

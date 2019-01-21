@@ -3,6 +3,7 @@ package com.stratagile.tox.toxcore;
 import android.os.Environment;
 
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.tox.toxcallback.ToxCallbackListener;
 import com.stratagile.tox.toxcallback.ToxConnection;
 
@@ -89,6 +90,16 @@ public class ToxCoreJni {
      */
     public native int addFriend(String friendId);
 
+    public int senToxMessage(String message, String friendId)
+    {
+       int result =  sendMessage(message, friendId);
+        if(message.indexOf("HeartBeat") < 0)
+        {
+            LogUtil.addLog("Tox发送消息:"+message +"  result:" +result);
+        }
+       return result;
+    }
+
     /**
      * 发送文字消息给好友。
      * @param message 文字消息内容
@@ -98,7 +109,12 @@ public class ToxCoreJni {
      */
     public native int sendMessage(String message, String friendId);
 
-
+    public int senToxFile(String filePath, String friendId)
+    {
+        int result =  sendFile(filePath, friendId);
+        LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
+        return result;
+    }
     public native int sendFile(String fileName, String friendId);
 
     /**

@@ -214,7 +214,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 var baseData = BaseData(2,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
         }
@@ -296,7 +296,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 var baseData = BaseData(2,regeister)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
 //                MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }
 

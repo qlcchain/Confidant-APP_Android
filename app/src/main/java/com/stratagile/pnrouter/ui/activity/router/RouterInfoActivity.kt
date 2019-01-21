@@ -154,7 +154,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         val baseData = BaseData(2,msgData)
                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                         val friendKey = FriendKey(routerEntity.routerId.substring(0, 64))
-                        ToxCoreJni.getInstance().sendMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
 //                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }
 

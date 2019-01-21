@@ -8,7 +8,6 @@ import android.support.multidex.MultiDexApplication
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.hyphenate.chat.EMClient
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
@@ -23,7 +22,7 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
-import com.stratagile.tox.toxcore.ToxService
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.MiPushClient
@@ -151,7 +150,7 @@ class AppConfig : MultiDexApplication() {
         val intent = Intent(this, MessageRetrievalService::class.java)
         this.stopService(intent)
 
-        val intentTox = Intent(this, ToxService::class.java)
+        val intentTox = Intent(this, KotlinToxService::class.java)
         this.stopService(intentTox)
     }
     companion object {

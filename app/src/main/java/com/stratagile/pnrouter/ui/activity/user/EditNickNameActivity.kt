@@ -24,6 +24,7 @@ import com.stratagile.pnrouter.ui.activity.user.presenter.EditNickNamePresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import org.greenrobot.eventbus.EventBus
@@ -134,7 +135,8 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
                             var baseData = BaseData(2,userInfoUpdate)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }
                     }else{
                         onBackPressed()
