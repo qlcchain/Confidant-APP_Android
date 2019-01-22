@@ -46,7 +46,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
            // startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
         }
-        receiver = AppConfig.instance.getMessageReceiver();
+        receiver = AppConfig.instance.getPNRouterServiceMessageReceiver();
 
 //        networkRequirement         = new NetworkRequirement(this);
 //        networkRequirementProvider = new NetworkRequirementProvider(this);
@@ -59,6 +59,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         setForegroundIfNecessary();
     }
 
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_STICKY;
 

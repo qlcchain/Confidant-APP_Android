@@ -2,11 +2,17 @@ package com.stratagile.tox.toxcore;
 
 import android.os.Environment;
 
+import com.google.gson.Gson;
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import events.ToxReceiveFileFinishedEvent;
 import events.ToxReceiveFileNoticeEvent;
 import events.ToxSendFileFinishedEvent;
+
+import com.stratagile.tox.entity.DhtJson;
+import com.stratagile.tox.entity.DhtNode;
 import com.stratagile.tox.toxcallback.ToxCallbackListener;
 import com.stratagile.tox.toxcallback.ToxConnection;
 
@@ -214,5 +220,16 @@ public class ToxCoreJni {
         {
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
         }
+    }
+
+    public void bootStrapJava() {
+        KLog.i("引导");
+        String toxJson = FileUtil.getAssetJson(AppConfig.instance, "tox.json");
+        DhtJson dhtJson = new Gson().fromJson(toxJson, DhtJson.class);
+        for (DhtNode dhtNode : dhtJson.getNodes()) {
+            int result = ToxCoreJni.getInstance().bootStrap(dhtNode.getIpv4(), dhtNode.getPort(), dhtNode.getPublic_key());
+            KLog.i("引导 " + dhtNode.getIpv4() + " " + result);
+        }
+        KLog.i("引导 完成");
     }
 }
