@@ -120,13 +120,14 @@ public class ToxCoreJni {
      */
     public native int sendMessage(String message, String friendId);
 
-    public int senToxFile(String filePath, String friendId)
+    public int senToxFile(String filePath, String friendId, String fileName)
     {
-        int result =  sendFile(filePath, friendId);
+        int result =  sendFile(filePath, friendId, fileName);
+        KLog.i("发送Tox文件:" + filePath +"  result:" +result);
         LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
         return result;
     }
-    public native int sendFile(String fileName, String friendId);
+    public native int sendFile(String filePath, String friendId, String fileName);
 
     /**
      * 关闭tox。app退出时调用。
