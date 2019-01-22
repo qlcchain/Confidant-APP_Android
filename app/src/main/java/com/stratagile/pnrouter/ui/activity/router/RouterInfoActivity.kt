@@ -7,7 +7,6 @@ import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
-import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -35,7 +34,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
-
 
 
 /**
@@ -153,9 +151,12 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     } else if (ConstantValue.isToxConnected) {
                         val baseData = BaseData(2,msgData)
                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-                        val friendKey = FriendKey(routerEntity.routerId.substring(0, 64))
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
-//                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        if (ConstantValue.isAntox) {
+                            var friendKey: FriendKey = FriendKey(routerEntity.routerId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }else{
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
+                        }
                     }
 
                     ConstantValue.isHasWebsocketInit = true

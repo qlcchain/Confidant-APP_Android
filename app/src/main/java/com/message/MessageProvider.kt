@@ -61,9 +61,15 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         } else if (ConstantValue.isToxConnected) {
             var baseData = BaseData(msgData,pushMsgRsp?.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+
+
         }
 
         calculateUnreadCount()
@@ -226,9 +232,12 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             } else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(pullMsgList)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                //MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
         return messageList

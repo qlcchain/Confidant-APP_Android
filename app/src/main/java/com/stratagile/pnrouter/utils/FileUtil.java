@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import okio.ByteString;
-import scalaz.Alpha;
+
 
 /**
  * Created by huzhipeng on 2018/3/7.

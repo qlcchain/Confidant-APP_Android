@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -45,12 +46,13 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
-import com.stratagile.tox.toxcore.KotlinToxService
-import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
+import com.stratagile.tox.toxcore.KotlinToxService
+import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
+import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -486,7 +488,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-
+        KLog.i("P2P好友状态:"+connectStatus.status)
         when (connectStatus.status) {
             0 -> {
                 if(standaloneCoroutine != null)
@@ -559,6 +561,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         when (toxStatusEvent.status) {
             0 -> {
+                KLog.i("P2P连接成功")
                 LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
                 runOnUiThread {
                     closeProgressDialog()
@@ -576,9 +579,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     return
                 if(isFromScan)
                 {
-                    var friendKey:FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
 
+                    if (ConstantValue.isAntox) {
+                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                    }else{
+                        ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
+                    }
                     standaloneCoroutine = launch(CommonPool) {
                         delay(60000)
                         if (!loginBack) {
@@ -616,10 +622,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     //ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                     isFromScan = false
                 }else{
-                    ToxCoreJni.getInstance().addFriend(routerId)
+                    if (ConstantValue.isAntox) {
+                        InterfaceScaleUtil.addFriend(routerId,this)
+                    }else{
+                        ToxCoreJni.getInstance().addFriend(routerId)
+                    }
                     if(isClickLogin)
                     {
-                        var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                        //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
                         loginBack = false
 
                         standaloneCoroutine = launch(CommonPool) {
@@ -755,7 +765,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if(ConstantValue.isToxConnected)
                 {
                     isToxLoginOverTime = true
-                    var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                    //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                     var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                     var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
@@ -790,8 +800,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } else false
                         })
                     }
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-//                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
+                    }
                 }else{
 //                    if (!ConstantValue.isToxConnected) {
 //                        loadLibrary()
@@ -810,6 +824,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
                     var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+                    if(ConstantValue.isAntox)
+                    {
+                        intent = Intent(AppConfig.instance, ToxService::class.java)
+                    }
                     startService(intent)
                 }
 
@@ -1396,6 +1414,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+            if(ConstantValue.isAntox)
+            {
+                intent = Intent(AppConfig.instance, ToxService::class.java)
+            }
             startService(intent)
         }else{
             runOnUiThread {
@@ -1741,9 +1763,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             LogUtil.addLog("P2P启动连接:", "LoginActivityActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+            if(ConstantValue.isAntox)
+            {
+                intent = Intent(AppConfig.instance, ToxService::class.java)
+            }
             startService(intent)
         } else {
-            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1753,12 +1779,21 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 })
             }
             AppConfig.instance.messageReceiver!!.loginBackListener = this
-            ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+            if (ConstantValue.isAntox) {
+                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+            }else{
+                ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+            }
+
             var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
             var baseData = BaseData(2, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
-//            MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+            }
         }
     }
 

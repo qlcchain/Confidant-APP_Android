@@ -757,7 +757,7 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
     //  sprintf(msg, "[t] control %u received", control);
     // printf("[t] control %u received", control);
     //new_lines(msg);
-
+    call_java_start_send_file(friend_number, file_number);
     if (control == TOX_FILE_CONTROL_CANCEL) {
         unsigned int i;
         for (i = 0; i < NUM_FILE_SENDERS; ++i) {
@@ -787,7 +787,7 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
                 LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum, file_senders[i].filenumber);
                 //new_lines(msg);
                 break;
@@ -797,16 +797,45 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             VLA(uint8_t, data, length);
             int len = fread(data, 1, length, file_senders[i].file);
             tox_file_send_chunk(tox, friend_number, file_number, position, data, len, 0);
-            call_java_sendfile_rate((int) position, (int) file_senders[0].filesize);
+            call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
             break;
         }
     }
 }
 
 /**
- * 回调给java发送了文件的多少字节
+ * 开始发送文件，回调给java
  */
-void call_java_sendfile_rate(int position, int filesize) {
+void call_java_start_send_file(int friendNumber, int fileNumber) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+    char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
+    uint8_t fraddr_bin[TOX_PUBLIC_KEY_SIZE];
+
+    if (tox_friend_get_public_key(mTox, (uint32_t) friendNumber, fraddr_bin, NULL)) {
+        frpuk_to_str(fraddr_bin, fraddr_str);
+    }
+    jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "starSendFile", "(ILjava/lang/String;)V");
+    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFriendId);
+    (*Env)->DeleteLocalRef(Env, clazz);
+    (*Env)->DeleteLocalRef(Env, jFriendId);
+}
+
+/**
+ * 回调给java开始接收文件
+ */
+void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName) {
     if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
         return;
     }
@@ -817,16 +846,48 @@ void call_java_sendfile_rate(int position, int filesize) {
         return;
     }
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(II)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "startReceiveFile", "(ILjava/lang/String;Ljava/lang/String;)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize);
+    jstring jFileName = (*Env)->NewStringUTF(Env, fileName);
+    char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
+    uint8_t fraddr_bin[TOX_PUBLIC_KEY_SIZE];
+
+    if (tox_friend_get_public_key(mTox, freindNumber, fraddr_bin, NULL)) {
+        frpuk_to_str(fraddr_bin, fraddr_str);
+    }
+    jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFileName, jFriendId);
+    (*Env)->DeleteLocalRef(Env, clazz);
+    (*Env)->DeleteLocalRef(Env, jFileName);
+    free(fraddr_str);
+    free(fraddr_bin);
+}
+
+/**
+ * 回调给java发送了文件的多少字节
+ */
+void call_java_sendfile_rate(int fileNumber, int position, int filesize) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(III)V");
+    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, position, filesize);
     (*Env)->DeleteLocalRef(Env, clazz);
 }
 /**
  * 回调给java接收了文件的多少字节
  */
-void call_java_receivedfile_rate(int position, int filesize) {
+void call_java_receivedfile_rate(int friendNumber, int position, int filesize) {
     if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
         return;
     }
@@ -836,12 +897,20 @@ void call_java_receivedfile_rate(int position, int filesize) {
         LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
         return;
     }
+    char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
+    uint8_t fraddr_bin[TOX_PUBLIC_KEY_SIZE];
+
+    if (tox_friend_get_public_key(mTox, friendNumber, fraddr_bin, NULL)) {
+        frpuk_to_str(fraddr_bin, fraddr_str);
+    }
+    jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate", "(II)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate", "(IILjava/lang/String;)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
-    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize);
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize, jFriendId);
     (*Env)->DeleteLocalRef(Env, clazz);
+    (*Env)->DeleteLocalRef(Env, jFriendId);
 }
 
 
@@ -857,7 +926,7 @@ void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, 
         //new_lines(msg);
         printf("file %s transfer from friendnumber %u completed\n" ,recv_filename, friend_number);
         LOGD("文件传输完毕");
-        call_java_receivedfile_rate((int) position, (int) received_file_size);
+        call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size);
 //        Call_File_Process_Func_From_Java(recv_filename, recv_filesize,friend_number);
         return;
     }
@@ -878,7 +947,7 @@ void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, 
         //new_lines("Error writing to file");
         printf("Error writing to file\n");
     }
-    call_java_receivedfile_rate((int) position, (int) received_file_size);
+    call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size);
     fclose(pFile);
 }
 
@@ -915,6 +984,7 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
         //  sprintf(msg, "Accepted file transfer. (saving file as: %u.%u.bin)", friend_number, file_number);
         // printf("Accepted file transfer. (saving file as: %s)\n", recv_filename);
         //new_lines(msg);
+        call_java_start_receive_file(friend_number, file_number, filename);
     } else {
         //new_lines("Could not accept file transfer.");
         printf("Could not accept file transfer.");

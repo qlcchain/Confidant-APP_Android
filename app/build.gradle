@@ -212,7 +212,7 @@ dependencies {
     implementation "android.arch.lifecycle:common-java8:$arch_version"
     kapt "android.arch.lifecycle:compiler:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
-
+    //implementation 'com.github.joshjdevl.libsodiumjni:libsodium-jni-aar:2.0.1-SNAPSHOT'
     //implementation 'com.noober.floatmenu:common:1.0.4'
     implementation 'com.tencent.bugly:crashreport:2.6.6.1'
     implementation 'com.tencent.bugly:nativecrashreport:3.3.1'

@@ -24,7 +24,6 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
-import scala.App;
 
 public class WsManager implements IWsManager {
     private final static int RECONNECT_INTERVAL = 10 * 1000;    //重连自增步长

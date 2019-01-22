@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.support.multidex.MultiDexApplication
+import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -13,6 +14,7 @@ import com.message.MessageProvider
 import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
@@ -149,9 +151,15 @@ class AppConfig : MultiDexApplication() {
     {
         val intent = Intent(this, MessageRetrievalService::class.java)
         this.stopService(intent)
+        if(ConstantValue.isAntox)
+        {
+            val intentAnTox = Intent(this, ToxService::class.java)
+            this.stopService(intentAnTox)
+        }else{
+            val intentTox = Intent(this, KotlinToxService::class.java)
+            this.stopService(intentTox)
+        }
 
-        val intentTox = Intent(this, KotlinToxService::class.java)
-        this.stopService(intentTox)
     }
     companion object {
         lateinit var instance: AppConfig

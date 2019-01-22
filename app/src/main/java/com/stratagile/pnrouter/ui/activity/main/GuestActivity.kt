@@ -13,6 +13,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
 import com.nightonke.wowoviewpager.Animation.ViewAnimation
 import com.nightonke.wowoviewpager.Animation.WoWoPositionAnimation
@@ -514,13 +515,21 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 if(!ConstantValue.scanRouterId.equals(""))
                 {
                     AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-                    ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+                    if (ConstantValue.isAntox) {
+                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                    }else{
+                        ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+                    }
+
                     var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
                     var baseData = BaseData(2,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                    //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
-                    //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                    }
                 }
             }
             1 ->{
@@ -774,19 +783,30 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         {
             LogUtil.addLog("P2P启动连接:","GuestActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+            if(ConstantValue.isAntox)
+            {
+                intent = Intent(AppConfig.instance, ToxService::class.java)
+            }
             startService(intent)
         }else {
             runOnUiThread {
                 showProgressDialog("wait...")
             }
             AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-            ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+            if (ConstantValue.isAntox) {
+                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+            }else{
+                ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+            }
             var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
             var baseData = BaseData(2, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
-            //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+            }
         }
     }
 }

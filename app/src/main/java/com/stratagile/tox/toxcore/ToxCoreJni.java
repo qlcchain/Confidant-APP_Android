@@ -4,12 +4,16 @@ import android.os.Environment;
 
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.utils.LogUtil;
+import events.ToxReceiveFileFinishedEvent;
+import events.ToxReceiveFileNoticeEvent;
+import events.ToxSendFileFinishedEvent;
 import com.stratagile.tox.toxcallback.ToxCallbackListener;
 import com.stratagile.tox.toxcallback.ToxConnection;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class ToxCoreJni {
     //tox单例的实例
@@ -26,7 +30,8 @@ public class ToxCoreJni {
     public void setToxCallbackListener(ToxCallbackListener toxCallbackListener) {
         this.toxCallbackListener = toxCallbackListener;
     }
-
+    private HashMap<String,String> sendFileRouterMap = new HashMap<>();
+    private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
     /**
      * 获取单例
      * @return toxCoreJni实例
@@ -166,22 +171,48 @@ public class ToxCoreJni {
         }
     }
 
+    public void startReceiveFile(int fileNumber, String fileName, String routerId) {
+        KLog.i("开始接收的文件序号：" + fileNumber);
+        KLog.i("开始接收的文件名：" + fileName);
+        KLog.i("路由器的Id是：" + routerId);
+        reveiveFileNumberMap.put(routerId,fileNumber+"");
+        EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
+    }
+
+    public void starSendFile(int fileNumber, String routerId) {
+        KLog.i("开始发送的文件序号：" + fileNumber);
+        KLog.i("路由器的Id是：" + routerId);
+        sendFileRouterMap.put(fileNumber+"",routerId);
+    }
+
     /**
      * 发送了多少字节的回调
      * @param position
      * @param filesize
      */
-    public void sendFileRate(int position, int filesize) {
+    public void sendFileRate(int fileNumber, int position, int filesize) {
+        KLog.i("fileNumber：" + fileNumber);
         KLog.i("发送了：" + position);
         KLog.i("总共：" + filesize);
+        String key = sendFileRouterMap.get(fileNumber +"");
+        if(position == filesize)
+        {
+            EventBus.getDefault().post(new ToxSendFileFinishedEvent(key,fileNumber));
+        }
     }
     /**
      * 接收了多少字节的回调
      * @param position
      * @param filesize
      */
-    public void receivedFileRate(int position, int filesize) {
+    public void receivedFileRate(int position, int filesize, String routerId) {
         KLog.i("接收了：" + position);
         KLog.i("总共：" + filesize);
+        KLog.i("路由Id为：" + routerId);
+        int fileNumber = Integer.valueOf(reveiveFileNumberMap.get(routerId));
+        if(position == filesize)
+        {
+            EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
+        }
     }
 }
