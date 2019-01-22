@@ -431,7 +431,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
                                    if(sendCount < 5)
                                    {
-                                       ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                       if (ConstantValue.isAntox) {
+                                           var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                           MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                       }else{
+                                           ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                       }
                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
                                    }else{
                                        closeProgressDialog()
