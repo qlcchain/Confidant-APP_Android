@@ -26,10 +26,6 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
-import im.tox.tox4j.core.enums.ToxMessageType;
-
 /**
  * Created by zhangsong on 17-10-12.
  */

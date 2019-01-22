@@ -21,7 +21,7 @@ import com.stratagile.pnrouter.ui.activity.router.presenter.RouterManagementPres
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.MutableListToArrayList
-import events.ToxStatusEvent
+import com.stratagile.tox.events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_router_management.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
