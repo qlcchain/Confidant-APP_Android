@@ -10,7 +10,8 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@color/white"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="0px"
