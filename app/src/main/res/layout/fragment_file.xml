@@ -74,7 +74,7 @@
             android:layout_height="@dimen/x92"
             android:layout_marginTop="@dimen/x1"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:srcmy="@mipmap/receive_file"
+            app:srcmy="@mipmap/documents_received"
             app:textmy="@string/Documents_received">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>

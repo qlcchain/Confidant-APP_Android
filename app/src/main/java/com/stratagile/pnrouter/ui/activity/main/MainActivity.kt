@@ -583,7 +583,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun initData() {
         try {
-            AppConfig.instance.messageReceiver!!.mainInfoBack = this
+            AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
         }catch (e : Exception) {
             e.printStackTrace()
         }
@@ -1076,6 +1076,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .show()
             exitTime = System.currentTimeMillis()
         } else {
+            ToxCoreJni.getInstance().toxKill()
             AppConfig.instance.stopAllService()
             //android进程完美退出方法。
             var intent = Intent(Intent.ACTION_MAIN);

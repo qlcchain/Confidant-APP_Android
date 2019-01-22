@@ -83,10 +83,10 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, 
     //strcpy 字符串复制
     strcpy(dataPathFile, dataPath_p);
     mTox = load_data();
-//    const char *name = "ppm Tox";
-//    tox_self_set_name(mTox, name, strlen(name), NULL);
-//    const char *status_message = "ppm your messages";
-//    tox_self_set_status_message(mTox, status_message, strlen(status_message), NULL);
+    const char *name = "ppm Tox";
+    tox_self_set_name(mTox, name, strlen(name), NULL);
+    const char *status_message = "ppm your messages";
+    tox_self_set_status_message(mTox, status_message, strlen(status_message), NULL);
     save_data_file(mTox, data_file_name);
     tox_callback_friend_connection_status(mTox, friend_connection_status_cb, NULL);
     tox_callback_friend_request(mTox, friend_request_cb, NULL);
@@ -97,6 +97,37 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, 
     tox_callback_file_recv(mTox, file_recv_cb, NULL);
     tox_callback_file_recv_chunk(mTox, file_recv_chunk_cb, NULL);
     tox_callback_file_recv_control(mTox, file_recv_control_cb, NULL);
+    java_bootstrap();
+    time_t timestamp0 = time(NULL);
+    while (1) {
+//        java_bootstrap();
+        if (tox_self_get_connection_status(mTox)) {
+            //tox已经连接到网络
+        } else {
+            time_t timestamp1 = time(NULL);
+
+            if (timestamp0 + 10 < timestamp1) {
+                timestamp0 = timestamp1;
+                java_bootstrap();
+            }
+        }
+        tox_iterate(mTox);
+        usleep(tox_iteration_interval(mTox) * 1000);
+    }
+}
+
+void java_bootstrap(void) {
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "bootStrapJava", "()V");
+    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback);
+    (*Env)->DeleteLocalRef(Env, clazz);
 }
 
 JNIEXPORT void JNICALL
@@ -395,7 +426,7 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_bootStrap(JNIEnv *env, jobject thiz, 
     return result;
 }
 
-int save_data(Tox *tox) {
+static int save_data(Tox *tox) {
     FILE *data_file = fopen(data_file_name, "w");
 
     if (!data_file) {
@@ -540,6 +571,7 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_addFriend(JNIEnv *env, jobject thiz, 
         if (friendid == NULL)
             return -2;
         char *friendid_p = Jstring2CStr(env, friendid);
+        LOGD("添加好友 %s", friendid_p);
         if (friendid_p == NULL)
             return -3;
         int friendNum = GetFriendNumInFriendlist(friendid_p);
@@ -746,12 +778,15 @@ void friend_connection_status_cb(Tox *tox, uint32_t friend_number, TOX_CONNECTIO
     }
     friend_status_callback(Env, status, fraddr_str);
     LOGD("%s", (char *) fraddr_str);
+//    free(fraddr_str);
+//    free(fraddr_bin);
 }
 
 /**
  * 发送方发送之前
  */
-void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, TOX_FILE_CONTROL control, void *user_data) {
+void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number,
+                          TOX_FILE_CONTROL control, void *user_data) {
     LOGD("file_recv_control_cb");
     char msg[512] = {0};
     //  sprintf(msg, "[t] control %u received", control);
@@ -762,10 +797,12 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
         unsigned int i;
         for (i = 0; i < NUM_FILE_SENDERS; ++i) {
             /* This is slow */
-            if (file_senders[i].file && file_senders[i].friendnum == friend_number && file_senders[i].filenumber == file_number) {
+            if (file_senders[i].file && file_senders[i].friendnum == friend_number &&
+                file_senders[i].filenumber == file_number) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                LOGD("[t] %u file transfer: %u cancelled", file_senders[i].friendnum, file_senders[i].filenumber);
+                LOGD("[t] %u file transfer: %u cancelled", file_senders[i].friendnum,
+                     file_senders[i].filenumber);
                 //new_lines(msg);
             }
         }
@@ -777,18 +814,22 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
  *
  */
 void
-file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position, size_t length, void *user_data) {
+file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
+                      size_t length, void *user_data) {
 //    LOGD("file_chunk_request_cb");
     unsigned int i;
 
     for (i = 0; i < NUM_FILE_SENDERS; ++i) {
         /* This is slow */
-        if (file_senders[i].file && file_senders[i].friendnum == friend_number && file_senders[i].filenumber == file_number) {
+        if (file_senders[i].file && file_senders[i].friendnum == friend_number &&
+            file_senders[i].filenumber == file_number) {
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
-                LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum, file_senders[i].filenumber);
+                call_java_sendfile_rate(file_number, (int) position,
+                                        (int) file_senders[0].filesize);
+                LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum,
+                     file_senders[i].filenumber);
                 //new_lines(msg);
                 break;
             }
@@ -824,7 +865,8 @@ void call_java_start_send_file(int friendNumber, int fileNumber) {
     }
     jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "starSendFile", "(ILjava/lang/String;)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "starSendFile",
+                                                 "(ILjava/lang/String;)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFriendId);
@@ -846,7 +888,8 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
         return;
     }
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "startReceiveFile", "(ILjava/lang/String;Ljava/lang/String;)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "startReceiveFile",
+                                                 "(ILjava/lang/String;Ljava/lang/String;)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     jstring jFileName = (*Env)->NewStringUTF(Env, fileName);
@@ -860,8 +903,6 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFileName, jFriendId);
     (*Env)->DeleteLocalRef(Env, clazz);
     (*Env)->DeleteLocalRef(Env, jFileName);
-    free(fraddr_str);
-    free(fraddr_bin);
 }
 
 /**
@@ -884,6 +925,7 @@ void call_java_sendfile_rate(int fileNumber, int position, int filesize) {
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, position, filesize);
     (*Env)->DeleteLocalRef(Env, clazz);
 }
+
 /**
  * 回调给java接收了文件的多少字节
  */
@@ -905,7 +947,8 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize) {
     }
     jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
     //找到需要调用的方法ID
-    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate", "(IILjava/lang/String;)V");
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate",
+                                                 "(IILjava/lang/String;)V");
     LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize, jFriendId);
@@ -914,17 +957,17 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize) {
 }
 
 
-
 /**
  * 接收方的片段
  */
-void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position, const uint8_t *data, size_t length, void *user_data) {
+void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
+                        const uint8_t *data, size_t length, void *user_data) {
     LOGD("file_recv_chunk_cb");
     if (length == 0) {
         char msg[512];
         //sprintf(msg, "[t] %u file transfer: %u completed", friendnumber, filenumber);
         //new_lines(msg);
-        printf("file %s transfer from friendnumber %u completed\n" ,recv_filename, friend_number);
+        printf("file %s transfer from friendnumber %u completed\n", recv_filename, friend_number);
         LOGD("文件传输完毕");
         call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size);
 //        Call_File_Process_Func_From_Java(recv_filename, recv_filesize,friend_number);
@@ -1021,7 +1064,7 @@ void frpuk_to_str(uint8_t *id_bin, char *id_str) {
 }
 
 /**
- * 接受到消息的处理
+ * 接受到好友状态改变的处理
  */
 void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
 //    jmethodID mid_construct = NULL;
@@ -1074,13 +1117,6 @@ void fraddr_to_str(uint8_t *id_bin, char *id_str) {
         if (i >= TOX_PUBLIC_KEY_SIZE) {
             sum_extra |= id_bin[i];
         }
-
-/*
-        if (!((i + 1) % FRADDR_TOSTR_CHUNK_LEN)) {
-            id_str[2 * (i + 1) + delta] = ' ';
-            delta++;
-        }
-        */
     }
 
     id_str[2 * i + delta] = 0;
@@ -1091,56 +1127,15 @@ void fraddr_to_str(uint8_t *id_bin, char *id_str) {
 }
 
 void print_formatted_message(Tox *m, char *message, uint32_t friendnum, uint8_t outgoing) {
-    char name[TOX_MAX_NAME_LENGTH + 1];
-//    getfriendname_terminated(m, friendnum, name);
-    VLA(char, msg, 100 + strlen(message) + strlen(name) + 1);
-    time_t rawtime;
-    struct tm *timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
     char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
     uint8_t fraddr_bin[TOX_PUBLIC_KEY_SIZE];
 
     if (tox_friend_get_public_key(m, friendnum, fraddr_bin, NULL)) {
         frpuk_to_str(fraddr_bin, fraddr_str);
-//        publickey = (*env)->NewStringUTF(env,fraddr_str);
     }
     show_log(Env, message);
     LOGD("好友的toxId为： %s", fraddr_str);
     received_message(Env, message, fraddr_str);
-    /* assume that printing the date once a day is enough */
-//    if (fmtmsg_tm_mday != timeinfo->tm_mday) {
-//        fmtmsg_tm_mday = timeinfo->tm_mday;
-//
-//
-//        // strftime(msg, 100, "Today is %a %b %d %Y.", timeinfo);
-//        /* %x is the locale's preferred date format */
-//        // strftime(msg, 100, "Today is %x.", timeinfo);
-//        strftime(msg,100,"Time:%Y-%m-%d %H:%M:%S",timeinfo);
-//        ////new_lines(msg);
-//    }
-
-    char time[64];
-    //strftime(time, 64, "%I:%M:%S %p", timeinfo);
-    /* %X is the locale's preferred time format */
-    // strftime(time, 64, "%X", timeinfo);
-
-    strftime(time, 64, "Time:%Y-%m-%d %H:%M:%S", timeinfo);
-
-    if (outgoing) {
-        /* tgt: friend */
-        sprintf(msg, "[%d] %s =>{%s} %s", friendnum, time, name, message);
-    } else {
-        /* src: friend */
-        sprintf(msg, "[%d] %s <%s>: %s", friendnum, time, name, message);
-    }
-
-    // //new_lines(msg);
-    char *pass = NULL;
-
-    ////new_lines(message);
-//	        LOGD(message);
-    printf("\n %s %s %s", name, time, message);
 }
 
 /**
@@ -1183,7 +1178,6 @@ void received_message(JNIEnv *env, char *string, char *friendNumber) {
     (*env)->DeleteLocalRef(env, clazz);
     (*env)->DeleteLocalRef(env, callbackStr);
     (*env)->DeleteLocalRef(env, jfriendNumber);
-//    (*g_jvm)->DetachCurrentThread(g_jvm);
 }
 
 /* GetFriendNumInFriendlist

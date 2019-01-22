@@ -10,6 +10,7 @@ import android.os.Process
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import com.stratagile.tox.toxcore.ToxCoreJni
 
 import java.io.File
 import java.io.FileNotFoundException
@@ -49,6 +50,7 @@ class CrashHandler private constructor() : Thread.UncaughtExceptionHandler {
             } catch (e1: InterruptedException) {
                 Log.e(TAG, "error", e)
             }
+            ToxCoreJni.getInstance().toxKill()
             AppConfig.instance.stopAllService()
             // 退出程序
             Process.killProcess(Process.myPid())

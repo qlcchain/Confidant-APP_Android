@@ -7,12 +7,12 @@
 
 #include "tox.h"
 //#include "../../../../../../../Library/Android/sdk/ndk-bundle/sysroot/usr/include/jni.h"    //hzp
-#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                                //z、l
+#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                                //zl
 
 #endif //TOXCORENEW_PPTOX_H
 
 char*   Jstring2CStr(JNIEnv*   env,   jstring   jstr);
-int save_data(Tox *tox);
+static int save_data(Tox *tox);
 int save_data_file(Tox *m, const char *path);
 static Tox *load_data(void);
 void fraddr_to_str(uint8_t *id_bin, char *id_str);
@@ -27,6 +27,7 @@ void call_java_sendfile_rate(int fileNumber, int position, int filesize);
 void call_java_receivedfile_rate(int friendNumber, int position, int filesize);
 void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName);
 void call_java_start_send_file(int friendNumber, int fileNumber);
+void java_bootstrap(void);
 
 
 
