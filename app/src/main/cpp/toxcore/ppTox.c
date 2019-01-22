@@ -150,17 +150,18 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
 ** -5 file send fail
 */
 JNIEXPORT jint JNICALL
-Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, jstring fileName,
-                                                    jstring friendId) {
+Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, jstring filePath,
+                                                    jstring friendId, jstring fileName) {
     //Tox *tox, uint32_t friend_number, uint32_t kind, uint64_t file_size, const uint8_t *file_id,
     //                       const uint8_t *filename, size_t filename_length, TOX_ERR_FILE_SEND *error
     if (mTox != NULL) {
-        if (fileName == NULL)
+        if (filePath == NULL)
             return -2;
-        char *filename = Jstring2CStr(env, fileName);
-        LOGD("%s", filename);
+        char *filePathC = Jstring2CStr(env, filePath);
+        char *fileNameC = Jstring2CStr(env, fileName);
+        LOGD("%s", filePathC);
         //printf("filename:%s\n",filename);
-        if (filename == NULL) {
+        if (filePathC == NULL) {
             return -3;
         }
 /*		if (friend_not_valid_Qlink(qlinkNode, friendnum))
@@ -169,26 +170,30 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, j
     	}
 */
         if (friendId == NULL) {
-            free(filename);
+            free(filePathC);
+            free(fileNameC);
             return -4;
         }
         char *friendId_P = Jstring2CStr(env, friendId);
         if (friendId_P == NULL) {
-            free(filename);
+            free(filePathC);
+            free(fileNameC);
             return -5;
         }
         int friendnum = GetFriendNumInFriendlist(friendId_P);
         if (friendnum < 0) {
             free(friendId_P);
-            free(filename);
+            free(filePathC);
+            free(fileNameC);
             return -6;
         }
 
-        FILE *tempfile = fopen(filename, "rb");
+        FILE *tempfile = fopen(filePathC, "rb");
 
         if (tempfile == 0) {
             free(friendId_P);
-            free(filename);
+            free(filePathC);
+            free(fileNameC);
             return -7;
         }
 
@@ -197,12 +202,13 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, j
         fseek(tempfile, 0, SEEK_SET);
         LOGD("开始发送文件");
         uint32_t filenum = tox_file_send(mTox, friendnum, TOX_FILE_KIND_DATA, filesize, 0,
-                                         (uint8_t *) filename,
-                                         strlen(filename), 0);
+                                         (uint8_t *) fileNameC,
+                                         strlen(fileNameC), 0);
 
         if (filenum == -1) {
             free(friendId_P);
-            free(filename);
+            free(filePathC);
+            free(fileNameC);
             return -8;
         }
         file_senders[numfilesenders].filesize = filesize;
@@ -210,7 +216,8 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, j
         file_senders[numfilesenders].friendnum = friendnum;
         file_senders[numfilesenders].filenumber = filenum;
         ++numfilesenders;
-        free(filename);
+        free(filePathC);
+        free(fileNameC);
         free(friendId_P);
         return filenum;
     } else {
@@ -1001,6 +1008,7 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
                   uint64_t file_size, const uint8_t *filename, size_t filename_length,
                   void *user_data) {
     LOGD("file_recv_cb");
+    LOGD("fileName: %s", filename);
     received_file_size = file_size;
     if (filename != NULL) {
         memset(recv_filename, 0x00, 200);
