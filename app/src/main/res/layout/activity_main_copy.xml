@@ -28,15 +28,21 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/x10"
+            android:layout_marginLeft="@dimen/x30"
             android:layout_height="wrap_content">
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Sort"
+                android:textSize="17sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
             <ImageView
-                android:layout_width="@dimen/x40"
-                android:src="@mipmap/up_dowload"
+                android:layout_width="@dimen/x20"
+                android:src="@mipmap/icon_back"
+                android:rotation="-90"
                 android:scaleType="centerCrop"
                 android:layout_marginLeft="@dimen/x5"
-                android:layout_height="@dimen/x40" />
+                android:layout_height="@dimen/x20" />
         </LinearLayout>
         <TextView
             android:id="@+id/tvTitle"
@@ -51,20 +57,24 @@
             android:layout_width="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/x20"
+            android:layout_marginRight="@dimen/x22"
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/mainIv1"
-                android:visibility="gone"
                 android:layout_width="@dimen/x40"
-                android:src="@mipmap/add_file"
+                android:visibility="gone"
+                android:src="@mipmap/icon_download"
+                android:layout_marginRight="@dimen/x30"
                 android:layout_height="@dimen/x40" />
             <ImageView
                 android:id="@+id/ivQrCode"
-                android:visibility="visible"
+                android:layout_toRightOf="@+id/mainIv1"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible"
                 android:layout_width="@dimen/x40"
                 android:src="@mipmap/icon_scan"
                 android:layout_height="@dimen/x40"
+                android:scaleType="fitCenter"
                 />
         </RelativeLayout>
 

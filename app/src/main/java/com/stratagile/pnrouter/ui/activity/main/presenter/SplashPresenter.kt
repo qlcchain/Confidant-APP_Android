@@ -237,8 +237,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                         var dst_private_Signkey = ByteArray(64)
                         var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
 
-                        val strSignPrivate:String = StringUitl.bytesToString(dst_private_Signkey)
-                        val strSignPublic = StringUitl.bytesToString(dst_public_SignKey)
+                        val strSignPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Signkey)
+                        val strSignPublic =  RxEncodeTool.base64Encode2String(dst_public_SignKey)
                         ConstantValue.libsodiumprivateSignKey = strSignPrivate
                         ConstantValue.libsodiumpublicSignKey = strSignPublic
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
@@ -256,8 +256,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                         var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
                         var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
 
-                        val strMiPrivate:String = StringUitl.bytesToString(dst_private_Mikey)
-                        val strMiPublic = StringUitl.bytesToString(dst_public_MiKey)
+                        val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                        val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
                         ConstantValue.libsodiumprivateMiKey = strMiPrivate
                         ConstantValue.libsodiumpublicMiKey = strMiPublic
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)

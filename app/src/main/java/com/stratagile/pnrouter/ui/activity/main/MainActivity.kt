@@ -985,7 +985,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun setToFile() {
         tvTitle.text = getString(R.string.file_)
         mainIv1.visibility = View.VISIBLE
-        ivQrCode.visibility = View.VISIBLE
+        ivQrCode.visibility = View.GONE
         llSort.visibility = View.VISIBLE
     }
 

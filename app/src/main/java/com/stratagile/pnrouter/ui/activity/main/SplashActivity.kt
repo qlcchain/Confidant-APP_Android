@@ -128,23 +128,15 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
 
-        var dst_public_SignKeya = StringUitl.toBytes("f5 44 40 55 46 a0 6f 96 5c 42 14 ba 3d 79 7 7f e8 22 8d 4b 67 af 14 20 4f 54 66 25 5b 37 6d d6")
-        var dst_private_Signkeyd = StringUitl.toBytes("34 4c b0 74 1c f4 2c 8c e8 93 73 3b 1 41 e4 b3 c4 c5 24 eb 9e 19 81 d9 41 5e 3c 49 53 4e b9 25 f5 44 40 55 46 a0 6f 96 5c 42 14 ba 3d 79 7 7f e8 22 8d 4b 67 af 14 20 4f 54 66 25 5b 37 6d d6")
-        var dst_public_MiKey = ByteArray(32)
-        var dst_private_Mikey = ByteArray(32)
-        var crypto_sign_ed25519_pk_to_curve25519_resulta = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKeya)
-        var crypto_sign_ed25519_sk_to_curve25519_resultb = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkeyd)
-
-        var  dst_public_MiKeyStr = StringUitl.bytesToString(dst_public_MiKey)
-        var  dst_private_SignkeydStr = StringUitl.bytesToString(dst_private_Mikey)
+    
 
         var dst_public_TemKey_My = ByteArray(32)
         var dst_private_Temkey_My = ByteArray(32)
 
         var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
 
-        ConstantValue.libsodiumprivateTemKey = StringUitl.bytesToString(dst_private_Temkey_My)
-        ConstantValue.libsodiumpublicTemKey =  StringUitl.bytesToString(dst_public_TemKey_My)
+        ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
+        ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 
 
         //模拟生成好友的加解密公钥
@@ -173,21 +165,21 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         //签名
         var dst_signed_msg = ByteArray(96)
         var signed_msg_len = IntArray(1)
-        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,dst_public_TemKey_My,dst_public_TemKey_My.size,StringUitl.toBytes(ConstantValue.libsodiumprivateSignKey))
+        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,dst_public_TemKey_My,dst_public_TemKey_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey))
         var dst_msg = ByteArray(32)
         var msg_len = IntArray(1)
-        var crypto_sign_open = Sodium.crypto_sign_open(dst_msg,msg_len,dst_signed_msg,dst_signed_msg.size,StringUitl.toBytes(ConstantValue.libsodiumpublicSignKey))
+        var crypto_sign_open = Sodium.crypto_sign_open(dst_msg,msg_len,dst_signed_msg,dst_signed_msg.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
 
 
-        var dst_shared_keyStr = StringUitl.bytesToString(dst_shared_key)
+        var dst_shared_keyStr = RxEncodeTool.base64Encode2String(dst_shared_key)
         //非对称加密方式crypto_box_seal加密对称密钥
         var dst_shared_key_Mi_My = ByteArray(32 + 48)
-        var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,StringUitl.toBytes(ConstantValue.libsodiumpublicMiKey))
+        var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
 
-        var dst_shared_key_Mi_MyStr = StringUitl.bytesToString(dst_shared_key_Mi_My)
+        var dst_shared_key_Mi_MyStr = RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My)
         //非对称解密方式crypto_box_seal_open解密出对称密钥
         var dst_shared_key_Soucre_My = ByteArray(32)
-        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,StringUitl.toBytes(ConstantValue.libsodiumpublicMiKey),StringUitl.toBytes(ConstantValue.libsodiumprivateMiKey))
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
         //解密自己的消息
         var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key_Soucre_My)
 

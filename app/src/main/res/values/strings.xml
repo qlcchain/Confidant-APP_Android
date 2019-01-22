@@ -486,6 +486,11 @@
     <string name="ExcessiveFileBlockLength">Excessive File Block Length</string>
     <string name="network_reconnecting">network reconnecting...</string>
     <string name="codeerror">code error</string>
+    <string name="My_Files">My Files</string>
+    <string name="Documents_I_Share">Documents I Share</string>
+    <string name="Documents_received">Documents received</string>
+    <string name="Documents_shared"> Documents shared</string>
+
 
 
 

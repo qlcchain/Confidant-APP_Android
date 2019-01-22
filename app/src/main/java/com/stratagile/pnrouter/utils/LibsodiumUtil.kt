@@ -21,8 +21,8 @@ object LibsodiumUtil {
      */
     fun crypto_box_beforenm_string(remote_public_keyStr:String, local_private_keyStr:String):String
     {
-        var remote_public_key = StringUitl.toBytes(remote_public_keyStr)
-        var local_private_key= StringUitl.toBytes(local_private_keyStr)
+        var remote_public_key = RxEncodeTool.base64Decode(remote_public_keyStr)
+        var local_private_key= RxEncodeTool.base64Decode(local_private_keyStr)
         var dst_shared_key  = ByteArray(32)
         var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,remote_public_key,local_private_key)
         return RxEncodeTool.base64Encode2String(dst_shared_key)
@@ -73,7 +73,7 @@ object LibsodiumUtil {
         {
             var encrypted = ByteArray(src_msg.size+ Sodium.crypto_box_macbytes())
             System.arraycopy(temp_encrypted, Sodium.crypto_box_boxzerobytes(), encrypted,0 , src_msg.size+ Sodium.crypto_box_macbytes())
-            return StringUitl.bytesToString(encrypted)
+            return RxEncodeTool.base64Encode2String(encrypted)
         }else
         {
             return ""
@@ -109,9 +109,9 @@ object LibsodiumUtil {
      */
     fun decrypt_data_symmetric_string(encryptedStr:String, src_nonceStr:String, src_keyStr:String):String
     {
-        var encrypted =  StringUitl.toBytes(encryptedStr)
+        var encrypted =  RxEncodeTool.base64Decode(encryptedStr)
         var src_nonce = src_nonceStr.toByteArray()
-        var src_key = StringUitl.toBytes(src_keyStr)
+        var src_key = RxEncodeTool.base64Decode(src_keyStr)
         var temp_plainafter = ByteArray(encrypted.size+Sodium.crypto_box_zerobytes())
         val temp_encryptedAfter = ByteArray(encrypted.size+Sodium.crypto_box_boxzerobytes())
         var temp_plainInitAfter = ByteArray(Sodium.crypto_box_boxzerobytes())

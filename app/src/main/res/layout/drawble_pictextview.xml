@@ -9,7 +9,6 @@
     <ImageView
         android:id="@+id/icon"
         android:layout_width="@dimen/x30"
-        android:rotation="180"
         android:layout_height="@dimen/x10"
         android:src="@mipmap/rouermanagement"
         android:layout_marginLeft="@dimen/x30"
