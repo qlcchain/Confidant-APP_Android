@@ -13,6 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.domain.EaseEmojicon
 import com.hyphenate.easeui.ui.EaseBaiduMapActivity
 import com.hyphenate.easeui.widget.EaseChatExtendMenu
@@ -35,6 +37,7 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.util.*
 

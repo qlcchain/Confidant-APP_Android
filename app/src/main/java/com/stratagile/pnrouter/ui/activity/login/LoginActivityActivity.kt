@@ -823,12 +823,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         })
                     }
                     LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-                    var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+
                     if(ConstantValue.isAntox)
                     {
-                        intent = Intent(AppConfig.instance, ToxService::class.java)
+                        var intent = Intent(AppConfig.instance, ToxService::class.java)
+                        startService(intent)
+                    }else{
+                        var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+                        startService(intent)
                     }
-                    startService(intent)
+
                 }
 
             }else{

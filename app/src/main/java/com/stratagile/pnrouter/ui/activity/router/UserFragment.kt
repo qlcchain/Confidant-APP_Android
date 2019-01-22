@@ -7,6 +7,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -29,6 +31,7 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.TempRouterAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_user.*
 import javax.inject.Inject

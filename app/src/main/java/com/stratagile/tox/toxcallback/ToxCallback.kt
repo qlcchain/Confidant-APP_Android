@@ -1,9 +1,9 @@
 package com.stratagile.tox.toxcallback
 
 import com.socks.library.KLog
-import com.stratagile.tox.events.ToxFriendStatusEvent
-import com.stratagile.tox.events.ToxMessageEvent
-import com.stratagile.tox.events.ToxStatusEvent
+import events.ToxFriendStatusEvent
+import events.ToxMessageEvent
+import events.ToxStatusEvent
 import org.greenrobot.eventbus.EventBus
 
 class OnConnectionStatusCallback {

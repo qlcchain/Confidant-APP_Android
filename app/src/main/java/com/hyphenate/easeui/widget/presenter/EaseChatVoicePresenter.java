@@ -32,6 +32,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
+import chat.tox.antox.tox.MessageHelper;
+import chat.tox.antox.wrapper.FriendKey;
+import im.tox.tox4j.core.enums.ToxMessageType;
+
 /**
  * Created by zhangsong on 17-10-12.
  */
