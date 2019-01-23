@@ -1017,7 +1017,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
         if(toxFileData != null)
         {
-            if(!deleteFileMap.get(toxFileData.getFileId()))
+            if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
                 SendToxFileNotice sendToxFileNotice = new SendToxFileNotice( toxFileData.getFromId(),toxFileData.getToId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getFileId(),toxFileData.getSrcKey(),toxFileData.getDstKey(),"SendFile");
                 BaseData baseData = new BaseData(sendToxFileNotice);

@@ -833,8 +833,7 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                call_java_sendfile_rate(file_number, (int) position,
-                                        (int) file_senders[0].filesize);
+                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[i].filesize);
                 LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum,
                      file_senders[i].filenumber);
                 //new_lines(msg);
@@ -845,7 +844,7 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             VLA(uint8_t, data, length);
             int len = fread(data, 1, length, file_senders[i].file);
             tox_file_send_chunk(tox, friend_number, file_number, position, data, len, 0);
-            call_java_sendfile_rate(file_number, (int) position, (int) file_senders[0].filesize);
+            call_java_sendfile_rate(file_number, (int) position, (int) file_senders[i].filesize);
             break;
         }
     }
@@ -1012,8 +1011,8 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
     received_file_size = file_size;
     if (filename != NULL) {
         memset(recv_filename, 0x00, 200);
-//        Call_GetFilePathFromJava(recv_filename,filename);
-        strcat(recv_filename, filename);
+        Call_GetFilePathFromJava(filename,recv_filename);
+//        strcat(recv_filename, filename);
         if (recv_filename == NULL)
             return;
     }
@@ -1041,6 +1040,53 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
         printf("Could not accept file transfer.");
     }
 }
+
+/* Call_GetFilePathFromJava
+** 0 success call java func
+** -2 data is null
+** -4 can't find	class
+** -5 can't find	mid_construct
+** -6 can't find mid_instance ID
+** -7 can't Create an instance
+*/
+int Call_GetFilePathFromJava(const char*oldfilepathname, char*newfilepathname)
+{
+    if(mTox != NULL)
+    {
+        if(oldfilepathname == NULL||Env==NULL)
+            return -2;
+        if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+            return -1;
+        }
+        //直接用GetObjectClass找到Class, 也就是Sdk.class.
+        jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+        if (clazz == NULL) {
+            LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+            return -4;
+        }
+        //找到需要调用的方法ID
+        jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "setFileSavePath", "(Ljava/lang/String;)Ljava/lang/String;");
+        LOGD("开始调用java方法");
+        jstring jOldFileName = (*Env)->NewStringUTF(Env, oldfilepathname);
+        //进行回调，ret是java层的返回值（这个有些场景很好用）
+        jstring result = (*Env)->CallObjectMethod(Env, g_obj, javaCallback, jOldFileName);
+        if(result!=NULL)
+        {
+            char *pathname=Jstring2CStr(Env,result);
+            if(pathname!=NULL){
+                strcpy(newfilepathname,pathname);
+                free(pathname);
+            }
+        }
+        (*Env)->DeleteLocalRef(Env, clazz);
+        (*Env)->DeleteLocalRef(Env, jOldFileName);
+
+        return 0;
+    }
+    else
+        return -1;
+}
+
 
 void frpuk_to_str(uint8_t *id_bin, char *id_str) {
     uint32_t i, delta = 0, pos_extra = 0, sum_extra = 0;
@@ -1075,9 +1121,6 @@ void frpuk_to_str(uint8_t *id_bin, char *id_str) {
  * 接受到好友状态改变的处理
  */
 void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
-//    jmethodID mid_construct = NULL;
-//    jobject jobj = NULL;
-
     if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
         return;
     }
@@ -1087,21 +1130,9 @@ void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
         LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
         return;
     }
-//    // 2、获取类的默认构造方法ID
-//    mid_construct = (*env)->GetMethodID(env, clazz, "<init>", "()V");
-//    if (mid_construct == NULL) {
-//        LOGD("找不到默认的构造方法");
-//        return;
-//    }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "freindStatus",
                                                  "(Ljava/lang/String;I)V");
-//    //创建该类的实例
-//    jobj = (*env)->NewObject(env, clazz, mid_construct);
-//    if (jobj == NULL) {
-//        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到freindStatus方法");
-//        return;
-//    }
     LOGD("开始调用java方法");
     jstring jfriendNumber = (*env)->NewStringUTF(env, friendNumber);
     //进行回调，ret是java层的返回值（这个有些场景很好用）
@@ -1109,7 +1140,6 @@ void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
 
     (*env)->DeleteLocalRef(env, clazz);
     (*env)->DeleteLocalRef(env, jfriendNumber);
-//    (*g_jvm)->DetachCurrentThread(g_jvm);
 }
 
 void fraddr_to_str(uint8_t *id_bin, char *id_str) {

@@ -28,6 +28,7 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize);
 void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName);
 void call_java_start_send_file(int friendNumber, int fileNumber);
 void java_bootstrap(void);
+int Call_GetFilePathFromJava(const char*oldfilepathname, char*newfilepathname);
 
 
 

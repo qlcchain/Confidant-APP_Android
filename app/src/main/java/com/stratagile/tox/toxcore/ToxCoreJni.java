@@ -120,10 +120,12 @@ public class ToxCoreJni {
      */
     public native int sendMessage(String message, String friendId);
 
-    public int senToxFile(String filePath, String friendId, String fileName)
+    public int senToxFile(String filePath, String friendId)
     {
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
+        KLog.i(filePath);
         int result =  sendFile(filePath, friendId, fileName);
-        KLog.i("发送Tox文件:" + filePath +"  result:" +result);
+        KLog.i("发送Tox文件:" + fileName +"  result:" +result);
         LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
         return result;
     }
@@ -232,5 +234,9 @@ public class ToxCoreJni {
             KLog.i("引导 " + dhtNode.getIpv4() + " " + result);
         }
         KLog.i("引导 完成");
+    }
+
+    public String setFileSavePath(String oldName) {
+        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + oldName;
     }
 }
