@@ -462,6 +462,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);
+        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey:String,Msg: String);
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)

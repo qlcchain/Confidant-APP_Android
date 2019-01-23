@@ -169,7 +169,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             val userId = SpUtil.getString(this, ConstantValue.userId, "")
                             var aesKey = RxEncryptTool.generateAESKey()
                             var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                            var friend = RxEncodeTool.base64Decode(i.publicKey)
+                            var friend = RxEncodeTool.base64Decode(i.signPublicKey)
                             var SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                             var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
                             var miMsg = AESCipher.aesEncryptString(msg, aesKey)
@@ -214,11 +214,11 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             sendMsgMap.put(uuid, message)
                                             sendMsgLocalMap.put(uuid, false)
                                             sendFilePathMap.put(uuid, files_dir)
-                                            sendFileFriendKeyMap.put(uuid, i.publicKey)
+                                            sendFileFriendKeyMap.put(uuid, i.signPublicKey)
 
                                             val aesKey = RxEncryptTool.generateAESKey()
                                             val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.publicKey)
+                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
@@ -251,7 +251,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 sendMsgMap.put(uuid.toString() + "", message)
                                                 sendMsgLocalMap.put(uuid.toString() + "", false)
                                                 sendFilePathMap.put(uuid.toString() + "", base58files_dir)
-                                                sendFileFriendKeyMap.put(uuid.toString() + "", i.publicKey)
+                                                sendFileFriendKeyMap.put(uuid.toString() + "", i.signPublicKey)
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -263,7 +263,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE
                                                 toxFileData.fileId = uuid
-                                                val FriendPublicKey = i.publicKey
+                                                val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
                                                 var SrcKey = ByteArray(256)
@@ -333,11 +333,11 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             sendMsgMap[uuid] = message
                                             sendMsgLocalMap[uuid] = false
                                             sendFilePathMap[uuid] = videoPath
-                                            sendFileFriendKeyMap[uuid] = i.publicKey
+                                            sendFileFriendKeyMap[uuid] = i.signPublicKey
 
                                             val aesKey = RxEncryptTool.generateAESKey()
                                             val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.publicKey)
+                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
@@ -364,7 +364,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                        sendMsgMap[uuid.toString() + ""] = message
                                                 sendMsgLocalMap[uuid.toString() + ""] = false
                                                 sendFilePathMap[uuid.toString() + ""] = base58files_dir
-                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.publicKey
+                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -376,7 +376,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA
                                                 toxFileData.fileId = uuid
-                                                val FriendPublicKey = i.publicKey
+                                                val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
                                                 var SrcKey = ByteArray(256)
@@ -439,11 +439,11 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             sendMsgMap[uuid] = message
                                             sendMsgLocalMap[uuid] = false
                                             sendFilePathMap[uuid] = files_dir
-                                            sendFileFriendKeyMap[uuid] = i.publicKey
+                                            sendFileFriendKeyMap[uuid] = i.signPublicKey
 
                                             val aesKey = RxEncryptTool.generateAESKey()
                                             val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.publicKey)
+                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
@@ -470,7 +470,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 sendMsgMap[uuid.toString() + ""] = message
                                                 sendMsgLocalMap[uuid.toString() + ""] = false
                                                 sendFilePathMap[uuid.toString() + ""] = base58files_dir
-                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.publicKey
+                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -482,7 +482,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_FILE
                                                 toxFileData.fileId = uuid
-                                                val FriendPublicKey = i.publicKey
+                                                val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
                                                 var SrcKey = ByteArray(256)

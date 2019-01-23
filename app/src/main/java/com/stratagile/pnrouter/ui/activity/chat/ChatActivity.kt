@@ -42,6 +42,7 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 
@@ -383,15 +384,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
             var msgId:String = pushMsgRsp?.params.msgId.toString()
             var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
+            var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+            }
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                 if(!msgId.equals(""))
                 {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
                 }
 
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -412,7 +418,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     }
                 }
             }
-            chatFragment?.receiveTxtMessage(pushMsgRsp)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                chatFragment?.receiveTxtMessageV3(pushMsgRsp)
+            }else{
+                chatFragment?.receiveTxtMessage(pushMsgRsp)
+            }
+
         }
     }
 
@@ -454,10 +466,72 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             LogUtil.addLog("sendMsg 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }
-
-
     }
+    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String) {
+        try {
+            if(FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals(""))
+            {
+                toast(R.string.Empty_with_parameters)
+                return
+            }
+            if(Msg.length >264)
+            {
+                toast(R.string.nomorecharacters)
+                return
+            }
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var mySignPublic  = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)
 
+            var myMiPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey)
+            var myMiPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey)
+
+            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
+            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
+
+
+            var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
+            LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
+
+            var src_msgBase64 = RxEncodeTool.base64Encode2String(Msg.toByteArray());
+            val random = org.libsodium.jni.crypto.Random()
+            var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
+            //开始加密
+            var dst_shared_key  = ByteArray(32)
+            var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,friendMiPublic,myTempPrivate) //自己临时私钥和好友加解密公钥->生成对称密钥
+            var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
+            var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(src_msgBase64,NonceBase64,shared_keyBase64)//消息原文转base64后用对称密码加密
+
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,myTempPublic,myTempPublic.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名自己临时公钥->转base64
+
+
+            var dst_shared_key_Mi_My = ByteArray(32 + 48)
+            var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
+            var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥
+
+
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, encryptedBase64,signBase64,NonceBase64,dst_shared_key_Mi_My64)
+
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(3,msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }catch (e:Exception)
+        {
+            LogUtil.addLog("sendMsg2 错误:",e.toString())
+            toast(R.string.Encryptionerror)
+        }
+    }
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
         chatFragment?.upateMessage(sendMsgRsp)
         //todo

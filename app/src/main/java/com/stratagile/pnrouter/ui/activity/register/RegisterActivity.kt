@@ -86,11 +86,14 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         } else {
             ConstantValue.loginOut = false
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
+            FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
+            newRouterEntity.index  = loginRsp.params!!.index
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
+            SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             SpUtil.putString(this, ConstantValue.username,createName.text.toString())
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -191,6 +194,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             newRouterEntity.userSn = registerRsp.params.userSn
             newRouterEntity.username = createName.text.toString()
             newRouterEntity.userId = registerRsp.params.userId
+            newRouterEntity.index = registerRsp.params.index
             newRouterEntity.loginKey = userName3.text.toString();
             newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
             newRouterEntity.dataFilePay = registerRsp.params.dataFilePay

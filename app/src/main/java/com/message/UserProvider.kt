@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
+import org.libsodium.jni.Sodium
 import java.util.*
 
 class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
@@ -133,11 +134,17 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.publicKey,0)
+                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.signPublicKey,0)
+                        var sendData = BaseData(addFriendDealReq)
+                        if(ConstantValue.encryptionType.equals("1"))
+                        {
+                            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.libsodiumpublicSignKey!!, itUserEntity.signPublicKey,0)
+                            sendData = BaseData(3,addFriendDealReq)
+                        }
                         if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                            AppConfig.instance.messageSender!!.send(sendData)
                         }else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(addFriendDealReq)
+                            var baseData = sendData
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -180,7 +187,13 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     it.friendStatus = 3
                 }*/
                 it.nickName = jAddFriendPushRsp.params.nickName;
-                it.publicKey = jAddFriendPushRsp.params.userKey
+                it.signPublicKey = jAddFriendPushRsp.params.userKey
+                var dst_public_MiKey_Friend = ByteArray(32)
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                {
+                    it.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                }
                 it.timestamp = jAddFriendPushRsp.timestamp
                 it.validationInfo = jAddFriendPushRsp.params.msg
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -190,10 +203,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
+                var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+                if(ConstantValue.encryptionType.equals("1"))
+                {
+                    sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+                }
                 if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                 }else if (ConstantValue.isToxConnected) {
-                    var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+                    var baseData = sendData
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -215,7 +233,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.timestamp = jAddFriendPushRsp.timestamp
         newFriend.noteName = ""
         newFriend.validationInfo = jAddFriendPushRsp.params.msg
-        newFriend.publicKey = jAddFriendPushRsp.params.userKey
+        newFriend.signPublicKey = jAddFriendPushRsp.params.userKey
+
+        var dst_public_MiKey_Friend = ByteArray(32)
+        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+        if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+        {
+            newFriend.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+        }
         userList.add(newFriend)
 
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -230,10 +255,16 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
 
         var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
+
+        var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
              if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -284,15 +315,26 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     it.friendStatus = 2
                 }*/
                 it.nickName = jAddFriendReplyRsp.params.nickname
-                it.publicKey = jAddFriendReplyRsp.params.userKey
+                it.signPublicKey = jAddFriendReplyRsp.params.userKey
+                var dst_public_MiKey_Friend = ByteArray(32)
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
+                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                {
+                    it.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                }
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
 
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
+                var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                if(ConstantValue.encryptionType.equals("1"))
+                {
+                    sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                }
                 if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                 }else if (ConstantValue.isToxConnected) {
-                    var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    var baseData = sendData
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -347,10 +389,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
 
         var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
+        var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -460,11 +507,17 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     fun addFriend(selfUserId : String, nickName : String, toUserId: String) {
         val strBase64 = RxEncodeTool.base64Encode2String(nickName.toByteArray())
-        var login = AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.publicRAS!!,"")
+        var addFriendReq = AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.publicRAS!!,"")
+        var sendData = BaseData(addFriendReq);
+        if(ConstantValue.encryptionType.equals( "1"))
+        {
+            addFriendReq =  AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.libsodiumpublicSignKey!!,"")
+            sendData = BaseData(3,addFriendReq);
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(login)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -498,10 +551,16 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
         var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS!!, friendKey,0)
+        var sendData = BaseData(addFriendDealReq)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.libsodiumpublicSignKey!!, friendKey,0)
+            sendData = BaseData(3,addFriendDealReq)
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            AppConfig.instance.messageSender!!.send(sendData)
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(addFriendDealReq)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -517,10 +576,17 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
         var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
+
+        var sendData = BaseData(addFriendDealReq)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
+            sendData = BaseData(3,addFriendDealReq)
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+            AppConfig.instance.messageSender!!.send(sendData)
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(addFriendDealReq)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

@@ -27,11 +27,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         public final static Property UserSn = new Property(2, String.class, "userSn", false, "USER_SN");
         public final static Property Username = new Property(3, String.class, "username", false, "USERNAME");
         public final static Property UserId = new Property(4, String.class, "userId", false, "USER_ID");
-        public final static Property RouterName = new Property(5, String.class, "routerName", false, "ROUTER_NAME");
-        public final static Property DataFileVersion = new Property(6, Integer.class, "dataFileVersion", false, "DATA_FILE_VERSION");
-        public final static Property DataFilePay = new Property(7, String.class, "dataFilePay", false, "DATA_FILE_PAY");
-        public final static Property LastCheck = new Property(8, boolean.class, "lastCheck", false, "LAST_CHECK");
-        public final static Property LoginKey = new Property(9, String.class, "loginKey", false, "LOGIN_KEY");
+        public final static Property Index = new Property(5, String.class, "index", false, "INDEX");
+        public final static Property RouterName = new Property(6, String.class, "routerName", false, "ROUTER_NAME");
+        public final static Property DataFileVersion = new Property(7, Integer.class, "dataFileVersion", false, "DATA_FILE_VERSION");
+        public final static Property DataFilePay = new Property(8, String.class, "dataFilePay", false, "DATA_FILE_PAY");
+        public final static Property LastCheck = new Property(9, boolean.class, "lastCheck", false, "LAST_CHECK");
+        public final static Property LoginKey = new Property(10, String.class, "loginKey", false, "LOGIN_KEY");
     }
 
 
@@ -52,11 +53,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
                 "\"USER_SN\" TEXT," + // 2: userSn
                 "\"USERNAME\" TEXT," + // 3: username
                 "\"USER_ID\" TEXT," + // 4: userId
-                "\"ROUTER_NAME\" TEXT," + // 5: routerName
-                "\"DATA_FILE_VERSION\" INTEGER," + // 6: dataFileVersion
-                "\"DATA_FILE_PAY\" TEXT," + // 7: dataFilePay
-                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 8: lastCheck
-                "\"LOGIN_KEY\" TEXT);"); // 9: loginKey
+                "\"INDEX\" TEXT," + // 5: index
+                "\"ROUTER_NAME\" TEXT," + // 6: routerName
+                "\"DATA_FILE_VERSION\" INTEGER," + // 7: dataFileVersion
+                "\"DATA_FILE_PAY\" TEXT," + // 8: dataFilePay
+                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 9: lastCheck
+                "\"LOGIN_KEY\" TEXT);"); // 10: loginKey
     }
 
     /** Drops the underlying database table. */
@@ -94,25 +96,30 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(5, userId);
         }
  
+        String index = entity.getIndex();
+        if (index != null) {
+            stmt.bindString(6, index);
+        }
+ 
         String routerName = entity.getRouterName();
         if (routerName != null) {
-            stmt.bindString(6, routerName);
+            stmt.bindString(7, routerName);
         }
  
         Integer dataFileVersion = entity.getDataFileVersion();
         if (dataFileVersion != null) {
-            stmt.bindLong(7, dataFileVersion);
+            stmt.bindLong(8, dataFileVersion);
         }
  
         String dataFilePay = entity.getDataFilePay();
         if (dataFilePay != null) {
-            stmt.bindString(8, dataFilePay);
+            stmt.bindString(9, dataFilePay);
         }
-        stmt.bindLong(9, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(10, entity.getLastCheck() ? 1L: 0L);
  
         String loginKey = entity.getLoginKey();
         if (loginKey != null) {
-            stmt.bindString(10, loginKey);
+            stmt.bindString(11, loginKey);
         }
     }
 
@@ -145,25 +152,30 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(5, userId);
         }
  
+        String index = entity.getIndex();
+        if (index != null) {
+            stmt.bindString(6, index);
+        }
+ 
         String routerName = entity.getRouterName();
         if (routerName != null) {
-            stmt.bindString(6, routerName);
+            stmt.bindString(7, routerName);
         }
  
         Integer dataFileVersion = entity.getDataFileVersion();
         if (dataFileVersion != null) {
-            stmt.bindLong(7, dataFileVersion);
+            stmt.bindLong(8, dataFileVersion);
         }
  
         String dataFilePay = entity.getDataFilePay();
         if (dataFilePay != null) {
-            stmt.bindString(8, dataFilePay);
+            stmt.bindString(9, dataFilePay);
         }
-        stmt.bindLong(9, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(10, entity.getLastCheck() ? 1L: 0L);
  
         String loginKey = entity.getLoginKey();
         if (loginKey != null) {
-            stmt.bindString(10, loginKey);
+            stmt.bindString(11, loginKey);
         }
     }
 
@@ -180,11 +192,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // userSn
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // username
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // userId
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // routerName
-            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // dataFileVersion
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // dataFilePay
-            cursor.getShort(offset + 8) != 0, // lastCheck
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9) // loginKey
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // index
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // routerName
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // dataFileVersion
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // dataFilePay
+            cursor.getShort(offset + 9) != 0, // lastCheck
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // loginKey
         );
         return entity;
     }
@@ -196,11 +209,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         entity.setUserSn(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setUsername(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setUserId(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setRouterName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setDataFileVersion(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
-        entity.setDataFilePay(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setLastCheck(cursor.getShort(offset + 8) != 0);
-        entity.setLoginKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setIndex(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setRouterName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setDataFileVersion(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setDataFilePay(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setLastCheck(cursor.getShort(offset + 9) != 0);
+        entity.setLoginKey(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
      }
     
     @Override

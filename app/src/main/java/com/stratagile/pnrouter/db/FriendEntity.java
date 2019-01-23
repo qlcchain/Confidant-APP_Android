@@ -13,7 +13,8 @@ public class FriendEntity implements Parcelable{
     private Long id;
     //用户id
     private String userId;
-
+    //用户hashid，14位字符串,不可为空
+    private String index;
     //好友id
     private String friendId;
 
@@ -26,26 +27,9 @@ public class FriendEntity implements Parcelable{
     //第一次通信的时间戳
     private long timestamp;
 
-
-
-
-
-
-    @Generated(hash = 928398089)
-    public FriendEntity(Long id, String userId, String friendId,
-            int friendLocalStatus, boolean addFromMe, long timestamp) {
-        this.id = id;
-        this.userId = userId;
-        this.friendId = friendId;
-        this.friendLocalStatus = friendLocalStatus;
-        this.addFromMe = addFromMe;
-        this.timestamp = timestamp;
-    }
     @Generated(hash = 834006476)
     public FriendEntity() {
     }
-
-
     protected FriendEntity(Parcel in) {
         if (in.readByte() == 0) {
             id = null;
@@ -53,10 +37,22 @@ public class FriendEntity implements Parcelable{
             id = in.readLong();
         }
         userId = in.readString();
+        index = in.readString();
         friendId = in.readString();
         friendLocalStatus = in.readInt();
         addFromMe = in.readByte() != 0;
         timestamp = in.readLong();
+    }
+    @Generated(hash = 1914995724)
+    public FriendEntity(Long id, String userId, String index, String friendId,
+            int friendLocalStatus, boolean addFromMe, long timestamp) {
+        this.id = id;
+        this.userId = userId;
+        this.index = index;
+        this.friendId = friendId;
+        this.friendLocalStatus = friendLocalStatus;
+        this.addFromMe = addFromMe;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -68,6 +64,7 @@ public class FriendEntity implements Parcelable{
             dest.writeLong(id);
         }
         dest.writeString(userId);
+        dest.writeString(index);
         dest.writeString(friendId);
         dest.writeInt(friendLocalStatus);
         dest.writeByte((byte) (addFromMe ? 1 : 0));
@@ -97,6 +94,19 @@ public class FriendEntity implements Parcelable{
     public void setId(Long id) {
         this.id = id;
     }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public boolean isAddFromMe() {
+        return addFromMe;
+    }
+
     public String getUserId() {
         return this.userId;
     }

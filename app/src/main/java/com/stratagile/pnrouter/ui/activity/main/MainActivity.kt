@@ -8,7 +8,6 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
-import android.util.Pair
 import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
@@ -22,7 +21,6 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
-import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.toast
@@ -45,7 +43,6 @@ import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxSendInfoEvent
@@ -54,6 +51,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 
@@ -295,10 +293,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!,0, "")
+
+            var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+            }
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
                 if (ConstantValue.isAntox) {
@@ -422,14 +426,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                      i.friendStatus = 2
                  }*/
                 i.nickName = jAddFriendReplyRsp.params.nickname
-                i.publicKey = jAddFriendReplyRsp.params.userKey
+                i.signPublicKey = jAddFriendReplyRsp.params.userKey
+
+                var dst_public_MiKey_Friend = ByteArray(32)
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
+                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                {
+                    i.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                }
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
+                var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                if(ConstantValue.encryptionType.equals("1"))
+                {
+                    sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                }
                 if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid))
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                 }else if (ConstantValue.isToxConnected) {
-                    var baseData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    var baseData = sendData
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -490,7 +506,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.addFromMe = false
         newFriend.timestamp = Calendar.getInstance().timeInMillis
         newFriend.noteName = ""
-        newFriend.publicKey = jAddFriendPushRsp.params.userKey
+        newFriend.signPublicKey = jAddFriendPushRsp.params.userKey
+
+        var dst_public_MiKey_Friend = ByteArray(32)
+        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+        if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+        {
+            newFriend.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+        }
         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
         newFriend.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
@@ -506,10 +529,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         runOnUiThread {
             viewModel.freindChange.value = Calendar.getInstance().timeInMillis
         }
+        var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+        }
+
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(addFriendPushReq,jAddFriendPushRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -687,10 +716,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (!ConstantValue.isInit) {
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var pullFriend = PullFriendReq(selfUserId!!)
+            var sendData = BaseData(pullFriend)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                sendData = BaseData(3,pullFriend)
+            }
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(pullFriend)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -726,10 +760,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
+                        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+                        if(ConstantValue.encryptionType.equals("1"))
+                        {
+                            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+                        }
                         if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                         }else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+                            var baseData = sendData
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -1076,7 +1115,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     .show()
             exitTime = System.currentTimeMillis()
         } else {
-            ToxCoreJni.getInstance().toxKill()
+            if(ConstantValue.curreantNetworkType.equals("TOX"))
+            {
+                ToxCoreJni.getInstance().toxKill()
+            }
             AppConfig.instance.stopAllService()
             //android进程完美退出方法。
             var intent = Intent(Intent.ACTION_MAIN);

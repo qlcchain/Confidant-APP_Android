@@ -404,14 +404,22 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
-        if(userInfo!!.publicKey != null)
+        if(userInfo!!.signPublicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.publicKey,0)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.signPublicKey,0)
             friendStatus = 0
+
+            var sendData = BaseData(addFriendDealReq)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey,0)
+                sendData = BaseData(3,addFriendDealReq)
+            }
+
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                AppConfig.instance.messageSender!!.send(sendData)
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(addFriendDealReq)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -431,14 +439,21 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         var userId = SpUtil.getString(this, ConstantValue.userId, "")
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
-        if(userInfo!!.publicKey != null)
+        if(userInfo!!.signPublicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.publicKey, 1)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.signPublicKey, 1)
+
+            var sendData = BaseData(addFriendDealReq)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                addFriendDealReq =  AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey, 1)
+                sendData = BaseData(3,addFriendDealReq)
+            }
             friendStatus = 1
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                AppConfig.instance.messageSender!!.send(sendData)
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(addFriendDealReq)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

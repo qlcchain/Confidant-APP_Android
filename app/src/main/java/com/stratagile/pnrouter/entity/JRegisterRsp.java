@@ -30,6 +30,7 @@ public class JRegisterRsp extends BaseEntity {
 
         private String Action;
         private int RetCode;
+        private String Index;
         private String RouteId;
         private String UserSn;
         private String UserId;
@@ -42,6 +43,14 @@ public class JRegisterRsp extends BaseEntity {
 
         public void setAction(String Action) {
             this.Action = Action;
+        }
+
+        public String getIndex() {
+            return Index;
+        }
+
+        public void setIndex(String index) {
+            Index = index;
         }
 
         public int getRetCode() {

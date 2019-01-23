@@ -10,8 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -34,11 +32,9 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
-import com.stratagile.pnrouter.entity.AddFriendReq
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.PullFriendReq
-import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
@@ -53,10 +49,10 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact.*
-import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -108,8 +104,15 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     isLocalFriend = true
                     //j.friendStatus = 0
                     j.nickName = i.name
+                    j.index = i.index
                     j.remarks = i.remarks
-                    j.publicKey = i.userKey
+                    j.signPublicKey = i.userKey
+                    var dst_public_MiKey_Friend = ByteArray(32)
+                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
+                    if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                    {
+                        j.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                    }
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
                     break
                 }
@@ -118,7 +121,14 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 var userEntity = UserEntity()
                 userEntity.nickName = i.name
                 userEntity.userId = i.id
-                userEntity.publicKey = i.userKey
+                userEntity.index = i.index
+                userEntity.signPublicKey = i.userKey
+                var dst_public_MiKey_Friend = ByteArray(32)
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
+                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                {
+                    userEntity.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                }
                 userEntity.remarks =i.remarks
                 //userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
@@ -138,6 +148,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             if (!isLocalFriendStatus) {
                 var friendEntity = FriendEntity()
                 friendEntity.userId = userId
+                friendEntity.index = i.index
                 friendEntity.friendId = i.id
                 friendEntity.friendLocalStatus = 0
                 friendEntity.timestamp = Calendar.getInstance().timeInMillis
@@ -256,12 +267,17 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var pullFriend = PullFriendReq( selfUserId!!)
+        var sendData = BaseData(pullFriend)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,pullFriend)
+        }
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullFriend))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         }else if (ConstantValue.isToxConnected) {
             Log.i("pullFriendList", "tox")
-            var baseData = BaseData(pullFriend)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

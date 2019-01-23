@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.SendMsgReq
+import com.stratagile.pnrouter.entity.SendMsgReqV3
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -39,6 +40,7 @@ import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_chat.*
+import org.libsodium.jni.Sodium
 import java.util.*
 
 class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
@@ -233,7 +235,13 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         messageListAdapter.addData(message)
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
         KLog.i(messageList?.size)
-        sendMsg(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId,userEntity.publicKey, content)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendMsgV3(SpUtil.getString(activity!!, ConstantValue.userIndex, "")!!, userEntity.index,userEntity.miPublicKey, content)
+        }else{
+            sendMsg(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId,userEntity.signPublicKey, content)
+        }
+
     }
 
     fun sendMsg(FromId: String, ToId: String,FriendPublicKey :String, Msg: String) {
@@ -273,10 +281,67 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             LogUtil.addLog("sendMsg2 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }
-
-
     }
+    fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String) {
+        try {
+            if(Msg.length >264)
+            {
+                toast(R.string.nomorecharacters)
+                return
+            }
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var mySignPublic  = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)
 
+            var myMiPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey)
+            var myMiPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey)
+
+            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
+            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
+
+
+            var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
+            LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
+
+            var src_msgBase64 = RxEncodeTool.base64Encode2String(Msg.toByteArray());
+            val random = org.libsodium.jni.crypto.Random()
+            var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
+            //开始加密
+            var dst_shared_key  = ByteArray(32)
+            var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,friendMiPublic,myTempPrivate) //自己临时私钥和好友加解密公钥->生成对称密钥
+            var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
+            var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(src_msgBase64,NonceBase64,shared_keyBase64)//消息原文转base64后用对称密码加密
+
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,myTempPublic,myTempPublic.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名自己临时公钥->转base64
+
+
+            var dst_shared_key_Mi_My = ByteArray(32 + 48)
+            var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
+            var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥
+
+
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, encryptedBase64,signBase64,NonceBase64,dst_shared_key_Mi_My64)
+
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(3,msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }catch (e:Exception)
+        {
+            LogUtil.addLog("sendMsg2 错误:",e.toString())
+            toast(R.string.Encryptionerror)
+        }
+    }
     companion object {
         private val USER = "user"
 

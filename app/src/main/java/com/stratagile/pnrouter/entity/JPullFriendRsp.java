@@ -76,6 +76,7 @@ public class JPullFriendRsp extends BaseEntity {
 
             private int Status;
             private String Id;
+            private String Index;
             private String Name;
 
             private String Remarks;
@@ -95,6 +96,14 @@ public class JPullFriendRsp extends BaseEntity {
 
             public void setId(String Id) {
                 this.Id = Id;
+            }
+
+            public String getIndex() {
+                return Index;
+            }
+
+            public void setIndex(String index) {
+                Index = index;
             }
 
             public String getName() {

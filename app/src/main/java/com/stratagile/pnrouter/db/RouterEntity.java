@@ -16,16 +16,36 @@ public class RouterEntity implements Parcelable{
     private String userSn;
     private String username;
     private String userId;
+    private String index;
     private String routerName;
     private Integer dataFileVersion;
     private String dataFilePay;
     private boolean lastCheck; //最后一次选中
     private String loginKey;
 
-    public RouterEntity()
-    {
 
+
+    @Generated(hash = 517680001)
+    public RouterEntity(Long id, String routerId, String userSn, String username,
+            String userId, String index, String routerName, Integer dataFileVersion,
+            String dataFilePay, boolean lastCheck, String loginKey) {
+        this.id = id;
+        this.routerId = routerId;
+        this.userSn = userSn;
+        this.username = username;
+        this.userId = userId;
+        this.index = index;
+        this.routerName = routerName;
+        this.dataFileVersion = dataFileVersion;
+        this.dataFilePay = dataFilePay;
+        this.lastCheck = lastCheck;
+        this.loginKey = loginKey;
     }
+
+    @Generated(hash = 997370902)
+    public RouterEntity() {
+    }
+
 
     protected RouterEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -37,6 +57,7 @@ public class RouterEntity implements Parcelable{
         userSn = in.readString();
         username = in.readString();
         userId = in.readString();
+        index = in.readString();
         routerName = in.readString();
         if (in.readByte() == 0) {
             dataFileVersion = null;
@@ -46,22 +67,6 @@ public class RouterEntity implements Parcelable{
         dataFilePay = in.readString();
         lastCheck = in.readByte() != 0;
         loginKey = in.readString();
-    }
-
-    @Generated(hash = 1467761423)
-    public RouterEntity(Long id, String routerId, String userSn, String username,
-            String userId, String routerName, Integer dataFileVersion, String dataFilePay,
-            boolean lastCheck, String loginKey) {
-        this.id = id;
-        this.routerId = routerId;
-        this.userSn = userSn;
-        this.username = username;
-        this.userId = userId;
-        this.routerName = routerName;
-        this.dataFileVersion = dataFileVersion;
-        this.dataFilePay = dataFilePay;
-        this.lastCheck = lastCheck;
-        this.loginKey = loginKey;
     }
 
     @Override
@@ -76,6 +81,7 @@ public class RouterEntity implements Parcelable{
         dest.writeString(userSn);
         dest.writeString(username);
         dest.writeString(userId);
+        dest.writeString(index);
         dest.writeString(routerName);
         if (dataFileVersion == null) {
             dest.writeByte((byte) 0);
@@ -181,6 +187,14 @@ public class RouterEntity implements Parcelable{
 
     public void setLoginKey(String loginKey) {
         this.loginKey = loginKey;
+    }
+
+    public String getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
     }
 
 }

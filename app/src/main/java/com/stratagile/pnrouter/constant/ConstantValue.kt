@@ -4,9 +4,9 @@ import com.stratagile.pnrouter.entity.LoginReq
 import java.util.HashMap
 
 object ConstantValue {
-        var encryptionType = "0" // 加密方式 0:RSA+AES  ; 1 : libsodium
+        var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
         var isAntox = false   //是antox 还是自己封装的tox
-        var localPath = "/RouterData13"
+        var localPath = "/RouterNewData"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
         var isRefeshed = false
@@ -14,6 +14,7 @@ object ConstantValue {
         var fingerprintUnLock = "fingerprintUnLock"
         var fingerPassWord = "fingerPassWord" //指纹密码
         var userId = "UserId"
+        var userIndex = "userIndex"
         var username = "username"
         var message = "message_"
         var userFriendname = "freindrname"

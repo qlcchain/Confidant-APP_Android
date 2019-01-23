@@ -75,6 +75,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
@@ -99,6 +100,7 @@ import com.stratagile.pnrouter.utils.CountDownTimerUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
+import com.stratagile.pnrouter.utils.LibsodiumUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -109,6 +111,7 @@ import com.yanzhenjie.permission.PermissionListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.libsodium.jni.Sodium;
 
 import java.io.File;
 import java.util.HashMap;
@@ -1458,7 +1461,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             message.setMsgTime(Message.getTimeStatmp()* 1000);
             if(i == 0)
             {
-                MsgStartId = Message.getDbId();
+                MsgStartId = Message.getMsgId();
             }
             message.setMsgId( Message.getMsgId()+"");
             if(Message.getMsgType() != 0)
@@ -2052,9 +2055,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            if ( AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getPublicKey() != null)
+            String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
+            if ( AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null)
             {
-                AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getPublicKey(),content);
+                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                {
+                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userIndex, UserDataManger.curreantfriendUserData.getIndex(),UserDataManger.curreantfriendUserData.getMiPublicKey(),content);
+                }else{
+                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getSignPublicKey(),content);
+                }
+
                 message.setFrom(userId);
                 message.setTo( UserDataManger.curreantfriendUserData.getUserId());
                 message.setDelivered(true);
@@ -2240,11 +2250,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendMsgLocalMap.put(uuid,false);
                     sendFilePathMap.put(uuid,filePath);
                     deleteFileMap.put(uuid,false);
-                    sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                    sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                     String aesKey =  RxEncryptTool.generateAESKey();
                     byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                    byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                    byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                     byte[] SrcKey = new byte[256];
                     byte[] DstKey = new byte[256];
                     try {
@@ -2275,7 +2285,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         sendMsgLocalMap.put(uuid+"",false);
                         sendFilePathMap.put(uuid+"",base58files_dir);
                         deleteFileMap.put(uuid+"",false);
-                        sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                        sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                         ToxFileData toxFileData = new ToxFileData();
                         toxFileData.setFromId(userId);
                         toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2287,7 +2297,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         toxFileData.setFileSize((int)fileSize);
                         toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AUDIO);
                         toxFileData.setFileId(uuid);
-                        String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                        String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                         byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                         byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                         byte[] SrcKey = new byte[256];
@@ -2365,11 +2375,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String aesKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
@@ -2406,7 +2416,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2418,7 +2428,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
@@ -2505,11 +2515,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,imagePath);
                             deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String aesKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
@@ -2539,7 +2549,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2551,7 +2561,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
@@ -2633,11 +2643,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
                             deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String aesKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
@@ -2668,7 +2678,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2680,7 +2690,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
@@ -2770,11 +2780,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getPublicKey());
+                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String aesKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getPublicKey());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
@@ -2804,7 +2814,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getPublicKey());
+                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2816,7 +2826,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_FILE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getPublicKey();
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
@@ -2900,6 +2910,61 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFromId(),baseDataJson);
         }else{
             SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFromId(),baseDataJson);
+        }
+        sendMessageTo(message);
+    }
+
+    /**
+     * 接受文字和表情消息V3
+     * @param jPushMsgRsp
+     */
+    public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp)
+    {
+        String myMiPublicBase64 = ConstantValue.INSTANCE.getLibsodiumpublicMiKey();
+        String myMiPrivateBase64 = ConstantValue.INSTANCE.getLibsodiumprivateMiKey();
+        String From = jPushMsgRsp.getParams().getFrom();
+        String To = jPushMsgRsp.getParams().getTo();
+        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        byte[] friendTempPublic = new byte[32];
+        UserEntity friendEntity = new UserEntity();
+        List<UserEntity>  localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.Index.eq(From)).list();
+        if (localFriendList.size() > 0)
+            friendEntity = localFriendList.get(0);
+
+         byte[] dst_signed_msg = RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getSign());
+
+        byte[] dst_Friend_TempPublicKey = new byte[32];
+        int[] msg_len = new int[1];
+        int crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey,msg_len,dst_signed_msg,dst_signed_msg.length,RxEncodeTool.base64Decode(friendEntity.getSignPublicKey()));
+
+        byte[] dst_share_key  = new byte[32];
+        int crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key,dst_Friend_TempPublicKey,RxEncodeTool.base64Decode(myMiPrivateBase64));
+
+        String msgSouce = LibsodiumUtil.INSTANCE.decrypt_data_symmetric_string(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),RxEncodeTool.base64Encode2String(dst_share_key));
+        if(msgSouce != null && !msgSouce.equals(""))
+        {
+            jPushMsgRsp.getParams().setMsg(msgSouce);
+        }
+        EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
+        message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
+        message.setFrom(friendEntity.getUserId());
+        message.setTo(userId);
+
+        Gson gson = new Gson();
+        Message Message = new Message();
+        Message.setMsg(jPushMsgRsp.getParams().getMsg());
+        Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
+        Message.setFrom(friendEntity.getUserId());
+        Message.setTo(userId);
+        Message.setTimeStatmp(System.currentTimeMillis());
+        String baseDataJson = gson.toJson(Message);
+
+        if(Message.getSender() == 0)
+        {
+            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+friendEntity.getUserId(),baseDataJson);
+        }else{
+            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+friendEntity.getUserId(),baseDataJson);
         }
         sendMessageTo(message);
     }

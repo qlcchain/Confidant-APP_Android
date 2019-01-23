@@ -124,11 +124,17 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
             var msg= RxEncodeTool.base64Encode2String(validation.text.toString().toByteArray())
 
             val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-            var login = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)
+            var addFriendReq = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)
+            var sendData = BaseData(addFriendReq);
+            if(ConstantValue.encryptionType.equals( "1"))
+            {
+                addFriendReq =  AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
+                sendData = BaseData(3,addFriendReq);
+            }
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(login))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(login)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

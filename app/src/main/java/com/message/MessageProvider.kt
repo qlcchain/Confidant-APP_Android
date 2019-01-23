@@ -56,10 +56,15 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
+        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+        }
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,pushMsgRsp?.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgData,pushMsgRsp?.msgid)
+            var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
             if (ConstantValue.isAntox) {

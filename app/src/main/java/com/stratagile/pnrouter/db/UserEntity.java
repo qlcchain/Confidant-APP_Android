@@ -3,8 +3,6 @@ package com.stratagile.pnrouter.db;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.stratagile.pnrouter.utils.RxEncodeTool;
-
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
@@ -15,11 +13,14 @@ public class UserEntity implements Parcelable{
     private Long id;
     //用户id
     private String userId;
-
+    //用户hashid，14个字节，不能为空
+    private String index;
     //路由器用户id
     private String routerUserId;
 
-    private String publicKey;
+    private String signPublicKey;
+
+    private String miPublicKey;
 
     //昵称
     private String nickName;
@@ -43,16 +44,18 @@ public class UserEntity implements Parcelable{
 
 
 
-
-    @Generated(hash = 906349994)
-    public UserEntity(Long id, String userId, String routerUserId, String publicKey,
-            String nickName, String remarks, String nickSouceName, String avatar,
-            String noteName, int friendStatus, boolean addFromMe, long timestamp,
+    @Generated(hash = 1529272245)
+    public UserEntity(Long id, String userId, String index, String routerUserId,
+            String signPublicKey, String miPublicKey, String nickName,
+            String remarks, String nickSouceName, String avatar, String noteName,
+            int friendStatus, boolean addFromMe, long timestamp,
             String validationInfo) {
         this.id = id;
         this.userId = userId;
+        this.index = index;
         this.routerUserId = routerUserId;
-        this.publicKey = publicKey;
+        this.signPublicKey = signPublicKey;
+        this.miPublicKey = miPublicKey;
         this.nickName = nickName;
         this.remarks = remarks;
         this.nickSouceName = nickSouceName;
@@ -75,8 +78,10 @@ public class UserEntity implements Parcelable{
             id = in.readLong();
         }
         userId = in.readString();
+        index = in.readString();
         routerUserId = in.readString();
-        publicKey = in.readString();
+        signPublicKey = in.readString();
+        miPublicKey = in.readString();
         nickName = in.readString();
         remarks = in.readString();
         nickSouceName = in.readString();
@@ -97,8 +102,10 @@ public class UserEntity implements Parcelable{
             dest.writeLong(id);
         }
         dest.writeString(userId);
+        dest.writeString(index);
         dest.writeString(routerUserId);
-        dest.writeString(publicKey);
+        dest.writeString(signPublicKey);
+        dest.writeString(miPublicKey);
         dest.writeString(nickName);
         dest.writeString(remarks);
         dest.writeString(nickSouceName);
@@ -185,12 +192,12 @@ public class UserEntity implements Parcelable{
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-    public String getPublicKey() {
-        return publicKey;
+    public String getSignPublicKey() {
+        return signPublicKey;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setSignPublicKey(String signPublicKey) {
+        this.signPublicKey = signPublicKey;
     }
     public String getRouterUserId() {
         return this.routerUserId;
@@ -209,5 +216,17 @@ public class UserEntity implements Parcelable{
     }
     public void setValidationInfo(String validationInfo) {
         this.validationInfo = validationInfo;
+    }
+    public String getIndex() {
+        return this.index;
+    }
+    public void setIndex(String index) {
+        this.index = index;
+    }
+    public String getMiPublicKey() {
+        return this.miPublicKey;
+    }
+    public void setMiPublicKey(String miPublicKey) {
+        this.miPublicKey = miPublicKey;
     }
 }

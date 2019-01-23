@@ -24,17 +24,19 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property UserId = new Property(1, String.class, "userId", false, "USER_ID");
-        public final static Property RouterUserId = new Property(2, String.class, "routerUserId", false, "ROUTER_USER_ID");
-        public final static Property PublicKey = new Property(3, String.class, "publicKey", false, "PUBLIC_KEY");
-        public final static Property NickName = new Property(4, String.class, "nickName", false, "NICK_NAME");
-        public final static Property Remarks = new Property(5, String.class, "remarks", false, "REMARKS");
-        public final static Property NickSouceName = new Property(6, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
-        public final static Property Avatar = new Property(7, String.class, "avatar", false, "AVATAR");
-        public final static Property NoteName = new Property(8, String.class, "noteName", false, "NOTE_NAME");
-        public final static Property FriendStatus = new Property(9, int.class, "friendStatus", false, "FRIEND_STATUS");
-        public final static Property AddFromMe = new Property(10, boolean.class, "addFromMe", false, "ADD_FROM_ME");
-        public final static Property Timestamp = new Property(11, long.class, "timestamp", false, "TIMESTAMP");
-        public final static Property ValidationInfo = new Property(12, String.class, "validationInfo", false, "VALIDATION_INFO");
+        public final static Property Index = new Property(2, String.class, "index", false, "INDEX");
+        public final static Property RouterUserId = new Property(3, String.class, "routerUserId", false, "ROUTER_USER_ID");
+        public final static Property SignPublicKey = new Property(4, String.class, "signPublicKey", false, "SIGN_PUBLIC_KEY");
+        public final static Property MiPublicKey = new Property(5, String.class, "miPublicKey", false, "MI_PUBLIC_KEY");
+        public final static Property NickName = new Property(6, String.class, "nickName", false, "NICK_NAME");
+        public final static Property Remarks = new Property(7, String.class, "remarks", false, "REMARKS");
+        public final static Property NickSouceName = new Property(8, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
+        public final static Property Avatar = new Property(9, String.class, "avatar", false, "AVATAR");
+        public final static Property NoteName = new Property(10, String.class, "noteName", false, "NOTE_NAME");
+        public final static Property FriendStatus = new Property(11, int.class, "friendStatus", false, "FRIEND_STATUS");
+        public final static Property AddFromMe = new Property(12, boolean.class, "addFromMe", false, "ADD_FROM_ME");
+        public final static Property Timestamp = new Property(13, long.class, "timestamp", false, "TIMESTAMP");
+        public final static Property ValidationInfo = new Property(14, String.class, "validationInfo", false, "VALIDATION_INFO");
     }
 
 
@@ -52,17 +54,19 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"USER_ENTITY\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"USER_ID\" TEXT," + // 1: userId
-                "\"ROUTER_USER_ID\" TEXT," + // 2: routerUserId
-                "\"PUBLIC_KEY\" TEXT," + // 3: publicKey
-                "\"NICK_NAME\" TEXT," + // 4: nickName
-                "\"REMARKS\" TEXT," + // 5: remarks
-                "\"NICK_SOUCE_NAME\" TEXT," + // 6: nickSouceName
-                "\"AVATAR\" TEXT," + // 7: avatar
-                "\"NOTE_NAME\" TEXT," + // 8: noteName
-                "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 9: friendStatus
-                "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 10: addFromMe
-                "\"TIMESTAMP\" INTEGER NOT NULL ," + // 11: timestamp
-                "\"VALIDATION_INFO\" TEXT);"); // 12: validationInfo
+                "\"INDEX\" TEXT," + // 2: index
+                "\"ROUTER_USER_ID\" TEXT," + // 3: routerUserId
+                "\"SIGN_PUBLIC_KEY\" TEXT," + // 4: signPublicKey
+                "\"MI_PUBLIC_KEY\" TEXT," + // 5: miPublicKey
+                "\"NICK_NAME\" TEXT," + // 6: nickName
+                "\"REMARKS\" TEXT," + // 7: remarks
+                "\"NICK_SOUCE_NAME\" TEXT," + // 8: nickSouceName
+                "\"AVATAR\" TEXT," + // 9: avatar
+                "\"NOTE_NAME\" TEXT," + // 10: noteName
+                "\"FRIEND_STATUS\" INTEGER NOT NULL ," + // 11: friendStatus
+                "\"ADD_FROM_ME\" INTEGER NOT NULL ," + // 12: addFromMe
+                "\"TIMESTAMP\" INTEGER NOT NULL ," + // 13: timestamp
+                "\"VALIDATION_INFO\" TEXT);"); // 14: validationInfo
     }
 
     /** Drops the underlying database table. */
@@ -85,47 +89,57 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             stmt.bindString(2, userId);
         }
  
-        String routerUserId = entity.getRouterUserId();
-        if (routerUserId != null) {
-            stmt.bindString(3, routerUserId);
+        String index = entity.getIndex();
+        if (index != null) {
+            stmt.bindString(3, index);
         }
  
-        String publicKey = entity.getPublicKey();
-        if (publicKey != null) {
-            stmt.bindString(4, publicKey);
+        String routerUserId = entity.getRouterUserId();
+        if (routerUserId != null) {
+            stmt.bindString(4, routerUserId);
+        }
+ 
+        String signPublicKey = entity.getSignPublicKey();
+        if (signPublicKey != null) {
+            stmt.bindString(5, signPublicKey);
+        }
+ 
+        String miPublicKey = entity.getMiPublicKey();
+        if (miPublicKey != null) {
+            stmt.bindString(6, miPublicKey);
         }
  
         String nickName = entity.getNickName();
         if (nickName != null) {
-            stmt.bindString(5, nickName);
+            stmt.bindString(7, nickName);
         }
  
         String remarks = entity.getRemarks();
         if (remarks != null) {
-            stmt.bindString(6, remarks);
+            stmt.bindString(8, remarks);
         }
  
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(7, nickSouceName);
+            stmt.bindString(9, nickSouceName);
         }
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(8, avatar);
+            stmt.bindString(10, avatar);
         }
  
         String noteName = entity.getNoteName();
         if (noteName != null) {
-            stmt.bindString(9, noteName);
+            stmt.bindString(11, noteName);
         }
-        stmt.bindLong(10, entity.getFriendStatus());
-        stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
-        stmt.bindLong(12, entity.getTimestamp());
+        stmt.bindLong(12, entity.getFriendStatus());
+        stmt.bindLong(13, entity.getAddFromMe() ? 1L: 0L);
+        stmt.bindLong(14, entity.getTimestamp());
  
         String validationInfo = entity.getValidationInfo();
         if (validationInfo != null) {
-            stmt.bindString(13, validationInfo);
+            stmt.bindString(15, validationInfo);
         }
     }
 
@@ -143,47 +157,57 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
             stmt.bindString(2, userId);
         }
  
-        String routerUserId = entity.getRouterUserId();
-        if (routerUserId != null) {
-            stmt.bindString(3, routerUserId);
+        String index = entity.getIndex();
+        if (index != null) {
+            stmt.bindString(3, index);
         }
  
-        String publicKey = entity.getPublicKey();
-        if (publicKey != null) {
-            stmt.bindString(4, publicKey);
+        String routerUserId = entity.getRouterUserId();
+        if (routerUserId != null) {
+            stmt.bindString(4, routerUserId);
+        }
+ 
+        String signPublicKey = entity.getSignPublicKey();
+        if (signPublicKey != null) {
+            stmt.bindString(5, signPublicKey);
+        }
+ 
+        String miPublicKey = entity.getMiPublicKey();
+        if (miPublicKey != null) {
+            stmt.bindString(6, miPublicKey);
         }
  
         String nickName = entity.getNickName();
         if (nickName != null) {
-            stmt.bindString(5, nickName);
+            stmt.bindString(7, nickName);
         }
  
         String remarks = entity.getRemarks();
         if (remarks != null) {
-            stmt.bindString(6, remarks);
+            stmt.bindString(8, remarks);
         }
  
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(7, nickSouceName);
+            stmt.bindString(9, nickSouceName);
         }
  
         String avatar = entity.getAvatar();
         if (avatar != null) {
-            stmt.bindString(8, avatar);
+            stmt.bindString(10, avatar);
         }
  
         String noteName = entity.getNoteName();
         if (noteName != null) {
-            stmt.bindString(9, noteName);
+            stmt.bindString(11, noteName);
         }
-        stmt.bindLong(10, entity.getFriendStatus());
-        stmt.bindLong(11, entity.getAddFromMe() ? 1L: 0L);
-        stmt.bindLong(12, entity.getTimestamp());
+        stmt.bindLong(12, entity.getFriendStatus());
+        stmt.bindLong(13, entity.getAddFromMe() ? 1L: 0L);
+        stmt.bindLong(14, entity.getTimestamp());
  
         String validationInfo = entity.getValidationInfo();
         if (validationInfo != null) {
-            stmt.bindString(13, validationInfo);
+            stmt.bindString(15, validationInfo);
         }
     }
 
@@ -197,17 +221,19 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
         UserEntity entity = new UserEntity( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // userId
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // routerUserId
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // publicKey
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // nickName
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // remarks
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // nickSouceName
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // avatar
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // noteName
-            cursor.getInt(offset + 9), // friendStatus
-            cursor.getShort(offset + 10) != 0, // addFromMe
-            cursor.getLong(offset + 11), // timestamp
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12) // validationInfo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // index
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // routerUserId
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // signPublicKey
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // miPublicKey
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // nickName
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // remarks
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // nickSouceName
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // avatar
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // noteName
+            cursor.getInt(offset + 11), // friendStatus
+            cursor.getShort(offset + 12) != 0, // addFromMe
+            cursor.getLong(offset + 13), // timestamp
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // validationInfo
         );
         return entity;
     }
@@ -216,17 +242,19 @@ public class UserEntityDao extends AbstractDao<UserEntity, Long> {
     public void readEntity(Cursor cursor, UserEntity entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserId(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setRouterUserId(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setPublicKey(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setNickName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setRemarks(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setNickSouceName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setAvatar(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setNoteName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setFriendStatus(cursor.getInt(offset + 9));
-        entity.setAddFromMe(cursor.getShort(offset + 10) != 0);
-        entity.setTimestamp(cursor.getLong(offset + 11));
-        entity.setValidationInfo(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setIndex(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setRouterUserId(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setSignPublicKey(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setMiPublicKey(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setNickName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setRemarks(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setNickSouceName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setAvatar(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setNoteName(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setFriendStatus(cursor.getInt(offset + 11));
+        entity.setAddFromMe(cursor.getShort(offset + 12) != 0);
+        entity.setTimestamp(cursor.getLong(offset + 13));
+        entity.setValidationInfo(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
      }
     
     @Override

@@ -130,11 +130,10 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     
 
+        //这里不要注释
         var dst_public_TemKey_My = ByteArray(32)
         var dst_private_Temkey_My = ByteArray(32)
-
         var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
-
         ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 
@@ -152,7 +151,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_shared_key  = ByteArray(32)
         var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_MiKey_Friend,dst_private_Temkey_My)
 
-        var src_msg = Base58.encode("123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()).toByteArray()
+        var src_msg = RxEncodeTool.base64Encode2String("123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()).toByteArray()
 
         val random = org.libsodium.jni.crypto.Random()
         var src_nonce =  random.randomBytes(24)

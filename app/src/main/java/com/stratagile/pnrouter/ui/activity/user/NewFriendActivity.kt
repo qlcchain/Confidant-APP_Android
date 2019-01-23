@@ -3,9 +3,7 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import com.message.UserProvider
@@ -21,18 +19,13 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.ui.activity.main.MainViewModel
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerNewFriendComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
 import com.stratagile.pnrouter.ui.activity.user.module.NewFriendModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.NewFriendPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.ShareUtil
 import com.stratagile.pnrouter.utils.SpUtil
-import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -226,9 +219,9 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                     friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                    if(newFriendListAdapter!!.getItem(position)!!.publicKey != null)
+                    if(newFriendListAdapter!!.getItem(position)!!.signPublicKey != null)
                     {
-                        UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.publicKey)
+                        UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.signPublicKey)
                         showProgressDialog()
                     }
                 }

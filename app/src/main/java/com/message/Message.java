@@ -32,7 +32,9 @@ public class Message {
     private String  FilePath;
     private Long FileSize;
     private String UserKey;
-
+    private String Nonce;
+    private String Sign;
+    private String PriKey;
 
     public String getFileName() {
         //bas58解码
@@ -71,7 +73,9 @@ public class Message {
                 ", Msg='" + Msg + '\'' +
                 ", type=" + type +
                 ", Status=" + Status +
-                ", unRead=" + unRead +
+                ", Nonce=" + Nonce +
+                ", Sign=" + Sign +
+                ", PriKey=" + PriKey +
                 '}';
     }
 
@@ -274,4 +278,27 @@ public class Message {
         return message;
     }
 
+    public String getNonce() {
+        return Nonce;
+    }
+
+    public void setNonce(String nonce) {
+        Nonce = nonce;
+    }
+
+    public String getSign() {
+        return Sign;
+    }
+
+    public void setSign(String sign) {
+        Sign = sign;
+    }
+
+    public String getPriKey() {
+        return PriKey;
+    }
+
+    public void setPriKey(String priKey) {
+        PriKey = priKey;
+    }
 }

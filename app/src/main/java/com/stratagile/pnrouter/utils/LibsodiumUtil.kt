@@ -58,7 +58,7 @@ object LibsodiumUtil {
     fun encrypt_data_symmetric_string(src_msgStr:String, src_nonceStr:String, src_keyStr:String):String
     {
         var src_msg = src_msgStr.toByteArray()
-        var src_nonce = src_nonceStr.toByteArray()
+        var src_nonce = RxEncodeTool.base64Decode(src_nonceStr)
         var src_key = RxEncodeTool.base64Decode(src_keyStr)
         val temp_plain = ByteArray(src_msg.size+ Sodium.crypto_box_zerobytes())
         val temp_encrypted = ByteArray(src_msg.size+ Sodium.crypto_box_macbytes()+ Sodium.crypto_box_boxzerobytes())
@@ -98,7 +98,7 @@ object LibsodiumUtil {
             var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
             System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
 
-            var souceStr  = String(Base58.decode(String(plain)))
+            var souceStr  = String(RxEncodeTool.base64Decode(plain))
             return souceStr
         }else{
             return ""
@@ -109,8 +109,8 @@ object LibsodiumUtil {
      */
     fun decrypt_data_symmetric_string(encryptedStr:String, src_nonceStr:String, src_keyStr:String):String
     {
-        var encrypted =  RxEncodeTool.base64Decode(encryptedStr)
-        var src_nonce = src_nonceStr.toByteArray()
+        var encrypted =  encryptedStr.toByteArray()
+        var src_nonce = RxEncodeTool.base64Decode(src_nonceStr)
         var src_key = RxEncodeTool.base64Decode(src_keyStr)
         var temp_plainafter = ByteArray(encrypted.size+Sodium.crypto_box_zerobytes())
         val temp_encryptedAfter = ByteArray(encrypted.size+Sodium.crypto_box_boxzerobytes())
@@ -126,11 +126,12 @@ object LibsodiumUtil {
             var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
             System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
 
-            var souceStr  = String(Base58.decode(String(plain)))
+            var souceStr  = String( RxEncodeTool.base64Decode(plain))
             return souceStr
         }else{
             return ""
         }
 
     }
+
 }
