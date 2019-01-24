@@ -48,35 +48,13 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             messages = arrayListOf()
             userMessageList.put(pushMsgRsp.params.fromId, messages)
         }
-        var msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
+        var msgSouce = ""
         if(ConstantValue.encryptionType.equals("1"))
         {
-            /*val myMiPublicBase64 = ConstantValue.libsodiumpublicMiKey
-            val myMiPrivateBase64 = ConstantValue.libsodiumprivateMiKey
-            val From = pushMsgRsp.getParams().getFrom()
-            val To = pushMsgRsp.getParams().getTo()
-            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            val friendTempPublic = ByteArray(32)
-            var friendEntity = UserEntity()
-            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list()
-            if (localFriendList.size > 0)
-                friendEntity = localFriendList[0]
-
-            val dst_signed_msg = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getSign())
-
-            val dst_Friend_TempPublicKey = ByteArray(32)
-            val msg_len = IntArray(1)
-            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(friendEntity.signPublicKey))
-
-            val dst_share_key = ByteArray(32)
-            val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKey, RxEncodeTool.base64Decode(myMiPrivateBase64))
-
-            KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
-            msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), RxEncodeTool.base64Encode2String(dst_share_key))*/
-
             msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+        }else{
+            msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
         }
-
 
         var message = Message.createReceivedMessage(msgSouce, pushMsgRsp.params.fromId, pushMsgRsp.params.msgId, pushMsgRsp.params.toId)
         if (msgSouce != null && msgSouce != "") {
@@ -124,7 +102,13 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 it.status = 1
                 it.setType()
                 it.isUnRead = false
-                val msgSouce = RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
+                var msgSouce = ""
+                if(ConstantValue.encryptionType.equals("1"))
+                {
+                    msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign)
+                }else{
+                    msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
+                }
                 if (msgSouce != null && msgSouce != "") {
                     it.setMsg(msgSouce)
                 }
