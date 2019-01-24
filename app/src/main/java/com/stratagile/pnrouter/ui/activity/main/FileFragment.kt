@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
+import com.stratagile.pnrouter.ui.activity.file.FileManagerActivity
 import kotlinx.android.synthetic.main.fragment_file.*
 import java.util.ArrayList
 
@@ -60,6 +62,15 @@ class FileFragment : BaseFragment(), FileContract.View {
             }
         })
         tabLayout.setupWithViewPager(viewPager)
+        myFile.setOnClickListener {
+            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+        }
+        iShare.setOnClickListener {
+            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+        }
+        docReceived.setOnClickListener {
+            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+        }
     }
 
 

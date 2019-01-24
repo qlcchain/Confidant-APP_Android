@@ -19,7 +19,7 @@
         android:id="@+id/rl1"
         android:layout_width="match_parent"
         android:layout_below="@+id/statusBar"
-        android:background="@drawable/navigation_shape"
+        android:background="@color/mainColor"
         android:minHeight="?attr/actionBarSize"
         android:layout_height="wrap_content">
         <LinearLayout

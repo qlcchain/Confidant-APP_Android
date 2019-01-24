@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.hyphenate.easeui.EaseUI
+import com.jaeger.library.StatusBarUtil
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.utils.UIUtils
@@ -43,12 +44,16 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     override fun onCreate(savedInstanceState: Bundle?) {
         initSwipeBackFinish()
         super.onCreate(savedInstanceState)
-        super.setContentView(R.layout.activity_base)
         // 这句很关键，注意是调用父类的方法
-        // 经测试在代码里直接声明透明状态栏更有效
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        super.setContentView(R.layout.activity_base)
+        if (android.os.Build.MANUFACTURER.toUpperCase() == "MEIZU") {
             val localLayoutParams = window.attributes
             localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
+        } else {
+            StatusBarUtil.setTransparent(this)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
+            }
         }
         AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {

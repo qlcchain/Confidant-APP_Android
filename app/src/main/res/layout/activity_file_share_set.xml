@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x19"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <ImageView
+            android:layout_width="@dimen/x92"
+            android:scaleType="center"
+            android:src="@drawable/ic_check"
+            android:layout_height="@dimen/x92" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Private Files"
+                android:textSize="15sp"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Just me"
+                android:textSize="12sp"
+                android:textColor="@color/color_808080"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x19"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <ImageView
+            android:layout_width="@dimen/x92"
+            android:scaleType="center"
+            android:src="@drawable/ic_check"
+            android:layout_height="@dimen/x92" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Public Files"
+                android:textSize="15sp"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Share with all friends"
+                android:textSize="12sp"
+                android:textColor="@color/color_808080"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x19"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <ImageView
+            android:layout_width="@dimen/x92"
+            android:scaleType="center"
+            android:src="@drawable/ic_check"
+            android:layout_height="@dimen/x92" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Share to"
+                android:textSize="15sp"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Selected friends"
+                android:textSize="12sp"
+                android:textColor="@color/color_808080"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x19"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <ImageView
+            android:layout_width="@dimen/x92"
+            android:scaleType="center"
+            android:src="@drawable/ic_check"
+            android:layout_height="@dimen/x92" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Don't share to"
+                android:textSize="15sp"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Exclude selected contacts"
+                android:textSize="12sp"
+                android:textColor="@color/color_808080"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+
+</LinearLayout>

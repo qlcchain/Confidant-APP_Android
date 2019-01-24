@@ -8,7 +8,8 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.entity.ShareBean
 
 class FileListAdapter(arrayList: ArrayList<String>) : BaseQuickAdapter<String, BaseViewHolder>(R.layout.layout_file_list_item, arrayList) {
-    override fun convert(helper: BaseViewHolder?, item: String?) {
+    override fun convert(helper: BaseViewHolder, item: String) {
+        helper.addOnClickListener(R.id.fileOpreate)
     }
 
 }
