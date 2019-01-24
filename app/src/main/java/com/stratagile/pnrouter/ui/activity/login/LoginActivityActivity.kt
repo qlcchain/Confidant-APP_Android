@@ -270,7 +270,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             ConstantValue.loginOut = false
             LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
-            FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
+            //FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
             LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
             LogUtil.addLog("loginBack:"+"b","LoginActivityActivity")
@@ -281,7 +281,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.userId = loginRsp.params!!.userId
             newRouterEntity.index = loginRsp.params!!.index
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
-            SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
+            //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             SpUtil.putString(this, ConstantValue.username,username)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()

@@ -314,7 +314,30 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
 
             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
+            var msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
+
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                /*val myMiPrivateBase64 = ConstantValue.libsodiumprivateMiKey
+                val From = pushMsgRsp.getParams().getFrom()
+                var friendEntity = UserEntity()
+                val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list()
+                if (localFriendList.size > 0)
+                    friendEntity = localFriendList[0]
+
+                val dst_signed_msg = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getSign())
+
+                val dst_Friend_TempPublicKey = ByteArray(32)
+                val msg_len = IntArray(1)
+                val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(friendEntity.signPublicKey))
+
+                val dst_share_key = ByteArray(32)
+                val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKey, RxEncodeTool.base64Decode(myMiPrivateBase64))
+
+                KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
+                msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), RxEncodeTool.base64Encode2String(dst_share_key))*/
+                msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+            }
             var message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
             if (msgSouce != null && msgSouce != "") {
                 message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)

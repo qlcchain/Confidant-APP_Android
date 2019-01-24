@@ -197,7 +197,7 @@ data class SendMsgReq(var FromId :String ,var ToId :String, var Msg : String, va
  * 场景：用户A向自己的好友用户B发送消息，A发送消息到router
  * (1)	请求（APP-->Router）
  */
-data class SendMsgReqV3(var FromIndex :String ,var ToIndex:String, var Msg : String, var Sign : String, var Nonce : String, var PriKey: String,var Action : String = "SendMsg")
+data class SendMsgReqV3(var From :String ,var To:String, var Msg : String, var Sign : String, var Nonce : String, var PriKey: String,var Action : String = "SendMsg")
 
 /**
  * 11.	发送消息

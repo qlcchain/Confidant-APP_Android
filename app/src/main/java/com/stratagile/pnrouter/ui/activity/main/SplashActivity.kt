@@ -151,12 +151,22 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_shared_key  = ByteArray(32)
         var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,dst_public_MiKey_Friend,dst_private_Temkey_My)
 
-        var src_msg = RxEncodeTool.base64Encode2String("123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()).toByteArray()
+        var src_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
 
         val random = org.libsodium.jni.crypto.Random()
         var src_nonce =  random.randomBytes(24)
         var encrypted = LibsodiumUtil.encrypt_data_symmetric(src_msg,src_nonce,dst_shared_key)
 
+        //解密自己的消息
+        var souceStrinit  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key)
+
+        var src_msg2 = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外".toByteArray()
+
+        var src_msgsrc_msg = "123456聚隆科技构建我国借我个偶就给我个饿哦go额外"
+        var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(src_msgsrc_msg,RxEncodeTool.base64Encode2String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key))
+
+        //解密自己的消息
+        var souceStrinitBase64  = LibsodiumUtil.decrypt_data_symmetric_string(encryptedBase64,RxEncodeTool.base64Encode2String(src_nonce),RxEncodeTool.base64Encode2String(dst_shared_key))
 
         var dst_public_SignKey = ByteArray(32)
         var dst_private_Signkey = ByteArray(64)

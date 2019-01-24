@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 
 public class JPushMsgRsp extends BaseEntity {
@@ -40,7 +41,13 @@ public class JPushMsgRsp extends BaseEntity {
         private String Msg;
 
         public String getFromId() {
-            return FromId;
+            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            {
+                return From;
+            }else{
+                return FromId;
+            }
+
         }
 
         public void setFromId(String fromId) {
@@ -48,7 +55,12 @@ public class JPushMsgRsp extends BaseEntity {
         }
 
         public String getToId() {
-            return ToId;
+            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            {
+                return To;
+            }else{
+                return ToId;
+            }
         }
 
         public void setToId(String toId) {

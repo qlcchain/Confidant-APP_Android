@@ -1242,7 +1242,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         {
             Message Message = messageList.get(i);
             EMMessage message = null;
-            String msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
+            String msgSouce =  "";
+            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            {
+                if(Message.getSender() == 0)
+                {
+                    msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(),Message.getNonce(),Message.getPriKey());
+                }else{
+                    msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(),Message.getNonce(),FriendId,Message.getSign());
+                }
+            }else{
+                msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
+            }
             if(msgSouce != null && !msgSouce.equals(""))
             {
                 Message.setMsg(msgSouce);
@@ -1425,8 +1436,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             {
                 continue;
             }
-
-            //message.setTo(Message.getTo());
             message.setUnread(false);
             if(Message.getSender() == 0)
             {
@@ -1656,12 +1665,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         swipeRefreshLayout.setRefreshing(true);
         String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         PullMsgReq pullMsgList = new PullMsgReq( userId,toChatUserId,1,MsgStartId,10,"PullMsg");
+        BaseData sendData = new BaseData(pullMsgList);
+        if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+        {
+            sendData = new BaseData(3,pullMsgList);
+        }
+
         if(ConstantValue.INSTANCE.isWebsocketConnected())
         {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(pullMsgList));
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData);
         }else if(ConstantValue.INSTANCE.isToxConnected())
         {
-            BaseData baseData = new BaseData(pullMsgList);
+            BaseData baseData = sendData;
             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
             if(ConstantValue.INSTANCE.isAntox())
@@ -2055,12 +2070,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }else{
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
-            String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
+            //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
             if ( AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null)
             {
                 if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                 {
-                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userIndex, UserDataManger.curreantfriendUserData.getIndex(),UserDataManger.curreantfriendUserData.getMiPublicKey(),content);
+                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getMiPublicKey(),content);
                 }else{
                     AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getSignPublicKey(),content);
                 }
@@ -2920,14 +2935,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp)
     {
-        String myMiPublicBase64 = ConstantValue.INSTANCE.getLibsodiumpublicMiKey();
+        /*String myMiPublicBase64 = ConstantValue.INSTANCE.getLibsodiumpublicMiKey();
         String myMiPrivateBase64 = ConstantValue.INSTANCE.getLibsodiumprivateMiKey();
         String From = jPushMsgRsp.getParams().getFrom();
         String To = jPushMsgRsp.getParams().getTo();
-        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+
         byte[] friendTempPublic = new byte[32];
         UserEntity friendEntity = new UserEntity();
-        List<UserEntity>  localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.Index.eq(From)).list();
+        List<UserEntity>  localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list();
         if (localFriendList.size() > 0)
             friendEntity = localFriendList.get(0);
 
@@ -2940,7 +2955,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         byte[] dst_share_key  = new byte[32];
         int crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key,dst_Friend_TempPublicKey,RxEncodeTool.base64Decode(myMiPrivateBase64));
 
-        String msgSouce = LibsodiumUtil.INSTANCE.decrypt_data_symmetric_string(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),RxEncodeTool.base64Encode2String(dst_share_key));
+        KLog.i("shared_keyBase64:_receive"+RxEncodeTool.base64Encode2String(dst_share_key));
+        String msgSouce = LibsodiumUtil.INSTANCE.decrypt_data_symmetric_string(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),RxEncodeTool.base64Encode2String(dst_share_key));*/
+        String msgSouce =  LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),jPushMsgRsp.getParams().getFrom(),jPushMsgRsp.getParams().getSign());
         if(msgSouce != null && !msgSouce.equals(""))
         {
             jPushMsgRsp.getParams().setMsg(msgSouce);
@@ -2948,23 +2965,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
         message.setDirection(EMMessage.Direct.RECEIVE);
         message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
-        message.setFrom(friendEntity.getUserId());
-        message.setTo(userId);
+        message.setFrom(jPushMsgRsp.getParams().getFrom());
+        message.setTo(jPushMsgRsp.getParams().getTo());
 
         Gson gson = new Gson();
         Message Message = new Message();
         Message.setMsg(jPushMsgRsp.getParams().getMsg());
         Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
-        Message.setFrom(friendEntity.getUserId());
-        Message.setTo(userId);
+        Message.setFrom(jPushMsgRsp.getParams().getFrom());
+        Message.setTo(jPushMsgRsp.getParams().getTo());
         Message.setTimeStatmp(System.currentTimeMillis());
         String baseDataJson = gson.toJson(Message);
-
+        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if(Message.getSender() == 0)
         {
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+friendEntity.getUserId(),baseDataJson);
+            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFrom(),baseDataJson);
         }else{
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+friendEntity.getUserId(),baseDataJson);
+            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFrom(),baseDataJson);
         }
         sendMessageTo(message);
     }

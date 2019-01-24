@@ -237,7 +237,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         KLog.i(messageList?.size)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendMsgV3(SpUtil.getString(activity!!, ConstantValue.userIndex, "")!!, userEntity.index,userEntity.miPublicKey, content)
+            sendMsgV3(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId,userEntity.miPublicKey, content)
         }else{
             sendMsg(SpUtil.getString(activity!!, ConstantValue.userId, "")!!, userEntity.userId,userEntity.signPublicKey, content)
         }
@@ -289,27 +289,24 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
                 toast(R.string.nomorecharacters)
                 return
             }
-            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var mySignPublic  = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)
-
-            var myMiPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey)
-            var myMiPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey)
-
+            var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
+            LogUtil.addLog("sendMsgV3 friendKey:",FriendMiPublicKey)
+            /*var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
             var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
             var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
 
 
-            var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
-            LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
 
-            var src_msgBase64 = RxEncodeTool.base64Encode2String(Msg.toByteArray());
             val random = org.libsodium.jni.crypto.Random()
             var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
             //开始加密
             var dst_shared_key  = ByteArray(32)
             var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,friendMiPublic,myTempPrivate) //自己临时私钥和好友加解密公钥->生成对称密钥
             var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
-            var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(src_msgBase64,NonceBase64,shared_keyBase64)//消息原文转base64后用对称密码加密
+            var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(Msg,NonceBase64,shared_keyBase64)//消息原文用对称密码加密后转base64
+
+            KLog.i("shared_keyBase64:"+shared_keyBase64)
+            val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(encryptedBase64, NonceBase64, shared_keyBase64)
 
             var dst_signed_msg = ByteArray(96)
             var signed_msg_len = IntArray(1)
@@ -319,10 +316,10 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
 
             var dst_shared_key_Mi_My = ByteArray(32 + 48)
             var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
-            var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥
+            var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥*/
 
-
-            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, encryptedBase64,signBase64,NonceBase64,dst_shared_key_Mi_My64)
+            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
+            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))

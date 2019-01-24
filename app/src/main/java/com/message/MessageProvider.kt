@@ -6,10 +6,13 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
+import org.libsodium.jni.Sodium
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
@@ -45,7 +48,36 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             messages = arrayListOf()
             userMessageList.put(pushMsgRsp.params.fromId, messages)
         }
-        val msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
+        var msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.getParams().getDstKey(), pushMsgRsp.getParams().getMsg())
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            /*val myMiPublicBase64 = ConstantValue.libsodiumpublicMiKey
+            val myMiPrivateBase64 = ConstantValue.libsodiumprivateMiKey
+            val From = pushMsgRsp.getParams().getFrom()
+            val To = pushMsgRsp.getParams().getTo()
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            val friendTempPublic = ByteArray(32)
+            var friendEntity = UserEntity()
+            val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list()
+            if (localFriendList.size > 0)
+                friendEntity = localFriendList[0]
+
+            val dst_signed_msg = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getSign())
+
+            val dst_Friend_TempPublicKey = ByteArray(32)
+            val msg_len = IntArray(1)
+            val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(friendEntity.signPublicKey))
+
+            val dst_share_key = ByteArray(32)
+            val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKey, RxEncodeTool.base64Decode(myMiPrivateBase64))
+
+            KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
+            msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), RxEncodeTool.base64Encode2String(dst_share_key))*/
+
+            msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
+        }
+
+
         var message = Message.createReceivedMessage(msgSouce, pushMsgRsp.params.fromId, pushMsgRsp.params.msgId, pushMsgRsp.params.toId)
         if (msgSouce != null && msgSouce != "") {
             message.setMsg(msgSouce)
@@ -232,10 +264,15 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var pullMsgList = PullMsgReq(selfUserId!!, userId, 1, 0, 10)
+            var sendData = BaseData(pullMsgList)
+            if(ConstantValue.encryptionType.equals("1"))
+            {
+                sendData = BaseData(3,pullMsgList)
+            }
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(pullMsgList))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
             } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(pullMsgList)
+                var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

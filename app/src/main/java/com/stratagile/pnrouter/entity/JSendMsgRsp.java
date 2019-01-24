@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.entity;
 
+import com.stratagile.pnrouter.constant.ConstantValue;
+
 public class JSendMsgRsp extends BaseEntity{
 
 
@@ -45,6 +47,8 @@ public class JSendMsgRsp extends BaseEntity{
         private String FromId;
         private String ToId;
         private String Msg;
+        private String From;//发送消息用户hashid，14位字符串,不可为空
+        private String To;//接收消息用户hashid，14位字符串,不可为空
 
         public String getAction() {
             return Action;
@@ -71,7 +75,12 @@ public class JSendMsgRsp extends BaseEntity{
         }
 
         public String getFromId() {
-            return FromId;
+            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            {
+                return From;
+            }else{
+                return FromId;
+            }
         }
 
         public void setFromId(String FromId) {
@@ -79,7 +88,13 @@ public class JSendMsgRsp extends BaseEntity{
         }
 
         public String getToId() {
-            return ToId;
+
+            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            {
+                return To;
+            }else{
+                return ToId;
+            }
         }
 
         public void setToId(String ToId) {
@@ -92,6 +107,22 @@ public class JSendMsgRsp extends BaseEntity{
 
         public void setMsg(String Msg) {
             this.Msg = Msg;
+        }
+
+        public String getFrom() {
+            return From;
+        }
+
+        public void setFrom(String from) {
+            From = from;
+        }
+
+        public String getTo() {
+            return To;
+        }
+
+        public void setTo(String to) {
+            To = to;
         }
     }
 }
