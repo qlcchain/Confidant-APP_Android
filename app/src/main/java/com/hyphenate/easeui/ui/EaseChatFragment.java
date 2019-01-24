@@ -75,7 +75,6 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
-import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
@@ -111,7 +110,6 @@ import com.yanzhenjie.permission.PermissionListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.libsodium.jni.Sodium;
 
 import java.io.File;
 import java.util.HashMap;
@@ -219,7 +217,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, Boolean> deleteFileMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
-    private HashMap<String, String> sendFileAESKeyByteMap = new HashMap<>();
+    private HashMap<String, String> sendFileKeyByteMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
     private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
@@ -299,7 +297,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
                             String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
-                            String aesKey = sendFileAESKeyByteMap.get(fileTransformEntity.getToId());
+                            String fileKey = sendFileKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] SrcKey = sendFileMyKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] DstKey = sendFileFriendKeyByteMap.get(fileTransformEntity.getToId());
                             File file = new File(filePath);
@@ -309,17 +307,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
                                 int fileId = (int)(System.currentTimeMillis()/1000);
-                                //String aesKey =  RxEncryptTool.generateAESKey();
-                                byte[] fileBufferMi = new byte[0];
+                                 byte[] fileBufferMi = new byte[0];
                                 try{
                                     long  miBegin = System.currentTimeMillis();
-                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,aesKey.getBytes("UTF-8"));
+                                    /*if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                    {
+                                        fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
+                                    }else{
+                                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                    }*/
+                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     long miend  = System.currentTimeMillis();
                                     KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
                                     faBegin = System.currentTimeMillis();
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
-                                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1,aesKey,SrcKey,DstKey);
+                                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
                                     }else{
                                         KLog.i("websocket文件发送前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -411,12 +414,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
                                 String fileName = sendFileNameMap.get(FileIdResult+"");
-                                String aesKey = sendFileAESKeyByteMap.get(FileIdResult+"");
+                                String fileKey = sendFileKeyByteMap.get(FileIdResult+"");
                                 byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult+"");
                                 byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult+"");
                                 if(!deleteFileMap.get(msgId))
                                 {
-                                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,aesKey,SrcKey,DstKey);
+                                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
                                 }else{
                                     KLog.i("websocket文件发送中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -503,17 +506,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
         }
     }
-    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq,String aesKey,byte[] SrcKey,byte[] DstKey)
+    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq,String fileKey,byte[] SrcKey,byte[] DstKey)
     {
         String FriendPublicKey = sendFileFriendKeyMap.get(msgId);
-        //String aesKey =  RxEncryptTool.generateAESKey();
+        //String fileKey =  RxEncryptTool.generateAESKey();
       /*  byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
         byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
         byte[] SrcKey = new byte[256];
         byte[] DstKey = new byte[256];*/
         try {
-          /*  SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),my));
-            DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.getBytes(),friend));*/
+          /*  SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(fileKey.getBytes(),my));
+            DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(fileKey.getBytes(),friend));*/
             KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
             String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
             int action = 1;
@@ -567,7 +570,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendFileLastByteSizeMap.put(fileId+"",segSize);
             sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
             sendMsgIdMap.put(fileId+"",msgId);
-            sendFileAESKeyByteMap.put(fileId+"",aesKey);
+            sendFileKeyByteMap.put(fileId+"",fileKey);
             sendFileMyKeyByteMap.put(fileId+"",SrcKey);
             sendFileFriendKeyByteMap.put(fileId+"",DstKey);
             //KLog.i("发送中>>>内容"+"content:"+aabb);
@@ -1076,8 +1079,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileNameTemp = message.getFileName();
                     String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameTemp;
                     String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileNameTemp;
-                    String aesKey = RxEncodeTool.getAESKey(message.getUserKey());
-                    int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,aesKey);
+                    String fileKey = RxEncodeTool.getAESKey(message.getUserKey());
+
+                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                    {
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getUserKey());
+                    }else{
+                        fileKey =  RxEncodeTool.getAESKey(message.getUserKey());
+                    }
+                    int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
                     if(code == 1)
                     {
                         String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -2267,15 +2277,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     deleteFileMap.put(uuid,false);
                     sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                    String aesKey =  RxEncryptTool.generateAESKey();
+                    String fileKey =  RxEncryptTool.generateAESKey();
                     byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                     byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                     byte[] SrcKey = new byte[256];
                     byte[] DstKey = new byte[256];
                     try {
-                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                        sendFileAESKeyByteMap.put(uuid,aesKey);
+
+                        if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                        {
+                            SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                            DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                        }else{
+                            SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                            DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                        }
+                        sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                         sendFileMyKeyByteMap.put(uuid,SrcKey);
                         sendFileFriendKeyByteMap.put(uuid,DstKey);
                     }catch (Exception e){
@@ -2289,8 +2306,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
                     String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                    String aesKey =  RxEncryptTool.generateAESKey();
-                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,aesKey);
+                    String fileKey =  RxEncryptTool.generateAESKey();
+                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
                     if(code == 1)
                     {
                         int uuid = (int)(System.currentTimeMillis()/1000);
@@ -2318,8 +2335,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         byte[] SrcKey = new byte[256];
                         byte[] DstKey = new byte[256];
                         try {
-                            SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                            DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+
+                            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                            {
+                                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                            }else{
+                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                            }
                         }catch (Exception e)
                         {
 
@@ -2392,22 +2416,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             deleteFileMap.put(uuid,false);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String aesKey =  RxEncryptTool.generateAESKey();
+                            String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                                sendFileAESKeyByteMap.put(uuid,aesKey);
+                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                }else{
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                }
+                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid,DstKey);
                             }catch (Exception e){
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
-
                             if(codeSave == 1)
                             {
                                 String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2420,8 +2449,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,aesKey,isCompress);
+                            String fileKey =  RxEncryptTool.generateAESKey();
+                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey,isCompress);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -2449,9 +2478,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                                }catch (Exception e)
+
+                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                    {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    }else{
+                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    }
+                                   }catch (Exception e)
                                 {
 
                                 }
@@ -2532,15 +2568,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             deleteFileMap.put(uuid,false);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String aesKey =  RxEncryptTool.generateAESKey();
+                            String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                                sendFileAESKeyByteMap.put(uuid,aesKey);
+
+                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                }else{
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                }
+                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid,DstKey);
                             }catch (Exception e){
@@ -2553,8 +2596,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,aesKey);
+                            String fileKey =  RxEncryptTool.generateAESKey();
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,fileKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -2582,8 +2625,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+
+                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                    {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    }else{
+                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    }
                                 }catch (Exception e)
                                 {
 
@@ -2660,15 +2710,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             deleteFileMap.put(uuid,false);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String aesKey =  RxEncryptTool.generateAESKey();
+                            String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                                sendFileAESKeyByteMap.put(uuid,aesKey);
+
+                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                }else{
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                }
+                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid,DstKey);
                             }catch (Exception e){
@@ -2682,8 +2739,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         }else{
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,aesKey);
+                            String fileKey =  RxEncryptTool.generateAESKey();
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -2711,8 +2768,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+
+                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                    {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    }else{
+                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    }
                                 }catch (Exception e)
                                 {
 
@@ -2797,15 +2861,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             deleteFileMap.put(uuid,false);
                             sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String aesKey =  RxEncryptTool.generateAESKey();
+                            String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
-                                sendFileAESKeyByteMap.put(uuid,aesKey);
+
+                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                }else{
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                }
+                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid,DstKey);
                             }catch (Exception e){
@@ -2818,8 +2889,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String aesKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,aesKey);
+                            String fileKey =  RxEncryptTool.generateAESKey();
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
                             if(code == 1)
                             {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
@@ -2847,8 +2918,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.getBytes(), friend));
+
+                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                                    {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    }else{
+                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    }
                                 }catch (Exception e)
                                 {
 
@@ -2935,28 +3013,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp)
     {
-        /*String myMiPublicBase64 = ConstantValue.INSTANCE.getLibsodiumpublicMiKey();
-        String myMiPrivateBase64 = ConstantValue.INSTANCE.getLibsodiumprivateMiKey();
-        String From = jPushMsgRsp.getParams().getFrom();
-        String To = jPushMsgRsp.getParams().getTo();
-
-        byte[] friendTempPublic = new byte[32];
-        UserEntity friendEntity = new UserEntity();
-        List<UserEntity>  localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(From)).list();
-        if (localFriendList.size() > 0)
-            friendEntity = localFriendList.get(0);
-
-         byte[] dst_signed_msg = RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getSign());
-
-        byte[] dst_Friend_TempPublicKey = new byte[32];
-        int[] msg_len = new int[1];
-        int crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey,msg_len,dst_signed_msg,dst_signed_msg.length,RxEncodeTool.base64Decode(friendEntity.getSignPublicKey()));
-
-        byte[] dst_share_key  = new byte[32];
-        int crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key,dst_Friend_TempPublicKey,RxEncodeTool.base64Decode(myMiPrivateBase64));
-
-        KLog.i("shared_keyBase64:_receive"+RxEncodeTool.base64Encode2String(dst_share_key));
-        String msgSouce = LibsodiumUtil.INSTANCE.decrypt_data_symmetric_string(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),RxEncodeTool.base64Encode2String(dst_share_key));*/
         String msgSouce =  LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),jPushMsgRsp.getParams().getFrom(),jPushMsgRsp.getParams().getSign());
         if(msgSouce != null && !msgSouce.equals(""))
         {

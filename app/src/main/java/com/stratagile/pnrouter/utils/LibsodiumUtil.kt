@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.utils
 
-import android.content.Context
-import android.content.SharedPreferences
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -85,7 +83,7 @@ object LibsodiumUtil {
         }
     }
     /**
-     *解密，参数都是ByteArray
+     *解密普通消息，参数都是ByteArray
      */
     fun decrypt_data_symmetric(encrypted:ByteArray, src_nonce:ByteArray, src_key:ByteArray):String
     {
@@ -107,6 +105,29 @@ object LibsodiumUtil {
             return souceStr
         }else{
             return ""
+        }
+    }
+    /**
+     *解密，参数都是ByteArray
+     */
+    fun decrypt_Filedata_symmetric(encrypted:ByteArray, src_nonce:ByteArray, src_key:ByteArray):ByteArray
+    {
+        var temp_plainafter = ByteArray(encrypted.size+Sodium.crypto_box_zerobytes())
+        val temp_encryptedAfter = ByteArray(encrypted.size+Sodium.crypto_box_boxzerobytes())
+        var temp_plainInitAfter = ByteArray(Sodium.crypto_box_boxzerobytes())
+        Arrays.fill(temp_plainInitAfter,0)
+        System.arraycopy(temp_plainInitAfter, 0, temp_encryptedAfter, 0, Sodium.crypto_box_boxzerobytes())
+        System.arraycopy(encrypted, 0, temp_encryptedAfter, Sodium.crypto_box_boxzerobytes(), encrypted.size)
+
+        var crypto_box_open_afternm_result = Sodium.crypto_box_open_afternm(temp_plainafter,temp_encryptedAfter,encrypted.size+Sodium.crypto_box_boxzerobytes(),src_nonce,src_key)
+
+        if(crypto_box_open_afternm_result == 0)
+        {
+            var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
+            System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
+            return plain
+        }else{
+            return ByteArray(0)
         }
     }
     /**
@@ -179,7 +200,61 @@ object LibsodiumUtil {
         }
 
     }
+    fun EncryptShareKey(shareKey:String,pulicMiKey:String):ByteArray
+    {
+        var dst_shared_key= shareKey.toByteArray()
+        var dst_shared_key_Mi_My = ByteArray(32 + 48)
+        var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(pulicMiKey))
+        return dst_shared_key_Mi_My
+    }
+    fun DecryptShareKey(shareMiKey:String):String
+    {
+        var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(shareMiKey)
+        var dst_shared_key_Soucre_My = ByteArray(32)
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
+        var shareKey16 =  ByteArray(16)
+        System.arraycopy(dst_shared_key_Soucre_My, 0, shareKey16,0 , 16)
+        var shareKey16Str = String(shareKey16)
+        return shareKey16Str
+    }
+    /**
+     * 得到最后发送文件数据
+     */
+    fun EncryptSendFile(fileData:ByteArray,shareKey:String):ByteArray
+    {
+        var byteArray = ByteArray(0)
+        try {
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
+            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
 
+            var Nonce =  RxEncodeTool.base64Decode(ConstantValue.fileNonce)//固定不随机
+            //开始加密
+            var dst_shared_key  = shareKey.toByteArray()
+            var encryptedFile = LibsodiumUtil.encrypt_data_symmetric(fileData,Nonce,dst_shared_key)//消息原文用对称密码加密
+            return encryptedFile
+        }catch (e:Exception)
+        {
+            return byteArray
+        }
+
+    }
+    /**
+     * 解密文件数据
+     */
+    fun DecryptFile(fileData:ByteArray,shareKey:ByteArray):ByteArray
+    {
+        var byteArray = ByteArray(0)
+        try {
+            var Nonce =  RxEncodeTool.base64Decode(ConstantValue.fileNonce)//固定不随机
+            var encryptedFile = LibsodiumUtil.decrypt_Filedata_symmetric(fileData,Nonce,shareKey)//消息原文用对称密码加密
+            return encryptedFile
+        }catch (e:Exception)
+        {
+            return byteArray
+        }
+
+    }
     /**
      * 解密好友的消息
      */

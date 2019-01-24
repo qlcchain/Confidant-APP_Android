@@ -291,33 +291,6 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             }
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
             LogUtil.addLog("sendMsgV3 friendKey:",FriendMiPublicKey)
-            /*var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-            var myTempPrivate = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateTemKey)
-            var myTempPublic = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicTemKey)
-
-
-
-            val random = org.libsodium.jni.crypto.Random()
-            var NonceBase64 =  RxEncodeTool.base64Encode2String(random.randomBytes(24))
-            //开始加密
-            var dst_shared_key  = ByteArray(32)
-            var crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_shared_key,friendMiPublic,myTempPrivate) //自己临时私钥和好友加解密公钥->生成对称密钥
-            var shared_keyBase64 =  RxEncodeTool.base64Encode2String(dst_shared_key)
-            var encryptedBase64 = LibsodiumUtil.encrypt_data_symmetric_string(Msg,NonceBase64,shared_keyBase64)//消息原文用对称密码加密后转base64
-
-            KLog.i("shared_keyBase64:"+shared_keyBase64)
-            val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(encryptedBase64, NonceBase64, shared_keyBase64)
-
-            var dst_signed_msg = ByteArray(96)
-            var signed_msg_len = IntArray(1)
-            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,myTempPublic,myTempPublic.size,mySignPrivate)
-            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名自己临时公钥->转base64
-
-
-            var dst_shared_key_Mi_My = ByteArray(32 + 48)
-            var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
-            var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥*/
-
             var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
             var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 

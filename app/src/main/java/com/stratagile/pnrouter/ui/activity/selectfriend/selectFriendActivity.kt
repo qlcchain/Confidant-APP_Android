@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -167,25 +168,48 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             var eMTextMessageBody: EMTextMessageBody = message!!.body as EMTextMessageBody
                             var msg:String = eMTextMessageBody!!.message
                             val userId = SpUtil.getString(this, ConstantValue.userId, "")
-                            var aesKey = RxEncryptTool.generateAESKey()
-                            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                            var friend = RxEncodeTool.base64Decode(i.signPublicKey)
-                            var SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                            var miMsg = AESCipher.aesEncryptString(msg, aesKey)
-                            var msgData = SendMsgReq(userId!!, i.userId!!, miMsg, String(SrcKey), String(DstKey))
-                            if (ConstantValue.isWebsocketConnected) {
-                                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-                            } else if (ConstantValue.isToxConnected) {
-                                var baseData = BaseData(msgData)
-                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                if (ConstantValue.isAntox) {
-                                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                }else{
-                                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            if(ConstantValue.encryptionType.equals("1"))
+                            {
+                                var friendMiPublic = RxEncodeTool.base64Decode(i.miPublicKey)
+                                LogUtil.addLog("sendMsgV3 friendKey:",friendMiPublic.toString())
+                                var msgMap = LibsodiumUtil.EncryptSendMsg(msg,friendMiPublic)
+                                var msgData = SendMsgReqV3(userId!!, i.userId!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
+
+                                if (ConstantValue.isWebsocketConnected) {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))
+                                }else if (ConstantValue.isToxConnected) {
+                                    var baseData = BaseData(3,msgData)
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    if (ConstantValue.isAntox) {
+                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    }else{
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                    }
+                                }
+                            }else{
+                                var aesKey = RxEncryptTool.generateAESKey()
+                                var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
+                                var friend = RxEncodeTool.base64Decode(i.signPublicKey)
+                                var SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                var miMsg = AESCipher.aesEncryptString(msg, aesKey)
+                                var msgData = SendMsgReq(userId!!, i.userId!!, miMsg, String(SrcKey), String(DstKey))
+                                if (ConstantValue.isWebsocketConnected) {
+                                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
+                                } else if (ConstantValue.isToxConnected) {
+                                    var baseData = BaseData(msgData)
+                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                    if (ConstantValue.isAntox) {
+                                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                    }else{
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                    }
                                 }
                             }
+
+
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
                         }
@@ -222,9 +246,15 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
-                                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                sendFileAESKeyByteMap.put(uuid, aesKey)
+
+                                                if (ConstantValue.encryptionType == "1") {
+                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                }else{
+                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                }
+                                                sendFileAESKeyByteMap.put(uuid, aesKey.substring(0,16))
                                                 sendFileMyKeyByteMap.put(uuid, SrcKey)
                                                 sendFileFriendKeyByteMap.put(uuid, DstKey)
                                             } catch (e: Exception) {
@@ -269,8 +299,13 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 var SrcKey = ByteArray(256)
                                                 var DstKey = ByteArray(256)
                                                 try {
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                    if (ConstantValue.encryptionType == "1") {
+                                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    }else{
+                                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                    }
                                                 } catch (e: Exception) {
 
                                                 }
@@ -341,9 +376,15 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
-                                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                sendFileAESKeyByteMap[uuid] = aesKey
+
+                                                if (ConstantValue.encryptionType == "1") {
+                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                }else{
+                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                }
+                                                sendFileAESKeyByteMap[uuid] = aesKey.substring(0,16)
                                                 sendFileMyKeyByteMap[uuid] = SrcKey
                                                 sendFileFriendKeyByteMap[uuid] = DstKey
                                             } catch (e: Exception) {
@@ -382,8 +423,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 var SrcKey = ByteArray(256)
                                                 var DstKey = ByteArray(256)
                                                 try {
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+
+                                                    if (ConstantValue.encryptionType == "1") {
+                                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    }else{
+                                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                    }
                                                 } catch (e: Exception) {
 
                                                 }
@@ -447,9 +494,15 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             var SrcKey = ByteArray(256)
                                             var DstKey = ByteArray(256)
                                             try {
-                                                SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                sendFileAESKeyByteMap[uuid] = aesKey
+
+                                                if (ConstantValue.encryptionType == "1") {
+                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                }else{
+                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                }
+                                                sendFileAESKeyByteMap[uuid] = aesKey.substring(0,16)
                                                 sendFileMyKeyByteMap[uuid] = SrcKey
                                                 sendFileFriendKeyByteMap[uuid] = DstKey
                                             } catch (e: Exception) {
@@ -488,8 +541,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 var SrcKey = ByteArray(256)
                                                 var DstKey = ByteArray(256)
                                                 try {
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+
+                                                    if (ConstantValue.encryptionType == "1") {
+                                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    }else{
+                                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
+                                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
+                                                    }
                                                 } catch (e: Exception) {
 
                                                 }

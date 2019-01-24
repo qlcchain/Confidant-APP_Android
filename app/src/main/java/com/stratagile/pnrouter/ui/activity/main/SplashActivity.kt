@@ -128,7 +128,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
 
-    
 
         //这里不要注释
         var dst_public_TemKey_My = ByteArray(32)

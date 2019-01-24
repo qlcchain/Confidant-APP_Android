@@ -688,17 +688,33 @@ public class RxEncryptTool {
      * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
      */
     public static String generateAESKey() {
-       // return "welcometoqlc0101";
-        try {
+        return "welcometoqlc0101welcometoqlc0101";
+       /* try {
             SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
             byte[] bytes_key = new byte[20];
             localSecureRandom.nextBytes(bytes_key);
             String str_key = toHex(bytes_key);
-            return str_key.substring(str_key.length() - 16);
+            return str_key.substring(str_key.length();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "welcometoqlc0101";
+        return "welcometoqlc0101welcometoqlc0101";*/
+    }
+    /*
+     * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
+     */
+    public static String generateFileShareKey() {
+        return "welcometoqlc0101welcometoqlc0101";
+       /* try {
+            SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
+            byte[] bytes_key = new byte[20];
+            localSecureRandom.nextBytes(bytes_key);
+            String str_key = toHex(bytes_key);
+            return str_key.substring(str_key.length());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "welcometoqlc0101welcometoqlc0101";*/
     }
     // 对密钥进行处理
     private static byte[] getRawKey(byte[] seed) throws Exception {
