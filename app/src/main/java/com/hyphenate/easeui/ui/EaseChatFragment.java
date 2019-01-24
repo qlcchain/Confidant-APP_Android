@@ -1253,16 +1253,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Message Message = messageList.get(i);
             EMMessage message = null;
             String msgSouce =  "";
-            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+            if(Message.getMsg() != null  && !Message.getMsg().equals(""))
             {
-                if(Message.getSender() == 0)
+                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                 {
-                    msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(),Message.getNonce(),Message.getPriKey());
+                    if(Message.getSender() == 0)
+                    {
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(),Message.getNonce(),Message.getPriKey());
+                    }else{
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(),Message.getNonce(),FriendId,Message.getSign());
+                    }
                 }else{
-                    msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(),Message.getNonce(),FriendId,Message.getSign());
+                    msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
                 }
-            }else{
-                msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
             }
             if(msgSouce != null && !msgSouce.equals(""))
             {
