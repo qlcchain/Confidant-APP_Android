@@ -7,13 +7,17 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.entity.ShareBean
+import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
+import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ShareSelfAdapter
 import com.stratagile.pnrouter.view.CustomPopWindow
 
@@ -132,7 +136,7 @@ object PopWindowUtil {
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
      */
-    fun showSelectRouterPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnRouterSelectListener) {
+    fun showSelectRouterPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.select_router_pop_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
         maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
@@ -145,7 +149,39 @@ object PopWindowUtil {
         selecRouterAdapter.setNewData(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            onRouterSelectListener.onSelect(position)
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showFileOpreatePopWindow(activity: Activity, showView: View, fileName : String, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
+        tvFileName.text = fileName
+        recyclerView.layoutManager = linearLayoutManager
+        val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType())
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
             CustomPopWindow.onBackPressed()
         }
         //对具体的view的事件的处理
@@ -161,7 +197,58 @@ object PopWindowUtil {
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
 
-    interface OnRouterSelectListener {
-        fun onSelect(position : Int)
+    fun getFileOpreateType() : ArrayList<FileOpreateType> {
+        var list = ArrayList<FileOpreateType>()
+        list.add(FileOpreateType("forward_h", "Send it to Friends"))
+        list.add(FileOpreateType("download_h", "Download"))
+        list.add(FileOpreateType("open", "Other application open"))
+        list.add(FileOpreateType("details", "Detailed Information"))
+        list.add(FileOpreateType("rename", "Rename"))
+        list.add(FileOpreateType("delete_h1", "Delete"))
+        return list
+    }
+
+
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showFileSortWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.sort_file_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+        val selecRouterAdapter = FileSortAdapter(getFileSortType())
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+
+    fun getFileSortType() : ArrayList<String> {
+        var list = ArrayList<String>()
+        list.add("Arrange by name")
+        list.add("Arrange by time")
+        list.add("Arrange by size")
+        return list
+    }
+
+    interface OnSelectListener {
+        fun onSelect(position : Int, obj : Any)
     }
 }

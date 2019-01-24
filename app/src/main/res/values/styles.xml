@@ -50,6 +50,11 @@
         <item name="android:layout_marginLeft">@dimen/x30</item>
         <item name="android:background">@color/color_f2f2f2</item>
     </style>
+    <style name="divide_line_nomarge">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/x1</item>
+        <item name="android:background">@color/color_f2f2f2</item>
+    </style>
     <style name="divide_line_black">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/x2</item>

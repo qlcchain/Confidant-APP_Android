@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_rl"
-    android:background="@drawable/navigation_shape"
+    android:background="@color/white"
     android:layout_height="wrap_content"
     android:minHeight="?attr/actionBarSize"
     android:titleTextColor="@color/white"
@@ -13,7 +13,7 @@
         android:id="@+id/view"
         android:gravity="center"
         android:textSize="9sp"
-        android:textColor="@color/color_333"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="1dp"/>
 
@@ -22,7 +22,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x110"
-            app:navigationIcon="@mipmap/icon_back"
+            app:navigationIcon="@mipmap/arrow_exit_h"
             android:navigationIcon="@mipmap/icon_back"
             android:titleTextColor="@color/white"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -39,7 +39,7 @@
                 android:singleLine="true"
                 android:text=""
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/white"
+                android:textColor="@color/mainColor"
                 android:textSize="17sp" />
         </android.support.v7.widget.Toolbar>
 </RelativeLayout>

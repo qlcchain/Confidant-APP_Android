@@ -186,12 +186,12 @@ public class CustomPopWindow {
      */
     public void dismiss(){
         if (mAnimationStyle == android.R.style.Animation_Dialog) {
-            dismissHandler.sendEmptyMessageDelayed(0, 200);
+            dismissHandler.sendEmptyMessageDelayed(0, 400);
         } else {
             contentView.setVisibility(View.GONE);
             contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
             mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.close_fade));
-            dismissHandler.sendEmptyMessageDelayed(0, 200);
+            dismissHandler.sendEmptyMessageDelayed(0, 400);
         }
     }
 

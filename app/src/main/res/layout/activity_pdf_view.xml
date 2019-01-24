@@ -36,7 +36,7 @@
 
     <LinearLayout
         android:id="@+id/llNoFile"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_above="@+id/llOperate"
         android:orientation="vertical"
@@ -62,15 +62,28 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="@dimen/x10"
             android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x33"
+            android:layout_marginRight="@dimen/x33"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/progress_bar"
+            android:max="100"
+            android:indeterminate="false"
+            android:layout_height="@dimen/x8" />
         <TextView
             android:id="@+id/tvFileOpreate"
-            android:layout_width="@dimen/x616"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x33"
+            android:layout_marginRight="@dimen/x33"
             android:layout_marginTop="@dimen/x60"
             android:gravity="center"
             android:textColor="@color/white"
             android:text="Preview Download"
             android:background="@drawable/filepreview_bg"
-            android:layout_height="@dimen/x105" />
+            android:layout_height="@dimen/x84" />
     </LinearLayout>
 
     <LinearLayout

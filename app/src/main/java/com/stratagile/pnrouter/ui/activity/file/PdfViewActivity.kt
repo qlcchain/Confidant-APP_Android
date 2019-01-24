@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.bumptech.glide.Glide
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -12,9 +13,13 @@ import com.stratagile.pnrouter.ui.activity.file.contract.PdfViewContract
 import com.stratagile.pnrouter.ui.activity.file.module.PdfViewModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.PdfViewPresenter
 import com.stratagile.pnrouter.utils.FileUtil
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_pdf_view.*
+import rx.lang.scala.schedulers.AndroidMainThreadScheduler
 import java.io.File
 import java.lang.Exception
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -71,7 +76,31 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             llNoFile.visibility = View.VISIBLE
             tvFileName.text = file.name
             tvFileSie.text = "100KB"
+            tvFileOpreate.setOnClickListener {
+                downLoadFile()
+            }
         }
+    }
+
+    fun downLoadFile() {
+        tvFileOpreate.text = "Cancel Download"
+        tvFileOpreate.setTextColor(resources.getColor(R.color.mainColor))
+        tvFileOpreate.background = resources.getDrawable(R.drawable.filedownload_bg)
+        progressBar.visibility = View.VISIBLE
+        Observable.interval(0, 1, TimeUnit.SECONDS)
+                .take(101)
+                .map {
+                    KLog.i("" + it)
+                    progressBar.progress = it.toInt()
+                }
+                .doOnSubscribe {
+
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+
+                }
+
     }
 
     fun isOfficeFile(fileName : String) : Intent?{

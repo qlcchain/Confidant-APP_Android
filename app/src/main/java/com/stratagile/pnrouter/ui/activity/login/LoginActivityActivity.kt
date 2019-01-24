@@ -1078,8 +1078,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if (routerList.size > 0) {
             routerNameTips.setOnClickListener { view1 ->
-                PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnRouterSelectListener{
-                    override fun onSelect(position: Int) {
+                PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnSelectListener{
+                    override fun onSelect(position: Int, obj : Any) {
                         /* routerList.forEach {
                              if(it.lastCheck) {
                                  it.lastCheck = false

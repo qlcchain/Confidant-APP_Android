@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x19"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="File Source"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Google developer..."
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x12"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="File Type"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="ZIP"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="@dimen/x12"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Modification time"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="2019/01/24"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x12"
+            android:visibility="invisible"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="File Size"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="21 K"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="@dimen/x12"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="File Assignment"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="hzp"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:visibility="invisible"
+            android:layout_width="@dimen/x12"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+    <LinearLayout
+        android:id="@+id/shareSet"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Shared Settings"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Private files"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_marginRight="@dimen/x19"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x12"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x31"
+            android:rotation="180"
+            android:layout_height="@dimen/x23" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line" />
+</LinearLayout>

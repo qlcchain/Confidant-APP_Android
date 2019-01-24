@@ -63,7 +63,7 @@ class AppConfig : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        //CrashHandler.instance.init(this)
+//        CrashHandler.instance.init(this)
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", true)
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)

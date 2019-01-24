@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/status">
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
-            android:id="@+id/routerManagement"
+            android:id="@+id/myFile"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:srcmy="@mipmap/my_file"
@@ -58,7 +58,7 @@
         <View style="@style/divide_line2" />
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
-            android:id="@+id/shareApp"
+            android:id="@+id/iShare"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:srcmy="@mipmap/share_file"
@@ -70,7 +70,7 @@
 
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
-            android:id="@+id/settings"
+            android:id="@+id/docReceived"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             android:layout_marginTop="@dimen/x1"

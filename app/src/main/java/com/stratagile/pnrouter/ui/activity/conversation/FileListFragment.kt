@@ -6,6 +6,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -13,8 +14,10 @@ import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileList
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
 import com.stratagile.pnrouter.ui.activity.conversation.module.FileListModule
 import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileListPresenter
+import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
+import com.stratagile.pnrouter.utils.PopWindowUtil
 import kotlinx.android.synthetic.main.fragment_file_list.*
 import javax.inject.Inject
 
@@ -39,7 +42,7 @@ class FileListFragment : BaseFragment(), FileListContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
+        var list = arrayListOf("ddd", "fff", "eee", "aaa", "eee", "rrr", "ttt", "yyy", "www", "kkk", "ttt", "yyy", "uuu", "iii", "oooo", "", "", "", "")
         fileListAdapter = FileListAdapter(list)
         recyclerView.adapter = fileListAdapter
         fileListAdapter!!.setOnItemClickListener { adapter, view, position ->
@@ -54,6 +57,38 @@ class FileListFragment : BaseFragment(), FileListContract.View {
                 filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
             }
             startActivity(Intent(activity, PdfViewActivity::class.java).putExtra("filePath", filePath))
+        }
+        fileListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
+            when(view.id) {
+                R.id.fileOpreate -> {
+                    PopWindowUtil.showFileOpreatePopWindow(activity!!, recyclerView, fileListAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
+                        override fun onSelect(position: Int, obj : Any) {
+                            KLog.i("" + position)
+                            when(position) {
+                                0 -> {
+
+                                }
+                                1 -> {
+
+                                }
+                                2 -> {
+
+                                }
+                                3 -> {
+                                    startActivity(Intent(activity!!, FileDetailInformationActivity::class.java))
+                                }
+                                4 -> {
+
+                                }
+                                5 -> {
+
+                                }
+                            }
+                        }
+
+                    })
+                }
+            }
         }
     }
 

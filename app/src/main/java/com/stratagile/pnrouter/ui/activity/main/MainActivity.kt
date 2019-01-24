@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -44,6 +45,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxSendInfoEvent
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -1054,6 +1056,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         contactListFragment = EaseContactListFragment()
         contactListFragment?.hideTitleBar()
         contactFragment  = ContactFragment()
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
+        }
     }
 
     override fun setupActivityComponent() {
@@ -1104,8 +1109,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         return contacts
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitToast()
+            if (!CustomPopWindow.onBackPressed()) {
+                exitToast()
+            }
         }
         return false
     }
