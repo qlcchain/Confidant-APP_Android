@@ -6,6 +6,7 @@ import java.util.HashMap
 object ConstantValue {
         var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
         var isAntox = false   //是antox 还是自己封装的tox
+        var fileNonce = "OmcKJrqehqQwNvdHkRBddXYyAvbGW2A1"
         var localPath = "/RouterNewData"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
