@@ -758,7 +758,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .isZoomAnim(true)
                                     .sizeMultiplier(0.5f)
                                     .setOutputCameraPath("/CustomPath")
-                                    .enableCrop(true)
+                                    .enableCrop(false)
                                     .compress(false)
                                     .glideOverride(160, 160)
                                     .hideBottomControls(false)

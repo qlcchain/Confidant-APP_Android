@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
     <View
         android:layout_width="match_parent"
-        android:background="@color/main_color"
+        android:background="@color/white"
         android:id="@+id/view1"
         android:layout_height="0px"/>
     <FrameLayout
