@@ -60,11 +60,13 @@ object LibsodiumUtil {
      */
     fun encrypt_data_symmetric_string(src_msgStr:String, src_nonceStr:String, src_keyStr:String):String
     {
-        var src_msg = RxEncodeTool.base64Encode2String(src_msgStr.toByteArray()).toByteArray()
+        var ddd = RxEncodeTool.base64Encode2String(src_msgStr.toByteArray())
+//        var src_msg = RxEncodeTool.base64Encode2String(src_msgStr.toByteArray()).toByteArray()
+        var src_msg = src_msgStr.toByteArray()
         var src_nonce = RxEncodeTool.base64Decode(src_nonceStr)
         var src_key = RxEncodeTool.base64Decode(src_keyStr)
         val temp_plain = ByteArray(src_msg.size+ Sodium.crypto_box_zerobytes())
-        val temp_encrypted = ByteArray(src_msg.size+ Sodium.crypto_box_macbytes()+ Sodium.crypto_box_boxzerobytes())
+        val temp_encrypted = ByteArray(src_msg.size + Sodium.crypto_box_macbytes()+ Sodium.crypto_box_boxzerobytes())
         var temp_plainInit = ByteArray(Sodium.crypto_box_zerobytes())
         Arrays.fill(temp_plainInit,0)
         System.arraycopy(temp_plainInit, 0, temp_plain, 0, Sodium.crypto_box_zerobytes())
@@ -152,7 +154,8 @@ object LibsodiumUtil {
             var plain = ByteArray(encrypted.size - Sodium.crypto_box_macbytes())
             System.arraycopy(temp_plainafter, Sodium.crypto_box_zerobytes(), plain,0 , encrypted.size- Sodium.crypto_box_macbytes())
 
-            var souceStr  = String( RxEncodeTool.base64Decode(plain))
+//            var souceStr  = String( RxEncodeTool.base64Decode(plain))
+            var souceStr  = String(plain)
             return souceStr
         }else{
             return ""

@@ -48,6 +48,9 @@ class FileInfosFragment : BaseFragment(), FileInfosContract.View {
     internal lateinit var fileInfosAdapter: FileInfosAdapter
     internal var view: View? = null
 
+    //文件类型，0 代表所有文件，1 代表图片，2 代表文件,不包含图片
+    var fileType = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (view != null) {
             return view
@@ -60,6 +63,7 @@ class FileInfosFragment : BaseFragment(), FileInfosContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val absolutePath = arguments!!.getString(EXTRA_ABSOLUTE_PATH)
+        fileType = arguments!!.getInt(FILETYPE)
         if (TextUtils.isEmpty(absolutePath)) {
             throw IllegalStateException("Absolute path is null")
         }
@@ -130,8 +134,18 @@ class FileInfosFragment : BaseFragment(), FileInfosContract.View {
                 while (it.hasNext())
                 {
                     val x = it.next()
-                    if (x.absolutePath.indexOf(".png") < 0 && x.absolutePath.indexOf(".jpg") < 0 && x.absolutePath.indexOf(".jpeg") < 0 && x.absolutePath.indexOf(".mp4") < 0 && x.absolutePath.indexOf(".amr") < 0&& x.absolutePath.indexOf("DCIM") < 0) {
+                    if (fileType == 0) {
                         fileInfosNew.add(x)
+                    } else if (fileType == 1) {
+                        //图片
+                        if (x.absolutePath.indexOf(".png") > 0 || x.absolutePath.indexOf(".jpg") > 0 || x.absolutePath.indexOf(".jpeg") > 0 || x.absolutePath.indexOf(".mp4") > 0 ||x.absolutePath.indexOf(".amr") > 0 || x.absolutePath.indexOf("DCIM") > 0) {
+                            fileInfosNew.add(x)
+                        }
+                    } else if (fileType == 2){
+                        //文件，不包含图片
+                        if (x.absolutePath.indexOf(".png") < 0 && x.absolutePath.indexOf(".jpg") < 0 && x.absolutePath.indexOf(".jpeg") < 0 && x.absolutePath.indexOf(".mp4") < 0 && x.absolutePath.indexOf(".amr") < 0&& x.absolutePath.indexOf("DCIM") < 0) {
+                            fileInfosNew.add(x)
+                        }
                     }
                 }
                 fileInfosAdapter.setNewData(fileInfosNew)
@@ -149,11 +163,12 @@ class FileInfosFragment : BaseFragment(), FileInfosContract.View {
 
     companion object {
         private val EXTRA_ABSOLUTE_PATH = BuildConfig.APPLICATION_ID + ".extra.ABSOLUTE_PATH"
-
-        fun newInstance(absolutePath: String): FileInfosFragment {
+        private val FILETYPE = "fileType"
+        fun newInstance(absolutePath: String, fileType : Int): FileInfosFragment {
             Preconditions.checkNotNull(absolutePath)
             val args = Bundle()
             args.putString(EXTRA_ABSOLUTE_PATH, absolutePath)
+            args.putInt(FILETYPE, fileType)
 
             val fragment = FileInfosFragment()
             fragment.arguments = args

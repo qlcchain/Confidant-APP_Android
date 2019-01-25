@@ -42,7 +42,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     var inputMethodManager: InputMethodManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        initSwipeBackFinish()
+//        initSwipeBackFinish()
         super.onCreate(savedInstanceState)
         // 这句很关键，注意是调用父类的方法
         super.setContentView(R.layout.activity_base)
@@ -51,7 +51,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
             localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
         } else {
             StatusBarUtil.setTransparent(this)
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
             }
         }
@@ -146,6 +146,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
         title = toolbar?.findViewById(R.id.title)!!
+        relativeLayout_root = findViewById<View>(R.id.root_rl) as RelativeLayout
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))
 //        if (!SpUtil.getBoolean(this, ConstantValue.isMainNet, false)) {

@@ -6,6 +6,7 @@ include ':library'
 include ':appTox'
 include ':qrcodecore'
 include ':zxing'
+include ':picture_library'
 include ':zbar'
 include ':PagerSlidingTabStrip'
 project(':PagerSlidingTabStrip').projectDir = new File('app/libs/PagerSlidingTabStrip')

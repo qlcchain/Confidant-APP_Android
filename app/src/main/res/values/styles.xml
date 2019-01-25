@@ -14,7 +14,7 @@
         <item name="android:activityCloseExitAnimation">@anim/translate_center_to_right</item>
     </style>
     <style name="FileInfos.Tab" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">@color/color_tab</item>
+        <item name="android:textColor">@color/mainColor</item>
         <item name="textAllCaps">false</item>
     </style>
     <!-- shapeDialog style-->

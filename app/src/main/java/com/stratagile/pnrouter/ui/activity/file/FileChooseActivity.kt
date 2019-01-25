@@ -57,6 +57,8 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
     @Inject
     internal lateinit var mPresenter: FileChoosePresenter
 
+    //文件类型，0 代表所有文件，1 代表图片，2 代表文件,不包含图片
+    var fileType = 0
 
     @IntDef(value = [OPERATION_NONE, OPERATION_BACK_PRESSED, OPERATION_SELECTED_TAB, OPERATION_CLICK_ITEM])
     @Retention(RetentionPolicy.SOURCE)
@@ -75,7 +77,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
     }
 
     override fun initData() {
-
+        fileType = intent.getIntExtra("fileType", 0)
         mMyHandler = MyHandler(this)
         mFragmentManager = supportFragmentManager
         showDirectory(null, OPERATION_NONE)
@@ -173,7 +175,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         }
         var selected = mFragmentManager!!.findFragmentByTag(mSelectedDirectory!!.absolutePath)
         if (selected == null) {
-            selected = FileInfosFragment.newInstance(mSelectedDirectory!!.absolutePath)
+            selected = FileInfosFragment.newInstance(mSelectedDirectory!!.absolutePath, fileType)
             ft.add(R.id.contentFrame, selected!!, mSelectedDirectory!!.absolutePath)
         } else {
             ft.attach(selected)
@@ -204,7 +206,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
             val previous = mSelectedDirectory
             f = mFragmentManager!!.findFragmentByTag(previous!!.getAbsolutePath())
             if (f == null) {
-                f = FileInfosFragment.newInstance(previous!!.getAbsolutePath())
+                f = FileInfosFragment.newInstance(previous!!.getAbsolutePath(), fileType)
                 ft.add(R.id.contentFrame, f!!, previous.getAbsolutePath())
             } else {
                 ft.attach(f)
@@ -232,7 +234,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
             f = mFragmentManager!!.findFragmentByTag(fileInfo.absolutePath)
             if (f == null) {
-                f = FileInfosFragment.newInstance(fileInfo.absolutePath)
+                f = FileInfosFragment.newInstance(fileInfo.absolutePath, fileType)
                 ft.add(R.id.contentFrame, f!!, fileInfo.absolutePath)
             } else {
                 ft.attach(f)
@@ -299,7 +301,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
 
         var f = mFragmentManager!!.findFragmentByTag(fileInfo.absolutePath)
         if (f == null) {
-            f = FileInfosFragment.newInstance(fileInfo.absolutePath)
+            f = FileInfosFragment.newInstance(fileInfo.absolutePath, fileType)
             ft.add(R.id.contentFrame, f!!, fileInfo.absolutePath)
         } else {
             ft.attach(f)

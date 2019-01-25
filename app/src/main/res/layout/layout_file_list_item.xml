@@ -11,58 +11,61 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/group"
-        android:layout_marginTop="@dimen/x6"
-        app:layout_constraintLeft_toLeftOf="@+id/group"
-        android:text="2018/11/07 13:00" />
+        android:layout_marginStart="@dimen/x20"
+        android:layout_marginTop="8dp"
+        android:text="2018/11/07 13:00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.028"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/fileicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/documents_received_h"
+        android:layout_marginLeft="@dimen/x23"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
+        app:layout_constraintStart_toEndOf="@+id/tvFileTime"
+        app:layout_constraintTop_toTopOf="@+id/tvFileTime" />
 
     <TextView
         android:id="@+id/friendName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:gravity="left"
         android:text="tom"
-        android:layout_marginLeft="@dimen/x20"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
-        app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
-        app:layout_constraintTop_toTopOf="@+id/tvFileTime" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/fileicon"
+        app:layout_constraintTop_toTopOf="parent" />
     <View
         android:id="@+id/line"
         style="@style/divide_line"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <com.stratagile.pnrouter.view.SmoothCheckBox
-        android:visibility="gone"
-        android:id="@+id/checkBox"
-        android:layout_width="@dimen/x31"
-        android:layout_height="@dimen/x31"
-        android:layout_marginStart="16dp"
-        app:color_checked="@color/mainColor"
-        app:color_unchecked="@color/white"
-        app:color_unchecked_stroke="@color/gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:stroke_width="@dimen/x2" />
     <ImageView
         android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/x42"
-        android:layout_height="@dimen/x46"
-        android:layout_marginLeft="16dp"
+        android:layout_width="@dimen/x45"
+        android:layout_height="@dimen/x45"
+        android:layout_marginStart="16dp"
         android:src="@mipmap/icon_ppt"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
 
     <LinearLayout
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="@dimen/x20"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
         app:layout_constraintStart_toEndOf="@+id/ivAvatar"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/ivAvatar">
 
         <TextView
             android:id="@+id/tvFileName"
@@ -87,10 +90,10 @@
 
     <ImageView
         android:id="@+id/fileOpreate"
-        android:layout_width="@dimen/x80"
-        android:scaleType="center"
-        android:layout_height="@dimen/x60"
-        android:layout_marginRight="@dimen/x20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

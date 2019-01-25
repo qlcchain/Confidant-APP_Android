@@ -22,6 +22,10 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.tools.PictureFileUtils.getPath
 import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.toast
@@ -38,6 +42,8 @@ import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
+import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -49,6 +55,7 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxSendInfoEvent
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -722,6 +729,54 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ivQrCode.setOnClickListener {
             mPresenter.getScanPermission()
         }
+        mainIv1.setOnClickListener{
+            PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj : Any) {
+                    KLog.i("" + position)
+                    when(position) {
+                        0 -> {
+//                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 1), 0)
+                            PictureSelector.create(this@MainActivity)
+                                    .openGallery(PictureMimeType.ofImage())
+//                                    .theme()
+                                    .maxSelectNum(100)
+                                    .minSelectNum(1)
+                                    .imageSpanCount(3)
+                                    .selectionMode(PictureConfig.MULTIPLE)
+                                    .previewImage(false)
+                                    .previewVideo(false)
+                                    .enablePreviewAudio(false)
+                                    .isCamera(true)
+                                    .imageFormat(PictureMimeType.PNG)
+                                    .isZoomAnim(true)
+                                    .sizeMultiplier(0.5f)
+                                    .setOutputCameraPath("/CustomPath")
+                                    .enableCrop(false)
+                                    .compress(false)
+                                    .glideOverride(160, 160)
+                                    .hideBottomControls(false)
+                                    .isGif(false)
+                                    .openClickSound(false)
+                                    .minimumCompressSize(100)
+                                    .synOrAsy(true)
+                                    .rotateEnabled(true)
+                                    .scaleEnabled(true)
+                                    .videoMaxSecond(15)
+                                    .videoMinSecond(10)
+                                    .isDragFrame(false)
+                                    .forResult(PictureConfig.CHOOSE_REQUEST)
+                        }
+                        1 -> {
+                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), 0)
+                        }
+                        2 -> {
+                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), 0)
+                        }
+                    }
+                }
+
+            })
+        }
         if (!ConstantValue.isInit) {
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var pullFriend = PullFriendReq(selfUserId!!)
@@ -1056,7 +1111,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         contactListFragment = EaseContactListFragment()
         contactListFragment?.hideTitleBar()
         contactFragment  = ContactFragment()
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
     }

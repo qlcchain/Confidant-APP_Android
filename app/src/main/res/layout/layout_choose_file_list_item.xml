@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/x123"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tvFileTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/group"
+        android:layout_marginTop="@dimen/x6"
+        app:layout_constraintLeft_toLeftOf="@+id/group"
+        android:text="2018/11/07 13:00" />
+
+    <TextView
+        android:id="@+id/friendName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="tom"
+        android:layout_marginLeft="@dimen/x20"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
+        app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
+        app:layout_constraintTop_toTopOf="@+id/tvFileTime" />
+    <View
+        android:id="@+id/line"
+        style="@style/divide_line"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <com.stratagile.pnrouter.view.SmoothCheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="@dimen/x31"
+        android:layout_height="@dimen/x31"
+        android:layout_marginStart="16dp"
+        app:color_checked="@color/mainColor"
+        app:color_unchecked="@color/white"
+        app:color_unchecked_stroke="@color/gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:stroke_width="@dimen/x2" />
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="@dimen/x42"
+        android:layout_height="@dimen/x46"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintLeft_toRightOf="@+id/checkBox"
+        android:src="@mipmap/icon_ppt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/x20"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvFileName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Google project development.zip"
+            android:textColor="@color/color_3f3f3f"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvFileSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x31"
+        android:layout_marginTop="@dimen/x45"
+        android:text="244k"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/fileOpreate"
+        android:layout_width="@dimen/x80"
+        android:scaleType="center"
+        android:layout_height="@dimen/x60"
+        android:layout_marginRight="@dimen/x20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/hedo_n" />
+
+</android.support.constraint.ConstraintLayout>

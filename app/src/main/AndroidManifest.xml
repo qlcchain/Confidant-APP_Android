@@ -41,8 +41,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Base"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        android:theme="@style/AppTheme.Base">
         <service
             android:name="chat.tox.antox.tox.ToxService"
             android:exported="false"

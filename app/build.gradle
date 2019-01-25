@@ -200,6 +200,7 @@ dependencies {
     implementation project(':library')
     implementation project(':appTox')
     implementation project(':zxing')
+    implementation project(':picture_library')
     implementation project(':zbar')
     implementation 'org.greenrobot:greendao:3.2.2'
 

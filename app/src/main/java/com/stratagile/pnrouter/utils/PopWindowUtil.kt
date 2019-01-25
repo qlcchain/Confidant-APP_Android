@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import android.widget.TextView
 
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -179,6 +180,43 @@ object PopWindowUtil {
         tvFileName.text = fileName
         recyclerView.layoutManager = linearLayoutManager
         val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType())
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showFileUploadPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
+        ll_file.visibility = View.GONE
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+        var list = arrayListOf<FileOpreateType>();
+        list.add(FileOpreateType("ic_upload_photo", "Upload Photos"))
+        list.add(FileOpreateType("ic_upload_photo", "Upload Video"))
+        list.add(FileOpreateType("ic_upload_document", "Upload document"))
+        val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])

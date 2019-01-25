@@ -27,6 +27,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.socks.library.KLog;
+
 import java.lang.reflect.Method;
 
 /**
@@ -52,6 +54,7 @@ class UIUtil {
         if (resourceId > 0 && checkDeviceHasNavigationBar(activity) && isNavigationBarVisible(activity)) {
             navigationBarHeight = resources.getDimensionPixelSize(resourceId);
         }
+        KLog.i("底部导航栏的高度为：" + navigationBarHeight);
         return navigationBarHeight;
 //        return 0;
     }
