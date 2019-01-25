@@ -472,19 +472,18 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         }
 
         if (id == R.id.picture_id_preview) {
-//            List<LocalMedia> selectedImages = adapter.getSelectedImages();
-//
-//            List<LocalMedia> medias = new ArrayList<>();
-//            for (LocalMedia media : selectedImages) {
-//                medias.add(media);
-//            }
-//            Bundle bundle = new Bundle();
-//            bundle.putSerializable(PictureConfig.EXTRA_PREVIEW_SELECT_LIST, (Serializable) medias);
-//            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
-//            bundle.putBoolean(PictureConfig.EXTRA_BOTTOM_PREVIEW, true);
-//            startActivity(PicturePreviewActivity.class, bundle,
-//                    config.selectionMode == PictureConfig.SINGLE ? UCrop.REQUEST_CROP : UCropMulti.REQUEST_MULTI_CROP);
-//            overridePendingTransition(R.anim.a5, 0);
+            List<LocalMedia> selectedImages = adapter.getSelectedImages();
+
+            List<LocalMedia> medias = new ArrayList<>();
+            for (LocalMedia media : selectedImages) {
+                medias.add(media);
+            }
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(PictureConfig.EXTRA_PREVIEW_SELECT_LIST, (Serializable) medias);
+            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
+            bundle.putBoolean(PictureConfig.EXTRA_BOTTOM_PREVIEW, true);
+            startActivity(PicturePreviewActivity.class, bundle, 69);
+            overridePendingTransition(R.anim.a5, 0);
         }
 
         if (id == R.id.id_ll_ok) {
@@ -797,13 +796,12 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         switch (mediaType) {
             case PictureConfig.TYPE_IMAGE:
                 // image
-//                List<LocalMedia> selectedImages = adapter.getSelectedImages();
-//                ImagesObservable.getInstance().saveLocalMedia(previewImages);
-//                bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
-//                bundle.putInt(PictureConfig.EXTRA_POSITION, position);
-//                startActivity(PicturePreviewActivity.class, bundle,
-//                        config.selectionMode == PictureConfig.SINGLE ? UCrop.REQUEST_CROP : UCropMulti.REQUEST_MULTI_CROP);
-//                overridePendingTransition(R.anim.a5, 0);
+                List<LocalMedia> selectedImages = adapter.getSelectedImages();
+                ImagesObservable.getInstance().saveLocalMedia(previewImages);
+                bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
+                bundle.putInt(PictureConfig.EXTRA_POSITION, position);
+                startActivity(PicturePreviewActivity.class, bundle, 69);
+                overridePendingTransition(R.anim.a5, 0);
                 break;
             case PictureConfig.TYPE_VIDEO:
                 // video

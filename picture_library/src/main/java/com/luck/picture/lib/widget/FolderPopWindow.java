@@ -63,8 +63,8 @@ public class FolderPopWindow extends PopupWindow implements View.OnClickListener
         this.setBackgroundDrawable(new ColorDrawable(Color.argb(123, 0, 0, 0)));
         drawableUp = AttrsUtils.getTypeValuePopWindowImg(context, R.attr.picture_arrow_up_icon);
         drawableDown = AttrsUtils.getTypeValuePopWindowImg(context, R.attr.picture_arrow_down_icon);
-        animationIn = AnimationUtils.loadAnimation(context, R.anim.photo_album_show);
-        animationOut = AnimationUtils.loadAnimation(context, R.anim.photo_album_dismiss);
+        animationIn = AnimationUtils.loadAnimation(context, R.anim.anim_top_to_center);
+        animationOut = AnimationUtils.loadAnimation(context, R.anim.anim_center_to_top);
         initView();
     }
 
