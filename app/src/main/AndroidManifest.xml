@@ -179,6 +179,7 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.activity.file.FileShareSetActivity"
             android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".ui.activity.file.UploadFileActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"

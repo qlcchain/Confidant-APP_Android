@@ -124,9 +124,9 @@
         android:background="@drawable/textview_border"
         android:drawableLeft="@mipmap/no"
         android:drawablePadding="10dp"
-        android:paddingBottom="@dimen/x36"
         android:layout_alignParentBottom="true"
-        android:paddingTop="@dimen/x36"
+        android:paddingBottom="@dimen/x16"
+        android:paddingTop="@dimen/x16"
         android:text="@string/next"
         android:textColor="@color/color_efefef"
 

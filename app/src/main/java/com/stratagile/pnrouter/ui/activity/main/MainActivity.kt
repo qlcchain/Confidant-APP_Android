@@ -24,7 +24,9 @@ import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureConfig.CHOOSE_REQUEST
 import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils.getPath
 import com.message.Message
 import com.message.MessageProvider
@@ -44,6 +46,7 @@ import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
+import com.stratagile.pnrouter.ui.activity.file.UploadFileActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -767,7 +770,35 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .forResult(PictureConfig.CHOOSE_REQUEST)
                         }
                         1 -> {
-                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), 0)
+                            PictureSelector.create(this@MainActivity)
+                                    .openGallery(PictureMimeType.ofVideo())
+//                                    .theme()
+                                    .maxSelectNum(100)
+                                    .minSelectNum(1)
+                                    .imageSpanCount(3)
+                                    .selectionMode(PictureConfig.MULTIPLE)
+                                    .previewImage(false)
+                                    .previewVideo(false)
+                                    .enablePreviewAudio(false)
+                                    .isCamera(true)
+                                    .imageFormat(PictureMimeType.PNG)
+                                    .isZoomAnim(true)
+                                    .sizeMultiplier(0.5f)
+                                    .setOutputCameraPath("/CustomPath")
+                                    .enableCrop(false)
+                                    .compress(false)
+                                    .glideOverride(160, 160)
+                                    .hideBottomControls(false)
+                                    .isGif(false)
+                                    .openClickSound(false)
+                                    .minimumCompressSize(100)
+                                    .synOrAsy(true)
+                                    .rotateEnabled(true)
+                                    .scaleEnabled(true)
+                                    .videoMaxSecond(15)
+                                    .videoMinSecond(10)
+                                    .isDragFrame(false)
+                                    .forResult(PictureConfig.CHOOSE_REQUEST)
                         }
                         2 -> {
                             startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), 0)
@@ -1151,6 +1182,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             viewModel.toAddUserId.value = data!!.getStringExtra("result")
             return
+        } else if (requestCode == CHOOSE_REQUEST && resultCode == Activity.RESULT_OK) {
+            var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+            KLog.i(list)
+            var startIntent = Intent(this, UploadFileActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
         }
     }
 

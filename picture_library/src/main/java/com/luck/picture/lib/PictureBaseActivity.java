@@ -448,7 +448,7 @@ public class PictureBaseActivity extends FragmentActivity {
         if (config.camera) {
             overridePendingTransition(0, R.anim.fade_out);
         } else {
-            overridePendingTransition(0, R.anim.a3);
+            overridePendingTransition(0, R.anim.activity_translate_out_1);
         }
     }
 
