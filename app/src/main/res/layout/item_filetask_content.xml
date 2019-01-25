@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/x123"
+    android:background="@color/white">
+
+
+    <View
+        android:id="@+id/line"
+        style="@style/divide_line"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="@dimen/x45"
+        android:layout_height="@dimen/x45"
+        android:layout_marginStart="16dp"
+        android:src="@mipmap/icon_ppt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/group"
+        android:layout_width="@dimen/x500"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
+        app:layout_constraintTop_toTopOf="@+id/ivAvatar">
+
+        <TextView
+            android:id="@+id/tvFileName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Google project development.zip"
+            android:textColor="@color/color_3f3f3f"
+            android:textSize="15sp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x10"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/progress_bar"
+            android:max="100"
+            android:indeterminate="false"
+            android:layout_height="@dimen/x8" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x10"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/type"
+                android:layout_width="@dimen/x23"
+                android:src="@mipmap/download_h"
+                android:layout_height="@dimen/x23" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="15.4M"
+                android:textSize="10sp"
+                android:layout_marginLeft="@dimen/x15"
+                android:layout_height="wrap_content" />
+            <View
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="1px"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="10sp"
+                android:text="105KB/s"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/start_n" />
+
+</android.support.constraint.ConstraintLayout>

@@ -10,7 +10,7 @@
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        hyphenate:titleBarLeftImage="@mipmap/icon_back" />
+        hyphenate:titleBarLeftImage="@mipmap/arrow_exit_h" />
 
     <LinearLayout
         android:id="@+id/layout_alert_kicked_off"

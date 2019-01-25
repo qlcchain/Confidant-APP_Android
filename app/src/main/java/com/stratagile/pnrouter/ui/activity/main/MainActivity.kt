@@ -46,6 +46,7 @@ import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
+import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.file.UploadFileActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
@@ -731,6 +732,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         setToNews()
         ivQrCode.setOnClickListener {
             mPresenter.getScanPermission()
+        }
+        llSort.setOnClickListener {
+            startActivity(Intent(this, FileTaskListActivity::class.java))
         }
         mainIv1.setOnClickListener{
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {

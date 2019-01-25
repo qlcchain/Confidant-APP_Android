@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:minHeight="?attr/actionBarSize"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/bottom_bar_normal_bg"
+    android:background="@color/white"
     android:gravity="center_vertical" >
 
     <RelativeLayout
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textColor="#ffffff"
+        android:textColor="@color/mainColor"
         android:textSize="20sp" />
 
     <RelativeLayout
