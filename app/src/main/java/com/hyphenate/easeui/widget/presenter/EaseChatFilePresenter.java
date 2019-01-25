@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.os.Environment;
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
@@ -25,6 +27,7 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
+import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
@@ -35,6 +38,7 @@ import java.io.File;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
+import scalaz.Alpha;
 
 
 /**
@@ -56,15 +60,22 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
         if (file.exists()) {
-            // open files if it exist
-            try {
-                Intent intent = OpenFileUtil.getInstance((Activity) getContext()).openFile(filePath);
-                ((Activity) getContext()).startActivity(intent);
-                //FileUtils.openFile(file, (Activity) getContext());
-            }catch (Exception e)
+            String newFilePath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/temp/"+file.getName();
+            int result = FileUtil.copyAppFileToSdcard(filePath,newFilePath);
+            if(result == 1)
             {
-                e.printStackTrace();
+                try {
+                    Intent intent = OpenFileUtil.getInstance((Activity) getContext()).openFile(newFilePath);
+                    ((Activity) getContext()).startActivity(intent);
+                    //FileUtils.openFile(file, (Activity) getContext());
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }else{
+                Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show();
             }
+
 
         } else {
             // download the file
@@ -85,11 +96,15 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
-        if(fromID.equals(userId) && message.getType() != EMMessage.Type.VOICE)
+        if( message.getType() != EMMessage.Type.VOICE)
         {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
-            floatMenu.inflate(R.menu.popup_menu_file);
-            //floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
+            if(fromID.equals(userId))
+            {
+                floatMenu.inflate(R.menu.popup_menu_file);
+            }else{
+                floatMenu.inflate(R.menu.friendpopup_menu_file);
+            }
             int[] loc1=new int[2];
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);

@@ -125,52 +125,6 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
-        if(fromID.equals(userId) && false)
-        {
-            FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
-            floatMenu.inflate(R.menu.popup_menu_file);
-            //floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
-            int[] loc1=new int[2];
-            view.getLocationOnScreen(loc1);
-            KLog.i(loc1[0]);
-            KLog.i(loc1[1]);
-            floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
-            floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
-                @Override
-                public void onClick(View v, int position) {
-                    switch (position)
-                    {
-                        case 0:
-                            Intent intent = new Intent(getContext(), selectFriendActivity.class);
-                            intent.putExtra("fromId", message.getTo());
-                            intent.putExtra("message",message);
-                            getContext().startActivity(intent);
-                            break;
-                        case 1:
-                            DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
-                            if(ConstantValue.INSTANCE.isWebsocketConnected())
-                            {
-                                AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
-                            }else if(ConstantValue.INSTANCE.isToxConnected())
-                            {
-                                BaseData baseData = new BaseData(msgData);
-                                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                                if (ConstantValue.INSTANCE.isAntox()) {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                                }else{
-                                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                }
-                            }
 
-                            String  aa = message.getMsgId();
-                            ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            });
-        }
     }
 }

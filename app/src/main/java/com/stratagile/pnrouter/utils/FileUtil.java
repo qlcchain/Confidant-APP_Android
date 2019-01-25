@@ -72,6 +72,10 @@ public class FileUtil {
                 if (!rsa.exists()) {
                     rsa.mkdir();
                 }
+                File temp = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/temp", "");
+                if (!temp.exists()) {
+                    temp.mkdir();
+                }
                 KLog.i("文件夹初始化成功。。。。。。。。。。。。。");
             }
         }).start();
@@ -1400,6 +1404,35 @@ public class FileUtil {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 拷贝本地文件
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copyAppFileToSdcard(String fromFile, String toFile)
+    {
+        try
+        {
+            InputStream fosfrom = new FileInputStream(fromFile);
+            OutputStream fosto = new FileOutputStream(toFile);
+            byte bt[] = new byte[1024];
+            int c;
+            while ((c = fosfrom.read(bt)) > 0)
+            {
+                fosto.write(bt, 0, c);
+            }
+            fosfrom.close();
+            fosto.close();
+
+            return 1;
+        } catch (Exception ex)
+        {
+
         }
         return 0;
     }
