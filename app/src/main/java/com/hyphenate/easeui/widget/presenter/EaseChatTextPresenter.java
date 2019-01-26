@@ -65,8 +65,8 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
     @Override
     public void onBubbleLongClick(EMMessage message, View view) {
         super.onBubbleLongClick(message,view);
-        if(!message.isAcked())
-            return;
+        /*if(!message.isAcked())
+            return;*/
         String fromID = message.getFrom();
         viewRoot = view;
         String userId =   SpUtil.INSTANCE.getString(AppConfig.instance.getApplicationContext(), ConstantValue.INSTANCE.getUserId(), "");
