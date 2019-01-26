@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.widget.presenter;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -102,6 +103,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                         intent.putExtra("fromId", message.getTo());
                         intent.putExtra("message",message);
                         getContext().startActivity(intent);
+                        ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                         break;
                     case 2:
                         DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");

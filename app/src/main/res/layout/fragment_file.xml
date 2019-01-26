@@ -48,8 +48,8 @@
             android:id="@+id/myFile"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:srcmy="@mipmap/my_file"
-            app:textmy="@string/My_Files">
+            app:srcmy="@mipmap/documents_received"
+            app:textmy="@string/all_Files">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 
@@ -61,8 +61,8 @@
             android:id="@+id/iShare"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:srcmy="@mipmap/share_file"
-            app:textmy="@string/Documents_I_Share">
+            app:srcmy="@mipmap/documents_i_share"
+            app:textmy="@string/files_sent">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 
@@ -76,7 +76,7 @@
             android:layout_marginTop="@dimen/x1"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
             app:srcmy="@mipmap/documents_received"
-            app:textmy="@string/Documents_received">
+            app:textmy="@string/file_received">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
     </LinearLayout>
@@ -88,8 +88,9 @@
     <com.stratagile.pnrouter.view.DrawableTextView
         android:id="@+id/documents_shared"
         android:layout_width="match_parent"
+        app:showNext="false"
         android:layout_height="@dimen/x92"
-        app:text="@string/Documents_shared">
+        app:text="@string/most_recent">
 
     </com.stratagile.pnrouter.view.DrawableTextView>
     <android.support.v4.view.ViewPager

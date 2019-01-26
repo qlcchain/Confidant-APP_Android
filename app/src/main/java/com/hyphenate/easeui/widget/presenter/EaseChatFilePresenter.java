@@ -120,6 +120,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             intent.putExtra("fromId", message.getTo());
                             intent.putExtra("message",message);
                             getContext().startActivity(intent);
+                            ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                             break;
                         case 1:
                             String  msgId = message.getMsgId();

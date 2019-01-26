@@ -132,9 +132,11 @@ void java_bootstrap(void) {
 
 JNIEXPORT void JNICALL
 Java_com_stratagile_tox_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
+    if (mTox == NULL) {
+        return;
+    }
     tox_kill(mTox);
     (*env)->DeleteGlobalRef(env, g_obj);
-//    (*g_jvm)->DestroyJavaVM(g_jvm);
     free(Env);
     free(g_jvm);
     mTox = NULL;

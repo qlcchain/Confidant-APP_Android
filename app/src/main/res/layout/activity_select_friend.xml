@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
         android:id="@+id/statusBar"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/main_color"
+        android:background="@color/white"
         android:gravity="center"
         android:textColor="@color/color_333"
         android:textSize="9sp" />
@@ -17,7 +16,7 @@
         android:id="@+id/rl1"
         android:layout_width="match_parent"
         android:layout_below="@+id/statusBar"
-        android:background="@drawable/navigation_shape"
+        android:background="@color/white"
         android:minHeight="?attr/actionBarSize"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -31,8 +30,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:text="@string/cancel"
-                android:textSize="17sp"
-                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textColor="#2c2c2c"
                 android:layout_height="wrap_content" />
         </LinearLayout>
         <TextView
@@ -41,11 +40,12 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="title"
-            android:textColor="@color/white"
+            android:textColor="@color/mainColor"
             android:textSize="18sp" />
 
         <RelativeLayout
             android:id="@+id/multiSelectBtn"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
@@ -54,7 +54,7 @@
            <TextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:textColor="@color/white"
+               android:textColor="@color/mainColor"
                android:textSize="@dimen/x36"
                android:text="@string/multiple"/>
         </RelativeLayout>
@@ -76,8 +76,7 @@
         android:layout_width="match_parent"
         android:layout_below="@+id/viewPager"
         android:background="@color/white"
-        android:minHeight="?attr/actionBarSize"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/x96">
         <LinearLayout
             android:id="@+id/tips"
             android:layout_width="wrap_content"
@@ -90,8 +89,8 @@
                 android:id="@+id/selectTxt"
                 android:layout_width="wrap_content"
                 android:text="selected"
-                android:textSize="17sp"
-                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textColor="#2B2B2B"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
@@ -103,14 +102,19 @@
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/send"
-                android:layout_width="@dimen/x155"
-                android:layout_height="@dimen/x75"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/x15"
+                android:paddingBottom="@dimen/x15"
+                android:paddingLeft="@dimen/x20"
+                android:paddingRight="@dimen/x20"
                 android:textColor="@color/white"
-                android:textSize="@dimen/x36"
+                android:includeFontPadding="false"
+                android:textSize="15sp"
                 android:gravity="center"
-                android:background="@color/main_color"
+                android:background="@drawable/btn_maincolor"
 
-                android:text="@string/button_send"/>
+                android:text="Confirm"/>
         </RelativeLayout>
 
 

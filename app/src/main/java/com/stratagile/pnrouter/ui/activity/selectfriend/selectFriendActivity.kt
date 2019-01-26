@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.selectfriend
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -115,8 +116,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         }
         viewPager.offscreenPageLimit = 1
         llCancel.setOnClickListener {
-
-            finish()
+            onBackPressed()
         }
         send.setOnClickListener {
             showSendDialog()
@@ -798,6 +798,11 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun selectFriendChange(selectFriendChange: SelectFriendChange) {
         selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.people)
+        if (selectFriendChange.friendNum == 0) {
+            send.text = "Confirm"
+        } else {
+            send.text = "Confirm (" + selectFriendChange.friendNum + ")"
+        }
     }
     override fun setupActivityComponent() {
         DaggerselectFriendComponent
@@ -824,6 +829,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
         } else {
             super.onBackPressed()
+            overridePendingTransition(0, R.anim.activity_translate_out_1)
         }
     }
 }

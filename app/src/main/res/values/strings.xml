@@ -1,5 +1,7 @@
-<resources>
-    <string name="app_name">PP Messager</string>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
+
+    <string name="app_name">PP Messenger</string>
     <string name="loading">loading...</string>
     <string name="apploading">loading...</string>
     <string name="news">Chats</string>
@@ -381,7 +383,7 @@
     <string name="adam_graspn">Adam Graspn</string>
     <string name="add_contact">Add Contact</string>
     <string name="chats">Chats</string>
-    <string name="private_faith">PP Messager</string>
+    <string name="private_faith">PP Messenger</string>
     <string name="nomore">No more data</string>
     <string name="recall">Recall</string>
     <string name="stop">Stop</string>
@@ -487,12 +489,22 @@
     <string name="ExcessiveFileBlockLength">Excessive File Block Length</string>
     <string name="network_reconnecting">network reconnecting...</string>
     <string name="codeerror">code error</string>
-    <string name="My_Files">My Files</string>
-    <string name="Documents_I_Share">Documents I Share</string>
-    <string name="Documents_received">Documents received</string>
-    <string name="Documents_shared"> Documents shared</string>
+    <string name="all_Files">All files</string>
+    <string name="files_sent">Files sent</string>
+    <string name="file_received">Files received</string>
+    <string name="most_recent">Most Recent</string>
     <string name="open_error">open error</string>
-
+    <string name="send_to_friend">Send it to Friends</string>
+    <string name="download">Download</string>
+    <string name="other_application_open">Other application open</string>
+    <string name="detailed_information">Detailed Information</string>
+    <string name="rename">Rename</string>
+    <string name="arrange_by_name">Arrange by name</string>
+    <string name="arrange_by_time">Arrange by time</string>
+    <string name="arrange_by_size">Arrange by size</string>
+    <string name="upload_photos">Upload Photos</string>
+    <string name="upload_video">Upload Video</string>
+    <string name="upload_document">Upload document</string>
 
 
 </resources>
