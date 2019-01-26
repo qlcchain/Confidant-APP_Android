@@ -1,26 +1,32 @@
 package com.stratagile.pnrouter.ui.activity.file
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.PullFileListReq
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.FileManagerContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileManagerModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileManagerPresenter
-import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
 import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.ShareUtil
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
 
 import javax.inject.Inject;
@@ -38,6 +44,9 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View {
     internal lateinit var mPresenter: FileManagerPresenter
 
     var fileListChooseAdapter : FileListChooseAdapter? = null
+
+    //类型，0 = My Files 1 = Documents I Share 2 = Documents received
+    var fileType = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +66,21 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View {
 
 
     override fun initData() {
-        title.text = "Documents received"
+        fileType = intent.getIntExtra("fileType", 0)
+        when(fileType) {
+            0 -> {
+                title.text = resources.getText(R.string.all_Files)
+            }
+            1 -> {
+                title.text = resources.getText(R.string.files_sent)
+            }
+            2 -> {
+                title.text = resources.getText(R.string.file_received)
+            }
+        }
+
+        pullFileList()
+
         var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
         fileListChooseAdapter = FileListChooseAdapter(list)
         recyclerView.adapter = fileListChooseAdapter
@@ -105,6 +128,30 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View {
 
                     })
                 }
+            }
+        }
+    }
+
+    fun pullFileList() {
+        var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, 0, 0)
+        var sendData = BaseData(pullFileListReq)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,pullFileListReq)
+        }
+        if (ConstantValue.isWebsocketConnected) {
+            Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        }else if (ConstantValue.isToxConnected) {
+            Log.i("pullFriendList", "tox")
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }

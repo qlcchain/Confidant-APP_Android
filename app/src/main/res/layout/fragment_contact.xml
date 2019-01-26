@@ -52,7 +52,7 @@
                 <View
                     android:id="@+id/new_contact_dot"
                     android:layout_width="@dimen/x20"
-                    android:background="@drawable/nick_text_bg"
+                    android:background="@drawable/new_message_flag_bg"
                     android:layout_marginRight="@dimen/x10"
                     android:layout_height="@dimen/x20"/>
 

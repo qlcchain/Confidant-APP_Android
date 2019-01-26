@@ -63,13 +63,13 @@ class FileFragment : BaseFragment(), FileContract.View {
         })
         tabLayout.setupWithViewPager(viewPager)
         myFile.setOnClickListener {
-            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+            startActivity(Intent(activity!!, FileManagerActivity::class.java).putExtra("fileType", 0))
         }
         iShare.setOnClickListener {
-            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+            startActivity(Intent(activity!!, FileManagerActivity::class.java).putExtra("fileType", 1))
         }
         docReceived.setOnClickListener {
-            startActivity(Intent(activity!!, FileManagerActivity::class.java))
+            startActivity(Intent(activity!!, FileManagerActivity::class.java).putExtra("fileType", 2))
         }
     }
 

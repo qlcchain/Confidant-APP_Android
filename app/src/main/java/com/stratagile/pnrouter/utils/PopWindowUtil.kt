@@ -35,55 +35,6 @@ import java.util.ArrayList
  * 公共的popwindow弹出类。所有的popwindow都可以封装在这个类里边
  */
 object PopWindowUtil {
-
-
-    /**
-     * @param activity 上下文
-     * @param showView 从activity中传进来的view,用于让popWindow附着的
-     */
-    @JvmOverloads
-    fun showPopWindow(activity: Activity, showView: View, clickListener: View.OnClickListener, tipContentStr: String, comfirmContent: String = "", cancalContent: String = "") {
-        //        View maskView = LayoutInflater.from(activity).inflate(R.layout.confirm_cancal_layout, null);
-        //        View contentView = maskView.findViewById(R.id.ll_popup);
-        //        maskView.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.open_fade));
-        //        contentView.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in));
-        //        //对具体的view的事件的处理
-        //        TextView confirm = (TextView) maskView.findViewById(R.id.bt_confirm);
-        //        TextView cancal = (TextView) maskView.findViewById(R.id.bt_cancal);
-        //        TextView tipContent = (TextView) maskView.findViewById(R.id.tip_content);
-        //        if (!"".equals(comfirmContent)) {
-        //            confirm.setText(comfirmContent);
-        //        }
-        //        if (!"".equals(cancalContent)) {
-        //            cancal.setText(cancalContent);
-        //        }
-        //        tipContent.setText(tipContentStr);
-        //        maskView.setOnClickListener(new View.OnClickListener() {
-        //            @Override
-        //            public void onClick(View view) {
-        //                CustomPopWindow.onBackPressed();
-        //            }
-        //        });
-        //        tipContent.setOnClickListener(clickListener);
-        //        cancal.setOnClickListener(new View.OnClickListener() {
-        //            @Override
-        //            public void onClick(View view) {
-        //                CustomPopWindow.onBackPressed();
-        //            }
-        //        });
-        //
-        //        confirm.setOnClickListener(clickListener);
-        //
-        //        new CustomPopWindow.PopupWindowBuilder(activity)
-        //                .setView(maskView)
-        //                .setClippingEnable(false)
-        //                .setContenView(contentView)
-        //                .setFocusable(false)
-        //                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
-        //                .create()
-        //                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0);
-    }
-
     /**
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
@@ -179,7 +130,7 @@ object PopWindowUtil {
         val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
         tvFileName.text = fileName
         recyclerView.layoutManager = linearLayoutManager
-        val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType())
+        val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType(activity))
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
@@ -213,9 +164,9 @@ object PopWindowUtil {
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
         var list = arrayListOf<FileOpreateType>();
-        list.add(FileOpreateType("ic_upload_photo", "Upload Photos"))
-        list.add(FileOpreateType("ic_upload_photo", "Upload Video"))
-        list.add(FileOpreateType("ic_upload_document", "Upload document"))
+        list.add(FileOpreateType("ic_upload_photo", activity.getString(R.string.upload_photos)))
+        list.add(FileOpreateType("ic_upload_photo", activity.getString(R.string.upload_video)))
+        list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))
         val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
@@ -235,14 +186,14 @@ object PopWindowUtil {
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
 
-    fun getFileOpreateType() : ArrayList<FileOpreateType> {
+    fun getFileOpreateType(context: Activity) : ArrayList<FileOpreateType> {
         var list = ArrayList<FileOpreateType>()
-        list.add(FileOpreateType("forward_h", "Send it to Friends"))
-        list.add(FileOpreateType("download_h", "Download"))
-        list.add(FileOpreateType("open", "Other application open"))
-        list.add(FileOpreateType("details", "Detailed Information"))
-        list.add(FileOpreateType("rename", "Rename"))
-        list.add(FileOpreateType("delete_h1", "Delete"))
+        list.add(FileOpreateType("forward_h", context.getString(R.string.send_to_friend)))
+        list.add(FileOpreateType("download_h", context.getString(R.string.download)))
+        list.add(FileOpreateType("open", context.getString(R.string.other_application_open)))
+        list.add(FileOpreateType("details", context.getString(R.string.detailed_information)))
+        list.add(FileOpreateType("rename", context.getString(R.string.rename)))
+        list.add(FileOpreateType("delete_h1", context.getString(R.string.delete)))
         return list
     }
 
@@ -259,7 +210,7 @@ object PopWindowUtil {
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
-        val selecRouterAdapter = FileSortAdapter(getFileSortType())
+        val selecRouterAdapter = FileSortAdapter(getFileSortType(activity))
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
@@ -278,11 +229,11 @@ object PopWindowUtil {
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
 
-    fun getFileSortType() : ArrayList<String> {
+    fun getFileSortType(context: Activity) : ArrayList<String> {
         var list = ArrayList<String>()
-        list.add("Arrange by name")
-        list.add("Arrange by time")
-        list.add("Arrange by size")
+        list.add(context.getString(R.string.arrange_by_name))
+        list.add(context.getString(R.string.arrange_by_time))
+        list.add(context.getString(R.string.arrange_by_size))
         return list
     }
 

@@ -330,6 +330,15 @@ data class ChangeRemarksReq(var UserId :String, var FriendId : String, var Remar
 data class QueryFriendReq(var UserId :String, var FriendId : String, var Action : String = "QueryFriend")
 
 /**
+ * 42.	拉取文件列表
+ * （1）请求（APP-->Router）
+ */
+data class PullFileListReq(var UserId: String, var MsgStartId: Int, var MsgNum: Int, var Category : Int, var FileType: Int, var Action: String = "PullFileList")
+
+//data class PullFileListRsp(var )
+
+
+/**
  * 43.	管理员登录
  * (2)	响应（APP->Router）
  */

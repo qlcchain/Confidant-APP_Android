@@ -199,7 +199,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     tvNext.text = resources.getString(R.string.next)
                     var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.no)
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
-                    tvNext.setCompoundDrawables(drawable,null,null,null)
+                    tvNext.setCompoundDrawables(null,null,null,null)
                 }
             }
 
@@ -431,7 +431,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         }
         EventBus.getDefault().register(this)
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
-        tvNext.setOnClickListener {
+        llNext.setOnClickListener {
             if (wowo.currentItem == 2) {
                 /*if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                  {
