@@ -109,9 +109,9 @@ extern "C" {
  *
  * \code
  * size_t length = tox_self_get_name_size(tox);
- * uint8_t *path = malloc(length);
- * if (!path) abort();
- * tox_self_get_name(tox, path);
+ * uint8_t *name = malloc(length);
+ * if (!name) abort();
+ * tox_self_get_name(tox, name);
  * \endcode
  *
  * If any other thread calls tox_self_set_name while this thread is allocating
@@ -270,7 +270,7 @@ bool tox_version_is_compatible(uint32_t major, uint32_t minor, uint32_t patch);
 #define TOX_FILE_ID_LENGTH             32
 
 /**
- * Maximum file path length for file transfers.
+ * Maximum file name length for file transfers.
  */
 #define TOX_MAX_FILENAME_LENGTH        255
 
@@ -418,9 +418,9 @@ struct Tox_Options {
 
 
     /**
-     * The IP address or DNS path of the proxy to be used.
+     * The IP address or DNS name of the proxy to be used.
      *
-     * If used, this must be non-NULL and be a valid DNS path. The path must not
+     * If used, this must be non-NULL and be a valid DNS name. The name must not
      * exceed 255 characters, and be in a NUL-terminated C string format
      * (255 chars + 1 NUL byte).
      *
@@ -875,11 +875,11 @@ typedef enum TOX_ERR_SET_INFO {
 /**
  * Set the nickname for the Tox client.
  *
- * Nickname length cannot exceed TOX_MAX_NAME_LENGTH. If length is 0, the path
+ * Nickname length cannot exceed TOX_MAX_NAME_LENGTH. If length is 0, the name
  * parameter is ignored (it can be NULL), and the nickname is set back to empty.
  *
- * @param path A byte array containing the new nickname.
- * @param length The size of the path byte array.
+ * @param name A byte array containing the new nickname.
+ * @param length The size of the name byte array.
  *
  * @return true on success.
  */
@@ -888,7 +888,7 @@ bool tox_self_set_name(Tox *tox, const uint8_t *name, size_t length, TOX_ERR_SET
 /**
  * Return the length of the current nickname as passed to tox_self_set_name.
  *
- * If no nickname was set before calling this function, the path is empty,
+ * If no nickname was set before calling this function, the name is empty,
  * and this function returns 0.
  *
  * @see threading for concurrency implications.
@@ -898,13 +898,13 @@ size_t tox_self_get_name_size(const Tox *tox);
 /**
  * Write the nickname set by tox_self_set_name to a byte array.
  *
- * If no nickname was set before calling this function, the path is empty,
+ * If no nickname was set before calling this function, the name is empty,
  * and this function has no effect.
  *
  * Call tox_self_get_name_size to find out how much memory to allocate for
  * the result.
  *
- * @param path A valid memory location large enough to hold the nickname.
+ * @param name A valid memory location large enough to hold the nickname.
  *   If this parameter is NULL, the function has no effect.
  */
 void tox_self_get_name(const Tox *tox, uint8_t *name);
@@ -1222,7 +1222,7 @@ typedef enum TOX_ERR_FRIEND_QUERY {
     TOX_ERR_FRIEND_QUERY_OK,
 
     /**
-     * The pointer parameter for storing the query result (path, message) was
+     * The pointer parameter for storing the query result (name, message) was
      * NULL. Unlike the `_self_` variants of these functions, which have no effect
      * when a parameter is NULL, these functions return an error in that case.
      */
@@ -1237,7 +1237,7 @@ typedef enum TOX_ERR_FRIEND_QUERY {
 
 
 /**
- * Return the length of the friend's path. If the friend number is invalid, the
+ * Return the length of the friend's name. If the friend number is invalid, the
  * return value is unspecified.
  *
  * The return value is equal to the `length` argument received by the last
@@ -1246,25 +1246,25 @@ typedef enum TOX_ERR_FRIEND_QUERY {
 size_t tox_friend_get_name_size(const Tox *tox, uint32_t friend_number, TOX_ERR_FRIEND_QUERY *error);
 
 /**
- * Write the path of the friend designated by the given friend number to a byte
+ * Write the name of the friend designated by the given friend number to a byte
  * array.
  *
- * Call tox_friend_get_name_size to determine the allocation size for the `path`
+ * Call tox_friend_get_name_size to determine the allocation size for the `name`
  * parameter.
  *
- * The data written to `path` is equal to the data received by the last
+ * The data written to `name` is equal to the data received by the last
  * `friend_name` callback.
  *
- * @param path A valid memory region large enough to store the friend's path.
+ * @param name A valid memory region large enough to store the friend's name.
  *
  * @return true on success.
  */
 bool tox_friend_get_name(const Tox *tox, uint32_t friend_number, uint8_t *name, TOX_ERR_FRIEND_QUERY *error);
 
 /**
- * @param friend_number The friend number of the friend whose path changed.
- * @param path A byte array containing the same data as
- *   tox_friend_get_name would write to its `path` parameter.
+ * @param friend_number The friend number of the friend whose name changed.
+ * @param name A byte array containing the same data as
+ *   tox_friend_get_name would write to its `name` parameter.
  * @param length A value equal to the return value of
  *   tox_friend_get_name_size.
  */
@@ -1274,7 +1274,7 @@ typedef void tox_friend_name_cb(Tox *tox, uint32_t friend_number, const uint8_t 
 /**
  * Set the callback for the `friend_name` event. Pass NULL to unset.
  *
- * This event is triggered when a friend changes their path.
+ * This event is triggered when a friend changes their name.
  */
 void tox_callback_friend_name(Tox *tox, tox_friend_name_cb *callback, void *user_data);
 
@@ -1604,7 +1604,7 @@ bool tox_hash(uint8_t *hash, const uint8_t *data, size_t length);
 enum TOX_FILE_KIND {
 
     /**
-     * Arbitrary file data. Clients can choose to handle it based on the file path
+     * Arbitrary file data. Clients can choose to handle it based on the file name
      * or magic or any other way they choose.
      */
     TOX_FILE_KIND_DATA,
@@ -1880,7 +1880,7 @@ typedef enum TOX_ERR_FILE_SEND {
  * Send a file transmission request.
  *
  * Maximum filename length is TOX_MAX_FILENAME_LENGTH bytes. The filename
- * should generally just be a file path, not a path with directory names.
+ * should generally just be a file name, not a path with directory names.
  *
  * If a non-UINT64_MAX file size is provided, it can be used by both sides to
  * determine the sending progress. File size can be set to UINT64_MAX for streaming
@@ -1926,8 +1926,8 @@ typedef enum TOX_ERR_FILE_SEND {
  * @param file_id A file identifier of length TOX_FILE_ID_LENGTH that can be used to
  *   uniquely identify file transfers across core restarts. If NULL, a random one will
  *   be generated by core. It can then be obtained by using tox_file_get_file_id().
- * @param filename Name of the file. Does not need to be the actual path. This
- *   path will be sent along with the file send request.
+ * @param filename Name of the file. Does not need to be the actual name. This
+ *   name will be sent along with the file send request.
  * @param filename_length Size in bytes of the filename.
  *
  * @return A file number used as an identifier in subsequent callbacks. This
@@ -2066,8 +2066,8 @@ void tox_callback_file_chunk_request(Tox *tox, tox_file_chunk_request_cb *callba
  * @param kind The meaning of the file to be sent.
  * @param file_size Size in bytes of the file the client wants to send,
  *   UINT64_MAX if unknown or streaming.
- * @param filename Name of the file. Does not need to be the actual path. This
- *   path will be sent along with the file send request.
+ * @param filename Name of the file. Does not need to be the actual name. This
+ *   name will be sent along with the file send request.
  * @param filename_length Size in bytes of the filename.
  */
 typedef void tox_file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32_t kind, uint64_t file_size,

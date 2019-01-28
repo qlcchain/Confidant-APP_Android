@@ -68,7 +68,7 @@ typedef struct cJSON
     /* The item's number, if type==cJSON_Number */
     double valuedouble;
 
-    /* The item's path string, if this item is the child of, or is in the list of subitems of an object. */
+    /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
     char *string;
 } cJSON;
 

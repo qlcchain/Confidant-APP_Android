@@ -31,24 +31,13 @@ import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
-import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage;
-import com.stratagile.pnrouter.utils.AESCipher;
-import com.stratagile.pnrouter.utils.Base58;
-import com.stratagile.pnrouter.utils.CountDownTimerUtils;
-import com.stratagile.pnrouter.utils.FileUtil;
-import com.stratagile.pnrouter.utils.FormatTransfer;
-import com.stratagile.pnrouter.utils.LibsodiumUtil;
-import com.stratagile.pnrouter.utils.RxEncodeTool;
-import com.stratagile.pnrouter.utils.RxEncryptTool;
-import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.entity.events.FileStatus;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.Arrays;
@@ -63,7 +52,7 @@ import im.tox.tox4j.core.enums.ToxMessageType;
 
 
 public class FileMangerUtil {
-    protected static final String TAG = "EaseChatFragment";
+    protected static final String TAG = "FileMangerUtil";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
@@ -118,6 +107,9 @@ public class FileMangerUtil {
     static final int ITEM_VIDEOCALL = 7;
     static final int ITEM_PRIVATEFILE = 8;
 
+
+
+
     protected static final int sendFileSizeMax = 1024 * 1024 * 2;
     protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file };
     protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
@@ -137,9 +129,9 @@ public class FileMangerUtil {
     private int MsgStartId = 0;
     private EMMessage currentSendMsg;
 
+    private static String fromUserId = "";
     private UserEntity toChatUser;
 
-    private static HashMap<String, EMMessage> sendMsgMap = new HashMap<>();
     private static HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private static HashMap<String, String> sendFilePathMap = new HashMap<>();
     private static HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
@@ -148,8 +140,8 @@ public class FileMangerUtil {
     private static HashMap<String, String> sendFileKeyByteMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
-    private static HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private static HashMap<String, String> sendFileNameMap = new HashMap<>();
+    private static HashMap<String, Long> sendFileSize = new HashMap<>();
     private static HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
     private static HashMap<String, String> sendMsgIdMap = new HashMap<>();
@@ -159,7 +151,8 @@ public class FileMangerUtil {
 
     public static void  init()
     {
-        //EventBus.getDefault().register(this);
+        String fromUserId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        fromUserId = fromUserId;
     }
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -181,7 +174,6 @@ public class FileMangerUtil {
 
                         try
                         {
-                            EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
                             String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
                             String fileKey = sendFileKeyByteMap.get(fileTransformEntity.getToId());
@@ -203,9 +195,9 @@ public class FileMangerUtil {
                                     faBegin = System.currentTimeMillis();
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
-                                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
+                                        sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
                                     }else{
-                                        KLog.i("websocket文件发送前取消！");
+                                        KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                     }
@@ -272,6 +264,8 @@ public class FileMangerUtil {
                 int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
                 byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
                 int leftSize =fileBuffer.length - lastSendSize;
+                String filePath = sendFilePathMap.get(FileIdResult+"");
+                long fileSize  = sendFileSize.get(FileIdResult+"");
                 String msgId = sendMsgIdMap.get(FileIdResult+"");
                 if(leftSize >0)
                 {
@@ -289,8 +283,9 @@ public class FileMangerUtil {
                                 if(!deleteFileMap.get(msgId))
                                 {
                                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
+                                    EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize - leftSize,10));
                                 }else{
-                                    KLog.i("websocket文件发送中取消！");
+                                    KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                                 }
@@ -302,15 +297,9 @@ public class FileMangerUtil {
                     }).start();
 
                 }else{
-                    if(!deleteFileMap.get(msgId))
-                    {
-
-                        KLog.i("websocket文件发送成功！");
-                    }else{
-                        DelMsgReq msgData = new DelMsgReq(FromIdResult, ToIdResult,LogIdIdResult ,"DelMsg");
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
-                        KLog.i("websocket文件发送成功后取消！");
-                    }
+                    EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
+                    KLog.i("websocket文件上传成功！");
+                    sendFilePathMap.remove(FileIdResult+"");
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -436,7 +425,7 @@ public class FileMangerUtil {
 
             }else{
                 EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(toxFileData.getFileId()+"");
-                KLog.i("tox文件发送成功后取消！");
+                KLog.i("tox文件上传成功后取消！");
             }
         }
     }
@@ -463,10 +452,9 @@ public class FileMangerUtil {
 
 
 
-    public static void sendVoiceMessage(String filePath, int length,String userId) {
-        if(friendStatus != 0)
+    public static void sendVoiceFile(String filePath, int length) {
+        if(sendFilePathMap.get(filePath) != null)
         {
-            //Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
         try {
@@ -480,6 +468,7 @@ public class FileMangerUtil {
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     sendMsgLocalMap.put(uuid,false);
                     sendFilePathMap.put(uuid,filePath);
+                    sendFileSize.put(uuid,file.length());
                     deleteFileMap.put(uuid,false);
                     //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
@@ -519,10 +508,11 @@ public class FileMangerUtil {
                         int uuid = (int)(System.currentTimeMillis()/1000);
                         sendMsgLocalMap.put(uuid+"",false);
                         sendFilePathMap.put(uuid+"",base58files_dir);
+                        sendFileSize.put(uuid+"",file.length());
                         deleteFileMap.put(uuid+"",false);
                         //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                         ToxFileData toxFileData = new ToxFileData();
-                        toxFileData.setFromId(userId);
+                        toxFileData.setFromId(fromUserId);
                         toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                         File fileMi = new File(base58files_dir);
                         long fileSize = fileMi.length();
@@ -572,7 +562,11 @@ public class FileMangerUtil {
 
     }
 
-    public static void sendImageFile(String imagePath,boolean isCompress,String userId) {
+    public static void sendImageFile(String imagePath,boolean isCompress) {
+        if(sendFilePathMap.get(imagePath) != null)
+        {
+            return;
+        }
         new Thread(new Runnable(){
             public void run(){
 
@@ -589,6 +583,7 @@ public class FileMangerUtil {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
+                            sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
                             //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
@@ -617,7 +612,7 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            String base58files_dir = imagePath;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey,isCompress);
                             if(code == 1)
@@ -625,10 +620,11 @@ public class FileMangerUtil {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
+                                sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
                                 //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
-                                toxFileData.setFromId(userId);
+                                toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -689,7 +685,7 @@ public class FileMangerUtil {
         }).start();
 
     }
-    protected void sendCameraImageMessage(String imagePath,String userId) {
+    protected void sendCameraImageMessage(String imagePath) {
         if(friendStatus != 0)
         {
             //Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
@@ -711,6 +707,7 @@ public class FileMangerUtil {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,imagePath);
+                            sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
                             //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
@@ -741,7 +738,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            String base58files_dir = imagePath;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,fileKey);
                             if(code == 1)
@@ -749,10 +746,11 @@ public class FileMangerUtil {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
+                                sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
                                 //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
-                                toxFileData.setFromId(userId);
+                                toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -809,10 +807,9 @@ public class FileMangerUtil {
         }).start();
 
     }
-    public static void sendVideoMessage(String videoPath,boolean isLocal,String userId) {
-        if(friendStatus != 0)
+    public static void sendVideoFile(String videoPath,boolean isLocal) {
+        if(sendFilePathMap.get(videoPath) != null)
         {
-            //Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
         new Thread(new Runnable(){
@@ -836,6 +833,7 @@ public class FileMangerUtil {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
+                            sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
                             //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
@@ -867,7 +865,7 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(videoFileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            String base58files_dir = videoPath;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey);
                             if(code == 1)
@@ -875,10 +873,11 @@ public class FileMangerUtil {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
+                                sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
                                 //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
-                                toxFileData.setFromId(userId);
+                                toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -937,12 +936,9 @@ public class FileMangerUtil {
 
     }
 
-    public static void sendFileMessage(String filePath,String userId) {
-       /* EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
-        sendMessageTo(message);*/
-        if(friendStatus != 0)
+    public static void sendOtherFile(String filePath) {
+        if(sendFilePathMap.get(filePath) != null)
         {
-            //Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
         new Thread(new Runnable(){
@@ -963,6 +959,7 @@ public class FileMangerUtil {
 
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
+                            sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
                             //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
@@ -993,7 +990,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            String base58files_dir = filePath;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
                             if(code == 1)
@@ -1001,10 +998,11 @@ public class FileMangerUtil {
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
+                                sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
                                 //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
-                                toxFileData.setFromId(userId);
+                                toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -1074,7 +1072,7 @@ public class FileMangerUtil {
                 case 0x55:
                     if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
                     {
-                        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                        String fromUserId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         Bundle data = msg.getData();
                         String msgId = data.getInt("msgID")+"";
                         Message message = receiveFileDataMap.get(msgId);
@@ -1123,7 +1121,7 @@ public class FileMangerUtil {
                                 {
                                     if(message.getSender() == 0)
                                     {
-                                        messageData.setFrom(userId);
+                                        messageData.setFrom(fromUserId);
                                         messageData.setTo(toChatUserId);
                                         switch (message.getStatus())
                                         {
@@ -1148,11 +1146,11 @@ public class FileMangerUtil {
                                         messageData.setDirection(EMMessage.Direct.SEND );
                                     }else {
                                         messageData.setFrom(toChatUserId);
-                                        messageData.setTo(userId);
+                                        messageData.setTo(fromUserId);
                                         messageData.setDirection(EMMessage.Direct.RECEIVE );
                                     }
                                 }else{
-                                    if(message.getFrom()!= null && message.getFrom().equals(userId))
+                                    if(message.getFrom()!= null && message.getFrom().equals(fromUserId))
                                     {
                                         messageData.setDirection(EMMessage.Direct.SEND );
                                     }else {

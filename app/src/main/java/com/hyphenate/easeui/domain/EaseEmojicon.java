@@ -49,7 +49,7 @@ public class EaseEmojicon {
     private String emojiText;
     
     /**
-     * path of emoji icon
+     * name of emoji icon
      */
     private String name;
     
@@ -123,7 +123,7 @@ public class EaseEmojicon {
     }
 
     /**
-     * get path of emoji icon
+     * get name of emoji icon
      * @return
      */
     public String getName() {
@@ -131,7 +131,7 @@ public class EaseEmojicon {
     }
     
     /**
-     * set path of emoji icon
+     * set name of emoji icon
      * @param name
      */
     public void setName(String name) {

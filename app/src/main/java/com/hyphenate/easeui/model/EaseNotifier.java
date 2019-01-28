@@ -229,7 +229,7 @@ public class EaseNotifier {
     /**
      * Generate a base Notification#Builder, contains:
      * 1.Use the app icon as default icon
-     * 2.Use the app path as default title
+     * 2.Use the app name as default title
      * 3.This notification would be sent immediately
      * 4.Can be cancelled by user
      * 5.Would launch the default activity when be clicked

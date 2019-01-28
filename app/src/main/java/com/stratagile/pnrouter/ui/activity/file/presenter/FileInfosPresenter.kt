@@ -105,7 +105,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: File
         //                            mView.showNoFileInfos();
         //                        } else {
         //                            if (fileInfos.size() == 1) {
-        //                                if (fileInfos.get(0).getPath().equals("")) {
+        //                                if (fileInfos.get(0).getName().equals("")) {
         //                                    mView.showNoFileInfos();
         //                                    return;
         //                                }

@@ -40,7 +40,7 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
      * when the group owner receives a group request from user
      *
      * @param groupId		group id
-     * @param groupName		group's path
+     * @param groupName		group's name
      * @param applicant		The applicant want to join the group
      * @param reason		Literal message coming with the application
      */
@@ -58,7 +58,7 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
      * when the group invitation is accepted
      *
      * @param groupId 		group id
-     * @param groupName 	group's path
+     * @param groupName 	group's name
      * @param accepter 		who approve the application
      */
     public void onRequestToJoinAccepted(String groupId, String groupName, String accepter) {}
@@ -75,7 +75,7 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
      * when the group invitation is declined
      *
      * @param groupId 		group id
-     * @param groupName 	group path
+     * @param groupName 	group name
      * @param decliner 		decliner's username
      * @param reason 		reason of declining
      */
@@ -139,7 +139,7 @@ public abstract class EaseGroupRemoveListener implements EMGroupChangeListener{
      * SDK will delete the group from local DB and local cache, then notify user that the group is destroyed
      *
      * @param groupId		group id
-     * @param groupName 	group path
+     * @param groupName 	group name
      */
     public void onGroupDestroyed(String groupId, String groupName) {}
 

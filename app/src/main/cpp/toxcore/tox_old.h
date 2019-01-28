@@ -43,9 +43,9 @@ void tox_callback_group_action(Tox *tox, void (*function)(Tox *tox, int, int, co
 void tox_callback_group_title(Tox *tox, void (*function)(Tox *tox, int, int, const uint8_t *, uint8_t,
                               void *), void *userdata);
 
-/* Set callback function for peer path list changes.
+/* Set callback function for peer name list changes.
  *
- * It gets called every time the path list changes(new peer/path, deleted peer)
+ * It gets called every time the name list changes(new peer/name, deleted peer)
  *  Function(Tox *tox, int groupnumber, int peernumber, TOX_CHAT_CHANGE change, void *userdata)
  */
 typedef enum {
@@ -71,10 +71,10 @@ int tox_add_groupchat(Tox *tox);
  */
 int tox_del_groupchat(Tox *tox, int groupnumber);
 
-/* Copy the path of peernumber who is in groupnumber to path.
- * path must be at least TOX_MAX_NAME_LENGTH long.
+/* Copy the name of peernumber who is in groupnumber to name.
+ * name must be at least TOX_MAX_NAME_LENGTH long.
  *
- * return length of path if success
+ * return length of name if success
  * return -1 if failure
  */
 int tox_group_peername(const Tox *tox, int groupnumber, int peernumber, uint8_t *name);
@@ -141,7 +141,7 @@ int tox_group_number_peers(const Tox *tox, int groupnumber);
 
 /* List all the peers in the group chat.
  *
- * Copies the names of the peers to the path[length][TOX_MAX_NAME_LENGTH] array.
+ * Copies the names of the peers to the name[length][TOX_MAX_NAME_LENGTH] array.
  *
  * Copies the lengths of the names to lengths[length]
  *

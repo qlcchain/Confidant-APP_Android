@@ -74,7 +74,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			String fileName = new File(mUrl.getFile()).getName();
 			String FileNameOld = new String(Base58.decode(fileName));
 			mFile = new File(out, FileNameOld);
-			Log.d(TAG, "out="+out+", path="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
+			Log.d(TAG, "out="+out+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -170,7 +170,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 		    int length = conn.getContentLength();
 			/*if(mFile.exists()&&length == mFile.length()){
-				Log.d(TAG, "file "+mFile.getPath()+" already exits!!");
+				Log.d(TAG, "file "+mFile.getName()+" already exits!!");
 				return 0l;
 			}*/
 

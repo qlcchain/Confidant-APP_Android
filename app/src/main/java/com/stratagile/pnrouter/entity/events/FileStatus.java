@@ -1,20 +1,31 @@
 package com.stratagile.pnrouter.entity.events;
 
 public class FileStatus {
-    public static int currentStatus;
-    //连接状态，0已经连接，1正在连接，2未连接,3网络错误
-    private int status;
 
-    public FileStatus(int status) {
-        this.status = status;
-        currentStatus = status;
+    String filePath;
+    long totalSize;
+    long sendSize;
+    int sendSpeed;
+
+    public FileStatus(String filePath,long totalSize,long sendSize,int sendSpeed) {
+        this.filePath = filePath;
+        this.totalSize = totalSize;
+        this.sendSize = sendSize;
+        this.sendSpeed = sendSpeed;
+    }
+    public String getFilePath() {
+        return filePath;
     }
 
-    public int getStatus() {
-        return status;
+    public long getTotalSize() {
+        return totalSize;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public long getSendSize() {
+        return sendSize;
+    }
+
+    public int getSendSpeed() {
+        return sendSpeed;
     }
 }

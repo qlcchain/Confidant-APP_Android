@@ -180,7 +180,7 @@ typedef struct {
     uint8_t info[MAX_FRIEND_REQUEST_DATA_SIZE]; // the data that is sent during the friend requests we do.
     uint8_t name[MAX_NAME_LENGTH];
     uint16_t name_length;
-    uint8_t name_sent; // 0 if we didn't send our path to this friend 1 if we have.
+    uint8_t name_sent; // 0 if we didn't send our name to this friend 1 if we have.
     uint8_t statusmessage[MAX_STATUSMESSAGE_LENGTH];
     uint16_t statusmessage_length;
     uint8_t statusmessage_sent;
@@ -379,10 +379,10 @@ int m_send_message_generic(Messenger *m, int32_t friendnumber, uint8_t type, con
                            uint32_t *message_id);
 
 
-/* Set the path and name_length of a friend.
- * path must be a string of maximum MAX_NAME_LENGTH length.
+/* Set the name and name_length of a friend.
+ * name must be a string of maximum MAX_NAME_LENGTH length.
  * length must be at least 1 byte.
- * length is the length of path with the NULL terminator.
+ * length is the length of name with the NULL terminator.
  *
  *  return 0 if success.
  *  return -1 if failure.
@@ -390,9 +390,9 @@ int m_send_message_generic(Messenger *m, int32_t friendnumber, uint8_t type, con
 int setfriendname(Messenger *m, int32_t friendnumber, const uint8_t *name, uint16_t length);
 
 /* Set our nickname.
- * path must be a string of maximum MAX_NAME_LENGTH length.
+ * name must be a string of maximum MAX_NAME_LENGTH length.
  * length must be at least 1 byte.
- * length is the length of path with the NULL terminator.
+ * length is the length of name with the NULL terminator.
  *
  *  return 0 if success.
  *  return -1 if failure.
@@ -402,22 +402,22 @@ int setname(Messenger *m, const uint8_t *name, uint16_t length);
 /*
  * Get your nickname.
  * m - The messenger context to use.
- * path needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
+ * name needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
  *
- *  return length of the path.
+ *  return length of the name.
  *  return 0 on error.
  */
 uint16_t getself_name(const Messenger *m, uint8_t *name);
 
-/* Get path of friendnumber and put it in path.
- * path needs to be a valid memory location with a size of at least MAX_NAME_LENGTH (128) bytes.
+/* Get name of friendnumber and put it in name.
+ * name needs to be a valid memory location with a size of at least MAX_NAME_LENGTH (128) bytes.
  *
- *  return length of path if success.
+ *  return length of name if success.
  *  return -1 if failure.
  */
 int getname(const Messenger *m, int32_t friendnumber, uint8_t *name);
 
-/*  return the length of path, including null on success.
+/*  return the length of name, including null on success.
  *  return -1 on failure.
  */
 int m_get_name_size(const Messenger *m, int32_t friendnumber);
@@ -489,7 +489,7 @@ void m_callback_friendrequest(Messenger *m, void (*function)(Messenger *m, const
 void m_callback_friendmessage(Messenger *m, void (*function)(Messenger *m, uint32_t, unsigned int, const uint8_t *,
                               size_t, void *), void *userdata);
 
-/* Set the callback for path changes.
+/* Set the callback for name changes.
  *  Function(uint32_t friendnumber, uint8_t *newname, size_t length)
  *  You are not responsible for freeing newname.
  */

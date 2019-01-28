@@ -148,7 +148,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
 
             override fun onBigExpressionClicked(emojicon: EaseEmojicon) {
                 KLog.i("onBigExpressionClicked")
-//                sendBigExpressionMessage(emojicon.path, emojicon.identityCode)
+//                sendBigExpressionMessage(emojicon.name, emojicon.identityCode)
             }
         })
 

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.google.gson.Gson
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
@@ -16,7 +15,6 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -33,7 +31,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.ArrayList
 
 import javax.inject.Inject;
 
@@ -53,20 +50,27 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             0-> {
                 var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
-                var uploadFile = UpLoadFile(localMedia!!.path, true, false, true)
-                val myRouter = MyFile()
-                myRouter.setType(0)
-                myRouter.setUpLoadFile(uploadFile)
-                LocalFileUtils.insertLocalAssets(myRouter)
-                var abc = LocalFileUtils.localAssetsList
+                var file = File(localMedia!!.path)
+                if(file.exists())
+                {
+                    var fileSize = file.length()
+                    var uploadFile = UpLoadFile(localMedia!!.path, false, false, false,0,fileSize,0)
+                    val myRouter = MyFile()
+                    myRouter.setType(0)
+                    myRouter.setUpLoadFile(uploadFile)
+                    LocalFileUtils.insertLocalAssets(myRouter)
 
-                val userId = SpUtil.getString(this, ConstantValue.userId, "")
-                FileMangerUtil.sendImageFile(localMedia!!.path,false,userId)
+
+                    var abc = LocalFileUtils.localAssetsList
+
+
+                    FileMangerUtil.sendImageFile(localMedia!!.path,false)
+                }
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
-                    fileTaskLisytAdapter = FileTaskLisytAdapter(list)
+                    fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
                     reSetHeadTitle()
-                    recyclerView.adapter = fileTaskLisytAdapter
+                    recyclerView.adapter = fileGoingTaskLisytAdapter
                 }
             }
             1-> {
@@ -86,7 +90,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     @Inject
     internal lateinit var mPresenter: FileTaskListPresenter
 
-    lateinit var fileTaskLisytAdapter: FileTaskLisytAdapter
+    lateinit var fileGoingTaskLisytAdapter: FileTaskLisytAdapter
+
+    lateinit var fileCompleteTaskLisytAdapter: FileTaskLisytAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,17 +105,19 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     lateinit var ongoingTaskHead : TaskFile
     lateinit var completeTaskHead : TaskFile
     var localMedia:LocalMedia? = null
-    var list = mutableListOf<TaskFile>()
+    var listGoing = mutableListOf<TaskFile>()
+    var listComplete = mutableListOf<TaskFile>()
 
     override fun initData() {
         EventBus.getDefault().register(this)
         var intent = Intent(this, FileDownloadUploadService::class.java)
         startService(intent)
         title.text = "Task List"
-        list = mutableListOf<TaskFile>()
+        listGoing = mutableListOf<TaskFile>()
+        listComplete  = mutableListOf<TaskFile>()
         ongoingTaskHead = TaskFile(true, "111")
         completeTaskHead = TaskFile(true, "222")
-        list.add(ongoingTaskHead)
+
         AppConfig.instance.messageReceiver?.fileTaskBack = this
         var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
         if(listData != null && listData.size > 0)
@@ -160,38 +168,36 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
 
         }
-       /* list.add(TaskFile(UpLoadFile("ccc", true, false, true)))
-        list.add(TaskFile(UpLoadFile("ccc", true, false, false)))
-        list.add(TaskFile(UpLoadFile("ccc", false, false, true)))
-        list.add(TaskFile(UpLoadFile("ccc", false, false, false)))*/
-        list.add(completeTaskHead)
-        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        fileTaskLisytAdapter = FileTaskLisytAdapter(list)
-        //fileTaskLisytAdapter.notifyItemChanged()
+        listGoing.add(ongoingTaskHead)
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
+        fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
+        //fileGoingTaskLisytAdapter.notifyItemChanged()
+        recyclerView.adapter = fileGoingTaskLisytAdapter
+
+        listComplete.add(completeTaskHead)
+        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+
+        fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
+        //fileGoingTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
-        recyclerView.adapter = fileTaskLisytAdapter
+        recyclerView2.adapter = fileCompleteTaskLisytAdapter
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
 
+
     }
     fun reSetHeadTitle() {
-        var ongoing = 0
-        var complete = 0
-        fileTaskLisytAdapter.data.forEach {
-            if (!it.isHeader) {
-                if (it.t.isComplete) {
-                    complete++
-                } else {
-                    ongoing++
-                }
-            }
-        }
+        var ongoing = fileGoingTaskLisytAdapter.data.size
+        var complete = fileCompleteTaskLisytAdapter.data.size
+
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
         completeTaskHead.header = "Completed (" + complete + ")"
-        fileTaskLisytAdapter.notifyDataSetChanged()
+        fileGoingTaskLisytAdapter.notifyDataSetChanged()
     }
 
     override fun setupActivityComponent() {

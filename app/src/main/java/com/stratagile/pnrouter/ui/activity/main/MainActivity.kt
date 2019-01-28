@@ -150,7 +150,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /* var ipAddress = WiFiUtil.getGateWay(AppConfig.instance);
              var filledUri = "https://" + ipAddress + ConstantValue.port +jPushFileMsgRsp.params.filePath
              var files_dir = this.filesDir.absolutePath + "/image/"
-             FileDownloadUtils.doUpLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.deleteMsgId, handler)*/
+             FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this, jPushFileMsgRsp.params.deleteMsgId, handler)*/
         }
     }
 
@@ -749,7 +749,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             PictureSelector.create(this@MainActivity)
                                     .openGallery(PictureMimeType.ofImage())
 //                                    .theme()
-                                    .maxSelectNum(1)
+                                    .maxSelectNum(100)
                                     .minSelectNum(1)
                                     .imageSpanCount(3)
                                     .selectionMode(PictureConfig.SINGLE)
