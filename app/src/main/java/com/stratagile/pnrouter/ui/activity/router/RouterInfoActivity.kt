@@ -83,8 +83,10 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
         {
             llRouterManagement.visibility =  View.VISIBLE
+            llDiskManagement.visibility = View.VISIBLE
         }else{
-            llRouterManagement.visibility =  View.GONE
+            llRouterManagement.visibility =  View.VISIBLE
+            llDiskManagement.visibility =  View.VISIBLE
         }
     }
     override fun initData() {
@@ -114,6 +116,9 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         }
         tvSwitchRouter.setOnClickListener {
 
+        }
+        llDiskManagement.setOnClickListener {
+            startActivity(Intent(this, DiskManagementActivity::class.java))
         }
         llRouterAlias.setOnClickListener {
             var intent = Intent(this, EditNickNameActivity::class.java)

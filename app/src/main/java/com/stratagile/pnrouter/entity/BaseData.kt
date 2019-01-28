@@ -358,3 +358,9 @@ data class ResetRouterKeyReq(var RouterId :String, var OldKey : String,var NewKe
  * (2)	响应（APP->Router）
  */
 data class ResetUserIdcodeReq(var RouterId :String, var UserSn : String,var OldCode : String,var NewCode : String, var Action : String = "ResetUserIdcode")
+
+/**
+ * 43.	上传文件请求
+ * (2)	响应（APP->Router）
+ */
+data class UploadFileReq(var UserId :String, var FileName : String,var FileSize : Long,var FileType : Int, var Action : String = "UploadFileReq")

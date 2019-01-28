@@ -153,9 +153,9 @@ public class AVLoadingIndicatorView extends View {
     /**
      * You should pay attention to pass this parameter with two way:
      * for example:
-     * 1. Only class Name,like "SimpleIndicator".(This way would use default package name with
+     * 1. Only class Name,like "SimpleIndicator".(This way would use default package path with
      * "com.wang.avi.indicators")
-     * 2. Class name with full package,like "com.my.android.indicators.SimpleIndicator".
+     * 2. Class path with full package,like "com.my.android.indicators.SimpleIndicator".
      * @param indicatorName the class must be extend Indicator .
      */
     public void setIndicator(String indicatorName){
@@ -174,7 +174,7 @@ public class AVLoadingIndicatorView extends View {
             Indicator indicator = (Indicator) drawableClass.newInstance();
             setIndicator(indicator);
         } catch (ClassNotFoundException e) {
-            Log.e(TAG,"Didn't find your class , check the name again !");
+            Log.e(TAG,"Didn't find your class , check the path again !");
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="@dimen/x271"
+            android:src="@mipmap/disk_a"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/x56"
+            android:layout_height="@dimen/x259" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/x8"
+            android:layout_gravity="center_horizontal"
+            android:text="storage: 2555G"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Used Sapce：886.2 G / 2055 G （43.1%）"
+            android:layout_marginTop="@dimen/x36"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_marginTop="@dimen/x6"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llRouterAlias"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_height="@dimen/x108">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x31"
+                android:textColor="@color/mainColor"
+                android:text="Configure the disk"
+                />
+            <View
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/tvRouterAlias"
+                android:layout_width="wrap_content"
+                android:text="BASIC"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_width="@dimen/x35"
+                android:src="@mipmap/icon_enter"
+                android:layout_marginRight="@dimen/x30"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_height="@dimen/x35" />
+        </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/disk_a"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginRight="@dimen/x31"
+            android:background="@drawable/disk_normal_bg"
+            android:layout_marginTop="@dimen/x31"
+            android:layout_height="@dimen/x230">
+            <TextView
+                android:layout_width="@dimen/x69"
+                android:layout_centerVertical="true"
+                android:background="#A0CCF9"
+                android:layout_marginLeft="@dimen/x2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="A"
+                android:layout_height="@dimen/x226" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/disk_b"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginRight="@dimen/x31"
+            android:background="@drawable/disk_notconfigured_bg"
+            android:layout_marginTop="@dimen/x31"
+            android:layout_height="@dimen/x230">
+            <TextView
+                android:layout_width="@dimen/x69"
+                android:layout_centerVertical="true"
+                android:background="#BFBFBF"
+                android:layout_marginLeft="@dimen/x2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="B"
+                android:layout_height="@dimen/x226" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/disk_c"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginBottom="@dimen/x77"
+            android:layout_marginRight="@dimen/x31"
+            android:background="@drawable/disk_notconfigured_bg"
+            android:layout_marginTop="@dimen/x31"
+            android:layout_height="@dimen/x230">
+            <TextView
+                android:layout_width="@dimen/x69"
+                android:layout_centerVertical="true"
+                android:background="#BFBFBF"
+                android:layout_marginLeft="@dimen/x2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="B"
+                android:layout_height="@dimen/x226" />
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

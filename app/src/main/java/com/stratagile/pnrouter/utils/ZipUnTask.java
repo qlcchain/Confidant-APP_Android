@@ -95,7 +95,7 @@ public class ZipUnTask extends AsyncTask<Void, Integer, Long> {
 			if(mDialog!=null){
 				mDialog.setTitle("商品初始化……");
 				mDialog.setMessage("");
-				//mDialog.setMessage(mInput.getName());
+				//mDialog.setMessage(mInput.getPath());
 				mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				mDialog.setOnCancelListener(new OnCancelListener() {
 

@@ -153,7 +153,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             holder.motioned.setVisibility(View.GONE);
         }else {
 //            EaseUserUtils.setUserAvatar(getContext(), conversationId, holder.avatar);
-            //EaseUserUtils.setUserNick(username, holder.name);
+            //EaseUserUtils.setUserNick(username, holder.path);
             holder.avatar.setText(usernameSouce);
             holder.name.setText(usernameSouce);
             holder.motioned.setVisibility(View.GONE);

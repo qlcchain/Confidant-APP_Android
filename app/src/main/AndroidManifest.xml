@@ -181,6 +181,9 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.activity.file.UploadFileActivity" />
         <activity android:name=".ui.activity.file.FileTaskListActivity" />
+        <activity android:name=".ui.activity.router.DiskManagementActivity" />
+        <activity android:name=".ui.activity.router.DiskConfigureActivity" />
+        <activity android:name=".ui.activity.router.DiskInformationActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"
@@ -241,7 +244,7 @@
             android:exported="false"
             android:grantUriPermissions="true">
             <!--<meta-data-->
-            <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+            <!--android:path="android.support.FILE_PROVIDER_PATHS"-->
             <!--android:resource="@xml/file_path" />-->
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
@@ -265,7 +268,7 @@
         <service android:enabled="true"
             android:name="com.xiaomi.mipush.sdk.MessageHandleService" />
         <service android:name="com.stratagile.tox.toxcore.KotlinToxService" />
-        <service android:name=".service.FileDownloadUploadService" />
+        <service android:name=".data.service.FileDownloadUploadService" />
 
         <receiver android:exported="true"
             android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver" >

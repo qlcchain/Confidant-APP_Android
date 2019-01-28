@@ -5,8 +5,8 @@
 #define CCOMPAT_H
 
 // Variable length arrays.
-// VLA(type, name, size) allocates a variable length array with automatic
-// storage duration. VLA_SIZE(name) evaluates to the runtime size of that array
+// VLA(type, path, size) allocates a variable length array with automatic
+// storage duration. VLA_SIZE(path) evaluates to the runtime size of that array
 // in bytes.
 //
 // If C99 VLAs are not available, an emulation using alloca (stack allocation
@@ -15,7 +15,7 @@
 // you may run out of stack space.
 #if !defined(_MSC_VER) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 // C99 VLAs.
-#define VLA(type, name, size) type name[size]
+#define VLA(type, path, size) type path[size]
 #define SIZEOF_VLA sizeof
 #else
 

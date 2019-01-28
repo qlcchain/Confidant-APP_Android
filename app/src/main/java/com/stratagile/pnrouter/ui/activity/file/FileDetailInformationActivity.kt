@@ -35,10 +35,10 @@ class FileDetailInformationActivity : BaseActivity(), FileDetailInformationContr
         setContentView(R.layout.activity_file_detail_information)
     }
     override fun initData() {
-        title.text = "Detailed Information"
-        shareSet.setOnClickListener {
-            startActivity(Intent(this, FileShareSetActivity::class.java))
-        }
+        title.text = "Details"
+//        shareSet.setOnClickListener {
+//            startActivity(Intent(this, FileShareSetActivity::class.java))
+//        }
     }
 
     override fun setupActivityComponent() {

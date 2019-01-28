@@ -104,11 +104,11 @@ public final class EaseUI {
         int pid = android.os.Process.myPid();
         String processAppName = getAppName(pid);
         
-        Log.d(TAG, "process app name : " + processAppName);
+        Log.d(TAG, "process app path : " + processAppName);
 
         // if there is application has remote service, application:onCreate() maybe called twice
         // this check is to make sure SDK will initialized only once
-        // return if process name is not application's name since the package name is the default process name
+        // return if process path is not application's path since the package path is the default process path
         if (processAppName == null || !processAppName.equalsIgnoreCase(appContext.getPackageName())) {
             Log.e(TAG, "enter the service process!");
             return false;
@@ -226,7 +226,7 @@ public final class EaseUI {
     
     
     /**
-     * check the application process name if process name is not qualified, then we think it is a service process and we will not init SDK
+     * check the application process path if process path is not qualified, then we think it is a service process and we will not init SDK
      * @param pID
      * @return
      */

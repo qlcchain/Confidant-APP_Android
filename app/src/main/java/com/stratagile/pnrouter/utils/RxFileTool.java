@@ -2110,13 +2110,13 @@ public class RxFileTool {
 //     *
 //     * @param url
 //     */
-//    public static void getFile(String url, final String filePath, String name) {
+//    public static void getFile(String url, final String filePath, String path) {
 //
 //        OkHttpUtils//
 //                .get()//
 //                .url(url)//
 //                .build()//
-//                .execute(new FileCallBack(filePath, name) {
+//                .execute(new FileCallBack(filePath, path) {
 //                    @Override
 //                    public void onError(Call call, Exception e, int id) {
 //

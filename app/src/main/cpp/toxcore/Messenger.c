@@ -528,7 +528,7 @@ int m_send_message_generic(Messenger *m, int32_t friendnumber, uint8_t type, con
     return 0;
 }
 
-/* Send a name packet to friendnumber.
+/* Send a path packet to friendnumber.
  * length is the length with the NULL terminator.
  */
 static int m_sendname(const Messenger *m, int32_t friendnumber, const uint8_t *name, uint16_t length)
@@ -539,7 +539,7 @@ static int m_sendname(const Messenger *m, int32_t friendnumber, const uint8_t *n
     return write_cryptpacket_id(m, friendnumber, PACKET_ID_NICKNAME, name, length, 0);
 }
 
-/* Set the name and name_length of a friend.
+/* Set the path and name_length of a friend.
  *
  *  return 0 if success.
  *  return -1 if failure.
@@ -558,9 +558,9 @@ int setfriendname(Messenger *m, int32_t friendnumber, const uint8_t *name, uint1
 }
 
 /* Set our nickname
- * name must be a string of maximum MAX_NAME_LENGTH length.
+ * path must be a string of maximum MAX_NAME_LENGTH length.
  * length must be at least 1 byte.
- * length is the length of name with the NULL terminator.
+ * length is the length of path with the NULL terminator.
  *
  *  return 0 if success.
  *  return -1 if failure.
@@ -585,10 +585,10 @@ int setname(Messenger *m, const uint8_t *name, uint16_t length)
     return 0;
 }
 
-/* Get our nickname and put it in name.
- * name needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
+/* Get our nickname and put it in path.
+ * path needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
  *
- *  return the length of the name.
+ *  return the length of the path.
  */
 uint16_t getself_name(const Messenger *m, uint8_t *name)
 {
@@ -601,10 +601,10 @@ uint16_t getself_name(const Messenger *m, uint8_t *name)
     return m->name_length;
 }
 
-/* Get name of friendnumber and put it in name.
- * name needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
+/* Get path of friendnumber and put it in path.
+ * path needs to be a valid memory location with a size of at least MAX_NAME_LENGTH bytes.
  *
- *  return length of name if success.
+ *  return length of path if success.
  *  return -1 if failure.
  */
 int getname(const Messenger *m, int32_t friendnumber, uint8_t *name)
@@ -1982,7 +1982,7 @@ static int handle_packet(void *object, int i, uint8_t *temp, uint16_t len)
             memcpy(data_terminated, data, data_length);
             data_terminated[data_length] = 0;
 
-            /* inform of namechange before we overwrite the old name */
+            /* inform of namechange before we overwrite the old path */
             if (m->friend_namechange)
                 m->friend_namechange(m, i, data_terminated, data_length, m->friend_namechange_userdata);
 
@@ -2107,7 +2107,7 @@ static int handle_packet(void *object, int i, uint8_t *temp, uint16_t len)
             uint8_t *filename = NULL;
 
             if (filename_length) {
-                /* Force NULL terminate file name. */
+                /* Force NULL terminate file path. */
                 memcpy(filename_terminated, data + head_length, filename_length);
                 filename_terminated[filename_length] = 0;
                 filename = filename_terminated;
@@ -2433,7 +2433,7 @@ void do_messenger(Messenger *m)
 
             if (msgfptr) {
                 LOGGER_TRACE("F[%2u:%2u] <%s> %s",
-                             dht2m[friend], friend, msgfptr->name,
+                             dht2m[friend], friend, msgfptr->path,
                              ID2String(msgfptr->real_pk));
             } else {
                 LOGGER_TRACE("F[--:%2u] %s", friend, ID2String(dhtfptr->public_key));

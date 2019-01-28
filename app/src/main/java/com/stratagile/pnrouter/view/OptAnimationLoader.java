@@ -74,7 +74,7 @@ public class OptAnimationLoader {
                 try {
                     anim = (Animation) Class.forName(name).getConstructor(Context.class, AttributeSet.class).newInstance(c, attrs);
                 } catch (Exception te) {
-                    throw new RuntimeException("Unknown animation name: " + parser.getName() + " error:" + te.getMessage());
+                    throw new RuntimeException("Unknown animation path: " + parser.getName() + " error:" + te.getMessage());
                 }
             }
 

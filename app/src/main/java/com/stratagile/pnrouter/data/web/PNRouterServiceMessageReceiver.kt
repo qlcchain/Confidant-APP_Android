@@ -246,6 +246,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
 
                 }
+                //请求上传文件
+                "UploadFileReq" -> {
+                    val jUploadFileRsp = gson.fromJson(text, JUploadFileRsp::class.java)
+                    fileTaskBack?.UploadFileRsp(jUploadFileRsp)
+
+                }
             }
         }
 
@@ -283,6 +289,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var adminRecoveryCallBack: AdminRecoveryCallBack? = null
 
     var userControlleCallBack : UserControlleCallBack? = null
+
+    var fileTaskBack: FileTaskBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -373,10 +381,6 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         return urls.signalServiceUrls[0].trustStore
     }
 
-    fun createFileWebSocket(): FileWebSocketConnection {
-        return FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
-    }
-
     /**
      * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息
      */
@@ -418,7 +422,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
-
+    interface FileTaskBack {
+        fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)
+    }
     interface UserControlleCallBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
