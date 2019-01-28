@@ -21,6 +21,9 @@ class FileDownloadUploadService : Service() {
         return null
     }
 
+    override fun onCreate() {
+        super.onCreate()
+    }
     override fun onStart(intent: Intent?, startId: Int) {
         super.onStart(intent, startId)
         if (!EventBus.getDefault().isRegistered(this)) {
