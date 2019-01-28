@@ -5,16 +5,14 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JAddFriendPushRsp
-import com.stratagile.pnrouter.entity.UploadFileReq
-import com.stratagile.pnrouter.entity.UserInfoPushRsp
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileTaskListComponent
@@ -22,11 +20,13 @@ import com.stratagile.pnrouter.ui.activity.file.contract.FileTaskListContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileTaskListModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
+import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_task_list.*
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 
 import javax.inject.Inject;
@@ -39,8 +39,34 @@ import javax.inject.Inject;
  */
 
 class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouterServiceMessageReceiver.FileTaskBack {
-    override fun UploadFileReqRsp(jAddFriendPushRsp: JAddFriendPushRsp) {
+    override fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        when(jUploadFileRsp.params.retCode)
+        {
+            0-> {
+                var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
+                list.add(TaskFile(UpLoadFile(fileName, true, false, true)))
+                runOnUiThread {
+                    toast(getString(R.string.Start_uploading))
+                    fileTaskLisytAdapter = FileTaskLisytAdapter(list)
+                    reSetHeadTitle()
+                    recyclerView.adapter = fileTaskLisytAdapter
+                }
+            }
+            1-> {
+                runOnUiThread {
+                    toast(getString(R.string.Documents_already_exist))
+                }
 
+            }
+            2-> {
+                runOnUiThread {
+                    toast(getString(R.string.not_enough_space))
+                }
+            }
+        }
     }
 
     @Inject
@@ -58,32 +84,53 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     lateinit var ongoingTaskHead : TaskFile
     lateinit var completeTaskHead : TaskFile
+    var localMedia:LocalMedia? = null
+    var list = mutableListOf<TaskFile>()
+
     override fun initData() {
+        EventBus.getDefault().register(this)
+        title.text = "Task List"
+        list = mutableListOf<TaskFile>()
+        ongoingTaskHead = TaskFile(true, "111")
+        completeTaskHead = TaskFile(true, "222")
+        list.add(ongoingTaskHead)
+        AppConfig.instance.messageReceiver?.fileTaskBack = this
         var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
-        if(listData.size > 0)
+        if(listData != null && listData.size > 0)
         {
             for (i in listData) {
                 var file = File(i.path)
                 if(file.exists())
                 {
-                    var fileName = i.path.substring(i.path.lastIndexOf("/")+1)
+                    localMedia = i
+                    var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
+                    val fileNameBase58 = Base58.encode(fileName.toByteArray())
                     var fileSize = file.length()
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var fileType = 1
-                    when(i.pictureType)
+                    when(localMedia!!.pictureType)
                     {
-                        "video/mp4"-> {
+                        "image/jpeg"-> {
+                            fileType = 1
+                        }
+                        "image/png"-> {
+                            fileType = 1
                         }
                         "video/mp4"-> {
+                            fileType = 4
                         }
-                        "video/mp4"-> {
+                        else -> {
+                            fileType = 6
                         }
                     }
-                    /*var msgData = UploadFileReq(userId!!,fileName,fileSize,fileType)
+                    runOnUiThread {
+                        showProgressDialog(getString(R.string.waiting))
+                    }
+                    var msgData = UploadFileReq(userId!!,fileNameBase58,fileSize,fileType)
                     if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jUserInfoPushRsp.msgid))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
                     }else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(2,msgData,jUserInfoPushRsp.msgid)
+                        var baseData = BaseData(2,msgData)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -91,27 +138,22 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
-                    }*/
+                    }
                 }
 
             }
 
         }
-        title.text = "Task List"
-        var list = mutableListOf<TaskFile>()
-        ongoingTaskHead = TaskFile(true, "111")
-        completeTaskHead = TaskFile(true, "222")
-        list.add(ongoingTaskHead)
-        list.add(TaskFile(UpLoadFile("ccc", true, false, true)))
+       /* list.add(TaskFile(UpLoadFile("ccc", true, false, true)))
         list.add(TaskFile(UpLoadFile("ccc", true, false, false)))
         list.add(TaskFile(UpLoadFile("ccc", false, false, true)))
-        list.add(TaskFile(UpLoadFile("ccc", false, false, false)))
-
+        list.add(TaskFile(UpLoadFile("ccc", false, false, false)))*/
         list.add(completeTaskHead)
         list.add(TaskFile(UpLoadFile("ccc", false, true)))
         list.add(TaskFile(UpLoadFile("ccc", false, true)))
         list.add(TaskFile(UpLoadFile("ccc", false, true)))
         fileTaskLisytAdapter = FileTaskLisytAdapter(list)
+        //fileTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
         recyclerView.adapter = fileTaskLisytAdapter
     }
@@ -152,5 +194,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+        AppConfig.instance.messageReceiver?.fileTaskBack = null
+    }
 }

@@ -246,6 +246,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
 
                 }
+                //请求上传文件
+                "UploadFileReq" -> {
+                    val jUploadFileRsp = gson.fromJson(text, JUploadFileRsp::class.java)
+                    fileTaskBack?.UploadFileRsp(jUploadFileRsp)
+
+                }
             }
         }
 
@@ -421,7 +427,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
     interface FileTaskBack {
-        fun UploadFileReqRsp(jAddFriendPushRsp: JAddFriendPushRsp)
+        fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)
     }
     interface UserControlleCallBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
