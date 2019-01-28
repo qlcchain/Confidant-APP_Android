@@ -363,4 +363,4 @@ data class ResetUserIdcodeReq(var RouterId :String, var UserSn : String,var OldC
  * 43.	上传文件请求
  * (2)	响应（APP->Router）
  */
-data class UploadFileReq(var UserId :String, var FileName : String,var FileSize : Int,var FileType : Int, var Action : String = "UploadFileReq")
+data class UploadFileReq(var UserId :String, var FileName : String,var FileSize : Long,var FileType : Int, var Action : String = "UploadFileReq")

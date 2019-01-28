@@ -284,6 +284,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var userControlleCallBack : UserControlleCallBack? = null
 
+    var fileTaskBack: FileTaskBack? = null
+
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -418,7 +420,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
-
+    interface FileTaskBack {
+        fun UploadFileReqRsp(jAddFriendPushRsp: JAddFriendPushRsp)
+    }
     interface UserControlleCallBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
