@@ -79,7 +79,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         "video/mp4"-> {
                         }
                     }
-                    var msgData = UploadFileReq(userId!!,fileName,fileSize,fileType)
+                    /*var msgData = UploadFileReq(userId!!,fileName,fileSize,fileType)
                     if (ConstantValue.isWebsocketConnected) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jUserInfoPushRsp.msgid))
                     }else if (ConstantValue.isToxConnected) {
@@ -91,7 +91,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         }else{
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
-                    }
+                    }*/
                 }
 
             }
