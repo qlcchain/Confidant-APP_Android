@@ -73,6 +73,9 @@ import javax.inject.Inject
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    var SELECT_PHOTO = 2
+    var SELECT_VIDEO = 3
+    var SELECT_DEOCUMENT = 4
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
 
@@ -749,7 +752,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .maxSelectNum(100)
                                     .minSelectNum(1)
                                     .imageSpanCount(3)
-                                    .selectionMode(PictureConfig.MULTIPLE)
+                                    .selectionMode(PictureConfig.SINGLE)
                                     .previewImage(false)
                                     .previewVideo(false)
                                     .enablePreviewAudio(false)
@@ -771,7 +774,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .videoMaxSecond(15)
                                     .videoMinSecond(10)
                                     .isDragFrame(false)
-                                    .forResult(PictureConfig.CHOOSE_REQUEST)
+                                    .forResult(SELECT_PHOTO)
                         }
                         1 -> {
                             PictureSelector.create(this@MainActivity)
@@ -802,10 +805,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .videoMaxSecond(15)
                                     .videoMinSecond(10)
                                     .isDragFrame(false)
-                                    .forResult(PictureConfig.CHOOSE_REQUEST)
+                                    .forResult(SELECT_VIDEO)
                         }
                         2 -> {
-                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), 0)
+                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 2), SELECT_DEOCUMENT)
                         }
                     }
                 }
@@ -1186,12 +1189,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             viewModel.toAddUserId.value = data!!.getStringExtra("result")
             return
-        } else if (requestCode == CHOOSE_REQUEST && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
             KLog.i(list)
             var startIntent = Intent(this, FileTaskListActivity::class.java)
             startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
             startActivity(startIntent)
+        } else if (requestCode == SELECT_VIDEO && resultCode == Activity.RESULT_OK) {
+            var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+            KLog.i(list)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
+        } else if (requestCode == SELECT_DEOCUMENT && resultCode == Activity.RESULT_OK) {
+            KLog.i(data!!.getStringExtra("path"))
         }
     }
 

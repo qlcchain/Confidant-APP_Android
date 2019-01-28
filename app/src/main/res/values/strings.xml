@@ -505,6 +505,7 @@
     <string name="upload_photos">Upload Photos</string>
     <string name="upload_video">Upload Video</string>
     <string name="upload_document">Upload document</string>
+    <string name="disk_management">Disk Management</string>
 
 
 </resources>

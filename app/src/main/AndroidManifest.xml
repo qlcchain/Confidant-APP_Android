@@ -181,6 +181,7 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.activity.file.UploadFileActivity" />
         <activity android:name=".ui.activity.file.FileTaskListActivity" />
+        <activity android:name=".ui.activity.router.DiskManagementActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"
