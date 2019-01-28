@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.file
 
 import android.os.Bundle
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.entity.LocalMedia
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -41,6 +43,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View {
     lateinit var ongoingTaskHead : TaskFile
     lateinit var completeTaskHead : TaskFile
     override fun initData() {
+        var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
         title.text = "Task List"
         var list = mutableListOf<TaskFile>()
         ongoingTaskHead = TaskFile(true, "111")

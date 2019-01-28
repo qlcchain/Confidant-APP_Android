@@ -1189,7 +1189,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         } else if (requestCode == CHOOSE_REQUEST && resultCode == Activity.RESULT_OK) {
             var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
             KLog.i(list)
-            var startIntent = Intent(this, UploadFileActivity::class.java)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
             startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
             startActivity(startIntent)
         }
