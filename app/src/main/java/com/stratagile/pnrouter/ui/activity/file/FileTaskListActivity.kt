@@ -13,6 +13,8 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileTaskListComponent
@@ -27,6 +29,8 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_task_list.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 
 import javax.inject.Inject;
@@ -47,7 +51,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             0-> {
                 var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
-                list.add(TaskFile(UpLoadFile(fileName, true, false, true)))
+                list.add(1,TaskFile(UpLoadFile(fileName, true, false, true)))
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
                     fileTaskLisytAdapter = FileTaskLisytAdapter(list)
@@ -152,12 +156,17 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+        var aa = TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0))
+
         fileTaskLisytAdapter = FileTaskLisytAdapter(list)
         //fileTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
         recyclerView.adapter = fileTaskLisytAdapter
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
 
+    }
     fun reSetHeadTitle() {
         var ongoing = 0
         var complete = 0
