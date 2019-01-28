@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/color_f5f5f5"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/configurate_disk"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/x31"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="/DEV/SDA"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="ATA Version is"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Device Model"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Firmware Version"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Form Factor"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="LU WWN Device Id"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Model Family"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Rotation Rate"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="/DEV/SDA"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="SATA Version is"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="SMART support is"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Serial Number"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="User Capacity"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:layout_height="@dimen/x77">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Sector Sizes"
+            android:textSize="13sp"
+            android:textColor="@color/mainColor"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="configured"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

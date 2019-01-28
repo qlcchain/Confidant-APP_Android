@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.os.Bundle
 import com.stratagile.pnrouter.R
 
@@ -9,6 +10,7 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerDiskManagement
 import com.stratagile.pnrouter.ui.activity.router.contract.DiskManagementContract
 import com.stratagile.pnrouter.ui.activity.router.module.DiskManagementModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.DiskManagementPresenter
+import kotlinx.android.synthetic.main.activity_disk_management.*
 
 import javax.inject.Inject;
 
@@ -33,6 +35,9 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View {
     }
     override fun initData() {
         title.text = resources.getText(R.string.disk_management)
+        disk_a.setOnClickListener {
+            startActivity(Intent(this, DiskInformationActivity::class.java))
+        }
     }
 
     override fun setupActivityComponent() {
