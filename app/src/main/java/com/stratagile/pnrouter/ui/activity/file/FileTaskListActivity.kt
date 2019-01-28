@@ -169,9 +169,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         }
         listGoing.add(ongoingTaskHead)
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, true, true, 10, 100, 0)))
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
+        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
         //fileGoingTaskLisytAdapter.notifyItemChanged()
         recyclerView.adapter = fileGoingTaskLisytAdapter
@@ -181,7 +181,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
 
-        fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
+        fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listComplete)
         //fileGoingTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
         recyclerView2.adapter = fileCompleteTaskLisytAdapter
