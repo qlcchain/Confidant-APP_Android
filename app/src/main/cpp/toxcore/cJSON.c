@@ -1492,16 +1492,16 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
             current_item = new_item;
         }
 
-        /* parse the name of the child */
+        /* parse the path of the child */
         input_buffer->offset++;
         buffer_skip_whitespace(input_buffer);
         if (!parse_string(current_item, input_buffer))
         {
-            goto fail; /* faile to parse name */
+            goto fail; /* faile to parse path */
         }
         buffer_skip_whitespace(input_buffer);
 
-        /* swap valuestring and string, because we parsed the name */
+        /* swap valuestring and string, because we parsed the path */
         current_item->string = current_item->valuestring;
         current_item->valuestring = NULL;
 
@@ -2021,7 +2021,7 @@ static cJSON_bool replace_item_in_object(cJSON *object, const char *string, cJSO
         return false;
     }
 
-    /* replace the name in the replacement */
+    /* replace the path in the replacement */
     if (!(replacement->type & cJSON_StringIsConst) && (replacement->string != NULL))
     {
         cJSON_free(replacement->string);

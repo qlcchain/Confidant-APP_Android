@@ -1,5 +1,14 @@
 package com.stratagile.pnrouter.utils;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+import com.stratagile.pnrouter.constant.ConstantValue;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -11,38 +20,18 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.TimeUnit;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Base64;
-import android.util.Log;
-
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.constant.ConstantValue;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.OkHttpClient;
-
-public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
-	private final String TAG = "FileDownLoaderTask";
+public class FileUpLoaderTask extends AsyncTask<Void, Integer, Long> {
+	private final String TAG = "FileUpLoaderTask";
 	private final int PER = 1024;
 	private URL mUrl;
 	private File mFile;
@@ -61,7 +50,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key){
+	public FileUpLoaderTask(String url, String out, Context context, int msgId, Handler message, String key){
 		super();
 		msgID = msgId;
 		keyStr = key;
@@ -98,7 +87,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	@Override
 	protected Long doInBackground(Void... params) {
 		// TODO Auto-generated method stub
-		return download();
+		return upload();
 	}
 
 	@Override
@@ -135,7 +124,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		}, 500);
 	}
 
-	private long download(){
+	private long upload(){
 		//URLConnection connection = null;
 		HttpURLConnection conn = null;
 		int bytesCopied = 0;
@@ -207,7 +196,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{
-			Log.i("FileDownLoaderTask", "jiemi  error ");
+			Log.i("FileUpLoaderTask", "jiemi  error ");
 		}
 		byte[] buffer = new byte[1024*8];
 		BufferedInputStream in = new BufferedInputStream(newInput, 1024*8);

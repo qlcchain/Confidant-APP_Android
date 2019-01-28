@@ -381,10 +381,6 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         return urls.signalServiceUrls[0].trustStore
     }
 
-    fun createFileWebSocket(): FileWebSocketConnection {
-        return FileWebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, userAgent, null)
-    }
-
     /**
      * 作为对外暴露的接口，聊天消息统一用这个接口对外输出消息
      */

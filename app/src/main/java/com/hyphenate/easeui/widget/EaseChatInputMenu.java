@@ -213,7 +213,7 @@ public class EaseChatInputMenu extends LinearLayout {
      * register menu item
      * 
      * @param name
-     *            item name
+     *            item path
      * @param drawableRes
      *            background of item
      * @param itemId
@@ -230,7 +230,7 @@ public class EaseChatInputMenu extends LinearLayout {
      * register menu item
      * 
      * @param name
-     *            resource id of item name
+     *            resource id of item path
      * @param drawableRes
      *            background of item
      * @param itemId

@@ -526,7 +526,7 @@ static int setnick(Group_Chats *g_c, int groupnumber, int peer_index, const uint
     if (!g)
         return -1;
 
-    /* same name as already stored? */
+    /* same path as already stored? */
     if (g->group[peer_index].nick_len == nick_len)
         if (nick_len == 0 || !memcmp(g->group[peer_index].nick, nick, nick_len))
             return 0;
@@ -748,10 +748,10 @@ int group_peer_pubkey(const Group_Chats *g_c, int groupnumber, int peernumber, u
     return 0;
 }
 
-/* Copy the name of peernumber who is in groupnumber to name.
- * name must be at least MAX_NAME_LENGTH long.
+/* Copy the path of peernumber who is in groupnumber to path.
+ * path must be at least MAX_NAME_LENGTH long.
  *
- * return length of name if success
+ * return length of path if success
  * return -1 if failure
  */
 int group_peername(const Group_Chats *g_c, int groupnumber, int peernumber, uint8_t *name)
@@ -775,7 +775,7 @@ int group_peername(const Group_Chats *g_c, int groupnumber, int peernumber, uint
 
 /* List all the peers in the group chat.
  *
- * Copies the names of the peers to the name[length][MAX_NAME_LENGTH] array.
+ * Copies the names of the peers to the path[length][MAX_NAME_LENGTH] array.
  *
  * Copies the lengths of the names to lengths[length]
  *
@@ -1028,9 +1028,9 @@ void group_lossy_packet_registerhandler(Group_Chats *g_c, uint8_t byte, int (*fu
     g_c->lossy_packethandlers[byte].function = function;
 }
 
-/* Set callback function for peer name list changes.
+/* Set callback function for peer path list changes.
  *
- * It gets called every time the name list changes(new peer/name, deleted peer)
+ * It gets called every time the path list changes(new peer/path, deleted peer)
  *  Function(Group_Chats *g_c, int groupnumber, int peernumber, TOX_CHAT_CHANGE change, void *userdata)
  */
 void g_callback_group_namelistchange(Group_Chats *g_c, void (*function)(Messenger *m, int, int, uint8_t, void *),
@@ -1165,7 +1165,7 @@ static int group_kill_peer_send(const Group_Chats *g_c, int groupnumber, uint16_
 
 #define GROUP_MESSAGE_NAME_ID 48
 
-/* send a name message
+/* send a path message
  * return 0 on success
  * return -1 on failure
  */
@@ -2200,7 +2200,7 @@ static int groupchat_clear_timedout(Group_Chats *g_c, int groupnumber)
     return 0;
 }
 
-/* Send current name (set in messenger) to all online groups.
+/* Send current path (set in messenger) to all online groups.
  */
 void send_name_all_groups(Group_Chats *g_c)
 {

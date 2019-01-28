@@ -1,8 +1,10 @@
 package com.stratagile.pnrouter.ui.activity.file
 
+import android.content.Intent
 import android.os.Bundle
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.google.gson.Gson
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
@@ -11,6 +13,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -22,9 +25,7 @@ import com.stratagile.pnrouter.ui.activity.file.contract.FileTaskListContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileTaskListModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
-import com.stratagile.pnrouter.utils.Base58
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_task_list.*
@@ -32,6 +33,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.util.ArrayList
 
 import javax.inject.Inject;
 
@@ -51,7 +53,15 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             0-> {
                 var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
-                list.add(1,TaskFile(UpLoadFile(fileName, true, false, true)))
+                var uploadFile = UpLoadFile(localMedia!!.path, true, false, true)
+                val myRouter = MyFile()
+                myRouter.setType(0)
+                myRouter.setUpLoadFile(uploadFile)
+                LocalFileUtils.insertLocalAssets(myRouter)
+                var abc = LocalFileUtils.localAssetsList
+
+                val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                FileMangerUtil.sendImageFile(localMedia!!.path,false,userId)
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
                     fileTaskLisytAdapter = FileTaskLisytAdapter(list)
@@ -93,6 +103,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     override fun initData() {
         EventBus.getDefault().register(this)
+        var intent = Intent(this, FileDownloadUploadService::class.java)
+        startService(intent)
         title.text = "Task List"
         list = mutableListOf<TaskFile>()
         ongoingTaskHead = TaskFile(true, "111")
@@ -156,8 +168,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        var aa = TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0))
-
         fileTaskLisytAdapter = FileTaskLisytAdapter(list)
         //fileTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()

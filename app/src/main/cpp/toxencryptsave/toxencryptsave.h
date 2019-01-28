@@ -124,7 +124,7 @@ bool toxes_version_is_compatible(uint32_t major, uint32_t minor, uint32_t patch)
 
 
 /* This module is conceptually organized into two parts. The first part are the functions
- * with "key" in the name. To use these functions, first derive an encryption key
+ * with "key" in the path. To use these functions, first derive an encryption key
  * from a password with tox_derive_key_from_pass, and use the returned key to
  * encrypt the data. The second part takes the password itself instead of the key,
  * and then delegates to the first part to derive the key before de/encryption,

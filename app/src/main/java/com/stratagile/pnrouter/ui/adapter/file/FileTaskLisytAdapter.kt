@@ -14,7 +14,8 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
 
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
         KLog.i("ddxxxx")
-        helper.setText(R.id.tvFileName,item.t.name)
+        var fileName =  item.t.path.substring(item.t.path.lastIndexOf("/")+1)
+        helper.setText(R.id.tvFileName,fileName)
         if (item.t.isComplete) {
             helper.setGone(R.id.progressBar, false)
             helper.setGone(R.id.status, false)

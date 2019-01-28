@@ -16,7 +16,7 @@ import javax.crypto.KeyGenerator;
 /// </summary>
 public class CryptoObjectHelper
 {
-    // This can be key name you want. Should be unique for the app.
+    // This can be key path you want. Should be unique for the app.
     static final String KEY_NAME = "com.createchance.android.sample.fingerprint_authentication_key";
 
     // We always use this keystore on Android.

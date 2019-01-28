@@ -163,9 +163,9 @@ void g_callback_group_action(Group_Chats *g_c, void (*function)(Messenger *m, in
 void g_callback_group_title(Group_Chats *g_c, void (*function)(Messenger *m, int, int, const uint8_t *, uint8_t,
                             void *), void *userdata);
 
-/* Set callback function for peer name list changes.
+/* Set callback function for peer path list changes.
  *
- * It gets called every time the name list changes(new peer/name, deleted peer)
+ * It gets called every time the path list changes(new peer/path, deleted peer)
  *  Function(Group_Chats *g_c, int groupnumber, int peernumber, TOX_CHAT_CHANGE change, void *userdata)
  */
 enum {
@@ -200,10 +200,10 @@ int del_groupchat(Group_Chats *g_c, int groupnumber);
  */
 int group_peer_pubkey(const Group_Chats *g_c, int groupnumber, int peernumber, uint8_t *pk);
 
-/* Copy the name of peernumber who is in groupnumber to name.
- * name must be at least MAX_NAME_LENGTH long.
+/* Copy the path of peernumber who is in groupnumber to path.
+ * path must be at least MAX_NAME_LENGTH long.
  *
- * return length of name if success
+ * return length of path if success
  * return -1 if failure
  */
 int group_peername(const Group_Chats *g_c, int groupnumber, int peernumber, uint8_t *name);
@@ -262,7 +262,7 @@ unsigned int group_peernumber_is_ours(const Group_Chats *g_c, int groupnumber, i
 
 /* List all the peers in the group chat.
  *
- * Copies the names of the peers to the name[length][MAX_NAME_LENGTH] array.
+ * Copies the names of the peers to the path[length][MAX_NAME_LENGTH] array.
  *
  * Copies the lengths of the names to lengths[length]
  *
@@ -309,7 +309,7 @@ uint32_t copy_chatlist(Group_Chats *g_c, int32_t *out_list, uint32_t list_size);
  */
 int group_get_type(const Group_Chats *g_c, int groupnumber);
 
-/* Send current name (set in messenger) to all online groups.
+/* Send current path (set in messenger) to all online groups.
  */
 void send_name_all_groups(Group_Chats *g_c);
 

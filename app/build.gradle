@@ -241,7 +241,7 @@ def getSelfDefinedVersion(type) {
 
     if ("code".equals(type)) {
         cccc
-    } else if ("name".equals(type)) {
+    } else if ("path".equals(type)) {
         String today = new Date().format("yyMMdd")
         process = "git describe --always".execute()
         process.waitFor()
