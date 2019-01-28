@@ -182,6 +182,8 @@
         <activity android:name=".ui.activity.file.UploadFileActivity" />
         <activity android:name=".ui.activity.file.FileTaskListActivity" />
         <activity android:name=".ui.activity.router.DiskManagementActivity" />
+        <activity android:name=".ui.activity.router.DiskConfigureActivity" />
+        <activity android:name=".ui.activity.router.DiskInformationActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"

@@ -149,9 +149,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         list.add(TaskFile(UpLoadFile("ccc", false, false, true)))
         list.add(TaskFile(UpLoadFile("ccc", false, false, false)))*/
         list.add(completeTaskHead)
-        list.add(TaskFile(UpLoadFile("ccc", false, true)))
-        list.add(TaskFile(UpLoadFile("ccc", false, true)))
-        list.add(TaskFile(UpLoadFile("ccc", false, true)))
+        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
+        list.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
         fileTaskLisytAdapter = FileTaskLisytAdapter(list)
         //fileTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
