@@ -12,16 +12,15 @@
         android:background="@color/white"
         android:text="Switch Router"
         android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/x30"
         android:paddingLeft="@dimen/x30"
-        android:layout_height="@dimen/x90" />
+        android:layout_height="@dimen/x108" />
     <LinearLayout
         android:id="@+id/llRouterManagement"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="@dimen/x30"
         android:layout_height="@dimen/x90">
         <TextView
             android:layout_width="wrap_content"
@@ -40,14 +39,41 @@
             android:layout_marginLeft="@dimen/x30"
             android:layout_height="@dimen/x35" />
     </LinearLayout>
+    <View
+        style="@style/divide_line"/>
+    <LinearLayout
+        android:id="@+id/llDiskManagement"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x30"
+            android:text="@string/disk_management"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:layout_width="@dimen/x35"
+            android:src="@mipmap/icon_enter"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="@dimen/x35" />
+    </LinearLayout>
+    <View
+        style="@style/divide_line"/>
     <LinearLayout
         android:id="@+id/llRouterAlias"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="@dimen/x30"
-        android:layout_height="@dimen/x90">
+        android:layout_height="@dimen/x108">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,7 +104,7 @@
         android:layout_width="match_parent"
         android:gravity="center_vertical"
         android:background="@color/white"
-        android:layout_height="@dimen/x90">
+        android:layout_height="@dimen/x108">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,7 +136,7 @@
         android:text="Log Out"
         android:gravity="center"
         android:paddingLeft="@dimen/x30"
-        android:layout_height="@dimen/x90" />
+        android:layout_height="@dimen/x108" />
 
     <TextView
         android:id="@+id/tvDeleteRouter"
@@ -121,6 +147,6 @@
         android:text="@string/delete"
         android:gravity="center"
         android:paddingLeft="@dimen/x30"
-        android:layout_height="@dimen/x90" />
+        android:layout_height="@dimen/x108" />
 
 </LinearLayout>
