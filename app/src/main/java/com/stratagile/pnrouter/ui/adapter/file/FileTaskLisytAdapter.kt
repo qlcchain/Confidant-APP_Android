@@ -16,6 +16,8 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         KLog.i("ddxxxx")
         var fileName =  item.t.path.substring(item.t.path.lastIndexOf("/")+1)
         helper.setText(R.id.tvFileName,fileName)
+        var fileSize = (item.t.fileSize / 1024 / 1024).toString()
+        helper.setText(R.id.filesize,fileSize+"M")
         if (item.t.isComplete) {
             helper.setGone(R.id.progressBar, false)
             helper.setGone(R.id.status, false)
