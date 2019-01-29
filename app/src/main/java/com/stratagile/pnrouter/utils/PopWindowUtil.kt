@@ -14,7 +14,10 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.ShareBean
+import com.stratagile.pnrouter.entity.file.Arrange
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
@@ -120,7 +123,7 @@ object PopWindowUtil {
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
      */
-    fun showFileOpreatePopWindow(activity: Activity, showView: View, fileName : String, onRouterSelectListener : OnSelectListener) {
+    fun showFileOpreatePopWindow(activity: Activity, showView: View, fileName : Any, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
         maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
@@ -128,12 +131,12 @@ object PopWindowUtil {
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
-        tvFileName.text = fileName
+        tvFileName.text = String(Base58.decode((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.substring((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.lastIndexOf("/") + 1)))
         recyclerView.layoutManager = linearLayoutManager
         val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType(activity))
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            onRouterSelectListener.onSelect(position, fileName)
             CustomPopWindow.onBackPressed()
         }
         //对具体的view的事件的处理
@@ -229,11 +232,11 @@ object PopWindowUtil {
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
 
-    fun getFileSortType(context: Activity) : ArrayList<String> {
-        var list = ArrayList<String>()
-        list.add(context.getString(R.string.arrange_by_name))
-        list.add(context.getString(R.string.arrange_by_time))
-        list.add(context.getString(R.string.arrange_by_size))
+    fun getFileSortType(context: Activity) : ArrayList<Arrange> {
+        var list = ArrayList<Arrange>()
+        list.add(Arrange(context.getString(R.string.arrange_by_name), ConstantValue.currentArrangeType == 0))
+        list.add(Arrange(context.getString(R.string.arrange_by_time), ConstantValue.currentArrangeType == 1))
+        list.add(Arrange(context.getString(R.string.arrange_by_size), ConstantValue.currentArrangeType == 2))
         return list
     }
 

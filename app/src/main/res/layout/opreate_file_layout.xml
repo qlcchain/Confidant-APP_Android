@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:background="@color/white"
-            android:layout_gravity="center"
+            android:gravity="center"
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/fileIcon"
@@ -26,9 +26,11 @@
 
             <TextView
                 android:id="@+id/fileName"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/x100"
-                android:text="@string/Cancel"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:maxEms="20"
                 android:gravity="center"
                 android:textColor="@color/main_color"
                 android:textSize="14sp" />

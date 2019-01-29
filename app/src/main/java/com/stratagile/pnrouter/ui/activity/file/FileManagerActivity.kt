@@ -43,6 +43,9 @@ import javax.inject.Inject;
 class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterServiceMessageReceiver.FileManageBack {
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
+        runOnUiThread {
+            fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload)
+        }
     }
 
     @Inject
@@ -50,7 +53,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     var fileListChooseAdapter : FileListChooseAdapter? = null
 
-    //类型，0 = My Files 1 = Documents I Share 2 = Documents received
+    //类型，0 = My Files 1 = sent 2 = Documents received
     var fileType = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +65,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         sort.setOnClickListener {
             PopWindowUtil.showFileSortWindow(this, sort, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
-
+                    ConstantValue.currentArrangeType = position
                 }
 
             })
@@ -87,8 +90,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
         pullFileList()
 
-        var list = arrayListOf("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "")
-        fileListChooseAdapter = FileListChooseAdapter(list)
+        fileListChooseAdapter = FileListChooseAdapter(arrayListOf())
         recyclerView.adapter = fileListChooseAdapter
         fileListChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
             var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
@@ -110,6 +112,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                     PopWindowUtil.showFileOpreatePopWindow(this@FileManagerActivity, recyclerView, fileListChooseAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj : Any) {
                             KLog.i("" + position)
+                            var data = obj as JPullFileListRsp.ParamsBean.PayloadBean
                             when(position) {
                                 0 -> {
 
@@ -127,7 +130,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 5 -> {
-
+                                    fileListChooseAdapter!!.data.remove(data)
+                                    fileListChooseAdapter!!.notifyDataSetChanged()
                                 }
                             }
                         }
@@ -140,7 +144,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, 0, 0)
+        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, fileType, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())

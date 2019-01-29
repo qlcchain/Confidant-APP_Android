@@ -5,11 +5,13 @@ import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.entity.file.Arrange
 import com.stratagile.pnrouter.entity.file.FileOpreateType
 
-class FileSortAdapter(arrayList: ArrayList<String>) : BaseQuickAdapter<String, BaseViewHolder>(R.layout.layout_file_sort_item, arrayList) {
-    override fun convert(helper: BaseViewHolder, item: String) {
-        helper.setText(R.id.tvSortType, item)
+class FileSortAdapter(arrayList: ArrayList<Arrange>) : BaseQuickAdapter<Arrange, BaseViewHolder>(R.layout.layout_file_sort_item, arrayList) {
+    override fun convert(helper: BaseViewHolder, item: Arrange) {
+        helper.setText(R.id.tvSortType, item.name)
+        helper.setVisible(R.id.ivAvatar, item.isSelect)
     }
 
 }
