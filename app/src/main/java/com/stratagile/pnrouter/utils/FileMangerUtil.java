@@ -895,7 +895,7 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     if(isHas)
                     {
-                        String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+filePath.substring(filePath.lastIndexOf("/")+1);
+                        String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
