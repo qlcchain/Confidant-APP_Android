@@ -101,7 +101,7 @@ object LocalFileUtils {
                         }.type)
                         for (myRouter in localRouterArrayList) {
 
-                            if (myRouter.getType() == 0)
+                            if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                             {
                                /* val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(myRouter.getUpLoadFile().userSn)).list()
                                 if (routerEntityList != null && routerEntityList!!.size == 0) {
@@ -128,7 +128,7 @@ object LocalFileUtils {
                             }.type)
                             for (myRouter in localRouterArrayList) {
 
-                                if (myRouter.getType() ==0)
+                                if (myRouter.getType() ==0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                                  {
                                     for (routerEntity in routerEntityList) {
 
@@ -173,7 +173,7 @@ object LocalFileUtils {
                 var isHad = false
                 for (myRouterItem in localAssetArrayList) {
 
-                    if (myRouter!!.getType() == 0)
+                    if (myRouter!!.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                     {
                         if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().path.equals(myRouterItem.getUpLoadFile().path)) {
                             isHad = true
@@ -220,7 +220,7 @@ object LocalFileUtils {
                 }.type)
                 for (myRouter in localRouterArrayList) {
 
-                    if (myRouter.getType() == 0)
+                    if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                     {
                         if (!myRouter.getUpLoadFile().path.equals(deletePath)) {
                             newRouterArrayList.add(myRouter)
@@ -301,7 +301,7 @@ object LocalFileUtils {
                 }.type)
                 for (myRouter in localRouterArrayList) {
 
-                    if (myRouter.getType() == 0)
+                    if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                     {
                         if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().path.equals(router!!.getUpLoadFile().path)) {
                             newRouterArrayList.add(router)

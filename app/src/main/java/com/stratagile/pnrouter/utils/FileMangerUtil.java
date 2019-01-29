@@ -205,6 +205,7 @@ public class FileMangerUtil {
                                         UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,0,segSeqTotal,10,false);
                                         MyFile myRouter = new MyFile();
                                         myRouter.setType(0);
+                                        myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                         myRouter.setUpLoadFile(uploadFile);
                                         LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
                                         EventBus.getDefault().post(new FileStatus());
@@ -301,6 +302,7 @@ public class FileMangerUtil {
                                     UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,fileTotalSegment +1,segSeqTotal,10,false);
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
+                                    myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                     myRouter.setUpLoadFile(uploadFile);
                                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
 
@@ -323,6 +325,7 @@ public class FileMangerUtil {
                     UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false);
                     MyFile myRouter = new MyFile();
                     myRouter.setType(0);
+                    myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                     myRouter.setUpLoadFile(uploadFile);
                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
                     EventBus.getDefault().post(new FileStatus());
@@ -616,6 +619,7 @@ public class FileMangerUtil {
                             UpLoadFile uploadFile = new UpLoadFile(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
+                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus());
@@ -663,6 +667,7 @@ public class FileMangerUtil {
                                 UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
+                                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                                 EventBus.getDefault().post(new FileStatus());
@@ -762,6 +767,7 @@ public class FileMangerUtil {
                             UpLoadFile uploadFile = new UpLoadFile(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
+                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus());
@@ -810,6 +816,7 @@ public class FileMangerUtil {
                                 UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
+                                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                                 EventBus.getDefault().post(new FileStatus());
@@ -904,6 +911,7 @@ public class FileMangerUtil {
                             UpLoadFile uploadFile = new UpLoadFile(filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
+                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus());
@@ -953,6 +961,7 @@ public class FileMangerUtil {
                                 UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
+                                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                                 EventBus.getDefault().post(new FileStatus());
