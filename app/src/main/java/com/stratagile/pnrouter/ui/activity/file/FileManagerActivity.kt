@@ -14,7 +14,9 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.PullFileListReq
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.FileManagerContract
@@ -38,7 +40,10 @@ import javax.inject.Inject;
  * @date 2019/01/23 14:15:29
  */
 
-class FileManagerActivity : BaseActivity(), FileManagerContract.View {
+class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterServiceMessageReceiver.FileManageBack {
+    override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
+        KLog.i("页面收到了文件列表拉取的返回了。")
+    }
 
     @Inject
     internal lateinit var mPresenter: FileManagerPresenter
@@ -66,6 +71,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View {
 
 
     override fun initData() {
+        AppConfig.instance.messageReceiver?.fileManageBack = this
         fileType = intent.getIntExtra("fileType", 0)
         when(fileType) {
             0 -> {
@@ -135,11 +141,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View {
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, 0, 0)
-        var sendData = BaseData(pullFileListReq)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(3,pullFileListReq)
-        }
+        var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

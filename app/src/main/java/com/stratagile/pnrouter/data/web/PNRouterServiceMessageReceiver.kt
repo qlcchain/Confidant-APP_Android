@@ -252,6 +252,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     fileTaskBack?.UploadFileRsp(jUploadFileRsp)
 
                 }
+                //拉取文件列表返回
+                "PullFileList" -> {
+                    val jPullFileListRsp = gson.fromJson(text, JPullFileListRsp::class.java)
+                    fileManageBack?.pullFileListRsp(jPullFileListRsp)
+                }
             }
         }
 
@@ -291,6 +296,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var userControlleCallBack : UserControlleCallBack? = null
 
     var fileTaskBack: FileTaskBack? = null
+
+    var fileManageBack : FileManageBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -493,6 +500,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     interface GlobalBack {
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
+    }
+
+    interface FileManageBack {
+        fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
     }
 }
 

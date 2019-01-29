@@ -8,12 +8,10 @@ import com.stratagile.pnrouter.entity.file.TaskFile
 
 class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapter<TaskFile, BaseViewHolder>(R.layout.item_filetask_content, R.layout.item_filetask_head, data) {
     override fun convertHead(helper: BaseViewHolder, item: TaskFile) {
-        KLog.i("ddd")
         helper.setText(R.id.tvHead, item.header)
     }
 
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
-        KLog.i("ddxxxx")
         var fileName =  item.t.path.substring(item.t.path.lastIndexOf("/")+1)
         helper.setText(R.id.tvFileName,fileName)
         var fileSize = (item.t.fileSize / 1024 / 1024).toString()
@@ -23,10 +21,10 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             helper.setGone(R.id.status, false)
             helper.setGone(R.id.speed, false)
             if (item.t.isDownLoad) {
-                helper.setText(R.id.filesize,"Download to: Router")
+                helper.setText(R.id.filesize,"Download to: Local")
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.download_h))
             } else {
-                helper.setText(R.id.filesize,"Upload to: Local")
+                helper.setText(R.id.filesize,"Upload to: Router")
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
         } else {
