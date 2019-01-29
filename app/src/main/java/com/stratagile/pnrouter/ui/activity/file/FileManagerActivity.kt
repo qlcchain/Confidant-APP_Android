@@ -3,11 +3,13 @@ package com.stratagile.pnrouter.ui.activity.file
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -22,13 +24,12 @@ import com.stratagile.pnrouter.ui.activity.file.contract.FileManagerContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileManagerModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileManagerPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
+import java.util.HashMap
 
 import javax.inject.Inject;
 
@@ -84,6 +85,9 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     var fileType = 0
 
     var waitDeleteData:JPullFileListRsp.ParamsBean.PayloadBean? = null
+
+    var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,7 +151,26 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 1 -> {
+                                    var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
+                                    var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        receiveFileDataMap.put(data.msgId.toString(),data)
+                                        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                    }else{
 
+                                        /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                        var base58Name =  Base58.encode(fileMiName.toByteArray())
+                                        receiveToxFileDataMap.put(base58Name,data)
+                                        var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
+                                        var baseData = BaseData(msgData)
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }*/
+                                    }
                                 }
                                 2 -> {
 
@@ -249,5 +272,24 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         inflater.inflate(R.menu.choose_file, menu)
         return super.onCreateOptionsMenu(menu)
     }
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
 
+                }
+                0x55 -> {
+                    var data:Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    var jPushFileMsgRsp:JPullFileListRsp.ParamsBean.PayloadBean = receiveFileDataMap.get(msgId.toString())!!
+                   /* var fileName:String = jPushFileMsgRsp.params.fileName;
+                    var fromId = jPushFileMsgRsp.params.fromId;
+                    var toId = jPushFileMsgRsp.params.toId
+                    var FileType = jPushFileMsgRsp.params.fileType*/
+                    receiveFileDataMap.remove(msgId.toString())
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
 }
