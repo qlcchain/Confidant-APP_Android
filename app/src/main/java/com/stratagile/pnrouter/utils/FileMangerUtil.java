@@ -154,8 +154,8 @@ public class FileMangerUtil {
 
     public static void  init()
     {
-        String fromUserId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        fromUserId = fromUserId;
+        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        fromUserId = userId;
     }
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -408,7 +408,7 @@ public class FileMangerUtil {
             sendFileMyKeyByteMap.put(fileId+"",SrcKey);
             sendFileFriendKeyByteMap.put(fileId+"",DstKey);
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
+            KLog.i("发送中>>>"+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
             EventBus.getDefault().post(new FileMangerTransformMessage(msgId,sendData));
 
         }catch (Exception e)
