@@ -53,18 +53,23 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 var file = File(localMedia!!.path)
                 if(file.exists())
                 {
-                    var fileSize = file.length()
-                    var uploadFile = UpLoadFile(localMedia!!.path, false, false, false,0,fileSize,0)
-                    val myRouter = MyFile()
-                    myRouter.setType(0)
-                    myRouter.setUpLoadFile(uploadFile)
-                    LocalFileUtils.insertLocalAssets(myRouter)
 
+                    when(localMedia!!.pictureType)
+                    {
+                        "image/jpeg"-> {
+                            FileMangerUtil.sendImageFile(localMedia!!.path,false)
+                        }
+                        "image/png"-> {
+                            FileMangerUtil.sendImageFile(localMedia!!.path,false)
+                        }
+                        "video/mp4"-> {
 
-                    var abc = LocalFileUtils.localAssetsList
+                        }
+                        else -> {
 
+                        }
+                    }
 
-                    FileMangerUtil.sendImageFile(localMedia!!.path,false)
                 }
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
@@ -112,9 +117,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         EventBus.getDefault().register(this)
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)
+
         title.text = "Task List"
-        listGoing = mutableListOf<TaskFile>()
-        listComplete  = mutableListOf<TaskFile>()
+
         ongoingTaskHead = TaskFile(true, "111")
         completeTaskHead = TaskFile(true, "222")
 
@@ -168,32 +173,42 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
 
         }
+        updataUI()
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        updataUI()
+    }
+    fun updataUI()
+    {
+        listGoing = mutableListOf<TaskFile>()
+        listComplete  = mutableListOf<TaskFile>()
+        var localFilesList = LocalFileUtils.localFilesList
         listGoing.add(ongoingTaskHead)
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
-        listGoing.add(TaskFile(UpLoadFile("ccc", false, false, false, 10, 100, 0)))
+        listComplete.add(completeTaskHead)
+        for (myFie in localFilesList)
+        {
+
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+            }else{
+
+                listComplete.add(TaskFile(UpLoadFile(myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0,false)))
+            }
+        }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
         //fileGoingTaskLisytAdapter.notifyItemChanged()
         recyclerView.adapter = fileGoingTaskLisytAdapter
-
-        listComplete.add(completeTaskHead)
-        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-        listComplete.add(TaskFile(UpLoadFile("ccc", false, true, true, 0, 0, 0)))
-
         fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listComplete)
         //fileGoingTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
         recyclerView2.adapter = fileCompleteTaskLisytAdapter
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onFileStatusChange(fileStatus: FileStatus) {
-
-
-    }
     fun reSetHeadTitle() {
-        var ongoing = fileGoingTaskLisytAdapter.data.size
-        var complete = fileCompleteTaskLisytAdapter.data.size
+        var ongoing = fileGoingTaskLisytAdapter.data.size -1
+        var complete = fileCompleteTaskLisytAdapter.data.size - 1
 
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
         completeTaskHead.header = "Completed (" + complete + ")"

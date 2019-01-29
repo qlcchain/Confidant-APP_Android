@@ -6,7 +6,10 @@ public class FileStatus {
     long totalSize;
     long sendSize;
     int sendSpeed;
+    public FileStatus()
+    {
 
+    }
     public FileStatus(String filePath,long totalSize,long sendSize,int sendSpeed) {
         this.filePath = filePath;
         this.totalSize = totalSize;

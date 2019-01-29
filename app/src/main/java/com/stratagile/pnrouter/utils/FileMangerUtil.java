@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
@@ -35,6 +36,7 @@ import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage;
 import com.stratagile.pnrouter.entity.events.FileStatus;
+import com.stratagile.pnrouter.entity.file.UpLoadFile;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
 import org.greenrobot.eventbus.EventBus;
@@ -141,6 +143,7 @@ public class FileMangerUtil {
     private static HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
     private static HashMap<String, String> sendFileNameMap = new HashMap<>();
+    private static HashMap<String, Integer> sendFileTotalSegment = new HashMap<>();
     private static HashMap<String, Long> sendFileSize = new HashMap<>();
     private static HashMap<String, Integer> sendFileLastByteSizeMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileLeftByteMap = new HashMap<>();
@@ -190,6 +193,8 @@ public class FileMangerUtil {
                                 try{
                                     long  miBegin = System.currentTimeMillis();
                                     fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                    int totlSegment = (int)Math.ceil(fileBufferMi.length / sendFileSizeMax);
+                                    sendFileTotalSegment.put(filePath,totlSegment);
                                     long miend  = System.currentTimeMillis();
                                     KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
                                     faBegin = System.currentTimeMillis();
@@ -264,9 +269,10 @@ public class FileMangerUtil {
                 int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
                 byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
                 int leftSize =fileBuffer.length - lastSendSize;
-                String filePath = sendFilePathMap.get(FileIdResult+"");
-                long fileSize  = sendFileSize.get(FileIdResult+"");
                 String msgId = sendMsgIdMap.get(FileIdResult+"");
+                String filePath = sendFilePathMap.get(msgId+"");
+                long fileSize  = sendFileSize.get(msgId);
+                int fileTotalSegment = sendFileTotalSegment.get(filePath);
                 if(leftSize >0)
                 {
                     new Thread(new Runnable(){
@@ -283,7 +289,15 @@ public class FileMangerUtil {
                                 if(!deleteFileMap.get(msgId))
                                 {
                                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
-                                    EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize - leftSize,10));
+
+                                    int segSeqTotal = sendFileTotalSegment.get(filePath);
+                                    UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,fileTotalSegment +1,segSeqTotal,10,false);
+                                    MyFile myRouter = new MyFile();
+                                    myRouter.setType(0);
+                                    myRouter.setUpLoadFile(uploadFile);
+                                    LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+
+                                    EventBus.getDefault().post(new FileStatus());
                                 }else{
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -297,7 +311,16 @@ public class FileMangerUtil {
                     }).start();
 
                 }else{
-                    EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
+
+                    int segSeqTotal = sendFileTotalSegment.get(filePath);
+                    UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false);
+                    MyFile myRouter = new MyFile();
+                    myRouter.setType(0);
+                    myRouter.setUpLoadFile(uploadFile);
+                    LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                    EventBus.getDefault().post(new FileStatus());
+
+                    //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
                     sendFilePathMap.remove(FileIdResult+"");
                     faEnd = System.currentTimeMillis();
@@ -576,6 +599,15 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     if(isHas)
                     {
+                        long fileSouceSize = file.length();
+                        int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                        UpLoadFile uploadFile = new UpLoadFile(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                        MyFile myRouter = new MyFile();
+                        myRouter.setType(0);
+                        myRouter.setUpLoadFile(uploadFile);
+                        LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                        EventBus.getDefault().post(new FileStatus());
+
                         String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                         String files_dir = imagePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))

@@ -51,7 +51,7 @@ object LocalFileUtils {
     //根据传入的集合(旧集合)获取迭代器
     //遍历老集合
     //记录每一个元素
-    val localAssetsList: ArrayList<MyFile>
+    val localFilesList: ArrayList<MyFile>
         get() {
             var userId = "fileData"
             var localAssetArrayList: ArrayList<MyFile> = ArrayList()

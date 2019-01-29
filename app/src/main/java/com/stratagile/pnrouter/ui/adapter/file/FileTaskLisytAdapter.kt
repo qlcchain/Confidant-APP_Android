@@ -22,14 +22,17 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         } else {
             helper.setGone(R.id.progressBar, true)
             helper.setGone(R.id.status, true)
+            helper.setProgress(R.id.progressBar,item.t.segSeqResult,item.t.segSeqTotal)
             if (item.t.isDownLoad) {
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.download_h))
             } else {
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
-            if (item.t.isStop) {
+            if (item.t.SendGgain) {
+                helper.setGone(R.id.status, true)
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
             } else {
+                helper.setGone(R.id.status, false)
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
