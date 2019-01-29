@@ -155,22 +155,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             if(userId == null || userId.equals(""))
             {
                 DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData.json")
-            }else{
-                var localFilesList = LocalFileUtils.localFilesList
-                for (myFie in localFilesList)
-                {
-                    if(myFie.upLoadFile.isComplete == false)
-                    {
-                        myFie.upLoadFile.SendGgain = true
-                        myFie.upLoadFile.segSeqResult = 0
-                        val myRouter = MyFile()
-                        myRouter.type = 0
-                        myRouter.upLoadFile = myFie.upLoadFile
-                        LocalFileUtils.updateLocalAssets(myRouter)
-                    }
-                }
             }
-
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)

@@ -636,6 +636,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun initData() {
         FileMangerUtil.init()
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
         }catch (e : Exception) {

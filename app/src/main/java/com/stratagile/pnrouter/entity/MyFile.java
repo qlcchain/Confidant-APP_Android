@@ -27,6 +27,16 @@ public class MyFile {
 
     private int type;
 
+    public String getUserSn() {
+        return userSn;
+    }
+
+    public void setUserSn(String userSn) {
+        this.userSn = userSn;
+    }
+
+    private String userSn;
+
     public UpLoadFile getUpLoadFile() {
         return upLoadFile;
     }
