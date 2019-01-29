@@ -70,7 +70,7 @@ object FileUtils {
   }
   def writeDataJsonFile(fileName: String, write: String, context: Context): Unit = {
     try {
-      var fw = new FileWriter(Environment.getExternalStorageDirectory().toString()+"/RouterData13/" + fileName);//SD卡中的路径
+      var fw = new FileWriter(Environment.getExternalStorageDirectory().toString()+"/RouterNewData/" + fileName);//SD卡中的路径
       fw.flush();
       fw.write(write);
       fw.close();

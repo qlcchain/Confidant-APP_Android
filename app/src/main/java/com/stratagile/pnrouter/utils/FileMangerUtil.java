@@ -483,7 +483,8 @@ public class FileMangerUtil {
 
 
     public static void sendVoiceFile(String filePath, int length) {
-        if(sendFilePathMap.get(filePath) != null)
+
+        if(sendFilePathMap.containsValue(filePath))
         {
             return;
         }
@@ -500,11 +501,11 @@ public class FileMangerUtil {
                     sendFilePathMap.put(uuid,filePath);
                     sendFileSize.put(uuid,file.length());
                     deleteFileMap.put(uuid,false);
-                    //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+
 
                     String fileKey =  RxEncryptTool.generateAESKey();
                     byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                    byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
+
                     byte[] SrcKey = new byte[256];
                     byte[] DstKey = new byte[256];
                     try {
@@ -512,10 +513,10 @@ public class FileMangerUtil {
                         if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                         {
                             SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                            DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                            DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                         }else{
                             SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                            DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                            DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                         }
                         sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                         sendFileMyKeyByteMap.put(uuid,SrcKey);
@@ -540,7 +541,6 @@ public class FileMangerUtil {
                         sendFilePathMap.put(uuid+"",base58files_dir);
                         sendFileSize.put(uuid+"",file.length());
                         deleteFileMap.put(uuid+"",false);
-                        //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
                         ToxFileData toxFileData = new ToxFileData();
                         toxFileData.setFromId(fromUserId);
                         toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -552,9 +552,7 @@ public class FileMangerUtil {
                         toxFileData.setFileSize((int)fileSize);
                         toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AUDIO);
                         toxFileData.setFileId(uuid);
-                        String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                         byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                        byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                         byte[] SrcKey = new byte[256];
                         byte[] DstKey = new byte[256];
                         try {
@@ -562,10 +560,10 @@ public class FileMangerUtil {
                             if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                             {
                                 SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                             }else{
                                 SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                             }
                         }catch (Exception e)
                         {
@@ -596,7 +594,7 @@ public class FileMangerUtil {
     }
 
     public static void sendImageFile(String imagePath,boolean isCompress) {
-        if(sendFilePathMap.get(imagePath) != null)
+        if(sendFilePathMap.containsValue(imagePath))
         {
             return;
         }
@@ -627,7 +625,6 @@ public class FileMangerUtil {
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
-                            //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -677,7 +674,7 @@ public class FileMangerUtil {
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
-                                //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -689,7 +686,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
+
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
@@ -742,7 +739,7 @@ public class FileMangerUtil {
 
     }
     public static void sendVideoFile(String videoPath) {
-        if(sendFilePathMap.get(videoPath) != null)
+        if(sendFilePathMap.containsValue(videoPath))
         {
             return;
         }
@@ -774,7 +771,6 @@ public class FileMangerUtil {
                             sendFilePathMap.put(uuid,videoPath);
                             sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
-                            //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -823,7 +819,7 @@ public class FileMangerUtil {
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
-                                //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -835,7 +831,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
+
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
 
                                 byte[] SrcKey = new byte[256];
@@ -886,7 +882,7 @@ public class FileMangerUtil {
     }
 
     public static void sendOtherFile(String filePath) {
-        if(sendFilePathMap.get(filePath) != null)
+        if(sendFilePathMap.containsValue(filePath))
         {
             return;
         }
@@ -918,11 +914,10 @@ public class FileMangerUtil {
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
                             deleteFileMap.put(uuid,false);
-                            //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+
 
                             String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
@@ -930,10 +925,10 @@ public class FileMangerUtil {
                                 if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                 {
                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                 }else{
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                 }
                                 sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
@@ -967,7 +962,7 @@ public class FileMangerUtil {
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());
                                 deleteFileMap.put(uuid+"",false);
-                                //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -979,9 +974,8 @@ public class FileMangerUtil {
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_FILE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
+
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                                byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
@@ -989,10 +983,10 @@ public class FileMangerUtil {
                                     if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                     {
                                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                     }else{
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     }
                                 }catch (Exception e)
                                 {

@@ -129,7 +129,7 @@ object ToxSingleton {
     ) yield nodes
   }
   def readCacheJsondDhtNodes(ctx: Context): Option[Seq[DhtNode]] = {
-    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterData13/", nodeFileName)
+    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterNewData/", nodeFileName)
     var isExit = savedNodeFile.exists()
     savedNodeFile.lastModified()
     for (
@@ -138,7 +138,7 @@ object ToxSingleton {
     ) yield nodes
   }
   def deleteCacheJsondDhtNodes(ctx: Context): Unit = {
-    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterData13/", nodeFileName)
+    val savedNodeFile = new File(Environment.getExternalStorageDirectory().toString()+"/RouterNewData/", nodeFileName)
     savedNodeFile.lastModified()
 
   }

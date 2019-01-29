@@ -5,6 +5,7 @@ import android.os.Environment;
 import com.google.gson.Gson;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import events.ToxReceiveFileFinishedEvent;
@@ -46,7 +47,7 @@ public class ToxCoreJni {
         if (instance == null) {
             instance = new ToxCoreJni();
             connectStatus = ToxConnection.NONE;
-            File dataFile = new File(Environment.getExternalStorageDirectory() + "/RouterData13", "");
+            File dataFile = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath(), "");
             if (!dataFile.exists()) {
                 dataFile.mkdir();
             }

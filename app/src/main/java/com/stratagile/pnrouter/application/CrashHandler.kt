@@ -140,7 +140,7 @@ class CrashHandler private constructor() : Thread.UncaughtExceptionHandler {
 
         // 判断有没有SD卡
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            val dir = File(Environment.getExternalStorageDirectory().absolutePath + "/RouterData13/ppmcrash")
+            val dir = File(Environment.getExternalStorageDirectory().absolutePath + ConstantValue.localPath+"/ppmcrash")
             if (!dir.exists()) {
                 dir.mkdirs()
             }

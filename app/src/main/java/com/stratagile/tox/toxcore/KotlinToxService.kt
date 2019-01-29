@@ -6,6 +6,7 @@ import android.os.Environment
 import android.os.IBinder
 import com.google.gson.Gson
 import com.socks.library.KLog
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.tox.entity.DhtJson
 import com.stratagile.tox.toxcallback.ToxCallbackListener
@@ -21,7 +22,7 @@ class KotlinToxService : Service() {
     override fun onCreate() {
         super.onCreate()
         val toxCallbackListener = ToxCallbackListener()
-        val dataFile = File(Environment.getExternalStorageDirectory().toString() + "/RouterData13", "")
+        val dataFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath, "")
         if (!dataFile.exists()) {
             dataFile.mkdir()
         }

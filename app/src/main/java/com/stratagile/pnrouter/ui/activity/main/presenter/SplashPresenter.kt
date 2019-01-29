@@ -141,7 +141,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             LocalRouterUtils.inspectionLocalData();
             LocalRouterUtils.updateGreanDaoFromLocal()
             var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"
-            val savedNodeFile = Environment.getExternalStorageDirectory().toString()+"/RouterData13/Nodefile.json"
+            val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
             RxFileTool.deleteNodefile(savedNodeFile)
             DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+"/temp/")
@@ -151,19 +151,26 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             }else{
                 ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
             }
-            var localFilesList = LocalFileUtils.localFilesList
-            for (myFie in localFilesList)
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(userId == null || userId.equals(""))
             {
-                if(myFie.upLoadFile.isComplete == false)
+                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData.json")
+            }else{
+                var localFilesList = LocalFileUtils.localFilesList
+                for (myFie in localFilesList)
                 {
-                    myFie.upLoadFile.SendGgain = true
-                    myFie.upLoadFile.segSeqResult = 0
-                    val myRouter = MyFile()
-                    myRouter.type = 0
-                    myRouter.upLoadFile = myFie.upLoadFile
-                    LocalFileUtils.updateLocalAssets(myRouter)
+                    if(myFie.upLoadFile.isComplete == false)
+                    {
+                        myFie.upLoadFile.SendGgain = true
+                        myFie.upLoadFile.segSeqResult = 0
+                        val myRouter = MyFile()
+                        myRouter.type = 0
+                        myRouter.upLoadFile = myFie.upLoadFile
+                        LocalFileUtils.updateLocalAssets(myRouter)
+                    }
                 }
             }
+
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)

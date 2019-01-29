@@ -364,3 +364,9 @@ data class ResetUserIdcodeReq(var RouterId :String, var UserSn : String,var OldC
  * (2)	响应（APP->Router）
  */
 data class UploadFileReq(var UserId :String, var FileName : String,var FileSize : Long,var FileType : Int, var Action : String = "UploadFileReq")
+
+/**
+ * 45.	删除文件
+ * (2)	响应（APP->Router）
+ */
+data class DelFileReq(var UserId :String, var FileName : String,var Action : String = "DelFile")
