@@ -1,6 +1,7 @@
 package com.stratagile.tox.toxcallback
 
 import com.socks.library.KLog
+import com.stratagile.pnrouter.utils.LogUtil
 import events.ToxFriendStatusEvent
 import events.ToxMessageEvent
 import events.ToxStatusEvent
@@ -10,6 +11,8 @@ class OnConnectionStatusCallback {
     fun onConnectionStatusCallback(freindId : String, toxConnection: ToxConnection) {
         KLog.i("好友id：" + freindId)
         KLog.i("好友连接状态：" + toxConnection)
+        LogUtil.addLog("tox好友id：" + freindId)
+        LogUtil.addLog("tox好友连接状态：" + toxConnection)
         if (toxConnection.ordinal == 0) {
             EventBus.getDefault().post(ToxFriendStatusEvent(0))
         } else {
