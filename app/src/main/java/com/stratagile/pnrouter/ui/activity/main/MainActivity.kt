@@ -67,6 +67,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 /**
@@ -1203,7 +1204,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
             startActivity(startIntent)
         } else if (requestCode == SELECT_DEOCUMENT && resultCode == Activity.RESULT_OK) {
-            KLog.i(data!!.getStringExtra("path"))
+            var list = ArrayList<LocalMedia>()
+            var localMedia = LocalMedia()
+            localMedia.path = data!!.getStringExtra("path")
+            list.add(localMedia)
+            KLog.i(list)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
         }
     }
 

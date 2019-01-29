@@ -67,7 +67,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             FileMangerUtil.sendVideoFile(localMedia!!.path)
                         }
                         else -> {
-
+                            FileMangerUtil.sendOtherFile(localMedia!!.path)
                         }
                     }
 

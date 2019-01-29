@@ -900,10 +900,18 @@ public class FileMangerUtil {
                     if(isHas)
                     {
                         String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+filePath.substring(filePath.lastIndexOf("/")+1);
-
                         String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            long fileSouceSize = file.length();
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            UpLoadFile uploadFile = new UpLoadFile(filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            MyFile myRouter = new MyFile();
+                            myRouter.setType(0);
+                            myRouter.setUpLoadFile(uploadFile);
+                            LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                            EventBus.getDefault().post(new FileStatus());
+
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
                             sendMsgLocalMap.put(uuid,false);
@@ -944,6 +952,16 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
                             if(code == 1)
                             {
+                                File miFile = new File(base58files_dir);
+                                long fileSouceSize = miFile.length();
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                MyFile myRouter = new MyFile();
+                                myRouter.setType(0);
+                                myRouter.setUpLoadFile(uploadFile);
+                                LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                                EventBus.getDefault().post(new FileStatus());
+
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
