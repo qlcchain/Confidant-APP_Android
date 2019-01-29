@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
 import com.stratagile.pnrouter.entity.CryptoBoxKeypair
+import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.RSAData
 import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.utils.*
@@ -149,6 +150,19 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
             }else{
                 ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
+            }
+            var localFilesList = LocalFileUtils.localFilesList
+            for (myFie in localFilesList)
+            {
+                if(myFie.upLoadFile.isComplete == false)
+                {
+                    myFie.upLoadFile.SendGgain = true
+                    myFie.upLoadFile.segSeqResult = 0
+                    val myRouter = MyFile()
+                    myRouter.type = 0
+                    myRouter.upLoadFile = myFie.upLoadFile
+                    LocalFileUtils.updateLocalAssets(myRouter)
+                }
             }
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)

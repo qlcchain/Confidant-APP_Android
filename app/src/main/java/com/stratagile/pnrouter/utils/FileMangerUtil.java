@@ -201,6 +201,13 @@ public class FileMangerUtil {
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
                                         sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
+                                        int segSeqTotal = sendFileTotalSegment.get(filePath);
+                                        UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,0,segSeqTotal,10,false);
+                                        MyFile myRouter = new MyFile();
+                                        myRouter.setType(0);
+                                        myRouter.setUpLoadFile(uploadFile);
+                                        LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                                        EventBus.getDefault().post(new FileStatus());
                                     }else{
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -852,13 +859,19 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     if(isHas)
                     {
+
+                        long fileSouceSize = file.length();
+                        int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                        UpLoadFile uploadFile = new UpLoadFile(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                        MyFile myRouter = new MyFile();
+                        myRouter.setType(0);
+                        myRouter.setUpLoadFile(uploadFile);
+                        LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                        EventBus.getDefault().post(new FileStatus());
+
                         String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
-                        String videoName = videoPath.substring(videoPath.lastIndexOf("/")+1,videoPath.lastIndexOf(".")+1);
-                        String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
-                        FileUtil.saveBitmpToFile(bitmap,thumbPath);
-
 
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
@@ -871,18 +884,17 @@ public class FileMangerUtil {
 
                             String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
-                            byte[] SrcKey = new byte[256];
+                                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
 
                                 if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                 {
                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                 }else{
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                 }
                                 sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
@@ -921,7 +933,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileId(uuid);
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                                byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
+
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
                                 try {
@@ -929,10 +941,10 @@ public class FileMangerUtil {
                                     if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                     {
                                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                     }else{
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     }
                                 }catch (Exception e)
                                 {
