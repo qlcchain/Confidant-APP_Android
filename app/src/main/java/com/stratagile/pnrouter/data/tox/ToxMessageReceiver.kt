@@ -180,7 +180,7 @@ class ToxMessageReceiver(){
     private fun sendKeepAlive() {
         if (keepAliveSender != null && ConstantValue.isToxConnected && !ConstantValue.loginOut) {
             //todo keepalive message
-            if (ConstantValue.curreantNetworkType == "TOX" && ConstantValue.isToxConnected)
+            if (ConstantValue.curreantNetworkType == "TOX" && ConstantValue.isToxConnected && !ConstantValue.currentRouterId.equals(""))
             {
                 var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")

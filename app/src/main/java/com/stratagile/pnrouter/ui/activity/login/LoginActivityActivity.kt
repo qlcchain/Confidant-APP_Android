@@ -454,24 +454,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                closeProgressDialog()
                                break
                            }
-                            /*if(!loginOk && isToxLoginOverTime && maxLogin < 5)
-                            {
-                                if(ConstantValue.isToxConnected)
-                                {
-                                    var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
-                                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                                    ConstantValue.loginReq = login
-                                    var baseData = BaseData(2,login)
-                                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                    MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                }
-                                maxLogin ++;
-                            }else{
-                                closeProgressDialog()
-                                break
-                            }*/
-                            Thread.sleep(2000)
+                             Thread.sleep(2000)
                         }
 
                     }

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -31,6 +32,7 @@ import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -80,8 +82,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     var RouterMacStr = ""
     var scanType = 0 // 0 admin   1 其他
     var isFromScanAdmim = false
+    var threadInit = false
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
 
+        ConstantValue.unSendMessage.remove("recovery")
+        ConstantValue.unSendMessageFriendId.remove("recovery")
+        ConstantValue.unSendMessageSendCount.remove("recovery")
         closeProgressDialog();
         /*FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
         var newRouterEntity = RouterEntity()
@@ -514,6 +520,21 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
                 if(!ConstantValue.scanRouterId.equals(""))
                 {
+
+                    runOnUiThread {
+                        var tips = "login..."
+                        if(ConstantValue.freindStatus == 1)
+                        {
+                            tips = "wait..."
+                        }else{
+                            tips = "router connecting..."
+                        }
+                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                false
+                            } else false
+                        })
+                    }
                     AppConfig.instance.messageReceiver!!.recoveryBackListener = this
                     if (ConstantValue.isAntox) {
                         InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
@@ -528,7 +549,11 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                         var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+
+                        ConstantValue.unSendMessage.put("recovery",baseDataJson)
+                        ConstantValue.unSendMessageFriendId.put("recovery",ConstantValue.scanRouterId.substring(0, 64))
+                        ConstantValue.unSendMessageSendCount.put("recovery",0)
+                        //ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                     }
                 }
             }
@@ -543,8 +568,50 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
         if(toxFriendStatusEvent.status == 1)
         {
+            ConstantValue.freindStatus = 1
+            if(!threadInit)
+            {
+                Thread(Runnable() {
+                    run() {
+
+                        while (true)
+                        {
+                            if(ConstantValue.unSendMessage.size >0)
+                            {
+                                for (key in ConstantValue.unSendMessage.keys)
+                                {
+                                    var sendData = ConstantValue.unSendMessage.get(key)
+                                    var friendId = ConstantValue.unSendMessageFriendId.get(key)
+                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if(sendCount < 5)
+                                    {
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                        }
+                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
+                                    }else{
+                                        closeProgressDialog()
+                                        break
+                                    }
+                                }
+
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
+                        }
+
+                    }
+                }).start()
+                threadInit = true
+            }
             LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
         }else{
+            ConstantValue.freindStatus = 0
             LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
         }
 
@@ -781,6 +848,13 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         ConstantValue.curreantNetworkType = "TOX"
         if(!ConstantValue.isToxConnected)
         {
+            runOnUiThread {
+                showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        false
+                    } else false
+                })
+            }
             LogUtil.addLog("P2P启动连接:","GuestActivity")
             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
             if(ConstantValue.isAntox)
