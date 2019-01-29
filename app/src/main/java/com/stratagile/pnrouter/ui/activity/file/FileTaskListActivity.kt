@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.file
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.luck.picture.lib.config.PictureConfig
@@ -117,9 +118,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         EventBus.getDefault().register(this)
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)
-
         title.text = "Task List"
-
+        listGoing = mutableListOf<TaskFile>()
+        listComplete  = mutableListOf<TaskFile>()
         ongoingTaskHead = TaskFile(true, "111")
         completeTaskHead = TaskFile(true, "222")
 
@@ -199,12 +200,17 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
-        //fileGoingTaskLisytAdapter.notifyItemChanged()
+        fileGoingTaskLisytAdapter.setOnItemChildClickListener { adapter, view, position ->
+
+        }
         recyclerView.adapter = fileGoingTaskLisytAdapter
+        recyclerView.setNestedScrollingEnabled(false)
+        recyclerView.setHasFixedSize(true)
         fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listComplete)
-        //fileGoingTaskLisytAdapter.notifyItemChanged()
         reSetHeadTitle()
         recyclerView2.adapter = fileCompleteTaskLisytAdapter
+        recyclerView2.setNestedScrollingEnabled(false)
+        recyclerView2.setHasFixedSize(true)
     }
     fun reSetHeadTitle() {
         var ongoing = fileGoingTaskLisytAdapter.data.size -1
@@ -213,6 +219,16 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
         completeTaskHead.header = "Completed (" + complete + ")"
         fileGoingTaskLisytAdapter.notifyDataSetChanged()
+        if (ongoing == 0) {
+            recyclerView.visibility = View.GONE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+        }
+        if (complete == 0) {
+            recyclerView2.visibility = View.GONE
+        } else {
+            recyclerView2.visibility = View.VISIBLE
+        }
     }
 
     override fun setupActivityComponent() {

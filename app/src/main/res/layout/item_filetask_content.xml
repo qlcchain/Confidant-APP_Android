@@ -35,6 +35,9 @@
         <TextView
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:maxEms="10"
             android:layout_height="match_parent"
             android:text="Google project development.zip"
             android:textColor="@color/color_3f3f3f"
