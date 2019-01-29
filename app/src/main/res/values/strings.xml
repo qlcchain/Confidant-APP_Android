@@ -511,5 +511,8 @@
     <string name="Documents_already_exist">Documents with the same name already exist</string>
     <string name="not_enough_space">not enough space</string>
     <string name="Start_uploading">Start uploading</string>
+    <string name="deletsuccess">Delete success</string>
+    <string name="No_authority"> No authority</string>
+
 
 </resources>

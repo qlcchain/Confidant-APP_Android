@@ -74,7 +74,15 @@ object LocalFileUtils {
             } finally {
 
             }
-            return localAssetArrayList
+            var localNeedAssetArrayList: ArrayList<MyFile> = ArrayList()
+            for (myFile in localAssetArrayList)
+            {
+                if(myFile.type == 0 && myFile.userSn.equals(ConstantValue.currentRouterSN))
+                {
+                    localNeedAssetArrayList.add(myFile)
+                }
+            }
+            return localNeedAssetArrayList
         }
     /**
      * 同步sd上的文件数据到greenDao

@@ -257,6 +257,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jPullFileListRsp = gson.fromJson(text, JPullFileListRsp::class.java)
                     fileManageBack?.pullFileListRsp(jPullFileListRsp)
                 }
+                //删除文件
+                "DelFile" -> {
+                    val jDelFileRsp = gson.fromJson(text, JDelFileRsp::class.java)
+                    fileManageBack?.deleFileRsp(jDelFileRsp)
+                }
             }
         }
 
@@ -504,6 +509,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     interface FileManageBack {
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
+        fun deleFileRsp(jDelFileRsp :JDelFileRsp)
     }
 }
 

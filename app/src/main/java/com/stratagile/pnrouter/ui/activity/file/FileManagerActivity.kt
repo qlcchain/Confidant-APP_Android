@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -15,9 +16,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JPullFileListRsp
-import com.stratagile.pnrouter.entity.PullFileListReq
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.FileManagerContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileManagerModule
@@ -41,6 +40,34 @@ import javax.inject.Inject;
  */
 
 class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterServiceMessageReceiver.FileManageBack {
+    override fun deleFileRsp(jDelFileRsp: JDelFileRsp) {
+
+        when(jDelFileRsp.params.retCode)
+        {
+            0 ->{
+
+                runOnUiThread {
+                    fileListChooseAdapter!!.data.remove(waitDeleteData!!)
+                    fileListChooseAdapter!!.notifyDataSetChanged()
+                    closeProgressDialog()
+                    toast(R.string.deletsuccess)
+                }
+            }
+            1 ->{
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.File_does_not_exist)
+                }
+            }
+            2 ->{
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.No_authority)
+                }
+            }
+        }
+    }
+
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         runOnUiThread {
@@ -55,6 +82,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     //类型，0 = My Files 1 = sent 2 = Documents received
     var fileType = 0
+
+    var waitDeleteData:JPullFileListRsp.ParamsBean.PayloadBean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,8 +159,24 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 5 -> {
-                                    fileListChooseAdapter!!.data.remove(data)
-                                    fileListChooseAdapter!!.notifyDataSetChanged()
+                                    showProgressDialog("wait…")
+                                    waitDeleteData = data
+                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                    var delFileReq = DelFileReq(selfUserId!!, data.fileName)
+                                    var sendData = BaseData(2, delFileReq)
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+                                    }else if (ConstantValue.isToxConnected) {
+                                        var baseData = sendData
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -163,16 +208,16 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     }
 
     override fun setupActivityComponent() {
-       DaggerFileManagerComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .fileManagerModule(FileManagerModule(this))
-               .build()
-               .inject(this)
+        DaggerFileManagerComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .fileManagerModule(FileManagerModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: FileManagerContract.FileManagerContractPresenter) {
-            mPresenter = presenter as FileManagerPresenter
-        }
+        mPresenter = presenter as FileManagerPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
