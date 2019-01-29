@@ -107,7 +107,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
                 {
                     msgSouce = LibsodiumUtil.DecryptFriendMsg(it.msg, it.nonce, it.from, it.sign)
                 }else{
-                    msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
+                    //msgSouce =  RxEncodeTool.RestoreMessage(it.getUserKey(), it.getMsg())
                 }
                 if (msgSouce != null && msgSouce != "") {
                     it.setMsg(msgSouce)
