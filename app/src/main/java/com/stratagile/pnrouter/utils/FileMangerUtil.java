@@ -896,7 +896,7 @@ public class FileMangerUtil {
                     if(isHas)
                     {
                         String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
-                        String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
+                        String files_dir = filePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
