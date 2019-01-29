@@ -295,7 +295,7 @@ public class FileMangerUtil {
                                 byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult+"");
                                 if(!deleteFileMap.get(msgId))
                                 {
-                                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
+                                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"","",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
 
                                     int segSeqTotal = sendFileTotalSegment.get(filePath);
                                     UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,fileTotalSegment +1,segSeqTotal,10,false);
@@ -584,6 +584,9 @@ public class FileMangerUtil {
                         sendToxFileDataMap.put(fileNumber,toxFileData);
                     }
                 }
+            }else{
+                LocalFileUtils.INSTANCE.deleteLocalAssets(filePath);
+                EventBus.getDefault().post(new FileStatus(filePath,1));
             }
         }catch (Exception e)
         {
@@ -606,19 +609,19 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     if(isHas)
                     {
-                        long fileSouceSize = file.length();
-                        int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                        UpLoadFile uploadFile = new UpLoadFile(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
-                        MyFile myRouter = new MyFile();
-                        myRouter.setType(0);
-                        myRouter.setUpLoadFile(uploadFile);
-                        LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                        EventBus.getDefault().post(new FileStatus());
-
                         String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                         String files_dir = imagePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            long fileSouceSize = file.length();
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            UpLoadFile uploadFile = new UpLoadFile(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            MyFile myRouter = new MyFile();
+                            myRouter.setType(0);
+                            myRouter.setUpLoadFile(uploadFile);
+                            LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                            EventBus.getDefault().post(new FileStatus());
+
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
@@ -651,11 +654,24 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = imagePath;
+                            String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey,isCompress);
                             if(code == 1)
                             {
+
+                                File miFile = new File(base58files_dir);
+                                long fileSouceSize = miFile.length();
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                MyFile myRouter = new MyFile();
+                                myRouter.setType(0);
+                                myRouter.setUpLoadFile(uploadFile);
+                                LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                                EventBus.getDefault().post(new FileStatus());
+
+
+
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
@@ -712,7 +728,8 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(imagePath);
+                        EventBus.getDefault().post(new FileStatus(imagePath,1));
                     }
 
                 }catch (Exception e)
@@ -724,129 +741,7 @@ public class FileMangerUtil {
         }).start();
 
     }
-    protected void sendCameraImageMessage(String imagePath) {
-        if(friendStatus != 0)
-        {
-            //Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        new Thread(new Runnable(){
-            public void run(){
-
-                try
-                {
-                    String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
-                    File file = new File(imagePath);
-                    boolean isHas = file.exists();
-                    if(isHas)
-                    {
-
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            sendMsgLocalMap.put(uuid,false);
-                            sendFilePathMap.put(uuid,imagePath);
-                            sendFileSize.put(uuid,file.length());
-                            deleteFileMap.put(uuid,false);
-                            //sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
-
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
-                            byte[] SrcKey = new byte[256];
-                            byte[] DstKey = new byte[256];
-                            try {
-
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                }else{
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
-                                }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                                sendFileMyKeyByteMap.put(uuid,SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid,DstKey);
-                            }catch (Exception e){
-                                //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-                        }else{
-                            String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = imagePath;
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,fileKey);
-                            if(code == 1)
-                            {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                sendFileSize.put(uuid+"",file.length());
-                                deleteFileMap.put(uuid+"",false);
-                                //sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
-                                ToxFileData toxFileData = new ToxFileData();
-                                toxFileData.setFromId(fromUserId);
-                                toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                File fileMi = new File(base58files_dir);
-                                long fileSize = fileMi.length();
-                                String fileMD5 = FileUtil.getFileMD5(fileMi);
-                                toxFileData.setFileName(strBase58);
-                                toxFileData.setFileMD5(fileMD5);
-                                toxFileData.setFileSize((int)fileSize);
-                                toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
-                                toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
-                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                                byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
-                                byte[] SrcKey = new byte[256];
-                                byte[] DstKey = new byte[256];
-                                try {
-
-                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                    {
-                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                    }else{
-                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
-                                    }
-                                }catch (Exception e)
-                                {
-
-                                }
-                                toxFileData.setSrcKey(new String(SrcKey));
-                                toxFileData.setDstKey(new String(DstKey));
-
-                                String fileNumber = "";
-                                if(ConstantValue.INSTANCE.isAntox())
-                                {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                                }else {
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
-                                }
-                                sendToxFileDataMap.put(fileNumber,toxFileData);
-                            }
-                        }
-
-
-                    }else{
-                        //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
-                    }
-                }catch (Exception e)
-                {
-
-                }
-            }
-
-        }).start();
-
-    }
-    public static void sendVideoFile(String videoPath,boolean isLocal) {
+    public static void sendVideoFile(String videoPath) {
         if(sendFilePathMap.get(videoPath) != null)
         {
             return;
@@ -859,22 +754,21 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     if(isHas)
                     {
-
-                        long fileSouceSize = file.length();
-                        int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                        UpLoadFile uploadFile = new UpLoadFile(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
-                        MyFile myRouter = new MyFile();
-                        myRouter.setType(0);
-                        myRouter.setUpLoadFile(uploadFile);
-                        LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                        EventBus.getDefault().post(new FileStatus());
-
                         String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
 
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            long fileSouceSize = file.length();
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            UpLoadFile uploadFile = new UpLoadFile(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            MyFile myRouter = new MyFile();
+                            myRouter.setType(0);
+                            myRouter.setUpLoadFile(uploadFile);
+                            LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                            EventBus.getDefault().post(new FileStatus());
+
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
@@ -884,7 +778,7 @@ public class FileMangerUtil {
 
                             String fileKey =  RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                                             byte[] SrcKey = new byte[256];
+                            byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
 
@@ -909,11 +803,21 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(videoFileName.getBytes());
-                            String base58files_dir = videoPath;
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey);
                             if(code == 1)
                             {
+                                File miFile = new File(base58files_dir);
+                                long fileSouceSize = miFile.length();
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                MyFile myRouter = new MyFile();
+                                myRouter.setType(0);
+                                myRouter.setUpLoadFile(uploadFile);
+                                LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                                EventBus.getDefault().post(new FileStatus());
+
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
@@ -967,7 +871,8 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(videoPath);
+                        EventBus.getDefault().post(new FileStatus(videoPath,1));
                     }
                 }catch (Exception e)
                 {
@@ -1034,7 +939,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = filePath;
+                            String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
                             if(code == 1)
@@ -1094,7 +999,8 @@ public class FileMangerUtil {
                         FileUtil.copySdcardFile(filePath,files_dir);
 
                     }else{
-                        //Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(filePath);
+                        EventBus.getDefault().post(new FileStatus(filePath,1));
                     }
 
                 }catch (Exception e)

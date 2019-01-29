@@ -63,7 +63,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             FileMangerUtil.sendImageFile(localMedia!!.path,false)
                         }
                         "video/mp4"-> {
-
+                            FileMangerUtil.sendVideoFile(localMedia!!.path)
                         }
                         else -> {
 
@@ -178,6 +178,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
+        if(fileStatus.result == 1)
+        {
+            toast(R.string.File_does_not_exist)
+        }
         updataUI()
     }
     fun updataUI()
