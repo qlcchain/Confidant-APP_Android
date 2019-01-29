@@ -1,14 +1,21 @@
 package com.stratagile.pnrouter.ui.activity.file
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.hyphenate.easeui.ui.EaseShowBigImageActivity
+import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
+import com.hyphenate.easeui.ui.EaseShowVideoActivity
+import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -29,6 +36,7 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
+import java.io.File
 import java.util.HashMap
 
 import javax.inject.Inject;
@@ -151,13 +159,15 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 1 -> {
+                                    runOnUiThread {
+                                        showProgressDialog("wait…")
+                                    }
                                     var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
                                     var files_dir = PathUtils.getInstance().filePath.toString()+"/"
                                     if (ConstantValue.isWebsocketConnected) {
                                         receiveFileDataMap.put(data.msgId.toString(),data)
                                         FileDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
                                     }else{
-
                                         /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
                                         var base58Name =  Base58.encode(fileMiName.toByteArray())
                                         receiveToxFileDataMap.put(base58Name,data)
@@ -173,7 +183,71 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     }
                                 }
                                 2 -> {
+                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                    var base58Name =  String(Base58.decode(fileMiName))
+                                    var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+                                    var file = File(filePath)
+                                    if(!file.exists())
+                                    {
+                                        runOnUiThread {
+                                            toast(R.string.You_need_to_download)
+                                            showProgressDialog("wait…")
+                                        }
+                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
+                                        var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            receiveFileDataMap.put(data.msgId.toString(),data)
+                                            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                        }else{
 
+                                            /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                            var base58Name =  Base58.encode(fileMiName.toByteArray())
+                                            receiveToxFileDataMap.put(base58Name,data)
+                                            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
+                                            var baseData = BaseData(msgData)
+                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                            if (ConstantValue.isAntox) {
+                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            }else{
+                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                            }*/
+                                        }
+                                    }else{
+                                        if(base58Name.indexOf("jpg") > -1 || base58Name.indexOf("jpeg") > -1 || base58Name.indexOf("png") > -1 )
+                                        {
+                                            val intent = Intent(AppConfig.instance, EaseShowBigImageActivity::class.java)
+                                            val file = File(filePath)
+                                            val uri = Uri.fromFile(file)
+                                            intent.putExtra("uri", uri)
+                                            startActivity(intent)
+                                        }else if(base58Name.indexOf("mp4") > -1 )
+                                        {
+                                            val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                                            intent.putExtra("path", filePath)
+                                            startActivity(intent)
+                                        }else{
+                                            if (file.exists()) run {
+                                                val newFilePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/temp/" + file.name
+                                                val result = FileUtil.copyAppFileToSdcard(filePath, newFilePath)
+                                                if (result == 1) {
+                                                    try {
+                                                        OpenFileUtil.getInstance(AppConfig.instance)
+                                                        val intent = OpenFileUtil.openFile(newFilePath)
+                                                        startActivity(intent)
+                                                        //FileUtils.openFile(file, (Activity) getContext());
+                                                    } catch (e: Exception) {
+                                                        e.printStackTrace()
+                                                    }
+
+                                                } else {
+                                                    Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show()
+                                                }
+
+                                            }
+                                        }
+
+                                    }
                                 }
                                 3 -> {
                                     startActivity(Intent(this@FileManagerActivity, FileDetailInformationActivity::class.java))
@@ -276,16 +350,18 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {
-
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_failed)
+                    }
                 }
                 0x55 -> {
                     var data:Bundle = msg.data;
                     var msgId = data.getInt("msgID")
-                    var jPushFileMsgRsp:JPullFileListRsp.ParamsBean.PayloadBean = receiveFileDataMap.get(msgId.toString())!!
-                   /* var fileName:String = jPushFileMsgRsp.params.fileName;
-                    var fromId = jPushFileMsgRsp.params.fromId;
-                    var toId = jPushFileMsgRsp.params.toId
-                    var FileType = jPushFileMsgRsp.params.fileType*/
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_success)
+                    }
                     receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();

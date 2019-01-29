@@ -76,7 +76,6 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                 Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show();
             }
 
-
         } else {
             // download the file
             getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));

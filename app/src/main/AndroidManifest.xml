@@ -132,7 +132,9 @@
         <activity
             android:name="com.hyphenate.easeui.ui.EaseShowVideoActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name="com.hyphenate.easeui.ui.EaseShowFileVideoActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.conversation.ConversationActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"

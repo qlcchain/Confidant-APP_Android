@@ -512,7 +512,11 @@
     <string name="not_enough_space">not enough space</string>
     <string name="Start_uploading">Start uploading</string>
     <string name="deletsuccess">Delete success</string>
-    <string name="No_authority"> No authority</string>
+    <string name="No_authority">No authority</string>
+    <string name="Download_failed">Download failed</string>
+    <string name="Download_success">Download success</string>
+    <string name="You_need_to_download">You need to download it before you can view it.</string>
+
 
 
 </resources>
