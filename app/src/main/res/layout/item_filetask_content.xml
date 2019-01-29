@@ -62,6 +62,7 @@
                 android:src="@mipmap/download_h"
                 android:layout_height="@dimen/x23" />
             <TextView
+                android:id="@+id/filesize"
                 android:layout_width="wrap_content"
                 android:text="15.4M"
                 android:textSize="10sp"
@@ -72,6 +73,7 @@
                 android:layout_weight="1"
                 android:layout_height="1px"/>
             <TextView
+                android:id="@+id/speed"
                 android:layout_width="wrap_content"
                 android:textSize="10sp"
                 android:text="105KB/s"
