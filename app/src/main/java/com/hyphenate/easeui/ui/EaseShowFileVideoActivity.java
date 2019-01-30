@@ -42,7 +42,7 @@ public class EaseShowFileVideoActivity extends EaseBaseActivity{
 		loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-		String path = getIntent().getParcelableExtra("path");
+		String path = getIntent().getStringExtra("path");
 		localFilePath = path;
 		if (localFilePath != null && new File(localFilePath).exists()) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);

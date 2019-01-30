@@ -217,6 +217,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			while((n=in.read(buffer, 0, 1024*8))!=-1){
 				out.write(buffer, 0, n);
 				count+=n;
+				Log.d(TAG,"downloading^");
 			}
 			out.flush();
 		} catch (IOException e) {
