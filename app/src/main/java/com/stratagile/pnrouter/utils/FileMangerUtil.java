@@ -492,15 +492,16 @@ public class FileMangerUtil {
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
-        String fileName = receiveToxFileNameMap.get(fileNumber+"");
+        String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
-        if(fileName != null)
+        String [] fileNameArray = fileNameAndUserId.split(":");
+        String fileName = fileNameArray[1];
+        if(fileNameAndUserId != null)
         {
-            String fileNameTemp = fileName;
-            String fileOrginName = new String(Base58.decode(fileNameTemp));
-            String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameTemp;
+            String fileOrginName = new String(Base58.decode(fileName));
+            String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameAndUserId;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
-            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileNameTemp);
+            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileName);
             String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(data.getUserKey());
             int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
             UpLoadFile uploadFile = new UpLoadFile(fileName,fileSize, true, true, false,1,1,0,false);
@@ -529,19 +530,18 @@ public class FileMangerUtil {
     }
     public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
     {
-        String [] fileNameArray = fileName.split(":");
+
         if(ConstantValue.INSTANCE.isAntox())
         {
             FriendKey friendKey = new FriendKey(key);
             if(friendKey != null)
             {
-
-                receiveToxFileNameMap.put(fileNumber+"",fileNameArray[1]);
+                receiveToxFileNameMap.put(fileNumber+"",fileName);
 
                 MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
             }
         }else{
-            receiveToxFileNameMap.put(fileNumber+"",fileNameArray[1]);
+            receiveToxFileNameMap.put(fileNumber+"",fileName);
         }
 
     }
