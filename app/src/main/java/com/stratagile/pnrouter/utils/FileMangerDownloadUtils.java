@@ -17,8 +17,9 @@ import java.util.HashMap;
 /**
  * Created by Administrator on 2016/6/30.
  */
-public class FileDownloadUtils {
+public class FileMangerDownloadUtils {
     private static ZipUnTask task;
+    private static HashMap<String, String> downFilePathMap = new HashMap<>();
     public static void doZipUnWork(String from, String to, Context context, Boolean replaceAll, Handler handler){
         task = new ZipUnTask(from, to, context, replaceAll,handler);
         task.execute();
@@ -35,8 +36,20 @@ public class FileDownloadUtils {
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
-        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key);
-        task.execute();
+        if(!downFilePathMap.containsKey(msgId+""))
+        {
+            UpLoadFile uploadFile = new UpLoadFile(path,0, true, false, false,0,1,0,false);
+            MyFile myRouter = new MyFile();
+            myRouter.setType(0);
+            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            myRouter.setUpLoadFile(uploadFile);
+            LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+            EventBus.getDefault().post(new FileStatus());
+
+            downFilePathMap.put(msgId+"",path);
+            FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap);
+            task.execute();
+        }
     }
 
 }

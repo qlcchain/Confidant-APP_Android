@@ -1,5 +1,19 @@
 package com.stratagile.pnrouter.utils;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.entity.MyFile;
+import com.stratagile.pnrouter.entity.events.FileStatus;
+import com.stratagile.pnrouter.entity.file.UpLoadFile;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -11,38 +25,18 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Base64;
-
-
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.constant.ConstantValue;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.OkHttpClient;
-
-public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
+public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private final String TAG = "FileDownLoaderTask";
 	private final int PER = 1024;
 	private URL mUrl;
@@ -55,6 +49,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private int msgID;
 	private String keyStr;
 	private String fileUlr;
+	private static HashMap<String, String> downFilePathTaskMap = new HashMap<>();
 
 	/**
 	 *
@@ -63,11 +58,12 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key){
+	public FileMangerDownLoaderTask(String url, String out, Context context, int msgId, Handler message, String key, HashMap<String, String> downFilePathMap){
 		super();
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
+		downFilePathTaskMap = downFilePathMap;
 		if(context!=null){
 			mContext = context;
 			handler = message;
@@ -124,13 +120,24 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				if(isCancelled())
 				{
 					msg.what = 0x404;
+					downFilePathTaskMap.remove(msgID);
 					handler.sendMessage(msg);
 					return;
 				}
 				if(bytesCopiedFlag != 0)
+				{
+					UpLoadFile uploadFile = new UpLoadFile(fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false);
+					MyFile myRouter = new MyFile();
+					myRouter.setType(0);
+					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+					myRouter.setUpLoadFile(uploadFile);
+					LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+					EventBus.getDefault().post(new FileStatus());
 					msg.what = 0x55;
+				}
 				else
 				{
+					downFilePathTaskMap.remove(msgID);
 					msg.what = 0x404;
 				}
 				handler.sendMessage(msg);
@@ -171,7 +178,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		    int length = conn.getContentLength();
+			int length = conn.getContentLength();
 			/*if(mFile.exists()&&length == mFile.length()){
 				KLog.d(TAG, "file "+mFile.getName()+" already exits!!");
 				return 0l;
@@ -223,6 +230,13 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				out.write(buffer, 0, n);
 				count+=n;
 				long progress = count * 100 / length;
+				UpLoadFile uploadFile = new UpLoadFile(fileUlr,length, true, false, false,count,length,0,false);
+				MyFile myRouter = new MyFile();
+				myRouter.setType(0);
+				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+				myRouter.setUpLoadFile(uploadFile);
+				LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+				EventBus.getDefault().post(new FileStatus());
 				KLog.d(TAG+":downloading:"+ progress +"%");
 			}
 			out.flush();

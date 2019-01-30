@@ -5,6 +5,7 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.entity.file.TaskFile
+import com.stratagile.pnrouter.utils.Base58
 
 class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapter<TaskFile, BaseViewHolder>(R.layout.item_filetask_content, R.layout.item_filetask_head, data) {
     override fun convertHead(helper: BaseViewHolder, item: TaskFile) {
@@ -13,7 +14,13 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
 
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
         var fileName =  item.t.path.substring(item.t.path.lastIndexOf("/")+1)
-        helper.setText(R.id.tvFileName,fileName)
+        if(!item.t.isDownLoad)
+        {
+            helper.setText(R.id.tvFileName,fileName)
+        }else{
+            var fileOriginalName =  String(Base58.decode(fileName))
+            helper.setText(R.id.tvFileName,fileOriginalName)
+        }
         var fileSize = (item.t.fileSize / 1024 / 1024).toString()
         helper.addOnClickListener(R.id.status)
         if (item.t.isComplete) {
