@@ -265,8 +265,7 @@ public class LocalMediaLoader {
 
         return String.format(Locale.CHINA, "%d <%s duration and duration <= %d",
                 Math.max(exMinLimit, videoMinS),
-                Math.max(exMinLimit, videoMinS) == 0 ? "" : "=",
-                maxS);
+                Math.max(exMinLimit, videoMinS) == 0 ? "" : "=", maxS);
     }
 
 

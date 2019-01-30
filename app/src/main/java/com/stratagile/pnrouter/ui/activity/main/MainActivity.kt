@@ -790,8 +790,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .synOrAsy(true)
                                     .rotateEnabled(true)
                                     .scaleEnabled(true)
-                                    .videoMaxSecond(15)
-                                    .videoMinSecond(10)
+                                    .videoMaxSecond(60 * 60 * 3)
+                                    .videoMinSecond(1)
                                     .isDragFrame(false)
                                     .forResult(SELECT_PHOTO)
                         }
@@ -821,8 +821,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     .synOrAsy(true)
                                     .rotateEnabled(true)
                                     .scaleEnabled(true)
-                                    .videoMaxSecond(15)
-                                    .videoMinSecond(10)
+                                    .videoMaxSecond(60 * 60 * 3)
+                                    .videoMinSecond(1)
                                     .isDragFrame(false)
                                     .forResult(SELECT_VIDEO)
                         }
