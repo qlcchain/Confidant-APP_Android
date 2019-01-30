@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.ui.activity.file
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,7 +13,6 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
-import com.hyphenate.easeui.ui.EaseShowVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
@@ -96,6 +94,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var wantOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,6 +188,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var file = File(filePath)
                                     if(!file.exists())
                                     {
+                                        wantOpen = true
                                         runOnUiThread {
                                             toast(R.string.You_need_to_download)
                                             showProgressDialog("wait…")
@@ -214,38 +214,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             }*/
                                         }
                                     }else{
-                                        if(base58Name.indexOf("jpg") > -1 || base58Name.indexOf("jpeg") > -1 || base58Name.indexOf("png") > -1 )
-                                        {
-                                            val intent = Intent(AppConfig.instance, EaseShowBigImageActivity::class.java)
-                                            val file = File(filePath)
-                                            val uri = Uri.fromFile(file)
-                                            intent.putExtra("uri", uri)
-                                            startActivity(intent)
-                                        }else if(base58Name.indexOf("mp4") > -1 )
-                                        {
-                                            val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
-                                            intent.putExtra("path", filePath)
-                                            startActivity(intent)
-                                        }else{
-                                            if (file.exists()) run {
-                                                val newFilePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/temp/" + file.name
-                                                val result = FileUtil.copyAppFileToSdcard(filePath, newFilePath)
-                                                if (result == 1) {
-                                                    try {
-                                                        OpenFileUtil.getInstance(AppConfig.instance)
-                                                        val intent = OpenFileUtil.openFile(newFilePath)
-                                                        startActivity(intent)
-                                                        //FileUtils.openFile(file, (Activity) getContext());
-                                                    } catch (e: Exception) {
-                                                        e.printStackTrace()
-                                                    }
-
-                                                } else {
-                                                    Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show()
-                                                }
-
-                                            }
-                                        }
+                                        openFile(filePath)
 
                                     }
                                 }
@@ -303,7 +272,44 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
             }
         }
     }
+    fun openFile(filePath:String)
+    {
+        var fileName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length)
+        var file = File(filePath)
+        if (file.exists())
+            if(fileName.indexOf("jpg") > -1 || fileName.indexOf("jpeg") > -1 || fileName.indexOf("png") > -1 )
+            {
+                val intent = Intent(AppConfig.instance, EaseShowBigImageActivity::class.java)
+                val file = File(filePath)
+                val uri = Uri.fromFile(file)
+                intent.putExtra("uri", uri)
+                startActivity(intent)
+            }else if(fileName.indexOf("mp4") > -1 )
+            {
+                val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
+                intent.putExtra("path", filePath)
+                startActivity(intent)
+            }else{
+                run {
+                    val newFilePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/temp/" + file.name
+                    val result = FileUtil.copyAppFileToSdcard(filePath, newFilePath)
+                    if (result == 1) {
+                        try {
+                            OpenFileUtil.getInstance(AppConfig.instance)
+                            val intent = OpenFileUtil.openFile(newFilePath)
+                            startActivity(intent)
+                            //FileUtils.openFile(file, (Activity) getContext());
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
+                    } else {
+                        Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }
+    }
     override fun setupActivityComponent() {
         DaggerFileManagerComponent
                 .builder()
@@ -362,6 +368,12 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                         closeProgressDialog()
                         toast(R.string.Download_success)
                     }
+                    /*if(wantOpen)
+                    {
+                        var fromData = receiveFileDataMap.get(msgId.toString())
+                        openFile(fromData!!.fileName)
+                        wantOpen = false
+                    }*/
                     receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();

@@ -136,15 +136,16 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
 
     private val permission = object : PermissionListener {
         override fun onSucceed(requestCode: Int, grantedPermissions: List<String>) {
+            DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/temp/")//删除外部查看文件的临时路径
             FileUtil.init()
             PathUtils.getInstance().initDirs("", "", AppConfig.instance)
             LocalRouterUtils.inspectionLocalData();
             LocalRouterUtils.updateGreanDaoFromLocal()
-            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"
+            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"//删除聊天的临时加密文件
             val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
             RxFileTool.deleteNodefile(savedNodeFile)
-            DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+"/temp/")
+
             if(!ConstantValue.mRegId.equals(""))
             {
                 FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
