@@ -368,12 +368,15 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                         closeProgressDialog()
                         toast(R.string.Download_success)
                     }
-                    /*if(wantOpen)
+                    if(wantOpen)
                     {
                         var fromData = receiveFileDataMap.get(msgId.toString())
-                        openFile(fromData!!.fileName)
+                        var fileMiName =fromData!!.fileName.substring(fromData!!.fileName.lastIndexOf("/")+1,fromData!!.fileName.length)
+                        var base58Name =  String(Base58.decode(fileMiName))
+                        var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+                        openFile(filePath)
                         wantOpen = false
-                    }*/
+                    }
                     receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();
