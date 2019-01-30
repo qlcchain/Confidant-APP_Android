@@ -15,7 +15,9 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.JPullFileListRsp
+import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.entity.file.Arrange
 import com.stratagile.pnrouter.entity.file.FileOpreateType
@@ -134,6 +136,41 @@ object PopWindowUtil {
         tvFileName.text = String(Base58.decode((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.substring((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.lastIndexOf("/") + 1)))
         recyclerView.layoutManager = linearLayoutManager
         val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType(activity))
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, fileName)
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showFileRecentPopWindow(activity: Activity, showView: View, fileName : Any, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
+        tvFileName.text = (fileName as RecentFile).fileName.substring((fileName as RecentFile).fileName.lastIndexOf("/") + 1)
+        recyclerView.layoutManager = linearLayoutManager
+        var list = arrayListOf<FileOpreateType>()
+        list.add(FileOpreateType("delete_h1", activity.getString(R.string.delete)))
+        val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             onRouterSelectListener.onSelect(position, fileName)

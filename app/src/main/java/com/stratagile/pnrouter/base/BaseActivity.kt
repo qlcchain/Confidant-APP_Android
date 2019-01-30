@@ -105,11 +105,9 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
     }
 
     protected fun hideSoftKeyboard() {
-        if (window.attributes.softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (currentFocus != null)
-                inputMethodManager?.hideSoftInputFromWindow(currentFocus!!.windowToken,
-                        InputMethodManager.HIDE_NOT_ALWAYS)
-        }
+        if (currentFocus != null)
+            inputMethodManager?.hideSoftInputFromWindow(currentFocus!!.windowToken,
+                    InputMethodManager.HIDE_NOT_ALWAYS)
     }
     override fun setContentView(layoutId: Int) {
         setContentView(View.inflate(this, layoutId, null))

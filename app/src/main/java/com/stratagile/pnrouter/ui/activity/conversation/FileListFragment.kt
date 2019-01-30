@@ -10,6 +10,8 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.db.RecentFile
+import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
 import com.stratagile.pnrouter.ui.activity.conversation.module.FileListModule
@@ -17,8 +19,12 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileListPresen
 import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
+import com.stratagile.pnrouter.utils.LocalFileUtils
 import com.stratagile.pnrouter.utils.PopWindowUtil
 import kotlinx.android.synthetic.main.fragment_file_list.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 /**
@@ -40,48 +46,31 @@ class FileListFragment : BaseFragment(), FileListContract.View {
         return view
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun refreshList(recentFile: RecentFile) {
+        fileListAdapter?.setNewData(AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.loadAll().apply { this.reverse() })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var list = arrayListOf("ddd", "fff", "eee", "aaa", "eee", "rrr", "ttt", "yyy", "www", "kkk", "ttt", "yyy", "uuu", "iii", "oooo", "", "", "", "")
-        fileListAdapter = FileListAdapter(list)
+        EventBus.getDefault().register(this)
+        var fileList = AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.loadAll().apply { this.reverse() }
+        fileListAdapter = FileListAdapter(fileList)
         recyclerView.adapter = fileListAdapter
         fileListAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
-            if (position == 0) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/test.txt"
-            } else if (position == 1) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/tupian.jpg"
-            } else if (position == 2) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/xxx.jpg"
-            } else if (position == 3) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
-            }
-            startActivity(Intent(activity, PdfViewActivity::class.java).putExtra("filePath", filePath))
+
+//            startActivity(Intent(activity, PdfViewActivity::class.java).putExtra("filePath", filePath))
         }
         fileListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when(view.id) {
                 R.id.fileOpreate -> {
-                    PopWindowUtil.showFileOpreatePopWindow(activity!!, recyclerView, fileListAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
+                    PopWindowUtil.showFileRecentPopWindow(activity!!, recyclerView, fileListAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj : Any) {
                             KLog.i("" + position)
                             when(position) {
                                 0 -> {
-
-                                }
-                                1 -> {
-
-                                }
-                                2 -> {
-
-                                }
-                                3 -> {
-                                    startActivity(Intent(activity!!, FileDetailInformationActivity::class.java))
-                                }
-                                4 -> {
-
-                                }
-                                5 -> {
-
+                                    AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.delete(obj as RecentFile)
+                                    EventBus.getDefault().post(obj)
                                 }
                             }
                         }
@@ -90,6 +79,11 @@ class FileListFragment : BaseFragment(), FileListContract.View {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
 

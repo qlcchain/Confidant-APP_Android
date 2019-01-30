@@ -13,6 +13,7 @@
         android:paddingBottom="5dp"
         android:paddingLeft="5dp"
         android:id="@+id/query"
+        android:inputType="textEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

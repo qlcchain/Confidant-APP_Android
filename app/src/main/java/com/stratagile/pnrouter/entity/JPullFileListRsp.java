@@ -1,7 +1,11 @@
 package com.stratagile.pnrouter.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JPullFileListRsp extends BaseEntity {
@@ -32,7 +36,7 @@ public class JPullFileListRsp extends BaseEntity {
         private String Action;
         private int RetCode;
         private int FileNum;
-        private List<PayloadBean> Payload;
+        private ArrayList<PayloadBean> Payload;
 
         public String getAction() {
             return Action;
@@ -58,15 +62,15 @@ public class JPullFileListRsp extends BaseEntity {
             this.FileNum = FileNum;
         }
 
-        public List<PayloadBean> getPayload() {
+        public ArrayList<PayloadBean> getPayload() {
             return Payload;
         }
 
-        public void setPayload(List<PayloadBean> Payload) {
+        public void setPayload(ArrayList<PayloadBean> Payload) {
             this.Payload = Payload;
         }
 
-        public static class PayloadBean {
+        public static class PayloadBean implements Parcelable {
             /**
              * MsgId : 43
              * Timestamp : 1548732669
@@ -84,6 +88,28 @@ public class JPullFileListRsp extends BaseEntity {
             private String FileMD5;
             private int FileSize;
             private String UserKey;
+
+            protected PayloadBean(Parcel in) {
+                MsgId = in.readInt();
+                Timestamp = in.readInt();
+                FileType = in.readInt();
+                FileName = in.readString();
+                FileMD5 = in.readString();
+                FileSize = in.readInt();
+                UserKey = in.readString();
+            }
+
+            public static final Creator<PayloadBean> CREATOR = new Creator<PayloadBean>() {
+                @Override
+                public PayloadBean createFromParcel(Parcel in) {
+                    return new PayloadBean(in);
+                }
+
+                @Override
+                public PayloadBean[] newArray(int size) {
+                    return new PayloadBean[size];
+                }
+            };
 
             public int getMsgId() {
                 return MsgId;
@@ -139,6 +165,22 @@ public class JPullFileListRsp extends BaseEntity {
 
             public void setUserKey(String UserKey) {
                 this.UserKey = UserKey;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
+                parcel.writeInt(MsgId);
+                parcel.writeInt(Timestamp);
+                parcel.writeInt(FileType);
+                parcel.writeString(FileName);
+                parcel.writeString(FileMD5);
+                parcel.writeInt(FileSize);
+                parcel.writeString(UserKey);
             }
         }
     }

@@ -6,10 +6,14 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileDetailInformationComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.FileDetailInformationContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileDetailInformationModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileDetailInformationPresenter
+import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.NetUtils
+import com.stratagile.pnrouter.utils.TimeUtil
 import kotlinx.android.synthetic.main.activity_file_detail_information.*
 import kotlinx.android.synthetic.main.ease_chat_menu_item.*
 
@@ -27,6 +31,7 @@ class FileDetailInformationActivity : BaseActivity(), FileDetailInformationContr
     @Inject
     internal lateinit var mPresenter: FileDetailInformationPresenter
 
+    lateinit var file : JPullFileListRsp.ParamsBean.PayloadBean
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -36,6 +41,13 @@ class FileDetailInformationActivity : BaseActivity(), FileDetailInformationContr
     }
     override fun initData() {
         title.text = "Details"
+        file = intent.getParcelableExtra("file")
+        var fileName1 = String(Base58.decode(file.fileName.substring(file.fileName.lastIndexOf("/") + 1)))
+        fileName.text = fileName1
+        fileType.text = fileName1.substring(fileName1.lastIndexOf(".") + 1)
+        fileTime.text = TimeUtil.getFileListTime(file.timestamp.toLong())
+        fileSize.text = NetUtils.parseSize(file.fileSize.toLong())
+        fileSource.text = ""
 //        shareSet.setOnClickListener {
 //            startActivity(Intent(this, FileShareSetActivity::class.java))
 //        }

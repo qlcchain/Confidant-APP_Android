@@ -15,7 +15,7 @@ import com.stratagile.pnrouter.utils.TimeUtil
 import com.stratagile.pnrouter.view.SmoothCheckBox
 import java.util.*
 
-class FileListChooseAdapter(arrayList: ArrayList<JPullFileListRsp.ParamsBean.PayloadBean>) : BaseQuickAdapter<JPullFileListRsp.ParamsBean.PayloadBean, BaseViewHolder>(R.layout.layout_choose_file_list_item, arrayList) {
+class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.PayloadBean>) : BaseQuickAdapter<JPullFileListRsp.ParamsBean.PayloadBean, BaseViewHolder>(R.layout.layout_choose_file_list_item, arrayList) {
     var isChooseMode = false
     override fun convert(helper: BaseViewHolder, item: JPullFileListRsp.ParamsBean.PayloadBean) {
         helper.addOnClickListener(R.id.fileOpreate)

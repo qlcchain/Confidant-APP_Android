@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/fileicon"
+        android:id="@+id/fileOpreateType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/documents_received_h"
@@ -40,7 +40,7 @@
         android:text="tom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/fileicon"
+        app:layout_constraintStart_toEndOf="@+id/fileOpreateType"
         app:layout_constraintTop_toTopOf="parent" />
     <View
         android:id="@+id/line"
@@ -71,6 +71,9 @@
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:maxEms="10"
             android:text="Google project development.zip"
             android:textColor="@color/color_3f3f3f"
             android:textSize="15sp" />

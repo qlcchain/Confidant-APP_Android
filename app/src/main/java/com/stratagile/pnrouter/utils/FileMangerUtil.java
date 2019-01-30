@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
@@ -43,6 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -667,6 +669,14 @@ public class FileMangerUtil {
                     {
                         String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                         String files_dir = imagePath;
+                        RecentFile recentFile = new RecentFile();
+                        recentFile.setFileName(fileName);
+                        recentFile.setFileType(1);
+                        recentFile.setFriendName("");
+                        recentFile.setOpreateType(0);
+                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
+                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
+                        EventBus.getDefault().post(recentFile);
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
@@ -813,6 +823,16 @@ public class FileMangerUtil {
                     if(isHas)
                     {
                         String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
+
+                        RecentFile recentFile = new RecentFile();
+                        recentFile.setFileName(videoFileName);
+                        recentFile.setFileType(4);
+                        recentFile.setFriendName("");
+                        recentFile.setOpreateType(0);
+                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
+                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
+                        EventBus.getDefault().post(recentFile);
+
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
 
@@ -960,6 +980,16 @@ public class FileMangerUtil {
                     if(isHas)
                     {
                         String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+
+                        RecentFile recentFile = new RecentFile();
+                        recentFile.setFileName(fileName);
+                        recentFile.setFileType(4);
+                        recentFile.setFriendName("");
+                        recentFile.setOpreateType(6);
+                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
+                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
+                        EventBus.getDefault().post(recentFile);
+
                         String files_dir = filePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {

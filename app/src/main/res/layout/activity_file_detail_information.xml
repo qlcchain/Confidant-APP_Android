@@ -22,6 +22,10 @@
             android:layout_weight="1"
             android:layout_height="match_parent"/>
         <TextView
+            android:id="@+id/fileName"
+            android:ellipsize="end"
+            android:maxEms="20"
+            android:singleLine="true"
             android:layout_width="wrap_content"
             android:text="Google developer..."
             android:textSize="15sp"
@@ -54,6 +58,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent"/>
         <TextView
+            android:id="@+id/fileType"
             android:layout_width="wrap_content"
             android:text="ZIP"
             android:textSize="15sp"
@@ -87,6 +92,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent"/>
         <TextView
+            android:id="@+id/fileTime"
             android:layout_width="wrap_content"
             android:text="2019/01/24"
             android:textSize="15sp"
@@ -120,6 +126,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent"/>
         <TextView
+            android:id="@+id/fileSize"
             android:layout_width="wrap_content"
             android:text="21 K"
             android:textSize="15sp"
@@ -153,6 +160,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent"/>
         <TextView
+            android:id="@+id/fileSource"
             android:layout_width="wrap_content"
             android:text="hzp"
             android:textSize="15sp"

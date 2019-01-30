@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -23,6 +25,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
@@ -35,6 +38,9 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
+import kotlinx.android.synthetic.main.ease_search_bar.*
+import org.greenrobot.eventbus.EventBus
+import java.util.*
 import java.io.File
 import java.util.HashMap
 
@@ -50,10 +56,16 @@ import javax.inject.Inject;
 class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterServiceMessageReceiver.FileManageBack {
     override fun deleFileRsp(jDelFileRsp: JDelFileRsp) {
 
-        when(jDelFileRsp.params.retCode)
-        {
-            0 ->{
-
+        when (jDelFileRsp.params.retCode) {
+            0 -> {
+                var recentFile = RecentFile()
+                recentFile.fileName = String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1)))
+                recentFile.fileType = 1
+                recentFile.friendName = ""
+                recentFile.opreateType = 2
+                recentFile.timeStamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
+                EventBus.getDefault().post(recentFile)
                 runOnUiThread {
                     fileListChooseAdapter!!.data.remove(waitDeleteData!!)
                     fileListChooseAdapter!!.notifyDataSetChanged()
@@ -61,13 +73,13 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                     toast(R.string.deletsuccess)
                 }
             }
-            1 ->{
+            1 -> {
                 runOnUiThread {
                     closeProgressDialog()
                     toast(R.string.File_does_not_exist)
                 }
             }
-            2 ->{
+            2 -> {
                 runOnUiThread {
                     closeProgressDialog()
                     toast(R.string.No_authority)
@@ -79,23 +91,35 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         runOnUiThread {
-            fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload)
+            when (ConstantValue.currentArrangeType) {
+                0 -> {
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.fileName }.toMutableList())
+                }
+                1 -> {
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.timestamp }.toMutableList())
+                }
+                2 -> {
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.fileSize }.toMutableList())
+                }
+            }
         }
     }
 
     @Inject
     internal lateinit var mPresenter: FileManagerPresenter
 
-    var fileListChooseAdapter : FileListChooseAdapter? = null
+    var fileListChooseAdapter: FileListChooseAdapter? = null
 
     //类型，0 = My Files 1 = sent 2 = Documents received
     var fileType = 0
 
-    var waitDeleteData:JPullFileListRsp.ParamsBean.PayloadBean? = null
+    var waitDeleteData: JPullFileListRsp.ParamsBean.PayloadBean? = null
 
     var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var wantOpen = false
+
+    var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,17 +131,60 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
             PopWindowUtil.showFileSortWindow(this, sort, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
                     ConstantValue.currentArrangeType = position
+                    when (ConstantValue.currentArrangeType) {
+                        0 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileName }.toMutableList())
+                        }
+                        1 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }.toMutableList())
+                        }
+                        2 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }.toMutableList())
+                        }
+                    }
                 }
 
             })
         }
+        query.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                KLog.i("beforeTextChanged " + charSequence.toString())
+                if ("".equals(charSequence.toString())) {
+                    beforeList = fileListChooseAdapter!!.data
+                }
+            }
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                KLog.i("onTextChanged " + charSequence.toString())
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+                KLog.i("afterTextChanged " + editable.toString())
+                if ("".equals(editable.toString())) {
+                    fileListChooseAdapter!!.setNewData(beforeList)
+                } else {
+                    fileListChooseAdapter!!.setNewData(searchListByName(editable.toString()))
+                }
+            }
+        })
+    }
+
+    fun searchListByName(name: String): MutableList<JPullFileListRsp.ParamsBean.PayloadBean> {
+        var retList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
+        beforeList.forEach {
+            var fileName = String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1)))
+            if (fileName.contains(name)) {
+                retList.add(it)
+            }
+        }
+        return retList
     }
 
 
     override fun initData() {
         AppConfig.instance.messageReceiver?.fileManageBack = this
         fileType = intent.getIntExtra("fileType", 0)
-        when(fileType) {
+        when (fileType) {
             0 -> {
                 title.text = resources.getText(R.string.all_Files)
             }
@@ -149,82 +216,149 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         }
 
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
-            when(view.id) {
+            when (view.id) {
                 R.id.fileOpreate -> {
                     PopWindowUtil.showFileOpreatePopWindow(this@FileManagerActivity, recyclerView, fileListChooseAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
-                        override fun onSelect(position: Int, obj : Any) {
+                        override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
                             var data = obj as JPullFileListRsp.ParamsBean.PayloadBean
-                            when(position) {
+                            when (position) {
                                 0 -> {
 
                                 }
                                 1 -> {
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                    var base58Name =  String(Base58.decode(fileMiName))
-                                    var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
-                                    var file = File(filePath)
-                                    if(file.exists())
-                                    {
-                                        runOnUiThread {
-                                            toast(R.string.no_download_is_required)
-                                        }
-                                    }else{
-                                        runOnUiThread {
-                                            showProgressDialog("wait…")
-                                        }
-
-                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
-                                        var files_dir = PathUtils.getInstance().filePath.toString()+"/"
-                                        if (ConstantValue.isWebsocketConnected) {
-                                            receiveFileDataMap.put(data.msgId.toString(),data)
-
-                                            Thread(Runnable() {
-                                                run() {
-                                                    val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                                    val myRouter = MyFile()
-                                                    myRouter.type = 0
-                                                    myRouter.userSn = ConstantValue.currentRouterSN
-                                                    myRouter.upLoadFile = uploadFile
-                                                    LocalFileUtils.insertLocalAssets(myRouter)
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
-                                                }
-                                            }).start()
-
-
-                                        }else{
-                                            /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                            var base58Name =  Base58.encode(fileMiName.toByteArray())
-                                            receiveToxFileDataMap.put(base58Name,data)
-                                            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
-                                            var baseData = BaseData(msgData)
-                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                            if (ConstantValue.isAntox) {
-                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
-                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                                            }*/
-                                        }
+                                    runOnUiThread {
+                                        showProgressDialog("wait…")
                                     }
 
+                                    var recentFile = RecentFile()
+                                    recentFile.fileName = String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1)))
+                                    recentFile.fileType = 1
+                                    recentFile.friendName = ""
+                                    recentFile.opreateType = 1
+                                    recentFile.timeStamp = Calendar.getInstance().timeInMillis
+                                    AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
+                                    EventBus.getDefault().post(recentFile)
+
+                                    var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                    var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        receiveFileDataMap.put(data.msgId.toString(), data)
+                                        FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                    } else {
+
+                                        /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                        var base58Name =  Base58.encode(fileMiName.toByteArray())
+                                        receiveToxFileDataMap.put(base58Name,data)
+                                        var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
+                                        var baseData = BaseData(msgData)
+                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                        }*/
+                                        var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                        var base58Name = String(Base58.decode(fileMiName))
+                                        var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
+                                        var file = File(filePath)
+                                        if (file.exists()) {
+                                            runOnUiThread {
+                                                toast(R.string.no_download_is_required)
+                                            }
+                                        } else {
+                                            runOnUiThread {
+                                                showProgressDialog("wait…")
+                                            }
+                                            var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                            var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                            if (ConstantValue.isWebsocketConnected) {
+                                                receiveFileDataMap.put(data.msgId.toString(), data)
+                                                val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                                val myRouter = MyFile()
+                                                myRouter.type = 0
+                                                myRouter.userSn = ConstantValue.currentRouterSN
+                                                myRouter.upLoadFile = uploadFile
+                                                LocalFileUtils.insertLocalAssets(myRouter)
+
+                                                FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                                var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                                var base58Name = String(Base58.decode(fileMiName))
+                                                var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
+                                                var file = File(filePath)
+                                                if (file.exists()) {
+                                                    runOnUiThread {
+                                                        toast(R.string.no_download_is_required)
+                                                    }
+                                                } else {
+                                                    runOnUiThread {
+                                                        showProgressDialog("wait…")
+                                                    }
+
+                                                    var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                                    var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                                    if (ConstantValue.isWebsocketConnected) {
+                                                        receiveFileDataMap.put(data.msgId.toString(), data)
+
+                                                        Thread(Runnable() {
+                                                            run() {
+                                                                val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                                                val myRouter = MyFile()
+                                                                myRouter.type = 0
+                                                                myRouter.userSn = ConstantValue.currentRouterSN
+                                                                myRouter.upLoadFile = uploadFile
+                                                                LocalFileUtils.insertLocalAssets(myRouter)
+                                                                FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                                            }
+                                                        }).start()
+
+
+                                                    } else {
+                                                        /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                                var base58Name =  Base58.encode(fileMiName.toByteArray())
+                                                receiveToxFileDataMap.put(base58Name,data)
+                                                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
+                                                var baseData = BaseData(msgData)
+                                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                                if (ConstantValue.isAntox) {
+                                                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                                }else{
+                                                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                                                }*/
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
                                 }
                                 2 -> {
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                    var base58Name =  String(Base58.decode(fileMiName))
-                                    var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    var base58Name = String(Base58.decode(fileMiName))
+                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
                                     var file = File(filePath)
-                                    if(!file.exists())
-                                    {
+                                    if (!file.exists()) {
                                         wantOpen = true
                                         runOnUiThread {
                                             toast(R.string.You_need_to_download)
                                             showProgressDialog("wait…")
                                         }
-                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
-                                        var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+
+                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
-                                            receiveFileDataMap.put(data.msgId.toString(),data)
+                                            receiveFileDataMap.put(data.msgId.toString(), data)
+                                            val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                            val myRouter = MyFile()
+                                            myRouter.type = 0
+                                            myRouter.userSn = ConstantValue.currentRouterSN
+                                            myRouter.upLoadFile = uploadFile
+                                            LocalFileUtils.insertLocalAssets(myRouter)
+                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                        } else {
+                                            receiveFileDataMap.put(data.msgId.toString(), data)
 
                                             Thread(Runnable() {
                                                 run() {
@@ -234,31 +368,17 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                                     myRouter.userSn = ConstantValue.currentRouterSN
                                                     myRouter.upLoadFile = uploadFile
                                                     LocalFileUtils.insertLocalAssets(myRouter)
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
                                                 }
                                             }).start()
-                                        }else{
-
-                                            /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                            var base58Name =  Base58.encode(fileMiName.toByteArray())
-                                            receiveToxFileDataMap.put(base58Name,data)
-                                            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
-                                            var baseData = BaseData(msgData)
-                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                            if (ConstantValue.isAntox) {
-                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
-                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                                            }*/
                                         }
-                                    }else{
+                                    } else {
                                         openFile(filePath)
 
                                     }
                                 }
                                 3 -> {
-                                    startActivity(Intent(this@FileManagerActivity, FileDetailInformationActivity::class.java))
+                                    startActivity(Intent(this@FileManagerActivity, FileDetailInformationActivity::class.java).putExtra("file", data))
                                 }
                                 4 -> {
 
@@ -271,21 +391,21 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var sendData = BaseData(2, delFileReq)
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                                    }else if (ConstantValue.isToxConnected) {
+                                    } else if (ConstantValue.isToxConnected) {
                                         var baseData = sendData
                                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                         if (ConstantValue.isAntox) {
                                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                        }else{
+                                        } else {
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                     }
 
                                 }
                             }
-                        }
 
+                        }
                     })
                 }
             }
@@ -299,36 +419,34 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             Log.i("pullFriendList", "tox")
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
     }
-    fun openFile(filePath:String)
-    {
-        var fileName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length)
+
+    fun openFile(filePath: String) {
+        var fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length)
         var file = File(filePath)
         if (file.exists())
-            if(fileName.indexOf("jpg") > -1 || fileName.indexOf("jpeg") > -1 || fileName.indexOf("png") > -1 )
-            {
+            if (fileName.indexOf("jpg") > -1 || fileName.indexOf("jpeg") > -1 || fileName.indexOf("png") > -1) {
                 val intent = Intent(AppConfig.instance, EaseShowBigImageActivity::class.java)
                 val file = File(filePath)
                 val uri = Uri.fromFile(file)
                 intent.putExtra("uri", uri)
                 startActivity(intent)
-            }else if(fileName.indexOf("mp4") > -1 )
-            {
+            } else if (fileName.indexOf("mp4") > -1) {
                 val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)
                 intent.putExtra("path", filePath)
                 startActivity(intent)
-            }else{
+            } else {
                 run {
                     val newFilePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/temp/" + file.name
                     val result = FileUtil.copyAppFileToSdcard(filePath, newFilePath)
@@ -349,6 +467,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 }
             }
     }
+
     override fun setupActivityComponent() {
         DaggerFileManagerComponent
                 .builder()
@@ -357,6 +476,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 .build()
                 .inject(this)
     }
+
     override fun setPresenter(presenter: FileManagerContract.FileManagerContractPresenter) {
         mPresenter = presenter as FileManagerPresenter
     }
@@ -381,6 +501,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         if (CustomPopWindow.onBackPressed()) {
 
         } else {
+            hideSoftKeyboard()
             super.onBackPressed()
         }
     }
@@ -391,6 +512,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         inflater.inflate(R.menu.choose_file, menu)
         return super.onCreateOptionsMenu(menu)
     }
+
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -399,25 +521,23 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                         closeProgressDialog()
                         toast(R.string.Download_failed)
                     }
-                    var data:Bundle = msg.data;
-                    var msgId = data.getInt("msgID")
                 }
                 0x55 -> {
-                    var data:Bundle = msg.data;
+                    var data: Bundle = msg.data;
                     var msgId = data.getInt("msgID")
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_success)
                     }
-                   /* if(wantOpen)
-                    {
-                        var fromData = receiveFileDataMap.get(msgId.toString())
-                        var fileMiName =fromData!!.fileName.substring(fromData!!.fileName.lastIndexOf("/")+1,fromData!!.fileName.length)
-                        var base58Name =  String(Base58.decode(fileMiName))
-                        var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
-                        openFile(filePath)
-                        wantOpen = false
-                    }*/
+                    /* if(wantOpen)
+                     {
+                         var fromData = receiveFileDataMap.get(msgId.toString())
+                         var fileMiName =fromData!!.fileName.substring(fromData!!.fileName.lastIndexOf("/")+1,fromData!!.fileName.length)
+                         var base58Name =  String(Base58.decode(fileMiName))
+                         var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+                         openFile(filePath)
+                         wantOpen = false
+                     }*/
                     receiveFileDataMap.remove(msgId.toString())
                 }
             }//goMain();

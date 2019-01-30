@@ -8,6 +8,7 @@ import chat.tox.antox.wrapper.FriendKey
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -15,6 +16,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
@@ -32,6 +34,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -73,6 +76,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             FileMangerUtil.sendOtherFile(localMedia!!.path)
                         }
                     }
+
+
                 }
             }
             1-> {
@@ -171,7 +176,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         }
         updataUI()
-
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
