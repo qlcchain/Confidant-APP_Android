@@ -173,18 +173,24 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                         runOnUiThread {
                                             showProgressDialog("wait…")
                                         }
+
                                         var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port +data.fileName
                                         var files_dir = PathUtils.getInstance().filePath.toString()+"/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(),data)
-                                            val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                            val myRouter = MyFile()
-                                            myRouter.type = 0
-                                            myRouter.userSn = ConstantValue.currentRouterSN
-                                            myRouter.upLoadFile = uploadFile
-                                            LocalFileUtils.insertLocalAssets(myRouter)
 
-                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                            Thread(Runnable() {
+                                                run() {
+                                                    val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                                    val myRouter = MyFile()
+                                                    myRouter.type = 0
+                                                    myRouter.userSn = ConstantValue.currentRouterSN
+                                                    myRouter.upLoadFile = uploadFile
+                                                    LocalFileUtils.insertLocalAssets(myRouter)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                                }
+                                            }).start()
+
 
                                         }else{
                                             /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
@@ -219,13 +225,18 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                         var files_dir = PathUtils.getInstance().filePath.toString()+"/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(),data)
-                                            val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                            val myRouter = MyFile()
-                                            myRouter.type = 0
-                                            myRouter.userSn = ConstantValue.currentRouterSN
-                                            myRouter.upLoadFile = uploadFile
-                                            LocalFileUtils.insertLocalAssets(myRouter)
-                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+
+                                            Thread(Runnable() {
+                                                run() {
+                                                    val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                                    val myRouter = MyFile()
+                                                    myRouter.type = 0
+                                                    myRouter.userSn = ConstantValue.currentRouterSN
+                                                    myRouter.upLoadFile = uploadFile
+                                                    LocalFileUtils.insertLocalAssets(myRouter)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance,data.msgId, handler,data.userKey)
+                                                }
+                                            }).start()
                                         }else{
 
                                             /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
