@@ -300,7 +300,8 @@ public class FileMangerUtil {
 
                                     int sended = SegSeqResult - 1;
                                     if(sended < 0 )
-                                        sended = 0
+                                        sended = 0;
+                                    KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
                                     UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false);
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
