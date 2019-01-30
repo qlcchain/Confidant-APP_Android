@@ -244,7 +244,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var base58Name = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
                                     var file = File(filePath)
-                                    if (file.exists()) {
+                                    if (false) {
                                         runOnUiThread {
                                             toast(R.string.no_download_is_required)
                                         }
@@ -274,7 +274,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             var base58Name =  Base58.encode(fileMiName.toByteArray())
                                             receiveToxFileDataMap.put(base58Name,data)
                                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                            var msgData = PullFileReq(selfUserId, selfUserId,base58Name,data.msgId,2)
+                                            var msgData = PullFileReq(selfUserId!!, selfUserId,base58Name,data.msgId,2)
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
