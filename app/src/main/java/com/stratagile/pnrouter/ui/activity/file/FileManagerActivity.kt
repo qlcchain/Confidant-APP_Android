@@ -240,99 +240,53 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
                                     EventBus.getDefault().post(recentFile)
 
-                                    var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
-                                    var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-                                    if (ConstantValue.isWebsocketConnected) {
-                                        receiveFileDataMap.put(data.msgId.toString(), data)
-                                        FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    var base58Name = String(Base58.decode(fileMiName))
+                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
+                                    var file = File(filePath)
+                                    if (file.exists()) {
+                                        runOnUiThread {
+                                            toast(R.string.no_download_is_required)
+                                        }
                                     } else {
+                                        runOnUiThread {
+                                            showProgressDialog("wait…")
+                                        }
+                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                                        if (ConstantValue.isWebsocketConnected) {
+                                            receiveFileDataMap.put(data.msgId.toString(), data)
 
-                                        /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                        var base58Name =  Base58.encode(fileMiName.toByteArray())
-                                        receiveToxFileDataMap.put(base58Name,data)
-                                        var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
-                                        var baseData = BaseData(msgData)
-                                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                        if (ConstantValue.isAntox) {
-                                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                        }else{
-                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                                        }*/
-                                        var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-                                        var base58Name = String(Base58.decode(fileMiName))
-                                        var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
-                                        var file = File(filePath)
-                                        if (file.exists()) {
-                                            runOnUiThread {
-                                                toast(R.string.no_download_is_required)
-                                            }
-                                        } else {
-                                            runOnUiThread {
-                                                showProgressDialog("wait…")
-                                            }
-                                            var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
-                                            var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-                                            if (ConstantValue.isWebsocketConnected) {
-                                                receiveFileDataMap.put(data.msgId.toString(), data)
-                                                val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                                val myRouter = MyFile()
-                                                myRouter.type = 0
-                                                myRouter.userSn = ConstantValue.currentRouterSN
-                                                myRouter.upLoadFile = uploadFile
-                                                LocalFileUtils.insertLocalAssets(myRouter)
-
-                                                FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
-                                                var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-                                                var base58Name = String(Base58.decode(fileMiName))
-                                                var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
-                                                var file = File(filePath)
-                                                if (file.exists()) {
-                                                    runOnUiThread {
-                                                        toast(R.string.no_download_is_required)
-                                                    }
-                                                } else {
-                                                    runOnUiThread {
-                                                        showProgressDialog("wait…")
-                                                    }
-
-                                                    var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
-                                                    var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-                                                    if (ConstantValue.isWebsocketConnected) {
-                                                        receiveFileDataMap.put(data.msgId.toString(), data)
-
-                                                        Thread(Runnable() {
-                                                            run() {
-                                                                val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                                                val myRouter = MyFile()
-                                                                myRouter.type = 0
-                                                                myRouter.userSn = ConstantValue.currentRouterSN
-                                                                myRouter.upLoadFile = uploadFile
-                                                                LocalFileUtils.insertLocalAssets(myRouter)
-                                                                FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
-                                                            }
-                                                        }).start()
-
-
-                                                    } else {
-                                                        /*var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
-                                                var base58Name =  Base58.encode(fileMiName.toByteArray())
-                                                receiveToxFileDataMap.put(base58Name,data)
-                                                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,data.msgId,2)
-                                                var baseData = BaseData(msgData)
-                                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                                if (ConstantValue.isAntox) {
-                                                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                                }else{
-                                                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                                                }*/
-                                                    }
+                                            Thread(Runnable() {
+                                                run() {
+                                                    val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
+                                                    val myRouter = MyFile()
+                                                    myRouter.type = 0
+                                                    myRouter.userSn = ConstantValue.currentRouterSN
+                                                    myRouter.upLoadFile = uploadFile
+                                                    LocalFileUtils.insertLocalAssets(myRouter)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
                                                 }
+                                            }).start()
 
+                                        } else {
+                                            var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/")+1,data.fileName.length)
+                                            var base58Name =  Base58.encode(fileMiName.toByteArray())
+                                            receiveToxFileDataMap.put(base58Name,data)
+                                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                            var msgData = PullFileReq(selfUserId, selfUserId,base58Name,data.msgId,2)
+                                            var baseData = BaseData(msgData)
+                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                            if (ConstantValue.isAntox) {
+                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                                            }else{
+                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
                                         }
+
                                     }
+
                                 }
                                 2 -> {
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
@@ -362,13 +316,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                             Thread(Runnable() {
                                                 run() {
-                                                    val uploadFile = UpLoadFile(filledUri, 0, true, false, false, 0, 1, 0, false)
-                                                    val myRouter = MyFile()
-                                                    myRouter.type = 0
-                                                    myRouter.userSn = ConstantValue.currentRouterSN
-                                                    myRouter.upLoadFile = uploadFile
-                                                    LocalFileUtils.insertLocalAssets(myRouter)
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+
                                                 }
                                             }).start()
                                         }

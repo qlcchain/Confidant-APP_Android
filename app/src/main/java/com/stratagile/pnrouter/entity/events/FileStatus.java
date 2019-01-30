@@ -37,4 +37,36 @@ public class FileStatus {
     public int getResult() {
         return result;
     }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public Boolean getDownLoad() {
+        return isDownLoad;
+    }
+
+    public Boolean getComplete() {
+        return isComplete;
+    }
+
+    public Boolean getStop() {
+        return isStop;
+    }
+
+    public int getSegSeqResult() {
+        return segSeqResult;
+    }
+
+    public int getSegSeqTotal() {
+        return segSeqTotal;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public Boolean getSendGgain() {
+        return SendGgain;
+    }
 }
