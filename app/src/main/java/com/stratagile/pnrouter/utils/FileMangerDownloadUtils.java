@@ -44,7 +44,7 @@ public class FileMangerDownloadUtils {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus());
+            EventBus.getDefault().post(new FileStatus(path,0, true, false, false,0,1,0,false,0));
 
             downFilePathMap.put(msgId+"",path);
             FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap);

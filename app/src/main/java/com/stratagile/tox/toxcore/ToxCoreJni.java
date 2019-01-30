@@ -10,7 +10,9 @@ import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import events.ToxReceiveFileFinishedEvent;
 import events.ToxReceiveFileNoticeEvent;
+import events.ToxReceiveFileProgressEvent;
 import events.ToxSendFileFinishedEvent;
+import events.ToxSendFileProgressEvent;
 
 import com.stratagile.tox.entity.DhtJson;
 import com.stratagile.tox.entity.DhtNode;
@@ -130,6 +132,15 @@ public class ToxCoreJni {
         LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
         return result;
     }
+    public int senToxFileInManger(String filePath, String friendId)
+    {
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
+        KLog.i(filePath);
+        int result =  sendFile(filePath, friendId, "u:"+fileName);
+        KLog.i("发送Tox文件:" + fileName +"  result:" +result);
+        LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
+        return result;
+    }
     public native int sendFile(String filePath, String friendId, String fileName);
 
     /**
@@ -208,6 +219,8 @@ public class ToxCoreJni {
         if(position == filesize)
         {
             EventBus.getDefault().post(new ToxSendFileFinishedEvent(key,fileNumber));
+        }else{
+            EventBus.getDefault().post(new ToxSendFileProgressEvent(key,fileNumber,position,filesize));
         }
     }
     /**
@@ -223,6 +236,9 @@ public class ToxCoreJni {
         if(position == filesize)
         {
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
+        }else{
+            EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber,position,filesize));
+
         }
     }
 

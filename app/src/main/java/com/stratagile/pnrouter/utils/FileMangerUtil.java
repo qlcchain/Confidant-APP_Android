@@ -30,7 +30,7 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.SendFileData;
-import com.stratagile.pnrouter.entity.SendToxFileNotice;
+import com.stratagile.pnrouter.entity.SendToxUploadFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage;
@@ -208,7 +208,7 @@ public class FileMangerUtil {
                                         myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                         myRouter.setUpLoadFile(uploadFile);
                                         LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                                        EventBus.getDefault().post(new FileStatus());
+                                        EventBus.getDefault().post(new FileStatus(filePath,fileSize, false, false, false,0,segSeqTotal,10,false,0));
                                     }else{
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -309,7 +309,7 @@ public class FileMangerUtil {
                                     myRouter.setUpLoadFile(uploadFile);
                                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
 
-                                    EventBus.getDefault().post(new FileStatus());
+                                    EventBus.getDefault().post(new FileStatus(filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
                                 }else{
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -331,7 +331,7 @@ public class FileMangerUtil {
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                     myRouter.setUpLoadFile(uploadFile);
                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                    EventBus.getDefault().post(new FileStatus());
+                    EventBus.getDefault().post(new FileStatus(filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,0));
 
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
@@ -439,16 +439,26 @@ public class FileMangerUtil {
     {
         friendStatus = status;
     }
-    public void  onToxFileSendFinished(int fileNumber,String key)
+    public static void  onToxFileSendFinished(int fileNumber,String key)
     {
 
         ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
         if(toxFileData != null)
         {
+            String filePath = toxFileData.getFilePath();
+
+            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false);
+            MyFile myRouter = new MyFile();
+            myRouter.setType(0);
+            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            myRouter.setUpLoadFile(uploadFile);
+            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+            EventBus.getDefault().post(new FileStatus(filePath,2));
+
             if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
-                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice( toxFileData.getFromId(),toxFileData.getToId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getFileId(),toxFileData.getSrcKey(),toxFileData.getDstKey(),"SendFile");
-                BaseData baseData = new BaseData(sendToxFileNotice);
+                SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
+                BaseData baseData = new BaseData(2,sendToxFileNotice);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if(ConstantValue.INSTANCE.isAntox())
                 {
@@ -457,15 +467,56 @@ public class FileMangerUtil {
                 }else{
                     ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
-
-
             }else{
-                EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(toxFileData.getFileId()+"");
-                KLog.i("tox文件上传成功后取消！");
+
             }
         }
     }
-    public void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
+    public static void  onToxSendFileProgressEvent(int fileNumber,String key,int position,int filesize)
+    {
+        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
+        if(toxFileData != null) {
+            String filePath = toxFileData.getFilePath();
+            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false);
+            MyFile myRouter = new MyFile();
+            myRouter.setType(0);
+            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            myRouter.setUpLoadFile(uploadFile);
+            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+            EventBus.getDefault().post(new FileStatus(filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,0));
+        }
+    }
+    public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
+    {
+        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
+        if(toxFileData != null)
+        {
+            String filePath = toxFileData.getFilePath();
+
+            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), true, true, false,1,1,0,false);
+            MyFile myRouter = new MyFile();
+            myRouter.setType(0);
+            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            myRouter.setUpLoadFile(uploadFile);
+            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+            EventBus.getDefault().post(new FileStatus(filePath,toxFileData.getFileSize(), true, true, false,1,1,0,false,0));
+        }
+    }
+    public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
+    {
+        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
+        if(toxFileData != null) {
+            String filePath = toxFileData.getFilePath();
+            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), true, false, false,position,filesize,0,false);
+            MyFile myRouter = new MyFile();
+            myRouter.setType(0);
+            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            myRouter.setUpLoadFile(uploadFile);
+            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+            EventBus.getDefault().post(new FileStatus(filePath,toxFileData.getFileSize(), true, false, false,position,filesize,0,false,0));
+        }
+    }
+    public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
     {
         if(ConstantValue.INSTANCE.isAntox())
         {
@@ -549,6 +600,7 @@ public class FileMangerUtil {
                         deleteFileMap.put(uuid+"",false);
                         ToxFileData toxFileData = new ToxFileData();
                         toxFileData.setFromId(fromUserId);
+                        toxFileData.setFilePath(filePath);
                         toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                         File fileMi = new File(base58files_dir);
                         long fileSize = fileMi.length();
@@ -583,7 +635,7 @@ public class FileMangerUtil {
                             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                         }else{
-                            fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                            fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                         }
                         sendToxFileDataMap.put(fileNumber,toxFileData);
                     }
@@ -625,7 +677,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus());
+                            EventBus.getDefault().post(new FileStatus(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
@@ -667,13 +719,13 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus());
+                                EventBus.getDefault().post(new FileStatus(imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
 
@@ -685,6 +737,7 @@ public class FileMangerUtil {
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
+                                toxFileData.setFilePath(imagePath);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -721,7 +774,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
@@ -773,7 +826,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus());
+                            EventBus.getDefault().post(new FileStatus(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             sendMsgLocalMap.put(uuid,false);
@@ -816,13 +869,13 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus());
+                                EventBus.getDefault().post(new FileStatus(videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
@@ -832,6 +885,7 @@ public class FileMangerUtil {
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
+                                toxFileData.setFilePath(videoPath);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -869,7 +923,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
@@ -917,7 +971,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus());
+                            EventBus.getDefault().post(new FileStatus(filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
@@ -961,13 +1015,13 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(base58files_dir,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus());
+                                EventBus.getDefault().post(new FileStatus(filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
                                 int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
@@ -977,6 +1031,7 @@ public class FileMangerUtil {
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
+                                toxFileData.setFilePath(filePath);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -1013,7 +1068,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else {
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);

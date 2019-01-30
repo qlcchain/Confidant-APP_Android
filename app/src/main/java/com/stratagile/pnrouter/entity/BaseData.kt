@@ -370,3 +370,9 @@ data class UploadFileReq(var UserId :String, var FileName : String,var FileSize 
  * (2)	响应（APP->Router）
  */
 data class DelFileReq(var UserId :String, var FileName : String,var Action : String = "DelFile")
+
+/**
+ * 24.	发送文件_Tox消息 上传文件
+ * (2)	响应（APP->Router）
+ */
+data class SendToxUploadFileNotice(var UserId :String,  var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int,  var UserKey : String,  var Action : String = "UploadFile")

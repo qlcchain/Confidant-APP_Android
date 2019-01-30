@@ -132,7 +132,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 					myRouter.setUpLoadFile(uploadFile);
 					LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-					EventBus.getDefault().post(new FileStatus());
+					EventBus.getDefault().post(new FileStatus(fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 					msg.what = 0x55;
 				}
 				else
@@ -236,7 +236,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 				myRouter.setUpLoadFile(uploadFile);
 				LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-				EventBus.getDefault().post(new FileStatus());
+				EventBus.getDefault().post(new FileStatus(fileUlr,length, true, false, false,count,length,0,false,0));
 				KLog.d(TAG+":downloading:"+ progress +"%");
 			}
 			out.flush();

@@ -12,7 +12,10 @@ public class FileStatus {
     {
 
     }
+    public FileStatus(String path ,long fileSize, Boolean isDownLoad, Boolean isComplete, Boolean isStop, int segSeqResult, int segSeqTotal, int speed,Boolean SendGgain,int result)
+    {
 
+    }
     public String getFilePath() {
         return filePath;
     }

@@ -7,6 +7,7 @@ package com.stratagile.pnrouter.entity;
 public class  ToxFileData {
     private String FromId;
     private String ToId;
+    private String FilePath;
     private String FileName;
     private String FileMD5;
     private int FileSize;
@@ -29,6 +30,14 @@ public class  ToxFileData {
 
     public void setToId(String toId) {
         ToId = toId;
+    }
+
+    public String getFilePath() {
+        return FilePath;
+    }
+
+    public void setFilePath(String filePath) {
+        FilePath = filePath;
     }
 
     public String getFileName() {

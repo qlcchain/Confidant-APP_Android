@@ -10,6 +10,7 @@ import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage
 import com.stratagile.pnrouter.utils.FileMangerUtil
+import events.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -69,5 +70,36 @@ class FileDownloadUploadService : Service() {
     fun onConnectWebSocket(transformReceiverFileMessage : FileMangerTransformReceiverMessage)
     {
         FileMangerUtil.onFileMangerTransformReceiverMessage(transformReceiverFileMessage)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
+        var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var key = toxSendFileFinishedEvent.key
+        FileMangerUtil.onToxFileSendFinished(fileNumber,key)
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendFileProgressEvent(toxSendFileProgressEvent: ToxSendFileProgressEvent) {
+        FileMangerUtil.onToxSendFileProgressEvent(toxSendFileProgressEvent.fileNumber,toxSendFileProgressEvent.key,toxSendFileProgressEvent.position,toxSendFileProgressEvent.filesize)
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun OnToxReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxReceiveFileNoticeEvent) {
+        var fileNumber=  toxReceiveFileNoticeEvent.fileNumber
+        var key = toxReceiveFileNoticeEvent.key
+        var fileName = toxReceiveFileNoticeEvent.filename
+        FileMangerUtil.onAgreeReceivwFileStart(fileNumber,key,fileName)
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxReceiveFileFinishedEvent) {
+        var fileNumber=  toxReceiveFileFinishedEvent.fileNumber
+        var key = toxReceiveFileFinishedEvent.key
+        FileMangerUtil.onToxReceiveFileFinishedEvent(fileNumber,key)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxReceiveFileProgressEvent(toxReceiveFileProgressEvent: ToxReceiveFileProgressEvent) {
+        FileMangerUtil.onToxReceiveFileProgressEvent(toxReceiveFileProgressEvent.fileNumber,toxReceiveFileProgressEvent.key,toxReceiveFileProgressEvent.position,toxReceiveFileProgressEvent.filesize)
     }
 }
