@@ -50,26 +50,23 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         runOnUiThread {
             closeProgressDialog()
         }
-        when(jUploadFileRsp.params.retCode)
-        {
-            0-> {
+        when (jUploadFileRsp.params.retCode) {
+            0 -> {
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
                 }
-                var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
+                var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
                 var file = File(localMedia!!.path)
-                if(file.exists())
-                {
+                if (file.exists()) {
 
-                    when(localMedia!!.pictureType)
-                    {
-                        "image/jpeg"-> {
-                            FileMangerUtil.sendImageFile(localMedia!!.path,false)
+                    when (localMedia!!.pictureType) {
+                        "image/jpeg" -> {
+                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
                         }
-                        "image/png"-> {
-                            FileMangerUtil.sendImageFile(localMedia!!.path,false)
+                        "image/png" -> {
+                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
                         }
-                        "video/mp4"-> {
+                        "video/mp4" -> {
                             FileMangerUtil.sendVideoFile(localMedia!!.path)
                         }
                         else -> {
@@ -80,13 +77,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                 }
             }
-            1-> {
+            1 -> {
                 runOnUiThread {
                     toast(getString(R.string.Documents_already_exist))
                 }
 
             }
-            2-> {
+            2 -> {
                 runOnUiThread {
                     toast(getString(R.string.not_enough_space))
                 }
@@ -109,9 +106,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         setContentView(R.layout.activity_file_task_list)
     }
 
-    lateinit var ongoingTaskHead : TaskFile
-    lateinit var completeTaskHead : TaskFile
-    var localMedia:LocalMedia? = null
+    lateinit var ongoingTaskHead: TaskFile
+    lateinit var completeTaskHead: TaskFile
+    var localMedia: LocalMedia? = null
     var listGoing = mutableListOf<TaskFile>()
     var listComplete = mutableListOf<TaskFile>()
 
@@ -119,33 +116,30 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         EventBus.getDefault().register(this)
         title.text = "Task List"
         listGoing = mutableListOf<TaskFile>()
-        listComplete  = mutableListOf<TaskFile>()
+        listComplete = mutableListOf<TaskFile>()
         ongoingTaskHead = TaskFile(true, "111")
         completeTaskHead = TaskFile(true, "222")
 
         AppConfig.instance.messageReceiver?.fileTaskBack = this
         var listData = intent.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
-        if(listData != null && listData.size > 0)
-        {
+        if (listData != null && listData.size > 0) {
             for (i in listData) {
                 var file = File(i.path)
-                if(file.exists())
-                {
+                if (file.exists()) {
                     localMedia = i
-                    var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/")+1)
+                    var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
                     val fileNameBase58 = Base58.encode(fileName.toByteArray())
                     var fileSize = file.length()
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var fileType = 1
-                    when(localMedia!!.pictureType)
-                    {
-                        "image/jpeg"-> {
+                    when (localMedia!!.pictureType) {
+                        "image/jpeg" -> {
                             fileType = 1
                         }
-                        "image/png"-> {
+                        "image/png" -> {
                             fileType = 1
                         }
-                        "video/mp4"-> {
+                        "video/mp4" -> {
                             fileType = 4
                         }
                         else -> {
@@ -155,16 +149,16 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     runOnUiThread {
                         showProgressDialog(getString(R.string.waiting))
                     }
-                    var msgData = UploadFileReq(userId!!,fileNameBase58,fileSize,fileType)
+                    var msgData = UploadFileReq(userId!!, fileNameBase58, fileSize, fileType)
                     if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
-                    }else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(2,msgData)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData))
+                    } else if (ConstantValue.isToxConnected) {
+                        var baseData = BaseData(2, msgData)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }else{
+                        } else {
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
                     }
@@ -173,32 +167,68 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
 
         }
-        updataUI()
+
+        initUI()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
-        if(fileStatus.result == 1)
-        {
+        if (fileStatus.result == 1) {
             toast(R.string.File_does_not_exist)
+        } else {
+            kotlin.run {
+                KLog.i(fileStatus.filePath)
+                var localFilesList = LocalFileUtils.localFilesList
+                listGoing.forEachIndexed { index, it ->
+                    it.takeUnless { it.isHeader }?.let {
+                        if (it.t.path.equals(fileStatus.filePath)) {
+                            for (myFie in localFilesList) {
+                                if (myFie.upLoadFile.path.equals(fileStatus.filePath)) {
+                                    if (myFie.upLoadFile.isComplete == false) {
+                                        it.t.segSeqResult = myFie.upLoadFile.segSeqResult
+                                        it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
+                                        fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                                        KLog.i("没有下载完")
+                                    } else {
+                                        listGoing.removeAt(index)
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
+                                        reSetHeadTitle()
+                                        fileGoingTaskLisytAdapter.notifyDataSetChanged()
+                                        KLog.i("下载完1")
+                                        fileCompleteTaskLisytAdapter.notifyDataSetChanged()
+                                    }
+                                }
+                            }
+                            return
+                        }
+                    }
+                }
+                for (myFie in localFilesList) {
+                    if (myFie.upLoadFile.isComplete == false && fileStatus.filePath.equals(myFie.upLoadFile.path)) {
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+                        reSetHeadTitle()
+                        fileGoingTaskLisytAdapter.notifyDataSetChanged()
+                        KLog.i("新下载")
+                    }
+                }
+            }
+
         }
-        updataUI()
     }
-    fun updataUI()
-    {
+
+    fun initUI() {
         listGoing = mutableListOf<TaskFile>()
-        listComplete  = mutableListOf<TaskFile>()
+        listComplete = mutableListOf<TaskFile>()
         var localFilesList = LocalFileUtils.localFilesList
         listGoing.add(ongoingTaskHead)
         listComplete.add(completeTaskHead)
-        for (myFie in localFilesList)
-        {
+        for (myFie in localFilesList) {
 
-            if(myFie.upLoadFile.isComplete == false)
-            {
-                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
-            }else{
+            if (myFie.upLoadFile.isComplete == false) {
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+            } else {
 
-                listComplete.add(TaskFile(UpLoadFile(myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0,false)))
+                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
@@ -206,15 +236,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
             var localMedia = taskFile!!.t
             var file = File(localMedia!!.path)
-            if(file.exists())
-            {
-                if(localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1 )
-                {
-                    FileMangerUtil.sendImageFile(localMedia!!.path,false)
-                }else if(localMedia!!.path.indexOf("mp4") > -1 )
-                {
+            if (file.exists()) {
+                if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
+                    FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                } else if (localMedia!!.path.indexOf("mp4") > -1) {
                     FileMangerUtil.sendVideoFile(localMedia!!.path)
-                }else{
+                } else {
                     FileMangerUtil.sendOtherFile(localMedia!!.path)
                 }
             }
@@ -223,13 +250,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         recyclerView.setNestedScrollingEnabled(false)
         recyclerView.setHasFixedSize(true)
         fileCompleteTaskLisytAdapter = FileTaskLisytAdapter(listComplete)
-        reSetHeadTitle()
         recyclerView2.adapter = fileCompleteTaskLisytAdapter
         recyclerView2.setNestedScrollingEnabled(false)
         recyclerView2.setHasFixedSize(true)
+        reSetHeadTitle()
     }
+
     fun reSetHeadTitle() {
-        var ongoing = fileGoingTaskLisytAdapter.data.size -1
+        var ongoing = fileGoingTaskLisytAdapter.data.size - 1
         var complete = fileCompleteTaskLisytAdapter.data.size - 1
 
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
@@ -248,16 +276,17 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
 
     override fun setupActivityComponent() {
-       DaggerFileTaskListComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .fileTaskListModule(FileTaskListModule(this))
-               .build()
-               .inject(this)
+        DaggerFileTaskListComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .fileTaskListModule(FileTaskListModule(this))
+                .build()
+                .inject(this)
     }
+
     override fun setPresenter(presenter: FileTaskListContract.FileTaskListContractPresenter) {
-            mPresenter = presenter as FileTaskListPresenter
-        }
+        mPresenter = presenter as FileTaskListPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -266,6 +295,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

@@ -100,7 +100,9 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, 
     java_bootstrap();
     time_t timestamp0 = time(NULL);
     while (1) {
-//        java_bootstrap();
+        if (mTox == NULL) {
+            continue;
+        }
         if (tox_self_get_connection_status(mTox)) {
             //tox已经连接到网络
         } else {
