@@ -271,9 +271,9 @@ object PopWindowUtil {
 
     fun getFileSortType(context: Activity) : ArrayList<Arrange> {
         var list = ArrayList<Arrange>()
-        list.add(Arrange(context.getString(R.string.arrange_by_name), ConstantValue.currentArrangeType == 0))
-        list.add(Arrange(context.getString(R.string.arrange_by_time), ConstantValue.currentArrangeType == 1))
-        list.add(Arrange(context.getString(R.string.arrange_by_size), ConstantValue.currentArrangeType == 2))
+        list.add(Arrange(context.getString(R.string.arrange_by_name), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 0) == 0))
+        list.add(Arrange(context.getString(R.string.arrange_by_time), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 0) == 1))
+        list.add(Arrange(context.getString(R.string.arrange_by_size), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 0) == 2))
         return list
     }
 

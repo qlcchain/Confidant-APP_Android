@@ -91,7 +91,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         runOnUiThread {
-            when (ConstantValue.currentArrangeType) {
+            when (SpUtil.getInt(this, ConstantValue.currentArrangeType, 0)) {
                 0 -> {
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.fileName }.toMutableList())
                 }
@@ -130,8 +130,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         sort.setOnClickListener {
             PopWindowUtil.showFileSortWindow(this, sort, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
-                    ConstantValue.currentArrangeType = position
-                    when (ConstantValue.currentArrangeType) {
+                    SpUtil.putInt(this@FileManagerActivity, ConstantValue.currentArrangeType, position)
+                    when (position) {
                         0 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileName }.toMutableList())
                         }

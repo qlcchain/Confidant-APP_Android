@@ -45,7 +45,8 @@ object ConstantValue {
         var libsodiumpublicMiKeySp ="libsodiumpublicMiKeySp"
         var libsodiumprivateMiKey:String? = ""
         var libsodiumpublicMiKey:String? = ""
-
+        //文件展示的排序方式，0 name， 1 time， 2 size
+        var currentArrangeType = "currentArrangeType"
 
         var libsodiumprivateTemKey:String? = ""
         var libsodiumpublicTemKey:String? = ""
@@ -82,7 +83,5 @@ object ConstantValue {
         var pushURL = "http://47.96.76.184:9000/v1/pareg"
         var loginOut = false
         var freindStatus = 0
-        //文件展示的排序方式，0 name， 1 time， 2 size
-        var currentArrangeType = 0
 
 }
