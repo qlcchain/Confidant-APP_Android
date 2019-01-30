@@ -117,8 +117,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     override fun initData() {
         EventBus.getDefault().register(this)
-        var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
-        startService(startFileDownloadUploadService)
         title.text = "Task List"
         listGoing = mutableListOf<TaskFile>()
         listComplete  = mutableListOf<TaskFile>()

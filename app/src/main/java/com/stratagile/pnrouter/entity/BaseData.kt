@@ -303,7 +303,7 @@ data class SendToxFileNotice(var FromId :String, var ToId : String, var FileName
  * 12.	向服务器要tox文件
  * (2)	响应（APP->Router）
  */
-data class PullFileReq(var FromId : String, var ToId : String,var FileName : String,var MsgId : Int,var FileOwner:Int, var Action : String = "PullFile")
+data class PullFileReq(var FromId : String, var ToId : String,var FileName : String,var MsgId : Int,var FileOwner:Int, var FileFrom:Int  = 1,var Action : String = "PullFile")
 
 /**
  * 个人信息修改

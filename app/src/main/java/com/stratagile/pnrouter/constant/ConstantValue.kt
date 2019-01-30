@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.constant
 
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.LoginReq
 import java.util.HashMap
 
@@ -50,7 +51,7 @@ object ConstantValue {
 
         var libsodiumprivateTemKey:String? = ""
         var libsodiumpublicTemKey:String? = ""
-
+        var receiveToxFileGlobalDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
         var updRouterData: HashMap<String,String> = HashMap()
         var unSendMessage: HashMap<String,String> = HashMap() //待发送消息
         var unSendMessageFriendId: HashMap<String,String> = HashMap() //待发送消息的路由器id

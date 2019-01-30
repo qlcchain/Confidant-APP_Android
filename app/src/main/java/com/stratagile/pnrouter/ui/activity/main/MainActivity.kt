@@ -36,6 +36,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
@@ -661,6 +662,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else{
             ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
         }
+        var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
+        startService(startFileDownloadUploadService)
         Thread(Runnable() {
             run() {
 

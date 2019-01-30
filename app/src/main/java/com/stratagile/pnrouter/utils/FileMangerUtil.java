@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.entity.JPullFileListRsp;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendToxUploadFileNotice;
@@ -141,6 +142,7 @@ public class FileMangerUtil {
     private static HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
     private static HashMap<String, Boolean> deleteFileMap = new HashMap<>();
     private static HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
+    private static HashMap<String, Long> receiveToxFileSizeMap = new HashMap<>();
     private static HashMap<String, String> sendFileKeyByteMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
     private static HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
@@ -490,46 +492,56 @@ public class FileMangerUtil {
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
-        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
-        if(toxFileData != null)
+        String fileName = receiveToxFileNameMap.get(fileNumber+"");
+        long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
+        if(fileName != null)
         {
-            String filePath = toxFileData.getFilePath();
-
-            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), true, true, false,1,1,0,false);
+            String fileNameTemp = fileName;
+            String fileOrginName = new String(Base58.decode(fileNameTemp));
+            String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameTemp;
+            String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
+            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileNameTemp);
+            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(data.getUserKey());
+            int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
+            UpLoadFile uploadFile = new UpLoadFile(fileName,fileSize, true, true, false,1,1,0,false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(filePath,toxFileData.getFileSize(), true, true, false,1,1,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileName,fileSize, true, true, false,1,1,0,false,0));
         }
     }
     public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
     {
-        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
-        if(toxFileData != null) {
-            String filePath = toxFileData.getFilePath();
-            UpLoadFile uploadFile = new UpLoadFile(filePath,toxFileData.getFileSize(), true, false, false,position,filesize,0,false);
+        String fileName = receiveToxFileNameMap.get(fileNumber+"");
+        if(fileName != null) {
+
+            receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
+            UpLoadFile uploadFile = new UpLoadFile(fileName,filesize, true, false, false,position,filesize,0,false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(filePath,toxFileData.getFileSize(), true, false, false,position,filesize,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileName,filesize, true, false, false,position,filesize,0,false,0));
         }
     }
     public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
     {
+        String [] fileNameArray = fileName.split(":");
         if(ConstantValue.INSTANCE.isAntox())
         {
             FriendKey friendKey = new FriendKey(key);
             if(friendKey != null)
             {
-                receiveToxFileNameMap.put(fileNumber+"",fileName);
+
+                receiveToxFileNameMap.put(fileNumber+"",fileNameArray[1]);
+
                 MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
             }
         }else{
-            receiveToxFileNameMap.put(fileNumber+"",fileName);
+            receiveToxFileNameMap.put(fileNumber+"",fileNameArray[1]);
         }
 
     }

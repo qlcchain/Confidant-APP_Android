@@ -1155,27 +1155,34 @@ public class FileUtil {
      */
     public static int copySdcardToxFileAndDecrypt(String fromFile, String toFile, String aesKey)
     {
-        try
+        File from = new File(fromFile);
+        if(from.exists())
         {
-            InputStream fosfrom = new FileInputStream(fromFile);
-            byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
-            byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
-            fosfrom = FileUtil.byteTOInputStream(miFile);
-            OutputStream fosto = new FileOutputStream(toFile);
-            byte bt[] = new byte[1024];
-            int c;
-            while ((c = fosfrom.read(bt)) > 0)
+            try
             {
-                fosto.write(bt, 0, c);
-            }
-            fosfrom.close();
-            fosto.close();
+                InputStream fosfrom = new FileInputStream(fromFile);
+                byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+                byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                fosfrom = FileUtil.byteTOInputStream(miFile);
+                OutputStream fosto = new FileOutputStream(toFile);
+                byte bt[] = new byte[1024];
+                int c;
+                while ((c = fosfrom.read(bt)) > 0)
+                {
+                    fosto.write(bt, 0, c);
+                }
+                fosfrom.close();
+                fosto.close();
 
-        } catch (Exception ex)
-        {
+            } catch (Exception ex)
+            {
+                return 0;
+            }
+            return 1;
+        }else{
             return 0;
         }
-        return 1;
+
     }
     /**
      * 得到amr的时长

@@ -227,6 +227,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "PullFile" -> {
                     val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
                     chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
+                    fileManageBack?.pullFileMsgRsp(jToxPullFileRsp)
                 }
                 //admin登陆
                 "RouterLogin" -> {
@@ -510,6 +511,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface FileManageBack {
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
         fun deleFileRsp(jDelFileRsp :JDelFileRsp)
+        fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
     }
 }
 

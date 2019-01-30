@@ -1303,9 +1303,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
                             }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,"PullFile");
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
@@ -1350,9 +1350,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
                             }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,"PullFile");
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
@@ -1401,9 +1401,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
                             }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,"PullFile");
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
@@ -1446,9 +1446,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             PullFileReq msgData;
                             if(Message.getSender() == 0)
                             {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,"PullFile");
+                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
                             }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,"PullFile");
+                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
