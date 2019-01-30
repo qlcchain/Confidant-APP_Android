@@ -604,7 +604,7 @@ public class FileMangerUtil {
                     String strBase58 = Base58.encode(fileName.getBytes());
                     String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                     String fileKey =  RxEncryptTool.generateAESKey();
-                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
+                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                     if(code == 1)
                     {
                         int uuid = (int)(System.currentTimeMillis()/1000);
@@ -734,7 +734,7 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey,isCompress);
+                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
                             if(code == 1)
                             {
 
@@ -895,7 +895,7 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey);
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
                                 File miFile = new File(base58files_dir);
@@ -1051,7 +1051,7 @@ public class FileMangerUtil {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
+                            int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
                                 File miFile = new File(base58files_dir);
