@@ -87,6 +87,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/llOpreate"
         android:orientation="horizontal"
         android:background="@color/mainColor"

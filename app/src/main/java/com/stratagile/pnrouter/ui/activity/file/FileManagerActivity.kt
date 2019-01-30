@@ -134,7 +134,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         fileListChooseAdapter = FileListChooseAdapter(arrayListOf())
         recyclerView.adapter = fileListChooseAdapter
         fileListChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-            var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
+            var taskFile = fileListChooseAdapter!!.getItem(position)
+            /*var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
             if (position == 0) {
                 filePath = "" + Environment.getExternalStorageDirectory() + "/1/test.txt"
             } else if (position == 1) {
@@ -143,8 +144,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 filePath = "" + Environment.getExternalStorageDirectory() + "/1/xxx.jpg"
             } else if (position == 3) {
                 filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
-            }
-            startActivity(Intent(this, PdfViewActivity::class.java).putExtra("filePath", filePath))
+            }*/
+            startActivity(Intent(this, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName))
         }
 
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
