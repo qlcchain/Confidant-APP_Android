@@ -298,8 +298,10 @@ public class FileMangerUtil {
                                 {
                                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"","",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
 
-                                    int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                    UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,fileTotalSegment +1,segSeqTotal,10,false);
+                                    int sended = SegSeqResult - 1;
+                                    if(sended < 0 )
+                                        sended = 0
+                                    UpLoadFile uploadFile = new UpLoadFile(filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false);
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
                                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
