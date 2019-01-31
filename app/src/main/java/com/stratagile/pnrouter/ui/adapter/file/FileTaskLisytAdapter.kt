@@ -41,6 +41,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
         } else {
+            if (item.t.isStop) {
+                helper.setGone(R.id.status, true)
+            } else {
+                helper.setGone(R.id.status, false)
+            }
             helper.setGone(R.id.progressBar, true)
             helper.setGone(R.id.status, true)
             helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))

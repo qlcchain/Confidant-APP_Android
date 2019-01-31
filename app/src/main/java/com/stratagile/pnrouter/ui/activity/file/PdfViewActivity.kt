@@ -76,8 +76,27 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         var base58Name =  String(Base58.decode(fileMiName))
         filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
-        var fileName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)
+        var fileName = String(Base58.decode(payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)))
         tvFileName.text = file.name
+        if (fileName.contains("jpg")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("pdf")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.pdf))
+        } else if (fileName.contains("mp4")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.video))
+        } else if (fileName.contains("png")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("txt")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.txt))
+        } else if (fileName.contains("ppt")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.ppt))
+        } else if (fileName.contains("xls")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.xls))
+        } else if (fileName.contains("doc")) {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc))
+        } else {
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.other))
+        }
         if (file.exists()) {
             progressBar.visibility = View.GONE
             if (fileName.contains(".pdf")) {
@@ -135,6 +154,9 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                     tvFileOpreate.setOnClickListener {
                         openFile(filePath)
                     }
+                }
+                if (progressBar.progress == 100) {
+                    progressBar.visibility = View.INVISIBLE
                 }
             }
         }

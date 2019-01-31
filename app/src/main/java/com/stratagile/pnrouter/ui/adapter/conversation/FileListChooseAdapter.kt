@@ -12,6 +12,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.TimeUtil
 import com.stratagile.pnrouter.view.SmoothCheckBox
@@ -61,7 +62,7 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
             }
             2 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))
-                helper.setText(R.id.friendName, item.sender)
+                helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
             }
             3 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))

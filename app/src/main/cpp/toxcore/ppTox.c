@@ -126,7 +126,7 @@ void java_bootstrap(void) {
     }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "bootStrapJava", "()V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback);
     (*Env)->DeleteLocalRef(Env, clazz);
@@ -207,6 +207,7 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, j
                                          (uint8_t *) fileNameC,
                                          strlen(fileNameC), 0);
 
+        LOGD("开始发送文件的fileNumber为：%d", filenum);
         if (filenum == -1) {
             free(friendId_P);
             free(filePathC);
@@ -538,7 +539,7 @@ int Call_SelfStatusChange_To_Java(JNIEnv *env, int status) {
 //        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到showLog方法");
 //        return 0;
 //    }
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
 
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*env)->CallVoidMethod(env, g_obj, javaCallback, status);
@@ -806,8 +807,7 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
         unsigned int i;
         for (i = 0; i < NUM_FILE_SENDERS; ++i) {
             /* This is slow */
-            if (file_senders[i].file && file_senders[i].friendnum == friend_number &&
-                file_senders[i].filenumber == file_number) {
+            if (file_senders[i].file && file_senders[i].friendnum == friend_number && file_senders[i].filenumber == file_number) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
                 LOGD("[t] %u file transfer: %u cancelled", file_senders[i].friendnum,
@@ -827,11 +827,11 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
                       size_t length, void *user_data) {
 //    LOGD("file_chunk_request_cb");
     unsigned int i;
-
     for (i = 0; i < NUM_FILE_SENDERS; ++i) {
         /* This is slow */
         if (file_senders[i].file && file_senders[i].friendnum == friend_number &&
             file_senders[i].filenumber == file_number) {
+            LOGD("fileNumber= %d,   总大小为：%d,  发送了的大小为: %d", file_number, (int) file_senders[i].filesize, position);
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
@@ -875,7 +875,7 @@ void call_java_start_send_file(int friendNumber, int fileNumber) {
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "starSendFile",
                                                  "(ILjava/lang/String;)V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFriendId);
     (*Env)->DeleteLocalRef(Env, clazz);
@@ -898,7 +898,7 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "startReceiveFile",
                                                  "(ILjava/lang/String;Ljava/lang/String;)V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     jstring jFileName = (*Env)->NewStringUTF(Env, fileName);
     char fraddr_str[FRAPUKKEY_TOSTR_BUFSIZE];
@@ -928,7 +928,7 @@ void call_java_sendfile_rate(int fileNumber, int position, int filesize) {
     }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "sendFileRate", "(III)V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, position, filesize);
     (*Env)->DeleteLocalRef(Env, clazz);
@@ -957,7 +957,7 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize) {
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "receivedFileRate",
                                                  "(IILjava/lang/String;)V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize, jFriendId);
     (*Env)->DeleteLocalRef(Env, clazz);
@@ -1068,7 +1068,7 @@ int Call_GetFilePathFromJava(const char*oldfilepathname, char*newfilepathname)
         }
         //找到需要调用的方法ID
         jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "setFileSavePath", "(Ljava/lang/String;)Ljava/lang/String;");
-        LOGD("开始调用java方法");
+//        LOGD("开始调用java方法");
         jstring jOldFileName = (*Env)->NewStringUTF(Env, oldfilepathname);
         //进行回调，ret是java层的返回值（这个有些场景很好用）
         jstring result = (*Env)->CallObjectMethod(Env, g_obj, javaCallback, jOldFileName);
@@ -1135,7 +1135,7 @@ void friend_status_callback(JNIEnv *env, int status, char *friendNumber) {
     //找到需要调用的方法ID
     jmethodID javaCallback = (*env)->GetMethodID(env, clazz, "freindStatus",
                                                  "(Ljava/lang/String;I)V");
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     jstring jfriendNumber = (*env)->NewStringUTF(env, friendNumber);
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     (*env)->CallVoidMethod(env, g_obj, javaCallback, jfriendNumber, status);
@@ -1209,7 +1209,7 @@ void received_message(JNIEnv *env, char *string, char *friendNumber) {
 //        LOGD("在com/stratagile/tox/toxcore/ToxCoreJni类中找不到receivedMessage方法");
 //        return;
 //    }
-    LOGD("开始调用java方法");
+//    LOGD("开始调用java方法");
     jstring callbackStr = (*env)->NewStringUTF(env, string);
     jstring jfriendNumber = (*env)->NewStringUTF(env, friendNumber);
     //进行回调，ret是java层的返回值（这个有些场景很好用）
