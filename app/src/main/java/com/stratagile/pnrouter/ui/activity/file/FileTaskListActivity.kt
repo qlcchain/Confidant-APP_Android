@@ -254,20 +254,20 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var msgId =  (System.currentTimeMillis() / 1000).toInt()
                     Thread(Runnable() {
                         run() {
-                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey)
+                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom)
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN
                             myRouter.upLoadFile = uploadFile
                             LocalFileUtils.updateLocalAssets(myRouter)
-                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, localMedia!!.userKey)
+                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, localMedia!!.userKey,localMedia!!.fileFrom)
                         }
                     }).start()
 
                 } else {
                     var msgId =  (System.currentTimeMillis() / 1000).toInt()
                     ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
-                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey)
+                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom)
                     val myRouter = MyFile()
                     myRouter.type = 0
                     myRouter.userSn = ConstantValue.currentRouterSN
@@ -275,15 +275,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     LocalFileUtils.updateLocalAssets(myRouter)
 
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var fielOwner = 1;
-                    if (localMedia!!.path.indexOf("/s/") > -1) {
-                        fielOwner = 1
-                    } else if (localMedia!!.path.indexOf("/r/") > -1) {
-                        fielOwner = 2
-                    } else {
-                        fielOwner = 3
-                    }
-                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, msgId, fielOwner, 2)
+                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, msgId, localMedia!!.fileFrom, 2)
                     var baseData = BaseData(msgData)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {

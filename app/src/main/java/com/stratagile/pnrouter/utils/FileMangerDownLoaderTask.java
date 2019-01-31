@@ -52,6 +52,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private static HashMap<String, String> downFilePathTaskMap = new HashMap<>();
 	private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
 	private int progressBarMaxSeg = 10;
+	private int fileFrom = 0;
 
 	/**
 	 *
@@ -60,11 +61,12 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileMangerDownLoaderTask(String url, String out, Context context, int msgId, Handler message, String key, HashMap<String, String> downFilePathMap){
+	public FileMangerDownLoaderTask(String url, String out, Context context, int msgId, Handler message, String key, HashMap<String, String> downFilePathMap,int FileFrom){
 		super();
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
+		fileFrom = FileFrom;
 		downFilePathTaskMap = downFilePathMap;
 		if(context!=null){
 			mContext = context;
@@ -129,7 +131,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				if(bytesCopiedFlag != 0)
 				{
 					String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr);
+					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr,fileFrom);
 					MyFile myRouter = new MyFile();
 					myRouter.setType(0);
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -234,7 +236,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				count+=n;
 				long progress = count * 100 / length;
 				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr);
+				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr,fileFrom);
 				MyFile myRouter = new MyFile();
 				myRouter.setType(0);
 				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

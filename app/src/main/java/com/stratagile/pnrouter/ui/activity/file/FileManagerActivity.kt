@@ -275,30 +275,21 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                             Thread(Runnable() {
                                                 run() {
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
                                                 }
                                             }).start()
 
                                         } else {
                                             receiveToxFileDataMap.put(fileOrginName,data)
                                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey)
+                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom)
                                             val myRouter = MyFile()
                                             myRouter.type = 0
                                             myRouter.userSn = ConstantValue.currentRouterSN
                                             myRouter.upLoadFile = uploadFile
                                             LocalFileUtils.insertLocalAssets(myRouter)
-
                                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                            var fielOwner = 1;
-                                            if (data.fileName.indexOf("/s/") > -1) {
-                                                fielOwner = 1
-                                            } else if (data.fileName.indexOf("/r/") > -1) {
-                                                fielOwner = 2
-                                            } else {
-                                                fielOwner = 3
-                                            }
-                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, fielOwner, 2)
+                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
@@ -323,11 +314,11 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
-                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
+                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
                                         } else {
                                             receiveToxFileDataMap.put(fileOrginName,data)
                                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey)
+                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey, data.fileFrom)
                                             val myRouter = MyFile()
                                             myRouter.type = 0
                                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -335,15 +326,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             LocalFileUtils.insertLocalAssets(myRouter)
 
                                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                            var fielOwner = 1;
-                                            if (data.fileName.indexOf("/s/") > -1) {
-                                                fielOwner = 1
-                                            } else if (data.fileName.indexOf("/r/") > -1) {
-                                                fielOwner = 2
-                                            } else {
-                                                fielOwner = 3
-                                            }
-                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, fielOwner, 2)
+                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {

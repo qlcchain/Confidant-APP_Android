@@ -30,7 +30,7 @@ public class FileMangerDownloadUtils {
             task.cancel(true);
         }
     }
-    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key){
+    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
         ///data/data/com.johnny.testzipanddownload/files
         File destDir = new File(to);
         if (!destDir.exists()) {
@@ -39,7 +39,7 @@ public class FileMangerDownloadUtils {
         if(!downFilePathMap.containsKey(msgId+""))
         {
             String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key);
+            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key,FileFrom);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
