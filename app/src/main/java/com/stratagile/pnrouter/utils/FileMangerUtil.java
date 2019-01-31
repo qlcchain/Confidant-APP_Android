@@ -206,7 +206,7 @@ public class FileMangerUtil {
                                     {
                                         sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
                                         int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false);
+                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"");
                                         MyFile myRouter = new MyFile();
                                         myRouter.setType(0);
                                         myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -306,7 +306,7 @@ public class FileMangerUtil {
                                     if(sended < 0 )
                                         sended = 0;
                                     KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
-                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false);
+                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false,"");
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
                                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -330,7 +330,7 @@ public class FileMangerUtil {
 
                     int segSeqTotal = sendFileTotalSegment.get(filePath);
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false);
+                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,"");
                     MyFile myRouter = new MyFile();
                     myRouter.setType(0);
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -452,7 +452,7 @@ public class FileMangerUtil {
         {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"");
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -483,7 +483,7 @@ public class FileMangerUtil {
         if(toxFileData != null) {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,"");
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -507,16 +507,18 @@ public class FileMangerUtil {
             String fileOrginName = new String(Base58.decode(fileMiName));
             String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileOrginName;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
-            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
-            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(data.getUserKey());
+            String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
+            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
             int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
             String fileMiUrl = fileMiName;
+            String userKey = "";
             if(localUpLoadFile != null)
             {
                 fileMiUrl = localUpLoadFile.getPath();
+                userKey = localUpLoadFile.getUserKey();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -538,11 +540,13 @@ public class FileMangerUtil {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
             String fileMiUrl = fileMiName;
+            String userKey = "";
             if(localUpLoadFile != null)
             {
                 fileMiUrl = localUpLoadFile.getPath();
+                userKey = localUpLoadFile.getUserKey();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, false,position,filesize,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, false,position,filesize,0,false,userKey);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -716,7 +720,7 @@ public class FileMangerUtil {
                         {
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -764,7 +768,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -875,7 +879,7 @@ public class FileMangerUtil {
                         {
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -924,7 +928,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1030,7 +1034,7 @@ public class FileMangerUtil {
                         {
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1080,7 +1084,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

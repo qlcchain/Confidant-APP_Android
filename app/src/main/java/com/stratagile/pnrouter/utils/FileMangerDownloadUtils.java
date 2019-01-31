@@ -39,7 +39,7 @@ public class FileMangerDownloadUtils {
         if(!downFilePathMap.containsKey(msgId+""))
         {
             String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

@@ -51,7 +51,7 @@ object ConstantValue {
 
         var libsodiumprivateTemKey:String? = ""
         var libsodiumpublicTemKey:String? = ""
-        var receiveToxFileGlobalDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+        var receiveToxFileGlobalDataMap = HashMap<String, String>()
         var updRouterData: HashMap<String,String> = HashMap()
         var unSendMessage: HashMap<String,String> = HashMap() //待发送消息
         var unSendMessageFriendId: HashMap<String,String> = HashMap() //待发送消息的路由器id

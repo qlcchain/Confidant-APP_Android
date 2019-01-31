@@ -275,20 +275,14 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                             Thread(Runnable() {
                                                 run() {
-                                                    val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false)
-                                                    val myRouter = MyFile()
-                                                    myRouter.type = 0
-                                                    myRouter.userSn = ConstantValue.currentRouterSN
-                                                    myRouter.upLoadFile = uploadFile
-                                                    LocalFileUtils.insertLocalAssets(myRouter)
                                                     FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
                                                 }
                                             }).start()
 
                                         } else {
                                             receiveToxFileDataMap.put(fileOrginName,data)
-                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data)
-                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false)
+                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
+                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey)
                                             val myRouter = MyFile()
                                             myRouter.type = 0
                                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -329,17 +323,11 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
-                                            val uploadFile = UpLoadFile(fileMiName,filledUri,  0, true, false, false, 0, 1, 0, false)
-                                            val myRouter = MyFile()
-                                            myRouter.type = 0
-                                            myRouter.userSn = ConstantValue.currentRouterSN
-                                            myRouter.upLoadFile = uploadFile
-                                            LocalFileUtils.insertLocalAssets(myRouter)
                                             FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
                                         } else {
                                             receiveToxFileDataMap.put(fileOrginName,data)
-                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data)
-                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false)
+                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
+                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey)
                                             val myRouter = MyFile()
                                             myRouter.type = 0
                                             myRouter.userSn = ConstantValue.currentRouterSN

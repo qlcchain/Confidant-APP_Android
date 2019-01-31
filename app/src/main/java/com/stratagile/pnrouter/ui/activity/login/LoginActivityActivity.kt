@@ -482,7 +482,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        KLog.i("P2P好友状态:"+connectStatus.status)
+        KLog.i("websocket状态:"+connectStatus.status)
         when (connectStatus.status) {
             0 -> {
                 if(standaloneCoroutine != null)

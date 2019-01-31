@@ -1,9 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.file
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
@@ -245,7 +247,52 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }
                 }
             }else{
+                var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
+                var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                if (ConstantValue.isWebsocketConnected) {
 
+                    var msgId =  (System.currentTimeMillis() / 1000).toInt()
+                    Thread(Runnable() {
+                        run() {
+                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey)
+                            val myRouter = MyFile()
+                            myRouter.type = 0
+                            myRouter.userSn = ConstantValue.currentRouterSN
+                            myRouter.upLoadFile = uploadFile
+                            LocalFileUtils.updateLocalAssets(myRouter)
+                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, localMedia!!.userKey)
+                        }
+                    }).start()
+
+                } else {
+                    var msgId =  (System.currentTimeMillis() / 1000).toInt()
+                    ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
+                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey)
+                    val myRouter = MyFile()
+                    myRouter.type = 0
+                    myRouter.userSn = ConstantValue.currentRouterSN
+                    myRouter.upLoadFile = uploadFile
+                    LocalFileUtils.updateLocalAssets(myRouter)
+
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var fielOwner = 1;
+                    if (localMedia!!.path.indexOf("/s/") > -1) {
+                        fielOwner = 1
+                    } else if (localMedia!!.path.indexOf("/r/") > -1) {
+                        fielOwner = 2
+                    } else {
+                        fielOwner = 3
+                    }
+                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, msgId, fielOwner, 2)
+                    var baseData = BaseData(msgData)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    }
+                }
             }
 
         }
@@ -298,7 +345,27 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_failed)
+                    }
+                }
+                0x55 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_success)
+                    }
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)

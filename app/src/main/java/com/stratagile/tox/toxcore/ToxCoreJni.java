@@ -14,7 +14,6 @@ import events.ToxReceiveFileNoticeEvent;
 import events.ToxReceiveFileProgressEvent;
 import events.ToxSendFileFinishedEvent;
 import events.ToxSendFileProgressEvent;
-import scalaz.Alpha;
 
 import com.stratagile.tox.entity.DhtJson;
 import com.stratagile.tox.entity.DhtNode;
@@ -43,6 +42,9 @@ public class ToxCoreJni {
     }
     private HashMap<String,String> sendFileRouterMap = new HashMap<>();
     private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
+    private HashMap<String,Boolean> progressSendMap = new HashMap<>();
+    private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
+    private int progressBarMaxSeg = 10;
     /**
      * 获取单例
      * @return toxCoreJni实例
@@ -218,11 +220,20 @@ public class ToxCoreJni {
         KLog.i("发送了：" + position);
         KLog.i("总共：" + filesize);
         String key = sendFileRouterMap.get(fileNumber +"");
+        int average = filesize / progressBarMaxSeg;
         if(position == filesize)
         {
+            int num = (int)(position / average) + 1;
+            progressSendMap.put(filesize+"_"+num,null);
             EventBus.getDefault().post(new ToxSendFileFinishedEvent(key,fileNumber));
         }else{
-            EventBus.getDefault().post(new ToxSendFileProgressEvent(key,fileNumber,position,filesize));
+            int num = (int)(position / average) + 1;
+            if(progressSendMap.get(filesize+"_"+num) == null)
+            {
+                KLog.i("抛出EventBus:sendFileRate"+filesize+"_"+num);
+                EventBus.getDefault().post(new ToxSendFileProgressEvent(key,fileNumber,position,filesize));
+                progressSendMap.put(filesize+"_"+num,true);
+            }
         }
     }
     /**
@@ -235,11 +246,20 @@ public class ToxCoreJni {
         KLog.i("总共：" + filesize);
         KLog.i("路由Id为：" + routerId);
         int fileNumber = Integer.valueOf(reveiveFileNumberMap.get(routerId));
+        int average = filesize / progressBarMaxSeg;
         if(position == filesize)
         {
+            int num = (int)(position / average) + 1;
+            progressReceiveMap.put(filesize+"_"+num,null);
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
         }else{
-            EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber,position,filesize));
+            int num = (int)(position / average) + 1;
+            if(progressReceiveMap.get(filesize+"_"+num) == null)
+            {
+                KLog.i("抛出EventBus:receivedFileRate"+filesize+"_"+num);
+                EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber,position,filesize));
+                progressReceiveMap.put(filesize+"_"+num,true);
+            }
 
         }
     }

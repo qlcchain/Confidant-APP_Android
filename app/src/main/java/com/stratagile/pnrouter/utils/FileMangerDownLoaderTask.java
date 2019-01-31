@@ -50,6 +50,8 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String keyStr;
 	private String fileUlr;
 	private static HashMap<String, String> downFilePathTaskMap = new HashMap<>();
+	private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
+	private int progressBarMaxSeg = 10;
 
 	/**
 	 *
@@ -127,7 +129,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				if(bytesCopiedFlag != 0)
 				{
 					String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false);
+					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr);
 					MyFile myRouter = new MyFile();
 					myRouter.setType(0);
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -232,13 +234,20 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				count+=n;
 				long progress = count * 100 / length;
 				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false);
+				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr);
 				MyFile myRouter = new MyFile();
 				myRouter.setType(0);
 				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 				myRouter.setUpLoadFile(uploadFile);
 				LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-				EventBus.getDefault().post(new FileStatus(fileNiName,length, true, false, false,count,length,0,false,0));
+				int average = length / progressBarMaxSeg;
+				int num = (int)(count / average) + 1;
+				if(progressReceiveMap.get(fileNiName+"_"+num) == null)
+				{
+					EventBus.getDefault().post(new FileStatus(fileNiName,length, true, false, false,count,length,0,false,0));
+					progressReceiveMap.put(fileNiName+"_"+num,true);
+				}
+
 				KLog.d(TAG+":downloading:"+ progress +"%");
 			}
 			out.flush();
