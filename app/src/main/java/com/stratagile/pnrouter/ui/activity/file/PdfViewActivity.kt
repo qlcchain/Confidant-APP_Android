@@ -79,23 +79,23 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         var fileName = String(Base58.decode(payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)))
         tvFileName.text = file.name
         if (fileName.contains("jpg")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc_img))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.picture_large))
         } else if (fileName.contains("pdf")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.pdf))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.pdf_large))
         } else if (fileName.contains("mp4")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.video))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.video_large))
         } else if (fileName.contains("png")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc_img))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.picture_large))
         } else if (fileName.contains("txt")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.txt))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.txt_large))
         } else if (fileName.contains("ppt")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.ppt))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.ppt_large))
         } else if (fileName.contains("xls")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.xls))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.xls_large))
         } else if (fileName.contains("doc")) {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.doc_large))
         } else {
-            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.other))
+            ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.other_large))
         }
         if (file.exists()) {
             progressBar.visibility = View.GONE

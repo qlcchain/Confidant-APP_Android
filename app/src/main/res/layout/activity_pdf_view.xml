@@ -54,6 +54,9 @@
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
             android:textColor="@color/color_3f3f3f"
+            android:singleLine="true"
+            android:maxEms="20"
+            android:ellipsize="middle"
             android:layout_marginTop="@dimen/x60"
             android:layout_height="wrap_content" />
         <TextView
