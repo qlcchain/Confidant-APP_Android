@@ -8,9 +8,11 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.pawegio.kandroid.loadAnimation
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.TimeUtil
 import com.stratagile.pnrouter.view.SmoothCheckBox
 import java.util.*
@@ -21,13 +23,50 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
         helper.addOnClickListener(R.id.fileOpreate)
         var checkBox = helper.getView<SmoothCheckBox>(R.id.checkBox)
         helper.setText(R.id.tvFileTime, TimeUtil.getFileListTime(item.timestamp.toLong()))
+        var fileName = String(Base58.decode(item.fileName.substring(item.fileName.lastIndexOf("/") + 1)))
+        helper.setText(R.id.tvFileName, fileName)
         if(isChooseMode) {
             checkBox.visibility = View.VISIBLE
             checkBox.animation = mContext.loadAnimation(R.anim.file_select_in)
         } else {
             checkBox.visibility = View.GONE
             KLog.i(item.fileName.substring(item.fileName.lastIndexOf("/") + 1))
-            helper.setText(R.id.tvFileName, String(Base58.decode(item.fileName.substring(item.fileName.lastIndexOf("/") + 1))))
+        }
+
+        if (fileName.contains("jpg")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("pdf")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.pdf))
+        } else if (fileName.contains("mp4")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.video))
+        } else if (fileName.contains("png")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("txt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.txt))
+        } else if (fileName.contains("ppt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.ppt))
+        } else if (fileName.contains("xls")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.xls))
+        } else if (fileName.contains("doc")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc))
+        } else {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.other))
+        }
+        helper.setText(R.id.friendName, "")
+        //1 自己发的， 2 收到的， 3自己上传的
+        when(item.fileFrom) {
+            1 -> {
+                helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_i_share))
+                helper.setText(R.id.friendName, item.sender)
+            }
+            2 -> {
+                helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))
+                helper.setText(R.id.friendName, item.sender)
+            }
+            3 -> {
+                helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))
+                helper.setText(R.id.friendName, SpUtil.getString(mContext, ConstantValue.username, ""))
+            }
         }
     }
 

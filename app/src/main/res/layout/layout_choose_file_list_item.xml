@@ -16,17 +16,25 @@
         android:text="2018/11/07 13:00"
         android:layout_marginLeft="@dimen/x31" />
 
+    <ImageView
+        android:id="@+id/fileForm"
+        android:layout_width="@dimen/x23"
+        android:layout_marginLeft="@dimen/x20"
+        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
+        app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
+        app:layout_constraintTop_toTopOf="@+id/tvFileTime"
+        android:layout_height="@dimen/x23" />
+
     <TextView
         android:id="@+id/friendName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:visibility="gone"
         android:text="tom"
         android:layout_marginLeft="@dimen/x20"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
-        app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
-        app:layout_constraintTop_toTopOf="@+id/tvFileTime" />
+        app:layout_constraintBottom_toBottomOf="@+id/fileForm"
+        app:layout_constraintLeft_toRightOf="@+id/fileForm"
+        app:layout_constraintTop_toTopOf="@+id/fileForm" />
     <View
         android:id="@+id/line"
         style="@style/divide_line"

@@ -5,14 +5,13 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JPullFileListRsp extends BaseEntity {
 
     /**
-     * timestamp : 1548732819
-     * params : {"Action":"PullFileList","RetCode":0,"FileNum":2,"Payload":[{"MsgId":43,"Timestamp":1548732669,"FileType":1,"FileName":"/user7/u/AeqbC4ECNWYuePyboXGYx2N1dAA9SQDz2sJzjjChK2g1K4FZs5jy8RJVchTCYDDev2ZvQcg75K1PHka6Nr4HAjZj4","FileMD5":"48e5f1a0bba1ab7084cc5278889db08a","FileSize":481456,"UserKey":"xTHLF5LEx62zeyr+cAvzYblqDeCQIcfONXyzb8xgnV+4UQDbuOlVSn/skaARNuJX5wu5ugwH3058u0oUwSleSCRMie6CjrTCc2ZBFNlmL9Y="},{"MsgId":42,"Timestamp":1548732533,"FileType":1,"FileName":"/user7/u/AeqbC4ECNWYuePyboXGYx2N1dAA9SQDz2sJzjjChHhSjJdkbA5Zt6USoRdpGXahLNB6H4nPSdTtuahoA2vPq5m3ux","FileMD5":"ea613421e1e91e56b0c31451d8ab75eb","FileSize":691472,"UserKey":"CiPEBTxRoxzCbp1ZSvoF0wJu/gBOg+40xy6Cwi8d2QdUToAdNCSxudtcmx4RZsHCxMdWsIT94QMHvj2mnJ3AsTmEJTdz5+OiYeG1qKHuShY="}]}
+     * timestamp : 1548920984
+     * params : {"Action":"PullFileList","RetCode":0,"FileNum":5,"Payload":[{"MsgId":82,"Timestamp":1548917023,"FileType":4,"FileName":"/user7/u/hDdeXdJfNaNjKdEFy6s","FileMD5":"b21e3561dd8455d98a994df1e7d7c558","FileSize":2868752,"Sender":"","UserKey":"LeAre9fdAcCqaEbQe9zGP4JsO5WaAnX8x2RL72XEtja1NKNMJlGzWuAF790aiFbBue+GqBbqtgQ91TB3aiu7ofwlGkkcsfpfbs86lVdC7ZU=","FileFrom":3},{"MsgId":81,"Timestamp":1548916185,"FileType":4,"FileName":"/user7/u/92MxFZ7ZW4oWjg8Q9iqcpsq5kNemp3RorvsyNed6czagbnHZ","FileMD5":"d64b2d9c61e97fdc8983ff399abeb615","FileSize":42632208,"Sender":"","UserKey":"BVDEip7NIFfMDjh18XsVwzzbr/Sv4XPKjj0EViDGZX4iphw5hQfcMkmGVdZHIpO2IS1Ay8SWN8vKX8LXlvO1Mu2vWTKYogr6L5/fDFBpfX8=","FileFrom":3},{"MsgId":80,"Timestamp":1548916155,"FileType":4,"FileName":"/user7/u/92MxFZ7ZW4oWjg8Q9iqcpsq5kNemp3RorvsvBM92pFPpV4Mq","FileMD5":"033316ad1f417b2d73dff884f095dfe8","FileSize":42540224,"Sender":"","UserKey":"JDe2ofraDKEIvGdaM06sfXI8v3WlUZULtbLU99e4hnCU/Yw4xKu4VyAYSONUML6Lz1QaJvNZFuQwXfQzL5jCIhcVSNdDixw9DxoBC9Gpmns=","FileFrom":3},{"MsgId":79,"Timestamp":1548905183,"FileType":4,"FileName":"/user7/u/3Z1UGiMAji5PcwkKjSYcTS41SrcWuhyvjyGF","FileMD5":"8cf2e737fd0f99e052f6b0423f83ea71","FileSize":1571552,"Sender":"","UserKey":"voDJaQ6YEWFVgEhjO8ZVZfYlWpkqVhNbtbHsLAIG0xbXKzDEVdoLTCcO+fzGo2P74h3cipMP+ETZCZIhdxgTSRIeTuxPCuleN8f74alnI7s=","FileFrom":3},{"MsgId":78,"Timestamp":1548904083,"FileType":4,"FileName":"/user7/u/EMd3XiSeCKb6sgTmHVBAgoWycrQQz7","FileMD5":"95d77a622eb961c4d002a1b18397d2fa","FileSize":7347536,"Sender":"","UserKey":"PQgp6o9W8JEGhQOsCAvKOb6VV6G89g/4K44NRWtl4QMJ7K7C7n62o6HjqaEuX0rk4c68JntajfeRS+BZF4WvhvlTHCv2DTfpWWIr/A/Oemo=","FileFrom":3}]}
      */
 
     private ParamsBean params;
@@ -29,14 +28,14 @@ public class JPullFileListRsp extends BaseEntity {
         /**
          * Action : PullFileList
          * RetCode : 0
-         * FileNum : 2
-         * Payload : [{"MsgId":43,"Timestamp":1548732669,"FileType":1,"FileName":"/user7/u/AeqbC4ECNWYuePyboXGYx2N1dAA9SQDz2sJzjjChK2g1K4FZs5jy8RJVchTCYDDev2ZvQcg75K1PHka6Nr4HAjZj4","FileMD5":"48e5f1a0bba1ab7084cc5278889db08a","FileSize":481456,"UserKey":"xTHLF5LEx62zeyr+cAvzYblqDeCQIcfONXyzb8xgnV+4UQDbuOlVSn/skaARNuJX5wu5ugwH3058u0oUwSleSCRMie6CjrTCc2ZBFNlmL9Y="},{"MsgId":42,"Timestamp":1548732533,"FileType":1,"FileName":"/user7/u/AeqbC4ECNWYuePyboXGYx2N1dAA9SQDz2sJzjjChHhSjJdkbA5Zt6USoRdpGXahLNB6H4nPSdTtuahoA2vPq5m3ux","FileMD5":"ea613421e1e91e56b0c31451d8ab75eb","FileSize":691472,"UserKey":"CiPEBTxRoxzCbp1ZSvoF0wJu/gBOg+40xy6Cwi8d2QdUToAdNCSxudtcmx4RZsHCxMdWsIT94QMHvj2mnJ3AsTmEJTdz5+OiYeG1qKHuShY="}]
+         * FileNum : 5
+         * Payload : [{"MsgId":82,"Timestamp":1548917023,"FileType":4,"FileName":"/user7/u/hDdeXdJfNaNjKdEFy6s","FileMD5":"b21e3561dd8455d98a994df1e7d7c558","FileSize":2868752,"Sender":"","UserKey":"LeAre9fdAcCqaEbQe9zGP4JsO5WaAnX8x2RL72XEtja1NKNMJlGzWuAF790aiFbBue+GqBbqtgQ91TB3aiu7ofwlGkkcsfpfbs86lVdC7ZU=","FileFrom":3},{"MsgId":81,"Timestamp":1548916185,"FileType":4,"FileName":"/user7/u/92MxFZ7ZW4oWjg8Q9iqcpsq5kNemp3RorvsyNed6czagbnHZ","FileMD5":"d64b2d9c61e97fdc8983ff399abeb615","FileSize":42632208,"Sender":"","UserKey":"BVDEip7NIFfMDjh18XsVwzzbr/Sv4XPKjj0EViDGZX4iphw5hQfcMkmGVdZHIpO2IS1Ay8SWN8vKX8LXlvO1Mu2vWTKYogr6L5/fDFBpfX8=","FileFrom":3},{"MsgId":80,"Timestamp":1548916155,"FileType":4,"FileName":"/user7/u/92MxFZ7ZW4oWjg8Q9iqcpsq5kNemp3RorvsvBM92pFPpV4Mq","FileMD5":"033316ad1f417b2d73dff884f095dfe8","FileSize":42540224,"Sender":"","UserKey":"JDe2ofraDKEIvGdaM06sfXI8v3WlUZULtbLU99e4hnCU/Yw4xKu4VyAYSONUML6Lz1QaJvNZFuQwXfQzL5jCIhcVSNdDixw9DxoBC9Gpmns=","FileFrom":3},{"MsgId":79,"Timestamp":1548905183,"FileType":4,"FileName":"/user7/u/3Z1UGiMAji5PcwkKjSYcTS41SrcWuhyvjyGF","FileMD5":"8cf2e737fd0f99e052f6b0423f83ea71","FileSize":1571552,"Sender":"","UserKey":"voDJaQ6YEWFVgEhjO8ZVZfYlWpkqVhNbtbHsLAIG0xbXKzDEVdoLTCcO+fzGo2P74h3cipMP+ETZCZIhdxgTSRIeTuxPCuleN8f74alnI7s=","FileFrom":3},{"MsgId":78,"Timestamp":1548904083,"FileType":4,"FileName":"/user7/u/EMd3XiSeCKb6sgTmHVBAgoWycrQQz7","FileMD5":"95d77a622eb961c4d002a1b18397d2fa","FileSize":7347536,"Sender":"","UserKey":"PQgp6o9W8JEGhQOsCAvKOb6VV6G89g/4K44NRWtl4QMJ7K7C7n62o6HjqaEuX0rk4c68JntajfeRS+BZF4WvhvlTHCv2DTfpWWIr/A/Oemo=","FileFrom":3}]
          */
 
         private String Action;
         private int RetCode;
         private int FileNum;
-        private ArrayList<PayloadBean> Payload;
+        private List<PayloadBean> Payload;
 
         public String getAction() {
             return Action;
@@ -62,23 +61,25 @@ public class JPullFileListRsp extends BaseEntity {
             this.FileNum = FileNum;
         }
 
-        public ArrayList<PayloadBean> getPayload() {
+        public List<PayloadBean> getPayload() {
             return Payload;
         }
 
-        public void setPayload(ArrayList<PayloadBean> Payload) {
+        public void setPayload(List<PayloadBean> Payload) {
             this.Payload = Payload;
         }
 
         public static class PayloadBean implements Parcelable {
             /**
-             * MsgId : 43
-             * Timestamp : 1548732669
-             * FileType : 1
-             * FileName : /user7/u/AeqbC4ECNWYuePyboXGYx2N1dAA9SQDz2sJzjjChK2g1K4FZs5jy8RJVchTCYDDev2ZvQcg75K1PHka6Nr4HAjZj4
-             * FileMD5 : 48e5f1a0bba1ab7084cc5278889db08a
-             * FileSize : 481456
-             * UserKey : xTHLF5LEx62zeyr+cAvzYblqDeCQIcfONXyzb8xgnV+4UQDbuOlVSn/skaARNuJX5wu5ugwH3058u0oUwSleSCRMie6CjrTCc2ZBFNlmL9Y=
+             * MsgId : 82
+             * Timestamp : 1548917023
+             * FileType : 4
+             * FileName : /user7/u/hDdeXdJfNaNjKdEFy6s
+             * FileMD5 : b21e3561dd8455d98a994df1e7d7c558
+             * FileSize : 2868752
+             * Sender :
+             * UserKey : LeAre9fdAcCqaEbQe9zGP4JsO5WaAnX8x2RL72XEtja1NKNMJlGzWuAF790aiFbBue+GqBbqtgQ91TB3aiu7ofwlGkkcsfpfbs86lVdC7ZU=
+             * FileFrom : 3
              */
 
             private int MsgId;
@@ -87,7 +88,10 @@ public class JPullFileListRsp extends BaseEntity {
             private String FileName;
             private String FileMD5;
             private int FileSize;
+            private String Sender;
             private String UserKey;
+            //1 自己发的， 2 收到的， 3自己上传的
+            private int FileFrom;
 
             protected PayloadBean(Parcel in) {
                 MsgId = in.readInt();
@@ -96,7 +100,9 @@ public class JPullFileListRsp extends BaseEntity {
                 FileName = in.readString();
                 FileMD5 = in.readString();
                 FileSize = in.readInt();
+                Sender = in.readString();
                 UserKey = in.readString();
+                FileFrom = in.readInt();
             }
 
             public static final Creator<PayloadBean> CREATOR = new Creator<PayloadBean>() {
@@ -159,12 +165,28 @@ public class JPullFileListRsp extends BaseEntity {
                 this.FileSize = FileSize;
             }
 
+            public String getSender() {
+                return Sender;
+            }
+
+            public void setSender(String Sender) {
+                this.Sender = Sender;
+            }
+
             public String getUserKey() {
                 return UserKey;
             }
 
             public void setUserKey(String UserKey) {
                 this.UserKey = UserKey;
+            }
+
+            public int getFileFrom() {
+                return FileFrom;
+            }
+
+            public void setFileFrom(int FileFrom) {
+                this.FileFrom = FileFrom;
             }
 
             @Override
@@ -180,7 +202,9 @@ public class JPullFileListRsp extends BaseEntity {
                 parcel.writeString(FileName);
                 parcel.writeString(FileMD5);
                 parcel.writeInt(FileSize);
+                parcel.writeString(Sender);
                 parcel.writeString(UserKey);
+                parcel.writeInt(FileFrom);
             }
         }
     }

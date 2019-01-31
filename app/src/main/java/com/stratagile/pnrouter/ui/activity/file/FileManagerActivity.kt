@@ -235,7 +235,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
             } else if (position == 3) {
                 filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
             }*/
-            startActivity(Intent(this, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName))
+            startActivity(Intent(this, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
         }
 
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
@@ -405,7 +405,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     }
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 30, fileType, 0)
+        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 5, fileType, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())

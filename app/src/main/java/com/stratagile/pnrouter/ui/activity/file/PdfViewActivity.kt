@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerPdfViewComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.PdfViewContract
 import com.stratagile.pnrouter.ui.activity.file.module.PdfViewModule
@@ -53,46 +54,49 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     }
     override fun initData() {
         var fileMiPath = intent.getStringExtra("fileMiPath")
+        var payLoad = intent.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("file")
         var fileMiName = fileMiPath.substring(fileMiPath.lastIndexOf("/")+1,fileMiPath.length)
         var base58Name =  String(Base58.decode(fileMiName))
         var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
+        var fileName = payLoad.fileName.substring(fileMiPath.lastIndexOf("/")+1,payLoad.fileName.length)
+        tvFileName.text = file.name
         if (file.exists()) {
             progressBar.visibility = View.GONE
-           /* if (intent.getStringExtra("filePath").contains(".pdf")) {
+           if (fileName.contains(".pdf")) {
                 pdfView.visibility = View.VISIBLE
                 pdfView.fromFile(file)
                         .load()
-            } else if(intent.getStringExtra("filePath").contains(".txt")){
+            } else if(fileName.contains(".txt")){
                 scrollView.visibility = View.VISIBLE
                 tvText.visibility = View.VISIBLE
                 tvText.text = FileUtil.getDataFromFile(file)
-            } else if (intent.getStringExtra("filePath").contains(".jpg")) {
+            } else if (fileName.contains(".jpg")) {
                 scrollView.visibility = View.VISIBLE
                 imageView.visibility = View.VISIBLE
                 Glide.with(this)
                         .load(file)
                         .into(imageView)
-            } else if (isOfficeFile(intent.getStringExtra("filePath")) != null) {
+            } else if (isOfficeFile(fileName) != null) {
                 llNoFile.visibility = View.VISIBLE
                 tvFileName.text = file.name
                 tvFileSie.text = "100KB"
                 tvFileOpreate.text = "Open with other applications"
                 tvFileOpreate.setOnClickListener {
                     try {
-                        startActivity(isOfficeFile(intent.getStringExtra("filePath")))
+                        startActivity(isOfficeFile(fileName))
                     } catch (ex : Exception) {
                         ex.printStackTrace()
                     }
                 }
-            }*/
+            }
             tvFileOpreate.text = "Open with other applications"
             tvFileOpreate.setOnClickListener {
                 openFile(filePath)
             }
         } else {
             llNoFile.visibility = View.VISIBLE
-            tvFileName.text = file.name
+
             //tvFileSie.text = "100KB"
             tvFileOpreate.setOnClickListener {
                 downLoadFile()
