@@ -10,14 +10,10 @@
         android:id="@+id/tvFileTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="@dimen/x20"
-        android:layout_marginTop="8dp"
-        android:text="2018/11/07 13:00"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.028"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/ivAvatar"
+        android:layout_marginTop="@dimen/x15"
+        android:text="2018/11/07 13:00" />
 
     <ImageView
         android:id="@+id/fileOpreateType"

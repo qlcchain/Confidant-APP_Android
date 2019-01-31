@@ -27,6 +27,25 @@ class FileListAdapter(arrayList: MutableList<RecentFile>) : BaseQuickAdapter<Rec
                 helper.setImageDrawable(R.id.fileOpreateType, mContext.resources.getDrawable(R.mipmap.delete_1))
             }
         }
+        if (item.fileName.contains("jpg")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (item.fileName.contains("pdf")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.pdf))
+        } else if (item.fileName.contains("mp4")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.video))
+        } else if (item.fileName.contains("png")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (item.fileName.contains("txt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.txt))
+        } else if (item.fileName.contains("ppt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.ppt))
+        } else if (item.fileName.contains("xls")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.xls))
+        } else if (item.fileName.contains("doc")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc))
+        } else {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.other))
+        }
     }
 
 }
