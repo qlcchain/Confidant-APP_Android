@@ -493,39 +493,48 @@ public class FileMangerUtil {
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
+        String fileMiName = fileNameAndUserId;
         long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
-        String [] fileNameArray = fileNameAndUserId.split(":");
-        String fileName = fileNameArray[1];
-        if(fileNameAndUserId != null)
+        if(fileNameAndUserId.contains(":"))
         {
-            String fileOrginName = new String(Base58.decode(fileName));
-            String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameAndUserId;
+            String [] fileNameArray = fileNameAndUserId.split(":");
+            fileMiName = fileNameArray[1];
+        }
+        if(fileMiName != null)
+        {
+            String fileOrginName = new String(Base58.decode(fileMiName));
+            String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileOrginName;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
-            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileName);
+            JPullFileListRsp.ParamsBean.PayloadBean  data = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
             String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(data.getUserKey());
             int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
-            UpLoadFile uploadFile = new UpLoadFile(fileName,fileSize, true, true, false,1,1,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileSize, true, true, false,1,1,0,false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileName,fileSize, true, true, false,1,1,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName,fileSize, true, true, false,1,1,0,false,0));
         }
     }
     public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
     {
-        String fileName = receiveToxFileNameMap.get(fileNumber+"");
-        if(fileName != null) {
-
+        String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
+        String fileMiName = fileNameAndUserId;
+        if(fileNameAndUserId.contains(":"))
+        {
+            String [] fileNameArray = fileNameAndUserId.split(":");
+            fileMiName = fileNameArray[1];
+        }
+        if(fileMiName != null) {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
-            UpLoadFile uploadFile = new UpLoadFile(fileName,filesize, true, false, false,position,filesize,0,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filesize, true, false, false,position,filesize,0,false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileName,filesize, true, false, false,position,filesize,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName,filesize, true, false, false,position,filesize,0,false,0));
         }
     }
     public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)

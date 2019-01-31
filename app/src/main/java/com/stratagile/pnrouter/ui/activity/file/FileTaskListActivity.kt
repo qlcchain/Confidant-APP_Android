@@ -236,15 +236,21 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
             var localMedia = taskFile!!.t
             var file = File(localMedia!!.path)
-            if (file.exists()) {
-                if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                    FileMangerUtil.sendImageFile(localMedia!!.path, false)
-                } else if (localMedia!!.path.indexOf("mp4") > -1) {
-                    FileMangerUtil.sendVideoFile(localMedia!!.path)
-                } else {
-                    FileMangerUtil.sendOtherFile(localMedia!!.path)
+            if(!localMedia!!.isDownLoad)
+            {
+                if (file.exists()) {
+                    if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
+                        FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                    } else if (localMedia!!.path.indexOf("mp4") > -1) {
+                        FileMangerUtil.sendVideoFile(localMedia!!.path)
+                    } else {
+                        FileMangerUtil.sendOtherFile(localMedia!!.path)
+                    }
                 }
+            }else{
+
             }
+
         }
         recyclerView.adapter = fileGoingTaskLisytAdapter
         recyclerView.setNestedScrollingEnabled(false)

@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import events.ToxReceiveFileFinishedEvent;
@@ -13,6 +14,7 @@ import events.ToxReceiveFileNoticeEvent;
 import events.ToxReceiveFileProgressEvent;
 import events.ToxSendFileFinishedEvent;
 import events.ToxSendFileProgressEvent;
+import scalaz.Alpha;
 
 import com.stratagile.tox.entity.DhtJson;
 import com.stratagile.tox.entity.DhtNode;
@@ -254,6 +256,13 @@ public class ToxCoreJni {
     }
 
     public String setFileSavePath(String oldName) {
-        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + oldName;
+        String origainName = "";
+        if(oldName.contains(":"))
+        {
+            oldName = oldName.substring(oldName.indexOf(":")+1,oldName.length());
+            oldName = oldName.substring(0,oldName.indexOf(":"));
+            origainName = new String(Base58.decode(oldName));
+        }
+        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + origainName;
     }
 }

@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.FileManagerContract
@@ -40,6 +41,8 @@ import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.ease_search_bar.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import java.io.File
 import java.util.HashMap
@@ -197,6 +200,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
 
     override fun initData() {
+        EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver?.fileManageBack = this
         fileType = intent.getIntExtra("fileType", 0)
         when (fileType) {
@@ -252,8 +256,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     EventBus.getDefault().post(recentFile)
 
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-                                    var base58Name = String(Base58.decode(fileMiName))
-                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
+                                    var fileOrginName = String(Base58.decode(fileMiName))
+                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                                     var file = File(filePath)
                                     if (file.exists()) {
                                         runOnUiThread {
@@ -278,7 +282,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             }).start()
 
                                         } else {
-                                            receiveToxFileDataMap.put(base58Name,data)
+                                            receiveToxFileDataMap.put(fileOrginName,data)
                                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data)
                                             val uploadFile = UpLoadFile(fileMiName, 0, true, false, false, 0, 1, 0, false)
                                             val myRouter = MyFile()
@@ -314,8 +318,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                 }
                                 2 -> {
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-                                    var base58Name = String(Base58.decode(fileMiName))
-                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + base58Name
+                                    var fileOrginName = String(Base58.decode(fileMiName))
+                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                                     var file = File(filePath)
                                     if (!file.exists()) {
                                         wantOpen = true
@@ -331,7 +335,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             LocalFileUtils.insertLocalAssets(myRouter)
                                             FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey)
                                         } else {
-                                            receiveToxFileDataMap.put(base58Name,data)
+                                            receiveToxFileDataMap.put(fileOrginName,data)
                                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data)
                                             val uploadFile = UpLoadFile(fileMiName, 0, true, false, false, 0, 1, 0, false)
                                             val myRouter = MyFile()
@@ -400,7 +404,17 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
             }
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.Download_failed)
+        } else {
+            if(fileStatus.complete)
+            {
+                toast(R.string.Download_success)
+            }
+        }
+    }
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, fileType, 0)
@@ -532,5 +546,9 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
             }//goMain();
             //goMain();
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }

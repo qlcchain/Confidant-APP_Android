@@ -20,7 +20,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         {
             helper.setText(R.id.tvFileName,fileName)
         }else{
-            var fileOriginalName =  String(Base58.decode(fileName))
+            var fileOriginalName = fileName
+            if(fileName.indexOf(".") < 0)
+            {
+                fileOriginalName =  String(Base58.decode(fileName))
+            }
             helper.setText(R.id.tvFileName,fileOriginalName)
         }
         var fileSize = (item.t.fileSize / 1024 / 1024).toString()
