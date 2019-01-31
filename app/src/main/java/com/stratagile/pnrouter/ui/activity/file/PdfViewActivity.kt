@@ -143,6 +143,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     fun onFileStatusChange(fileStatus: FileStatus) {
         if (fileStatus.result == 1) {
             toast(R.string.Download_failed)
+        }else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
         } else {
             runOnUiThread {
                 var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)

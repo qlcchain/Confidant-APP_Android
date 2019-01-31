@@ -11,7 +11,7 @@ public class FileStatus {
     int segSeqTotal;
     int speed;
     Boolean SendGgain;
-    int result;  // 0成功，1文件不存在
+    int result;  // 0成功，1文件不存在,2文件过大
     public FileStatus(String fileKey, int result)
     {
           this.fileKey = fileKey;

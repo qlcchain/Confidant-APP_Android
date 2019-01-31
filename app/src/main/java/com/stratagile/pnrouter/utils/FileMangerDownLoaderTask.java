@@ -139,6 +139,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
 					EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 					msg.what = 0x55;
+					downFilePathTaskMap.remove(msgID);
 				}
 				else
 				{
@@ -226,12 +227,12 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		{
 			KLog.i("FileDownLoaderTask jiemi  error ");
 		}
-		byte[] buffer = new byte[1024*1024*10];
-		BufferedInputStream in = new BufferedInputStream(newInput, 1024*1024*10);
-		BufferedOutputStream out  = new BufferedOutputStream(output, 1024*1024*10);
+		byte[] buffer = new byte[1024*1024*100];
+		BufferedInputStream in = new BufferedInputStream(newInput, 1024*1024*100);
+		BufferedOutputStream out  = new BufferedOutputStream(output, 1024*1024*100);
 		int count =0,n=0;
 		try {
-			while((n=in.read(buffer, 0, 1024*1024*10))!=-1){
+			while((n=in.read(buffer, 0, 1024*1024*100))!=-1){
 				out.write(buffer, 0, n);
 				count+=n;
 				long progress = count * 100 / length;

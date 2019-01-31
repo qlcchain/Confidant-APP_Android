@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.ui.activity.file.module.FileTaskListModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxStatusEvent
@@ -75,13 +76,34 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             FileMangerUtil.sendOtherFile(localMedia!!.path)
                         }
                     }
-
-
                 }
             }
             1 -> {
                 runOnUiThread {
-                    toast(getString(R.string.Documents_already_exist))
+                    SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                            .setContentText(getString(R.string.Documents_already_exist))
+                            .setConfirmClickListener {
+                                var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
+                                var file = File(localMedia!!.path)
+                                if (file.exists()) {
+
+                                    when (localMedia!!.pictureType) {
+                                        "image/jpeg" -> {
+                                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                                        }
+                                        "image/png" -> {
+                                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                                        }
+                                        "video/mp4" -> {
+                                            FileMangerUtil.sendVideoFile(localMedia!!.path)
+                                        }
+                                        else -> {
+                                            FileMangerUtil.sendOtherFile(localMedia!!.path)
+                                        }
+                                    }
+                                }
+                            }
+                            .show()
                 }
 
             }
@@ -206,7 +228,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     fun onFileStatusChange(fileStatus: FileStatus) {
         if (fileStatus.result == 1) {
             toast(R.string.File_does_not_exist)
-        } else {
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        }else {
             kotlin.run {
                 KLog.i(fileStatus.fileKey)
                 var localFilesList = LocalFileUtils.localFilesList

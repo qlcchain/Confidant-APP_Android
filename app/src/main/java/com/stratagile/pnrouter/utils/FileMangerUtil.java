@@ -340,7 +340,7 @@ public class FileMangerUtil {
 
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
-                    sendFilePathMap.remove(FileIdResult+"");
+                    sendFilePathMap.remove(msgId);
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -593,9 +593,10 @@ public class FileMangerUtil {
         try {
             File file = new File(filePath);
             boolean isHas = file.exists();
+            String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
             if(isHas)
             {
-                String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+
                 if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                 {
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
@@ -686,8 +687,8 @@ public class FileMangerUtil {
                     }
                 }
             }else{
-                LocalFileUtils.INSTANCE.deleteLocalAssets(filePath);
-                EventBus.getDefault().post(new FileStatus(filePath,1));
+                LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                EventBus.getDefault().post(new FileStatus(fileName,1));
             }
         }catch (Exception e)
         {
@@ -708,9 +709,9 @@ public class FileMangerUtil {
                 {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
+                    String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                     if(isHas)
                     {
-                        String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                         String files_dir = imagePath;
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(fileName);
@@ -839,8 +840,8 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(imagePath);
-                        EventBus.getDefault().post(new FileStatus(imagePath,1));
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                        EventBus.getDefault().post(new FileStatus(fileName,1));
                     }
 
                 }catch (Exception e)
@@ -863,9 +864,10 @@ public class FileMangerUtil {
                 try {
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
+                    String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
                     if(isHas)
                     {
-                        String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
+
 
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(videoFileName);
@@ -994,8 +996,8 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(videoPath);
-                        EventBus.getDefault().post(new FileStatus(videoPath,1));
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(videoFileName);
+                        EventBus.getDefault().post(new FileStatus(videoFileName,1));
                     }
                 }catch (Exception e)
                 {
@@ -1020,9 +1022,14 @@ public class FileMangerUtil {
                 {
                     File file = new File(filePath);
                     boolean isHas = file.exists();
+                    String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
                     if(isHas)
                     {
-                        String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                        if(file.length() > 1024 * 1024 * 100)
+                        {
+                            EventBus.getDefault().post(new FileStatus(filePath,2));
+                            return;
+                        }
 
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(fileName);
@@ -1151,8 +1158,8 @@ public class FileMangerUtil {
                         FileUtil.copySdcardFile(filePath,files_dir);
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(filePath);
-                        EventBus.getDefault().post(new FileStatus(filePath,1));
+                        LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                        EventBus.getDefault().post(new FileStatus(fileName,1));
                     }
 
                 }catch (Exception e)

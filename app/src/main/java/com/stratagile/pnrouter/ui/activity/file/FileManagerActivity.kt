@@ -388,7 +388,9 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 toast(R.string.upload_failed)
             }
 
-        } else {
+        } else if (fileStatus.result == 2) {
+            toast(R.string.Files_100M)
+        }else {
             if(fileStatus.complete)
             {
                 if(fileStatus.downLoad == true)
