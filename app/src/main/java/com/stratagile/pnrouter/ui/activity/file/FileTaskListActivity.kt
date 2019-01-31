@@ -177,7 +177,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         KLog.i("websocket状态FileTaskListActivity:"+connectStatus.status)
         if(connectStatus.status != 0)
         {
-
+            resetUnCompleteFileRecode()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -185,7 +185,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         KLog.i("tox状态FileTaskListActivity:"+toxStatusEvent.status)
         if(toxStatusEvent.status != 0)
         {
-
+            resetUnCompleteFileRecode()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -193,7 +193,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         KLog.i("tox好友状态FileTaskListActivity:"+toxFriendStatusEvent.status)
         if(toxFriendStatusEvent.status == 0)
         {
-
+            resetUnCompleteFileRecode()
         }
 
     }
@@ -389,6 +389,23 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
             }//goMain();
             //goMain();
+        }
+    }
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
         }
     }
     override fun onDestroy() {
