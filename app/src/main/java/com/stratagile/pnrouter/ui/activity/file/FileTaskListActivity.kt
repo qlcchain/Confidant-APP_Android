@@ -1,6 +1,5 @@
 package com.stratagile.pnrouter.ui.activity.file
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import chat.tox.antox.tox.MessageHelper
@@ -14,9 +13,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
@@ -34,7 +31,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.*
 
 import javax.inject.Inject;
 
@@ -177,13 +173,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             toast(R.string.File_does_not_exist)
         } else {
             kotlin.run {
-                KLog.i(fileStatus.filePath)
+                KLog.i(fileStatus.fileKey)
                 var localFilesList = LocalFileUtils.localFilesList
                 listGoing.forEachIndexed { index, it ->
                     it.takeUnless { it.isHeader }?.let {
-                        if (it.t.path.equals(fileStatus.filePath)) {
+                        if (it.t.fileKey.equals(fileStatus.fileKey)) {
                             for (myFie in localFilesList) {
-                                if (myFie.upLoadFile.path.equals(fileStatus.filePath)) {
+                                if (myFie.upLoadFile.fileKey.equals(fileStatus.fileKey)) {
                                     if (myFie.upLoadFile.isComplete == false) {
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
@@ -191,7 +187,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         KLog.i("没有下载完")
                                     } else {
                                         listGoing.removeAt(index)
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
@@ -204,8 +200,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }
                 }
                 for (myFie in localFilesList) {
-                    if (myFie.upLoadFile.isComplete == false && fileStatus.filePath.equals(myFie.upLoadFile.path)) {
-                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+                    if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.equals(myFie.upLoadFile.fileKey)) {
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                         KLog.i("新下载")
@@ -225,10 +221,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         for (myFie in localFilesList) {
 
             if (myFie.upLoadFile.isComplete == false) {
-                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
             } else {
 
-                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
+                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)

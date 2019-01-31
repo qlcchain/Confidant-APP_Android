@@ -126,13 +126,14 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}
 				if(bytesCopiedFlag != 0)
 				{
-					UpLoadFile uploadFile = new UpLoadFile(fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false);
+					String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
+					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false);
 					MyFile myRouter = new MyFile();
 					myRouter.setType(0);
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 					myRouter.setUpLoadFile(uploadFile);
 					LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-					EventBus.getDefault().post(new FileStatus(fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,0));
+					EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 					msg.what = 0x55;
 				}
 				else
@@ -230,13 +231,14 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				out.write(buffer, 0, n);
 				count+=n;
 				long progress = count * 100 / length;
-				UpLoadFile uploadFile = new UpLoadFile(fileUlr,length, true, false, false,count,length,0,false);
+				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
+				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false);
 				MyFile myRouter = new MyFile();
 				myRouter.setType(0);
 				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 				myRouter.setUpLoadFile(uploadFile);
 				LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-				EventBus.getDefault().post(new FileStatus(fileUlr,length, true, false, false,count,length,0,false,0));
+				EventBus.getDefault().post(new FileStatus(fileNiName,length, true, false, false,count,length,0,false,0));
 				KLog.d(TAG+":downloading:"+ progress +"%");
 			}
 			out.flush();

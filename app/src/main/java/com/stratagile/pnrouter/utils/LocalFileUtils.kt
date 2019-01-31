@@ -22,7 +22,7 @@ object LocalFileUtils {
     fun inspectionLocalData()
     {
         synchronized(fileLock){
-            var userId = "fileData"
+            var userId = "fileData1"
             if(userId.equals(""))
             {
                 return
@@ -58,7 +58,7 @@ object LocalFileUtils {
     val localFilesList: ArrayList<MyFile>
         get() {
             synchronized(fileLock){
-                var userId = "fileData"
+                var userId = "fileData1"
                 var localAssetArrayList: ArrayList<MyFile> = ArrayList()
                 if(userId.equals(""))
                 {
@@ -97,7 +97,7 @@ object LocalFileUtils {
      */
     fun updateGreanDaoFromLocal() {
         //wallet = walletList.get(SpUtil.getInt(AppConfig.instance, ConstantValue.currentWallet, 0));
-        var userId = "fileData"
+        var userId = "fileData1"
         if(userId.equals(""))
         {
             return
@@ -174,7 +174,7 @@ object LocalFileUtils {
             if (myRouter == null) {
                 return
             }
-            var userId = "fileData"
+            var userId = "fileData1"
             if(userId.equals(""))
             {
                 return
@@ -193,7 +193,7 @@ object LocalFileUtils {
 
                         if (myRouter!!.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().path.equals(myRouterItem.getUpLoadFile().path)) {
+                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().fileKey.equals(myRouterItem.getUpLoadFile().fileKey)) {
                                 isHad = true
                                 break
                             }
@@ -221,10 +221,46 @@ object LocalFileUtils {
             }
         }
     }
-    fun deleteLocalAssets(deletePath: String): UpLoadFile? {
+    fun getLocalAssets(fileKey: String): UpLoadFile? {
         synchronized(fileLock){
-            var userId = "fileData"
-            if(deletePath == null && deletePath.equals(""))
+            var userId = "fileData1"
+            if(fileKey == null && fileKey.equals(""))
+            {
+                return null
+            }
+            val gson = Gson()
+            val localRouterArrayList: ArrayList<MyFile>
+            try {
+                //开始读取sd卡的文件数据
+                var assetStr = FileUtil.readRoutersData(userId)
+                if (assetStr != "") {
+                    localRouterArrayList = gson.fromJson<ArrayList<MyFile>>(assetStr, object : TypeToken<ArrayList<MyFile>>() {
+
+                    }.type)
+                    for (myRouter in localRouterArrayList) {
+
+                        if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
+                        {
+                            if (myRouter.getUpLoadFile().fileKey.equals(fileKey)) {
+                                return  myRouter.getUpLoadFile()
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                System.out.println("出错啦_localFilesList")
+                //e.printStackTrace()
+            } finally {
+
+            }
+            return null
+        }
+    }
+    fun deleteLocalAssets(deleteFileKey: String): UpLoadFile? {
+        synchronized(fileLock){
+            var userId = "fileData1"
+            if(deleteFileKey == null && deleteFileKey.equals(""))
             {
                 return null
             }
@@ -243,7 +279,7 @@ object LocalFileUtils {
 
                         if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (!myRouter.getUpLoadFile().path.equals(deletePath)) {
+                            if (!myRouter.getUpLoadFile().fileKey.equals(deleteFileKey)) {
                                 newRouterArrayList.add(myRouter)
                             } else{
                                 deleteRouterEntity = myRouter.getUpLoadFile()
@@ -269,7 +305,7 @@ object LocalFileUtils {
      */
     fun updateList(myAssets: ArrayList<MyFile>?) {
         synchronized(fileLock){
-            var userId = "fileData"
+            var userId = "fileData1"
             if(userId.equals(""))
             {
                 return
@@ -309,7 +345,7 @@ object LocalFileUtils {
      */
     fun updateLocalAssets(router: MyFile?) {
         synchronized(fileLock){
-            var userId = "fileData"
+            var userId = "fileData1"
             if(userId.equals(""))
             {
                 return
@@ -331,7 +367,7 @@ object LocalFileUtils {
 
                         if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().path.equals(router!!.getUpLoadFile().path)) {
+                            if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().fileKey.equals(router!!.getUpLoadFile().fileKey)) {
                                 newRouterArrayList.add(router)
                             } else {
                                 newRouterArrayList.add(myRouter)

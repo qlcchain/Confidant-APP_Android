@@ -15,7 +15,7 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
     }
 
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
-        var fileName =  item.t.path.substring(item.t.path.lastIndexOf("/")+1)
+        var fileName =  item.t.fileKey
         if(!item.t.isDownLoad)
         {
             helper.setText(R.id.tvFileName,fileName)
