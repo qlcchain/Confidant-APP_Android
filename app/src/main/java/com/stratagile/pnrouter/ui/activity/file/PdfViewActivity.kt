@@ -4,28 +4,40 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.bumptech.glide.Glide
 import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFileListRsp
+import com.stratagile.pnrouter.entity.MyFile
+import com.stratagile.pnrouter.entity.PullFileReq
+import com.stratagile.pnrouter.entity.events.FileStatus
+import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerPdfViewComponent
 import com.stratagile.pnrouter.ui.activity.file.contract.PdfViewContract
 import com.stratagile.pnrouter.ui.activity.file.module.PdfViewModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.PdfViewPresenter
-import com.stratagile.pnrouter.utils.Base58
-import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_pdf_view.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import rx.lang.scala.schedulers.AndroidMainThreadScheduler
 import java.io.File
 import java.lang.Exception
@@ -43,6 +55,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
 
     @Inject
     internal lateinit var mPresenter: PdfViewPresenter
+    var payLoad:JPullFileListRsp.ParamsBean.PayloadBean? = null
+    var fileMiPath:String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,17 +67,17 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         title.text = "FilePreview"
     }
     override fun initData() {
-        var fileMiPath = intent.getStringExtra("fileMiPath")
-        var payLoad = intent.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("file")
+        fileMiPath = intent.getStringExtra("fileMiPath")
+        payLoad = intent.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("file")
         var fileMiName = fileMiPath.substring(fileMiPath.lastIndexOf("/")+1,fileMiPath.length)
         var base58Name =  String(Base58.decode(fileMiName))
         var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
-        var fileName = payLoad.fileName.substring(fileMiPath.lastIndexOf("/")+1,payLoad.fileName.length)
+        var fileName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)
         tvFileName.text = file.name
         if (file.exists()) {
             progressBar.visibility = View.GONE
-           if (fileName.contains(".pdf")) {
+            if (fileName.contains(".pdf")) {
                 pdfView.visibility = View.VISIBLE
                 pdfView.fromFile(file)
                         .load()
@@ -103,13 +117,22 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             }
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFileStatusChange(fileStatus: FileStatus) {
+        if (fileStatus.result == 1) {
+            toast(R.string.Download_failed)
+        } else {
+            runOnUiThread {
+                progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
+            }
+        }
+    }
     fun downLoadFile() {
         tvFileOpreate.text = "Cancel Download"
         tvFileOpreate.setTextColor(resources.getColor(R.color.mainColor))
         tvFileOpreate.background = resources.getDrawable(R.drawable.filedownload_bg)
         progressBar.visibility = View.VISIBLE
-        Observable.interval(0, 1, TimeUnit.SECONDS)
+        /*Observable.interval(0, 1, TimeUnit.SECONDS)
                 .take(101)
                 .map {
                     KLog.i("" + it)
@@ -121,8 +144,35 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
 
-                }
-
+                }*/
+        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + payLoad!!.fileName
+        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+        var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
+        if (ConstantValue.isWebsocketConnected) {
+            //receiveFileDataMap.put(data.msgId.toString(), data)
+            var msgId = (System.currentTimeMillis() / 1000).toInt()
+            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
+        } else {
+            //receiveToxFileDataMap.put(fileOrginName,data)
+            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.userKey)
+            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,payLoad!!.userKey, payLoad!!.fileFrom)
+            val myRouter = MyFile()
+            myRouter.type = 0
+            myRouter.userSn = ConstantValue.currentRouterSN
+            myRouter.upLoadFile = uploadFile
+            LocalFileUtils.insertLocalAssets(myRouter)
+            var msgId = (System.currentTimeMillis() / 1000).toInt()
+            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, msgId, payLoad!!.fileFrom, 2)
+            var baseData = BaseData(msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
     }
     fun openFile(filePath:String)
     {
@@ -175,21 +225,41 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     }
 
     override fun setupActivityComponent() {
-       DaggerPdfViewComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .pdfViewModule(PdfViewModule(this))
-               .build()
-               .inject(this)
+        DaggerPdfViewComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .pdfViewModule(PdfViewModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: PdfViewContract.PdfViewContractPresenter) {
-            mPresenter = presenter as PdfViewPresenter
-        }
+        mPresenter = presenter as PdfViewPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
     }
-
+    internal var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_failed)
+                    }
+                }
+                0x55 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    runOnUiThread {
+                        closeProgressDialog()
+                        toast(R.string.Download_success)
+                    }
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
     override fun closeProgressDialog() {
         progressDialog.hide()
     }

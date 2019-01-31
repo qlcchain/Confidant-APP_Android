@@ -65,12 +65,12 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
         if (jJToxPullFileRsp.params.retCode != 0) {
             runOnUiThread {
-                toast(R.string.Download_failed)
+                toast(R.string.fail)
             }
 
         } else {
             runOnUiThread {
-                toast(R.string.Start_downloading)
+                toast(R.string.success)
             }
 
         }
@@ -381,11 +381,23 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
         if (fileStatus.result == 1) {
-            toast(R.string.Download_failed)
+            if(fileStatus.downLoad == true)
+            {
+                toast(R.string.Download_failed)
+            }else{
+                toast(R.string.upload_failed)
+            }
+
         } else {
             if(fileStatus.complete)
             {
-                toast(R.string.Download_success)
+                if(fileStatus.downLoad == true)
+                {
+                    toast(R.string.Download_success)
+                }else{
+                    toast(R.string.Upload_success)
+                }
+
             }
         }
     }
