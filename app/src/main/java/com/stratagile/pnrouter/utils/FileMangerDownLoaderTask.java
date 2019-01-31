@@ -51,7 +51,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String fileUlr;
 	private static HashMap<String, String> downFilePathTaskMap = new HashMap<>();
 	private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
-	private int progressBarMaxSeg = 10;
+	private int progressBarMaxSeg = 25;
 	private int fileFrom = 0;
 
 	/**

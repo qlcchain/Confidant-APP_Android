@@ -36,6 +36,7 @@ import im.tox.tox4j.core.enums.ToxMessageType
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_pdf_view.*
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import rx.lang.scala.schedulers.AndroidMainThreadScheduler
@@ -57,6 +58,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     internal lateinit var mPresenter: PdfViewPresenter
     var payLoad:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var fileMiPath:String = ""
+    var filePath:String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,11 +69,12 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         title.text = "FilePreview"
     }
     override fun initData() {
+        EventBus.getDefault().register(this)
         fileMiPath = intent.getStringExtra("fileMiPath")
         payLoad = intent.getParcelableExtra<JPullFileListRsp.ParamsBean.PayloadBean>("file")
         var fileMiName = fileMiPath.substring(fileMiPath.lastIndexOf("/")+1,fileMiPath.length)
         var base58Name =  String(Base58.decode(fileMiName))
-        var filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
+        filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
         var fileName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)
         tvFileName.text = file.name
@@ -124,11 +127,22 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         } else {
             runOnUiThread {
                 progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
+                if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
+                {
+                    tvFileOpreate.text = "Open with other applications"
+                    tvFileOpreate.setTextColor(resources.getColor(R.color.white))
+                    tvFileOpreate.background = resources.getDrawable(R.drawable.filepreview_bg)
+                    tvFileOpreate.setOnClickListener {
+                        openFile(filePath)
+                    }
+                }
             }
         }
     }
     fun downLoadFile() {
-        tvFileOpreate.text = "Cancel Download"
+        tvFileOpreate.text = "Downloading"
+        tvFileOpreate.setOnClickListener {
+        }
         tvFileOpreate.setTextColor(resources.getColor(R.color.mainColor))
         tvFileOpreate.background = resources.getDrawable(R.drawable.filedownload_bg)
         progressBar.visibility = View.VISIBLE
@@ -263,5 +277,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 }

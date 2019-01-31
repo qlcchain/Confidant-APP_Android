@@ -44,7 +44,7 @@ public class ToxCoreJni {
     private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
     private HashMap<String,Boolean> progressSendMap = new HashMap<>();
     private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
-    private int progressBarMaxSeg = 10;
+    private int progressBarMaxSeg = 25;
     /**
      * 获取单例
      * @return toxCoreJni实例
