@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
+import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -28,6 +29,8 @@ import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
+import events.ToxFriendStatusEvent
+import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_task_list.*
 import org.greenrobot.eventbus.EventBus
@@ -170,9 +173,34 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         initUI()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        KLog.i("websocket状态FileTaskListActivity:"+connectStatus.status)
+        if(connectStatus.status != 0)
+        {
+
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
+        KLog.i("tox状态FileTaskListActivity:"+toxStatusEvent.status)
+        if(toxStatusEvent.status != 0)
+        {
+
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+        KLog.i("tox好友状态FileTaskListActivity:"+toxFriendStatusEvent.status)
+        if(toxFriendStatusEvent.status == 0)
+        {
+
+        }
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAllFileStatusChange(allFileStatus: AllFileStatus) {
 
-        
+
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
