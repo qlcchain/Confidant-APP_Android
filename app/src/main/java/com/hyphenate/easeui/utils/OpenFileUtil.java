@@ -127,7 +127,11 @@ public class OpenFileUtil {
             } else {
                 uri = Uri.fromFile(new File(filePath));
             }
-
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if(new File(filePath).exists())
+            {
+                String aa = "";
+            }
             intent.setDataAndType(uri, mimeType);
             return intent;
         }
@@ -165,6 +169,10 @@ public class OpenFileUtil {
         String type = "*/*";
         type = mapSimple.get("."+end);
         Log.i("bqt", "我定义的MIME类型为：" + type);
+        if(type == null )
+        {
+            type = "*/*";
+        }
         return type;
     }
     // Android获取一个用于打开APK文件的intent
