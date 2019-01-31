@@ -155,7 +155,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             if(userId == null || userId.equals(""))
             {
-                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData2.json")
+                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData3.json")
             }
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)

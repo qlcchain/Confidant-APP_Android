@@ -309,6 +309,9 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                                     var file = File(filePath)
                                     if (!file.exists()) {
+                                        runOnUiThread {
+                                            toast(R.string.You_need_to_download)
+                                        }
                                         wantOpen = true
                                         var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"

@@ -58,7 +58,9 @@ import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
+import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
+import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -634,23 +636,37 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        KLog.i("websocket状态MainActivity:"+connectStatus.status)
+        if(connectStatus.status != 0)
+        {
+            resetUnCompleteFileRecode()
+            EventBus.getDefault().post(AllFileStatus())
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
+        KLog.i("tox状态MainActivity:"+toxStatusEvent.status)
+       if(toxStatusEvent.status != 0)
+       {
+           resetUnCompleteFileRecode()
+           EventBus.getDefault().post(AllFileStatus())
+       }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+        KLog.i("tox好友状态MainActivity:"+toxFriendStatusEvent.status)
+        if(toxFriendStatusEvent.status == 0)
+        {
+            resetUnCompleteFileRecode()
+            EventBus.getDefault().post(AllFileStatus())
+        }
 
+    }
     override fun initData() {
         FileMangerUtil.init()
-        var localFilesList = LocalFileUtils.localFilesList
-        for (myFie in localFilesList)
-        {
-            if(myFie.upLoadFile.isComplete == false)
-            {
-                myFie.upLoadFile.SendGgain = true
-                myFie.upLoadFile.segSeqResult = 0
-                val myRouter = MyFile()
-                myRouter.type = 0
-                myRouter.userSn = ConstantValue.currentRouterSN
-                myRouter.upLoadFile = myFie.upLoadFile
-                LocalFileUtils.updateLocalAssets(myRouter)
-            }
-        }
+        resetUnCompleteFileRecode()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
         }catch (e : Exception) {
@@ -984,6 +1000,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
     override fun onResume() {
         exitTime = System.currentTimeMillis() - 2001
         super.onResume()

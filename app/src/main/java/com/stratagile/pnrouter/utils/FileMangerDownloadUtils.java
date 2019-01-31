@@ -48,7 +48,7 @@ public class FileMangerDownloadUtils {
             EventBus.getDefault().post(new FileStatus(fileNiName,0, true, false, false,0,1,0,false,0));
 
             downFilePathMap.put(msgId+"",path);
-            FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap);
+            FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
             task.execute();
         }
     }

@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
@@ -168,7 +169,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         initUI()
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAllFileStatusChange(allFileStatus: AllFileStatus) {
 
+        
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {
         if (fileStatus.result == 1) {
