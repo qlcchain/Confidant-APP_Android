@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.file
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,10 @@ import com.hyphenate.easeui.ui.EaseShowBigImageActivity
 import com.hyphenate.easeui.ui.EaseShowFileVideoActivity
 import com.hyphenate.easeui.utils.OpenFileUtil
 import com.hyphenate.easeui.utils.PathUtils
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -58,13 +63,12 @@ import javax.inject.Inject;
 
 class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterServiceMessageReceiver.FileManageBack {
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
-        if(jJToxPullFileRsp.params.retCode != 0)
-        {
+        if (jJToxPullFileRsp.params.retCode != 0) {
             runOnUiThread {
                 toast(R.string.Download_failed)
             }
 
-        }else{
+        } else {
             runOnUiThread {
                 toast(R.string.Start_downloading)
             }
@@ -111,13 +115,13 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         runOnUiThread {
             when (SpUtil.getInt(this, ConstantValue.currentArrangeType, 0)) {
                 0 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.fileName }.toMutableList())
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileName }?.toMutableList())
                 }
                 1 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.timestamp }.toMutableList())
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.timestamp }?.toMutableList())
                 }
                 2 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload.sortedByDescending { it.fileSize }.toMutableList())
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileSize }?.toMutableList())
                 }
             }
         }
@@ -293,22 +297,20 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                             var fielOwner = 1;
-                                            if(data.fileName.indexOf("/s/") > -1)
-                                            {
+                                            if (data.fileName.indexOf("/s/") > -1) {
                                                 fielOwner = 1
-                                            }else if(data.fileName.indexOf("/r/") > -1)
-                                            {
+                                            } else if (data.fileName.indexOf("/r/") > -1) {
                                                 fielOwner = 2
-                                            }else {
+                                            } else {
                                                 fielOwner = 3
                                             }
-                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!,fileMiName,data.msgId,fielOwner,2)
+                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, fielOwner, 2)
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
                                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
+                                            } else {
                                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
                                         }
@@ -346,22 +348,20 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                             var fielOwner = 1;
-                                            if(data.fileName.indexOf("/s/") > -1)
-                                            {
+                                            if (data.fileName.indexOf("/s/") > -1) {
                                                 fielOwner = 1
-                                            }else if(data.fileName.indexOf("/r/") > -1)
-                                            {
+                                            } else if (data.fileName.indexOf("/r/") > -1) {
                                                 fielOwner = 2
-                                            }else {
+                                            } else {
                                                 fielOwner = 3
                                             }
-                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!,fileMiName,data.msgId,fielOwner,2)
+                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, fielOwner, 2)
                                             var baseData = BaseData(msgData)
                                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                             if (ConstantValue.isAntox) {
                                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            }else{
+                                            } else {
                                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                             }
                                         }
@@ -417,7 +417,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     }
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 10, fileType, 0)
+        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 30, fileType, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
@@ -492,12 +492,115 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         progressDialog.hide()
     }
 
+    var SELECT_PHOTO = 2
+    var SELECT_VIDEO = 3
+    var SELECT_DEOCUMENT = 4
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.chooseFile) {
-            fileListChooseAdapter!!.isChooseMode = !fileListChooseAdapter!!.isChooseMode
-            fileListChooseAdapter!!.notifyDataSetChanged()
+        if (item.itemId == R.id.upLoadFile) {
+            PopWindowUtil.showFileUploadPopWindow(this@FileManagerActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    KLog.i("" + position)
+                    when (position) {
+                        0 -> {
+//                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 1), 0)
+                            PictureSelector.create(this@FileManagerActivity)
+                                    .openGallery(PictureMimeType.ofImage())
+//                                    .theme()
+                                    .maxSelectNum(100)
+                                    .minSelectNum(1)
+                                    .imageSpanCount(3)
+                                    .selectionMode(PictureConfig.SINGLE)
+                                    .previewImage(false)
+                                    .previewVideo(false)
+                                    .enablePreviewAudio(false)
+                                    .isCamera(true)
+                                    .imageFormat(PictureMimeType.PNG)
+                                    .isZoomAnim(true)
+                                    .sizeMultiplier(0.5f)
+                                    .setOutputCameraPath("/CustomPath")
+                                    .enableCrop(false)
+                                    .compress(false)
+                                    .glideOverride(160, 160)
+                                    .hideBottomControls(false)
+                                    .isGif(false)
+                                    .openClickSound(false)
+                                    .minimumCompressSize(100)
+                                    .synOrAsy(true)
+                                    .rotateEnabled(true)
+                                    .scaleEnabled(true)
+                                    .videoMaxSecond(60 * 60 * 3)
+                                    .videoMinSecond(1)
+                                    .isDragFrame(false)
+                                    .forResult(SELECT_PHOTO)
+                        }
+                        1 -> {
+                            PictureSelector.create(this@FileManagerActivity)
+                                    .openGallery(PictureMimeType.ofVideo())
+//                                    .theme()
+                                    .maxSelectNum(1)
+                                    .minSelectNum(1)
+                                    .imageSpanCount(3)
+                                    .selectionMode(PictureConfig.SINGLE)
+                                    .previewImage(false)
+                                    .previewVideo(false)
+                                    .enablePreviewAudio(false)
+                                    .isCamera(true)
+                                    .imageFormat(PictureMimeType.PNG)
+                                    .isZoomAnim(true)
+                                    .sizeMultiplier(0.5f)
+                                    .setOutputCameraPath("/CustomPath")
+                                    .enableCrop(false)
+                                    .compress(false)
+                                    .glideOverride(160, 160)
+                                    .hideBottomControls(false)
+                                    .isGif(false)
+                                    .openClickSound(false)
+                                    .minimumCompressSize(100)
+                                    .synOrAsy(true)
+                                    .rotateEnabled(true)
+                                    .scaleEnabled(true)
+                                    .videoMaxSecond(60 * 60 * 3)
+                                    .videoMinSecond(1)
+                                    .isDragFrame(false)
+                                    .forResult(SELECT_VIDEO)
+                        }
+                        2 -> {
+                            startActivityForResult(Intent(this@FileManagerActivity, FileChooseActivity::class.java).putExtra("fileType", 2), SELECT_DEOCUMENT)
+                        }
+                    }
+                }
+            })
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            return
+        } else if (requestCode == SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
+            var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+            KLog.i(list)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
+        } else if (requestCode == SELECT_VIDEO && resultCode == Activity.RESULT_OK) {
+            var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
+            KLog.i(list)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
+        } else if (requestCode == SELECT_DEOCUMENT && resultCode == Activity.RESULT_OK) {
+            var list = ArrayList<LocalMedia>()
+            var localMedia = LocalMedia()
+            localMedia.path = data!!.getStringExtra("path")
+            list.add(localMedia)
+            KLog.i(list)
+            var startIntent = Intent(this, FileTaskListActivity::class.java)
+            startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
+            startActivity(startIntent)
+        }
     }
 
     override fun onBackPressed() {
@@ -512,7 +615,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.choose_file, menu)
+        inflater.inflate(R.menu.upload_file, menu)
         return super.onCreateOptionsMenu(menu)
     }
 

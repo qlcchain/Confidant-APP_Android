@@ -138,10 +138,9 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
         return;
     }
     tox_kill(mTox);
-    (*env)->DeleteGlobalRef(env, g_obj);
-    free(Env);
-    free(g_jvm);
-    mTox = NULL;
+//    (*env)->DeleteGlobalRef(env, g_obj);
+//    free(Env);
+//    free(g_jvm);
 }
 
 /*

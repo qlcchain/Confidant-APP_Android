@@ -183,6 +183,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                     if (myFie.upLoadFile.isComplete == false) {
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
+                                        it.t.fileSize = myFie.upLoadFile.fileSize
                                         fileGoingTaskLisytAdapter.notifyItemChanged(index)
                                         KLog.i("没有下载完")
                                     } else {

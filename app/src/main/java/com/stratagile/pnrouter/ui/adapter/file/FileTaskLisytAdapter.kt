@@ -43,7 +43,7 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         } else {
             helper.setGone(R.id.progressBar, true)
             helper.setGone(R.id.status, true)
-            helper.setText(R.id.filesize,NetUtils.parseSize(item.t.segSeqTotal.toLong()))
+            helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))
             helper.setProgress(R.id.progressBar,item.t.segSeqResult,item.t.segSeqTotal)
             KLog.i("" + item.t.segSeqResult)
             KLog.i("" + item.t.segSeqTotal)
