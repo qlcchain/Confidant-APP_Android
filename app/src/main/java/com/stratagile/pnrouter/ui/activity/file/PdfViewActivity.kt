@@ -145,18 +145,22 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             toast(R.string.Download_failed)
         } else {
             runOnUiThread {
-                progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
-                if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
+                var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
+                if(fileStatus.fileKey.equals(fileMiName))
                 {
-                    tvFileOpreate.text = "Open with other applications"
-                    tvFileOpreate.setTextColor(resources.getColor(R.color.white))
-                    tvFileOpreate.background = resources.getDrawable(R.drawable.filepreview_bg)
-                    tvFileOpreate.setOnClickListener {
-                        openFile(filePath)
+                    progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
+                    if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
+                    {
+                        tvFileOpreate.text = "Open with other applications"
+                        tvFileOpreate.setTextColor(resources.getColor(R.color.white))
+                        tvFileOpreate.background = resources.getDrawable(R.drawable.filepreview_bg)
+                        tvFileOpreate.setOnClickListener {
+                            openFile(filePath)
+                        }
                     }
-                }
-                if (progressBar.progress == 100) {
-                    progressBar.visibility = View.INVISIBLE
+                    if (progressBar.progress == 100) {
+                        progressBar.visibility = View.INVISIBLE
+                    }
                 }
             }
         }
