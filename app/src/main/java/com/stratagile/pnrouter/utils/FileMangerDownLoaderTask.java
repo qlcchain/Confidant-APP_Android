@@ -237,16 +237,16 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				count+=n;
 				long progress = count * 100 / length;
 				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-				UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr,fileFrom);
-				MyFile myRouter = new MyFile();
-				myRouter.setType(0);
-				myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-				myRouter.setUpLoadFile(uploadFile);
-				LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
 				int average = length / progressBarMaxSeg;
 				int num = (int)(count / average) + 1;
 				if(progressReceiveMap.get(fileNiName+"_"+num) == null)
 				{
+					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr,fileFrom);
+					MyFile myRouter = new MyFile();
+					myRouter.setType(0);
+					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+					myRouter.setUpLoadFile(uploadFile);
+					LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
 					EventBus.getDefault().post(new FileStatus(fileNiName,length, true, false, false,count,length,0,false,0));
 					progressReceiveMap.put(fileNiName+"_"+num,true);
 				}
