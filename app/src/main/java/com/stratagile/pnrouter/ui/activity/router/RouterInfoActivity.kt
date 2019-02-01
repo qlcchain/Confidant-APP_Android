@@ -26,9 +26,7 @@ import com.stratagile.pnrouter.ui.activity.router.contract.RouterInfoContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterInfoModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterInfoPresenter
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
-import com.stratagile.pnrouter.utils.LocalFileUtils
-import com.stratagile.pnrouter.utils.LocalRouterUtils
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -177,6 +175,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     isUserExit = true
                     resetUnCompleteFileRecode()
                     if (ConstantValue.isWebsocketConnected) {
+                        FileMangerDownloadUtils.init()
                         ConstantValue.webSockeFileMangertList.forEach {
                             it.disconnect(true)
                             //ConstantValue.webSockeFileMangertList.remove(it)
