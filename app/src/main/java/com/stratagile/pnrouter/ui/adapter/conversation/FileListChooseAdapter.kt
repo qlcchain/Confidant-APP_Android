@@ -58,7 +58,7 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
         when(item.fileFrom) {
             1 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_i_share))
-                helper.setText(R.id.friendName, item.sender)
+                helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
             }
             2 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))

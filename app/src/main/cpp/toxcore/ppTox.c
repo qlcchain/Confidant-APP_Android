@@ -71,12 +71,14 @@ tox_file_recv_control_cb file_recv_control_cb;
 char recv_filename[200] = {0};
 int recv_filesize = 0;
 
+bool isStop = false;
+
 JNIEXPORT void JNICALL
 Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, jstring dataPath) {
     Env = env;
     (*Env)->GetJavaVM(Env, &g_jvm);
     g_obj = (*Env)->NewGlobalRef(Env, thiz);
-
+    isStop = false;
     char *dataPath_p = Jstring2CStr(Env, dataPath);
     // strcat 将两个char连接起来
     data_file_name = strcat(dataPath_p, savedata_filename);
@@ -97,9 +99,10 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, 
     tox_callback_file_recv(mTox, file_recv_cb, NULL);
     tox_callback_file_recv_chunk(mTox, file_recv_chunk_cb, NULL);
     tox_callback_file_recv_control(mTox, file_recv_control_cb, NULL);
+    tox_iterate(mTox);
     java_bootstrap();
     time_t timestamp0 = time(NULL);
-    while (1) {
+    while (!isStop) {
         if (mTox == NULL) {
             continue;
         }
@@ -116,6 +119,9 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, 
         tox_iterate(mTox);
         usleep(tox_iteration_interval(mTox) * 1000);
     }
+    LOGD("tox关闭");
+    tox_kill(mTox);
+    mTox = NULL;
 }
 
 void java_bootstrap(void) {
@@ -134,10 +140,11 @@ void java_bootstrap(void) {
 
 JNIEXPORT void JNICALL
 Java_com_stratagile_tox_toxcore_ToxCoreJni_toxKill(JNIEnv *env, jobject thiz) {
-    if (mTox == NULL) {
-        return;
-    }
-    tox_kill(mTox);
+    isStop = true;
+//    if (mTox == NULL) {
+//        return;
+//    }
+//    tox_kill(mTox);
 //    (*env)->DeleteGlobalRef(env, g_obj);
 //    free(Env);
 //    free(g_jvm);

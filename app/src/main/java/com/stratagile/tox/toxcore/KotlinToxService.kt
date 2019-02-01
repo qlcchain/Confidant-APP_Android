@@ -15,6 +15,7 @@ import java.io.File
 import kotlin.concurrent.thread
 
 class KotlinToxService : Service() {
+    lateinit var thread : Thread
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -28,43 +29,13 @@ class KotlinToxService : Service() {
         }
         val path = dataFile.path + "/"
         ToxCoreJni.getInstance().toxCallbackListener = toxCallbackListener
-        thread(true, false, null, "toxThread", -1) {
+        thread = thread(true, false, null, "toxThread", -1) {
             ToxCoreJni.getInstance().createTox(path)
-//            ToxCoreJni.getInstance().iterate()
-        }
-//        thread(true, false, null, "toxThreadBootStrap", -1) {
-//            bootStrap()
-//        }
-    }
-
-    private fun bootStrap() {
-        var count = 0
-        try {
-            val toxJson = FileUtil.getAssetJson(this, "tox.json")
-            val dhtJson = Gson().fromJson<DhtJson>(toxJson, DhtJson::class.java)
-            while (ToxCoreJni.connectStatus == ToxConnection.NONE && count < 1) {
-                KLog.i("开始引导")
-                var bootstrapped = false
-                dhtJson.nodes.forEach {
-                    var sucess = ToxCoreJni.getInstance().bootStrap(it.ipv4, it.port, it.public_key)
-//                    KLog.i("引导 " + it.ipv4 + " " + sucess)
-                    if (sucess == 1) {
-                        bootstrapped = true
-                    }
-                }
-                if (bootstrapped) {
-                    KLog.i("bootstrapped 成功")
-                } else {
-                    KLog.i("bootstrapped 失败")
-                }
-                count++
-            }
-        } catch (e : Exception) {
-            e.printStackTrace()
         }
     }
 
     override fun onDestroy() {
+        ToxCoreJni.getInstance().toxKill()
         ToxCoreJni.getInstance().toxCallbackListener = null
 
         super.onDestroy()

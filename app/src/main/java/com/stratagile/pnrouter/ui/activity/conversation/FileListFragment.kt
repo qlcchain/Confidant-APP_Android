@@ -50,7 +50,7 @@ class FileListFragment : BaseFragment(), FileListContract.View {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun refreshList(recentFile: RecentFile) {
-        fileListAdapter?.setNewData(AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.loadAll().apply { this.reverse() })
+        fileListAdapter?.setNewData(AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().apply { this.reverse() })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
