@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.util.HashMap
 
 import javax.inject.Inject;
 
@@ -127,6 +128,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     lateinit var fileGoingTaskLisytAdapter: FileTaskLisytAdapter
 
     lateinit var fileCompleteTaskLisytAdapter: FileTaskLisytAdapter
+
+    var receiveFileDataMap = HashMap<String, UpLoadFile>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -341,7 +344,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }
                 }
             }else{
-                var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
+
+                var filledUri = localMedia!!.path
+                if(localMedia!!.path.indexOf("https://") < 0 )
+                {
+                    filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
+                }
                 var files_dir = PathUtils.getInstance().filePath.toString() + "/"
 
                 var fileMiName = localMedia!!.fileKey
@@ -361,6 +369,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                 if (ConstantValue.isWebsocketConnected) {
                     var msgId =  (System.currentTimeMillis() / 1000).toInt()
+                    receiveFileDataMap.put(msgId.toString(),localMedia)
                     Thread(Runnable() {
                         run() {
                             val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom)
@@ -450,6 +459,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    var fileData = receiveFileDataMap.get(msgId.toString())
+                    LocalFileUtils.deleteLocalAssets(fileData!!.fileKey)
+                    EventBus.getDefault().post(AllFileStatus())
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_failed)

@@ -24,6 +24,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFileListRsp
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.PullFileReq
+import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerPdfViewComponent
@@ -42,6 +43,7 @@ import org.greenrobot.eventbus.ThreadMode
 import rx.lang.scala.schedulers.AndroidMainThreadScheduler
 import java.io.File
 import java.lang.Exception
+import java.util.HashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -59,6 +61,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
     var payLoad:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var fileMiPath:String = ""
     var filePath:String = ""
+    var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,8 +194,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
         var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
         if (ConstantValue.isWebsocketConnected) {
-            //receiveFileDataMap.put(data.msgId.toString(), data)
             var msgId = (System.currentTimeMillis() / 1000).toInt()
+            receiveFileDataMap.put(msgId.toString(), payLoad!!)
             FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
         } else {
             //receiveToxFileDataMap.put(fileOrginName,data)
@@ -285,6 +288,12 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    var fileData = receiveFileDataMap.get(msgId.toString())
+                    var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
+                    LocalFileUtils.deleteLocalAssets(fileMiName)
+                    EventBus.getDefault().post(AllFileStatus())
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_failed)

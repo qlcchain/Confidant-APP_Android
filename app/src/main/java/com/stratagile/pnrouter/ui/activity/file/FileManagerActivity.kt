@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileManagerComponent
@@ -65,7 +66,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
         if (jJToxPullFileRsp.params.retCode != 0) {
             runOnUiThread {
-                toast(R.string.fail)
+                toast(R.string.Download_failed)
             }
 
         } else {
@@ -623,6 +624,12 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
                 0x404 -> {
+                    var data: Bundle = msg.data;
+                    var msgId = data.getInt("msgID")
+                    var fileData = receiveFileDataMap.get(msgId.toString())
+                    var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
+                    LocalFileUtils.deleteLocalAssets(fileMiName)
+                    EventBus.getDefault().post(AllFileStatus())
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_failed)
