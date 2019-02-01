@@ -21,6 +21,7 @@ import java.util.HashMap;
 public class FileMangerDownloadUtils {
     private static ZipUnTask task;
     private static HashMap<String, String> downFilePathMap = new HashMap<>();
+    private static HashMap<String, FileMangerDownLoaderTask> taskListMap = new HashMap<>();
     public static void doZipUnWork(String from, String to, Context context, Boolean replaceAll, Handler handler){
         task = new ZipUnTask(from, to, context, replaceAll,handler);
         task.execute();
@@ -34,6 +35,7 @@ public class FileMangerDownloadUtils {
     public static void init()
     {
         downFilePathMap = new HashMap<>();
+
     }
 
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
@@ -57,6 +59,7 @@ public class FileMangerDownloadUtils {
             downFilePathMap.put(msgId+"",path);
             FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
             task.execute();
+            taskListMap.put(msgId+"",task);
         }else{
 
         }
