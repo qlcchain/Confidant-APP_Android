@@ -340,7 +340,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             isToxLoginOverTime = false
             ConstantValue.hasLogin = true
             ConstantValue.isHeart = true
-
+            resetUnCompleteFileRecode()
             if(loginGoMain)
                 return
             startActivity(Intent(this, MainActivity::class.java))
@@ -350,7 +350,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
 
-
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         maxLogin = 0
         loginGoMain = false

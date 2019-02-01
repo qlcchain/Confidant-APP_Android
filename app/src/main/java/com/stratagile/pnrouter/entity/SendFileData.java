@@ -165,6 +165,7 @@ public class SendFileData implements Serializable {
         byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
                 + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+ this.Content.length;
+        System.out.println("发送文件长度："+length);
         byte[] result = new byte[length + 2];
         int copyLength = 0;
         System.arraycopy(magicByte, 0, result, copyLength, magicByte.length);
