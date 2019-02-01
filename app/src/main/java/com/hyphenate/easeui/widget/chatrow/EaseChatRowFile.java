@@ -59,9 +59,13 @@ public class EaseChatRowFile extends EaseChatRow{
                 ll_loading.setVisibility(View.INVISIBLE);
             }
         }
-        fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+        File file = new File(filePath);
+        if (file.exists() && !file.getName().contains("file_downloading")) {
+            fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+        }else{
+            fileSizeView.setText(TextFormater.getDataSize(0));
+        }
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            File file = new File(filePath);
             if (file.exists() && !file.getName().contains("file_downloading")) {
                 fileStateView.setText(R.string.Have_downloaded);
             } else {

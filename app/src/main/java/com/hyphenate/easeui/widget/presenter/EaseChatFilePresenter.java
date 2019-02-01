@@ -59,7 +59,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
-        if (file.exists()) {
+        if (file.exists() && !file.getName().contains("file_downloading")) {
             String newFilePath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/temp/"+file.getName();
             int result = FileUtil.copyAppFileToSdcard(filePath,newFilePath);
             if(result == 1)
@@ -78,7 +78,8 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
 
         } else {
             // download the file
-            getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
+            Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show();
+            //getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == EMMessage.ChatType.Chat) {
             try {
