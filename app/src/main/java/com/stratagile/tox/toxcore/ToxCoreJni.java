@@ -225,15 +225,15 @@ public class ToxCoreJni {
         if(position == filesize)
         {
             int num = (int)(position / average) + 1;
-            progressSendMap.put(filesize+"_"+num,null);
+            progressSendMap.put(index+"_"+num,null);
             EventBus.getDefault().post(new ToxSendFileFinishedEvent(key,fileNumber));
         }else{
             int num = (int)(position / average) + 1;
-            if(progressSendMap.get(filesize+"_"+num) == null)
+            if(progressSendMap.get(index+"_"+num) == null)
             {
                 KLog.i("抛出EventBus:sendFileRate"+filesize+"_"+num);
                 EventBus.getDefault().post(new ToxSendFileProgressEvent(key,fileNumber,position,filesize));
-                progressSendMap.put(filesize+"_"+num,true);
+                progressSendMap.put(index+"_"+num,true);
             }
         }
     }
@@ -252,16 +252,16 @@ public class ToxCoreJni {
         if(position == filesize)
         {
             int num = (int)(position / average) + 1;
-            progressReceiveMap.put(filesize+"_"+num,null);
-            KLog.i("抛出EventBus:receivedFileFinish"+filesize+"_"+num);
+            progressReceiveMap.put(fileNum+"_"+num,null);
+            KLog.i("抛出EventBus:receivedFileFinish"+fileNum+"_"+num);
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
         }else{
             int num = (int)(position / average) + 1;
-            if(progressReceiveMap.get(filesize+"_"+num) == null)
+            if(progressReceiveMap.get(fileNum+"_"+num) == null)
             {
-                KLog.i("抛出EventBus:receivedFileRate"+filesize+"_"+num);
+                KLog.i("抛出EventBus:receivedFileRate"+fileNum+"_"+num);
                 EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber,position,filesize));
-                progressReceiveMap.put(filesize+"_"+num,true);
+                progressReceiveMap.put(fileNum+"_"+num,true);
             }
 
         }

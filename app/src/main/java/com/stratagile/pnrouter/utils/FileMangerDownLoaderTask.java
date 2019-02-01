@@ -67,6 +67,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 */
 	public FileMangerDownLoaderTask(String url, String out, Context context, int msgId, Handler message, String key, HashMap<String, String> downFilePathMap,int FileFrom){
 		super();
+		bytesCopiedFlag = 0;
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
@@ -130,7 +131,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				if(isCancelled())
 				{
 					msg.what = 0x404;
-					downFilePathTaskMap.remove(msgID);
+					downFilePathTaskMap.remove(msgID+"");
 					handler.sendMessage(msg);
 					return;
 				}
@@ -139,6 +140,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					String temp = files_Temp_dir +FileNameOld;
 					String out = outPath +FileNameOld;
 					int result = FileUtil.copyTempFiletoFile(temp,out);
+					downFilePathTaskMap.remove(msgID+"");
 					if(result == 1)
 					{
 						DeleteUtils.deleteFile(temp);
@@ -151,12 +153,13 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 						LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
 						EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 						msg.what = 0x55;
+					}else{
+						msg.what = 0x404;
 					}
-					downFilePathTaskMap.remove(msgID);
 				}
 				else
 				{
-					downFilePathTaskMap.remove(msgID);
+					downFilePathTaskMap.remove(msgID+"");
 					msg.what = 0x404;
 				}
 				handler.sendMessage(msg);

@@ -52,6 +52,8 @@ public class FileMangerDownloadUtils {
             downFilePathMap.put(msgId+"",path);
             FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
             task.execute();
+        }else{
+
         }
     }
 
