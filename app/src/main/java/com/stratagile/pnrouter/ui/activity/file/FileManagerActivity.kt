@@ -262,7 +262,17 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
+                                    var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
                                     var file = File(filePath)
+                                    if(file.exists())
+                                    {
+                                        DeleteUtils.deleteFile(filePath)
+                                    }
+                                    var fileMi = File(fileMiPath)
+                                    if(fileMi.exists())
+                                    {
+                                        DeleteUtils.deleteFile(fileMiPath)
+                                    }
                                     if (false) {
                                         runOnUiThread {
                                             toast(R.string.no_download_is_required)

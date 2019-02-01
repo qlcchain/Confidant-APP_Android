@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JLogOutRsp
 import com.stratagile.pnrouter.entity.LogOutReq
+import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.entity.events.RouterChange
@@ -25,6 +26,7 @@ import com.stratagile.pnrouter.ui.activity.router.contract.RouterInfoContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterInfoModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterInfoPresenter
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
+import com.stratagile.pnrouter.utils.LocalFileUtils
 import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
@@ -172,6 +174,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     ConstantValue.loginOut = true
                     ConstantValue.isHeart = false
                     isUserExit = true
+                    resetUnCompleteFileRecode()
                     EventBus.getDefault().post(LogOutEvent())
                     onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true
@@ -182,6 +185,23 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                 }
                 .show()
 
+    }
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
     }
     fun showDeleteDialog() {
         SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
