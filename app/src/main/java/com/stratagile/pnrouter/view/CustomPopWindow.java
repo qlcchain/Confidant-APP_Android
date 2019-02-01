@@ -141,7 +141,7 @@ public class CustomPopWindow {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                onBackPressed();
             }
         });
 
@@ -185,14 +185,11 @@ public class CustomPopWindow {
      * 关闭popWindow
      */
     public void dismiss(){
-        if (mAnimationStyle == android.R.style.Animation_Dialog) {
-            dismissHandler.sendEmptyMessageDelayed(0, 400);
-        } else {
-            contentView.setVisibility(View.GONE);
-            contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
-            mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.close_fade));
-            dismissHandler.sendEmptyMessageDelayed(0, 400);
-        }
+        contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
+        contentView.setVisibility(View.GONE);
+        mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
+        mContentView.setVisibility(View.GONE);
+        dismissHandler.sendEmptyMessageDelayed(0, 400);
     }
 
 

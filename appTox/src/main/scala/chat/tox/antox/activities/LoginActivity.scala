@@ -103,7 +103,7 @@ class LoginActivity extends AppCompatActivity {
   def onClickCreateAccount(view: View) {
     val createAccount = new Intent(getApplicationContext, classOf[CreateAccountActivity])
     startActivityForResult(createAccount, 1)
-    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+    overridePendingTransition(android.R.anim.pic_fade_in, android.R.anim.pic_fade_out)
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {

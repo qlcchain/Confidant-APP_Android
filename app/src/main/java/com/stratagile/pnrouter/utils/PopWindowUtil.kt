@@ -196,7 +196,7 @@ object PopWindowUtil {
     fun showFileUploadPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
         contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
