@@ -458,7 +458,7 @@ public class FileMangerUtil {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName,2));
+            EventBus.getDefault().post(new FileStatus(fileMiName,toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
 
             if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
