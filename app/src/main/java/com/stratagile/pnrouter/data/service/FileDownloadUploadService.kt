@@ -9,6 +9,7 @@ import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage
+import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.utils.FileMangerUtil
 import events.*
 import org.greenrobot.eventbus.EventBus
@@ -101,5 +102,13 @@ class FileDownloadUploadService : Service() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxReceiveFileProgressEvent(toxReceiveFileProgressEvent: ToxReceiveFileProgressEvent) {
         FileMangerUtil.onToxReceiveFileProgressEvent(toxReceiveFileProgressEvent.fileNumber,toxReceiveFileProgressEvent.key,toxReceiveFileProgressEvent.position,toxReceiveFileProgressEvent.filesize)
+    }
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun stopAllWebSocket(logOutEvent: LogOutEvent)
+    {
+        webSocketList.forEach {
+            it.disconnect(true)
+            webSocketList.remove(it)
+        }
     }
 }

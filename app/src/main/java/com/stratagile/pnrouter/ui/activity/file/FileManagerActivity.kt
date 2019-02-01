@@ -263,7 +263,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                                     var file = File(filePath)
-                                    if (file.exists()) {
+                                    if (false) {
                                         runOnUiThread {
                                             toast(R.string.no_download_is_required)
                                         }

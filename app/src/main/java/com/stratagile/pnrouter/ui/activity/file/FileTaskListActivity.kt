@@ -54,7 +54,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             closeProgressDialog()
         }
         when (jUploadFileRsp.params.retCode) {
-            0 -> {
+            0,1 -> {
                 runOnUiThread {
                     toast(getString(R.string.Start_uploading))
                 }
@@ -77,35 +77,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         }
                     }
                 }
-            }
-            1 -> {
-                runOnUiThread {
-                    SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
-                            .setContentText(getString(R.string.Documents_already_exist))
-                            .setConfirmClickListener {
-                                var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
-                                var file = File(localMedia!!.path)
-                                if (file.exists()) {
-
-                                    when (localMedia!!.pictureType) {
-                                        "image/jpeg" -> {
-                                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
-                                        }
-                                        "image/png" -> {
-                                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
-                                        }
-                                        "video/mp4" -> {
-                                            FileMangerUtil.sendVideoFile(localMedia!!.path)
-                                        }
-                                        else -> {
-                                            FileMangerUtil.sendOtherFile(localMedia!!.path)
-                                        }
-                                    }
-                                }
-                            }
-                            .show()
-                }
-
             }
             2 -> {
                 runOnUiThread {

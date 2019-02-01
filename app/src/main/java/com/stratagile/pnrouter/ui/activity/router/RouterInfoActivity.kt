@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JLogOutRsp
 import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterInfoComponent
@@ -171,6 +172,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     ConstantValue.loginOut = true
                     ConstantValue.isHeart = false
                     isUserExit = true
+                    EventBus.getDefault().post(LogOutEvent())
                     onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)

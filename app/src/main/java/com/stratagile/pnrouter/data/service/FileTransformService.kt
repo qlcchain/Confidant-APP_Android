@@ -7,6 +7,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
 import com.stratagile.pnrouter.entity.events.FileTransformEntity
+import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.entity.events.TransformFileMessage
 import com.stratagile.pnrouter.entity.events.TransformStrMessage
 import org.greenrobot.eventbus.EventBus
@@ -70,5 +71,12 @@ class FileTransformService : Service() {
             }
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun stopAllWebSocket(logOutEvent: LogOutEvent)
+    {
+        webSocketList.forEach {
+            it.disconnect(true)
+            webSocketList.remove(it)
+        }
+    }
 }
