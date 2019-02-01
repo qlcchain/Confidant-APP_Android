@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by Administrator on 2016/6/30.
@@ -32,10 +33,12 @@ public class FileMangerDownloadUtils {
             task.cancel(true);
         }
     }
-    public static void init()
-    {
+    public static void init() {
         downFilePathMap = new HashMap<>();
-
+        for (String key : taskListMap.keySet()) {
+            FileMangerDownLoaderTask FileMangerDownLoaderTask = taskListMap.get(key);
+            FileMangerDownLoaderTask.cancel(true);
+        }
     }
 
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
