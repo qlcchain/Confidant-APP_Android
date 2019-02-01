@@ -462,8 +462,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var data: Bundle = msg.data;
                     var msgId = data.getInt("msgID")
                     var fileData = receiveFileDataMap.get(msgId.toString())
-                    LocalFileUtils.deleteLocalAssets(fileData!!.fileKey)
-                    EventBus.getDefault().post(AllFileStatus())
+                    if(fileData != null)
+                    {
+                        LocalFileUtils.deleteLocalAssets(fileData!!.fileKey)
+                        EventBus.getDefault().post(AllFileStatus())
+                    }
+
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_failed)

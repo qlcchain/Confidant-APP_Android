@@ -627,9 +627,12 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                     var data: Bundle = msg.data;
                     var msgId = data.getInt("msgID")
                     var fileData = receiveFileDataMap.get(msgId.toString())
-                    var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
-                    LocalFileUtils.deleteLocalAssets(fileMiName)
-                    EventBus.getDefault().post(AllFileStatus())
+                    if(fileData != null)
+                    {
+                        var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
+                        LocalFileUtils.deleteLocalAssets(fileMiName)
+                        EventBus.getDefault().post(AllFileStatus())
+                    }
                     runOnUiThread {
                         closeProgressDialog()
                         toast(R.string.Download_failed)

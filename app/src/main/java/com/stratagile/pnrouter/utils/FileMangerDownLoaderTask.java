@@ -175,6 +175,9 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			if(mUrl == null)
 			{
 				Message msg = new Message();
+				Bundle data = new Bundle();
+				data.putInt("msgID",msgID);
+				msg.setData(data);
 				msg.what = 0x404;
 				handler.sendMessage(msg);
 				return 0L;
