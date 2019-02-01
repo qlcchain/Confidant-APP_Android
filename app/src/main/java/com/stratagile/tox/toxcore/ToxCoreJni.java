@@ -204,9 +204,10 @@ public class ToxCoreJni {
         EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
     }
 
-    public void starSendFile(int fileNumber, String routerId) {
+    public void starSendFile(int fileNumber, String routerId, int index) {
         KLog.i("开始发送的文件序号：" + fileNumber);
         KLog.i("路由器的Id是：" + routerId);
+        KLog.i("pptox的index为：" + index);
         sendFileRouterMap.put(fileNumber+"",routerId);
     }
 
@@ -215,7 +216,7 @@ public class ToxCoreJni {
      * @param position
      * @param filesize
      */
-    public void sendFileRate(int fileNumber, int position, int filesize) {
+    public void sendFileRate(int fileNumber, int position, int filesize, int index) {
 //        KLog.i("fileNumber：" + fileNumber);
 //        KLog.i("发送了：" + position);
 //        KLog.i("总共：" + filesize);
@@ -241,16 +242,18 @@ public class ToxCoreJni {
      * @param position
      * @param filesize
      */
-    public void receivedFileRate(int position, int filesize, String routerId) {
+    public void receivedFileRate(int position, int filesize, String routerId, int fileNum) {
         KLog.i("接收了：" + position);
         KLog.i("总共：" + filesize);
         KLog.i("路由Id为：" + routerId);
+        KLog.i("fileNum为：" + fileNum);
         int fileNumber = Integer.valueOf(reveiveFileNumberMap.get(routerId));
         int average = filesize / progressBarMaxSeg;
         if(position == filesize)
         {
             int num = (int)(position / average) + 1;
             progressReceiveMap.put(filesize+"_"+num,null);
+            KLog.i("抛出EventBus:receivedFileFinish"+filesize+"_"+num);
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
         }else{
             int num = (int)(position / average) + 1;

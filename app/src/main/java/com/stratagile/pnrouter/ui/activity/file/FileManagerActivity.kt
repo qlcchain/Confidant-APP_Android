@@ -84,6 +84,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 recentFile.fileName = String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1)))
                 recentFile.fileType = 1
                 recentFile.friendName = ""
+                recentFile.userSn = ConstantValue.currentRouterSN
                 recentFile.opreateType = 2
                 recentFile.timeStamp = Calendar.getInstance().timeInMillis
                 AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
@@ -113,7 +114,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         runOnUiThread {
-            when (SpUtil.getInt(this, ConstantValue.currentArrangeType, 0)) {
+            when (SpUtil.getInt(this, ConstantValue.currentArrangeType, 1)) {
                 0 -> {
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileName }?.toMutableList())
                 }
@@ -253,6 +254,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     var recentFile = RecentFile()
                                     recentFile.fileName = String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1)))
                                     recentFile.fileType = 1
+                                    recentFile.userSn = ConstantValue.currentRouterSN
                                     recentFile.friendName = ""
                                     recentFile.opreateType = 1
                                     recentFile.timeStamp = Calendar.getInstance().timeInMillis
