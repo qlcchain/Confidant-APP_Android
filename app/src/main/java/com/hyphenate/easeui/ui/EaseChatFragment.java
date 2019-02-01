@@ -304,7 +304,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             if(file.exists())
                             {
                                 long fileSize = file.length();
-                                String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
                                 int fileId = (int)(System.currentTimeMillis()/1000);
                                  byte[] fileBufferMi = new byte[0];

@@ -626,12 +626,12 @@ public class FileUtil {
         }
         MessageDigest digest = null;
         FileInputStream in = null;
-        byte buffer[] = new byte[1024];
+        byte buffer[] = new byte[1024 * 1024 * 100];
         int len;
         try {
             digest = MessageDigest.getInstance("MD5");
             in = new FileInputStream(file);
-            while ((len = in.read(buffer, 0, 1024)) != -1) {
+            while ((len = in.read(buffer, 0, 1024 * 1024 * 100)) != -1) {
                 digest.update(buffer, 0, len);
             }
             in.close();
@@ -654,6 +654,7 @@ public class FileUtil {
         if (!file.isDirectory()) {
             return null;
         }
+        int leng = (int) file.length();
         Map<String, String> map = new HashMap<String, String>();
         String md5;
         File files[] = file.listFiles();
@@ -701,7 +702,7 @@ public class FileUtil {
             }
             bos = new ByteArrayOutputStream((int) file.length());
             in = new BufferedInputStream(new FileInputStream(file));
-            int buf_size = 1024;
+            int buf_size = (int) file.length();
             byte[] buffer = new byte[buf_size];
             int len = 0;
             while (-1 != (len = in.read(buffer, 0, buf_size))) {
@@ -1002,7 +1003,7 @@ public class FileUtil {
                 {
                     InputStream fosfrom = new FileInputStream(fromFile);
                     OutputStream fosto = new FileOutputStream(toFile);
-                    byte bt[] = new byte[1024];
+                    byte bt[] = new byte[1024 * 1024 * 10];
                     int c;
                     while ((c = fosfrom.read(bt)) > 0)
                     {

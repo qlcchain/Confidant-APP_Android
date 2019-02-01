@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.util.Log
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity
 import com.stratagile.pnrouter.entity.events.FileMangerTransformReceiverMessage
@@ -59,7 +60,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
     @Synchronized
     fun connect() {
         Log.w(TAG, "WSC connect()...")
-        KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
+        KLog.i("文件管理网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = wsUri
         if (client == null) {
@@ -67,7 +68,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
             } else {
                 filledUri = wsUri
             }
-            KLog.i("连接的地址为：${filledUri}")
+            KLog.i("文件管理连接的地址为：${filledUri}")
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()
@@ -99,7 +100,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 
     @Synchronized
     fun disconnect(isShutDown : Boolean) {
-        Log.w(TAG, "WSC disconnect()...")
+        Log.w(TAG, "文件管理WSC disconnect()...")
         this.isShutDown = isShutDown
         if (client != null) {
             client!!.close(1000, "OK")
@@ -130,8 +131,14 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
     }
 
     fun send(message : String?) : Boolean{
-        KLog.i("开始传输字符串。。")
-       KLog.i("send:"+message)
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("文件管理监测到登出。。")
+            disconnect(true)
+            return false
+        }
+        KLog.i("文件管理开始传输字符串。。")
+        KLog.i("send:"+message)
         if (client == null || !connected) {
             Log.i("websocket", "No connection!")
             return false
@@ -140,7 +147,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 //            throw IOException("Write failed!")
             return false
         } else {
-            KLog.i("发送成功")
+            KLog.i("文件管理发送成功")
             EventBus.getDefault().post(FileMangerTransformEntity(toId, 2))
             return true
         }
@@ -154,22 +161,28 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
             return false
         }
         var byteString = FileUtil.readFile(file)
-        KLog.i("开始传输文件。。"+byteString)
+        KLog.i("文件管理开始传输文件。。"+byteString)
         if (!client!!.send(byteString)) {
             return false
         } else {
-            KLog.i("发送成功")
+            KLog.i("文件管理发送成功")
             EventBus.getDefault().post(FileMangerTransformEntity(toId, 2))
             return true
         }
     }
 
     fun sendByteString(bytes : ByteArray) : Boolean {
-        KLog.i("开始传输文件。。"+ FileUtil.toByteString(bytes))
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("文件管理监测到登出。。")
+            disconnect(true)
+            return false
+        }
+        KLog.i("文件管理开始传输文件。。"+ FileUtil.toByteString(bytes))
         if (!client!!.send(FileUtil.toByteString(bytes))) {
             return false
         } else {
-            KLog.i("发送成功")
+            KLog.i("文件管理发送成功")
             EventBus.getDefault().post(FileMangerTransformEntity(toId, 2))
             return true
         }
@@ -200,12 +213,12 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
         return buffer
     }
 
-//    @Synchronized
+    //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         if (client != null) {
             KLog.i("onConnected()")
             KLog.i(client!!.request().url())
-            LogUtil.addLog("websocket连接成功：${client!!.request().url()}")
+            LogUtil.addLog("文件管理websocket连接成功：${client!!.request().url()}")
             attempts = 0
             connected = true
             retryTime = 0
@@ -217,13 +230,25 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("文件管理监测到登出。。")
+            disconnect(true)
+            return
+        }
         var text = payload.toString();
-        KLog.i("WSC onMessage()" + text);
+        KLog.i("文件管理WSC onMessage()" + text);
         EventBus.getDefault().post(FileMangerTransformReceiverMessage(toId, payload!!.toByteArray()))
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        KLog.i("websocketFilereceive " + text!!)
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("文件管理监测到登出。。")
+            disconnect(true)
+            return
+        }
+        KLog.i("文件管理websocketFilereceive " + text!!)
         EventBus.getDefault().post(FileMangerTransformEntity(toId, 3, text))
 //        LogUtil.addLog("接收信息：${text}")
 //        try {
@@ -245,7 +270,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        KLog.i("onClosed()...")
+        KLog.i("文件管理onClosed()...")
         this.connected = false
 
         listener?.onDisconnected()
@@ -260,7 +285,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 
     @Synchronized
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        KLog.i("onFailure()")
+        KLog.i("文件管理onFailure()")
         KLog.i(t)
 
         if (response != null && (response.code() == 401 || response.code() == 403)) {
@@ -274,7 +299,7 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
 
     @Synchronized
     override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
-        KLog.i("onClosing()!...")
+        KLog.i("文件管理onClosing()!...")
         webSocket!!.close(1000, "OK")
     }
 

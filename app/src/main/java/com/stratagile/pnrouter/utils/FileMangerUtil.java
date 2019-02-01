@@ -869,7 +869,11 @@ public class FileMangerUtil {
                     if(isHas)
                     {
 
-
+                       if(file.length() > 1024 * 1024 * 100)
+                        {
+                            EventBus.getDefault().post(new FileStatus(videoPath,2));
+                            return;
+                        }
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(videoFileName);
                         recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

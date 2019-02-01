@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.util.Log
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.FileTransformEntity
 import com.stratagile.pnrouter.entity.events.TransformReceiverFileMessage
@@ -130,6 +131,12 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     }
 
     fun send(message : String?) : Boolean{
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("聊天文件传输监测到登出。。")
+            disconnect(true)
+            return false
+        }
         KLog.i("开始传输字符串。。")
        KLog.i("send:"+message)
         if (client == null || !connected) {
@@ -165,6 +172,12 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     }
 
     fun sendByteString(bytes : ByteArray) : Boolean {
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("聊天文件传输监测到登出。。")
+            disconnect(true)
+            return false
+        }
         KLog.i("开始传输文件。。"+ FileUtil.toByteString(bytes))
         if (!client!!.send(FileUtil.toByteString(bytes))) {
             return false
@@ -217,12 +230,24 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("聊天文件传输监测到登出。。")
+            disconnect(true)
+            return
+        }
         var text = payload.toString();
         KLog.i("WSC onMessage()" + text);
         EventBus.getDefault().post(TransformReceiverFileMessage(toId, payload!!.toByteArray()))
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
+        if(ConstantValue.loginOut == true)
+        {
+            KLog.i("聊天文件传输监测到登出。。")
+            disconnect(true)
+            return
+        }
         KLog.i("websocketFilereceive " + text!!)
         EventBus.getDefault().post(FileTransformEntity(toId, 3, text))
 //        LogUtil.addLog("接收信息：${text}")

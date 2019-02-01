@@ -42,6 +42,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         tools:replace="android:allowBackup"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
         android:theme="@style/AppTheme.Base">
         <service
             android:name="chat.tox.antox.tox.ToxService"
