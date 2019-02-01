@@ -521,6 +521,7 @@
     <string name="You_need_to_download">You need to download it before you can view it,Start download</string>
     <string name="no_download_is_required">Files already exist, no download is required</string>
     <string name="Start_downloading">Start download</string>
+    <string name="Already_on_the_list">Already on the list</string>
 
 
 

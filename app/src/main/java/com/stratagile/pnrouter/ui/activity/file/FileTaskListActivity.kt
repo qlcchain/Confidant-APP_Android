@@ -79,7 +79,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 }
                             }else{
                                 runOnUiThread {
-                                    toast(getString(R.string.upload_failed))
+                                    toast(getString(R.string.Already_on_the_list))
                                 }
                             }
                         }
@@ -92,7 +92,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 }
                             }else{
                                 runOnUiThread {
-                                    toast(getString(R.string.upload_failed))
+                                    toast(getString(R.string.Already_on_the_list))
                                 }
                             }
                         }
@@ -105,7 +105,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 }
                             }else{
                                 runOnUiThread {
-                                    toast(getString(R.string.upload_failed))
+                                    toast(getString(R.string.Already_on_the_list))
                                 }
                             }
                         }
@@ -311,7 +311,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }else{
                             runOnUiThread {
-                                toast(getString(R.string.upload_failed))
+                                toast(getString(R.string.Already_on_the_list))
                             }
                         }
                     } else if (localMedia!!.path.indexOf("mp4") > -1) {
@@ -323,7 +323,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }else{
                             runOnUiThread {
-                                toast(getString(R.string.upload_failed))
+                                toast(getString(R.string.Already_on_the_list))
                             }
                         }
                     } else {
@@ -335,7 +335,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }else{
                             runOnUiThread {
-                                toast(getString(R.string.upload_failed))
+                                toast(getString(R.string.Already_on_the_list))
                             }
                         }
                     }
