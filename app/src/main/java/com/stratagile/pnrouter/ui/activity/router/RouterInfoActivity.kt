@@ -89,7 +89,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             llRouterManagement.visibility =  View.VISIBLE
             llDiskManagement.visibility = View.VISIBLE
         }else{
-            llRouterManagement.visibility =  View.VISIBLE
+            llRouterManagement.visibility =  View.GONE
             llDiskManagement.visibility =  View.VISIBLE
         }
     }
