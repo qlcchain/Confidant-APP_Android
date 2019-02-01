@@ -26,7 +26,9 @@ import com.stratagile.pnrouter.ui.activity.router.contract.RouterInfoContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterInfoModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterInfoPresenter
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.LocalFileUtils
+import com.stratagile.pnrouter.utils.LocalRouterUtils
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -169,28 +171,25 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)
                         AppConfig.instance.messageReceiver!!.close()
-                    ConstantValue.isWebsocketConnected = false
+
                     ConstantValue.loginOut = true
                     ConstantValue.isHeart = false
                     isUserExit = true
                     resetUnCompleteFileRecode()
                     if (ConstantValue.isWebsocketConnected) {
-                        //EventBus.getDefault().post(LogOutEvent())
-
-                    }else{
-                        FileMangerUtil.init()
-                        FileMangerDownloadUtils.init()
                         ConstantValue.webSockeFileMangertList.forEach {
                             it.disconnect(true)
-                            ConstantValue.webSockeFileMangertList.remove(it)
+                            //ConstantValue.webSockeFileMangertList.remove(it)
                         }
                         ConstantValue.webSocketFileList.forEach {
                             it.disconnect(true)
-                            ConstantValue.webSocketFileList.remove(it)
+                            //ConstantValue.webSocketFileList.remove(it)
                         }
+                    }else{
                         val intentTox = Intent(this, KotlinToxService::class.java)
                         this.stopService(intentTox)
                     }
+                    ConstantValue.isWebsocketConnected = false
                     onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)
