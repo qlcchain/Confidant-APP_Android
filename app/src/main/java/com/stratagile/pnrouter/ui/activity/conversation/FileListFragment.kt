@@ -50,13 +50,13 @@ class FileListFragment : BaseFragment(), FileListContract.View {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun refreshList(recentFile: RecentFile) {
-        fileListAdapter?.setNewData(AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().apply { this.reverse() })
+        fileListAdapter?.setNewData(AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().sortedByDescending { it.timeStamp }.toMutableList())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
-        var fileList = AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().apply { this.reverse() }
+        var fileList = AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().sortedByDescending { it.timeStamp }.toMutableList()
         fileListAdapter = FileListAdapter(fileList)
         recyclerView.adapter = fileListAdapter
         fileListAdapter!!.setOnItemClickListener { adapter, view, position ->

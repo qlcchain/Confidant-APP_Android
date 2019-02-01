@@ -36,8 +36,9 @@ class KotlinToxService : Service() {
 
     override fun onDestroy() {
         ToxCoreJni.getInstance().toxKill()
+        ConstantValue.isToxConnected = false
+        ConstantValue.freindStatus = 0
         ToxCoreJni.getInstance().toxCallbackListener = null
-
         super.onDestroy()
     }
 }

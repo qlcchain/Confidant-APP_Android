@@ -230,7 +230,7 @@ object PopWindowUtil {
         var list = ArrayList<FileOpreateType>()
         list.add(FileOpreateType("forward_h", context.getString(R.string.send_to_friend)))
         list.add(FileOpreateType("download_h", context.getString(R.string.download)))
-        list.add(FileOpreateType("open", context.getString(R.string.other_application_open)))
+//        list.add(FileOpreateType("open", context.getString(R.string.other_application_open)))
         list.add(FileOpreateType("details", context.getString(R.string.detailed_information)))
         list.add(FileOpreateType("rename", context.getString(R.string.rename)))
         list.add(FileOpreateType("delete_h1", context.getString(R.string.delete)))

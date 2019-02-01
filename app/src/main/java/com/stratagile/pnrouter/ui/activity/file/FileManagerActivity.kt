@@ -81,15 +81,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
         when (jDelFileRsp.params.retCode) {
             0 -> {
-                var recentFile = RecentFile()
-                recentFile.fileName = String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1)))
-                recentFile.fileType = 1
-                recentFile.friendName = ""
-                recentFile.userSn = ConstantValue.currentRouterSN
-                recentFile.opreateType = 2
-                recentFile.timeStamp = Calendar.getInstance().timeInMillis
-                AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
-                EventBus.getDefault().post(recentFile)
+                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1)
                 runOnUiThread {
                     fileListChooseAdapter!!.data.remove(waitDeleteData!!)
                     fileListChooseAdapter!!.notifyDataSetChanged()
@@ -252,16 +244,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 1 -> {
-                                    var recentFile = RecentFile()
-                                    recentFile.fileName = String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1)))
-                                    recentFile.fileType = 1
-                                    recentFile.userSn = ConstantValue.currentRouterSN
-                                    recentFile.friendName = ""
-                                    recentFile.opreateType = 1
-                                    recentFile.timeStamp = Calendar.getInstance().timeInMillis
-                                    AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.insert(recentFile)
-                                    EventBus.getDefault().post(recentFile)
-
+                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1)
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
@@ -316,54 +299,54 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     }
 
                                 }
+//                                2 -> {
+//                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+//                                    var fileOrginName = String(Base58.decode(fileMiName))
+//                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
+//                                    var file = File(filePath)
+//                                    if (!file.exists()) {
+//                                        runOnUiThread {
+//                                            toast(R.string.You_need_to_download)
+//                                        }
+//                                        wantOpen = true
+//                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+//                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+//                                        if (ConstantValue.isWebsocketConnected) {
+//                                            receiveFileDataMap.put(data.msgId.toString(), data)
+//                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
+//                                        } else {
+//                                            receiveToxFileDataMap.put(fileOrginName,data)
+//                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
+//                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey, data.fileFrom)
+//                                            val myRouter = MyFile()
+//                                            myRouter.type = 0
+//                                            myRouter.userSn = ConstantValue.currentRouterSN
+//                                            myRouter.upLoadFile = uploadFile
+//                                            LocalFileUtils.insertLocalAssets(myRouter)
+//
+//                                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+//                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
+//                                            var baseData = BaseData(msgData)
+//                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+//                                            if (ConstantValue.isAntox) {
+//                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+//                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+//                                            } else {
+//                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+//                                            }
+//                                        }
+//                                    } else {
+//                                        openFile(filePath)
+//
+//                                    }
+//                                }
                                 2 -> {
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-                                    var fileOrginName = String(Base58.decode(fileMiName))
-                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
-                                    var file = File(filePath)
-                                    if (!file.exists()) {
-                                        runOnUiThread {
-                                            toast(R.string.You_need_to_download)
-                                        }
-                                        wantOpen = true
-                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
-                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-                                        if (ConstantValue.isWebsocketConnected) {
-                                            receiveFileDataMap.put(data.msgId.toString(), data)
-                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
-                                        } else {
-                                            receiveToxFileDataMap.put(fileOrginName,data)
-                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey, data.fileFrom)
-                                            val myRouter = MyFile()
-                                            myRouter.type = 0
-                                            myRouter.userSn = ConstantValue.currentRouterSN
-                                            myRouter.upLoadFile = uploadFile
-                                            LocalFileUtils.insertLocalAssets(myRouter)
-
-                                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
-                                            var baseData = BaseData(msgData)
-                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                                            if (ConstantValue.isAntox) {
-                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                                            } else {
-                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                                            }
-                                        }
-                                    } else {
-                                        openFile(filePath)
-
-                                    }
-                                }
-                                3 -> {
                                     startActivity(Intent(this@FileManagerActivity, FileDetailInformationActivity::class.java).putExtra("file", data))
                                 }
-                                4 -> {
+                                3 -> {
 
                                 }
-                                5 -> {
+                                4 -> {
                                     showProgressDialog("wait…")
                                     waitDeleteData = data
                                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
