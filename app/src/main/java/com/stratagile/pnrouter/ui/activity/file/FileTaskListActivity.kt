@@ -55,27 +55,62 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         }
         when (jUploadFileRsp.params.retCode) {
             0,1 -> {
-                runOnUiThread {
-                    toast(getString(R.string.Start_uploading))
-                }
+
                 var fileName = localMedia!!.path.substring(localMedia!!.path.lastIndexOf("/") + 1)
                 var file = File(localMedia!!.path)
                 if (file.exists()) {
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg" -> {
-                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                           var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                            if(result  == 1)
+                            {
+                                runOnUiThread {
+                                    toast(getString(R.string.Start_uploading))
+                                }
+                            }
                         }
                         "image/png" -> {
-                            FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                            if(result  == 1)
+                            {
+                                runOnUiThread {
+                                    toast(getString(R.string.Start_uploading))
+                                }
+                            }else{
+                                runOnUiThread {
+                                    toast(getString(R.string.upload_failed))
+                                }
+                            }
                         }
                         "video/mp4" -> {
-                            FileMangerUtil.sendVideoFile(localMedia!!.path)
+                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path)
+                            if(result  == 1)
+                            {
+                                runOnUiThread {
+                                    toast(getString(R.string.Start_uploading))
+                                }
+                            }else{
+                                runOnUiThread {
+                                    toast(getString(R.string.upload_failed))
+                                }
+                            }
                         }
                         else -> {
-                            FileMangerUtil.sendOtherFile(localMedia!!.path)
+                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path)
+                            if(result  == 1)
+                            {
+                                runOnUiThread {
+                                    toast(getString(R.string.Start_uploading))
+                                }
+                            }else{
+                                runOnUiThread {
+                                    toast(getString(R.string.upload_failed))
+                                }
+                            }
                         }
                     }
+
                 }
             }
             2 -> {
@@ -268,11 +303,41 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             {
                 if (file.exists()) {
                     if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                        FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                        if(result  == 1)
+                        {
+                            runOnUiThread {
+                                toast(getString(R.string.Start_uploading))
+                            }
+                        }else{
+                            runOnUiThread {
+                                toast(getString(R.string.upload_failed))
+                            }
+                        }
                     } else if (localMedia!!.path.indexOf("mp4") > -1) {
-                        FileMangerUtil.sendVideoFile(localMedia!!.path)
+                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path)
+                        if(result  == 1)
+                        {
+                            runOnUiThread {
+                                toast(getString(R.string.Start_uploading))
+                            }
+                        }else{
+                            runOnUiThread {
+                                toast(getString(R.string.upload_failed))
+                            }
+                        }
                     } else {
-                        FileMangerUtil.sendOtherFile(localMedia!!.path)
+                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path)
+                        if(result  == 1)
+                        {
+                            runOnUiThread {
+                                toast(getString(R.string.Start_uploading))
+                            }
+                        }else{
+                            runOnUiThread {
+                                toast(getString(R.string.upload_failed))
+                            }
+                        }
                     }
                 }
             }else{

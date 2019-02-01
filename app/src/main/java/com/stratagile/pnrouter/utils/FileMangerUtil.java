@@ -697,10 +697,10 @@ public class FileMangerUtil {
 
     }
 
-    public static void sendImageFile(String imagePath,boolean isCompress) {
+    public static int sendImageFile(String imagePath,boolean isCompress) {
         if(sendFilePathMap.containsValue(imagePath))
         {
-            return;
+            return 0;
         }
         new Thread(new Runnable(){
             public void run(){
@@ -852,12 +852,12 @@ public class FileMangerUtil {
             }
 
         }).start();
-
+        return 1;
     }
-    public static void sendVideoFile(String videoPath) {
+    public static int sendVideoFile(String videoPath) {
         if(sendFilePathMap.containsValue(videoPath))
         {
-            return;
+            return 0;
         }
         new Thread(new Runnable(){
             public void run() {
@@ -1012,14 +1012,13 @@ public class FileMangerUtil {
             }
 
         }).start();
-
-
+        return 1;
     }
 
-    public static void sendOtherFile(String filePath) {
+    public static int sendOtherFile(String filePath) {
         if(sendFilePathMap.containsValue(filePath))
         {
-            return;
+            return 0;
         }
         new Thread(new Runnable(){
             public void run(){
@@ -1176,6 +1175,7 @@ public class FileMangerUtil {
             }
 
         }).start();
+        return 1;
     }
 
 
