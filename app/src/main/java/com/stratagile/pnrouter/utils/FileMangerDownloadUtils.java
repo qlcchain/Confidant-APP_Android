@@ -31,6 +31,11 @@ public class FileMangerDownloadUtils {
             task.cancel(true);
         }
     }
+    public static void init()
+    {
+        downFilePathMap = new HashMap<>();
+    }
+
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
         ///data/data/com.johnny.testzipanddownload/files
         File destDir = new File(to);

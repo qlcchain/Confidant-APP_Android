@@ -403,6 +403,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
         } else if (fileStatus.result == 2) {
             toast(R.string.Files_100M)
+        }else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
         }else {
             if(fileStatus.complete)
             {

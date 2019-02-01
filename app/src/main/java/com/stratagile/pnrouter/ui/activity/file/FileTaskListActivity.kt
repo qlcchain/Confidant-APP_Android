@@ -239,6 +239,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             toast(R.string.File_does_not_exist)
         } else if (fileStatus.result == 2) {
             toast(R.string.Files_100M)
+        } else if (fileStatus.result == 3) {
+            toast(R.string.Files_0M)
         }else {
             kotlin.run {
                 KLog.i(fileStatus.fileKey)

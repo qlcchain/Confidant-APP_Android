@@ -666,6 +666,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     override fun initData() {
         FileMangerUtil.init()
+        FileMangerDownloadUtils.init()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
         }catch (e : Exception) {

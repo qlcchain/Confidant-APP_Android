@@ -703,6 +703,8 @@ public class FileUtil {
             bos = new ByteArrayOutputStream((int) file.length());
             in = new BufferedInputStream(new FileInputStream(file));
             int buf_size = (int) file.length();
+            if(buf_size == 0 )
+                buf_size = 1024;
             byte[] buffer = new byte[buf_size];
             int len = 0;
             while (-1 != (len = in.read(buffer, 0, buf_size))) {

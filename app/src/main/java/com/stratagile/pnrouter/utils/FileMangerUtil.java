@@ -158,6 +158,22 @@ public class FileMangerUtil {
 
     public static void  init()
     {
+        sendMsgLocalMap = new HashMap<>();
+        sendFilePathMap = new HashMap<>();
+        sendToxFileDataMap = new HashMap<>();
+        deleteFileMap = new HashMap<>();
+        receiveToxFileNameMap = new HashMap<>();
+        receiveToxFileSizeMap = new HashMap<>();
+        sendFileKeyByteMap = new HashMap<>();
+        sendFileFriendKeyByteMap = new HashMap<>();
+        sendFileMyKeyByteMap = new HashMap<>();
+        sendFileNameMap = new HashMap<>();
+        sendFileTotalSegment = new HashMap<>();
+        sendFileSize = new HashMap<>();
+        sendFileLastByteSizeMap = new HashMap<>();
+        sendFileLeftByteMap = new HashMap<>();
+        sendMsgIdMap = new HashMap<>();
+        receiveFileDataMap = new HashMap<>();
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         fromUserId = userId;
     }
@@ -712,6 +728,11 @@ public class FileMangerUtil {
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
                     if(isHas)
                     {
+                        if(file.length() == 0)
+                        {
+                            EventBus.getDefault().post(new FileStatus(imagePath,3));
+                            return;
+                        }
                         String files_dir = imagePath;
                         RecentFile recentFile = new RecentFile();
                         recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -872,6 +893,11 @@ public class FileMangerUtil {
                        if(file.length() > 1024 * 1024 * 100)
                         {
                             EventBus.getDefault().post(new FileStatus(videoPath,2));
+                            return;
+                        }
+                        if(file.length() == 0)
+                        {
+                            EventBus.getDefault().post(new FileStatus(videoPath,3));
                             return;
                         }
                         RecentFile recentFile = new RecentFile();
@@ -1035,7 +1061,11 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(filePath,2));
                             return;
                         }
-
+                        if(file.length() == 0)
+                        {
+                            EventBus.getDefault().post(new FileStatus(filePath,3));
+                            return;
+                        }
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(fileName);
                         recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

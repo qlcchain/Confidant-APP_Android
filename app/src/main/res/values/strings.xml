@@ -214,6 +214,7 @@
     <string name="cant_find_pictures">"Can't find pictures"</string>
     <string name="File_does_not_exist">File does not exist</string>
     <string name="Files_100M">Files should not be greater than 100M</string>
+    <string name="Files_0M">The file has no content</string>
     <string name="The_file_is_not_greater_than_10_m">The file is not greater than 10 m</string>
     <string name="Whether_to_empty_all_chats">Clear all messages?</string>
     <string name="Send_voice_need_sdcard_support">Send voice need sdcard support</string>
