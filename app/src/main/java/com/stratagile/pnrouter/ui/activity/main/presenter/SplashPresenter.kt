@@ -145,7 +145,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
             RxFileTool.deleteNodefile(savedNodeFile)
-
+            resetUnCompleteFileRecode()
             if(!ConstantValue.mRegId.equals(""))
             {
                 FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
@@ -337,6 +337,23 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 permissionState = 0
                 AppConfig.instance.toast(R.string.permission_denied)
                 mView.exitApp()
+            }
+        }
+    }
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
             }
         }
     }

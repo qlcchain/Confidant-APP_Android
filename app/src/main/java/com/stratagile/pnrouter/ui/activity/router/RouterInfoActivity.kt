@@ -30,6 +30,7 @@ import com.stratagile.pnrouter.utils.LocalFileUtils
 import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_router_info.*
@@ -175,7 +176,12 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     ConstantValue.isHeart = false
                     isUserExit = true
                     resetUnCompleteFileRecode()
-                    EventBus.getDefault().post(LogOutEvent())
+                    if (ConstantValue.isWebsocketConnected) {
+                        EventBus.getDefault().post(LogOutEvent())
+                    }else{
+                        val intentTox = Intent(this, KotlinToxService::class.java)
+                        this.stopService(intentTox)
+                    }
                     onLogOutSuccess()
                     /*ConstantValue.isHasWebsocketInit = true
                     if(AppConfig.instance.messageReceiver != null)

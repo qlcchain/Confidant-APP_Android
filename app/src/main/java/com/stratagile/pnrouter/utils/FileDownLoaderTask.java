@@ -221,6 +221,10 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		int count =0,n=0;
 		try {
 			while((n=in.read(buffer, 0, 1024*1024*10))!=-1){
+				if(ConstantValue.INSTANCE.getLoginOut())
+				{
+					return 0;
+				}
 				out.write(buffer, 0, n);
 				count+=n;
 				long progress = count * 100 / length;

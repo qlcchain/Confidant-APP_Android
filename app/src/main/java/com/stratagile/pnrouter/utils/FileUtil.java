@@ -1185,6 +1185,40 @@ public class FileUtil {
 
     }
     /**
+     * 拷贝下载的临时文件到file文件
+     * @param fromFile
+     * @param toFile
+     * @return
+     */
+    public static int copyTempFiletoFile(String fromFile, String toFile)
+    {
+        File from = new File(fromFile);
+        if(from.exists())
+        {
+            try
+            {
+                InputStream fosfrom = new FileInputStream(fromFile);
+                OutputStream fosto = new FileOutputStream(toFile);
+                byte bt[] = new byte[1024];
+                int c;
+                while ((c = fosfrom.read(bt)) > 0)
+                {
+                    fosto.write(bt, 0, c);
+                }
+                fosfrom.close();
+                fosto.close();
+
+            } catch (Exception ex)
+            {
+                return 0;
+            }
+            return 1;
+        }else{
+            return 0;
+        }
+
+    }
+    /**
      * 得到amr的时长
      *
      * @param file

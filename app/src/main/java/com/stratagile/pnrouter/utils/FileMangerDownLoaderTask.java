@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.MyFile;
@@ -53,6 +54,9 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
 	private int progressBarMaxSeg = 25;
 	private int fileFrom = 0;
+	private String outPath = "";
+	private String files_Temp_dir = "";
+	private String FileNameOld;
 
 	/**
 	 *
@@ -67,7 +71,9 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		keyStr = key;
 		fileUlr = url;
 		fileFrom = FileFrom;
+		outPath = out;
 		downFilePathTaskMap = downFilePathMap;
+		files_Temp_dir = PathUtils.getInstance().getTempPath().toString() + "/";
 		if(context!=null){
 			mContext = context;
 			handler = message;
@@ -75,9 +81,9 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		try {
 			mUrl = new URL(url);
 			String fileName = new File(mUrl.getFile()).getName();
-			String FileNameOld = new String(Base58.decode(fileName));
-			mFile = new File(out, FileNameOld);
-			KLog.d(TAG+":out="+out+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
+			FileNameOld = new String(Base58.decode(fileName));
+			mFile = new File(files_Temp_dir, FileNameOld);
+			KLog.d(TAG+":out="+files_Temp_dir+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,15 +136,22 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}
 				if(bytesCopiedFlag != 0)
 				{
-					String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr,fileFrom);
-					MyFile myRouter = new MyFile();
-					myRouter.setType(0);
-					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-					myRouter.setUpLoadFile(uploadFile);
-					LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-					EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
-					msg.what = 0x55;
+					String temp = files_Temp_dir +FileNameOld;
+					String out = outPath +FileNameOld;
+					int result = FileUtil.copyTempFiletoFile(temp,out);
+					if(result == 1)
+					{
+						DeleteUtils.deleteFile(temp);
+						String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
+						UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr,fileFrom);
+						MyFile myRouter = new MyFile();
+						myRouter.setType(0);
+						myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+						myRouter.setUpLoadFile(uploadFile);
+						LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+						EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
+						msg.what = 0x55;
+					}
 					downFilePathTaskMap.remove(msgID);
 				}
 				else
@@ -234,6 +247,10 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		int count =0,n=0;
 		try {
 			while((n=in.read(buffer, 0, 1024*1024*10))!=-1){
+				if(ConstantValue.INSTANCE.getLoginOut())
+				{
+					return 0;
+				}
 				out.write(buffer, 0, n);
 				count+=n;
 				long progress = count * 100 / length;

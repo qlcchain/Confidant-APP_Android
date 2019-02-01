@@ -666,7 +666,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     override fun initData() {
         FileMangerUtil.init()
-        resetUnCompleteFileRecode()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
         }catch (e : Exception) {
