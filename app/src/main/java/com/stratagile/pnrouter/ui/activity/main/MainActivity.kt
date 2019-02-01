@@ -1140,8 +1140,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             2 -> {
                 if(isCanShotNetCoonect)
                 {
-                    closeProgressDialog()
-                    showProgressDialog(getString(R.string.network_reconnecting))
+                    if(!ConstantValue.loginOut)
+                    {
+                        closeProgressDialog()
+                        showProgressDialog(getString(R.string.network_reconnecting))
+                    }
                     isCanShotNetCoonect = false
                 }
             }

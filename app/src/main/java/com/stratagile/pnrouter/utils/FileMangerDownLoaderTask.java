@@ -259,7 +259,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}
 				out.write(buffer, 0, n);
 				count+=n;
-				long progress = count * 100 / length;
+				long progress = (count * 100) / length;
 				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
 				int average = length / progressBarMaxSeg;
 				int num = (int)(count / average) + 1;
