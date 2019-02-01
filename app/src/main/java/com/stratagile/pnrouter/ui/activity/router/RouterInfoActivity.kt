@@ -177,7 +177,15 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     isUserExit = true
                     resetUnCompleteFileRecode()
                     if (ConstantValue.isWebsocketConnected) {
-                        EventBus.getDefault().post(LogOutEvent())
+                        //EventBus.getDefault().post(LogOutEvent())
+                        ConstantValue.webSockeFileMangertList.forEach {
+                            it.disconnect(true)
+                            ConstantValue.webSockeFileMangertList.remove(it)
+                        }
+                        ConstantValue.webSocketFileList.forEach {
+                            it.disconnect(true)
+                            ConstantValue.webSocketFileList.remove(it)
+                        }
                     }else{
                         val intentTox = Intent(this, KotlinToxService::class.java)
                         this.stopService(intentTox)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.entity.events.FileMangerTransformEntity
 import com.stratagile.pnrouter.entity.events.FileMangerTransformMessage
@@ -17,7 +18,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class FileDownloadUploadService : Service() {
-    lateinit var webSocketList : ArrayList<FileMangerWebSocketConnection>
     override fun onBind(p0: Intent?): IBinder? {
 
         return null
@@ -31,7 +31,7 @@ class FileDownloadUploadService : Service() {
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
         }
-        webSocketList = ArrayList()
+        ConstantValue.webSockeFileMangertList = ArrayList()
     }
 
     override fun onDestroy() {
@@ -46,12 +46,12 @@ class FileDownloadUploadService : Service() {
             val fileWebSocketConnection = FileMangerWebSocketConnection(fileMangerTransformEntity.httpUrl, AppConfig.instance.messageReceiver!!.getTrustStore(), fileMangerTransformEntity.userAgent,null)
             fileWebSocketConnection.connect()
             fileWebSocketConnection.toId = fileMangerTransformEntity.toId
-            webSocketList.add(fileWebSocketConnection)
+            ConstantValue.webSockeFileMangertList.add(fileWebSocketConnection)
         } else if (fileMangerTransformEntity.message == 4) {
-            webSocketList.forEach {
+            ConstantValue.webSockeFileMangertList.forEach {
                 if (it.toId.equals(fileMangerTransformEntity.toId)) {
                     it.disconnect(true)
-                    webSocketList.remove(it)
+                    ConstantValue.webSockeFileMangertList.remove(it)
                     return
                 }
             }
@@ -60,7 +60,7 @@ class FileDownloadUploadService : Service() {
     }
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun sendMessage(fileMangertransfromMessage: FileMangerTransformMessage) {
-        webSocketList.forEach {
+        ConstantValue.webSockeFileMangertList.forEach {
             if (it.toId.equals(fileMangertransfromMessage.toId)) {
                 it.sendByteString(fileMangertransfromMessage.message)
                 return
@@ -106,9 +106,6 @@ class FileDownloadUploadService : Service() {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun stopAllWebSocket(logOutEvent: LogOutEvent)
     {
-        webSocketList.forEach {
-            it.disconnect(true)
-            webSocketList.remove(it)
-        }
+
     }
 }
