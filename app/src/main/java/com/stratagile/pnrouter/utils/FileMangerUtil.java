@@ -714,6 +714,7 @@ public class FileMangerUtil {
                     {
                         String files_dir = imagePath;
                         RecentFile recentFile = new RecentFile();
+                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                         recentFile.setFileName(fileName);
                         recentFile.setFileType(1);
                         recentFile.setFriendName("");
@@ -871,6 +872,7 @@ public class FileMangerUtil {
 
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(videoFileName);
+                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                         recentFile.setFileType(4);
                         recentFile.setFriendName("");
                         recentFile.setOpreateType(0);
@@ -1033,6 +1035,7 @@ public class FileMangerUtil {
 
                         RecentFile recentFile = new RecentFile();
                         recentFile.setFileName(fileName);
+                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                         recentFile.setFileType(4);
                         recentFile.setFriendName("");
                         recentFile.setOpreateType(6);

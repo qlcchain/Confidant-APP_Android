@@ -10,7 +10,9 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RecentFile
+import com.stratagile.pnrouter.db.RecentFileDao
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
@@ -54,7 +56,7 @@ class FileListFragment : BaseFragment(), FileListContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
-        var fileList = AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.loadAll().apply { this.reverse() }
+        var fileList = AppConfig.instance.mDaoMaster!!.newSession().recentFileDao.queryBuilder().where(RecentFileDao.Properties.UserSn.eq(ConstantValue.currentRouterSN)).list().apply { this.reverse() }
         fileListAdapter = FileListAdapter(fileList)
         recyclerView.adapter = fileListAdapter
         fileListAdapter!!.setOnItemClickListener { adapter, view, position ->

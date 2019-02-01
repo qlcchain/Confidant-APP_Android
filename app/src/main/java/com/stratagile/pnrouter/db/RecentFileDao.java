@@ -24,10 +24,11 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property TimeStamp = new Property(1, long.class, "timeStamp", false, "TIME_STAMP");
-        public final static Property FileName = new Property(2, String.class, "fileName", false, "FILE_NAME");
-        public final static Property FileType = new Property(3, int.class, "fileType", false, "FILE_TYPE");
-        public final static Property OpreateType = new Property(4, int.class, "opreateType", false, "OPREATE_TYPE");
-        public final static Property FriendName = new Property(5, String.class, "friendName", false, "FRIEND_NAME");
+        public final static Property UserSn = new Property(2, String.class, "userSn", false, "USER_SN");
+        public final static Property FileName = new Property(3, String.class, "fileName", false, "FILE_NAME");
+        public final static Property FileType = new Property(4, int.class, "fileType", false, "FILE_TYPE");
+        public final static Property OpreateType = new Property(5, int.class, "opreateType", false, "OPREATE_TYPE");
+        public final static Property FriendName = new Property(6, String.class, "friendName", false, "FRIEND_NAME");
     }
 
 
@@ -45,10 +46,11 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"RECENT_FILE\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"TIME_STAMP\" INTEGER NOT NULL ," + // 1: timeStamp
-                "\"FILE_NAME\" TEXT," + // 2: fileName
-                "\"FILE_TYPE\" INTEGER NOT NULL ," + // 3: fileType
-                "\"OPREATE_TYPE\" INTEGER NOT NULL ," + // 4: opreateType
-                "\"FRIEND_NAME\" TEXT);"); // 5: friendName
+                "\"USER_SN\" TEXT," + // 2: userSn
+                "\"FILE_NAME\" TEXT," + // 3: fileName
+                "\"FILE_TYPE\" INTEGER NOT NULL ," + // 4: fileType
+                "\"OPREATE_TYPE\" INTEGER NOT NULL ," + // 5: opreateType
+                "\"FRIEND_NAME\" TEXT);"); // 6: friendName
     }
 
     /** Drops the underlying database table. */
@@ -67,16 +69,21 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
         }
         stmt.bindLong(2, entity.getTimeStamp());
  
+        String userSn = entity.getUserSn();
+        if (userSn != null) {
+            stmt.bindString(3, userSn);
+        }
+ 
         String fileName = entity.getFileName();
         if (fileName != null) {
-            stmt.bindString(3, fileName);
+            stmt.bindString(4, fileName);
         }
-        stmt.bindLong(4, entity.getFileType());
-        stmt.bindLong(5, entity.getOpreateType());
+        stmt.bindLong(5, entity.getFileType());
+        stmt.bindLong(6, entity.getOpreateType());
  
         String friendName = entity.getFriendName();
         if (friendName != null) {
-            stmt.bindString(6, friendName);
+            stmt.bindString(7, friendName);
         }
     }
 
@@ -90,16 +97,21 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
         }
         stmt.bindLong(2, entity.getTimeStamp());
  
+        String userSn = entity.getUserSn();
+        if (userSn != null) {
+            stmt.bindString(3, userSn);
+        }
+ 
         String fileName = entity.getFileName();
         if (fileName != null) {
-            stmt.bindString(3, fileName);
+            stmt.bindString(4, fileName);
         }
-        stmt.bindLong(4, entity.getFileType());
-        stmt.bindLong(5, entity.getOpreateType());
+        stmt.bindLong(5, entity.getFileType());
+        stmt.bindLong(6, entity.getOpreateType());
  
         String friendName = entity.getFriendName();
         if (friendName != null) {
-            stmt.bindString(6, friendName);
+            stmt.bindString(7, friendName);
         }
     }
 
@@ -113,10 +125,11 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
         RecentFile entity = new RecentFile( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.getLong(offset + 1), // timeStamp
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // fileName
-            cursor.getInt(offset + 3), // fileType
-            cursor.getInt(offset + 4), // opreateType
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // friendName
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // userSn
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // fileName
+            cursor.getInt(offset + 4), // fileType
+            cursor.getInt(offset + 5), // opreateType
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // friendName
         );
         return entity;
     }
@@ -125,10 +138,11 @@ public class RecentFileDao extends AbstractDao<RecentFile, Long> {
     public void readEntity(Cursor cursor, RecentFile entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setTimeStamp(cursor.getLong(offset + 1));
-        entity.setFileName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setFileType(cursor.getInt(offset + 3));
-        entity.setOpreateType(cursor.getInt(offset + 4));
-        entity.setFriendName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setUserSn(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setFileName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setFileType(cursor.getInt(offset + 4));
+        entity.setOpreateType(cursor.getInt(offset + 5));
+        entity.setFriendName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     @Override

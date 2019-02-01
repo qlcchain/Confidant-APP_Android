@@ -9,6 +9,7 @@ public class RecentFile {
     @Id(autoincrement = true)
     private Long id;
     private long timeStamp;
+    private String userSn;
     private String fileName;
     // 文件类型0--所有文件
     //1--图片
@@ -21,11 +22,12 @@ public class RecentFile {
     //操作类型，0 上传，1 下载，2 删除，3 分享
     private int opreateType;
     private String friendName;
-    @Generated(hash = 206090348)
-    public RecentFile(Long id, long timeStamp, String fileName, int fileType,
-            int opreateType, String friendName) {
+    @Generated(hash = 83904453)
+    public RecentFile(Long id, long timeStamp, String userSn, String fileName,
+            int fileType, int opreateType, String friendName) {
         this.id = id;
         this.timeStamp = timeStamp;
+        this.userSn = userSn;
         this.fileName = fileName;
         this.fileType = fileType;
         this.opreateType = opreateType;
@@ -69,5 +71,11 @@ public class RecentFile {
     }
     public void setFriendName(String friendName) {
         this.friendName = friendName;
+    }
+    public String getUserSn() {
+        return this.userSn;
+    }
+    public void setUserSn(String userSn) {
+        this.userSn = userSn;
     }
 }
