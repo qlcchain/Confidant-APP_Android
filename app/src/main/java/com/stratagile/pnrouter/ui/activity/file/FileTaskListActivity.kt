@@ -278,8 +278,23 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }else{
                 var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
                 var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-                if (ConstantValue.isWebsocketConnected) {
 
+                var fileMiName = localMedia!!.fileKey
+                var fileOrginName = String(Base58.decode(fileMiName))
+                var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
+                var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
+                var file = File(filePath)
+                if(file.exists())
+                {
+                    DeleteUtils.deleteFile(filePath)
+                }
+                var fileMi = File(fileMiPath)
+                if(fileMi.exists())
+                {
+                    DeleteUtils.deleteFile(fileMiPath)
+                }
+
+                if (ConstantValue.isWebsocketConnected) {
                     var msgId =  (System.currentTimeMillis() / 1000).toInt()
                     Thread(Runnable() {
                         run() {

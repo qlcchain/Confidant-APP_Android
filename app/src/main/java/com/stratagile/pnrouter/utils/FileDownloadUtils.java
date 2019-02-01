@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.events.FileStatus;
@@ -35,6 +36,7 @@ public class FileDownloadUtils {
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
+        KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to);
         FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key);
         task.execute();
     }

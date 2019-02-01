@@ -193,7 +193,8 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 			mOutputStream = new ProgressReportingOutputStream(mFile);
 			publishProgress(0,length);
-			bytesCopied =copy(conn.getInputStream(),mOutputStream,length);
+			InputStream inputStream = conn.getInputStream();
+			bytesCopied =copy(inputStream,mOutputStream,length);
 			if(bytesCopied!=length&&length!=-1){
 				KLog.e(TAG+":Download incomplete bytesCopied="+bytesCopied+", length"+length);
 			}else{
@@ -201,7 +202,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			mOutputStream.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			DeleteUtils.deleteFile(mFile.getPath());
 			e.printStackTrace();
 		}finally {
 			KLog.d(TAG+":nopath");
@@ -225,7 +226,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{
-			KLog.i("FileDownLoaderTask jiemi  error ");
+			KLog.i("FileMangerDownLoaderTask jiemi  error ");
 		}
 		byte[] buffer = new byte[1024*1024*10];
 		BufferedInputStream in = new BufferedInputStream(newInput, 1024*1024*10);

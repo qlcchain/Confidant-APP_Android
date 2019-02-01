@@ -349,7 +349,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                         message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
                                         break;
                                     case 5:
-                                        String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_file.all";
+                                        String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "file_downloading.*";
                                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                         break;
                                 }

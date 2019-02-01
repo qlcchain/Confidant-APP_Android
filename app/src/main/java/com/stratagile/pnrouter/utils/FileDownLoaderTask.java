@@ -180,7 +180,8 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 			mOutputStream = new ProgressReportingOutputStream(mFile);
 			publishProgress(0,length);
-			bytesCopied =copy(conn.getInputStream(),mOutputStream,length);
+			InputStream inputStream = conn.getInputStream();
+			bytesCopied =copy(inputStream,mOutputStream,length);
 			if(bytesCopied!=length&&length!=-1){
 				KLog.e(TAG+":Download incomplete bytesCopied="+bytesCopied+", length"+length);
 			}else{
@@ -188,7 +189,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			mOutputStream.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			DeleteUtils.deleteFile(mFile.getPath());
 			e.printStackTrace();
 		}finally {
 			KLog.d(TAG+":nopath");

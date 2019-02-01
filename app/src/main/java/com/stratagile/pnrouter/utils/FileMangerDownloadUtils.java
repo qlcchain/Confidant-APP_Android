@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.events.FileStatus;
@@ -38,6 +39,7 @@ public class FileMangerDownloadUtils {
         }
         if(!downFilePathMap.containsKey(msgId+""))
         {
+            KLog.i("FiledoDownLoadWork:"+path+"_TO::"+to);
             String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
             UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key,FileFrom);
             MyFile myRouter = new MyFile();

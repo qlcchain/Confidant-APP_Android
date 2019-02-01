@@ -62,7 +62,7 @@ public class EaseChatRowFile extends EaseChatRow{
         fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             File file = new File(filePath);
-            if (file.exists()) {
+            if (file.exists() && !file.getName().contains("file_downloading")) {
                 fileStateView.setText(R.string.Have_downloaded);
             } else {
                 fileStateView.setText(R.string.Did_not_download);

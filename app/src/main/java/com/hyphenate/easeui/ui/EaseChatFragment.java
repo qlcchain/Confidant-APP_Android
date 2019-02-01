@@ -1421,7 +1421,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                     break;
                 case 5:
-                    String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_file.all";
+                    String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "file_downloading.*";
                     String file_dir =  PathUtils.getInstance().getImagePath().toString()+"/" +Message.getFileName();
                     File fileFile = new File(file_dir);
                     if(fileFile.exists())
@@ -3621,8 +3621,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0x404:
-
-                    break;
+                    Bundle errdata = msg.getData();
+                    String errmsgId = errdata.getInt("msgID")+"";
+                    Message messageError = receiveFileDataMap.get(errmsgId);
+                   /* getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(),messageError.getFileName()+ " Download failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });*/
+                     break;
                 case 0x55:
                     if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
                     {
@@ -3661,7 +3669,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
                                     break;
                                 case 5:
-                                    files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                    files_dir = PathUtils.getInstance().getFilePath()+"/" +message.getFileName();
                                     messageData = EMMessage.createFileSendMessage(files_dir, toChatUserId);
                                     break;
                             }
