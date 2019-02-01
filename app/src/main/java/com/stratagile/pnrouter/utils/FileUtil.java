@@ -14,8 +14,11 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.db.RecentFile;
+import com.stratagile.pnrouter.db.RecentFileDao;
 
 import org.apache.http.util.EncodingUtils;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -37,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1479,5 +1483,23 @@ public class FileUtil {
 
         }
         return 0;
+    }
+
+    public static void recordRecentFile(String fileName, int opreateType, int fileType) {
+        RecentFile recentFile = AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().queryBuilder().where(RecentFileDao.Properties.FileName.eq(fileName), RecentFileDao.Properties.OpreateType.eq(opreateType)).unique();
+        if (recentFile != null) {
+            recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
+            AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().update(recentFile);
+        } else {
+            recentFile = new RecentFile();
+            recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+            recentFile.setFileName(fileName);
+            recentFile.setFileType(fileType);
+            recentFile.setFriendName("");
+            recentFile.setOpreateType(opreateType);
+            recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
+            AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
+        }
+        EventBus.getDefault().post(recentFile);
     }
 }

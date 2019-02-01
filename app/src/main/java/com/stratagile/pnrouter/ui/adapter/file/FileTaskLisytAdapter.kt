@@ -71,5 +71,24 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
+        if (fileName.contains("jpg")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("pdf")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.pdf))
+        } else if (fileName.contains("mp4")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.video))
+        } else if (fileName.contains("png")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
+        } else if (fileName.contains("txt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.txt))
+        } else if (fileName.contains("ppt")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.ppt))
+        } else if (fileName.contains("xls")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.xls))
+        } else if (fileName.contains("doc")) {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc))
+        } else {
+            helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.other))
+        }
     }
 }

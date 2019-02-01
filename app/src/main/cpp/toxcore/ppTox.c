@@ -27,7 +27,7 @@ typedef struct {
 static Friend_request pending_requests[256];
 static uint8_t num_requests = 0;
 
-#define NUM_FILE_SENDERS 100
+#define NUM_FILE_SENDERS 200
 typedef struct {
     uint64_t filesize;
     FILE *file;
@@ -75,6 +75,7 @@ bool isStop = false;
 
 JNIEXPORT void JNICALL
 Java_com_stratagile_tox_toxcore_ToxCoreJni_createTox(JNIEnv *env, jobject thiz, jstring dataPath) {
+    LOGD("启动tox");
     Env = env;
     (*Env)->GetJavaVM(Env, &g_jvm);
     g_obj = (*Env)->NewGlobalRef(Env, thiz);
@@ -688,9 +689,13 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendMessage(JNIEnv *env, jobject thiz
     char *message_p = Jstring2CStr(env, message);
     int friendNum = GetFriendNumInFriendlist(friendid_p);
     //Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
-    //                                 size_t length, TOX_ERR_FRIEND_SEND_MESSAGE *error
+    //
+    //                            size_t length, TOX_ERR_FRIEND_SEND_MESSAGE *error
     LOGD("%s", friendid_p);
     LOGD("要发送的消息：%s", message_p);
+    if (mTox == NULL) {
+        return -1;
+    }
     LOGD("%d", tox_self_get_friend_list_size(mTox));
 //    uint32_t *list;
 //    tox_self_get_friend_list(mTox, list);

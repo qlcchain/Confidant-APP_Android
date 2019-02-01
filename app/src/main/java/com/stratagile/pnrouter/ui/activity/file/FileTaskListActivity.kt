@@ -230,8 +230,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onAllFileStatusChange(allFileStatus: AllFileStatus) {
-
-
+        initUI()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFileStatusChange(fileStatus: FileStatus) {

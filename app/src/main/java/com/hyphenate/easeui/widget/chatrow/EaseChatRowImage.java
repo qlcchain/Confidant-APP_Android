@@ -126,7 +126,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
     private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
         // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
-
+        Bitmap bitmap1 = EaseImageCache.getInstance().get(localFullSizePath);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
             imageView.setImageBitmap(bitmap);
@@ -140,14 +140,26 @@ public class EaseChatRowImage extends EaseChatRowFile{
                     protected Bitmap doInBackground(Object... args) {
                         File file = new File(thumbernailPath);
                         if (file.exists()) {
-                            return EaseImageUtils.decodeScaleImage(thumbernailPath, 160, 160);
+                            if (bitmap1 != null) {
+                                return EaseImageUtils.decodeScaleImage(thumbernailPath, bitmap1.getWidth() / 3, bitmap1.getHeight() / 3);
+                            } else {
+                                return EaseImageUtils.decodeScaleImage(thumbernailPath, 320, 320);
+                            }
                         } else if (new File(imgBody.thumbnailLocalPath()).exists()) {
-                            return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), 160, 160);
+                            if (bitmap1 != null) {
+                                return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), bitmap1.getWidth() / 3, bitmap1.getHeight() / 3);
+                            } else {
+                                return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), 320, 320);
+                            }
                         }
                         else {
                             if (message.direct() == EMMessage.Direct.SEND) {
                                 if (localFullSizePath != null && new File(localFullSizePath).exists()) {
-                                    return EaseImageUtils.decodeScaleImage(localFullSizePath, 160, 160);
+                                    if (bitmap1 != null) {
+                                        return EaseImageUtils.decodeScaleImage(localFullSizePath, bitmap1.getWidth() / 3, bitmap1.getHeight() / 3);
+                                    } else {
+                                        return EaseImageUtils.decodeScaleImage(localFullSizePath, 320, 320);
+                                    }
                                 } else {
                                     return null;
                                 }

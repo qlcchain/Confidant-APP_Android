@@ -734,15 +734,7 @@ public class FileMangerUtil {
                             return;
                         }
                         String files_dir = imagePath;
-                        RecentFile recentFile = new RecentFile();
-                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                        recentFile.setFileName(fileName);
-                        recentFile.setFileType(1);
-                        recentFile.setFriendName("");
-                        recentFile.setOpreateType(0);
-                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
-                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
-                        EventBus.getDefault().post(recentFile);
+                        FileUtil.recordRecentFile(fileName, 0, 0);
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
@@ -900,15 +892,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(videoPath,3));
                             return;
                         }
-                        RecentFile recentFile = new RecentFile();
-                        recentFile.setFileName(videoFileName);
-                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                        recentFile.setFileType(4);
-                        recentFile.setFriendName("");
-                        recentFile.setOpreateType(0);
-                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
-                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
-                        EventBus.getDefault().post(recentFile);
+                        FileUtil.recordRecentFile(videoFileName, 0, 4);
 
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
@@ -1061,21 +1045,12 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(filePath,2));
                             return;
                         }
+                        FileUtil.recordRecentFile(fileName, 0, 4);
                         if(file.length() == 0)
                         {
                             EventBus.getDefault().post(new FileStatus(filePath,3));
                             return;
                         }
-                        RecentFile recentFile = new RecentFile();
-                        recentFile.setFileName(fileName);
-                        recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                        recentFile.setFileType(4);
-                        recentFile.setFriendName("");
-                        recentFile.setOpreateType(6);
-                        recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
-                        AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);
-                        EventBus.getDefault().post(recentFile);
-
                         String files_dir = filePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
