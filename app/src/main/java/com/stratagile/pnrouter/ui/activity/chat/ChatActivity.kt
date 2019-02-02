@@ -42,7 +42,6 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 
@@ -249,6 +248,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
+
         var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
@@ -262,8 +262,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
-
-        chatFragment?.delFreindMsg(delMsgPushRsp)
+        if (delMsgPushRsp.params.friendId.equals(toChatUserID)) {//正好在聊天窗口聊天
+            chatFragment?.delFreindMsg(delMsgPushRsp)
+        }
     }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
@@ -282,17 +283,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         } else {
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
         }
-        var msgData = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
+        var msgDataPushFileRsp = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
         var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
         var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,jPushFileMsgRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid))
             if(!msgId.equals(""))
             {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
+                }
             }
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgData,jPushFileMsgRsp.msgid)
+            var baseData = BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -300,12 +303,34 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
+            if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
+                var baseData2 = BaseData(2,readMsgReq)
+                var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
+                if(!msgId.equals(""))
+                {
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson2, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson2, ConstantValue.currentRouterId.substring(0, 64))
+                    }
+                }
+            }
 
-            var baseData2 = BaseData(2,readMsgReq)
-            var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
-            //var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-            if(!msgId.equals(""))
-            {
+        }
+        if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
+            var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
+            var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+            if (ConstantValue.isWebsocketConnected) {
+                receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
+                FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
+            }else{
+
+                var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
+                receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
+                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
+                var baseData = BaseData(msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
@@ -314,27 +339,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
         }
-
-        var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
-        var files_dir = PathUtils.getInstance().filePath.toString()+"/"
-        if (ConstantValue.isWebsocketConnected) {
-            receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-            FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
-        }else{
-
-            var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
-            receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
-            var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
-            var baseData = BaseData(msgData)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
-
     }
 
     override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
@@ -386,32 +390,35 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
-        if (pushMsgRsp.params.fromId.equals(toChatUserID)) {
-            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-            var msgId:String = pushMsgRsp?.params.msgId.toString()
-            var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
-            var sendData = BaseData(msgData,pushMsgRsp?.msgid)
-            if(ConstantValue.encryptionType.equals("1"))
+
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
+        var msgId:String = pushMsgRsp?.params.msgId.toString()
+        var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
+        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+        }
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            if(!msgId.equals(""))
             {
-                sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
-            }
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                if(!msgId.equals(""))
-                {
+                if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
                 }
+            }
 
-            }else if (ConstantValue.isToxConnected) {
-                var baseData = sendData
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+            if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
                 var baseData2 = BaseData(2,readMsgReq)
                 var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
                 //var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -425,6 +432,9 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     }
                 }
             }
+
+        }
+        if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
             if(ConstantValue.encryptionType.equals("1"))
             {
                 chatFragment?.receiveTxtMessageV3(pushMsgRsp)
