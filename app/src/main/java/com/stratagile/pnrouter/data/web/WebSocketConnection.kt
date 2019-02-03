@@ -220,11 +220,20 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private fun sendKeepAlive() {
         if (keepAliveSender != null && webSocketClient != null && !ConstantValue.loginOut) {
             //todo keepalive message
-            var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
+            var active = 0;
+            var isBack = SystemUtil.isBackground(AppConfig.instance)
+            if(isBack)
+            {
+                active = 1
+                LogUtil.addLog("APP切换到后台")
+            }else{
+                LogUtil.addLog("APP切换到前台")
+            }
+            var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!,active)
             LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
             var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送结果：${reslut}")
-            KLog.i("发送心跳消息")
+            KLog.i("发送心跳消息"+isBack)
             //KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }

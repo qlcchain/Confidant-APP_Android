@@ -22,6 +22,7 @@ import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.utils.AppActivityManager
+import com.stratagile.pnrouter.utils.AppFrontBackHelper
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
@@ -78,6 +79,8 @@ class AppConfig : MultiDexApplication() {
         initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
+
+
 //        MessageProvider.init()
     }
     fun getMessageReceiverInstance():  PNRouterServiceMessageReceiver{
@@ -198,7 +201,7 @@ class AppConfig : MultiDexApplication() {
                 // ignore
             }
 
-          override  fun log(content: String, t: Throwable) {
+            override  fun log(content: String, t: Throwable) {
                 //KLog.i(content, t)
             }
 

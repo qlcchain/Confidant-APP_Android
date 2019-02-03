@@ -10,10 +10,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
-import com.stratagile.pnrouter.utils.GsonUtil
-import com.stratagile.pnrouter.utils.LogUtil
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import events.ToxMessageEvent
 import events.ToxStatusEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -182,7 +179,16 @@ class ToxMessageReceiver(){
             //todo keepalive message
             if (ConstantValue.curreantNetworkType == "TOX" && ConstantValue.isToxConnected && !ConstantValue.currentRouterId.equals(""))
             {
-                var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!)
+                var active = 0;
+                var isBack = SystemUtil.isBackground(AppConfig.instance)
+                if(isBack)
+                {
+                    LogUtil.addLog("APP切换到后台")
+                    active = 1
+                }else{
+                    LogUtil.addLog("APP切换到前台")
+                }
+                var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!,active)
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
                 var baseDataJson = BaseData(heartBeatReq).baseDataToJson().replace("\\", "")
                  LogUtil.addLog("发送结果：${baseDataJson}")

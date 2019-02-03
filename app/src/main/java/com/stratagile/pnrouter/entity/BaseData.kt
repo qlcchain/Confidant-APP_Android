@@ -240,7 +240,7 @@ data class PullFriendReq(var UserId: String, var Action: String = "PullFriend")
 
 data class PullUserReq(var UserType: Int, var UserNum :Int ,var UserStartSN:String ,var Action: String = "PullUserList")
 
-data class HeartBeatReq(var UserId: String, var Action: String = "HeartBeat")
+data class HeartBeatReq(var UserId: String,var Active:Int, var Action: String = "HeartBeat")
 
 data class ShareBean(var avatar : String, var name : String)
 
