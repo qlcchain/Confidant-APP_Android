@@ -262,7 +262,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
-        if (delMsgPushRsp.params.friendId.equals(toChatUserID)) {//正好在聊天窗口聊天
+        if (delMsgPushRsp.params.userId.equals(toChatUserID)) {//正好在聊天窗口聊天
             chatFragment?.delFreindMsg(delMsgPushRsp)
         }
     }

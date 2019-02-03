@@ -25,7 +25,7 @@ import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMConversationListener;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -48,6 +48,7 @@ import com.stratagile.pnrouter.utils.SpUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     protected EditText query;
     protected ImageButton clearSearch;
     protected boolean hidden;
-    protected List<EMConversation> conversationList = new ArrayList<EMConversation>();
+    protected List<EMMessage> conversationList = new ArrayList<EMMessage>();
     protected EaseConversationList conversationListView;
     protected FrameLayout errorItemContainer;
 
@@ -99,7 +100,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
     @Override
     protected void setUpView() {
-        conversationList.addAll(loadConversationList());
+        conversationList.addAll(loadLocalConversationList());
         conversationListView.init(conversationList);
 
         if(listItemClickListener != null){
@@ -107,8 +108,8 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    EMConversation conversation = conversationListView.getItem(position);
-                    EMMessage lastMessage = conversation.getLastMessage();
+                    EMMessage conversation = conversationListView.getItem(position);
+                    EMMessage lastMessage = conversation;
                     UserEntity friendInfo = null;
                     List<UserEntity> localFriendList = null;
                     if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()) )
@@ -235,7 +236,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 case MSG_REFRESH:
                 {
                     conversationList.clear();
-                    conversationList.addAll(loadConversationList());
+                    conversationList.addAll(loadLocalConversationList());
                     if(conversationListView != null)
                         conversationListView.refresh();
                     break;
@@ -273,7 +274,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     public int removeFriend()
     {
         conversationList.clear();
-        List<EMConversation> list = loadConversationList();
+        List<EMMessage> list = loadLocalConversationList();
         conversationList.addAll(list);
         conversationListView.init(conversationList);
         refresh();
@@ -284,13 +285,13 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      *
      * @return
     +    */
-    protected List<EMConversation> loadConversationList(){
+    protected List<EMMessage> loadLocalConversationList(){
         // get all conversations
-        List<EMConversation> list = new ArrayList<EMConversation>();
+        List<EMMessage> list = new ArrayList<EMMessage>();
         try
         {
-            Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-            List<Pair<Long, EMConversation>> sortList = new ArrayList<Pair<Long, EMConversation>>();
+            Map<String, EMMessage> conversations = new HashMap<>();
+            List<Pair<Long, EMMessage>> sortList = new ArrayList<Pair<Long, EMMessage>>();
             /**
              * lastMsgTime will change if there is new message during sorting
              * so use synchronized to make sure timestamp of last message won't change.
@@ -357,33 +358,33 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                 {
                                     continue;
                                 }
-
                                 //message.setTo(Message.getTo());
                                 message.setUnread(false);
+                                switch (Message.getStatus())
+                                {
+                                    case 0:
+                                        message.setDelivered(true);
+                                        message.setAcked(false);
+                                        message.setUnread(true);
+                                        break;
+                                    case 1:
+                                        message.setDelivered(true);
+                                        message.setAcked(true);
+                                        message.setUnread(true);
+                                        break;
+                                    case 2:
+                                        message.setDelivered(true);
+                                        message.setAcked(true);
+                                        message.setUnread(false);
+                                        break;
+                                    default:
+                                        break;
+                                }
                                 if(Message.getSender() == 0)
                                 {
                                     message.setFrom(userId);
                                     message.setTo(toChatUserId);
-                                    switch (Message.getStatus())
-                                    {
-                                        case 0:
-                                            message.setDelivered(true);
-                                            message.setAcked(false);
-                                            message.setUnread(true);
-                                            break;
-                                        case 1:
-                                            message.setDelivered(true);
-                                            message.setAcked(true);
-                                            message.setUnread(true);
-                                            break;
-                                        case 2:
-                                            message.setDelivered(true);
-                                            message.setAcked(true);
-                                            message.setUnread(false);
-                                            break;
-                                        default:
-                                            break;
-                                    }
+
                                     message.setDirection(EMMessage.Direct.SEND );
                                 }else {
                                     message.setFrom(toChatUserId);
@@ -392,33 +393,19 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                 }
                                 message.setMsgTime(Message.getTimeStatmp());
                                 message.setMsgId( Message.getMsgId()+"");
-
+                                conversations.put(toChatUserId,message);
                             }
-                            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true);
-                            if(conversation != null)
-                            {
-                                conversation.insertMessage(message);
-                                KLog.i("insertMessage:"+"EaseConversationListFragment");
-                                int size = conversation.getAllMessages().size();
-                                int len = conversation.getAllMsgCount();
-                                EMMessage EMMessage = conversation.getLastMessage();
-                                if (conversation.getAllMessages().size() != 0) {
-                                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-                                }
 
-                            }
                         }
                     }
 
                 }
             }
-        /*synchronized (conversations) {
-            for (EMConversation conversation : conversations.values()) {
-                if (conversation.getAllMessages().size() != 0) {
-                    sortList.add(new Pair<Long, EMConversation>(conversation.getLastMessage().getMsgTime(), conversation));
-                }
+        synchronized (conversations) {
+            for (EMMessage conversation : conversations.values()) {
+                sortList.add(new Pair<Long, EMMessage>(conversation.getMsgTime(), conversation));
             }
-        }*/
+        }
             try {
                 // Internal is TimSort algorithm, has bug
                 sortConversationByLastChatTime(sortList);
@@ -426,7 +413,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 e.printStackTrace();
             }
 
-            for (Pair<Long, EMConversation> sortItem : sortList) {
+            for (Pair<Long, EMMessage> sortItem : sortList) {
                 list.add(sortItem.second);
             }
 
@@ -442,10 +429,10 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      *
      * @param conversationList
      */
-    private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
-        Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
+    private void sortConversationByLastChatTime(List<Pair<Long, EMMessage>> conversationList) {
+        Collections.sort(conversationList, new Comparator<Pair<Long, EMMessage>>() {
             @Override
-            public int compare(final Pair<Long, EMConversation> con1, final Pair<Long, EMConversation> con2) {
+            public int compare(final Pair<Long, EMMessage> con1, final Pair<Long, EMMessage> con2) {
 
                 if (con1.first.equals(con2.first)) {
                     return 0;

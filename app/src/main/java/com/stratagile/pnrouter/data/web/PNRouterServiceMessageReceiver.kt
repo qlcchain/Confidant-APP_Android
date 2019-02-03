@@ -174,7 +174,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "SendMsg" -> {
                     val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
                     chatCallBack?.sendMsgRsp(JSendMsgRsp)
-                    convsationCallBack?.sendMsgRsp(JSendMsgRsp)
+                    //convsationCallBack?.sendMsgRsp(JSendMsgRsp)
                 }
                 "QueryFriend" -> {
                     val jQueryFriendRsp = gson.fromJson(text, JQueryFriendRsp::class.java)
@@ -194,7 +194,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "PushMsg" -> {
                     val JPushMsgRsp = gson.fromJson(text, JPushMsgRsp::class.java)
                     chatCallBack?.pushMsgRsp(JPushMsgRsp)
-                    convsationCallBack?.pushMsgRsp(JPushMsgRsp)
+                    //convsationCallBack?.pushMsgRsp(JPushMsgRsp)
                     if (mainInfoBack == null) {
                         AppConfig.instance.tempPushMsgList.add(JPushMsgRsp)
                     }
@@ -204,19 +204,19 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "PullMsg" -> {
                     val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
                     KLog.i("insertMessage:PNRouterServiceMessageReceiver"+chatCallBack)
-                    KLog.i("insertMessage:PNRouterServiceMessageReceiver"+convsationCallBack)
+                    //KLog.i("insertMessage:PNRouterServiceMessageReceiver"+convsationCallBack)
                     chatCallBack?.pullMsgRsp(JPullMsgRsp)
-                    convsationCallBack?.pullMsgRsp(JPullMsgRsp)
+                    //convsationCallBack?.pullMsgRsp(JPullMsgRsp)
                 }
                 "DelMsg" -> {
                     val JDelMsgRsp = gson.fromJson(text, JDelMsgRsp::class.java)
                     chatCallBack?.delMsgRsp(JDelMsgRsp)
-                    convsationCallBack?.delMsgRsp(JDelMsgRsp)
+                    //convsationCallBack?.delMsgRsp(JDelMsgRsp)
                 }
                 "PushDelMsg" -> {
                     val JDelMsgPushRsp = gson.fromJson(text, JDelMsgPushRsp::class.java)
                     chatCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
-                    convsationCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
+                    //convsationCallBack?.pushDelMsgRsp(JDelMsgPushRsp)
                     mainInfoBack?.pushDelMsgRsp(JDelMsgPushRsp)
                 }
                 "PushFile" -> {
@@ -283,7 +283,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var mainInfoBack: MainInfoBack? = null
     var addFriendDealCallBack: AddFriendDealCallBack? = null
     var chatCallBack: ChatCallBack? = null
-    var convsationCallBack: CoversationCallBack? = null
+    //var convsationCallBack: CoversationCallBack? = null
 
     var pullFriendCallBack: PullFriendCallBack? = null
 

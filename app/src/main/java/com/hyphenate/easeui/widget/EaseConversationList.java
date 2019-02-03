@@ -6,10 +6,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.ListView;
-import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage;
 import com.stratagile.pnrouter.R;
-import com.hyphenate.easeui.adapter.EaseConversationAdapter;
+import com.hyphenate.easeui.adapter.EaseConversationNewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ public class EaseConversationList extends ListView{
     protected final int MSG_REFRESH_ADAPTER_DATA = 0;
     
     protected Context context;
-    protected EaseConversationAdapter adapter;
-    protected List<EMConversation> conversations = new ArrayList<EMConversation>();
-    protected List<EMConversation> passedListRef = null;
+    protected EaseConversationNewAdapter adapter;
+    protected List<EMMessage> conversations = new ArrayList<EMMessage>();
+    protected List<EMMessage> passedListRef = null;
     
     
     public EaseConversationList(Context context, AttributeSet attrs) {
@@ -57,16 +57,16 @@ public class EaseConversationList extends ListView{
         
     }
 
-    public void init(List<EMConversation> conversationList){
+    public void init(List<EMMessage> conversationList){
         this.init(conversationList, null);
     }
 
-    public void init(List<EMConversation> conversationList, EaseConversationListHelper helper){
+    public void init(List<EMMessage> conversationList, EaseConversationListHelper helper){
         conversations = conversationList;
         if(helper != null){
             this.conversationListHelper = helper;
         }
-        adapter = new EaseConversationAdapter(context, 0, conversationList);
+        adapter = new EaseConversationNewAdapter(context, 0, conversationList);
         adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
@@ -92,8 +92,8 @@ public class EaseConversationList extends ListView{
         }
     };
 
-    public EMConversation getItem(int position) {
-        return (EMConversation)adapter.getItem(position);
+    public EMMessage getItem(int position) {
+        return (EMMessage)adapter.getItem(position);
     }
     
     public void refresh() {
