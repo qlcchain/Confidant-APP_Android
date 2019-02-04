@@ -25,6 +25,7 @@ import android.widget.ListView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -98,6 +99,14 @@ public class EaseMessageAdapter extends BaseAdapter{
 			java.util.List<EMMessage> var = conversation.getAllMessages();
 			messages = var.toArray(new EMMessage[var.size()]);
 			conversation.markAllMessagesAsRead();
+			/*for(int i = 0 ; i < messages.length; i++)
+			{
+				EMMessage temp = messages[i];
+				long time = temp.getMsgTime();
+				String aaa = ((EMTextMessageBody) temp.getBody()).getMessage();
+
+				System.out.println("消息打印:"+aaa+"_"+time);
+			}*/
 			notifyDataSetChanged();
 		}
 		

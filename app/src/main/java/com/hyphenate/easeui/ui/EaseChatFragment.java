@@ -1217,7 +1217,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if(conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(FriendId, EaseCommonUtils.getConversationType(chatType), true);
         KLog.i("insertMessage:" + "EaseChatFragment"+"_refreshData1_"+conversation+"_"+toChatUserId);
-       /* if (conversation != null) {
+        if (conversation != null) {
             if(currentPage == 0)
             {
                 conversation.clearAllMessages();
@@ -1226,7 +1226,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if(isMessageListInited) {
                 easeChatMessageList.refresh();
             }
-        }*/
+        }
         int size = messageList.size();
         handler.postDelayed(new Runnable() {
             @Override
@@ -1804,8 +1804,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Override
     public void onResume() {
         super.onResume();
-        if(isMessageListInited)
-            easeChatMessageList.refresh();
+       /* if(isMessageListInited)
+            easeChatMessageList.refresh();*/
         EaseUI.getInstance().pushActivity(getActivity());
         // register the event listener when enter the foreground
         EMClient.getInstance().chatManager().addMessageListener(this);
