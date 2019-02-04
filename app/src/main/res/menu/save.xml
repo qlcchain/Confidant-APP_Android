@@ -3,5 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/save"
         app:showAsAction="always"
-        android:title="Save" />
+        android:icon="@mipmap/save"
+        android:title="" />
 </menu>
