@@ -23,6 +23,7 @@ import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.utils.AppActivityManager
 import com.stratagile.pnrouter.utils.AppFrontBackHelper
+import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
@@ -76,7 +77,12 @@ class AppConfig : MultiDexApplication() {
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
-        initMiPush()
+
+        ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
+        if(ConstantValue.mRegId.equals(""))
+        {
+            initMiPush()
+        }
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
 
