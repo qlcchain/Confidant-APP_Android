@@ -699,12 +699,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }catch (e : Exception) {
             e.printStackTrace()
         }
-        if(!ConstantValue.mRegId.equals(""))
-        {
-            FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
-        }else{
-            ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
-        }
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)
         Thread(Runnable() {
@@ -721,7 +715,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 map.put("userid",selfUserId!!)
                 var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
                 map.put("usersn",lastLoginUserSn)
-                LogUtil.addLog("小米推送注册regid:"+ConstantValue.mRegId,"MainActivity")
+                KLog.i("小米推送注册RegId= "+ConstantValue.mRegId)
+                LogUtil.addLog("小米推送注册RegId= "+ConstantValue.mRegId,"MainActivity")
                 OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
                     override fun onFailure( e :Exception) {
                         LogUtil.addLog("小米推送注册失败:","MainActivity")
@@ -1360,7 +1355,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            }
             CrashReport.closeBugly()
             CrashReport.closeCrashReport()
-            MiPushClient.unregisterPush(this)
+            //MiPushClient.unregisterPush(this)
             AppConfig.instance.stopAllService()
             //android进程完美退出方法。
 //            AppConfig.instance.mAppActivityManager.AppExit()

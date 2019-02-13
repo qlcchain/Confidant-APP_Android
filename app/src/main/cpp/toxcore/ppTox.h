@@ -7,8 +7,8 @@
 
 #include "tox.h"
 //#include "../../../../../../../Library/Android/sdk/ndk-bundle/sysroot/usr/include/jni.h"    //hzp
-//#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                              //zl
-#include "D:/Android-SDK_antox/ndk-bundle/sysroot/usr/include/jni.h"                         //zl  home
+#include "E:/Android-SDK/ndk-bundle/sysroot/usr/include/jni.h"                              //zl
+//#include "D:/Android-SDK_antox/ndk-bundle/sysroot/usr/include/jni.h"                         //zl  home
 
 #endif //TOXCORENEW_PPTOX_H
 

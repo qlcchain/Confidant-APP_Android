@@ -145,12 +145,6 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
             RxFileTool.deleteFilesInDir(tempFile)
             RxFileTool.deleteNodefile(savedNodeFile)
-            if(!ConstantValue.mRegId.equals(""))
-            {
-                FileUtil.saveUserData2Local(ConstantValue.mRegId,"mRegId")
-            }else{
-                ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
-            }
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             if(userId == null || userId.equals(""))
             {

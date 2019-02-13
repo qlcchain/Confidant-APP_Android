@@ -77,12 +77,7 @@ class AppConfig : MultiDexApplication() {
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
-
-        ConstantValue.mRegId  = FileUtil.getLocalUserData("mRegId")
-        if(ConstantValue.mRegId.equals(""))
-        {
-            initMiPush()
-        }
+        initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
 
