@@ -6,9 +6,11 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.util.Log
 import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
@@ -17,6 +19,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.HttpData
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
+import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.utils.*
 import okhttp3.*
 import okio.ByteString
@@ -57,6 +60,46 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var mLock: Lock? = null
     private var mCurrentStatus = WsStatus.DISCONNECTED     //websocket连接状态
     private val wsMainHandler = Handler(Looper.getMainLooper())
+    private var handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            when (msg.what) {
+                MyAuthCallback.MSG_UPD_DATA -> {
+                    var obj:String = msg.obj.toString()
+                    if(!obj.equals(""))
+                    {
+                        var objArray = obj.split("##")
+                        var index = 0;
+                        for(item in objArray)
+                        {
+                            if(!item.equals(""))
+                            {
+                                var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                var udpRouterArray = udpData.split(";")
+
+                                if(udpRouterArray.size > 1)
+                                {
+                                    println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                    //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                    if(!ConstantValue.currentRouterId.equals("") && ConstantValue.currentRouterId.equals(udpRouterArray[1]))
+                                    {
+                                        ConstantValue.currentRouterIp = udpRouterArray[0]
+                                        ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
+                                        ConstantValue.port= ":18006"
+                                        ConstantValue.filePort = ":18007"
+                                        break;
+                                    }
+                                }
+                            }
+                            index ++
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
     private val reconnectRunnable = Runnable {
         Log.i("websocket", "服务器重连接中...")
         buildConnect()
@@ -354,6 +397,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             Thread(Runnable() {
                 run() {
                     Thread.sleep(2000)
+                    getServer(ConstantValue.currentRouterId)
+                }
+            }).start()
+
+            /*Thread(Runnable() {
+                run() {
+                    Thread.sleep(2000)
                     KLog.i("开启线程2：")
                     if(WiFiUtil.isMobile())
                     {
@@ -418,7 +468,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         wsMainHandler.postDelayed(reconnectRunnable, delay)
                     }
                 }
-            }).start()
+            }).start()*/
 
 
             if(reconnectCount > 2)
@@ -732,6 +782,133 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     interface OnMessageReceiveListener {
         fun onMessage(message : BaseData, text: String?)
+    }
+    private fun getServer(routerId:String)
+    {
+        ConstantValue.currentRouterIp = ""
+        if(WiFiUtil.isWifiConnect())
+        {
+            var count =0;
+            KLog.i("测试计时器" + count)
+            Thread(Runnable() {
+                run() {
+
+                    while (true)
+                    {
+                        if(count >=3)
+                        {
+                            if(!ConstantValue.currentRouterIp.equals(""))
+                            {
+                                ConstantValue.port= ":18006"
+                                ConstantValue.filePort = ":18007"
+                                KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
+                                wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                break;
+                            }else{
+                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                                    override fun onFailure( e :Exception) {
+                                        KLog.i("Tox不管：")
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+
+                                    override fun  onResponse(json:String ) {
+
+                                        val gson = GsonUtil.getIntGson()
+                                        var httpData: HttpData? = null
+                                        try {
+                                            if (json != null) {
+                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                                {
+                                                    ConstantValue.curreantNetworkType = "WIFI"
+                                                    ConstantValue.currentRouterIp = httpData.serverHost
+                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
+                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                                    KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                                    filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                                    val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
+                                                    wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                                    /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                     AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+
+                                                    Thread.currentThread().interrupt() //方法调用终止线程
+                                                }else{
+                                                    KLog.i("Tox不管：")
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                }
+
+                                            }
+                                        } catch (e: Exception) {
+                                            KLog.i("Tox不管：")
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                        }
+                                    }
+                                })
+                                break
+                            }
+
+                        }
+                        count ++;
+                        MobileSocketClient.getInstance().init(handler,AppConfig.instance)
+                        var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
+                        MobileSocketClient.getInstance().destroy()
+                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
+                        MobileSocketClient.getInstance().receive()
+                        KLog.i("测试计时器" + count)
+                        Thread.sleep(1000)
+                    }
+
+                }
+            }).start()
+        }else{
+
+            Thread(Runnable() {
+                run() {
+
+                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
+                        override fun onFailure( e :Exception) {
+                            KLog.i("Tox不管：")
+                            Thread.currentThread().interrupt(); //方法调用终止线程
+                        }
+
+                        override fun  onResponse(json:String ) {
+                            val gson = GsonUtil.getIntGson()
+                            var httpData: HttpData? = null
+                            try {
+                                if (json != null) {
+                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                    {
+                                        ConstantValue.curreantNetworkType = "WIFI"
+                                        ConstantValue.currentRouterIp = httpData.serverHost
+                                        ConstantValue.port = ":"+httpData.serverPort.toString()
+                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                        KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                        filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                        val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
+                                        wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
+                                        Thread.currentThread().interrupt() //方法调用终止线程
+                                    }else{
+                                        KLog.i("Tox不管：")
+                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                    }
+
+                                }
+                            } catch (e: Exception) {
+                                KLog.i("Tox不管：")
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                            }
+                        }
+                    })
+                }
+            }).start()
+
+        }
     }
 
 }
