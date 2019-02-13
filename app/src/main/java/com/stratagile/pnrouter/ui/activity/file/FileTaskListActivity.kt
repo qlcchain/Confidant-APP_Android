@@ -257,7 +257,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         KLog.i("没有下载完")
                                     } else {
                                         listGoing.removeAt(index)
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
@@ -271,7 +271,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
                 for (myFie in localFilesList) {
                     if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.equals(myFie.upLoadFile.fileKey)) {
-                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                         KLog.i("新下载")
@@ -291,10 +291,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         for (myFie in localFilesList) {
 
             if (myFie.upLoadFile.isComplete == false) {
-                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain)))
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom)))
             } else {
 
-                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false)))
+                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom)))
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)

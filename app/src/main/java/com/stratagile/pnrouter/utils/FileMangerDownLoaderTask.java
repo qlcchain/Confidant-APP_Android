@@ -230,7 +230,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		return bytesCopied;
 	}
 	private int copy(InputStream input, OutputStream output,int length){
-		InputStream newInput = input;
+		/*InputStream newInput = input;
 		try {
 			String aesKey = "";
 			if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
@@ -246,9 +246,9 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		}catch (Exception e)
 		{
 			KLog.i("FileMangerDownLoaderTask jiemi  error ");
-		}
+		}*/
 		byte[] buffer = new byte[1024*1024*10];
-		BufferedInputStream in = new BufferedInputStream(newInput, 1024*1024*10);
+		BufferedInputStream in = new BufferedInputStream(input, 1024*1024*10);
 		BufferedOutputStream out  = new BufferedOutputStream(output, 1024*1024*10);
 		int count =0,n=0;
 		try {
