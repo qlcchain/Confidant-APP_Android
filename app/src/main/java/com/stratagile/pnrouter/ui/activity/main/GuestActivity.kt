@@ -397,6 +397,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                             if(ConstantValue.scanRouterId.equals(udpRouterArray[1]))
                                             {
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                                 ConstantValue.port = ":18006"
@@ -406,6 +407,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                         }else{
                                             ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterMac = RouterMacStr

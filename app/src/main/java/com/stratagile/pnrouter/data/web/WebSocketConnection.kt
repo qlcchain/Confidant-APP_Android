@@ -15,6 +15,7 @@ import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.data.web.java.WsStatus
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
+import com.stratagile.pnrouter.entity.HttpData
 import com.stratagile.pnrouter.entity.JHeartBeatRsp
 import com.stratagile.pnrouter.utils.*
 import okhttp3.*
@@ -349,7 +350,76 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             reconnectCount ++
             Log.i(TAG, "ReConnectThread_"+"reconnectCount:[$reconnectCount]")
             val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
-            wsMainHandler.postDelayed(reconnectRunnable, delay)
+            KLog.i("开启线程1：")
+            Thread(Runnable() {
+                run() {
+                    Thread.sleep(2000)
+                    KLog.i("开启线程2：")
+                    if(WiFiUtil.isMobile())
+                    {
+                        KLog.i("开启线程3：")
+                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.currentRouterId,  object : OkHttpUtils.OkCallback {
+                            override fun onFailure( e :Exception) {
+                                if(!ConstantValue.localCurrentRouterIp.equals(""))
+                                {
+                                    ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
+                                    ConstantValue.port= ":18006"
+                                    ConstantValue.filePort = ":18007"
+                                    KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                    filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                }
+                                wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                Thread.currentThread().interrupt(); //方法调用终止线程
+                            }
+                            override fun  onResponse(json:String ) {
+
+                                val gson = GsonUtil.getIntGson()
+                                var httpData: HttpData? = null
+                                try {
+                                    if (json != null) {
+                                        httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
+                                        {
+                                            ConstantValue.curreantNetworkType = "WIFI"
+                                            ConstantValue.currentRouterIp = httpData.serverHost
+                                            ConstantValue.port = ":"+httpData.serverPort.toString()
+                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
+                                            KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                            filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                            wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                        }
+
+                                    }
+                                } catch (e: Exception) {
+                                    if(!ConstantValue.localCurrentRouterIp.equals(""))
+                                    {
+                                        ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
+                                        ConstantValue.port= ":18006"
+                                        ConstantValue.filePort = ":18007"
+                                        KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                        filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+                                    }
+                                    wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                }
+                            }
+                        })
+                    }else{
+                        if(!ConstantValue.localCurrentRouterIp.equals(""))
+                        {
+                            ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
+                            ConstantValue.port= ":18006"
+                            ConstantValue.filePort = ":18007"
+                            KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                            filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
+
+                        }
+                        wsMainHandler.postDelayed(reconnectRunnable, delay)
+                    }
+                }
+            }).start()
+
 
             if(reconnectCount > 2)
             {

@@ -30,4 +30,14 @@ object WiFiUtil {
         var mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
         return mWifi.isConnected()
     }
+    //判断移动数据是否打开
+    fun isMobile() : Boolean {
+        var connManager = AppConfig.instance.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var networkInfo = connManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+            return true
+        }
+        return false
+    }
 }
+

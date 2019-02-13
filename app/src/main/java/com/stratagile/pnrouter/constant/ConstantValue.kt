@@ -63,6 +63,7 @@ object ConstantValue {
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn
         var currentRouterIp:String = ""//记录组播寻找到的路由器ip
+        var localCurrentRouterIp:String = ""//记录组播寻找到的路由器ip
         var currentRouterId:String = ""//记录组播寻找到的路由器id
         var currentRouterSN:String = ""//记录组播寻找到的路由器SN  02000018B827EBD089CB00005BFB70B9     02000006B827EBD4703000005BFDF5E8 华为
         var currentRouterMac:String = ""//二维码路由Mac

@@ -943,6 +943,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
                                             {
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                                 ConstantValue.port= ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
@@ -951,6 +952,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
                                             {
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                                 ConstantValue.port= ":18006"
                                                 ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterId = routerId
@@ -960,6 +962,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         }else{
                                             ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
+                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterMac = RouterMacStr
