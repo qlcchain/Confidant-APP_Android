@@ -1192,19 +1192,23 @@ public class FileUtil {
 
     }
     /**
-     * 拷贝下载的临时文件到file文件
+     * 拷贝下载的临时文件并解密到file文件
      * @param fromFile
      * @param toFile
      * @return
      */
-    public static int copyTempFiletoFile(String fromFile, String toFile)
+    public static int copyTempFiletoFileAndDecrypt(String fromFile, String toFile, String aesKey)
     {
         File from = new File(fromFile);
         if(from.exists())
         {
             try
             {
+                long size = from.length();
                 InputStream fosfrom = new FileInputStream(fromFile);
+                byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+                byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+                fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
                 byte bt[] = new byte[1024];
                 int c;

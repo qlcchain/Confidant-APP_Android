@@ -222,6 +222,10 @@ public class ToxCoreJni {
 //        KLog.i("总共：" + filesize);
         String key = sendFileRouterMap.get(fileNumber +"");
         int average = filesize / progressBarMaxSeg;
+        if(average <= 0)
+        {
+            average = 1;
+        }
         if(position == filesize)
         {
             int num = (int)(position / average) + 1;

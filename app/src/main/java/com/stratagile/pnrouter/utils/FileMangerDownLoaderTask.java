@@ -139,7 +139,14 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				{
 					String temp = files_Temp_dir +FileNameOld;
 					String out = outPath +FileNameOld;
-					int result = FileUtil.copyTempFiletoFile(temp,out);
+                    String aesKey = "";
+                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                    {
+                        aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+                    }else{
+                        aesKey = RxEncodeTool.getAESKey(keyStr);
+                    }
+					int result = FileUtil.copyTempFiletoFileAndDecrypt(temp,out,aesKey);
 					downFilePathTaskMap.remove(msgID+"");
 					if(result == 1)
 					{
@@ -262,6 +269,10 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				long progress = (count * 100) / length;
 				String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
 				int average = length / progressBarMaxSeg;
+				if(average <= 0)
+				{
+					average = 1;
+				}
 				int num = (int)(count / average) + 1;
 				if(progressReceiveMap.get(fileNiName+"_"+num) == null)
 				{

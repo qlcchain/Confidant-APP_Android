@@ -1166,7 +1166,7 @@ public class FileMangerUtil {
                             }
 
                         }
-                        FileUtil.copySdcardFile(filePath,files_dir);
+                        //FileUtil.copySdcardFile(filePath,files_dir);
 
                     }else{
                         LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
