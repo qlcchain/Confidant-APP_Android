@@ -15,12 +15,18 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
     }
 
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
+        var fileOriginalName = ""
         var fileName =  item.t.fileKey
         if(!item.t.isDownLoad)
         {
-            helper.setText(R.id.tvFileName,fileName)
+            fileOriginalName = fileName
+            if(fileName.indexOf(".") < 0)
+            {
+                fileOriginalName =  String(Base58.decode(fileName))
+            }
+            helper.setText(R.id.tvFileName,fileOriginalName)
         }else{
-            var fileOriginalName = fileName
+            fileOriginalName = fileName
             if(fileName.indexOf(".") < 0)
             {
                 fileOriginalName =  String(Base58.decode(fileName))
@@ -71,21 +77,21 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
-        if (fileName.contains("jpg")) {
+        if (fileOriginalName.contains("jpg")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
-        } else if (fileName.contains("pdf")) {
+        } else if (fileOriginalName.contains("pdf")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.pdf))
-        } else if (fileName.contains("mp4")) {
+        } else if (fileOriginalName.contains("mp4")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.video))
-        } else if (fileName.contains("png")) {
+        } else if (fileOriginalName.contains("png")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
-        } else if (fileName.contains("txt")) {
+        } else if (fileOriginalName.contains("txt")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.txt))
-        } else if (fileName.contains("ppt")) {
+        } else if (fileOriginalName.contains("ppt")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.ppt))
-        } else if (fileName.contains("xls")) {
+        } else if (fileOriginalName.contains("xls")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.xls))
-        } else if (fileName.contains("doc")) {
+        } else if (fileOriginalName.contains("doc")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc))
         } else {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.other))
