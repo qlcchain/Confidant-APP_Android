@@ -14,23 +14,31 @@
             android:layout_marginTop="@dimen/x56"
             android:layout_height="@dimen/x259" />
         <TextView
+            android:id="@+id/storage"
             android:layout_width="wrap_content"
             android:layout_marginTop="@dimen/x8"
             android:layout_gravity="center_horizontal"
             android:text="storage: 2555G"
             android:layout_height="wrap_content" />
         <TextView
+            android:id="@+id/UsedAndTotal"
             android:layout_width="wrap_content"
             android:text="Used Sapce：886.2 G / 2055 G （43.1%）"
             android:layout_marginTop="@dimen/x36"
             android:layout_marginLeft="@dimen/x31"
             android:layout_height="wrap_content" />
+
         <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/progress_bar"
+            android:max="100"
+            android:indeterminate="false"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x31"
             android:layout_marginRight="@dimen/x31"
-            android:layout_marginTop="@dimen/x6"
-            android:layout_height="wrap_content" />
+            android:layout_marginTop="@dimen/x6"/>
         <LinearLayout
             android:id="@+id/llRouterAlias"
             android:layout_width="match_parent"
@@ -70,14 +78,94 @@
             android:layout_marginTop="@dimen/x31"
             android:layout_height="@dimen/x230">
             <TextView
+                android:id="@+id/disk_a_name"
                 android:layout_width="@dimen/x69"
                 android:layout_centerVertical="true"
-                android:background="#A0CCF9"
+                android:background="@color/color_A0CCF9"
                 android:layout_marginLeft="@dimen/x2"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="A"
                 android:layout_height="@dimen/x226" />
+
+            <TextView
+                android:layout_width="@dimen/x240"
+                android:layout_marginLeft="@dimen/x40"
+                android:gravity="right"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text="Disk temperature：
+                 usage time：
+                 Device Model：
+                  Serial Number：
+                   User Capacity："
+                android:layout_height="@dimen/x200" />
+            <TextView
+                android:id="@+id/temperature_0"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/usagetime_0"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x60"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/DeviceModel_0"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x100"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/SerialNumber_0"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x144"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/UserCapacity_0"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x186"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/status_0"
+                android:layout_width="@dimen/x255"
+                android:src="@mipmap/disk_not_config"
+                android:layout_gravity="center_horizontal"
+                android:gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_height="@dimen/x149" />
         </RelativeLayout>
         <RelativeLayout
             android:id="@+id/disk_b"
@@ -88,17 +176,97 @@
             android:layout_marginTop="@dimen/x31"
             android:layout_height="@dimen/x230">
             <TextView
+                android:id="@+id/disk_b_name"
                 android:layout_width="@dimen/x69"
                 android:layout_centerVertical="true"
-                android:background="#BFBFBF"
+                android:background="@color/color_BFBFBF"
                 android:layout_marginLeft="@dimen/x2"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:text="B"
                 android:layout_height="@dimen/x226" />
+            <TextView
+                android:layout_width="@dimen/x240"
+                android:layout_marginLeft="@dimen/x40"
+                android:gravity="right"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text="Disk temperature：
+                 usage time：
+                 Device Model：
+                  Serial Number：
+                   User Capacity："
+                android:layout_height="@dimen/x200" />
+            <TextView
+                android:id="@+id/temperature_1"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/usagetime_1"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x60"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/DeviceModel_1"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x100"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/SerialNumber_1"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x144"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/UserCapacity_1"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x186"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+
+            <ImageView
+                android:id="@+id/status_1"
+                android:layout_width="@dimen/x255"
+                android:src="@mipmap/disk_not_config"
+                android:layout_gravity="center_horizontal"
+                android:gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_height="@dimen/x149" />
         </RelativeLayout>
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/disk_c"
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x31"
@@ -114,8 +282,78 @@
                 android:layout_marginLeft="@dimen/x2"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="B"
+                android:text="C"
                 android:layout_height="@dimen/x226" />
+
+            <TextView
+                android:layout_width="@dimen/x240"
+                android:layout_marginLeft="@dimen/x40"
+                android:gravity="right"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text="Disk temperature：
+                 usage time：
+                 Device Model：
+                  Serial Number：
+                   User Capacity："
+                android:layout_height="@dimen/x200" />
+            <TextView
+                android:id="@+id/temperature_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x15"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/usagetime_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x60"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/DeviceModel_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x100"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/SerialNumber_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x144"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+            <TextView
+                android:id="@+id/UserCapacity_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x186"
+                android:text=""
+                android:layout_height="@dimen/x25" />
         </RelativeLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

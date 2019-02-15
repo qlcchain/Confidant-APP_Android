@@ -92,6 +92,7 @@
     </style>
 
     <item name="CreateAccountButtonColor" type="color">#414141</item>
+    <item name="CreateAccountButtonColorA0CCF9" type="color">#A0CCF9</item>
     <item name="CreateAccountButtonTextColor" type="color">@color/white</item>
 
     <style name="CreateAccountButtonStyle" parent="Widget.AppCompat.Button.Colored">

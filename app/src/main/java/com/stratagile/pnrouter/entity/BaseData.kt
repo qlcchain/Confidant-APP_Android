@@ -376,3 +376,9 @@ data class DelFileReq(var UserId :String, var FileName : String,var Action : Str
  * (2)	响应（APP->Router）
  */
 data class SendToxUploadFileNotice(var UserId :String,  var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int,  var UserKey : String,  var Action : String = "UploadFile")
+
+/**
+ * 50.	设备磁盘统计信息
+ * (2)	响应（APP->Router）
+ */
+data class GetDiskTotalInfoReq(var Action : String = "GetDiskTotalInfo")

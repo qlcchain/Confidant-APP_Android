@@ -263,6 +263,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jDelFileRsp = gson.fromJson(text, JDelFileRsp::class.java)
                     fileManageBack?.deleFileRsp(jDelFileRsp)
                 }
+                //50.	设备磁盘统计信息
+                "GetDiskTotalInfo" -> {
+                    val jGetDiskTotalInfoRsp = gson.fromJson(text, JGetDiskTotalInfoRsp::class.java)
+                    getDiskTotalInfoBack?.getDiskTotalInfoReq(jGetDiskTotalInfoRsp)
+                }
             }
         }
 
@@ -304,6 +309,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var fileTaskBack: FileTaskBack? = null
 
     var fileManageBack : FileManageBack? = null
+
+    var getDiskTotalInfoBack : GetDiskTotalInfoBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -512,6 +519,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
         fun deleFileRsp(jDelFileRsp :JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+    }
+    interface GetDiskTotalInfoBack {
+        fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
     }
 }
 
