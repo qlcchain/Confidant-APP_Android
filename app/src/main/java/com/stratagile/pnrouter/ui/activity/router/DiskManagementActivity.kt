@@ -68,6 +68,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             status_0.visibility = View.GONE
                             disk_a.setBackgroundResource(R.drawable.disk_normal_bg)
                             disk_a_name.setBackgroundColor(resources.getColor(R.color.color_A0CCF9))
+                            disk_a.setOnClickListener {
+                                val intent = Intent(this, DiskInformationActivity::class.java)
+                                intent.putExtra("Slot", 0)
+                                startActivity(intent)
+                            }
                         }else if(infoBean.status == 1)
                         {
                             status_0.visibility = View.VISIBLE
@@ -93,6 +98,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setBackgroundResource(R.drawable.disk_normal_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_A0CCF9))
                             status_1.visibility = View.GONE
+                            disk_b.setOnClickListener {
+                                val intent = Intent(this, DiskInformationActivity::class.java)
+                                intent.putExtra("Slot", 2)
+                                startActivity(intent)
+                            }
                         }else if(infoBean.status == 1)
                         {
                             status_1.visibility = View.VISIBLE
@@ -133,9 +143,6 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     }
     override fun initData() {
         title.text = resources.getText(R.string.disk_management)
-        disk_a.setOnClickListener {
-            startActivity(Intent(this, DiskInformationActivity::class.java))
-        }
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
         var msgData = GetDiskTotalInfoReq()
         if (ConstantValue.isWebsocketConnected) {

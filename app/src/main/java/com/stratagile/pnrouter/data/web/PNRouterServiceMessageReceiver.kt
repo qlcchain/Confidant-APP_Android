@@ -268,6 +268,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jGetDiskTotalInfoRsp = gson.fromJson(text, JGetDiskTotalInfoRsp::class.java)
                     getDiskTotalInfoBack?.getDiskTotalInfoReq(jGetDiskTotalInfoRsp)
                 }
+                //51.	设备磁盘详细信息
+                "GetDiskDetailInfo" -> {
+                    val jGetDiskDetailInfoRsp = gson.fromJson(text, JGetDiskDetailInfoRsp::class.java)
+                    getDiskDetailInfoBack?.getDiskDetailInfoReq(jGetDiskDetailInfoRsp)
+                }
             }
         }
 
@@ -312,6 +317,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var getDiskTotalInfoBack : GetDiskTotalInfoBack? = null
 
+    var getDiskDetailInfoBack : GetDiskDetailInfoBack? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -522,6 +528,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface GetDiskTotalInfoBack {
         fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
+    }
+
+    interface GetDiskDetailInfoBack {
+        fun getDiskDetailInfoReq(JGetDiskDetailInfoRsp: JGetDiskDetailInfoRsp)
     }
 }
 

@@ -382,3 +382,9 @@ data class SendToxUploadFileNotice(var UserId :String,  var FileName : String, v
  * (2)	响应（APP->Router）
  */
 data class GetDiskTotalInfoReq(var Action : String = "GetDiskTotalInfo")
+
+/**
+ * 51.	设备磁盘详细信息
+ * (2)	响应（APP->Router）
+ */
+data class GetDiskDetailInfoReq(var Slot:Int,var Action : String = "GetDiskDetailInfo")
