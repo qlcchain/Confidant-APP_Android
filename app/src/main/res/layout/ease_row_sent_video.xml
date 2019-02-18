@@ -35,14 +35,13 @@
             android:layout_height="145dp"
             android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
-            android:background="@drawable/ease_chatto_bg"
              >
 
             <ImageView
                 android:id="@+id/chatting_content_iv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY" />
+                android:scaleType="centerCrop" />
 
             <LinearLayout
                 android:id="@+id/chatting_video_data_area"

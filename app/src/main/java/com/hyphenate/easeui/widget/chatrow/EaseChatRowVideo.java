@@ -3,6 +3,13 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.NinePatch;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -143,7 +150,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                     @Override
                     protected Bitmap doInBackground(Void... params) {
                         if (new File(localThumb).exists()) {
-                            return ImageUtils.decodeScaleImage(localThumb, 160, 160);
+                            return ImageUtils.decodeScaleImage(localThumb, activity.getWindowManager().getDefaultDisplay().getWidth() / 3, activity.getWindowManager().getDefaultDisplay().getWidth() / 3);
                         } else {
                             return null;
                         }
@@ -154,7 +161,8 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                         super.onPostExecute(result);
                         if (result != null) {
                             EaseImageCache.getInstance().put(localThumb, result);
-                            iv.setImageBitmap(result);
+                            Bitmap bitmap2 = getRoundCornerImage(result, result.getWidth(), result.getHeight());
+                            iv.setImageBitmap(bitmap2);
 
                         } else {
                             if (message.status() == EMMessage.Status.FAIL) {
@@ -173,6 +181,27 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
         }
         
+    }
+
+    public Bitmap getRoundCornerImage(Bitmap bitmap_in, int widht, int height)
+    {
+        Bitmap bitmap_bg;
+        if (message.direct() == EMMessage.Direct.RECEIVE) {
+            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.drawable.rounded_fectanglewhite);
+        } else {
+            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.drawable.rounded_rectangle);
+        }
+        Bitmap roundConcerImage = Bitmap.createBitmap(widht,height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(roundConcerImage);
+        Paint paint = new Paint();
+        Rect rect = new Rect(0,0,widht,height);
+        Rect rectF = new Rect(0, 0, bitmap_in.getWidth(), bitmap_in.getHeight());
+        paint.setAntiAlias(true);
+        NinePatch patch = new NinePatch(bitmap_bg, bitmap_bg.getNinePatchChunk(), null);
+        patch.draw(canvas, rect);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap_in, rectF, rect, paint);
+        return roundConcerImage;
     }
 
 }
