@@ -50,23 +50,79 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
         ivBasic.setOnClickListener {
             if (detailBasic.visibility == View.VISIBLE) {
                 detailBasic.visibility = View.GONE
+                ivBasic.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
             } else {
                 detailBasic.visibility = View.VISIBLE
+                ivBasic.setImageDrawable(resources.getDrawable(R.mipmap.arrow_upper))
             }
         }
         ivRaid0.setOnClickListener {
             if (detailRaid0.visibility == View.VISIBLE) {
                 detailRaid0.visibility = View.GONE
+                ivRaid0.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
             } else {
                 detailRaid0.visibility = View.VISIBLE
+                ivRaid0.setImageDrawable(resources.getDrawable(R.mipmap.arrow_upper))
             }
         }
         ivLvm.setOnClickListener {
             if (detailLvm.visibility == View.VISIBLE) {
                 detailLvm.visibility = View.GONE
+                ivLvm.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
             } else {
                 detailLvm.visibility = View.VISIBLE
+                ivLvm.setImageDrawable(resources.getDrawable(R.mipmap.arrow_upper))
             }
+        }
+
+
+        llRaid1.setOnClickListener {
+            checkRaid1.visibility = View.VISIBLE
+            checkBasic.visibility = View.INVISIBLE
+            checkRaid0.visibility = View.INVISIBLE
+            checkLvm.visibility = View.INVISIBLE
+            checkAddToRaid1.visibility = View.INVISIBLE
+            checkAddToLvm.visibility = View.INVISIBLE
+        }
+        llBasic.setOnClickListener {
+            checkRaid1.visibility = View.INVISIBLE
+            checkBasic.visibility = View.VISIBLE
+            checkRaid0.visibility = View.INVISIBLE
+            checkLvm.visibility = View.INVISIBLE
+            checkAddToRaid1.visibility = View.INVISIBLE
+            checkAddToLvm.visibility = View.INVISIBLE
+        }
+        llRaid0.setOnClickListener {
+            checkRaid1.visibility = View.INVISIBLE
+            checkBasic.visibility = View.INVISIBLE
+            checkRaid0.visibility = View.VISIBLE
+            checkLvm.visibility = View.INVISIBLE
+            checkAddToRaid1.visibility = View.INVISIBLE
+            checkAddToLvm.visibility = View.INVISIBLE
+        }
+        llLvm.setOnClickListener {
+            checkRaid1.visibility = View.INVISIBLE
+            checkBasic.visibility = View.INVISIBLE
+            checkRaid0.visibility = View.INVISIBLE
+            checkLvm.visibility = View.VISIBLE
+            checkAddToRaid1.visibility = View.INVISIBLE
+            checkAddToLvm.visibility = View.INVISIBLE
+        }
+        llAddToRaid1.setOnClickListener {
+            checkRaid1.visibility = View.INVISIBLE
+            checkBasic.visibility = View.INVISIBLE
+            checkRaid0.visibility = View.INVISIBLE
+            checkLvm.visibility = View.INVISIBLE
+            checkAddToRaid1.visibility = View.VISIBLE
+            checkAddToLvm.visibility = View.INVISIBLE
+        }
+        llAddToLvm.setOnClickListener {
+            checkRaid1.visibility = View.INVISIBLE
+            checkBasic.visibility = View.INVISIBLE
+            checkRaid0.visibility = View.INVISIBLE
+            checkLvm.visibility = View.INVISIBLE
+            checkAddToRaid1.visibility = View.INVISIBLE
+            checkAddToLvm.visibility = View.VISIBLE
         }
     }
     override fun initData() {
