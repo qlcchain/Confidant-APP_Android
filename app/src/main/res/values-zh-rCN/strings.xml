@@ -388,5 +388,6 @@
     <string name="error">error</string>
     <string name="send_failed">send failed</string>
     <string name="send_success">send success</string>
+    <string name="notsupported">This mode is not supported</string>
 
 </resources>

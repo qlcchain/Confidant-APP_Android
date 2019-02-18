@@ -388,3 +388,8 @@ data class GetDiskTotalInfoReq(var Action : String = "GetDiskTotalInfo")
  * (2)	响应（APP->Router）
  */
 data class GetDiskDetailInfoReq(var Slot:Int,var Action : String = "GetDiskDetailInfo")
+/**
+ * 52.	设备磁盘模式配置
+ * (2)	响应（APP->Router）
+ */
+data class FormatDiskReq(var Mode:String,var Action : String = "FormatDisk")

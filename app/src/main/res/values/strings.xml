@@ -381,6 +381,9 @@
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
     <string name="setting_">Settings</string>
     <string name="scan_qr_code_to_add_me">Scan QR code to add me</string>
+    <string name="erase">Please confirm you would like to erase the data and format the hard disk?</string>
+    <string name="erasechoose">Please choose to agree.</string>
+
     <string name="delete_contact">Delete Contact</string>
     <string name="send_a_message">Send a message</string>
     <string name="adam_graspn">Adam Graspn</string>
@@ -532,5 +535,6 @@
     <string name="notfound">not found</string>
 
     <string name="automaticlogin">Automatic login</string>
+    <string name="notsupported">This mode is not supported</string>
 
 </resources>

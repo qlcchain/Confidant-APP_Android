@@ -198,6 +198,7 @@
         <activity android:name=".ui.activity.router.DiskManagementActivity" />
         <activity android:name=".ui.activity.router.DiskConfigureActivity" />
         <activity android:name=".ui.activity.router.DiskInformationActivity" />
+        <activity android:name=".ui.activity.router.DiskReconfigureActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"

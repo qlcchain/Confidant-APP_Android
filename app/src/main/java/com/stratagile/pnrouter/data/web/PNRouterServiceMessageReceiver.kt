@@ -273,6 +273,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jGetDiskDetailInfoRsp = gson.fromJson(text, JGetDiskDetailInfoRsp::class.java)
                     getDiskDetailInfoBack?.getDiskDetailInfoReq(jGetDiskDetailInfoRsp)
                 }
+                //52.	设备磁盘模式配置
+                "FormatDisk" -> {
+                    val jFormatDiskRsp = gson.fromJson(text, JFormatDiskRsp::class.java)
+                    formatDiskBack?.formatDiskReq(jFormatDiskRsp)
+                }
+
             }
         }
 
@@ -318,6 +324,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var getDiskTotalInfoBack : GetDiskTotalInfoBack? = null
 
     var getDiskDetailInfoBack : GetDiskDetailInfoBack? = null
+
+    var formatDiskBack: FormatDiskBack? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -532,6 +540,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     interface GetDiskDetailInfoBack {
         fun getDiskDetailInfoReq(JGetDiskDetailInfoRsp: JGetDiskDetailInfoRsp)
+    }
+    interface FormatDiskBack {
+        fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
     }
 }
 

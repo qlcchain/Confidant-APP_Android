@@ -1,7 +1,11 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -25,12 +29,14 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
 
     @Inject
     internal lateinit var mPresenter: DiskConfigurePresenter
+    var mode:String = "RAID1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
+        mode = "RAID1"
         setContentView(R.layout.activity_disk_configure)
         checkRaid1.visibility = View.VISIBLE
         checkBasic.visibility = View.INVISIBLE
@@ -83,6 +89,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.INVISIBLE
             checkAddToRaid1.visibility = View.INVISIBLE
             checkAddToLvm.visibility = View.INVISIBLE
+            mode = "RAID1"
         }
         llBasic.setOnClickListener {
             checkRaid1.visibility = View.INVISIBLE
@@ -91,6 +98,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.INVISIBLE
             checkAddToRaid1.visibility = View.INVISIBLE
             checkAddToLvm.visibility = View.INVISIBLE
+            mode = "BASIC"
         }
         llRaid0.setOnClickListener {
             checkRaid1.visibility = View.INVISIBLE
@@ -99,6 +107,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.INVISIBLE
             checkAddToRaid1.visibility = View.INVISIBLE
             checkAddToLvm.visibility = View.INVISIBLE
+            mode = "RAID0"
         }
         llLvm.setOnClickListener {
             checkRaid1.visibility = View.INVISIBLE
@@ -107,6 +116,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.VISIBLE
             checkAddToRaid1.visibility = View.INVISIBLE
             checkAddToLvm.visibility = View.INVISIBLE
+            mode = ""
         }
         llAddToRaid1.setOnClickListener {
             checkRaid1.visibility = View.INVISIBLE
@@ -115,6 +125,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.INVISIBLE
             checkAddToRaid1.visibility = View.VISIBLE
             checkAddToLvm.visibility = View.INVISIBLE
+            mode = ""
         }
         llAddToLvm.setOnClickListener {
             checkRaid1.visibility = View.INVISIBLE
@@ -123,12 +134,30 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             checkLvm.visibility = View.INVISIBLE
             checkAddToRaid1.visibility = View.INVISIBLE
             checkAddToLvm.visibility = View.VISIBLE
+            mode = ""
         }
     }
     override fun initData() {
         title.text = "Configuration Disk"
     }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.confirm, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.confirm) {
+            if(mode.equals("BASIC") || mode.equals("RAID0") || mode.equals("RAID1"))
+            {
+                val intent = Intent(this, DiskReconfigureActivity::class.java)
+                intent.putExtra("Mode", mode)
+                startActivity(intent)
+            }else{
+                toast(getString(R.string.notsupported))
+            }
 
+        }
+        return super.onOptionsItemSelected(item)
+    }
     override fun setupActivityComponent() {
        DaggerDiskConfigureComponent
                .builder()
