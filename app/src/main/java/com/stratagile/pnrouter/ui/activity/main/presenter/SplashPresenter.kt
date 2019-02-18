@@ -66,8 +66,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if(routerList.size == 0)
         {
+            jumpToGuest = true
         }
-        jumpToGuest = true
     }
 
     override fun getPermission() {
