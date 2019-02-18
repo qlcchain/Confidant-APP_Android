@@ -183,7 +183,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
         r = Math.sqrt((screenW * screenW + screenH * screenH).toDouble()).toInt() + 10
 
-        wowo.addTemporarilyInvisibleViews(1, iv2, tvPage2)
+        wowo.addTemporarilyInvisibleViews(1, tvNext, funTv2, iv2, tvPage2)
 
         wowo.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
 
@@ -196,17 +196,17 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
             }
 
             override fun onPageSelected(p0: Int) {
-                if (p0 == 2) {
-                    tvNext.text = getString(R.string.QR_Code)
-                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.icon_little_scan)
-                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
-                    tvNext.setCompoundDrawables(drawable,null,null,null)
-                } else {
-                    tvNext.text = resources.getString(R.string.next)
-                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.no)
-                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
-                    tvNext.setCompoundDrawables(null,null,null,null)
-                }
+//                if (p0 == 2) {
+//                    tvNext.text = getString(R.string.QR_Code)
+//                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.icon_little_scan)
+//                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
+//                    tvNext.setCompoundDrawables(drawable,null,null,null)
+//                } else {
+//                    tvNext.text = resources.getString(R.string.next)
+//                    var drawable:Drawable = getResources()!!.getDrawable(R.mipmap.no)
+//                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight())
+//                    tvNext.setCompoundDrawables(null,null,null,null)
+//                }
             }
 
         })
@@ -261,7 +261,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         addIv2()
         addTvPage2()
         addGotIt()
-
+        addFun()
         addDot()
 
         wowo.ready()
@@ -285,8 +285,8 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     private fun addTvPage0() {
         wowo.addAnimation(tvPage0)
                 .add(WoWoTranslationAnimation.builder().page(0)
-                        .fromX(0f).toX(screenW.toFloat())
-                        .fromY(0f).toY(500f).build())
+                        .fromX(0f).toX(-screenW.toFloat())
+                        .fromY(0f).toY(0f).build())
     }
 
 
@@ -294,17 +294,37 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         wowo.addAnimation(iv0)
                 .add(WoWoTranslationAnimation.builder().page(0)
                         .fromX(0f).toX((-screenW).toFloat())
-                        .keepY(0f).toY(-500f).build())
+                        .keepY(0f).toY(0f).build())
+    }
+    private fun addFun() {
+        wowo.addAnimation(funTv0)
+                .add(WoWoTranslationAnimation.builder().page(0)
+                        .fromX(0f).toX((-screenW).toFloat())
+                        .keepY(0f).toY(0f).build())
+        wowo.addAnimation(funTv1)
+                .add(WoWoTranslationAnimation.builder().page(0)
+                        .fromX((screenW).toFloat()).toX(0f)
+                        .fromY(0f).toY(0f).build())
+                .add(WoWoTranslationAnimation.builder().page(1)
+                        .fromX(0f).toX(-screenW.toFloat())
+                        .fromY(0f).toY(0f).build())
+        wowo.addAnimation(funTv2)
+                .add(WoWoTranslationAnimation.builder().page(1)
+                        .fromX((screenW).toFloat()).toX(0f)
+                        .fromY(0f).toY(0f).build())
+                .add(WoWoTranslationAnimation.builder().page(1)
+                        .fromX(0f).toX(screenW.toFloat())
+                        .fromY(0f).toY(0f).build())
     }
 
     private fun addTvPage1() {
         wowo.addAnimation(tvPage1)
                 .add(WoWoTranslationAnimation.builder().page(0)
-                        .fromX((-screenW).toFloat()).toX(0f)
-                        .fromY(500f).toY(0f).build())
+                        .fromX((screenW).toFloat()).toX(0f)
+                        .fromY(0f).toY(0f).build())
                 .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX(0f).toX(screenW.toFloat())
-                        .fromY(0f).toY(500f).build())
+                        .fromX(0f).toX(-screenW.toFloat())
+                        .fromY(0f).toY(0f).build())
     }
 
 
@@ -312,20 +332,20 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         wowo.addAnimation(iv1)
                 .add(WoWoTranslationAnimation.builder().page(0)
                         .fromX(screenW.toFloat()).toX(0f)
-                        .keepY(-500f).toY(0f).build())
+                        .keepY(0f).toY(0f).build())
                 .add(WoWoTranslationAnimation.builder().page(1)
                         .fromX(0f).toX((-screenW).toFloat())
-                        .keepY(0f).toY(-500f).build())
+                        .keepY(0f).toY(0f).build())
     }
 
     private fun addTvPage2() {
         wowo.addAnimation(tvPage2)
                 .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX((-screenW).toFloat()).toX(0f)
-                        .fromY(500f).toY(0f).build())
+                        .fromX((screenW).toFloat()).toX(0f)
+                        .fromY(0f).toY(0f).build())
                 .add(WoWoTranslationAnimation.builder().page(1)
                         .fromX(0f).toX(screenW.toFloat())
-                        .fromY(0f).toY(500f).build())
+                        .fromY(0f).toY(0f).build())
     }
 
 
@@ -333,22 +353,22 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         wowo.addAnimation(iv2)
                 .add(WoWoTranslationAnimation.builder().page(1)
                         .fromX(screenW.toFloat()).toX(0f)
-                        .keepY(-500f).toY(0f).build())
+                        .keepY(0f).toY(0f).build())
                 .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX(0f).toX((-screenW).toFloat())
-                        .keepY(0f).toY(-500f).build())
+                        .fromX(0f).toX((screenW).toFloat())
+                        .keepY(0f).toY(0f).build())
     }
 
     private fun addGotIt() {
-//        wowo.addAnimation(gotIt)
-//                .add(WoWoTranslationAnimation.builder().page(1)
-//                        .keepX(gotIt.getTranslationX())
-//                        .fromY(screenH.toFloat()).toY(0f).ease(Ease.OutBack)
-//                        .build())
-//                .add(WoWoTranslationAnimation.builder().page(1)
-//                        .keepX(0f)
-//                        .fromY(0f).toY(screenH.toFloat())
-//                        .ease(Ease.InCubic).sameEaseBack(false).build())
+        wowo.addAnimation(tvNext)
+                .add(WoWoTranslationAnimation.builder().page(1)
+                        .keepX(tvNext.getTranslationX())
+                        .fromY(screenH.toFloat()).toY(0f).ease(Ease.OutBack)
+                        .build())
+                .add(WoWoTranslationAnimation.builder().page(1)
+                        .keepX(0f)
+                        .fromY(0f).toY(screenH.toFloat())
+                        .ease(Ease.InCubic).sameEaseBack(false).build())
     }
 
     private fun addBack() {
@@ -439,7 +459,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         }
         EventBus.getDefault().register(this)
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
-        llNext.setOnClickListener {
+        tvNext.setOnClickListener {
             if (wowo.currentItem == 2) {
                 /*if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                  {
@@ -450,7 +470,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 mPresenter.getScanPermission()
                 //startActivity(Intent(this, LoginActivityActivity::class.java))
             } else {
-                wowo.next()
+//                wowo.next()
             }
         }
     }
