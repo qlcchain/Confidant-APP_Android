@@ -4,5 +4,264 @@
     android:background="@color/color_f5f5f5"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/llRaid1"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkRaid1"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="RAID 1"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivRaid1"
+                android:layout_width="@dimen/x70"
+                android:src="@mipmap/arrow_upper"
+                android:scaleType="center"
+                android:layout_height="@dimen/x70" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/detailRaid1"
+            android:text="The two hard disks are automatically mirrored. When any of the disks is damaged, it can be simply replaced by a new disk. It is the recommended ultimate mode for data security. "
+            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="@dimen/x106"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llBasic"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkBasic"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="BASIC"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivBasic"
+                android:layout_width="@dimen/x70"
+                android:src="@mipmap/arrow_upper"
+                android:scaleType="center"
+                android:layout_height="@dimen/x70" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/detailBasic"
+            android:text="Master-slave mode, the slave disk is mounted to the disk directory. "
+            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="@dimen/x106"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llRaid0"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkRaid0"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="RAID 0"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivRaid0"
+                android:layout_width="@dimen/x70"
+                android:src="@mipmap/arrow_upper"
+                android:scaleType="center"
+                android:layout_height="@dimen/x70" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/detailRaid0"
+            android:text="The two hard disks are virtually merged into one, the overall capacity doubles with fast access speed. BUT, if any of the disks is damaged, the data of the other disk will be lost. "
+            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="@dimen/x106"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llLvm"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkLvm"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="LVM"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivLvm"
+                android:layout_width="@dimen/x70"
+                android:src="@mipmap/arrow_upper"
+                android:scaleType="center"
+                android:layout_height="@dimen/x70" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/detailLvm"
+            android:text="All hard disks are merged into one virtual disk, the overall capacity is the sum of that of the two disks. This way enables adding in a new disk without any changes to the directory structure. "
+            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginLeft="@dimen/x106"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llAddToLvm"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkAddToRaid1"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="ADD TO RAID 1"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llAddToRaid1"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/x18"
+            android:paddingBottom="@dimen/x18"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/checkAddToLvm"
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/ic_verified"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_height="@dimen/x46" />
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="ADD TO LVM"
+                    android:textColor="@color/color_2B2B2B"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Erase data and format, with data protection"
+                    android:textSize="12sp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

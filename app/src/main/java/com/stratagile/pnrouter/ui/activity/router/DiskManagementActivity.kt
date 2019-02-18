@@ -79,6 +79,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             status_0.setImageResource(R.mipmap.disk_not_config)
                             disk_a.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_a_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
+                            disk_b.setOnClickListener {
+                                val intent = Intent(this, DiskConfigureActivity::class.java)
+                                intent.putExtra("Slot", 0)
+                                startActivity(intent)
+                            }
                         }else if(infoBean.status == 0)
                         {
                             status_0.setImageResource(R.mipmap.disk_not_detected)
@@ -109,6 +114,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             status_1.setImageResource(R.mipmap.disk_not_config)
                             disk_b.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
+                            disk_b.setOnClickListener {
+                                val intent = Intent(this, DiskConfigureActivity::class.java)
+                                intent.putExtra("Slot", 2)
+                                startActivity(intent)
+                            }
                         }else if(infoBean.status == 0)
                         {
                             status_1.setImageResource(R.mipmap.disk_not_detected)
