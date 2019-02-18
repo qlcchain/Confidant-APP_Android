@@ -38,7 +38,31 @@ class DiskInformationActivity : BaseActivity(), DiskInformationContract.View , P
         if(JGetDiskDetailInfoRsp.params.retCode == 0)
         {
             runOnUiThread {
-
+                name.text = JGetDiskDetailInfoRsp.params.name
+                when(JGetDiskDetailInfoRsp.params.status)
+                {
+                    0 ->{
+                        status.text = getString(R.string.notfound)
+                    }
+                    1 ->{
+                        status.text = getString(R.string.notconfigured)
+                    }
+                    2 ->{
+                        status.text = getString(R.string.configured)
+                    }
+                }
+                ATAVersion.text = JGetDiskDetailInfoRsp.params.ataVersion
+                Device.text = JGetDiskDetailInfoRsp.params.device
+                Firmware.text = JGetDiskDetailInfoRsp.params.firmware
+                FormFactor.text = JGetDiskDetailInfoRsp.params.formFactor
+                LUWWNDeviceId.text = JGetDiskDetailInfoRsp.params.luwwnDeviceId
+                ModelFamily.text = JGetDiskDetailInfoRsp.params.modelFamily
+                RotationRate.text = JGetDiskDetailInfoRsp.params.rotationRate
+                SATAVersion.text = JGetDiskDetailInfoRsp.params.sataVersion
+                SMARTsupport.text = JGetDiskDetailInfoRsp.params.smarTsupport
+                Serial.text =  JGetDiskDetailInfoRsp.params.serial
+                Capacity.text = JGetDiskDetailInfoRsp.params.capacity
+                SectorSizes.text = JGetDiskDetailInfoRsp.params.sectorSizes
             }
         }else{
             runOnUiThread {

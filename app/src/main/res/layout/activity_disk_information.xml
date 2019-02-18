@@ -13,6 +13,7 @@
         android:gravity="center_vertical"
         android:layout_height="@dimen/x77">
         <TextView
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:text="/DEV/SDA"
             android:textSize="13sp"
@@ -23,6 +24,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -47,6 +49,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/ATAVersion"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -71,6 +74,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/Device"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -95,6 +99,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/Firmware"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -119,6 +124,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/FormFactor"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -143,6 +149,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/LUWWNDeviceId"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -167,6 +174,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/ModelFamily"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -191,30 +199,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
-            android:layout_width="wrap_content"
-            android:text="configured"
-            android:layout_marginRight="@dimen/x31"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <View
-        style="@style/divide_line"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:paddingLeft="@dimen/x31"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:layout_height="@dimen/x77">
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="/DEV/SDA"
-            android:textSize="13sp"
-            android:textColor="@color/mainColor"
-            android:layout_height="wrap_content" />
-        <View
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <TextView
+            android:id="@+id/RotationRate"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -239,6 +224,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/SATAVersion"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -263,6 +249,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/SMARTsupport"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -287,6 +274,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/Serial"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -311,6 +299,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/Capacity"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"
@@ -335,6 +324,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
         <TextView
+            android:id="@+id/SectorSizes"
             android:layout_width="wrap_content"
             android:text="configured"
             android:layout_marginRight="@dimen/x31"

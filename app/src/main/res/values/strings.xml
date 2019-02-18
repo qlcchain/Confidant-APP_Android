@@ -527,6 +527,8 @@
     <string name="Used_Sapce">Used Sapce：</string>
     <string name="storage">storage：</string>
 
-
+    <string name="configured">configured</string>
+    <string name="notconfigured">not configured</string>
+    <string name="notfound">not found</string>
 
 </resources>
