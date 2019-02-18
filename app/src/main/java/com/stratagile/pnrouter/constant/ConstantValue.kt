@@ -89,5 +89,6 @@ object ConstantValue {
         var pushURL = "http://47.96.76.184:9000/v1/pareg"
         var loginOut = false
         var freindStatus = 0
+        var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn
 
 }

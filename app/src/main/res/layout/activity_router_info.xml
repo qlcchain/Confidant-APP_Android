@@ -126,7 +126,30 @@
             android:layout_marginLeft="@dimen/x30"
             android:layout_height="@dimen/x35" />
     </LinearLayout>
-
+    <LinearLayout
+        android:id="@+id/autoLogin"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x30"
+            android:text="@string/automaticlogin"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Switch
+            android:id="@+id/autoLoginSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/tvLogOut"
         android:visibility="gone"

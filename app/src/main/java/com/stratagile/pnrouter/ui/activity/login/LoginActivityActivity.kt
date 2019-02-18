@@ -102,6 +102,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isFromScan = false
     var isFromScanAdmim = false
     var isClickLogin = false
+    var isStartLogin = false
     var stopTox = false;
     var loginOk = false
     var isToxLoginOverTime = false;
@@ -189,6 +190,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             ConstantValue.currentRouterIp = ""
                             //ConstantValue.scanRouterId = routerId;
                             isClickLogin = false
+                            isStartLogin = true
                             getServer(routerId,userSn,true)
                         }
                     }
@@ -444,33 +446,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                         while (true)
                         {
-                           if(ConstantValue.unSendMessage.size >0)
-                           {
-                               for (key in ConstantValue.unSendMessage.keys)
-                               {
-                                   var sendData = ConstantValue.unSendMessage.get(key)
-                                   var friendId = ConstantValue.unSendMessageFriendId.get(key)
-                                   var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
-                                   if(sendCount < 5)
-                                   {
-                                       if (ConstantValue.isAntox) {
-                                           var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                                           MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
-                                       }else{
-                                           ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
-                                       }
-                                       ConstantValue.unSendMessageSendCount.put(key,sendCount++)
-                                   }else{
-                                       closeProgressDialog()
-                                       break
-                                   }
-                               }
+                            if(ConstantValue.unSendMessage.size >0)
+                            {
+                                for (key in ConstantValue.unSendMessage.keys)
+                                {
+                                    var sendData = ConstantValue.unSendMessage.get(key)
+                                    var friendId = ConstantValue.unSendMessageFriendId.get(key)
+                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if(sendCount < 5)
+                                    {
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                        }
+                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
+                                    }else{
+                                        closeProgressDialog()
+                                        break
+                                    }
+                                }
 
-                           }else{
-                               closeProgressDialog()
-                               break
-                           }
-                             Thread.sleep(2000)
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
                         }
 
                     }
@@ -703,197 +705,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-           if(!ConstantValue.lastNetworkType.equals(""))
-            {
-                isFromScan = false
-                ConstantValue.curreantNetworkType = ConstantValue.lastNetworkType
-                ConstantValue.currentRouterIp = ConstantValue.lastRouterIp
-                ConstantValue.port = ConstantValue.lastPort
-                ConstantValue.filePort = ConstantValue.lastFilePort
-                ConstantValue.currentRouterId = ConstantValue.lastRouterId
-                ConstantValue.currentRouterSN =  ConstantValue.lastRouterSN
-                ConstantValue.lastRouterId=""
-                ConstantValue.lastPort=""
-                ConstantValue.lastFilePort=""
-                ConstantValue.lastRouterId=""
-                ConstantValue.lastRouterSN=""
-                ConstantValue.lastNetworkType =""
-            }
-            if (loginKey.text.toString().equals("")) {
-                toast(getString(R.string.please_type_your_password))
-                return@setOnClickListener
-            }
-            if( ConstantValue.curreantNetworkType.equals("TOX"))
-            {
-
-                if(ConstantValue.isToxConnected)
-                {
-                    isToxLoginOverTime = true
-                    //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
-
-                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                    ConstantValue.loginReq = login
-                    var baseData = BaseData(2,login)
-                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    standaloneCoroutine = launch(CommonPool) {
-                        delay(60000)
-                        if (!loginBack) {
-                            runOnUiThread {
-                                closeProgressDialog()
-                                toast("login time out")
-                            }
-                        }
-                    }
-                    runOnUiThread {
-                        var tips = "login..."
-                        if(ConstantValue.freindStatus == 1)
-                        {
-                            tips = "login..."
-                        }else{
-                            tips = "router connecting..."
-                        }
-                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
-                                    standaloneCoroutine.cancel()
-                                EventBus.getDefault().post(StopTox())
-                                false
-                            } else false
-                        })
-                    }
-                    if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
-                    }
-                }else{
-//                    if (!ConstantValue.isToxConnected) {
-//                        loadLibrary()
-//                    }
-                    isToxLoginOverTime = true
-                    isClickLogin = true
-                    stopTox = false
-                    ConstantValue.curreantNetworkType = "TOX"
-                    runOnUiThread {
-                        showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                stopTox = true
-                                false
-                            } else false
-                        })
-                    }
-                    LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
-
-                    if(ConstantValue.isAntox)
-                    {
-                        var intent = Intent(AppConfig.instance, ToxService::class.java)
-                        startService(intent)
-                    }else{
-                        var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-                        startService(intent)
-                    }
-
-                }
-
-            }else{
-                isClickLogin = true
-                if(!ConstantValue.isWebsocketConnected)
-                {
-                    if (intent.hasExtra("flag")) {
-                        if(ConstantValue.isHasWebsocketInit)
-                        {
-                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                        }else{
-                            ConstantValue.isHasWebsocketInit = true
-                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                        }
-                        AppConfig.instance.messageReceiver!!.loginBackListener = this
-                        standaloneCoroutine = launch(CommonPool) {
-                            delay(10000)
-                            runOnUiThread {
-                                closeProgressDialog()
-                                if (!ConstantValue.isWebsocketConnected) {
-                                    if(AppConfig.instance.messageReceiver != null)
-                                        AppConfig.instance.messageReceiver!!.close()
-                                    toast("Server connection timeout")
-                                }
-                            }
-                        }
-                        runOnUiThread {
-                            closeProgressDialog()
-                            showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                    if(standaloneCoroutine != null)
-                                        standaloneCoroutine.cancel()
-                                    if(AppConfig.instance.messageReceiver != null)
-                                        AppConfig.instance.messageReceiver!!.close()
-                                    false
-                                } else false
-                            })
-                        }
-//                onWebSocketConnected(ConnectStatus(0))
-                    } else {
-                        if(ConstantValue.isHasWebsocketInit)
-                        {
-                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                        }else{
-                            ConstantValue.isHasWebsocketInit = true
-                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                        }
-                        AppConfig.instance.messageReceiver!!.loginBackListener = this
-                        standaloneCoroutine = launch(CommonPool) {
-                            delay(10000)
-                            runOnUiThread {
-                                closeProgressDialog()
-                                if (!ConstantValue.isWebsocketConnected) {
-                                    if(AppConfig.instance.messageReceiver != null)
-                                        AppConfig.instance.messageReceiver!!.close()
-                                    toast("Server connection timeout")
-                                }
-                            }
-                        }
-                        runOnUiThread {
-                            closeProgressDialog()
-                            showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                    if(standaloneCoroutine != null)
-                                        standaloneCoroutine.cancel()
-                                    if(AppConfig.instance.messageReceiver != null)
-                                        AppConfig.instance.messageReceiver!!.close()
-                                    false
-                                } else false
-                            })
-                        }
-
-                    }
-                }else{
-                    var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                    var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                    ConstantValue.loginReq = login
-                    standaloneCoroutine = launch(CommonPool) {
-                        delay(10000)
-                        if (!loginBack) {
-                            runOnUiThread {
-                                closeProgressDialog()
-                                toast("login time out")
-                            }
-                        }
-                    }
-                    runOnUiThread {
-                        showProgressDialog("login...")
-                    }
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
-                }
-            }
-
-
-//            mThread = CustomThread(routerId, userId)
-//            mThread!!.start()
+            startLogin()
         }
         scanIconLogin.setOnClickListener {
             mPresenter.getScanPermission()
@@ -1027,27 +839,54 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             return@breaking
                         }
                     }else{
-                        if (it.lastCheck) {
-                            routerId = it.routerId
-                            userSn = it.userSn
-                            userId = it.userId
-                            username = it.username
-                            dataFileVersion = it.dataFileVersion
+                        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+                        if(!autoLoginRouterSn.equals(""))
+                        {
+                            if (it.userSn.equals(autoLoginRouterSn)) {
+                                routerId = it.routerId
+                                userSn = it.userSn
+                                userId = it.userId
+                                username = it.username
+                                dataFileVersion = it.dataFileVersion
 
-                            if(it.routerName != null){
-                                routerNameTips.text = it.routerName
-                            }else{
-                                routerNameTips.text =  "Router 1"
-                            }
-                            if(it.loginKey != null){
-                                loginKey.setText(it.loginKey)
-                            }else{
-                                loginKey.setText("")
-                            }
+                                if(it.routerName != null){
+                                    routerNameTips.text = it.routerName
+                                }else{
+                                    routerNameTips.text =  "Router 1"
+                                }
+                                if(it.loginKey != null){
+                                    loginKey.setText(it.loginKey)
+                                }else{
+                                    loginKey.setText("")
+                                }
 
-                            hasCheckedRouter = true
-                            return@breaking
+                                hasCheckedRouter = true
+                                return@breaking
+                            }
+                        }else{
+                            if (it.lastCheck) {
+                                routerId = it.routerId
+                                userSn = it.userSn
+                                userId = it.userId
+                                username = it.username
+                                dataFileVersion = it.dataFileVersion
+
+                                if(it.routerName != null){
+                                    routerNameTips.text = it.routerName
+                                }else{
+                                    routerNameTips.text =  "Router 1"
+                                }
+                                if(it.loginKey != null){
+                                    loginKey.setText(it.loginKey)
+                                }else{
+                                    loginKey.setText("")
+                                }
+
+                                hasCheckedRouter = true
+                                return@breaking
+                            }
                         }
+
                     }
 
                 }
@@ -1123,6 +962,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             {
                                 e.printStackTrace()
                             }
+                            isStartLogin = true
                             /* if(AppConfig.instance.messageReceiver != null)
                                  AppConfig.instance.messageReceiver!!.close()*/
                             getServer(routerId,userSn,false)
@@ -1237,6 +1077,200 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             SpUtil.putString(this, ConstantValue.fingerPassWord, "")
         }
     }
+    private fun startLogin()
+    {
+
+        isStartLogin = true
+        if(!ConstantValue.lastNetworkType.equals(""))
+        {
+            isFromScan = false
+            ConstantValue.curreantNetworkType = ConstantValue.lastNetworkType
+            ConstantValue.currentRouterIp = ConstantValue.lastRouterIp
+            ConstantValue.port = ConstantValue.lastPort
+            ConstantValue.filePort = ConstantValue.lastFilePort
+            ConstantValue.currentRouterId = ConstantValue.lastRouterId
+            ConstantValue.currentRouterSN =  ConstantValue.lastRouterSN
+            ConstantValue.lastRouterId=""
+            ConstantValue.lastPort=""
+            ConstantValue.lastFilePort=""
+            ConstantValue.lastRouterId=""
+            ConstantValue.lastRouterSN=""
+            ConstantValue.lastNetworkType =""
+        }
+        if (loginKey.text.toString().equals("")) {
+            toast(getString(R.string.please_type_your_password))
+            return
+        }
+        if( ConstantValue.curreantNetworkType.equals("TOX"))
+        {
+
+            if(ConstantValue.isToxConnected)
+            {
+                isToxLoginOverTime = true
+                //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+
+                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                ConstantValue.loginReq = login
+                var baseData = BaseData(2,login)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                standaloneCoroutine = launch(CommonPool) {
+                    delay(60000)
+                    if (!loginBack) {
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast("login time out")
+                        }
+                    }
+                }
+                runOnUiThread {
+                    var tips = "login..."
+                    if(ConstantValue.freindStatus == 1)
+                    {
+                        tips = "login..."
+                    }else{
+                        tips = "router connecting..."
+                    }
+                    showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            if(standaloneCoroutine != null)
+                                standaloneCoroutine.cancel()
+                            EventBus.getDefault().post(StopTox())
+                            false
+                        } else false
+                    })
+                }
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
+                }
+            }else{
+//                    if (!ConstantValue.isToxConnected) {
+//                        loadLibrary()
+//                    }
+                isToxLoginOverTime = true
+                isClickLogin = true
+                stopTox = false
+                ConstantValue.curreantNetworkType = "TOX"
+                runOnUiThread {
+                    showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            stopTox = true
+                            false
+                        } else false
+                    })
+                }
+                LogUtil.addLog("P2P启动连接:","LoginActivityActivity")
+
+                if(ConstantValue.isAntox)
+                {
+                    var intent = Intent(AppConfig.instance, ToxService::class.java)
+                    startService(intent)
+                }else{
+                    var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+                    startService(intent)
+                }
+
+            }
+
+        }else{
+            isClickLogin = true
+            if(!ConstantValue.isWebsocketConnected)
+            {
+                if (intent.hasExtra("flag")) {
+                    if(ConstantValue.isHasWebsocketInit)
+                    {
+                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                    }else{
+                        ConstantValue.isHasWebsocketInit = true
+                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                    }
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        runOnUiThread {
+                            closeProgressDialog()
+                            if (!ConstantValue.isWebsocketConnected) {
+                                if(AppConfig.instance.messageReceiver != null)
+                                    AppConfig.instance.messageReceiver!!.close()
+                                toast("Server connection timeout")
+                            }
+                        }
+                    }
+                    runOnUiThread {
+                        closeProgressDialog()
+                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                if(standaloneCoroutine != null)
+                                    standaloneCoroutine.cancel()
+                                if(AppConfig.instance.messageReceiver != null)
+                                    AppConfig.instance.messageReceiver!!.close()
+                                false
+                            } else false
+                        })
+                    }
+//                onWebSocketConnected(ConnectStatus(0))
+                } else {
+                    if(ConstantValue.isHasWebsocketInit)
+                    {
+                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                    }else{
+                        ConstantValue.isHasWebsocketInit = true
+                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                    }
+                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        runOnUiThread {
+                            closeProgressDialog()
+                            if (!ConstantValue.isWebsocketConnected) {
+                                if(AppConfig.instance.messageReceiver != null)
+                                    AppConfig.instance.messageReceiver!!.close()
+                                toast("Server connection timeout")
+                            }
+                        }
+                    }
+                    runOnUiThread {
+                        closeProgressDialog()
+                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                if(standaloneCoroutine != null)
+                                    standaloneCoroutine.cancel()
+                                if(AppConfig.instance.messageReceiver != null)
+                                    AppConfig.instance.messageReceiver!!.close()
+                                false
+                            } else false
+                        })
+                    }
+
+                }
+            }else{
+                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
+                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                ConstantValue.loginReq = login
+                standaloneCoroutine = launch(CommonPool) {
+                    delay(10000)
+                    if (!loginBack) {
+                        runOnUiThread {
+                            closeProgressDialog()
+                            toast("login time out")
+                        }
+                    }
+                }
+                runOnUiThread {
+                    showProgressDialog("login...")
+                }
+                AppConfig.instance.messageReceiver!!.loginBackListener = this
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+            }
+        }
+
+    }
+
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean)
     {
         runOnUiThread {
@@ -1260,12 +1294,28 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     closeProgressDialog()
                                 }
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
+                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                {
+                                    runOnUiThread {
+                                        startLogin()
+                                    }
+
+                                }
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
 
@@ -1290,15 +1340,39 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     runOnUiThread {
                                                         closeProgressDialog()
                                                     }
+                                                    var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                                    {
+                                                        runOnUiThread {
+                                                            startLogin()
+                                                        }
+
+                                                    }
                                                     Thread.currentThread().interrupt() //方法调用终止线程
                                                 }else{
                                                     startTox(startToxFlag)
+                                                    var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                                    {
+                                                        runOnUiThread {
+                                                            startLogin()
+                                                        }
+
+                                                    }
                                                     Thread.currentThread().interrupt(); //方法调用终止线程
                                                 }
 
                                             }
                                         } catch (e: Exception) {
                                             startTox(startToxFlag)
+                                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                            if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                            {
+                                                runOnUiThread {
+                                                    startLogin()
+                                                }
+
+                                            }
                                             Thread.currentThread().interrupt(); //方法调用终止线程
                                         }
                                     }
@@ -1327,6 +1401,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                         override fun onFailure( e :Exception) {
                             startTox(startToxFlag)
+                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                            if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                            {
+                                runOnUiThread {
+                                    startLogin()
+                                }
+
+                            }
                             Thread.currentThread().interrupt(); //方法调用终止线程
                         }
 
@@ -1351,15 +1433,39 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         runOnUiThread {
                                             closeProgressDialog()
                                         }
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
                                         Thread.currentThread().interrupt() //方法调用终止线程
                                     }else{
                                         startTox(startToxFlag)
+                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        {
+                                            runOnUiThread {
+                                                startLogin()
+                                            }
+
+                                        }
                                         Thread.currentThread().interrupt(); //方法调用终止线程
                                     }
 
                                 }
                             } catch (e: Exception) {
                                 startTox(startToxFlag)
+                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                                if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                {
+                                    runOnUiThread {
+                                        startLogin()
+                                    }
+
+                                }
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                             }
                         }

@@ -531,4 +531,6 @@
     <string name="notconfigured">not configured</string>
     <string name="notfound">not found</string>
 
+    <string name="automaticlogin">Automatic login</string>
+
 </resources>

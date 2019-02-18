@@ -18,7 +18,6 @@ import com.stratagile.pnrouter.entity.JLogOutRsp
 import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.LogOutEvent
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterInfoComponent
@@ -90,6 +89,13 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             llRouterManagement.visibility =  View.GONE
             llDiskManagement.visibility =  View.VISIBLE
         }
+        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+        if(autoLoginRouterSn.equals(routerEntity.userSn))
+        {
+            autoLoginSwitch.isChecked = true
+        }else{
+            autoLoginSwitch.isChecked = false
+        }
     }
     override fun initData() {
         AppConfig.instance.messageReceiver?.logOutBack = this
@@ -118,6 +124,14 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         }
         tvSwitchRouter.setOnClickListener {
 
+        }
+        autoLoginSwitch.setOnClickListener{
+            if(autoLoginSwitch.isChecked)
+            {
+                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, routerEntity.userSn)
+            }else{
+                SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
+            }
         }
         llDiskManagement.setOnClickListener {
             startActivity(Intent(this, DiskManagementActivity::class.java))
