@@ -399,9 +399,9 @@
     <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
-    <string name="guest_viewpager_1">Safeguard your privacy using \n Pretty Private Messenger, via the \n Pretty Private Router secure channel.</string>
-    <string name="guest_viewpager_2">Use Pretty Private Messenger within the \n WiFi range of the Pretty Private Router</string>
-    <string name="guest_viewpager_3">Connect the Pretty Private Messenger to the \n Pretty Private Router by scanning the QR Code \n on the Pretty Private Router</string>
+    <string name="guest_viewpager_1">Dedicated encrypted messaging system created for enterprises and individual customers to facilitate secure communication and carefree file sharing.</string>
+    <string name="guest_viewpager_2">Password is saved locally and securely against hacking or misuse.\nSecurity of the local data, all data is saved in the router ROM and never exposed to any intermediary server.\nUnique system architecture that serves as a decentralised private network communication tunnel.</string>
+    <string name="guest_viewpager_3">Scan the QR code on the Confidant Router to activate your administrator account.\nScan your QR code of the private key to import an existing account.\nScan the invation code to join your friend\'s Confidant circle.</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
