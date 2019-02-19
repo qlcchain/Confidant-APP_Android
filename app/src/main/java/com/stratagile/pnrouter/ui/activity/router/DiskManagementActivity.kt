@@ -53,9 +53,28 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
 
         if(JGetDiskTotalInfoRsp.params.retCode == 0)
         {
-            var usedCapacity = JGetDiskTotalInfoRsp.params.usedCapacity.replace("M","").toDouble() * 100
-            var totalCapacity= JGetDiskTotalInfoRsp.params.totalCapacity.replace("G","").toDouble() *1024
-
+            var usedCapacity = 0.0
+            if(JGetDiskTotalInfoRsp.params.usedCapacity.contains("M"))
+            {
+                usedCapacity = JGetDiskTotalInfoRsp.params.usedCapacity.replace("M","").toDouble() * 100
+            }else if(JGetDiskTotalInfoRsp.params.usedCapacity.contains("G"))
+            {
+                usedCapacity = JGetDiskTotalInfoRsp.params.usedCapacity.replace("G","").toDouble() * 1024 * 100
+            }else  if(JGetDiskTotalInfoRsp.params.usedCapacity.contains("T"))
+            {
+                usedCapacity = JGetDiskTotalInfoRsp.params.usedCapacity.replace("T","").toDouble() * 1024 * 1024 * 100
+            }
+            var totalCapacity= 1.0
+            if(JGetDiskTotalInfoRsp.params.totalCapacity.contains("M"))
+            {
+                totalCapacity = JGetDiskTotalInfoRsp.params.totalCapacity.replace("M","").toDouble()
+            }else if(JGetDiskTotalInfoRsp.params.totalCapacity.contains("G"))
+            {
+                totalCapacity = JGetDiskTotalInfoRsp.params.totalCapacity.replace("G","").toDouble() * 1024
+            }else if(JGetDiskTotalInfoRsp.params.totalCapacity.contains("T"))
+            {
+                totalCapacity = JGetDiskTotalInfoRsp.params.totalCapacity.replace("T","").toDouble() * 1024 * 1024
+            }
             var precent = (usedCapacity / totalCapacity).toString()
             if(precent.length > 4)
             {
