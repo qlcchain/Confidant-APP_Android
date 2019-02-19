@@ -9,6 +9,7 @@
     <com.hyphenate.easeui.widget.EaseTitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
+        hyphenate:titleBarRightImage="@mipmap/data"
         android:layout_height="wrap_content"
         hyphenate:titleBarLeftImage="@mipmap/arrow_exit_h" />
 
