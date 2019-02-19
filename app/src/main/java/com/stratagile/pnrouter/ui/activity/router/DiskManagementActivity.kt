@@ -52,6 +52,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         if(jFormatDiskRsp.params.retCode == 0)
         {
             runOnUiThread {
+                hideFormatDialog()
                 showHasBeenFormatDialog()
             }
         }else  if(jFormatDiskRsp.params.retCode == 1){
@@ -170,10 +171,9 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
                             disk_b.setOnClickListener {
-//                                val intent = Intent(this, DiskConfigureActivity::class.java)
-//                                intent.putExtra("Slot", 2)
-//                                startActivity(intent)
-                                showHasBeenFormatDialog()
+                                val intent = Intent(this, DiskConfigureActivity::class.java)
+                                intent.putExtra("Slot", 2)
+                                startActivity(intent)
                             }
                         }else if(infoBean.status == 0)
                         {
@@ -199,6 +199,9 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
 
     @Inject
     internal lateinit var mPresenter: DiskManagementPresenter
+    var formatDialog:CommonDialog ? = null
+    var hasBeenFormatDialog:CommonDialog ? = null
+    var rebootting:CommonDialog ? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -240,20 +243,22 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
 
     private fun showFormatDialog() {
         val view = View.inflate(this, R.layout.layout_format, null)
-        val sweetAlertDialog = CommonDialog(this)
-        sweetAlertDialog.setCancelable(false)
-        val window = sweetAlertDialog.window
-        window.setBackgroundDrawableResource(android.R.color.transparent)
-        sweetAlertDialog.setView(view)
-        sweetAlertDialog.show()
+        formatDialog = CommonDialog(this)
+        formatDialog?.setCancelable(false)
+        val window = formatDialog?.window
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        formatDialog?.setView(view)
+        formatDialog?.show()
     }
-
+    private fun hideFormatDialog() {
+        formatDialog?.dismiss()
+    }
     private fun showHasBeenFormatDialog() {
         val view = View.inflate(this, R.layout.layout_has_been_format, null)
         //取消或确定按钮监听事件处l
-        val sweetAlertDialog = CommonDialog(this)
-        sweetAlertDialog.setCancelable(false)
-        val window = sweetAlertDialog.window
+        hasBeenFormatDialog = CommonDialog(this)
+        hasBeenFormatDialog?.setCancelable(false)
+        val window = hasBeenFormatDialog?.window
         var tvReboot = view.findViewById<TextView>(R.id.tvReboot)
         tvReboot.setOnClickListener {
             var msgData = RebootReq()
@@ -269,40 +274,54 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
-            ConstantValue.isHasWebsocketInit = true
-            if(AppConfig.instance.messageReceiver != null)
-                AppConfig.instance.messageReceiver!!.close()
+            hideHasBeenFormatDialog()
+            showRebootting()
+            Thread(Runnable() {
+                run() {
+                    Thread.sleep(5000)
+                    hideRebootting()
+                    ConstantValue.isHasWebsocketInit = true
+                   /* if(AppConfig.instance.messageReceiver != null)
+                        AppConfig.instance.messageReceiver!!.close()*/
 
-            ConstantValue.loginOut = true
-            ConstantValue.isHeart = false
-            //isUserExit = true
-            resetUnCompleteFileRecode()
-            if (ConstantValue.isWebsocketConnected) {
-                FileMangerDownloadUtils.init()
-                ConstantValue.webSockeFileMangertList.forEach {
-                    it.disconnect(true)
-                    //ConstantValue.webSockeFileMangertList.remove(it)
+                    ConstantValue.loginOut = true
+                    ConstantValue.isHeart = false
+                    //isUserExit = true
+                    resetUnCompleteFileRecode()
+                    if (ConstantValue.isWebsocketConnected) {
+                        FileMangerDownloadUtils.init()
+                        ConstantValue.webSockeFileMangertList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSockeFileMangertList.remove(it)
+                        }
+                        ConstantValue.webSocketFileList.forEach {
+                            it.disconnect(true)
+                            //ConstantValue.webSocketFileList.remove(it)
+                        }
+                    }else{
+                        val intentTox = Intent(this, KotlinToxService::class.java)
+                        this.stopService(intentTox)
+                    }
+                    ConstantValue.isWebsocketConnected = false
+                    ConstantValue.loginReq = null
+                    ConstantValue.isWebsocketReConnect = false
+                    AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                    var intent = Intent(this, LoginActivityActivity::class.java)
+                    intent.putExtra("flag", "logout")
+                    startActivity(intent)
+                    finish()
                 }
-                ConstantValue.webSocketFileList.forEach {
-                    it.disconnect(true)
-                    //ConstantValue.webSocketFileList.remove(it)
-                }
-            }else{
-                val intentTox = Intent(this, KotlinToxService::class.java)
-                this.stopService(intentTox)
-            }
-            ConstantValue.isWebsocketConnected = false
-            ConstantValue.loginReq = null
-            ConstantValue.isWebsocketReConnect = false
-            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-            var intent = Intent(this, LoginActivityActivity::class.java)
-            intent.putExtra("flag", "logout")
-            startActivity(intent)
-            finish()
+            }).start()
+
+
         }
-        window.setBackgroundDrawableResource(android.R.color.transparent)
-        sweetAlertDialog.setView(view)
-        sweetAlertDialog.show()
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        hasBeenFormatDialog?.setView(view)
+        hasBeenFormatDialog?.show()
+    }
+    fun hideHasBeenFormatDialog()
+    {
+        hasBeenFormatDialog?.dismiss()
     }
     fun resetUnCompleteFileRecode()
     {
@@ -324,15 +343,17 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     private fun showRebootting() {
         val view = View.inflate(this, R.layout.layout_format, null)
         //取消或确定按钮监听事件处l
-        val sweetAlertDialog = CommonDialog(this)
+        rebootting = CommonDialog(this)
         var content = view.findViewById<TextView>(R.id.content)
         content.text = getString(R.string.rebooting)
-        val window = sweetAlertDialog.window
-        window.setBackgroundDrawableResource(android.R.color.transparent)
-        sweetAlertDialog.setView(view)
-        sweetAlertDialog.show()
+        val window = rebootting?.window
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        rebootting?.setView(view)
+        rebootting?.show()
     }
-
+    private fun hideRebootting() {
+        rebootting?.dismiss()
+    }
     override fun setupActivityComponent() {
        DaggerDiskManagementComponent
                .builder()
