@@ -977,7 +977,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 })
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
+        if (false && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
@@ -1008,14 +1009,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 cancellationSignal = null
                             }
                             finish();
-                            android.os.Process.killProcess(android.os.Process.myPid())
-                            System.exit(0)
+                            //android进程完美退出方法。
+                            var intent = Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+                            this.startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                            //System.runFinalizersOnExit(true);
+                            System.exit(0);
                         }
                         finger = view.findViewById<View>(R.id.finger) as ImageView
                         tvContent.setText(R.string.choose_finger_dialog_title)
                         val currentContext = this
                         builderTips = builder.create()
-                        //builderTips?.show()
+                        builderTips?.show()
                     } catch (e: Exception) {
                         try {
                             myAuthCallback = MyAuthCallback(handler)
@@ -1054,17 +1064,33 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     dialog.setPositiveButton(android.R.string.ok
                     ) { dialog, which ->
-                        val intent = Intent(Settings.ACTION_SETTINGS)
-                        startActivity(intent)
                         finish();
-                        android.os.Process.killProcess(android.os.Process.myPid())
-                        System.exit(0)
+                        //android进程完美退出方法。
+                        var intent = Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+                        this.startActivity(intent);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        //System.runFinalizersOnExit(true);
+                        System.exit(0);
                     }
                     dialog.setNegativeButton(android.R.string.cancel
                     ) { dialog, which ->
                         finish();
-                        android.os.Process.killProcess(android.os.Process.myPid())
-                        System.exit(0)
+                        //android进程完美退出方法。
+                        var intent = Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+                        this.startActivity(intent);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        //System.runFinalizersOnExit(true);
+                        System.exit(0);
                     }
                     dialog.create().show()
                 }
