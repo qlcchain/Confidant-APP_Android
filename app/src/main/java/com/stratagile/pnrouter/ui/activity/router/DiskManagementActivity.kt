@@ -13,6 +13,7 @@ import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.d
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -114,7 +115,9 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             DeviceModel_0.text = infoBean.device.toString()
                             SerialNumber_0.text = infoBean.serial.toString()
                             UserCapacity_0.text = infoBean.capacity.toString()*/
-                            rightContent.text = infoBean.temperature.toString() +"\n"+infoBean.powerOn.toString() +"\n"+infoBean.device.toString()+"\n"+infoBean.serial.toString()+"\n"+infoBean.capacity.toString()
+                            left1.text = "Disk temperature: \nusage time: \nDevice Model: \nSerial Number: \nUser Capacity: "
+                            var content = infoBean.temperature.toString() +"\n"+infoBean.powerOn.toString() +"\n"+infoBean.device.toString()+"\n"+infoBean.serial.toString()+"\n"+infoBean.capacity.toString()
+                            rightContent.text = content
                             status_0.visibility = View.GONE
                             disk_a.setBackgroundResource(R.drawable.disk_normal_bg)
                             disk_a_name.setBackgroundColor(resources.getColor(R.color.color_A0CCF9))
