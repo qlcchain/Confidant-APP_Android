@@ -89,6 +89,7 @@
                 android:layout_height="@dimen/x226" />
 
             <TextView
+                android:id="@+id/left1"
                 android:layout_width="@dimen/x240"
                 android:layout_marginLeft="@dimen/x40"
                 android:gravity="right"
@@ -96,11 +97,7 @@
                 android:textSize="@dimen/x20"
                 android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
-                android:text="Disk temperature：
-                 usage time：
-                 Device Model：
-                  Serial Number：
-                   User Capacity："
+                android:text="Disk temperature: \nusage time: \nDevice Model: \nSerial Number: \nUser Capacity: "
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/rightContent"
@@ -112,7 +109,6 @@
                 android:singleLine="false"
                 android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
-                android:text="Disk temperature："
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/temperature_0"
@@ -205,11 +201,7 @@
                 android:textSize="@dimen/x20"
                 android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
-                android:text="Disk temperature：
-                 usage time：
-                 Device Model：
-                  Serial Number：
-                   User Capacity："
+                android:text="Disk temperature: \nusage time: \nDevice Model: \nSerial Number: \nUser Capacity: "
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/rightContent2"
@@ -221,7 +213,6 @@
                 android:singleLine="false"
                 android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
-                android:text="Disk temperature："
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/temperature_1"
