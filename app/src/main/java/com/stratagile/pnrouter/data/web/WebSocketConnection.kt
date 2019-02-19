@@ -145,6 +145,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 filledUri = "wss://" + ipAddress + port
             }
             KLog.i("连接的地址为：${filledUri}")
+            if(filledUri == null || filledUri.equals(""))
+            {
+                return
+            }
             val socketFactory = createTlsSocketFactory(trustStore)
 
             if(mOkHttpClient == null)

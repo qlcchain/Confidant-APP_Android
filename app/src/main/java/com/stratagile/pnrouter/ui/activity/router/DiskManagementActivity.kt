@@ -19,15 +19,14 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.GetDiskTotalInfoReq
-import com.stratagile.pnrouter.entity.JGetDiskTotalInfoRsp
-import com.stratagile.pnrouter.entity.LogOutReq
+import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerDiskManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.DiskManagementContract
 import com.stratagile.pnrouter.ui.activity.router.module.DiskManagementModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.DiskManagementPresenter
 import com.stratagile.pnrouter.utils.FileMangerDownloadUtils
+import com.stratagile.pnrouter.utils.LocalFileUtils
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.CommonDialog
@@ -48,6 +47,24 @@ import javax.inject.Inject;
  */
 
 class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRouterServiceMessageReceiver.GetDiskTotalInfoBack {
+    override fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp) {
+        if(jFormatDiskRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                showHasBeenFormatDialog()
+            }
+        }else  if(jFormatDiskRsp.params.retCode == 1){
+
+            runOnUiThread {
+                toast(getString(R.string.notsupported))
+            }
+        }else{
+            runOnUiThread {
+                toast(R.string.system_busy)
+            }
+        }
+    }
+
     override fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp) {
 
 
@@ -193,26 +210,35 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         }
     }
     override fun initData() {
+
         title.text = resources.getText(R.string.disk_management)
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
-        var msgData = GetDiskTotalInfoReq()
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
-        } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(3, msgData)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            } else {
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        var isFormat = intent.getIntExtra("isFormat",0)
+        if(isFormat == 1)
+        {
+            showFormatDialog();
+        }else{
+            var msgData = GetDiskTotalInfoReq()
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(3, msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
+
     }
 
     private fun showFormatDialog() {
         val view = View.inflate(this, R.layout.layout_format, null)
         val sweetAlertDialog = CommonDialog(this)
+        sweetAlertDialog.setCancelable(false)
         val window = sweetAlertDialog.window
         window.setBackgroundDrawableResource(android.R.color.transparent)
         sweetAlertDialog.setView(view)
@@ -223,16 +249,75 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         val view = View.inflate(this, R.layout.layout_has_been_format, null)
         //取消或确定按钮监听事件处l
         val sweetAlertDialog = CommonDialog(this)
+        sweetAlertDialog.setCancelable(false)
         val window = sweetAlertDialog.window
         var tvReboot = view.findViewById<TextView>(R.id.tvReboot)
         tvReboot.setOnClickListener {
-            //todo
+            var msgData = RebootReq()
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(3, msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+            ConstantValue.isHasWebsocketInit = true
+            if(AppConfig.instance.messageReceiver != null)
+                AppConfig.instance.messageReceiver!!.close()
+
+            ConstantValue.loginOut = true
+            ConstantValue.isHeart = false
+            //isUserExit = true
+            resetUnCompleteFileRecode()
+            if (ConstantValue.isWebsocketConnected) {
+                FileMangerDownloadUtils.init()
+                ConstantValue.webSockeFileMangertList.forEach {
+                    it.disconnect(true)
+                    //ConstantValue.webSockeFileMangertList.remove(it)
+                }
+                ConstantValue.webSocketFileList.forEach {
+                    it.disconnect(true)
+                    //ConstantValue.webSocketFileList.remove(it)
+                }
+            }else{
+                val intentTox = Intent(this, KotlinToxService::class.java)
+                this.stopService(intentTox)
+            }
+            ConstantValue.isWebsocketConnected = false
+            ConstantValue.loginReq = null
+            ConstantValue.isWebsocketReConnect = false
+            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+            var intent = Intent(this, LoginActivityActivity::class.java)
+            intent.putExtra("flag", "logout")
+            startActivity(intent)
+            finish()
         }
         window.setBackgroundDrawableResource(android.R.color.transparent)
         sweetAlertDialog.setView(view)
         sweetAlertDialog.show()
     }
-
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
     private fun showRebootting() {
         val view = View.inflate(this, R.layout.layout_format, null)
         //取消或确定按钮监听事件处l

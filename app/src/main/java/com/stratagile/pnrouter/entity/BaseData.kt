@@ -393,3 +393,9 @@ data class GetDiskDetailInfoReq(var Slot:Int,var Action : String = "GetDiskDetai
  * (2)	响应（APP->Router）
  */
 data class FormatDiskReq(var Mode:String,var Action : String = "FormatDisk")
+
+/**
+ * 	53.	设备重启
+ * (2)	响应（APP->Router）
+ */
+data class RebootReq(var Action : String = "Reboot")

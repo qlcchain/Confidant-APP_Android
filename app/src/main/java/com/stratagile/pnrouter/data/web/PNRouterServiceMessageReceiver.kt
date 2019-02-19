@@ -277,6 +277,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "FormatDisk" -> {
                     val jFormatDiskRsp = gson.fromJson(text, JFormatDiskRsp::class.java)
                     formatDiskBack?.formatDiskReq(jFormatDiskRsp)
+                    getDiskTotalInfoBack?.formatDiskReq(jFormatDiskRsp)
                 }
 
             }
@@ -536,6 +537,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface GetDiskTotalInfoBack {
         fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
+        fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
     }
 
     interface GetDiskDetailInfoBack {

@@ -85,6 +85,10 @@ class DiskReconfigureActivity : BaseActivity(), DiskReconfigureContract.View, PN
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
+                val intent = Intent(this, DiskManagementActivity::class.java)
+                intent.putExtra("isFormat", 1)
+                startActivity(intent)
+                finish()
             }
         }
     }
