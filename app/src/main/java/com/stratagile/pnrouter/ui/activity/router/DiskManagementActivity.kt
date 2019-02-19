@@ -92,11 +92,12 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                     {
                         if(infoBean.status == 2)
                         {
-                            temperature_0.text = infoBean.temperature.toString()
+                           /* temperature_0.text = infoBean.temperature.toString()
                             usagetime_0.text = infoBean.powerOn.toString()
                             DeviceModel_0.text = infoBean.device.toString()
                             SerialNumber_0.text = infoBean.serial.toString()
-                            UserCapacity_0.text = infoBean.capacity.toString()
+                            UserCapacity_0.text = infoBean.capacity.toString()*/
+                            rightContent.text = infoBean.temperature.toString() +"\n"+infoBean.powerOn.toString() +"\n"+infoBean.device.toString()+"\n"+infoBean.serial.toString()+"\n"+infoBean.capacity.toString()
                             status_0.visibility = View.GONE
                             disk_a.setBackgroundResource(R.drawable.disk_normal_bg)
                             disk_a_name.setBackgroundColor(resources.getColor(R.color.color_A0CCF9))
@@ -127,11 +128,13 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                     }else{
                         if(infoBean.status == 2)
                         {
-                            temperature_1.text = infoBean.temperature.toString()
+                            /*temperature_1.text = infoBean.temperature.toString()
                             usagetime_1.text = infoBean.powerOn.toString()
                             DeviceModel_1.text = infoBean.device.toString()
                             SerialNumber_1.text = infoBean.serial.toString()
-                            UserCapacity_1.text = infoBean.capacity.toString()
+                            UserCapacity_1.text = infoBean.capacity.toString()*/
+                            rightContent2.text = infoBean.temperature.toString() +"\n"+infoBean.powerOn.toString() +"\n"+infoBean.device.toString()+"\n"+infoBean.serial.toString()+"\n"+infoBean.capacity.toString()
+
                             disk_b.setBackgroundResource(R.drawable.disk_normal_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_A0CCF9))
                             status_1.visibility = View.GONE
@@ -183,6 +186,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
 
     override fun initView() {
         setContentView(R.layout.activity_disk_management)
+        llRouterAlias.setOnClickListener {
+            val intent = Intent(this, DiskConfigureActivity::class.java)
+            intent.putExtra("Slot", 0)
+            startActivity(intent)
+        }
     }
     override fun initData() {
         title.text = resources.getText(R.string.disk_management)

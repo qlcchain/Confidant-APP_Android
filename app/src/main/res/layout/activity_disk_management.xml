@@ -94,13 +94,25 @@
                 android:gravity="right"
                 android:textColor="@color/color_2B2B2B"
                 android:textSize="@dimen/x20"
-                android:lineSpacingExtra="@dimen/x16"
+                android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
                 android:text="Disk temperature：
                  usage time：
                  Device Model：
                   Serial Number：
                    User Capacity："
+                android:layout_height="@dimen/x200" />
+            <TextView
+                android:id="@+id/rightContent"
+                android:layout_width="@dimen/x400"
+                android:layout_marginLeft="@dimen/x280"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:singleLine="false"
+                android:lineSpacingExtra="@dimen/x20"
+                android:layout_marginTop="@dimen/x15"
+                android:text="Disk temperature："
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/temperature_0"
@@ -191,13 +203,25 @@
                 android:gravity="right"
                 android:textColor="@color/color_2B2B2B"
                 android:textSize="@dimen/x20"
-                android:lineSpacingExtra="@dimen/x16"
+                android:lineSpacingExtra="@dimen/x20"
                 android:layout_marginTop="@dimen/x15"
                 android:text="Disk temperature：
                  usage time：
                  Device Model：
                   Serial Number：
                    User Capacity："
+                android:layout_height="@dimen/x200" />
+            <TextView
+                android:id="@+id/rightContent2"
+                android:layout_width="@dimen/x400"
+                android:layout_marginLeft="@dimen/x280"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:singleLine="false"
+                android:lineSpacingExtra="@dimen/x20"
+                android:layout_marginTop="@dimen/x15"
+                android:text="Disk temperature："
                 android:layout_height="@dimen/x200" />
             <TextView
                 android:id="@+id/temperature_1"

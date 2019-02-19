@@ -174,6 +174,7 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
                 val intent = Intent(this, DiskReconfigureActivity::class.java)
                 intent.putExtra("Mode", mode)
                 startActivity(intent)
+                finish()
             }else{
                 toast(getString(R.string.notsupported))
             }
