@@ -1,10 +1,16 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.d
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
@@ -16,14 +22,21 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.GetDiskTotalInfoReq
 import com.stratagile.pnrouter.entity.JGetDiskTotalInfoRsp
+import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerDiskManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.DiskManagementContract
 import com.stratagile.pnrouter.ui.activity.router.module.DiskManagementModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.DiskManagementPresenter
+import com.stratagile.pnrouter.utils.FileMangerDownloadUtils
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_disk_management.*
+import org.w3c.dom.Text
 
 import javax.inject.Inject;
 
@@ -115,9 +128,10 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
                             disk_b.setOnClickListener {
-                                val intent = Intent(this, DiskConfigureActivity::class.java)
-                                intent.putExtra("Slot", 2)
-                                startActivity(intent)
+//                                val intent = Intent(this, DiskConfigureActivity::class.java)
+//                                intent.putExtra("Slot", 2)
+//                                startActivity(intent)
+                                showHasBeenFormatDialog()
                             }
                         }else if(infoBean.status == 0)
                         {
@@ -167,6 +181,41 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
+    }
+
+    private fun showFormatDialog() {
+        val view = View.inflate(this, R.layout.layout_format, null)
+        val sweetAlertDialog = CommonDialog(this)
+        val window = sweetAlertDialog.window
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        sweetAlertDialog.setView(view)
+        sweetAlertDialog.show()
+    }
+
+    private fun showHasBeenFormatDialog() {
+        val view = View.inflate(this, R.layout.layout_has_been_format, null)
+        //取消或确定按钮监听事件处l
+        val sweetAlertDialog = CommonDialog(this)
+        val window = sweetAlertDialog.window
+        var tvReboot = view.findViewById<TextView>(R.id.tvReboot)
+        tvReboot.setOnClickListener {
+            //todo
+        }
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        sweetAlertDialog.setView(view)
+        sweetAlertDialog.show()
+    }
+
+    private fun showRebootting() {
+        val view = View.inflate(this, R.layout.layout_format, null)
+        //取消或确定按钮监听事件处l
+        val sweetAlertDialog = CommonDialog(this)
+        var content = view.findViewById<TextView>(R.id.content)
+        content.text = getString(R.string.rebooting)
+        val window = sweetAlertDialog.window
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        sweetAlertDialog.setView(view)
+        sweetAlertDialog.show()
     }
 
     override fun setupActivityComponent() {

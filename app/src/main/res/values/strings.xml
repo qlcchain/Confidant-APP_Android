@@ -537,6 +537,11 @@
     <string name="automaticlogin">Automatic login</string>
     <string name="notsupported">This mode is not supported</string>
     <string name="Configuration_success">Configuration success</string>
+    <string name="rebooting">Rebooting...</string>
+    <string name="your_hard_disk_has_been_n_formatted">Your hard disk has been   formatted</string>
+    <string name="please_reboot_your_router">Please reboot your router</string>
+    <string name="reboot">Reboot</string>
+    <string name="formatting_in_progress">Formatting in progress...</string>
 
 
 </resources>

@@ -129,6 +129,12 @@ public class SweetAlertDialog extends Dialog implements View.OnClickListener {
         mOverlayOutAnim.setDuration(120);
     }
 
+    public SweetAlertDialog setView(View view) {
+        mDialogView = getWindow().getDecorView().findViewById(android.R.id.content);
+        setContentView(view);
+        return this;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
