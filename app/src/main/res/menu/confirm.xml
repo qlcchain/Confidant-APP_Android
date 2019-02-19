@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/confirm"
         app:showAsAction="always"
-        android:icon="@mipmap/confirm"
+        android:icon="@mipmap/save"
         android:title="" />
 </menu>

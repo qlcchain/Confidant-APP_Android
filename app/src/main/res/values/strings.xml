@@ -536,5 +536,7 @@
 
     <string name="automaticlogin">Automatic login</string>
     <string name="notsupported">This mode is not supported</string>
+    <string name="Configuration_success">Configuration success</string>
+
 
 </resources>

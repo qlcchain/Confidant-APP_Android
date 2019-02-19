@@ -34,12 +34,21 @@ import javax.inject.Inject
 
 class DiskReconfigureActivity : BaseActivity(), DiskReconfigureContract.View, PNRouterServiceMessageReceiver.FormatDiskBack {
     override fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp) {
-        /*if(jFormatDiskRsp.params.retCode == 0)
+        if(jFormatDiskRsp.params.retCode == 0)
         {
+            runOnUiThread {
+                toast(R.string.Configuration_success)
+            }
+        }else  if(jFormatDiskRsp.params.retCode == 1){
 
+            runOnUiThread {
+                toast(getString(R.string.notsupported))
+            }
         }else{
-
-        }*/
+            runOnUiThread {
+                toast(R.string.system_busy)
+            }
+        }
     }
 
 
@@ -56,6 +65,7 @@ class DiskReconfigureActivity : BaseActivity(), DiskReconfigureContract.View, PN
     override fun initData() {
         title.text = "Reconfigure"
         var mode = intent.getStringExtra("Mode")
+        AppConfig.instance.messageReceiver?.formatDiskBack = this
         Confirm.setOnClickListener {
             if(!tipscheckbox.isChecked)
             {
@@ -98,5 +108,8 @@ class DiskReconfigureActivity : BaseActivity(), DiskReconfigureContract.View, PN
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        AppConfig.instance.messageReceiver?.formatDiskBack = null
+    }
 }
