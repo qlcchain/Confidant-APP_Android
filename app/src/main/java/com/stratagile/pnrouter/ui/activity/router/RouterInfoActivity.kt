@@ -89,6 +89,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             llRouterManagement.visibility =  View.GONE
             llDiskManagement.visibility = View.GONE
         }
+        llDiskManagement.visibility = View.VISIBLE
         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
         if(autoLoginRouterSn.equals(routerEntity.userSn))
         {
