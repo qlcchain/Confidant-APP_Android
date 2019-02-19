@@ -27,3 +27,4 @@
 /app/debug/app-debug.apk
 /app/debug/output.json
 /app/src/main/cpp/toxcore/ppTox.h
+/target/.history
