@@ -549,7 +549,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
                     }
@@ -678,7 +678,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
                         var baseData = BaseData(4,login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -1147,7 +1147,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -1291,7 +1291,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
                     delay(10000)
