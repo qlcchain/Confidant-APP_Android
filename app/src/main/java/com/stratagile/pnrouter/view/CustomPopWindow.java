@@ -14,7 +14,12 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.PopupWindow;
 
 import com.stratagile.pnrouter.R;
@@ -185,10 +190,40 @@ public class CustomPopWindow {
      * 关闭popWindow
      */
     public void dismiss(){
-        contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
+//        contentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.pop_manage_product_out));
+//        contentView.setVisibility(View.GONE);
+        TranslateAnimation translate = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
+        );
+        translate.setDuration(200);
+        contentView.startAnimation(translate);
         contentView.setVisibility(View.GONE);
-        mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
-        mContentView.setVisibility(View.GONE);
+        translate.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                AlphaAnimation alpha = new AlphaAnimation(1, 0);
+                AnimationSet set = new AnimationSet(true);
+                set.addAnimation(alpha);
+                set.setInterpolator(new DecelerateInterpolator());
+                set.setDuration(200);
+                set.setFillAfter(true);
+                mContentView.startAnimation(set);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+//        mContentView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
+//        mContentView.setVisibility(View.GONE);
+
         dismissHandler.sendEmptyMessageDelayed(0, 400);
     }
 

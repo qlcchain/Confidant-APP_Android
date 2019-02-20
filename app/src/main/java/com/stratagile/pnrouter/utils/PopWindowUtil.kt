@@ -6,7 +6,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
 
@@ -47,8 +49,14 @@ object PopWindowUtil {
     fun showSharePopWindow(activity: Activity, showView: View) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.share_pop_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
         recyclerView.layoutManager = linearLayoutManager
@@ -96,8 +104,14 @@ object PopWindowUtil {
     fun showSelectRouterPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.select_router_pop_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
@@ -128,8 +142,14 @@ object PopWindowUtil {
     fun showFileOpreatePopWindow(activity: Activity, showView: View, fileName : Any, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
@@ -161,8 +181,14 @@ object PopWindowUtil {
     fun showFileRecentPopWindow(activity: Activity, showView: View, fileName : Any, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
@@ -196,8 +222,14 @@ object PopWindowUtil {
     fun showFileUploadPopWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.opreate_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         var ll_file = contentView.findViewById<LinearLayout>(R.id.ll_file)
         ll_file.visibility = View.GONE
@@ -245,8 +277,14 @@ object PopWindowUtil {
     fun showFileSortWindow(activity: Activity, showView: View, onRouterSelectListener : OnSelectListener) {
         val maskView = LayoutInflater.from(activity).inflate(R.layout.sort_file_layout, null)
         val contentView = maskView.findViewById<View>(R.id.ll_popup)
-        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
-        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
