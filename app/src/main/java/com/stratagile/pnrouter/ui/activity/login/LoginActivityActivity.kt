@@ -978,7 +978,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (false && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager

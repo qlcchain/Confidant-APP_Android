@@ -58,10 +58,12 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         }else  if(jFormatDiskRsp.params.retCode == 1){
 
             runOnUiThread {
+                hideFormatDialog()
                 toast(getString(R.string.notsupported))
             }
         }else{
             runOnUiThread {
+                hideFormatDialog()
                 toast(R.string.system_busy)
             }
         }
@@ -214,6 +216,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
             intent.putExtra("Slot", 0)
             startActivity(intent)
         }
+        var isFormat = intent.getIntExtra("isFormat",0)
+        if(isFormat == 1)
+        {
+            showFormatDialog()
+        }
     }
     override fun initData() {
 
@@ -222,7 +229,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         var isFormat = intent.getIntExtra("isFormat",0)
         if(isFormat == 1)
         {
-            showFormatDialog();
+            //showFormatDialog()
         }else{
             var msgData = GetDiskTotalInfoReq()
             if (ConstantValue.isWebsocketConnected) {
@@ -244,14 +251,25 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     private fun showFormatDialog() {
         val view = View.inflate(this, R.layout.layout_format, null)
         formatDialog = CommonDialog(this)
-        formatDialog?.setCancelable(false)
+        //formatDialog?.setCancelable(false)
         val window = formatDialog?.window
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         formatDialog?.setView(view)
         formatDialog?.show()
     }
     private fun hideFormatDialog() {
-        formatDialog?.dismiss()
+
+        /*Thread(Runnable() {
+            run() {
+
+                Thread.sleep(2000)
+                formatDialog?.dismiss()
+            }
+        }).start()*/
+        if(formatDialog != null){
+            formatDialog?.dismiss()
+        }
+
     }
     private fun showHasBeenFormatDialog() {
         val view = View.inflate(this, R.layout.layout_has_been_format, null)
