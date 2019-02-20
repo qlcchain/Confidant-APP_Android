@@ -135,7 +135,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         Thread(Runnable() {
             run() {
 
-                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(adminQrcode, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode("type_2,"+adminQrcode, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
                     ivQrCodeAdmin.setImageBitmap(bitmap)
                 }

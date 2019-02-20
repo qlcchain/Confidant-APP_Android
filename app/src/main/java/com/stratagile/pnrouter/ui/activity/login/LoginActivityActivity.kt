@@ -978,7 +978,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
-        if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (false && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
@@ -1625,8 +1625,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             noRoutergroupLogin.visibility = View.INVISIBLE
             try {
                 var result = data!!.getStringExtra("result");
-                var soureData:ByteArray =  AESCipher.aesDecryptByte(result,"welcometoqlc0101")
-                if(soureData.size == 114)
+                if(!result.contains("type_"))
+                {
+                    toast(R.string.code_error)
+                    return
+                }
+                var type = result.substring(0,6);
+                var data = result.substring(7,result.length);
+                var soureData:ByteArray =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
+                if(type.equals("type_1"))
                 {
                     scanType = 1
                     val keyId:ByteArray = ByteArray(6) //密钥ID
@@ -1778,7 +1785,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }else{
                         toast(R.string.code_error)
                     }
-                }else  if(soureData.size == 17)
+                }else  if(type.equals("type_2"))
                 {
                     scanType = 0;
                     RouterMacStr = String(soureData)

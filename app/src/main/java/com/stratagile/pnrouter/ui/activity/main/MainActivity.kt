@@ -1293,12 +1293,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result")
-            if(!result.contains(","))
+            if(!result.contains("type_0"))
             {
                 toast(getString(R.string.codeerror))
                 return;
             }
-            viewModel.toAddUserId.value = data!!.getStringExtra("result")
+            viewModel.toAddUserId.value = result.substring(7,result.length)
             return
         } else if (requestCode == SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
