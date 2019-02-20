@@ -14,6 +14,7 @@ import android.widget.TextView
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -245,8 +246,13 @@ object PopWindowUtil {
             onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
             CustomPopWindow.onBackPressed()
         }
+        maskView.setOnSystemUiVisibilityChangeListener {
+            KLog.i("改变了。。。")
+        }
         //对具体的view的事件的处理
-        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+        maskView.setOnClickListener {
+            CustomPopWindow.onBackPressed()
+        }
 
         CustomPopWindow.PopupWindowBuilder(activity)
                 .setView(maskView)
