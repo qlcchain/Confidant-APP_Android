@@ -205,16 +205,20 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             myRouter.setRouterEntity(newRouterEntity)
             LocalRouterUtils.insertLocalAssets(myRouter)
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
-            var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-            var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
+            //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+            //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,sign, registerRsp.params.dataFileVersion,NickName)
+
             ConstantValue.loginReq = login
             if(ConstantValue.isWebsocketConnected)
             {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
             }
             else if(ConstantValue.isToxConnected)
             {
-                var baseData = BaseData(2,login)
+                var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
@@ -274,6 +278,13 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         registerBtn.setOnClickListener {
             if(flag != null && flag == 1)
             {
+                if (createName.text.toString().equals("")) {
+                    toast(getString(R.string.Cannot_be_empty))
+                    return@setOnClickListener
+                }
+            }
+          /*  if(flag != null && flag == 1)
+            {
                 if (createName.text.toString().equals("") || userName3.text.toString().equals("")) {
                     toast(getString(R.string.Cannot_be_empty))
                     return@setOnClickListener
@@ -288,18 +299,21 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             if (!userName3.text.toString().equals(userName4.text.toString())) {
                 toast(getString(R.string.Password_inconsistent))
                 return@setOnClickListener
-            }
+            }*/
             showProgressDialog("waiting...")
             val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
+            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+            var pulicMiKey = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey!!).toString()
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-            var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+            //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+            var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, sign,pulicMiKey,NickName)
             if(ConstantValue.isWebsocketConnected)
             {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,regeister))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
             }
             else if(ConstantValue.isToxConnected)
             {
-                var baseData = BaseData(2,regeister)
+                var baseData = BaseData(4,regeister)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))

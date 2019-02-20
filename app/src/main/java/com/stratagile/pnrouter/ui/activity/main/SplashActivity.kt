@@ -129,11 +129,16 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
 
-
+        var op = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var op2 = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)
+        var bb = String(op)
+        var cc = bb.toByteArray()
         //这里不要注释
         var dst_public_TemKey_My = ByteArray(32)
         var dst_private_Temkey_My = ByteArray(32)
         var crypto_box_keypair_Temresult = Sodium.crypto_box_keypair(dst_public_TemKey_My,dst_private_Temkey_My)
+        var gg = dst_public_TemKey_My.toString()
+        var hh = dst_private_Temkey_My.toString()
         ConstantValue.libsodiumprivateTemKey = RxEncodeTool.base64Encode2String(dst_private_Temkey_My)
         ConstantValue.libsodiumpublicTemKey =  RxEncodeTool.base64Encode2String(dst_public_TemKey_My)
 

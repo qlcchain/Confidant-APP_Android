@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
 import android.os.*
-import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.KeyEvent
 import android.view.View
@@ -46,11 +45,11 @@ import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.tox.toxcore.KotlinToxService
+import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
-import com.stratagile.tox.toxcore.KotlinToxService
-import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
@@ -546,9 +545,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
 //            standaloneCoroutine.cancel()
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                        var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                        val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
                     }
 
                 }
@@ -671,9 +674,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             })
                         }
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                        var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+
+                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                        val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
-                        var baseData = BaseData(2,login)
+                        var baseData = BaseData(4,login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         ConstantValue.unSendMessage.put("login",baseDataJson)
                         ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
@@ -1123,10 +1130,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             ConstantValue.lastRouterSN=""
             ConstantValue.lastNetworkType =""
         }
-        if (loginKey.text.toString().equals("")) {
+       /* if (loginKey.text.toString().equals("")) {
             toast(getString(R.string.please_type_your_password))
             return
-        }
+        }*/
         if( ConstantValue.curreantNetworkType.equals("TOX"))
         {
 
@@ -1136,9 +1143,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
-                var baseData = BaseData(2,login)
+                var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
@@ -1276,7 +1287,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }else{
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
-                var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                var login = LoginReq_V4(routerId,userId, userId,sign, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
                     delay(10000)
@@ -1291,7 +1306,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     showProgressDialog("login...")
                 }
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,login))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
             }
         }
 

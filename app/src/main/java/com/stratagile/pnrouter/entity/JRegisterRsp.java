@@ -32,6 +32,7 @@ public class JRegisterRsp extends BaseEntity {
         private int RetCode;
         private String Index;
         private String RouteId;
+        private String RouteName;
         private String UserSn;
         private String UserId;
         private int DataFileVersion;
@@ -80,7 +81,13 @@ public class JRegisterRsp extends BaseEntity {
         public String getUserId() {
             return UserId;
         }
+        public String getRouteName() {
+            return RouteName;
+        }
 
+        public void setRouteName(String routeName) {
+            RouteName = routeName;
+        }
         public void setUserId(String UserId) {
             this.UserId = UserId;
         }

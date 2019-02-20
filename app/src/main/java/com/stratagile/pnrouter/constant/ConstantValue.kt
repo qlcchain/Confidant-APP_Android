@@ -2,9 +2,9 @@ package com.stratagile.pnrouter.constant
 
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
-import com.stratagile.pnrouter.entity.JPullFileListRsp
-import com.stratagile.pnrouter.entity.LoginReq
+import com.stratagile.pnrouter.entity.LoginReq_V4
 import java.util.HashMap
+import kotlin.collections.ArrayList
 
 object ConstantValue {
         var encryptionType = "1" // 加密方式 0:RSA+AES  ; 1 : libsodium
@@ -82,7 +82,7 @@ object ConstantValue {
         var isHasWebsocketInit = false  //是否走过websocket连接初始化
         var isHeart = false //是否可以发心跳
         var hasLogin = false  //是否登录过
-        var loginReq:LoginReq? = null  //登录过的账号数据
+        var loginReq: LoginReq_V4? = null  //登录过的账号数据
         var isWebsocketReConnect = false  //websocket是否重连过
         var isToxReConnect = false  //tox是否重连过
         var mRegId = ""

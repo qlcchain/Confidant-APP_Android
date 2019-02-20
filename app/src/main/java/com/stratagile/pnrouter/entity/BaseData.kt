@@ -77,10 +77,21 @@ data class RecoveryReq(var RouteId : String, var UserSn : String, var Action : S
  */
 data class RegeisterReq(var RouteId : String, var UserSn : String, var IdentifyCode :String,var LoginKey :String,var NickName :String, var Action : String = "Register")
 /**
+ * 57.	APP新用户注册_V4
+ * (1)	请求（APP-->Router）
+ */
+data class RegeisterReq_V4(var RouteId : String, var UserSn : String, var Sign :String,var Pubkey :String,var NickName :String, var Action : String = "Register")
+/**
  * 1.	APP登录
  * (1)	请求（APP-->Router）
  */
 data class LoginReq(var RouteId : String, var UserSn:String, var UserId : String, var LoginKey : String, var DataFileVersion :Int, var Action : String = "Login")
+
+/**
+ *58.	APP用户登陆_V4
+ * (1)	请求（APP-->Router）
+ */
+data class LoginReq_V4(var RouteId : String, var UserSn:String, var UserId : String, var Sign : String, var DataFileVersion :Int,var NickName :String, var Action : String = "Login")
 
 /**
  * 1.	APP登录（包含新用户注册）
