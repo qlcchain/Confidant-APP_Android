@@ -3249,7 +3249,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             chooseOriginalImage(file.getAbsolutePath());
             //sendImageMessage(file.getAbsolutePath());
         }
-
+        inputMenu.hideExtendMenuContainer();
     }
     protected void chooseOriginalImage(String path)
     {

@@ -37,6 +37,7 @@ import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.utils.UIUtils;
 
 import java.io.File;
 
@@ -83,7 +84,7 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 			// int screenHeight =metrics.heightPixels;
 			bitmap = EaseImageCache.getInstance().get(uri.getPath());
 			if (bitmap == null) {
-				EaseLoadLocalBigImgTask task = new EaseLoadLocalBigImgTask(this, uri.getPath(), image, loadLocalPb, ImageUtils.SCALE_IMAGE_WIDTH,
+				EaseLoadLocalBigImgTask task = new EaseLoadLocalBigImgTask(this, uri.getPath(), image, loadLocalPb, UIUtils.getDisplayWidth(this),
 						ImageUtils.SCALE_IMAGE_HEIGHT);
 				if (android.os.Build.VERSION.SDK_INT > 10) {
 					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -228,11 +229,11 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		isCheck = chooseCheckBox.isChecked();
-		Intent intent = new Intent();
-		intent.putExtra("isCheck", isCheck);
-		intent.putExtra("path", path);
-		setResult(RESULT_OK,intent);
+//		isCheck = chooseCheckBox.isChecked();
+//		Intent intent = new Intent();
+//		intent.putExtra("isCheck", isCheck);
+//		intent.putExtra("path", path);
+//		setResult(RESULT_OK,intent);
 		finish();
 	}
 }
