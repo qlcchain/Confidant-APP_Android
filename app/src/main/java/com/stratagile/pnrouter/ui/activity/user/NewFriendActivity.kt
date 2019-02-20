@@ -153,7 +153,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         viewModel.toAddUserId.observe(this, android.arch.lifecycle.Observer<String> { toAddUserId ->
             KLog.i(toAddUserId)
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            if (toAddUserId.equals(selfUserId)) {
+            if (toAddUserId!!.contains(selfUserId!!)) {
                 return@Observer
             }
             if (!"".equals(toAddUserId)) {

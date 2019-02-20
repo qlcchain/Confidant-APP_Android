@@ -410,3 +410,9 @@ data class FormatDiskReq(var Mode:String,var Action : String = "FormatDisk")
  * (2)	响应（APP->Router）
  */
 data class RebootReq(var Action : String = "Reboot")
+
+/**
+ * 	56.	设备管理员修改设备昵称
+ * (2)	响应（APP->Router）
+ */
+data class ResetRouterNameReq(var RouterId :String, var UserId : String,var Name : String,var Action : String = "ResetRouterName")
