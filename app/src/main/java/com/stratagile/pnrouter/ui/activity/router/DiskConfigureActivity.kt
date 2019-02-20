@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
@@ -173,14 +174,26 @@ class DiskConfigureActivity : BaseActivity(), DiskConfigureContract.View {
             {
                 val intent = Intent(this, DiskReconfigureActivity::class.java)
                 intent.putExtra("Mode", mode)
-                startActivity(intent)
-                finish()
+                startActivityForResult(intent,1)
             }else{
                 toast(getString(R.string.notsupported))
             }
 
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            var result = data!!.getStringExtra("result")
+            if(result.equals("1"))
+            {
+                val intent = Intent()
+                intent.putExtra("result", "1")
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+        }
     }
     override fun setupActivityComponent() {
        DaggerDiskConfigureComponent

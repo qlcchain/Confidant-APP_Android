@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -138,7 +139,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setOnClickListener {
                                 val intent = Intent(this, DiskConfigureActivity::class.java)
                                 intent.putExtra("Slot", 0)
-                                startActivity(intent)
+                                startActivityForResult(intent,1)
                             }
                         }else if(infoBean.status == 0)
                         {
@@ -175,7 +176,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setOnClickListener {
                                 val intent = Intent(this, DiskConfigureActivity::class.java)
                                 intent.putExtra("Slot", 2)
-                                startActivity(intent)
+                                startActivityForResult(intent,1)
                             }
                         }else if(infoBean.status == 0)
                         {
@@ -214,38 +215,26 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         llRouterAlias.setOnClickListener {
             val intent = Intent(this, DiskConfigureActivity::class.java)
             intent.putExtra("Slot", 0)
-            startActivity(intent)
-        }
-        var isFormat = intent.getIntExtra("isFormat",0)
-        if(isFormat == 1)
-        {
-            showFormatDialog()
+            startActivityForResult(intent,1)
         }
     }
     override fun initData() {
 
         title.text = resources.getText(R.string.disk_management)
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
-        var isFormat = intent.getIntExtra("isFormat",0)
-        if(isFormat == 1)
-        {
-            //showFormatDialog()
-        }else{
-            var msgData = GetDiskTotalInfoReq()
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
-            } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(3, msgData)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                } else {
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
+        var msgData = GetDiskTotalInfoReq()
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(3, msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
-
     }
 
     private fun showFormatDialog() {
@@ -259,16 +248,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     }
     private fun hideFormatDialog() {
 
-        /*Thread(Runnable() {
-            run() {
-
-                Thread.sleep(2000)
-                formatDialog?.dismiss()
-            }
-        }).start()*/
-        if(formatDialog != null){
-            formatDialog?.dismiss()
-        }
+        formatDialog?.dismiss()
 
     }
     private fun showHasBeenFormatDialog() {
@@ -371,6 +351,16 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     }
     private fun hideRebootting() {
         rebootting?.dismiss()
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            var result = data!!.getStringExtra("result")
+            if(result.equals("1"))
+            {
+                showFormatDialog()
+            }
+        }
     }
     override fun setupActivityComponent() {
        DaggerDiskManagementComponent
