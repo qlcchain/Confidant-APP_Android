@@ -52,17 +52,20 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     override fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp) {
         if(jFormatDiskRsp.params.retCode == 0)
         {
+            isnoNeed = false
             runOnUiThread {
                 hideFormatDialog()
                 showHasBeenFormatDialog()
             }
         }else  if(jFormatDiskRsp.params.retCode == 1){
 
+            isnoNeed = true
             runOnUiThread {
                 hideFormatDialog()
                 toast(getString(R.string.notsupported))
             }
         }else{
+            isnoNeed = true
             runOnUiThread {
                 hideFormatDialog()
                 toast(R.string.system_busy)
@@ -114,11 +117,11 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                     {
                         if(infoBean.status == 2)
                         {
-                           /* temperature_0.text = infoBean.temperature.toString()
-                            usagetime_0.text = infoBean.powerOn.toString()
-                            DeviceModel_0.text = infoBean.device.toString()
-                            SerialNumber_0.text = infoBean.serial.toString()
-                            UserCapacity_0.text = infoBean.capacity.toString()*/
+                            /* temperature_0.text = infoBean.temperature.toString()
+                             usagetime_0.text = infoBean.powerOn.toString()
+                             DeviceModel_0.text = infoBean.device.toString()
+                             SerialNumber_0.text = infoBean.serial.toString()
+                             UserCapacity_0.text = infoBean.capacity.toString()*/
                             left1.text = "Disk temperature: \nusage time: \nDevice Model: \nSerial Number: \nUser Capacity: "
                             var content = infoBean.temperature.toString() +"\n"+infoBean.powerOn.toString() +"\n"+infoBean.device.toString()+"\n"+infoBean.serial.toString()+"\n"+infoBean.capacity.toString()
                             rightContent.text = content
@@ -137,6 +140,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_a.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_a_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
                             disk_b.setOnClickListener {
+                                isnoNeed = false
                                 val intent = Intent(this, DiskConfigureActivity::class.java)
                                 intent.putExtra("Slot", 0)
                                 startActivityForResult(intent,1)
@@ -174,6 +178,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setBackgroundResource(R.drawable.disk_notconfigured_bg)
                             disk_b_name.setBackgroundColor(resources.getColor(R.color.color_BFBFBF))
                             disk_b.setOnClickListener {
+                                isnoNeed = false
                                 val intent = Intent(this, DiskConfigureActivity::class.java)
                                 intent.putExtra("Slot", 2)
                                 startActivityForResult(intent,1)
@@ -205,6 +210,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     var formatDialog:CommonDialog ? = null
     var hasBeenFormatDialog:CommonDialog ? = null
     var rebootting:CommonDialog ? = null
+    var isnoNeed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -213,6 +219,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     override fun initView() {
         setContentView(R.layout.activity_disk_management)
         llRouterAlias.setOnClickListener {
+            isnoNeed = false
             val intent = Intent(this, DiskConfigureActivity::class.java)
             intent.putExtra("Slot", 0)
             startActivityForResult(intent,1)
@@ -240,7 +247,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     private fun showFormatDialog() {
         val view = View.inflate(this, R.layout.layout_format, null)
         formatDialog = CommonDialog(this)
-        //formatDialog?.setCancelable(false)
+        formatDialog?.setCancelable(false)
         val window = formatDialog?.window
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         formatDialog?.setView(view)
@@ -248,7 +255,14 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
     }
     private fun hideFormatDialog() {
 
-        formatDialog?.dismiss()
+        Thread(Runnable() {
+            run() {
+
+                Thread.sleep(500)
+                formatDialog?.dismiss()
+            }
+        }).start()
+
 
     }
     private fun showHasBeenFormatDialog() {
@@ -279,8 +293,8 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                     Thread.sleep(5000)
                     hideRebootting()
                     ConstantValue.isHasWebsocketInit = true
-                   /* if(AppConfig.instance.messageReceiver != null)
-                        AppConfig.instance.messageReceiver!!.close()*/
+                    /* if(AppConfig.instance.messageReceiver != null)
+                         AppConfig.instance.messageReceiver!!.close()*/
 
                     ConstantValue.loginOut = true
                     ConstantValue.isHeart = false
@@ -356,23 +370,24 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result")
-            if(result.equals("1"))
+            if(result.equals("1") && !isnoNeed)
             {
+
                 showFormatDialog()
             }
         }
     }
     override fun setupActivityComponent() {
-       DaggerDiskManagementComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .diskManagementModule(DiskManagementModule(this))
-               .build()
-               .inject(this)
+        DaggerDiskManagementComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .diskManagementModule(DiskManagementModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: DiskManagementContract.DIsManagementContractPresenter) {
-            mPresenter = presenter as DiskManagementPresenter
-        }
+        mPresenter = presenter as DiskManagementPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
