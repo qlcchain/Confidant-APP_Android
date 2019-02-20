@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:textSize="19sp"
+        android:text="Set a username"
+        android:textColor="@color/color_2c2c2c"
+        android:layout_marginTop="@dimen/x38"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Your username will be visible to all your Confidant contacts"
+        android:textSize="11sp"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x10"
+        android:textColor="@color/color_2c2c2c"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textSize="11sp"
+        android:text="Username "
+        android:textColor="@color/color_2c2c2c"
+        android:layout_marginTop="@dimen/x70"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginTop="@dimen/x20"
+        android:background="@null"
+        android:hint="Please input your username"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x1"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginTop="@dimen/x30"
+        android:background="@color/color_f2f2f2"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginTop="@dimen/x86"
+        android:layout_marginRight="@dimen/x31"
+        android:textSize="13sp"
+        android:text="@string/next"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:background="@drawable/btn_maincolor"
+        android:layout_height="@dimen/x84" />
+
+    <TextView
+        android:id="@+id/importOtherAccount"
+        android:layout_width="wrap_content"
+        android:text="I already have an account"
+        android:drawableRight="@mipmap/arrow_enter"
+        android:drawablePadding="@dimen/x10"
+        android:layout_marginTop="@dimen/x80"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content" />
+</LinearLayout>

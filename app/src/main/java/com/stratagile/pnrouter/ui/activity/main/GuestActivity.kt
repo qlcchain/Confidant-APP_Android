@@ -183,7 +183,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
         r = Math.sqrt((screenW * screenW + screenH * screenH).toDouble()).toInt() + 10
 
-        wowo.addTemporarilyInvisibleViews(1, tvNext, funTv2, iv2, tvPage2)
+        wowo.addTemporarilyInvisibleViews(1, llNext, funTv2, iv2, tvPage2)
 
         wowo.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
 
@@ -360,7 +360,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     }
 
     private fun addGotIt() {
-        wowo.addAnimation(tvNext)
+        wowo.addAnimation(llNext)
                 .add(WoWoTranslationAnimation.builder().page(1)
                         .keepX(tvNext.getTranslationX())
                         .fromY(screenH.toFloat()).toY(0f).ease(Ease.OutBack)

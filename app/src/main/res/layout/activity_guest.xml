@@ -122,7 +122,7 @@
         android:id="@+id/rlDot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tvNext"
+        android:layout_above="@+id/llNext"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/x60">
 
@@ -157,14 +157,27 @@
             android:src="@mipmap/icon_inprogress" />
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/tvNext"
-        android:layout_width="wrap_content"
-        android:layout_centerHorizontal="true"
+    <LinearLayout
+        android:id="@+id/llNext"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x60"
+        android:layout_marginEnd="@dimen/x52"
+        android:background="@drawable/btn_white"
+        android:layout_marginStart="@dimen/x52"
+        android:paddingBottom="@dimen/x16"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/x70"
-        android:background="@mipmap/scavenging_h"
-        android:textSize="23sp" />
+        android:gravity="center"
+        android:paddingTop="@dimen/x16"
+        android:layout_marginTop="@dimen/x84">
+        <com.stratagile.pnrouter.view.DrawablePicTextView
+            android:id="@+id/tvNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:text="@string/start"
+            android:textColor="@color/mainColor"
+            android:textSize="23sp"/>
+    </LinearLayout>
 
 </RelativeLayout>

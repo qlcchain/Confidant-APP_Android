@@ -48,8 +48,7 @@
         <com.hyphenate.easeui.widget.EaseChatInputMenu
             android:id="@+id/input_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <com.hyphenate.easeui.widget.EaseVoiceRecorderView

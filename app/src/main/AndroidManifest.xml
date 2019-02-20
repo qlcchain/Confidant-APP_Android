@@ -199,6 +199,10 @@
         <activity android:name=".ui.activity.router.DiskConfigureActivity" />
         <activity android:name=".ui.activity.router.DiskInformationActivity" />
         <activity android:name=".ui.activity.router.DiskReconfigureActivity" />
+        <activity android:name=".ui.activity.user.CreateLocalAccountActivity">
+
+        </activity>
+        <activity android:name=".ui.activity.user.ImportAccountActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"

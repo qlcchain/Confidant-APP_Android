@@ -795,6 +795,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         });
 
+//        titleBar.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                easeChatMessageList.refreshSelectLast();
+//            }
+//        });
+
         setRefreshLayoutListener();
 
         // show forward message if the message is not null

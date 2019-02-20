@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Import an account"
+        android:textSize="18sp"
+        android:layout_marginTop="@dimen/x38"
+        android:textColor="@color/mainColor"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginLeft="@dimen/x31"
+        android:text="To log in to your registered account, please import your configuration QR code which can be found in /'Settings/'"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Where to find the configuration QR code"
+        android:layout_marginRight="@dimen/x31"
+        android:textSize="18sp"
+        android:layout_marginTop="@dimen/x38"
+        android:textColor="@color/mainColor"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginLeft="@dimen/x31"
+        android:text="The configuration QR code is for re-logging in to your account or synchronizing your Confidant account on new devices. 1. Go to 'My', find 'Settings' 2. Export the configuration QR code."
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Import the configuration QR code"
+        android:textSize="18sp"
+        android:layout_marginTop="@dimen/x38"
+        android:textColor="@color/mainColor"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_marginRight="@dimen/x31"
+        android:text="If the QR code has been saved on the device, find it in your /'Photos/' to import. Scan the QR code with your new device directly to sync an existing account."
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_weight="1"
+        android:layout_height="0px" />
+
+    <ImageView
+        android:id="@+id/ivScan"
+        android:layout_width="@dimen/x123"
+        android:layout_gravity="center_horizontal"
+        android:src="@mipmap/scaninging_h"
+        android:layout_marginBottom="@dimen/x44"
+        android:layout_height="@dimen/x123" />
+</LinearLayout>
