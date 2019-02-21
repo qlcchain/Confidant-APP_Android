@@ -543,6 +543,6 @@
     <string name="reboot">Reboot</string>
     <string name="formatting_in_progress">Formatting in progress...</string>
     <string name="create_an_account">Create an account</string>
-
+    <string name="Create_failure">Create failure</string>
 
 </resources>

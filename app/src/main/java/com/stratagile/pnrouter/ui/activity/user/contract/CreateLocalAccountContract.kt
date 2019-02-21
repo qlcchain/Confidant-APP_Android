@@ -19,12 +19,11 @@ interface CreateLocalAccountContract {
          *
          */
         fun closeProgressDialog()
+
+        abstract fun getScanPermissionSuccess()
     }
 
     interface CreateLocalAccountContractPresenter : BasePresenter {
-//        /**
-//         *
-//         */
-//        fun getBusinessInfo(map : Map)
+        abstract fun getScanPermission()
     }
 }

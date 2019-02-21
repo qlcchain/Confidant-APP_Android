@@ -7,6 +7,7 @@ package com.stratagile.pnrouter.entity;
 public class CryptoBoxKeypair {
     private String privateKey;
     private String publicKey;
+    private String userName;
 
     public String getPrivateKey() {
         return privateKey;
@@ -22,6 +23,14 @@ public class CryptoBoxKeypair {
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
 

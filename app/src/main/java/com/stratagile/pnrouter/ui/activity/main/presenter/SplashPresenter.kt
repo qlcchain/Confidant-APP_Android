@@ -188,7 +188,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     val gson = Gson()
                     var rsaData = FileUtil.readKeyData("data");
                     val localRSAArrayList: ArrayList<RSAData>
-                    if(rsaData.equals(""))
+                    if(rsaData.equals("")&& false)
                     {
                         val KeyPair = RxEncryptTool.generateRSAKeyPair(1024)
                         val aahh = KeyPair!!.private.format
@@ -232,7 +232,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     var miData = FileUtil.readKeyData("libsodiumdata_mi")
                     val localSignArrayList: ArrayList<CryptoBoxKeypair>
                     val localMiArrayList: ArrayList<CryptoBoxKeypair>
-                    if(signData.equals(""))
+                    if(signData.equals("")&& false)//不用在这里创建
                     {
                         var dst_public_SignKey = ByteArray(32)
                         var dst_private_Signkey = ByteArray(64)

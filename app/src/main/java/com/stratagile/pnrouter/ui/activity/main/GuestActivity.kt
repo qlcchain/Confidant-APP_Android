@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.ui.activity.main.module.GuestModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.GuestPresenter
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.ui.activity.user.CreateLocalAccountActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -89,20 +90,6 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         ConstantValue.unSendMessageFriendId.remove("recovery")
         ConstantValue.unSendMessageSendCount.remove("recovery")
         closeProgressDialog();
-        /*FileUtil.saveUserId2Local(recoveryRsp.params!!.userId)
-        var newRouterEntity = RouterEntity()
-        newRouterEntity.routerId = recoveryRsp.params.routeId
-        newRouterEntity.userSn = recoveryRsp.params.userSn
-        newRouterEntity.username =String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName))
-        newRouterEntity.userId = recoveryRsp.params.userId
-        newRouterEntity.dataFileVersion = 1
-        var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-        newRouterEntity.routerName = "Router " + (localData.size + 1)
-        val myRouter = MyRouter()
-        myRouter.setType(0)
-        myRouter.setUserEntity(newRouterEntity)
-        LocalRouterUtils.insertLocalAssets(myRouter)
-        LocalRouterUtils.updateGreanDaoFromLocal();*/
         when (recoveryRsp.params.retCode) {
             0 -> {
                 val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
@@ -467,7 +454,12 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                      AppConfig.instance.messageReceiver!!.recoveryBackListener = this
 
                  }*/
-                mPresenter.getScanPermission()
+                if(ConstantValue.libsodiumprivateSignKey.equals(""))
+                {
+                    startActivity(Intent(this, CreateLocalAccountActivity::class.java))
+                }else{
+                    mPresenter.getScanPermission()
+                }
                 //startActivity(Intent(this, LoginActivityActivity::class.java))
             } else {
 //                wowo.next()
