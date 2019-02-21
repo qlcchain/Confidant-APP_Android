@@ -188,6 +188,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             runOnUiThread()
                             {
                                 routerNameTips.text = i.routerName
+                                ivAvatar.setText(i.routerName)
                                 loginKey.setText(i.loginKey)
                             }
                             ConstantValue.currentRouterIp = ""
@@ -291,12 +292,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
-            newRouterEntity.routerName = "Router " + (routerList.size + 1)
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             if(loginRsp.params.nickName != null)
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
-            newRouterEntity.loginKey = loginKey.text.toString();
+            newRouterEntity.loginKey = loginKey.text.toString()
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
@@ -323,6 +324,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = loginKey.text.toString();
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -429,6 +431,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNameChange(nameChange: NameChange) {
         routerNameTips.text = nameChange.name
+        ivAvatar.setText(nameChange.name)
         loginKey.setText(nameChange.loginkey)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -837,9 +840,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                             if(it.routerName != null){
                                 routerNameTips.text = it.routerName
+                                ivAvatar.setText(it.routerName)
                             }else{
                                 routerNameTips.text =  "Router 1"
+                                ivAvatar.setText("Router 1")
                             }
+                            tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
                             if(it.loginKey != null){
                                 loginKey.setText(it.loginKey)
                             }else{
@@ -862,9 +868,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                 if(it.routerName != null){
                                     routerNameTips.text = it.routerName
+                                    ivAvatar.setText(it.routerName)
                                 }else{
                                     routerNameTips.text =  "Router 1"
+                                    ivAvatar.setText("Router 1")
                                 }
+                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
                                 }else{
@@ -884,9 +893,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                 if(it.routerName != null){
                                     routerNameTips.text = it.routerName
+                                    ivAvatar.setText(it.routerName)
                                 }else{
                                     routerNameTips.text =  "Router 1"
+                                    ivAvatar.setText("Router 1")
                                 }
+                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
                                 }else{
@@ -907,18 +919,23 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 userSn =  routerList[0].userSn
                 userId = routerList[0].userId
                 username = routerList[0].username
+                tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
                 dataFileVersion = routerList[0].dataFileVersion
                 if(routerList[0].routerName != null){
                     routerNameTips.text = routerList[0].routerName
+                    ivAvatar.setText(routerList[0].routerName)
                 }else{
                     routerNameTips.text = "Router 1"
+                    ivAvatar.setText("Router 1")
                 }
+
                 if(routerList[0].loginKey != null){
                     loginKey.setText(routerList[0].loginKey)
                 }else{
                     loginKey.setText("")
                 }
             }
+            ivAvatar.visibility = View.VISIBLE
             hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.INVISIBLE
             scanParentLogin.visibility = View.INVISIBLE
@@ -932,6 +949,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     .load(R.mipmap.icon_no_circle)
                     .apply(options)
                     .into(ivNoCircle)
+            ivNoCircle.visibility = View.VISIBLE
+            ivAvatar.visibility = View.GONE
             hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.VISIBLE
             scanParentLogin.visibility = View.VISIBLE
@@ -958,6 +977,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             username = routerList[position].username
                             dataFileVersion = routerList[position].dataFileVersion
                             routerNameTips.text = routerList[position].routerName
+
+                            ivAvatar.setText(routerList[position].routerName)
                             if(routerList[position].loginKey != null){
                                 loginKey.setText(routerList[position].loginKey)
                             }else{

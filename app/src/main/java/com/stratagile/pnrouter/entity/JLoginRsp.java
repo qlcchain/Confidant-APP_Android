@@ -32,6 +32,7 @@ public class JLoginRsp extends BaseEntity {
         private int RetCode;
         private String Index;
         private String Routerid;
+        private String RouterName;
         private String UserSn;
         private String UserId;
         private int NeedAsysn;
@@ -67,6 +68,14 @@ public class JLoginRsp extends BaseEntity {
 
         public void setRouterid(String Routerid) {
             this.Routerid = Routerid;
+        }
+
+        public String getRouterName() {
+            return RouterName;
+        }
+
+        public void setRouterName(String routerName) {
+            RouterName = routerName;
         }
 
         public String getUserSn() {

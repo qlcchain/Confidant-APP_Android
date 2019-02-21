@@ -184,7 +184,8 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
                 userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
-                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
+                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.lastIndexOf(","))
+                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 userEntity.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)

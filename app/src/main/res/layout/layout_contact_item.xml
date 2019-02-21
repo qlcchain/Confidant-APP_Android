@@ -10,6 +10,7 @@
         android:src="@mipmap/icon_sub_user"
         android:layout_height="@dimen/x31" />
     <TextView
+        android:id="@+id/routerName"
         android:layout_width="0px"
         android:layout_weight="1"
         android:text="呵呵呵"

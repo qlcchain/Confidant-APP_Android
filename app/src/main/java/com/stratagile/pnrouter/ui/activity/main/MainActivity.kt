@@ -784,7 +784,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
                 userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
-                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.length)
+                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.lastIndexOf(","))
+                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") +1,toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId

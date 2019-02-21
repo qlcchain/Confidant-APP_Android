@@ -400,18 +400,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
 
         }
-        val list1 = arrayListOf<MultiItemEntity>()
-        contactMapList.forEach {
-            var userHead = UserHead()
-            userHead.userEntity = it.value.userEntity
-            it.value.routerItemList?.forEach {
-                userHead.addSubItem(UserItem(it))
-            }
-            list1.add(userHead)
-        }
-        var contactAdapter1 = ContactAdapter(list1)
-        recyclerView.adapter = contactAdapter1
-        contactAdapter1.expandAll()
 
         var  contactNewList = arrayListOf<MyFriend>()
         var contactNewListValues = contactMapList.values
@@ -422,6 +410,22 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         contactNewList.sortBy {
             it.userName
         }
+        val list1 = arrayListOf<MultiItemEntity>()
+        contactNewList.forEach {
+            var userHead = UserHead()
+            userHead.userName = it.userName
+            userHead.userEntity = it.userEntity
+            if(it.routerItemList.size > 1)
+            {
+                it.routerItemList?.forEach {
+                    userHead.addSubItem(UserItem(it))
+                }
+            }
+            list1.add(userHead)
+        }
+        var contactAdapter1 = ContactAdapter(list1)
+        recyclerView.adapter = contactAdapter1
+        contactAdapter1.expandAll()
         //一对多数据处理end
         if(bundle == null)
         {
