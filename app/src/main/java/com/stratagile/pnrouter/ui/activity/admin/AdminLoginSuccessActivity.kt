@@ -2,7 +2,9 @@ package com.stratagile.pnrouter.ui.activity.admin
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.toast
@@ -113,15 +115,18 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     internal lateinit var mPresenter: AdminLoginSuccessPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        needFront = true
         super.onCreate(savedInstanceState)
     }
 
     override fun initView() {
         setContentView(R.layout.activity_adminqrcode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+        }
     }
     override fun initData() {
 
-        title.text = getString(R.string.Administrator_account)
         var adminRouterId = intent.getStringExtra("adminRouterId")
         var adminUserSn = intent.getStringExtra("adminUserSn")
         var adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
@@ -164,6 +169,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             showProgressDialog("wait...")
             var recovery = RecoveryReq(adminRouterId, adminUserSn)
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+        }
+        ivScan.setOnClickListener {
+
         }
     }
     override fun onDestroy() {
