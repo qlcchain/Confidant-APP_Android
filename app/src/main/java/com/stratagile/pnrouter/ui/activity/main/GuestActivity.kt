@@ -459,7 +459,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         }
         EventBus.getDefault().register(this)
         SpUtil.putInt(this, ConstantValue.LOCALVERSIONCODE, VersionUtil.getAppVersionCode(this))
-        tvNext.setOnClickListener {
+        llNext.setOnClickListener {
             if (wowo.currentItem == 2) {
                 /*if(ConstantValue.currentRouterIp != null  && !ConstantValue.currentRouterIp.equals(""))
                  {

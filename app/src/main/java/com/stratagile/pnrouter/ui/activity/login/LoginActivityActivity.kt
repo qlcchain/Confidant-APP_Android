@@ -16,6 +16,10 @@ import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
 import chat.tox.antox.wrapper.FriendKey
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -915,11 +919,20 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     loginKey.setText("")
                 }
             }
-            hasRouterParentLogin.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.INVISIBLE
             scanParentLogin.visibility = View.INVISIBLE
         } else {
-            hasRouterParentLogin.visibility = View.INVISIBLE
+            var options = RequestOptions()
+                    .centerCrop()
+                    .transform(GlideCircleTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .priority(Priority.HIGH)
+            Glide.with(this)
+                    .load(R.mipmap.icon_no_circle)
+                    .apply(options)
+                    .into(ivNoCircle)
+            hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.VISIBLE
             scanParentLogin.visibility = View.VISIBLE
         }
@@ -1636,7 +1649,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         super.onActivityResult(requestCode, resultCode, data)
         var this_ = this
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
-            hasRouterParentLogin.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.INVISIBLE
             try {
                 var result = data!!.getStringExtra("result");

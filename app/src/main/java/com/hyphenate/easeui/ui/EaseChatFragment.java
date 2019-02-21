@@ -3157,7 +3157,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             //refresh ui
             if(isMessageListInited) {
                 KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2_"+conversation.getAllMessages().size());
-                easeChatMessageList.refresh();
+                easeChatMessageList.refreshSelectLast();
+//                easeChatMessageList.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        easeChatMessageList.refreshSelectLast();
+//                    }
+//                }, 500);
             }
         }else{
             new Thread(new Runnable(){
@@ -3176,7 +3182,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             //SpUtil.INSTANCE.putString(conversation.conversationId());
                             //refresh ui
                             if(isMessageListInited) {
-                                easeChatMessageList.refresh();
+                                easeChatMessageList.refreshSelectLast();
                             }
                         }
                     }catch (Exception e)

@@ -33,12 +33,94 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/img_bg" />
 
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="@dimen/x60"
+            android:textColor="@color/white"
+            android:text="Hello\nChecKai\nWelcome back!"
+            android:textSize="19sp"
+            android:layout_marginTop="@dimen/x365"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/joincircle"
+            android:layout_width="wrap_content"
+            android:text="Join a circle"
+            app:layout_constraintTop_toBottomOf="@+id/tvUserName"
+            app:layout_constraintLeft_toLeftOf="@+id/tvUserName"
+            android:layout_marginTop="@dimen/x38"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/llCircle"
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/joincircle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="@dimen/x60"
+            android:orientation="horizontal"
+            android:layout_marginRight="@dimen/x60"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_height="@dimen/x108">
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivNoCircle"
+                android:layout_width="@dimen/x80"
+                android:layout_height="@dimen/x80" />
+            <com.stratagile.pnrouter.view.ImageButtonWithText
+                android:id="@+id/ivAvatar"
+                android:layout_width="@dimen/x80"
+                android:layout_height="@dimen/x80">
+
+            </com.stratagile.pnrouter.view.ImageButtonWithText>
+            <TextView
+                android:id="@+id/routerNameTips"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Router 1"
+                android:layout_marginLeft="@dimen/x15"
+                android:textColor="@color/white"
+                android:textSize="@dimen/x40" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_choose2"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/viewLine"
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/llCircle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="@dimen/x60"
+            android:layout_marginRight="@dimen/x60"
+            android:layout_height="@dimen/x4"
+            android:background="@color/color_b2b2b2"/>
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x60"
+            android:layout_marginRight="@dimen/x60"
+            android:layout_marginTop="@dimen/x20"
+            android:text="*Scan the invitation QR code to join your friend's Confidant circle. \n*Scan the QR code on your Confidant router to launch your circle."
+            android:textColor="@color/color_999999"
+            android:textSize="13sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
         <android.support.constraint.Group
             android:id="@+id/hasRouterParentLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:constraint_referenced_ids="routerbg,routerNameTips"
+            android:visibility="gone"
+            app:constraint_referenced_ids="routerbg"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -51,26 +133,11 @@
             android:layout_marginTop="255dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/adduserbg"
             app:srcCompat="@mipmap/img_wifi1" />
-
-        <TextView
-            android:id="@+id/routerNameTips"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/x282"
-            android:text="Router 1"
-            android:textColor="@color/white"
-            android:textSize="@dimen/x40"
-            android:drawableRight="@mipmap/icon_choose2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/routerbg" />
 
         <android.support.constraint.Group
             android:id="@+id/miniScanParentLogin"
@@ -83,36 +150,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/miniScanBg"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="27dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/viewLogLogin"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/icon_base" />
 
         <ImageView
             android:id="@+id/miniScanIconLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/miniScanBg"
-            app:layout_constraintEnd_toEndOf="@+id/miniScanBg"
-            app:layout_constraintStart_toStartOf="@+id/miniScanBg"
-            app:layout_constraintTop_toTopOf="@+id/miniScanBg"
-            app:srcCompat="@mipmap/icon_little_scan" />
+            android:layout_marginTop="@dimen/x60"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="@dimen/x30"
+            app:srcCompat="@mipmap/icon_scan2" />
 
         <android.support.constraint.Group
             android:id="@+id/scanParentLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="gone"
             app:constraint_referenced_ids="scanBg,scanIconLogin"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
@@ -120,6 +173,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/scanBg"
             android:layout_width="@dimen/x268"
             android:layout_height="@dimen/x268"
@@ -131,6 +185,7 @@
             app:srcCompat="@mipmap/icon_headportrai" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/scanIconLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -155,6 +210,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -199,7 +255,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="@dimen/x72"
             android:layout_marginStart="@dimen/x72"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/x80"
             android:background="@drawable/textview_border"
             android:gravity="center"
             android:paddingBottom="@dimen/x16"
@@ -207,11 +263,10 @@
             android:text="@string/Login"
             android:textColor="@color/color_efefef"
             android:textSize="23sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintTop_toBottomOf="@+id/desc"
             app:layout_constraintVertical_bias="0.22" />
 
         <TextView
