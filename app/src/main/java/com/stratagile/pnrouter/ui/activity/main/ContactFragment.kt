@@ -34,7 +34,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
-import com.stratagile.pnrouter.entity.PullFriendReq
+import com.stratagile.pnrouter.entity.PullFriendReq_V4
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
@@ -266,11 +266,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         if(refreshLayout != null)
             refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
-        var pullFriend = PullFriendReq( selfUserId!!)
+        var pullFriend = PullFriendReq_V4( selfUserId!!)
         var sendData = BaseData(pullFriend)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,pullFriend)
+            sendData = BaseData(4,pullFriend)
         }
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())

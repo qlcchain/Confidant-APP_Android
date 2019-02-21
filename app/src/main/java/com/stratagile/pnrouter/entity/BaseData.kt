@@ -247,7 +247,7 @@ data class DelMsgReq(var UserId : String, var Friendid : String, var MsgId :Int,
  */
 data class DelMsgRsp(var Retcode : Int, var Msg : String,var ToId:String,var Action: String = "PushDelMsg")
 
-data class PullFriendReq(var UserId: String, var Action: String = "PullFriend")
+data class PullFriendReq_V4(var UserId: String, var Action: String = "PullFriend")
 
 data class PullUserReq(var UserType: Int, var UserNum :Int ,var UserStartSN:String ,var Action: String = "PullUserList")
 

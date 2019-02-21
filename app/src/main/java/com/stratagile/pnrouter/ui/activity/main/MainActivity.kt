@@ -22,13 +22,10 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
-import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.config.PictureConfig.CHOOSE_REQUEST
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.tools.PictureFileUtils.getPath
 import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.toast
@@ -47,9 +44,7 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
-import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
-import com.stratagile.pnrouter.ui.activity.file.UploadFileActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -60,7 +55,6 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
-import com.xiaomi.mipush.sdk.MiPushClient
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
@@ -874,11 +868,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         if (!ConstantValue.isInit) {
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            var pullFriend = PullFriendReq(selfUserId!!)
+            var pullFriend = PullFriendReq_V4(selfUserId!!)
             var sendData = BaseData(pullFriend)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                sendData = BaseData(3,pullFriend)
+                sendData = BaseData(4,pullFriend)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
