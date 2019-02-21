@@ -34,16 +34,14 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
+import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.PullFriendReq_V4
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
-import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
-import com.stratagile.pnrouter.ui.adapter.user.UserHead
-import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
@@ -58,6 +56,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * @author hzp
@@ -163,24 +162,24 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
         }
         //把本地的多余好友清除
-      /*  localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        for (i in localFriendList) {
-            //是否为本地多余的好友
-            if (i.friendStatus == 3 || i.friendStatus == 1) {
-                //等待验证的S好友，不能处理
-                continue
-            }
-            var isLocalDeletedFriend = true
-            for (j in jPullFriendRsp.params.payload) {
-                if (i.userId.equals(j.id)) {
-                    isLocalDeletedFriend = false
-                }
-            }
-            if (isLocalDeletedFriend) {
-                i.friendStatus = 7
-                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
-            }
-        }*/
+        /*  localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+          for (i in localFriendList) {
+              //是否为本地多余的好友
+              if (i.friendStatus == 3 || i.friendStatus == 1) {
+                  //等待验证的S好友，不能处理
+                  continue
+              }
+              var isLocalDeletedFriend = true
+              for (j in jPullFriendRsp.params.payload) {
+                  if (i.userId.equals(j.id)) {
+                      isLocalDeletedFriend = false
+                  }
+              }
+              if (isLocalDeletedFriend) {
+                  i.friendStatus = 7
+                  AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
+              }
+          }*/
         //把本地的多余好友清除
         localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         LogUtil.addLog("localFriendStatusList:"+localFriendStatusList.size,"ContactFragment")
@@ -305,31 +304,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var  contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
-        /*for (i in list) {
-
-            if (i.userId.equals(selfUserId)) {
-                continue
-            }
-            if(fromId != null && !fromId.equals(""))
-            {
-                if (i.userId.equals(fromId)) {
-                    continue
-                }
-            }
-            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
-                if (i.friendStatus == 0) {
-                    contactList.add(i)
-                }
-                if (i.friendStatus == 3) {
-                    newFriendCount++
-                }
-            }else{
-                if (i.friendStatus == 0) {
-                    contactList.add(i)
-                }
-            }
-
-        }*/
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         for (i in localFriendStatusList) {
@@ -366,32 +340,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         var  contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
-       /* for (i in list) {
-
-            if (i.userId.equals(selfUserId)) {
-                continue
-            }
-            if(fromId != null && !fromId.equals(""))
-            {
-                if (i.userId.equals(fromId)) {
-                    continue
-                }
-            }
-            if (i.routerUserId !=null && i.routerUserId.equals(selfUserId)) {
-                if (i.friendStatus == 0) {
-                    contactList.add(i)
-                }
-                if (i.friendStatus == 3) {
-                    hasNewFriendRequest = true
-                    newFriendCount++
-                }
-            }else{
-                if (i.friendStatus == 0) {
-                    contactList.add(i)
-                }
-            }
-
-        }*/
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         for (i in localFriendStatusList) {
@@ -427,6 +375,37 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         contactList.sortBy {
             it.nickSouceName
         }
+        //一对多数据处理begin
+        var contactMapList = HashMap<String,MyFriend>()
+        for (i in contactList) {
+
+            if(contactMapList.get(i.signPublicKey) == null)
+            {
+                var myFriend = MyFriend()
+                myFriend.userKey = i.signPublicKey
+                myFriend.userName = i.nickName
+                myFriend.userEntity = i
+                var temp = ArrayList<UserEntity>()
+                temp.add(i)
+                myFriend.routerItemList = temp;
+                contactMapList.put(i.signPublicKey,myFriend)
+            }else{
+                var temp = contactMapList.get(i.signPublicKey)
+                var contactNewList = temp!!.routerItemList
+                contactNewList.add(i)
+            }
+
+        }
+        var  contactNewList = arrayListOf<MyFriend>()
+        var contactNewListValues = contactMapList.values
+        for(i in contactNewListValues)
+        {
+            contactNewList.add(i)
+        }
+        contactNewList.sortBy {
+            it.userName
+        }
+        //一对多数据处理end
         if(bundle == null)
         {
             newFriend.visibility = View.VISIBLE
@@ -486,7 +465,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     fun fiter(key:String,contactList:ArrayList<UserEntity>)
     {
-       var contactListTemp:ArrayList<UserEntity> = arrayListOf<UserEntity>()
+        var contactListTemp:ArrayList<UserEntity> = arrayListOf<UserEntity>()
         for (i in contactList) {
             if(i.nickSouceName.toLowerCase().contains(key))
             {

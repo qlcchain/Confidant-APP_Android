@@ -76,7 +76,7 @@ import kotlin.collections.ArrayList
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
     override fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = OnlineStatusPushRsp(0,"", userId!!,"")
+        var msgData = OnlineStatusPushRsp(0,"", userId!!)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
         }else if (ConstantValue.isToxConnected) {
