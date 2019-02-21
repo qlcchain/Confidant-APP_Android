@@ -19,7 +19,7 @@
         android:layout_height="@dimen/x123">
 
     </com.stratagile.pnrouter.view.ImageButtonWithText>
-    
+
     <ImageView
         android:id="@+id/ivScan"
         android:layout_width="@dimen/x46"
@@ -40,18 +40,15 @@
             android:layout_height="match_parent">
             <TextView
                 android:layout_width="wrap_content"
-                android:text="Bay Area Biz Networking"
-                android:textSize="19sp"
-                android:layout_marginLeft="@dimen/x31"
+                android:text="You have activated a confidant router, proceed to complete your registration now"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:layout_marginLeft="@dimen/x60"
+                android:paddingLeft="@dimen/x30"
+                android:paddingRight="@dimen/x30"
+                android:layout_marginRight="@dimen/x60"
                 android:textColor="@color/mainColor"
                 android:layout_height="wrap_content" />
-            <com.stratagile.pnrouter.view.DrawableTextView
-                android:id="@+id/Routerpassword"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/x92"
-                app:text="@string/Routerpassword">
-
-            </com.stratagile.pnrouter.view.DrawableTextView>
 
             <LinearLayout
                 android:id="@+id/cardView"
@@ -71,28 +68,41 @@
                         android:orientation="vertical"
                         android:layout_marginBottom="@dimen/x1"
                         android:layout_height="match_parent">
+
                         <TextView
                             android:id="@+id/tvUserName"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="17sp"
-                            android:text="Administrator Account QR Code"
                             android:layout_centerVertical="true"
+                            android:text="Set an Alias for your circle"
                             android:textColor="@color/color_2c2c2c"
-                            />
+                            android:textSize="17sp" />
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="Please keep your account QR code safely for logging in to your account."
+                            android:textSize="12sp"
+                            android:text="The circle alias indicates which router you are connected to."
                             android:layout_marginTop="@dimen/x10"
                             android:layout_height="wrap_content" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="@dimen/x70"
+                            android:text="Cirle Alias"
+                            android:textColor="@color/mainColor"
+                            android:layout_height="wrap_content" />
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:hint="Please input router alias"
+                            android:background="@null"
+                            android:layout_height="wrap_content" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/x1"
+                            android:background="@color/color_f2f2f2"
+                            android:layout_marginTop="@dimen/x10"/>
+
                     </LinearLayout>
-                    <ImageView
-                        android:id="@+id/ivQrCodeAdmin"
-                        android:layout_width="@dimen/x490"
-                        android:layout_marginTop="@dimen/x20"
-                        android:layout_marginBottom="@dimen/x60"
-                        android:layout_height="@dimen/x490" />
-                    />
+
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.test
 
 import android.os.Bundle
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -9,6 +10,9 @@ import com.stratagile.pnrouter.ui.activity.test.component.DaggerTestComponent
 import com.stratagile.pnrouter.ui.activity.test.contract.TestContract
 import com.stratagile.pnrouter.ui.activity.test.module.TestModule
 import com.stratagile.pnrouter.ui.activity.test.presenter.TestPresenter
+import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
+import com.stratagile.pnrouter.ui.adapter.user.UserHead
+import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import kotlinx.android.synthetic.main.activity_test.*
 
 import javax.inject.Inject;
@@ -32,12 +36,25 @@ class TestActivity : BaseActivity(), TestContract.View {
     override fun initView() {
         setContentView(R.layout.activity_test)
         setTitle("TestActivity")
-        avi.setIndicator("BallSpinFadeLoaderIndicator")
-        avi.show()
+//        avi.setIndicator("BallSpinFadeLoaderIndicator")
+//        avi.show()
     }
     override fun initData() {
-
+        val list = arrayListOf<MultiItemEntity>()
+        for (i in 0..9) {
+            var userHead = UserHead()
+            userHead.userName = "xx" + i + "yy"
+            val list1 = arrayListOf<MultiItemEntity>()
+            for (j in 0..3) {
+                userHead.addSubItem(UserItem())
+            }
+            list.add(userHead)
+        }
+        var contactAdapter1 = ContactAdapter(list)
+        recyclerView.adapter = contactAdapter1
+        contactAdapter1.expandAll()
     }
+
 
     override fun setupActivityComponent() {
        DaggerTestComponent

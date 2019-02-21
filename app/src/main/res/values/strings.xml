@@ -165,7 +165,7 @@
     <string name="user_name">User name</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
-    <string name="LoginAdmin">Log in to PPM</string>
+    <string name="LoginAdmin">Log in</string>
     <string name="Administrator_account">Administrator’s account</string>
     <string name="Modify_Activation_Code">Modify Activation Code</string>
     <string name="Modify_Router_Password">Modify Router Password</string>
@@ -443,7 +443,7 @@
 
 
     <string name="adduserTips">*The nickname filling is convenient for users to manage, and the invitation code is set to designate users safely.</string>
-    <string name="routerpasswordTips">Please input your router password as indicated in the user manual book.</string>
+    <string name="routerpasswordTips">*Please input your router password as indicated in the user manual book.</string>
     <string name="routercodeupdata">*Your activation code must include 8 characters.</string>
     <string name="routerpasswordupdata">*Your password must include 8 characters.</string>
 
@@ -453,7 +453,7 @@
     <string name="upPasswordTips">You are advised to change your activation code on a regular basis to safeguard your privacy.</string>
 
 
-    <string name="Routerpassword">Router password</string>
+    <string name="Routerpassword">Circle password</string>
     <string name="Activationcode">Activation code</string>
     <string name="User_QR_Code">User\'s QR Code</string>
 

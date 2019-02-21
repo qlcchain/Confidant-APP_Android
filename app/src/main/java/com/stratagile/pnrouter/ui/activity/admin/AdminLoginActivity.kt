@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.admin.component.DaggerAdminLoginCompo
 import com.stratagile.pnrouter.ui.activity.admin.contract.AdminLoginContract
 import com.stratagile.pnrouter.ui.activity.admin.module.AdminLoginModule
 import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminLoginPresenter
+import com.stratagile.pnrouter.ui.activity.router.RouterAliasSetActivity
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import kotlinx.android.synthetic.main.activity_adminlogin.*
 
@@ -39,7 +40,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
                 runOnUiThread {
                              toast("Login success")
                 }
-                var intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                var intent = Intent(this, RouterAliasSetActivity::class.java)
                 intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
                 intent.putExtra("adminUserSn",jAdminLoginRsp.params.userSn)
                 intent.putExtra("adminIdentifyCode",jAdminLoginRsp.params.identifyCode)

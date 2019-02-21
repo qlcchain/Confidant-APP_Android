@@ -40,7 +40,10 @@ import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
+import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
+import com.stratagile.pnrouter.ui.adapter.user.UserHead
+import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
@@ -429,6 +432,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             contactAdapter = ContactListAdapter(contactList,true)
         }
         recyclerView.adapter = contactAdapter
+
         contactAdapter!!.setOnItemClickListener { adapter, view, position ->
             if(bundle == null)
             {
@@ -474,6 +478,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             //hideSoftKeyboard()
         })
     }
+
+
     fun fiter(key:String,contactList:ArrayList<UserEntity>)
     {
        var contactListTemp:ArrayList<UserEntity> = arrayListOf<UserEntity>()
