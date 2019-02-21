@@ -133,7 +133,7 @@ class AddFreindActivity : BaseActivity(), AddFreindContract.View, PNRouterServic
             if(ConstantValue.encryptionType.equals( "1"))
             {
                 addFriendReq = AddFriendReq( selfUserId!!, strBase64!!, intent.getStringExtra("toUserId"),ConstantValue.libsodiumpublicSignKey!!,"")
-                sendData = BaseData(3,addFriendReq);
+                sendData = BaseData(4,addFriendReq);
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

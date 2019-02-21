@@ -20,6 +20,10 @@ public class UserEntity implements Parcelable{
 
     private String signPublicKey;
 
+    private String RouteId;
+
+    private String RouteName;
+
     private String miPublicKey;
 
     //昵称
@@ -44,17 +48,21 @@ public class UserEntity implements Parcelable{
 
 
 
-    @Generated(hash = 1529272245)
+
+
+    @Generated(hash = 1577789092)
     public UserEntity(Long id, String userId, String index, String routerUserId,
-            String signPublicKey, String miPublicKey, String nickName,
-            String remarks, String nickSouceName, String avatar, String noteName,
-            int friendStatus, boolean addFromMe, long timestamp,
-            String validationInfo) {
+            String signPublicKey, String RouteId, String RouteName,
+            String miPublicKey, String nickName, String remarks,
+            String nickSouceName, String avatar, String noteName, int friendStatus,
+            boolean addFromMe, long timestamp, String validationInfo) {
         this.id = id;
         this.userId = userId;
         this.index = index;
         this.routerUserId = routerUserId;
         this.signPublicKey = signPublicKey;
+        this.RouteId = RouteId;
+        this.RouteName = RouteName;
         this.miPublicKey = miPublicKey;
         this.nickName = nickName;
         this.remarks = remarks;
@@ -81,6 +89,8 @@ public class UserEntity implements Parcelable{
         index = in.readString();
         routerUserId = in.readString();
         signPublicKey = in.readString();
+        RouteId = in.readString();
+        RouteName = in.readString();
         miPublicKey = in.readString();
         nickName = in.readString();
         remarks = in.readString();
@@ -105,6 +115,8 @@ public class UserEntity implements Parcelable{
         dest.writeString(index);
         dest.writeString(routerUserId);
         dest.writeString(signPublicKey);
+        dest.writeString(RouteId);
+        dest.writeString(RouteName);
         dest.writeString(miPublicKey);
         dest.writeString(nickName);
         dest.writeString(remarks);
@@ -223,6 +235,27 @@ public class UserEntity implements Parcelable{
     public void setIndex(String index) {
         this.index = index;
     }
+
+    public String getRouteId() {
+        return RouteId;
+    }
+
+    public void setRouteId(String routeId) {
+        RouteId = routeId;
+    }
+
+    public String getRouteName() {
+        return RouteName;
+    }
+
+    public void setRouteName(String routeName) {
+        RouteName = routeName;
+    }
+
+    public boolean isAddFromMe() {
+        return addFromMe;
+    }
+
     public String getMiPublicKey() {
         return this.miPublicKey;
     }

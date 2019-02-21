@@ -142,7 +142,7 @@ data class AddFriendPushReq(var Retcode : Int,var ToId : String, var Msg : Strin
  * 场景：APP上显示有新的好友请求，用户可以选择是否允许对方添加自己好友
  * (1)	请求（APP-->Router）
  */
-data class AddFriendDealReq(var Nickname : String, var FriendName : String, var UserId : String, var FriendId : String, var UserKey : String, var FriendKey : String, var Result : Int, var Action : String = "AddFriendDeal")
+data class AddFriendDealReq(var Nickname : String, var FriendName : String, var UserId : String, var FriendId : String, var UserKey : String, var FriendKey : String, var Sign : String, var Result : Int, var Action : String = "AddFriendDeal")
 
 /**
  * 7.	好友请求处理
@@ -416,3 +416,10 @@ data class RebootReq(var Action : String = "Reboot")
  * (2)	响应（APP->Router）
  */
 data class ResetRouterNameReq(var RouterId :String, var UserId : String,var Name : String,var Action : String = "ResetRouterName")
+
+/**
+ * 	60.	用户在线状态通知_V4
+ * (2)	响应（APP->Router）
+ */
+data class OnlineStatusPushRsp(var RetCode :Int, var Msg : String, var ToId : String,var Action : String = "OnlineStatusPush")
+

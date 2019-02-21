@@ -110,6 +110,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     j.index = i.index
                     j.remarks = i.remarks
                     j.signPublicKey = i.userKey
+                    j.routeId = i.routeId
+                    j.routeName = i.routeName
                     var dst_public_MiKey_Friend = ByteArray(32)
                     var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
                     if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
@@ -126,6 +128,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.userId = i.id
                 userEntity.index = i.index
                 userEntity.signPublicKey = i.userKey
+                userEntity.routeId = i.routeId
+                userEntity.routeName = i.routeName
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
                 if(crypto_sign_ed25519_pk_to_curve25519_result == 0)

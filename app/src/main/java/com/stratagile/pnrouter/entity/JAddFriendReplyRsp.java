@@ -65,6 +65,9 @@ public class JAddFriendReplyRsp extends BaseEntity {
         private String FriendId;
         private String Nickname;
         private String FriendName;
+        private String Sign;
+        private String RouteId;
+        private String RouteName;
         private int Result;
 
         public String getAction() {
@@ -83,6 +86,30 @@ public class JAddFriendReplyRsp extends BaseEntity {
 
         public void setUserKey(String userKey) {
             UserKey = userKey;
+        }
+
+        public String getSign() {
+            return Sign;
+        }
+
+        public void setSign(String sign) {
+            Sign = sign;
+        }
+
+        public String getRouteId() {
+            return RouteId;
+        }
+
+        public void setRouteId(String routeId) {
+            RouteId = routeId;
+        }
+
+        public String getRouteName() {
+            return RouteName;
+        }
+
+        public void setRouteName(String routeName) {
+            RouteName = routeName;
         }
     }
 }

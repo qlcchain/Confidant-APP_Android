@@ -129,7 +129,7 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
             if(ConstantValue.encryptionType.equals( "1"))
             {
                 addFriendReq =  AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.libsodiumpublicSignKey!!,msg)
-                sendData = BaseData(3,addFriendReq);
+                sendData = BaseData(4,addFriendReq);
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

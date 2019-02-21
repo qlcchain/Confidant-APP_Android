@@ -74,6 +74,23 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    override fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = OnlineStatusPushRsp(0,"", userId!!,"")
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
+
     var SELECT_PHOTO = 2
     var SELECT_VIDEO = 3
     var SELECT_DEOCUMENT = 4
@@ -475,6 +492,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                  }*/
                 i.nickName = jAddFriendReplyRsp.params.nickname
                 i.signPublicKey = jAddFriendReplyRsp.params.userKey
+                i.routeId = jAddFriendReplyRsp.params.routeId
+                i.routeName = jAddFriendReplyRsp.params.routeName
 
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
@@ -488,7 +507,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
                 if(ConstantValue.encryptionType.equals("1"))
                 {
-                    sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    sendData = BaseData(4,addFriendReplyReq,jAddFriendReplyRsp.msgid)
                 }
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -580,7 +599,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+            sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
         }
 
         if (ConstantValue.isWebsocketConnected) {

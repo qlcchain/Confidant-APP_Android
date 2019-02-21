@@ -27,10 +27,7 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponen
 import com.stratagile.pnrouter.ui.activity.user.contract.UserInfoContract
 import com.stratagile.pnrouter.ui.activity.user.module.UserInfoModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.UserInfoPresenter
-import com.stratagile.pnrouter.utils.LogUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.EditBoxAlertDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import events.ToxSendInfoEvent
@@ -406,14 +403,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.signPublicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.signPublicKey,0)
+            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.signPublicKey,sign,0)
             friendStatus = 0
 
             var sendData = BaseData(addFriendDealReq)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey,0)
-                sendData = BaseData(3,addFriendDealReq)
+                addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey,sign,0)
+                sendData = BaseData(4,addFriendDealReq)
             }
 
             if (ConstantValue.isWebsocketConnected) {
@@ -441,13 +439,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.signPublicKey != null)
         {
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.signPublicKey, 1)
+            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.signPublicKey, sign,1)
 
             var sendData = BaseData(addFriendDealReq)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                addFriendDealReq =  AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey, 1)
-                sendData = BaseData(3,addFriendDealReq)
+                addFriendDealReq =  AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey, sign,1)
+                sendData = BaseData(4,addFriendDealReq)
             }
             friendStatus = 1
             if (ConstantValue.isWebsocketConnected) {

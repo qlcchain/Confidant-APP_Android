@@ -12,10 +12,7 @@ import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
-import com.stratagile.pnrouter.utils.MutableListToArrayList
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import org.greenrobot.eventbus.EventBus
@@ -134,12 +131,13 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.signPublicKey,0)
+                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.signPublicKey,sign,0)
                         var sendData = BaseData(addFriendDealReq)
                         if(ConstantValue.encryptionType.equals("1"))
                         {
-                            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.libsodiumpublicSignKey!!, itUserEntity.signPublicKey,0)
-                            sendData = BaseData(3,addFriendDealReq)
+                            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.libsodiumpublicSignKey!!, itUserEntity.signPublicKey,sign,0)
+                            sendData = BaseData(4,addFriendDealReq)
                         }
                         if (ConstantValue.isWebsocketConnected) {
                             AppConfig.instance.messageSender!!.send(sendData)
@@ -188,6 +186,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 }*/
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.signPublicKey = jAddFriendPushRsp.params.userKey
+                it.routeName = jAddFriendPushRsp.params.routeName
+                it.routeId = jAddFriendPushRsp.params.routeId
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
                 if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
@@ -206,7 +206,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
                 if(ConstantValue.encryptionType.equals("1"))
                 {
-                    sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+                    sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
                 }
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -229,6 +229,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         newFriend.nickName = jAddFriendPushRsp.params.nickName
         //newFriend.friendStatus = 3
         newFriend.userId = jAddFriendPushRsp.params.friendId
+        newFriend.routeName = jAddFriendPushRsp.params.routeName
+        newFriend.routeId = jAddFriendPushRsp.params.routeId
         newFriend.addFromMe = false
         newFriend.timestamp = jAddFriendPushRsp.timestamp
         newFriend.noteName = ""
@@ -259,7 +261,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,addFriendPushReq,jAddFriendPushRsp.msgid)
+            sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -316,6 +318,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 }*/
                 it.nickName = jAddFriendReplyRsp.params.nickname
                 it.signPublicKey = jAddFriendReplyRsp.params.userKey
+                it.routeId = jAddFriendReplyRsp.params.routeId
+                it.routeName = jAddFriendReplyRsp.params.routeName
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
                 if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
@@ -329,7 +333,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
                 if(ConstantValue.encryptionType.equals("1"))
                 {
-                    sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                    sendData = BaseData(4,addFriendReplyReq,jAddFriendReplyRsp.msgid)
                 }
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -366,6 +370,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         var userEntity = UserEntity()
         userEntity.userId = jAddFriendReplyRsp.params.friendId
         userEntity.nickName = jAddFriendReplyRsp.params.friendName
+        userEntity.routeId = jAddFriendReplyRsp.params.routeId
+        userEntity.routeName = jAddFriendReplyRsp.params.routeName
        /* if (jAddFriendReplyRsp.params.result == 0) {
             userEntity.friendStatus = 0
         } else if (jAddFriendReplyRsp.params.result == 1) {
@@ -392,7 +398,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+            sendData = BaseData(4,addFriendReplyReq,jAddFriendReplyRsp.msgid)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -512,7 +518,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         if(ConstantValue.encryptionType.equals( "1"))
         {
             addFriendReq =  AddFriendReq( selfUserId, strBase64, toUserId,ConstantValue.libsodiumpublicSignKey!!,"")
-            sendData = BaseData(3,addFriendReq);
+            sendData = BaseData(4,addFriendReq);
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -549,13 +555,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
+        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS!!, friendKey,0)
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS!!, friendKey,sign,0)
         var sendData = BaseData(addFriendDealReq)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.libsodiumpublicSignKey!!, friendKey,0)
-            sendData = BaseData(3,addFriendDealReq)
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.libsodiumpublicSignKey!!, friendKey,sign,0)
+            sendData = BaseData(4,addFriendDealReq)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.messageSender!!.send(sendData)
@@ -575,13 +582,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
+        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,sign,1)
 
         var sendData = BaseData(addFriendDealReq)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,1)
-            sendData = BaseData(3,addFriendDealReq)
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,sign,1)
+            sendData = BaseData(4,addFriendDealReq)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.messageSender!!.send(sendData)
