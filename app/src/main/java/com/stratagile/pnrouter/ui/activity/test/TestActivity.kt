@@ -46,7 +46,7 @@ class TestActivity : BaseActivity(), TestContract.View {
             userHead.userName = "xx" + i + "yy"
             val list1 = arrayListOf<MultiItemEntity>()
             for (j in 0..3) {
-                userHead.addSubItem(UserItem())
+//                userHead.addSubItem(UserItem())
             }
             list.add(userHead)
         }

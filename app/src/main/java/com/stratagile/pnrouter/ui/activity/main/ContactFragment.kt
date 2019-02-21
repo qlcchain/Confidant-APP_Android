@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
@@ -41,7 +42,10 @@ import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
+import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
+import com.stratagile.pnrouter.ui.adapter.user.UserHead
+import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
@@ -396,6 +400,19 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
 
         }
+        val list1 = arrayListOf<MultiItemEntity>()
+        contactMapList.forEach {
+            var userHead = UserHead()
+            userHead.userEntity = it.value.userEntity
+            it.value.routerItemList?.forEach {
+                userHead.addSubItem(UserItem(it))
+            }
+            list1.add(userHead)
+        }
+        var contactAdapter1 = ContactAdapter(list1)
+        recyclerView.adapter = contactAdapter1
+        contactAdapter1.expandAll()
+
         var  contactNewList = arrayListOf<MyFriend>()
         var contactNewListValues = contactMapList.values
         for(i in contactNewListValues)
@@ -414,7 +431,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             newFriend.visibility = View.GONE
             contactAdapter = ContactListAdapter(contactList,true)
         }
-        recyclerView.adapter = contactAdapter
+//        recyclerView.adapter = contactAdapter
 
         contactAdapter!!.setOnItemClickListener { adapter, view, position ->
             if(bundle == null)
