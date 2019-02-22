@@ -74,6 +74,7 @@
             <com.stratagile.pnrouter.view.ImageButtonWithText
                 android:visibility="gone"
                 android:id="@+id/ivAvatar"
+                app:withShape="true"
                 android:layout_width="@dimen/x80"
                 android:layout_height="@dimen/x80">
 

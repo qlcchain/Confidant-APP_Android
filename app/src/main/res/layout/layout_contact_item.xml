@@ -17,10 +17,12 @@
         android:layout_marginLeft="@dimen/x12"
         android:layout_height="wrap_content" />
     <TextView
+        android:id="@+id/tvChat"
         android:layout_width="@dimen/x100"
         android:layout_marginRight="@dimen/x31"
         android:gravity="center"
-        android:background="@drawable/btn_white"
+        android:textColor="@color/color_2c2c2c"
+        android:background="@drawable/contact_chat_item_bg"
         android:text="Chats"
         android:layout_height="@dimen/x46" />
 </LinearLayout>

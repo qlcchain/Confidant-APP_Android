@@ -54,4 +54,14 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/ivArrow"
+        android:layout_width="@dimen/x30"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@mipmap/arrow_upper"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="@dimen/x30"
+        android:layout_height="@dimen/x30" />
+
 </android.support.constraint.ConstraintLayout>
