@@ -189,6 +189,11 @@ object LibsodiumUtil {
             var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,myTempPublic,myTempPublic.size,mySignPrivate)
             var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名自己临时公钥->转base64
 
+            var dst_msgaa = ByteArray(32)
+            var msg_lenaa = IntArray(1)
+            var crypto_sign_openaa = Sodium.crypto_sign_open(dst_msgaa,msg_lenaa,dst_signed_msg,dst_signed_msg.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+            var dst_msgaaSouce = String(dst_msgaa)
+
             var dst_shared_key_Mi_My = ByteArray(32 + 48)
             var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey))
             var dst_shared_key_Mi_My64 =  RxEncodeTool.base64Encode2String(dst_shared_key_Mi_My) //非对称加密方式crypto_box_seal用自己的加密公钥加密对称密钥
