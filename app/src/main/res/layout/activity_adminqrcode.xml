@@ -89,7 +89,7 @@
             <LinearLayout
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x28"
+                android:layout_marginTop="@dimen/x18"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_marginRight="@dimen/x31"
                 android:layout_height="wrap_content">
@@ -121,10 +121,10 @@
                     </LinearLayout>
                     <ImageView
                         android:id="@+id/ivQrCodeAdmin"
-                        android:layout_width="@dimen/x490"
+                        android:layout_width="@dimen/x450"
                         android:layout_marginTop="@dimen/x20"
                         android:layout_marginBottom="@dimen/x60"
-                        android:layout_height="@dimen/x490" />
+                        android:layout_height="@dimen/x450" />
                     />
                 </LinearLayout>
             </LinearLayout>
@@ -151,7 +151,7 @@
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x50"
+                android:layout_marginTop="@dimen/x20"
                 android:background="@drawable/btn_maincolor"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_marginRight="@dimen/x31"
