@@ -250,7 +250,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
-                    toast("password error")
+                    toast("Validation failed")
                     closeProgressDialog()
                 }
             }
