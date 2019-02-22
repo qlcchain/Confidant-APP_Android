@@ -7,6 +7,16 @@ import com.stratagile.pnrouter.db.UserEntity;
 public class UserHead extends AbstractExpandableItem<UserItem> implements MultiItemEntity {
     private String userName;
 
+    private boolean isChecked = false;
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
     private UserEntity userEntity;
 
     public UserEntity getUserEntity() {

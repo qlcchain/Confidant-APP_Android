@@ -5,6 +5,16 @@
     android:paddingLeft="@dimen/x136"
     android:orientation="horizontal"
     android:layout_height="@dimen/x92">
+
+    <CheckBox
+        android:visibility="gone"
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/x30"
+        android:clickable="false"
+        android:button="@drawable/checkbox_style" />
+
     <ImageView
         android:layout_width="@dimen/x31"
         android:src="@mipmap/icon_sub_user"

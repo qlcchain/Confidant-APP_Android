@@ -87,11 +87,11 @@
                 android:text=""
                 android:layout_marginLeft="@dimen/x15"
                 android:textColor="@color/white"
-                android:textSize="@dimen/x40" />
+                android:textSize="14sp" />
             <ImageView
                 android:id="@+id/routerNameTipsmore"
                 android:layout_width="wrap_content"
-                android:src="@mipmap/icon_choose2"
+                android:src="@mipmap/arrow_enter"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
@@ -254,18 +254,16 @@
         <TextView
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/x84"
             android:layout_marginBottom="16dp"
-            android:layout_marginEnd="@dimen/x72"
-            android:layout_marginStart="@dimen/x72"
+            android:layout_marginEnd="@dimen/x60"
+            android:layout_marginStart="@dimen/x60"
             android:layout_marginTop="@dimen/x80"
-            android:background="@drawable/textview_border"
+            android:background="@drawable/btn_white"
             android:gravity="center"
-            android:paddingBottom="@dimen/x16"
-            android:paddingTop="@dimen/x16"
             android:text="@string/Login"
-            android:textColor="@color/color_efefef"
-            android:textSize="23sp"
+            android:textColor="@color/color_2B2B2B"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

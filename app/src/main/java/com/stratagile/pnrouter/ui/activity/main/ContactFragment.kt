@@ -221,7 +221,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     @Inject
     lateinit internal var mPresenter: ContactPresenter
 
-    var contactAdapter : ContactListAdapter? = null
+//    var contactAdapter : ContactListAdapter? = null
+
+    var contactAdapter1 : ContactAdapter? = null
 
     lateinit var viewModel : MainViewModel
 
@@ -335,7 +337,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         contactList.sortBy {
             it.nickSouceName
         }
-        contactAdapter!!.setNewData(contactList);
+        updateAdapterData(contactList)
+//        contactAdapter!!.setNewData(contactList);
     }
     fun initData() {
         var bundle = getArguments();
@@ -411,10 +414,17 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             it.userName
         }
         val list1 = arrayListOf<MultiItemEntity>()
+        var isIn = false
         contactNewList.forEach {
             var userHead = UserHead()
             userHead.userName = it.userName
             userHead.userEntity = it.userEntity
+            if (!isIn) {
+                isIn = true
+                userHead.addSubItem(UserItem(it.userEntity))
+                userHead.addSubItem(UserItem(it.userEntity))
+                userHead.addSubItem(UserItem(it.userEntity))
+            }
             if(it.routerItemList.size > 1)
             {
                 it.routerItemList?.forEach {
@@ -423,42 +433,45 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
             list1.add(userHead)
         }
-        var contactAdapter1 = ContactAdapter(list1)
+        contactAdapter1 = ContactAdapter(list1)
         recyclerView.adapter = contactAdapter1
-        contactAdapter1.expandAll()
+        contactAdapter1!!.expandAll()
+        if (bundle != null) {
+            contactAdapter1!!.isCheckMode = true
+        }
         //一对多数据处理end
         if(bundle == null)
         {
             newFriend.visibility = View.VISIBLE
-            contactAdapter = ContactListAdapter(contactList,false)
+//            contactAdapter = ContactListAdapter(contactList,false)
         }else{
             newFriend.visibility = View.GONE
-            contactAdapter = ContactListAdapter(contactList,true)
+//            contactAdapter = ContactListAdapter(contactList,true)
         }
 //        recyclerView.adapter = contactAdapter
-
-        contactAdapter!!.setOnItemClickListener { adapter, view, position ->
-            if(bundle == null)
-            {
-                var intent = Intent(activity!!, UserInfoActivity::class.java)
-                intent.putExtra("user", contactAdapter!!.getItem(position))
-                startActivity(intent)
-            }else{
-                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
-                checkBox.setChecked(!checkBox.isChecked)
-                var itemCount =  contactAdapter!!.itemCount -1
-                var count :Int = 0;
-                for (i in 0..itemCount) {
-                    var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-                    if(checkBox.isChecked)
-                    {
-                        count ++
-                    }
-                }
-                EventBus.getDefault().post(SelectFriendChange(count,0))
-            }
-
-        }
+//
+//        contactAdapter!!.setOnItemClickListener { adapter, view, position ->
+//            if(bundle == null)
+//            {
+//                var intent = Intent(activity!!, UserInfoActivity::class.java)
+//                intent.putExtra("user", contactAdapter!!.getItem(position))
+//                startActivity(intent)
+//            }else{
+//                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
+//                checkBox.setChecked(!checkBox.isChecked)
+//                var itemCount =  contactAdapter!!.itemCount -1
+//                var count :Int = 0;
+//                for (i in 0..itemCount) {
+//                    var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+//                    if(checkBox.isChecked)
+//                    {
+//                        count ++
+//                    }
+//                }
+//                EventBus.getDefault().post(SelectFriendChange(count,0))
+//            }
+//
+//        }
 
 
         query.addTextChangedListener(object : TextWatcher {
@@ -483,6 +496,60 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         })
     }
 
+    fun updateAdapterData(list : ArrayList<UserEntity>) {
+        var contactMapList = HashMap<String,MyFriend>()
+        for (i in list) {
+
+            if(contactMapList.get(i.signPublicKey) == null)
+            {
+                var myFriend = MyFriend()
+                myFriend.userKey = i.signPublicKey
+                myFriend.userName = i.nickName
+                myFriend.userEntity = i
+                var temp = ArrayList<UserEntity>()
+                temp.add(i)
+                myFriend.routerItemList = temp;
+                contactMapList.put(i.signPublicKey,myFriend)
+            }else{
+                var temp = contactMapList.get(i.signPublicKey)
+                var contactNewList = temp!!.routerItemList
+                contactNewList.add(i)
+            }
+
+        }
+
+        var  contactNewList = arrayListOf<MyFriend>()
+        var contactNewListValues = contactMapList.values
+        for(i in contactNewListValues)
+        {
+            contactNewList.add(i)
+        }
+        contactNewList.sortBy {
+            it.userName
+        }
+        val list1 = arrayListOf<MultiItemEntity>()
+        var isIn = false
+        contactNewList.forEach {
+            var userHead = UserHead()
+            userHead.userName = it.userName
+            userHead.userEntity = it.userEntity
+            if (!isIn) {
+                isIn = true
+                userHead.addSubItem(UserItem(it.userEntity))
+                userHead.addSubItem(UserItem(it.userEntity))
+                userHead.addSubItem(UserItem(it.userEntity))
+            }
+            if(it.routerItemList.size > 1)
+            {
+                it.routerItemList?.forEach {
+                    userHead.addSubItem(UserItem(it))
+                }
+            }
+            list1.add(userHead)
+        }
+        contactAdapter1!!.setNewData(list1)
+    }
+
 
     fun fiter(key:String,contactList:ArrayList<UserEntity>)
     {
@@ -493,38 +560,56 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 contactListTemp.add(i)
             }
         }
-        contactAdapter!!.setNewData(contactListTemp)
+        updateAdapterData(contactListTemp)
+//        contactAdapter!!.setNewData(contactListTemp)
     }
 
     fun selectOrCancelAll()
     {
-        var itemCount =  contactAdapter!!.itemCount -1
-
-        for (i in 0..itemCount) {
-            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-            checkBox.setChecked(!checkBox.isChecked)
-        }
-        var count :Int = 0;
-        for (i in 0..itemCount) {
-            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-            if(checkBox.isChecked)
-            {
-                count ++
-            }
-        }
-        EventBus.getDefault().post(SelectFriendChange(count,0))
+//        var itemCount =  contactAdapter!!.itemCount -1
+//
+//        for (i in 0..itemCount) {
+//            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+//            checkBox.setChecked(!checkBox.isChecked)
+//        }
+//        var count :Int = 0;
+//        for (i in 0..itemCount) {
+//            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+//            if(checkBox.isChecked)
+//            {
+//                count ++
+//            }
+//        }
+//        EventBus.getDefault().post(SelectFriendChange(count,0))
     }
     fun getAllSelectedFriend() : ArrayList<UserEntity>
     {
         var contactList = arrayListOf<UserEntity>()
-        var itemCount =  contactAdapter!!.itemCount -1
-        for (i in 0..itemCount) {
-            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-            if(checkBox.isChecked)
-            {
-                contactList.add( contactAdapter!!.getItem(i) as UserEntity)
+//        var itemCount =  contactAdapter1!!.itemCount -1
+        for (i in 0 until contactAdapter1!!.data.size) {
+            if (contactAdapter1!!.data.get(i).getItemType() == 0) {
+                val userHead =contactAdapter1!!.data.get(i) as UserHead
+                if (userHead.subItems == null || userHead.subItems.size == 0) {
+                    if (userHead.isChecked) {
+                        contactList.add(userHead.userEntity)
+                    }
+                } else {
+                    for (j in 0 until userHead.subItems.size) {
+                        val userItem = userHead.subItems[j]
+                        if (userItem.isChecked) {
+                            contactList.add(userItem.userEntity)
+                        }
+                    }
+                }
             }
         }
+//        for (i in 0..itemCount) {
+//            var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
+//            if(checkBox.isChecked)
+//            {
+//                contactList.add( contactAdapter!!.getItem(i) as UserEntity)
+//            }
+//        }
         return contactList!!
     }
     override fun setupFragmentComponent() {

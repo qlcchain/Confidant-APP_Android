@@ -6,6 +6,16 @@ import com.stratagile.pnrouter.db.UserEntity;
 public class UserItem implements MultiItemEntity {
     private UserEntity userEntity;
 
+    private boolean isChecked = false;
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
     public UserItem(UserEntity userEntity) {
         this.userEntity = userEntity;
     }

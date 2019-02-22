@@ -856,7 +856,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             userId = it.userId
                             username = it.username
                             dataFileVersion = it.dataFileVersion
-
+                            routerNameTips.setTextColor(resources.getColor(R.color.white))
                             if(it.routerName != null){
                                 routerNameTips.text = it.routerName
                                 ivAvatar.setText(it.routerName)
@@ -909,7 +909,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 userId = it.userId
                                 username = it.username
                                 dataFileVersion = it.dataFileVersion
-
+                                routerNameTips.setTextColor(resources.getColor(R.color.white))
                                 if(it.routerName != null){
                                     routerNameTips.text = it.routerName
                                     ivAvatar.setText(it.routerName)
@@ -940,6 +940,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 username = routerList[0].username
                 tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
                 dataFileVersion = routerList[0].dataFileVersion
+                routerNameTips.setTextColor(resources.getColor(R.color.white))
                 if(routerList[0].routerName != null){
                     routerNameTips.text = routerList[0].routerName
                     ivAvatar.setText(routerList[0].routerName)
@@ -958,8 +959,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             tvUserName.visibility = View.VISIBLE
             ivNoCircle.visibility = View.GONE
             joincircle.visibility = View.INVISIBLE
+            loginBtn.background = resources.getDrawable(R.drawable.btn_white)
             if(routerList.size > 1)
             {
+                routerNameTipsmore.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
                 routerNameTipsmore.visibility = View.VISIBLE
             }else{
                 routerNameTipsmore.visibility = View.INVISIBLE
@@ -981,8 +984,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             joincircle.visibility = View.VISIBLE
             ivAvatar.visibility = View.GONE
             tvUserName.visibility = View.INVISIBLE
-            routerNameTips.text = ""
-            routerNameTipsmore.visibility = View.INVISIBLE
+            routerNameTips.text = "You haven't joined any circle"
+            loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
+            routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
+            routerNameTipsmore.visibility = View.VISIBLE
             hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.GONE
             scanParentLogin.visibility = View.GONE
@@ -1178,7 +1183,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     private fun startLogin()
     {
-
         isStartLogin = true
         if(!ConstantValue.lastNetworkType.equals(""))
         {
