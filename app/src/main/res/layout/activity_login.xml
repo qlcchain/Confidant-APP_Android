@@ -59,7 +59,8 @@
             android:id="@+id/llCircle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x108"
-            android:layout_marginLeft="32dp"
+            android:layout_marginLeft="@dimen/x60"
+            android:layout_marginRight="@dimen/x60"
             android:layout_marginTop="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -105,7 +106,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginLeft="@dimen/x60"
             android:layout_marginRight="@dimen/x60"
-            android:layout_height="@dimen/x4"
+            android:layout_height="@dimen/x2"
             android:background="@color/color_b2b2b2"/>
 
         <TextView
@@ -115,7 +116,7 @@
             android:layout_marginLeft="@dimen/x60"
             android:layout_marginRight="@dimen/x60"
             android:layout_marginTop="@dimen/x20"
-            android:text="*Scan the invitation QR code to join your friend's Confidant circle. \n*Scan the QR code on your Confidant router to launch your circle."
+            android:text="@string/login_no_router"
             android:textColor="@color/color_999999"
             android:textSize="13sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -161,7 +162,7 @@
             android:id="@+id/miniScanIconLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x60"
+            android:layout_marginTop="@dimen/x70"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginRight="@dimen/x30"

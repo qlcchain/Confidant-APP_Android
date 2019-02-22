@@ -90,7 +90,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 routerList.forEach {
                     if (it.userSn.equals(usersn)) {
                         isHas = true
-                        break;
+                        return@forEach
                     }
                 }
                 if(isHas)

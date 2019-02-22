@@ -550,5 +550,7 @@
     <string name="create_an_account">Create an account</string>
     <string name="Create_failure">Create failure</string>
     <string name="Export_account">Export account</string>
+    <string name="login_no_router">*Scan the invitation QR code to join your friend\'s Confidant circle.  *Scan the QR code on your Confidant router to launch your circle.</string>
+    <string name="login_has_router">*Select to re-join an existing circle or Scan the invitation QR code to join a new circle.</string>
 
 </resources>

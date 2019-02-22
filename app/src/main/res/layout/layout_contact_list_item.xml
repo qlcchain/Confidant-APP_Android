@@ -5,11 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/x123">
 
-    <View
-        android:id="@+id/line"
-        style="@style/divide_line"
-        app:layout_constraintBottom_toTopOf="parent" />
-
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
@@ -63,5 +58,8 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="@dimen/x30"
         android:layout_height="@dimen/x30" />
-
+    <View
+        android:id="@+id/line"
+        style="@style/divide_line"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </android.support.constraint.ConstraintLayout>

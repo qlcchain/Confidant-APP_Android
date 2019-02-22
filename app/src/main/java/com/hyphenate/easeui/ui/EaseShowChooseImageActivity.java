@@ -82,27 +82,36 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 			getWindowManager().getDefaultDisplay().getMetrics(metrics);
 			// int screenWidth = metrics.widthPixels;
 			// int screenHeight =metrics.heightPixels;
-			bitmap = EaseImageCache.getInstance().get(uri.getPath());
-			if (bitmap == null) {
-				EaseLoadLocalBigImgTask task = new EaseLoadLocalBigImgTask(this, uri.getPath(), image, loadLocalPb, UIUtils.getDisplayWidth(this),
-						ImageUtils.SCALE_IMAGE_HEIGHT);
-				if (android.os.Build.VERSION.SDK_INT > 10) {
-					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-				} else {
-					task.execute();
-				}
-			} else {
-				Bitmap bigData = EaseImageUtils.getBitmap(new File(uri.getPath()));
-				int degree = EaseImageUtils.readPictureDegree(uri.getPath());
-				if(degree != 0)
-				{
-					Bitmap bmpOk = EaseImageUtils.rotateToDegrees(bigData, degree);
-					image.setImageBitmap(bmpOk);
-				}else{
-					image.setImageBitmap(bigData);
-				}
-
+			Bitmap bigData = EaseImageUtils.getBitmap(new File(uri.getPath()));
+			int degree = EaseImageUtils.readPictureDegree(uri.getPath());
+			if(degree != 0)
+			{
+				Bitmap bmpOk = EaseImageUtils.rotateToDegrees(bigData, degree);
+				image.setImageBitmap(bmpOk);
+			}else{
+				image.setImageBitmap(bigData);
 			}
+//			bitmap = EaseImageCache.getInstance().get(uri.getPath());
+//			if (bitmap == null) {
+//				EaseLoadLocalBigImgTask task = new EaseLoadLocalBigImgTask(this, uri.getPath(), image, loadLocalPb, UIUtils.getDisplayWidth(this),
+//						ImageUtils.SCALE_IMAGE_HEIGHT);
+//				if (android.os.Build.VERSION.SDK_INT > 10) {
+//					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//				} else {
+//					task.execute();
+//				}
+//			} else {
+//				Bitmap bigData = EaseImageUtils.getBitmap(new File(uri.getPath()));
+//				int degree = EaseImageUtils.readPictureDegree(uri.getPath());
+//				if(degree != 0)
+//				{
+//					Bitmap bmpOk = EaseImageUtils.rotateToDegrees(bigData, degree);
+//					image.setImageBitmap(bmpOk);
+//				}else{
+//					image.setImageBitmap(bigData);
+//				}
+//
+//			}
 		} else if(msgId != null) {
 		    downloadImage(msgId);
 		}else {

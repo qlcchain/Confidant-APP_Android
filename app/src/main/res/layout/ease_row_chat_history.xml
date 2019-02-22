@@ -39,10 +39,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="7dp"
+        android:text="hahhahahah"
         android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/avatar_container"
         android:textColor="@color/list_itease_primary_color"
         android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/userRouter"
+        android:layout_width="@dimen/x200"
+        android:layout_toRightOf="@+id/name"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:gravity="center_vertical"
+        android:textColor="@color/color_2B2B2B"
+        android:textSize="12sp"
+        android:layout_alignBottom="@+id/name"
+        android:layout_alignTop="@+id/name"
+        android:layout_marginLeft="@dimen/x10"
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/time"
