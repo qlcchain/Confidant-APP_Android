@@ -75,20 +75,7 @@ import kotlin.collections.ArrayList
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
     override fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp) {
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = OnlineStatusPushRsp(0,"", userId!!)
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
+
     }
 
     var SELECT_PHOTO = 2

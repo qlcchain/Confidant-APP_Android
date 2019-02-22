@@ -50,6 +50,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
                 {
                     intent = Intent(this, AdminLoginSuccessActivity::class.java)
                 }
+                intent.putExtra("flag",0)
                 intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
                 intent.putExtra("adminUserSn",jAdminLoginRsp.params.userSn)
                 intent.putExtra("adminIdentifyCode",jAdminLoginRsp.params.identifyCode)

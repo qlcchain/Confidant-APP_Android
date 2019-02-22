@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import chat.tox.antox.tox.MessageHelper
@@ -22,6 +23,7 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import kotlinx.android.synthetic.main.activity_routeraliasset.*
 import javax.inject.Inject
 
@@ -35,19 +37,30 @@ import javax.inject.Inject
 class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
     override fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp) {
 
-        if(jResetRouterNameRsp.retCode == 0)
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jResetRouterNameRsp.params.retCode == 0)
         {
             runOnUiThread {
-                var intent = Intent(this, AdminLoginSuccessActivity::class.java)
-                intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
-                intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
-                intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
-                intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
-                intent.putExtra("routerName",routerName.text.toString())
-                startActivity(intent)
-                finish()
+                if(flag == 0)
+                {
+                    var intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                    intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
+                    intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
+                    intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
+                    intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
+                    intent.putExtra("routerName",routerName.text.toString())
+                    startActivity(intent)
+                }else{
+                    var intent = Intent()
+                    intent.putExtra("routerName", routerName.text.toString())
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
+
             }
-        }else  if(jResetRouterNameRsp.retCode == 1)
+        }else  if(jResetRouterNameRsp.params.retCode == 1)
         {
             runOnUiThread {
                 toast("No authority")
@@ -62,7 +75,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
 
     @Inject
     internal lateinit var mPresenter: RouterAliasSetPresenter
-
+    var flag = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -72,12 +85,14 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         setContentView(R.layout.activity_routeraliasset)
     }
     override fun initData() {
+        flag = intent.getIntExtra("flag",0);
         LoginInBtn.setOnClickListener {
             if(routerName.text.toString().equals(""))
             {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
+            AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
             var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
             showProgressDialog("waiting...")
             var resetRouterNameReq = ResetRouterNameReq(intent.getStringExtra("adminRouterId"),routerName)
@@ -116,5 +131,8 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
+    }
 }

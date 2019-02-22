@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.data.web
 
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
@@ -7,7 +9,10 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import java.io.IOException
 
 
@@ -79,7 +84,25 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         resetRouterNameCallBack?.ResetRouterName(jResetRouterNameRsp)
 
                     }
-
+                    //60.	用户在线状态通知_V4
+                    "OnlineStatusPush" -> {
+                        val jOnlineStatusPushRsp = gson.fromJson(text, JOnlineStatusPushRsp::class.java)
+                        mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var msgData = OnlineStatusPushRsp(0,"", userId!!)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
+                        }else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }else{
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+                        }
+                    }
                 }
             }
 
@@ -104,6 +127,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     KLog.i(loginRsp)
                     loginBackListener?.loginBack(loginRsp)
                     registerListener?.loginBack(loginRsp)
+                    adminRecoveryCallBack?.loginBack(loginRsp)
                 }
                 "AddFriendReq" -> {
                     val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -256,6 +280,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
 
                 }
+                //56.	设备管理员修改设备昵称
+                "ResetRouterName" -> {
+                    val jResetRouterNameRsp = gson.fromJson(text, JResetRouterNameRsp::class.java)
+                    resetRouterNameCallBack?.ResetRouterName(jResetRouterNameRsp)
+
+                }
                 //请求上传文件
                 "UploadFileReq" -> {
                     val jUploadFileRsp = gson.fromJson(text, JUploadFileRsp::class.java)
@@ -292,6 +322,21 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "OnlineStatusPush" -> {
                     val jOnlineStatusPushRsp = gson.fromJson(text, JOnlineStatusPushRsp::class.java)
                     mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
+                    mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var msgData = OnlineStatusPushRsp(0,"", userId!!)
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
+                    }else if (ConstantValue.isToxConnected) {
+                        var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }else{
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                        }
+                    }
                 }
             }
         }
@@ -517,6 +562,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface AdminRecoveryCallBack {
         fun recoveryBack(recoveryRsp: JRecoveryRsp)
+        fun loginBack(loginRsp: JLoginRsp)
     }
     interface AdminUpdataPassWordCallBack{
         fun updataPassWord(jAdminUpdataPasswordRsp:JAdminUpdataPasswordRsp)

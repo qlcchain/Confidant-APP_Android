@@ -224,11 +224,11 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }else{
-                ConstantValue.libsodiumprivateSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, "")
-                ConstantValue.libsodiumpublicSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, "")
-                ConstantValue.libsodiumprivateMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, "")
-                ConstantValue.libsodiumpublicMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, "")
-                ConstantValue.localUserName = SpUtil.getString(AppConfig.instance, ConstantValue.localUserNameSp, "")
+                ConstantValue.libsodiumprivateSignKey = ""
+                ConstantValue.libsodiumpublicSignKey = ""
+                ConstantValue.libsodiumprivateMiKey = ""
+                ConstantValue.libsodiumpublicMiKey = ""
+                ConstantValue.localUserName = ""
                 if(ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals(""))
                 {
                     val gson = Gson()

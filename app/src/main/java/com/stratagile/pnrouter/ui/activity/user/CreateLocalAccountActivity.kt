@@ -142,6 +142,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             if(result)
             {
                 startActivity(Intent(this, LoginActivityActivity::class.java))
+                finish()
                 //mPresenter.getScanPermission()
             }else{
                 toast(getString(R.string.Create_failure))
@@ -216,11 +217,11 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
     }
     fun createLocalUserData(userName:String):Boolean
     {
-        ConstantValue.libsodiumprivateSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, "")
-        ConstantValue.libsodiumpublicSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, "")
-        ConstantValue.libsodiumprivateMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, "")
-        ConstantValue.libsodiumpublicMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, "")
-        ConstantValue.localUserName = SpUtil.getString(AppConfig.instance, ConstantValue.localUserNameSp, "")
+        ConstantValue.libsodiumprivateSignKey = ""
+        ConstantValue.libsodiumpublicSignKey = ""
+        ConstantValue.libsodiumprivateMiKey = ""
+        ConstantValue.libsodiumpublicMiKey = ""
+        ConstantValue.localUserName = ""
         if(ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals(""))
         {
             val gson = Gson()
