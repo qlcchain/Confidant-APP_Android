@@ -42,6 +42,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
                         KLog.i(JRegisterRsp)
                         registerListener?.registerBack(JRegisterRsp)
+                        loginBackListener?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
                         val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
@@ -95,6 +96,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
                     KLog.i(JRegisterRsp)
                     registerListener?.registerBack(JRegisterRsp)
+                    loginBackListener?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
                     val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
@@ -447,6 +449,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun loginBack(loginRsp: JLoginRsp)
     }
     interface LoginMessageCallback {
+        fun registerBack(registerRsp: JRegisterRsp)
         fun loginBack(loginRsp: JLoginRsp)
         fun recoveryBack(recoveryRsp: JRecoveryRsp)
     }

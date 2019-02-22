@@ -508,8 +508,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     isFromScanAdmim = false
                 }else{
                     isHasConnect = true
-                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
                 }
 
 
@@ -559,9 +560,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     }else{
                         ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
                     }
-
-                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                    var baseData = BaseData(2,recovery)
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+                    var baseData = BaseData(4,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
@@ -897,8 +898,9 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
             }else{
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
-            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-            var baseData = BaseData(2, recovery)
+            var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+            var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))

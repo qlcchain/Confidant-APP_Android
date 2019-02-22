@@ -129,12 +129,15 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var DstKey = RxEncodeTool.base64Encode(aa)
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
-        var dst_msgaaaa = ByteArray(32)
+       /* var dst_msgaaaa = ByteArray(32)
         var sign = "123456".toByteArray()
         System.arraycopy(sign, 0, dst_msgaaaa, 0, sign.size)
         var dst_signed_msg1 = ByteArray(96)
         var signed_msg_len1 = IntArray(1)
         var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var mypublicTest = ByteArray(32)
+        System.arraycopy(mySignPrivate, 32, mypublicTest, 0, 32)
+        var aaabb = RxEncodeTool.base64Encode2String(mypublicTest)
         var crypto_sign2 = Sodium.crypto_sign(dst_signed_msg1,signed_msg_len1,dst_msgaaaa,dst_msgaaaa.size,mySignPrivate)
         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg1)
 
@@ -207,7 +210,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_shared_key_Soucre_My = ByteArray(32)
         var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
         //解密自己的消息
-        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key_Soucre_My)
+        var souceStr  = LibsodiumUtil.decrypt_data_symmetric(encrypted,src_nonce,dst_shared_key_Soucre_My)*/
 
 
         mPresenter.observeJump()

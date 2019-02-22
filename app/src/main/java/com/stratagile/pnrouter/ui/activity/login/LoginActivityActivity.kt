@@ -77,6 +77,8 @@ import javax.inject.Inject
  */
 
 class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRouterServiceMessageReceiver.LoginMessageCallback {
+
+
     @Inject
     internal lateinit var mPresenter: LoginActivityPresenter
 
@@ -115,7 +117,89 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var RouterMacStr = ""
     var scanType = 0 // 0 admin   1 其他
 
+    override fun registerBack(registerRsp: JRegisterRsp) {
+        if (registerRsp.params.retCode != 0) {
+            if (registerRsp.params.retCode == 1) {
+                runOnUiThread {
+                    toast("RouterId Error")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 2) {
+                runOnUiThread {
+                    toast("The two-dimensional code has been activated by other users.")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast("Error Verification Code")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast("Other Error")
+                    closeProgressDialog()
+                }
+            }
+            return
+        }
+        if ("".equals(registerRsp.params.userId)) {
+            runOnUiThread {
+                toast("Too many users")
+                closeProgressDialog()
+            }
+        } else {
+            runOnUiThread {
+                closeProgressDialog()
+            }
+            var newRouterEntity = RouterEntity()
+            newRouterEntity.routerId = registerRsp.params.routeId
+            newRouterEntity.userSn = registerRsp.params.userSn
+            newRouterEntity.username = ConstantValue.localUserName
+            newRouterEntity.userId = registerRsp.params.userId
+            newRouterEntity.loginKey = "";
+            newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
+            newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+            var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
+            val myRouter = MyRouter()
+            myRouter.setType(0)
+            myRouter.setRouterEntity(newRouterEntity)
+            LocalRouterUtils.insertLocalAssets(myRouter)
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+            //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+            //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
 
+            ConstantValue.loginReq = login
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(4,login)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
+                }
+            }
+        }
+    }
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
         ConstantValue.unSendMessage.remove("recovery")
@@ -163,8 +247,41 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             1 -> {
-                AppConfig.instance.messageReceiver!!.loginBackListener = null
-                startActivity(Intent(this, RegisterActivity::class.java))
+              /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
+                startActivity(Intent(this, RegisterActivity::class.java))*/
+
+                runOnUiThread {
+                    showProgressDialog("waiting...")
+                }
+
+                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, signBase64,pulicMiKey,NickName)
+                if(ConstantValue.isWebsocketConnected)
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                }
+                else if(ConstantValue.isToxConnected)
+                {
+                    var baseData = BaseData(4,regeister)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                    }
+                }
             }
             2 -> {
                 runOnUiThread {
@@ -200,10 +317,42 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                 }else{
-                    AppConfig.instance.messageReceiver!!.loginBackListener = null
+                  /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
                     var intent = Intent(this, RegisterActivity::class.java)
                     intent.putExtra("flag", 1)
-                    startActivity(intent)
+                    startActivity(intent)*/
+                    runOnUiThread {
+                        showProgressDialog("waiting...")
+                    }
+
+                    val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                    var sign = ByteArray(32)
+                    var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                    System.arraycopy(time, 0, sign, 0, time.size)
+                    var dst_signed_msg = ByteArray(96)
+                    var signed_msg_len = IntArray(1)
+                    var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                    var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                    var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                    //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                    var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, signBase64,pulicMiKey,NickName)
+                    if(ConstantValue.isWebsocketConnected)
+                    {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                    }
+                    else if(ConstantValue.isToxConnected)
+                    {
+                        var baseData = BaseData(4,regeister)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                            var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        }else{
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                        }
+                    }
                 }
 
             }
@@ -532,8 +681,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         closeProgressDialog()
                         showProgressDialog("wait...")
                     }
-                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
                     isFromScan = false
                 }else{
                     if(isClickLogin)
@@ -642,8 +792,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } else false
                         })
                     }
-                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-                    var baseData = BaseData(2,recovery)
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+                    var baseData = BaseData(4,recovery)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
                     ConstantValue.unSendMessage.put("recovery",baseDataJson)
@@ -1999,9 +2150,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }else{
                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
             }
-
-            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-            var baseData = BaseData(2, recovery)
+            var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+            var baseData = BaseData(4, recovery)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))

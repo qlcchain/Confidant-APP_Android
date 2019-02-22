@@ -5,26 +5,24 @@ import android.content.Intent
 import android.os.Bundle
 import com.google.gson.Gson
 import com.pawegio.kandroid.toast
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.CryptoBoxKeypair
-import com.stratagile.pnrouter.entity.HttpData
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerImportAccountComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.ImportAccountContract
 import com.stratagile.pnrouter.ui.activity.user.module.ImportAccountModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.ImportAccountPresenter
-import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.FileUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_import_account.*
 import org.libsodium.jni.Sodium
-import java.util.ArrayList
-
-import javax.inject.Inject;
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -80,33 +78,40 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 }
                 var type = result.substring(0,6);
                 var left = result.substring(7,result.length)
-                var signprivatek = left.substring(0,result.indexOf(","))
-                left = left.substring(signprivatek.length+1,result.length)
-                var usersn = left.substring(0,result.indexOf(","))
-                left = left.substring(usersn.length+1,result.length)
-                var username = left.substring(0,result.length)
+                var signprivatek = left.substring(0,left.indexOf(","))
+                left = left.substring(signprivatek.length+1,left.length)
+                var usersn = left.substring(0,left.indexOf(","))
+                left = left.substring(usersn.length+1,left.length)
+                var username = left.substring(0,left.length)
                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
                 var isHas = false
                 routerList.forEach {
                     if (it.userSn.equals(usersn)) {
                         isHas = true
-                        break;
+                        return@forEach
                     }
                 }
                 if(isHas)
                 {
+                    toast("Same account, no need to import")
                     return;
+                }else{
+                    FileUtil.deleteFile(ConstantValue.localPath + "/RouterList/routerData.json")
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                 }
-
                 val localSignArrayList: ArrayList<CryptoBoxKeypair>
                 val localMiArrayList: ArrayList<CryptoBoxKeypair>
                 val gson = Gson()
-                var dst_public_SignKey = ByteArray(32)
-                var dst_private_Signkey = ByteArray(64)
-                var crypto_box_keypair_result = Sodium.crypto_sign_keypair(dst_public_SignKey,dst_private_Signkey)
 
-                val strSignPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Signkey)
-                val strSignPublic =  RxEncodeTool.base64Encode2String(dst_public_SignKey)
+                var strSignPublicSouce = ByteArray(32)
+                var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
+
+
+                var dst_public_SignKey = strSignPublicSouce
+                var dst_private_Signkey = signprivatekByteArray
+                val strSignPrivate:String =  signprivatek
+                val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
                 ConstantValue.libsodiumprivateSignKey = strSignPrivate
                 ConstantValue.libsodiumpublicSignKey = strSignPublic
                 ConstantValue.localUserName = username
@@ -119,7 +124,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 SignData.publicKey = strSignPublic
                 SignData.userName = username
                 localSignArrayList.add(SignData)
-                //FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+                FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
 
 
                 var dst_public_MiKey = ByteArray(32)
@@ -141,13 +146,18 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 RSAData.publicKey = strMiPublic
                 RSAData.userName = username
                 localMiArrayList.add(RSAData)
-                //FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
-                //startActivity(Intent(this, LoginActivityActivity::class.java))
+                FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+                runOnUiThread {
+                    toast("Import success")
+                    startActivity(Intent(this, LoginActivityActivity::class.java))
+                    finish()
+                }
+
             }catch (e:Exception)
             {
                 runOnUiThread {
                     closeProgressDialog()
-                    toast(R.string.code_error)
+                    toast("Import failure")
                 }
             }
 

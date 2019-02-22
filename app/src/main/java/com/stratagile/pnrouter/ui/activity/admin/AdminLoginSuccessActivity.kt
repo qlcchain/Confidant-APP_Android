@@ -175,13 +175,14 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
         LoginInBtn.setOnClickListener {
             showProgressDialog("wait...")
-            var recovery = RecoveryReq(adminRouterId, adminUserSn)
+            var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+            var recovery = RecoveryReq(adminRouterId, adminUserSn,pulicMiKey)
             if(ConstantValue.isWebsocketConnected)
             {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
             }
             else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(2,recovery)
+                var baseData = BaseData(4,recovery)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
