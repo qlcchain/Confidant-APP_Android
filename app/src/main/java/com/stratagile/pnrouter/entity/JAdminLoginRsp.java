@@ -6,8 +6,8 @@ public class JAdminLoginRsp extends BaseEntity {
 
 
     /**
-     * timestamp : 1547889595
-     * params : {"Action":"RouterLogin","RetCode":0,"UserSn":"01000001B827EBD089CB00005C09FBC8","IdentifyCode":"QLCADMIN","RouterId":"D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67","Qrcode":"46xQvEG/5K5bKHYgCOHCL4h9qX1HI223rAK5bSIWjb/FPQGLGYauLV0UXNyoEWQxxqFAgVx3sOb77VeJaFlcwNswQ7CR+daPSOMqVgmi7c17SU6ETEBGDZsRK0Vr2Stb"}
+     * timestamp : 1550800639
+     * params : {"Action":"RouterLogin","RetCode":0,"UserSn":"01000001B827EBD089CB00005C6D3835","IdentifyCode":"","RouterId":"D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67","Qrcode":"type_1,46xQvEG/5K5bKHYgCOHCL4h9qX1HI223rAK5bSIWjb/FPQGLGYauLV0UXNyoEWQxxqFAgVx3sOb77VeJaFlcwNswQ7CR+daPSOMqVgmi7c0yS5WeuRsU2LYu66kCAXYD6kpX9cQYdPI0tfmyRvi6kCTOEqyDGrWBkRAV+cvqFMU=","RouterName":"YXBwIHdhcyA="}
      */
 
     private int timestampX;
@@ -33,10 +33,11 @@ public class JAdminLoginRsp extends BaseEntity {
         /**
          * Action : RouterLogin
          * RetCode : 0
-         * UserSn : 01000001B827EBD089CB00005C09FBC8
-         * IdentifyCode : QLCADMIN
+         * UserSn : 01000001B827EBD089CB00005C6D3835
+         * IdentifyCode :
          * RouterId : D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67
-         * Qrcode : 46xQvEG/5K5bKHYgCOHCL4h9qX1HI223rAK5bSIWjb/FPQGLGYauLV0UXNyoEWQxxqFAgVx3sOb77VeJaFlcwNswQ7CR+daPSOMqVgmi7c17SU6ETEBGDZsRK0Vr2Stb
+         * Qrcode : type_1,46xQvEG/5K5bKHYgCOHCL4h9qX1HI223rAK5bSIWjb/FPQGLGYauLV0UXNyoEWQxxqFAgVx3sOb77VeJaFlcwNswQ7CR+daPSOMqVgmi7c0yS5WeuRsU2LYu66kCAXYD6kpX9cQYdPI0tfmyRvi6kCTOEqyDGrWBkRAV+cvqFMU=
+         * RouterName : YXBwIHdhcyA=
          */
 
         private String Action;
@@ -45,6 +46,7 @@ public class JAdminLoginRsp extends BaseEntity {
         private String IdentifyCode;
         private String RouterId;
         private String Qrcode;
+        private String RouterName;
 
         public String getAction() {
             return Action;
@@ -92,6 +94,14 @@ public class JAdminLoginRsp extends BaseEntity {
 
         public void setQrcode(String Qrcode) {
             this.Qrcode = Qrcode;
+        }
+
+        public String getRouterName() {
+            return RouterName;
+        }
+
+        public void setRouterName(String RouterName) {
+            this.RouterName = RouterName;
         }
     }
 }

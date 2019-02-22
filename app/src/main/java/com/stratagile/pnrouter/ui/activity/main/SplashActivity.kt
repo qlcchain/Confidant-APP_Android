@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
+import kotlinx.android.synthetic.main.activity_register.*
 import javax.inject.Inject
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
@@ -128,6 +129,19 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var DstKey = RxEncodeTool.base64Encode(aa)
         LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())*/
         //mPresenter.getLastVersion()
+        var dst_msgaaaa = ByteArray(32)
+        var sign = "123456".toByteArray()
+        System.arraycopy(sign, 0, dst_msgaaaa, 0, sign.size)
+        var dst_signed_msg1 = ByteArray(96)
+        var signed_msg_len1 = IntArray(1)
+        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var crypto_sign2 = Sodium.crypto_sign(dst_signed_msg1,signed_msg_len1,dst_msgaaaa,dst_msgaaaa.size,mySignPrivate)
+        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg1)
+
+        var dst_msgaa = ByteArray(32)
+        var msg_lenaa = IntArray(1)
+        var crypto_sign_openaa = Sodium.crypto_sign_open(dst_msgaa,msg_lenaa,dst_signed_msg1,dst_signed_msg1.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+        var dst_msgaaSouce = String(dst_msgaa)
 
         var op = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
         var op2 = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)
@@ -183,8 +197,6 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         var dst_msg = ByteArray(32)
         var msg_len = IntArray(1)
         var crypto_sign_open = Sodium.crypto_sign_open(dst_msg,msg_len,dst_signed_msg,dst_signed_msg.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-
-
         var dst_shared_keyStr = RxEncodeTool.base64Encode2String(dst_shared_key)
         //非对称加密方式crypto_box_seal加密对称密钥
         var dst_shared_key_Mi_My = ByteArray(32 + 48)

@@ -31,6 +31,7 @@ public class JRecoveryRsp extends BaseEntity {
         private String Action;
         private int RetCode;
         private String RouteId;
+        private String RouterName;
         private String UserSn;
         private String UserId;
         private String NickName;
@@ -58,6 +59,14 @@ public class JRecoveryRsp extends BaseEntity {
 
         public void setRouteId(String RouteId) {
             this.RouteId = RouteId;
+        }
+
+        public String getRouterName() {
+            return RouterName;
+        }
+
+        public void setRouterName(String routerName) {
+            RouterName = routerName;
         }
 
         public String getUserSn() {

@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
@@ -18,6 +20,9 @@ import com.stratagile.pnrouter.ui.activity.admin.module.AdminLoginModule
 import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminLoginPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterAliasSetActivity
 import com.stratagile.pnrouter.utils.RxEncryptTool
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminlogin.*
 
 import javax.inject.Inject;
@@ -41,10 +46,15 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
                              toast("Login success")
                 }
                 var intent = Intent(this, RouterAliasSetActivity::class.java)
+                if(!jAdminLoginRsp.params.routerName.equals(""))
+                {
+                    intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                }
                 intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
                 intent.putExtra("adminUserSn",jAdminLoginRsp.params.userSn)
                 intent.putExtra("adminIdentifyCode",jAdminLoginRsp.params.identifyCode)
                 intent.putExtra("adminQrcode",jAdminLoginRsp.params.qrcode)
+                intent.putExtra("routerName",jAdminLoginRsp.params.routerName)
                 startActivity(intent)
                 finish()
             }
@@ -100,6 +110,15 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
             if(ConstantValue.isWebsocketConnected)
             {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,createNormalUser))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(2,createNormalUser)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
     }

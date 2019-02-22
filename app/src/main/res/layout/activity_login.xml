@@ -83,11 +83,12 @@
                 android:layout_width="0px"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Router 1"
+                android:text=""
                 android:layout_marginLeft="@dimen/x15"
                 android:textColor="@color/white"
                 android:textSize="@dimen/x40" />
             <ImageView
+                android:id="@+id/routerNameTipsmore"
                 android:layout_width="wrap_content"
                 android:src="@mipmap/icon_choose2"
                 android:layout_height="wrap_content" />

@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import cn.bingoogolapple.qrcode.zxing.QRCodeEncoder
 import com.pawegio.kandroid.toast
@@ -29,6 +31,9 @@ import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.utils.LocalRouterUtils
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminqrcode.*
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
@@ -64,8 +69,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                     newRouterEntity.dataFileVersion = recoveryRsp.params.dataFileVersion
                     newRouterEntity.loginKey = ""
                     newRouterEntity.dataFilePay = ""
-                    var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-                    newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    newRouterEntity.routerName = String(RxEncodeTool.base64Decode(recoveryRsp.params!!.routerName))
                     //routerNameTips.text = newRouterEntity.routerName
                     EventBus.getDefault().post(NameChange(newRouterEntity.routerName))
                     val myRouter = MyRouter()
@@ -131,6 +135,10 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         var adminUserSn = intent.getStringExtra("adminUserSn")
         var adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
         var adminQrcode = intent.getStringExtra("adminQrcode")
+        var routerName = intent.getStringExtra("routerName")
+        routerName =  String(RxEncodeTool.base64Decode(routerName))
+        adminName.text   = routerName
+        ivAvatarAdmin.setText(routerName)
         Activationcode.setRightTitleText(adminIdentifyCode)
         Routerpassword.setRightTitleText(getString(R.string.Modify))
         if(AppConfig.instance.messageReceiver != null)
@@ -168,7 +176,20 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         LoginInBtn.setOnClickListener {
             showProgressDialog("wait...")
             var recovery = RecoveryReq(adminRouterId, adminUserSn)
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))
+            }
+            else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(2,recovery)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
         }
         ivScan.setOnClickListener {
 

@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
@@ -16,6 +18,9 @@ import com.stratagile.pnrouter.ui.activity.admin.component.DaggerAdminUpCodeComp
 import com.stratagile.pnrouter.ui.activity.admin.contract.AdminUpCodeContract
 import com.stratagile.pnrouter.ui.activity.admin.module.AdminUpCodeModule
 import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminUpCodePresenter
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminupcode.*
 
 import javax.inject.Inject;
@@ -106,6 +111,15 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
             if(ConstantValue.isWebsocketConnected)
             {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,ResetUserIdcodeReq))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(2,ResetUserIdcodeReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
     }

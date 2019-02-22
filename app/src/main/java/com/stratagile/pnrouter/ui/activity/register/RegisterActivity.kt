@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_register.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 
@@ -100,7 +101,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             newRouterEntity.routerId = loginRsp.params!!.routerid
             newRouterEntity.loginKey = userName3.text.toString();
             newRouterEntity.userSn = loginRsp.params!!.userSn
-            newRouterEntity.routerName = "Router " + (routerList.size + 1)
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             var myUserData = UserEntity()
@@ -205,11 +206,18 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             myRouter.setRouterEntity(newRouterEntity)
             LocalRouterUtils.insertLocalAssets(myRouter)
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
-            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
             val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
-            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,sign, registerRsp.params.dataFileVersion,NickName)
+            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
 
             ConstantValue.loginReq = login
             if(ConstantValue.isWebsocketConnected)
@@ -302,11 +310,18 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             }*/
             showProgressDialog("waiting...")
             val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
-            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
-            var pulicMiKey = RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey!!).toString()
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
             var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-            var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, sign,pulicMiKey,NickName)
+            var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, signBase64,pulicMiKey,NickName)
             if(ConstantValue.isWebsocketConnected)
             {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))

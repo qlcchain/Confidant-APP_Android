@@ -72,6 +72,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         adminUpdataCodeCallBack?.updataCode(JAdminUpdataCodeRsp)
 
                     }
+                    //56.	设备管理员修改设备昵称
+                    "ResetRouterName" -> {
+                        val jResetRouterNameRsp = gson.fromJson(text, JResetRouterNameRsp::class.java)
+                        resetRouterNameCallBack?.ResetRouterName(jResetRouterNameRsp)
+
+                    }
+
                 }
             }
 
@@ -314,6 +321,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var adminLoginCallBack: AdminLoginCallBack? = null
 
+    var resetRouterNameCallBack:ResetRouterNameCallBack? = null
+
     var adminUpdataPassWordCallBack: AdminUpdataPassWordCallBack? = null
 
     var adminUpdataCodeCallBack: AdminUpdataCodeCallBack? = null
@@ -496,6 +505,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface AdminLoginCallBack {
         fun login(jAdminLoginRsp: JAdminLoginRsp)
+    }
+    interface ResetRouterNameCallBack {
+        fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp)
     }
     interface AdminUpdataCodeCallBack {
         fun updataCode(jAdminUpdataCodeRsp:JAdminUpdataCodeRsp)

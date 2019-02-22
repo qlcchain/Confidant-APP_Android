@@ -63,8 +63,12 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             KLog.i(VersionUtil.getAppVersionCode(AppConfig.instance))
             jumpToGuest = true
         }*/
-        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if(routerList.size == 0)
+        {
+            jumpToGuest = true
+        }*/
+        if( ConstantValue.libsodiumprivateSignKey.equals(""))
         {
             jumpToGuest = true
         }
@@ -161,8 +165,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(it)
                 }
             }
-            routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            getLastVersion()
+
 
 
             if(ConstantValue.isAntox)
@@ -302,7 +305,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }
-
+            getLastVersion()
             var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
             var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
             ConstantValue.currentRouterId = lastLoginRouterId;

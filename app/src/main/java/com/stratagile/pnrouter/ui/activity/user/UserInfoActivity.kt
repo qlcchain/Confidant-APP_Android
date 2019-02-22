@@ -41,6 +41,7 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import javax.inject.Inject
 
 /**
@@ -403,14 +404,21 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.signPublicKey != null)
         {
-            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.signPublicKey,sign,0)
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.publicRAS!!, userInfo!!.signPublicKey,signBase64,0)
             friendStatus = 0
 
             var sendData = BaseData(addFriendDealReq)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey,sign,0)
+                addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId, ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey,signBase64,0)
                 sendData = BaseData(4,addFriendDealReq)
             }
 
@@ -439,13 +447,20 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(userInfo!!.nickName!!.toByteArray())
         if(userInfo!!.signPublicKey != null)
         {
-            var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
-            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.signPublicKey, sign,1)
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.publicRAS!!, userInfo!!.signPublicKey, signBase64,1)
 
             var sendData = BaseData(addFriendDealReq)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                addFriendDealReq =  AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey, sign,1)
+                addFriendDealReq =  AddFriendDealReq(selfNickNameBase64!!, userInfo!!.nickName!!, userId!!, userInfo!!.userId,ConstantValue.libsodiumpublicSignKey!!, userInfo!!.signPublicKey, signBase64,1)
                 sendData = BaseData(4,addFriendDealReq)
             }
             friendStatus = 1

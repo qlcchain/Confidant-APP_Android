@@ -6,6 +6,8 @@ import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.JResetRouterNameRsp
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterAliasSetComponent
@@ -23,7 +25,10 @@ import javax.inject.Inject;
  * @date 2019/02/21 11:00:31
  */
 
-class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View {
+class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
+    override fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp) {
+
+    }
 
     @Inject
     internal lateinit var mPresenter: RouterAliasSetPresenter
@@ -43,6 +48,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View {
             intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
             intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
             intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
+            intent.putExtra("routerName",intent.getStringExtra("routerName"))
             startActivity(intent)
         }
     }

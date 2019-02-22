@@ -220,6 +220,16 @@ object LibsodiumUtil {
         var shareKey16Str = String(shareKey16)
         return shareKey16Str
     }
+    fun DecryptShareKeyBySign(shareMiKey:String):String
+    {
+        var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(shareMiKey)
+        var dst_shared_key_Soucre_My = ByteArray(32)
+        var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey))
+        var shareKey16 =  ByteArray(16)
+        System.arraycopy(dst_shared_key_Soucre_My, 0, shareKey16,0 , 16)
+        var shareKey16Str = String(shareKey16)
+        return shareKey16Str
+    }
     /**
      * 得到最后发送文件数据
      */

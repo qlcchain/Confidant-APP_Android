@@ -64,6 +64,7 @@ import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.util.*
 import javax.inject.Inject
 
@@ -145,7 +146,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     newRouterEntity.loginKey = ""
                     newRouterEntity.dataFilePay = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-                    newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    newRouterEntity.routerName = String(RxEncodeTool.base64Decode(recoveryRsp.params!!.routerName))
                     routerId = recoveryRsp.params.routeId
                     userSn = recoveryRsp.params.userSn
                     userId = recoveryRsp.params.userId
@@ -553,10 +554,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 //            standaloneCoroutine.cancel()
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                        var sign = ByteArray(32)
+                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        System.arraycopy(time, 0, sign, 0, time.size)
+                        var dst_signed_msg = ByteArray(96)
+                        var signed_msg_len = IntArray(1)
+                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
                     }
@@ -682,10 +690,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                         var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
 
-                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                        var sign = ByteArray(32)
+                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        System.arraycopy(time, 0, sign, 0, time.size)
+                        var dst_signed_msg = ByteArray(96)
+                        var signed_msg_len = IntArray(1)
+                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                        var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
+                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
                         var baseData = BaseData(4,login)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -727,7 +742,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         miniScanIconLogin.setOnClickListener {
             mPresenter.getScanPermission()
         }
-
+        ivNoCircle.setOnClickListener {
+            mPresenter.getScanPermission()
+        }
         viewLogLogin.setOnClickListener {
             startActivity(Intent(this, LogActivity::class.java))
         }
@@ -789,6 +806,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             ConstantValue.curreantNetworkType = "WIFI"
                                             ConstantValue.currentRouterIp = udpRouterArray[0]
                                             ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
+                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
                                             ConstantValue.port= ":18006"
                                             ConstantValue.filePort = ":18007"
                                             ConstantValue.currentRouterMac = RouterMacStr
@@ -936,9 +955,18 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
             ivAvatar.visibility = View.VISIBLE
+            tvUserName.visibility = View.VISIBLE
+            ivNoCircle.visibility = View.GONE
+            joincircle.visibility = View.INVISIBLE
+            if(routerList.size > 1)
+            {
+                routerNameTipsmore.visibility = View.VISIBLE
+            }else{
+                routerNameTipsmore.visibility = View.INVISIBLE
+            }
             hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.INVISIBLE
-            scanParentLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.GONE
+            scanParentLogin.visibility = View.GONE
         } else {
             var options = RequestOptions()
                     .centerCrop()
@@ -950,10 +978,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     .apply(options)
                     .into(ivNoCircle)
             ivNoCircle.visibility = View.VISIBLE
+            joincircle.visibility = View.VISIBLE
             ivAvatar.visibility = View.GONE
+            tvUserName.visibility = View.INVISIBLE
+            routerNameTips.text = ""
+            routerNameTipsmore.visibility = View.INVISIBLE
             hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.VISIBLE
-            scanParentLogin.visibility = View.VISIBLE
+            noRoutergroupLogin.visibility = View.GONE
+            scanParentLogin.visibility = View.GONE
         }
         if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
         {
@@ -1178,10 +1210,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -1322,10 +1361,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }else{
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
-                var login = LoginReq_V4(routerId,userSn, userId,sign, dataFileVersion,NickName)
+                var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
                     delay(10000)
@@ -1671,7 +1717,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var this_ = this
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
             hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.INVISIBLE
+            noRoutergroupLogin.visibility = View.GONE
             try {
                 var result = data!!.getStringExtra("result");
                 if(!result.contains("type_"))

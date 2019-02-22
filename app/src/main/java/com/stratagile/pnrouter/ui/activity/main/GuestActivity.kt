@@ -105,7 +105,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     newRouterEntity.dataFilePay = ""
                     newRouterEntity.loginKey = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-                    newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    newRouterEntity.routerName = String(RxEncodeTool.base64Decode(recoveryRsp.params!!.routerName))
                     val myRouter = MyRouter()
                     myRouter.setType(0)
                     myRouter.setRouterEntity(newRouterEntity)
@@ -457,8 +457,11 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                 if(ConstantValue.libsodiumprivateSignKey.equals(""))
                 {
                     startActivity(Intent(this, CreateLocalAccountActivity::class.java))
+                    finish()
                 }else{
-                    mPresenter.getScanPermission()
+                    startActivity(Intent(this, LoginActivityActivity::class.java))
+                    finish()
+                    //mPresenter.getScanPermission()
                 }
                 //startActivity(Intent(this, LoginActivityActivity::class.java))
             } else {
@@ -497,6 +500,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                     }
                     var intent = Intent(this, AdminLoginActivity::class.java)
                     startActivity(intent)
+                    finish()
                     /*closeProgressDialog()
                     showProgressDialog("wait...")
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)

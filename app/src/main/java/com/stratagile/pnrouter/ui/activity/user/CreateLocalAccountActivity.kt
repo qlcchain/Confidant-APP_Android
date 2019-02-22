@@ -87,6 +87,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     newRouterEntity.loginKey = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
                     newRouterEntity.routerName = "Router " + (localData.size + 1)
+                    newRouterEntity.routerName = String(RxEncodeTool.base64Decode(recoveryRsp.params!!.routerName))
                     val myRouter = MyRouter()
                     myRouter.setType(0)
                     myRouter.setRouterEntity(newRouterEntity)
@@ -140,7 +141,8 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
            var result =  createLocalUserData(imputUserName.text.toString())
             if(result)
             {
-                mPresenter.getScanPermission()
+                startActivity(Intent(this, LoginActivityActivity::class.java))
+                //mPresenter.getScanPermission()
             }else{
                 toast(getString(R.string.Create_failure))
             }
@@ -298,7 +300,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
         }
         return true;
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
+   /* @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         when (connectStatus.status) {
             0 -> {
@@ -309,10 +311,10 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     }
                     var intent = Intent(this, AdminLoginActivity::class.java)
                     startActivity(intent)
-                    /*closeProgressDialog()
+                    *//*closeProgressDialog()
                     showProgressDialog("wait...")
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*//*
                     isFromScanAdmim = false
                 }else{
                     isHasConnect = true
@@ -441,7 +443,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
         }
 
-    }
+    }*/
     override fun getScanPermissionSuccess() {
         val intent1 = Intent(this, ScanQrCodeActivity::class.java)
         startActivityForResult(intent1, REQUEST_SCAN_QRCODE)
@@ -694,7 +696,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
     }
     private fun startToxAndRecovery()
     {
-        ConstantValue.curreantNetworkType = "TOX"
+       /* ConstantValue.curreantNetworkType = "TOX"
         if(!ConstantValue.isToxConnected)
         {
             runOnUiThread {
@@ -730,6 +732,6 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
             }
-        }
+        }*/
     }
 }

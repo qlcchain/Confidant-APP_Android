@@ -12,7 +12,7 @@
         android:src="@mipmap/login_router_bg"
         android:layout_height="@dimen/x246" />
     <com.stratagile.pnrouter.view.ImageButtonWithText
-        android:id="@+id/ivAvatar"
+        android:id="@+id/ivAvatarAdmin"
         android:layout_marginTop="@dimen/x200"
         android:layout_width="@dimen/x123"
         android:layout_marginLeft="@dimen/x31"
@@ -31,7 +31,7 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_below="@+id/ivAvatar"
+        android:layout_below="@+id/ivAvatarAdmin"
         android:layout_marginTop="@dimen/x31"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -39,6 +39,7 @@
             android:orientation="vertical"
             android:layout_height="match_parent">
             <TextView
+                android:id="@+id/adminName"
                 android:layout_width="wrap_content"
                 android:text="Bay Area Biz Networking"
                 android:textSize="19sp"

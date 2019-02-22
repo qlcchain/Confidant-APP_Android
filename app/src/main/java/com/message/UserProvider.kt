@@ -131,12 +131,19 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-                        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
-                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.signPublicKey,sign,0)
+                        var sign = ByteArray(32)
+                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        System.arraycopy(time, 0, sign, 0, time.size)
+                        var dst_signed_msg = ByteArray(96)
+                        var signed_msg_len = IntArray(1)
+                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.publicRAS!!, itUserEntity.signPublicKey,signBase64,0)
                         var sendData = BaseData(addFriendDealReq)
                         if(ConstantValue.encryptionType.equals("1"))
                         {
-                            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.libsodiumpublicSignKey!!, itUserEntity.signPublicKey,sign,0)
+                            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, itUserEntity.nickName, selfUserId!!, itUserEntity.userId, ConstantValue.libsodiumpublicSignKey!!, itUserEntity.signPublicKey,signBase64,0)
                             sendData = BaseData(4,addFriendDealReq)
                         }
                         if (ConstantValue.isWebsocketConnected) {
@@ -555,13 +562,20 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     fun accepteAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
-        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
+        var sign = ByteArray(32)
+        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+        System.arraycopy(time, 0, sign, 0, time.size)
+        var dst_signed_msg = ByteArray(96)
+        var signed_msg_len = IntArray(1)
+        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS!!, friendKey,sign,0)
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.publicRAS!!, friendKey,signBase64,0)
         var sendData = BaseData(addFriendDealReq)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.libsodiumpublicSignKey!!, friendKey,sign,0)
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, ConstantValue.libsodiumpublicSignKey!!, friendKey,signBase64,0)
             sendData = BaseData(4,addFriendDealReq)
         }
         if (ConstantValue.isWebsocketConnected) {
@@ -582,13 +596,20 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     fun refuseAddFriend(selfNickName : String, toNickName : String, selfUserId: String, toUserId : String,friendKey :String) {
         val selfNickNameBase64 = RxEncodeTool.base64Encode2String(selfNickName!!.toByteArray())
         //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-        var sign = LibsodiumUtil.EncryptShareKey((System.currentTimeMillis() /1000).toString(), ConstantValue.libsodiumpublicMiKey!!).toString()
-        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,sign,1)
+        var sign = ByteArray(32)
+        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+        System.arraycopy(time, 0, sign, 0, time.size)
+        var dst_signed_msg = ByteArray(96)
+        var signed_msg_len = IntArray(1)
+        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+        var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,signBase64,1)
 
         var sendData = BaseData(addFriendDealReq)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,sign,1)
+            addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, toNickName, selfUserId, toUserId, "",friendKey,signBase64,1)
             sendData = BaseData(4,addFriendDealReq)
         }
         if (ConstantValue.isWebsocketConnected) {
