@@ -285,8 +285,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                             {
                                 ConstantValue.libsodiumprivateSignKey = localSignArrayList.get(0).privateKey
                                 ConstantValue.libsodiumpublicSignKey =  localSignArrayList.get(0).publicKey
+                                ConstantValue.localUserName =  localSignArrayList.get(0).userName
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                             }
                         }
 
@@ -299,8 +301,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                             {
                                 ConstantValue.libsodiumprivateMiKey = localMiArrayList.get(0).privateKey
                                 ConstantValue.libsodiumpublicMiKey =  localMiArrayList.get(0).publicKey
+                                ConstantValue.localUserName =  localMiArrayList.get(0).userName
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                             }
                         }
                     }

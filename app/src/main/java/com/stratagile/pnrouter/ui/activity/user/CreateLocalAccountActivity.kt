@@ -227,7 +227,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             var miData = FileUtil.readKeyData("libsodiumdata_mi")
             val localSignArrayList: ArrayList<CryptoBoxKeypair>
             val localMiArrayList: ArrayList<CryptoBoxKeypair>
-            if(signData.equals(""))//不用在这里创建
+            if(signData.equals(""))
             {
                 var dst_public_SignKey = ByteArray(32)
                 var dst_private_Signkey = ByteArray(64)
@@ -282,9 +282,10 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     {
                         ConstantValue.libsodiumprivateSignKey = localSignArrayList.get(0).privateKey
                         ConstantValue.libsodiumpublicSignKey =  localSignArrayList.get(0).publicKey
+                        ConstantValue.localUserName =  localSignArrayList.get(0).userName
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
-                    }
+                        SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)}
                 }
 
                 var miStr = miData
@@ -296,8 +297,10 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     {
                         ConstantValue.libsodiumprivateMiKey = localMiArrayList.get(0).privateKey
                         ConstantValue.libsodiumpublicMiKey =  localMiArrayList.get(0).publicKey
+                        ConstantValue.localUserName =  localMiArrayList.get(0).userName
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                     }
                 }
             }
