@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/item_news"
-        android:icon="@mipmap/btn_news_highlight"
+        android:icon="@mipmap/btn_chat_h"
         android:title="@string/chats" />
     <item
         android:id="@+id/item_file"
-        android:icon="@mipmap/btn_file_highlight"
+        android:icon="@mipmap/btn_file_h"
         android:title="@string/file_" />
     <item
         android:id="@+id/item_contacts"
-        android:icon="@mipmap/btn_contacts_highlight"
+        android:icon="@mipmap/btn_contact_h"
         android:title="@string/contacts" />
     <item
         android:id="@+id/item_my"
-        android:icon="@mipmap/btn_my_highlight"
+        android:icon="@mipmap/btn_me_h"
         android:title="@string/my" />
 </menu>
