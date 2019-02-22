@@ -88,6 +88,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         if (holder == null) {
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.name);
+            holder.userRouter = (TextView) convertView.findViewById(R.id.userRouter);
             holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.message = (TextView) convertView.findViewById(R.id.message);
             holder.time = (TextView) convertView.findViewById(R.id.time);
@@ -151,6 +152,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
             //EaseUserUtils.setUserNick(username, holder.name);
             holder.avatar.setText(usernameSouce);
             holder.name.setText(usernameSouce);
+            holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
             holder.motioned.setVisibility(View.GONE);
         }
 
@@ -370,6 +372,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         /** layout */
         RelativeLayout list_itease_layout;
         TextView motioned;
+        TextView userRouter;
     }
 }
 

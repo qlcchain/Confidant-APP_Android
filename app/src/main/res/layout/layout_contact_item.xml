@@ -3,36 +3,48 @@
     android:layout_width="match_parent"
     android:gravity="center_vertical"
     android:paddingLeft="@dimen/x136"
-    android:orientation="horizontal"
-    android:layout_height="@dimen/x92">
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    <CheckBox
-        android:visibility="gone"
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/x30"
-        android:clickable="false"
-        android:button="@drawable/checkbox_style" />
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_height="@dimen/x92">
 
-    <ImageView
-        android:layout_width="@dimen/x31"
-        android:src="@mipmap/icon_sub_user"
-        android:layout_height="@dimen/x31" />
-    <TextView
-        android:id="@+id/routerName"
-        android:layout_width="0px"
-        android:layout_weight="1"
-        android:text="呵呵呵"
-        android:layout_marginLeft="@dimen/x12"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/tvChat"
-        android:layout_width="@dimen/x100"
-        android:layout_marginRight="@dimen/x31"
-        android:gravity="center"
-        android:textColor="@color/color_2c2c2c"
-        android:background="@drawable/contact_chat_item_bg"
-        android:text="Chats"
-        android:layout_height="@dimen/x46" />
+        <CheckBox
+            android:visibility="gone"
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:clickable="false"
+            android:button="@drawable/checkbox_style" />
+
+        <ImageView
+            android:layout_width="@dimen/x31"
+            android:src="@mipmap/icon_sub_user"
+            android:layout_height="@dimen/x31" />
+        <TextView
+            android:id="@+id/routerName"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:text="呵呵呵"
+            android:layout_marginLeft="@dimen/x12"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvChat"
+            android:layout_width="@dimen/x100"
+            android:layout_marginRight="@dimen/x31"
+            android:gravity="center"
+            android:textColor="@color/color_2c2c2c"
+            android:background="@drawable/contact_chat_item_bg"
+            android:text="Chats"
+            android:layout_height="@dimen/x46" />
+    </LinearLayout>
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:background="@color/color_f2f2f2"
+        android:layout_height="@dimen/x1" />
 </LinearLayout>

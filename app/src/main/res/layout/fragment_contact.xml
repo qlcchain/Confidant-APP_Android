@@ -2,112 +2,121 @@
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/refreshLayout"
-    android:background="@color/color_f2f2f2"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/color_f2f2f2">
 
-    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <!--<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <include
+                android:id="@+id/include"
+                layout="@layout/ease_search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/newFriend"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x90"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/x30"
+            android:paddingRight="@dimen/x30">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_contact" />
+
+            <View
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <View
+                android:id="@+id/new_contact_dot"
+                android:layout_width="@dimen/x20"
+                android:layout_height="@dimen/x20"
+                android:layout_marginRight="@dimen/x10"
+                android:background="@drawable/new_message_flag_bg" />
+
+            <ImageView
+                android:layout_width="@dimen/x30"
+                android:layout_height="@dimen/x30"
+                android:rotation="180"
+                android:src="@mipmap/icon_back" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:focusable="true"
-                android:focusableInTouchMode="true">
-
-                <include
-                    android:id="@+id/include"
-                    layout="@layout/ease_search_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </FrameLayout>
-
-            <LinearLayout
-                android:id="@+id/newFriend"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/x90"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/x30"
-                android:paddingRight="@dimen/x30">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/add_contact" />
-
-                <View
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-
-                <View
-                    android:id="@+id/new_contact_dot"
-                    android:layout_width="@dimen/x20"
-                    android:background="@drawable/new_message_flag_bg"
-                    android:layout_marginRight="@dimen/x10"
-                    android:layout_height="@dimen/x20"/>
-
-                <ImageView
-                    android:layout_width="@dimen/x30"
-                    android:layout_height="@dimen/x30"
-                    android:rotation="180"
-                    android:src="@mipmap/icon_back" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/x90"
-                android:layout_marginTop="@dimen/x2"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/x30"
-                android:paddingRight="@dimen/x30">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Create a Group Chat" />
-
-                <View
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:layout_width="@dimen/x30"
-                    android:layout_height="@dimen/x30"
-                    android:rotation="180"
-                    android:src="@mipmap/icon_back" />
-            </LinearLayout>
+            android:layout_height="@dimen/x90"
+            android:layout_marginTop="@dimen/x2"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/x30"
+            android:paddingRight="@dimen/x30"
+            android:visibility="gone">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/x90"
-                android:layout_marginTop="@dimen/x20"
-                android:background="@color/white"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/x30"
-                android:text="Contacts" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create a Group Chat" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
+            <View
+                android:layout_width="0px"
                 android:layout_height="match_parent"
-                android:background="@color/white"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager">
+                android:layout_weight="1" />
 
-            </android.support.v7.widget.RecyclerView>
+            <ImageView
+                android:layout_width="@dimen/x30"
+                android:layout_height="@dimen/x30"
+                android:rotation="180"
+                android:src="@mipmap/icon_back" />
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x90"
+            android:layout_marginTop="@dimen/x20"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/x30"
+            android:text="Contacts" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x1"
+            android:background="@color/color_f2f2f2"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:background="@color/white"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager">
+
+        </android.support.v7.widget.RecyclerView>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x1"
+            android:background="@color/color_f2f2f2"/>
+    </LinearLayout>
+    <!--</android.support.v4.widget.NestedScrollView>-->
 </android.support.v4.widget.SwipeRefreshLayout>
 

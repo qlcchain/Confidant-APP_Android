@@ -1048,6 +1048,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     routerNameTips.text =  "Router 1"
                                     ivAvatar.setText("Router 1")
                                 }
+                                desc.text = getString(R.string.login_has_router)
                                 tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
@@ -1073,6 +1074,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     routerNameTips.text =  "Router 1"
                                     ivAvatar.setText("Router 1")
                                 }
+                                desc.text = getString(R.string.login_has_router)
                                 tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
@@ -1094,6 +1096,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 userSn =  routerList[0].userSn
                 userId = routerList[0].userId
                 username = routerList[0].username
+                desc.text = getString(R.string.login_has_router)
                 tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
                 dataFileVersion = routerList[0].dataFileVersion
                 routerNameTips.setTextColor(resources.getColor(R.color.white))
@@ -1139,8 +1142,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             ivNoCircle.visibility = View.VISIBLE
             joincircle.visibility = View.VISIBLE
             ivAvatar.visibility = View.GONE
-            tvUserName.visibility = View.INVISIBLE
+            tvUserName.visibility = View.VISIBLE
+            username = ConstantValue.localUserName!!
+            tvUserName.text = "Hello\n"+ ConstantValue.localUserName + "\nWelcome back!"
             routerNameTips.text = "You haven't joined any circle"
+            desc.text = resources.getString(R.string.login_no_router)
             loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
             routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
             routerNameTipsmore.visibility = View.VISIBLE
