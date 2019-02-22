@@ -49,10 +49,19 @@ class MyFragment : BaseFragment(), MyContract.View {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
         toDetail.setOnClickListener {
-            startActivity(Intent(activity, MyDetailActivity::class.java))
+            var intent= Intent(activity, MyDetailActivity::class.java)
+            intent.putExtra("flag",0)
+            startActivity(intent)
+        }
+        settings.setOnClickListener {
+            var intent= Intent(activity, MyDetailActivity::class.java)
+            intent.putExtra("flag",1)
+            startActivity(intent)
         }
         shareApp.setOnClickListener {
-            startActivity(Intent(activity, QRCodeActivity::class.java))
+            var intent = Intent(activity, QRCodeActivity::class.java)
+            intent.putExtra("flag",0)
+            startActivity(intent)
         }
         status.text = SpUtil.getString(activity!!, ConstantValue.status, "")
         version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"

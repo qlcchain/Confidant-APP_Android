@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr=""
+        app:showImg="false"
+        app:text1="Name">
+    </com.stratagile.pnrouter.view.DetailView>
+
+    <!--<include layout="@layout/divide_line"/>-->
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/qrCode"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:src="@mipmap/icon_qr_code"
+        app:showImg="true"
+        app:text1="My QR Code">
+    </com.stratagile.pnrouter.view.DetailView>
+
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/company"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="Not set"
+        app:showImg="false"
+        app:text1="Company">
+    </com.stratagile.pnrouter.view.DetailView>
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/profession"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="Not set"
+        app:showImg="false"
+        app:text1="Occupation">
+    </com.stratagile.pnrouter.view.DetailView>
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="Not set"
+        app:showImg="false"
+        app:text1="Region">
+    </com.stratagile.pnrouter.view.DetailView>
+
+
+</LinearLayout>

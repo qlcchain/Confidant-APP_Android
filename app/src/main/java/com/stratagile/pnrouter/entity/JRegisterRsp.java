@@ -1,13 +1,25 @@
 package com.stratagile.pnrouter.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 public class JRegisterRsp extends BaseEntity {
 
 
     /**
-     * params : {"Action":"Register","RetCode":0,"RouteId":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000001B827EBD089CB00005BEBF3BF","UserId":"7132FDA46AE177488108B82C0BEEE62CFA42E4E5ADCD087462DCE2CD865CF44CA46BDBD97374","dataFileVersion":0,"DataFilePay":"7132FDA46AE177488108B82C0BEEE62CFA42E4E5ADCD087462DCE2CD865CF44CA46BDBD97374"}
+     * timestamp : 1550817467
+     * params : {"Action":"Register","RetCode":0,"RouteId":"D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67","RouterName":"Q2hhbmdzaGE=","UserSn":"03F00001B827EBD089CB00005C6F750E","UserId":"9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D","DataFileVersion":0,"DataFilePay":"9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D"}
      */
 
+    private int timestampX;
     private ParamsBean params;
+
+    public int getTimestampX() {
+        return timestampX;
+    }
+
+    public void setTimestampX(int timestampX) {
+        this.timestampX = timestampX;
+    }
 
     public ParamsBean getParams() {
         return params;
@@ -21,18 +33,18 @@ public class JRegisterRsp extends BaseEntity {
         /**
          * Action : Register
          * RetCode : 0
-         * RouteId : D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472
-         * UserSn : 02000001B827EBD089CB00005BEBF3BF
-         * UserId : 7132FDA46AE177488108B82C0BEEE62CFA42E4E5ADCD087462DCE2CD865CF44CA46BDBD97374
-         * dataFileVersion : 0
-         * DataFilePay : 7132FDA46AE177488108B82C0BEEE62CFA42E4E5ADCD087462DCE2CD865CF44CA46BDBD97374
+         * RouteId : D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67
+         * RouterName : Q2hhbmdzaGE=
+         * UserSn : 03F00001B827EBD089CB00005C6F750E
+         * UserId : 9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D
+         * DataFileVersion : 0
+         * DataFilePay : 9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D
          */
 
         private String Action;
         private int RetCode;
-        private String Index;
         private String RouteId;
-        private String RouteName;
+        private String RouterName;
         private String UserSn;
         private String UserId;
         private int DataFileVersion;
@@ -44,14 +56,6 @@ public class JRegisterRsp extends BaseEntity {
 
         public void setAction(String Action) {
             this.Action = Action;
-        }
-
-        public String getIndex() {
-            return Index;
-        }
-
-        public void setIndex(String index) {
-            Index = index;
         }
 
         public int getRetCode() {
@@ -70,6 +74,14 @@ public class JRegisterRsp extends BaseEntity {
             this.RouteId = RouteId;
         }
 
+        public String getRouterName() {
+            return RouterName;
+        }
+
+        public void setRouterName(String RouterName) {
+            this.RouterName = RouterName;
+        }
+
         public String getUserSn() {
             return UserSn;
         }
@@ -81,13 +93,7 @@ public class JRegisterRsp extends BaseEntity {
         public String getUserId() {
             return UserId;
         }
-        public String getRouteName() {
-            return RouteName;
-        }
 
-        public void setRouteName(String routeName) {
-            RouteName = routeName;
-        }
         public void setUserId(String UserId) {
             this.UserId = UserId;
         }

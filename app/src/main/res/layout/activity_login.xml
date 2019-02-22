@@ -58,41 +58,44 @@
         <LinearLayout
             android:id="@+id/llCircle"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/joincircle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="@dimen/x60"
-            android:orientation="horizontal"
-            android:layout_marginRight="@dimen/x60"
+            android:layout_height="@dimen/x108"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="4dp"
             android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/x20"
-            android:layout_height="@dimen/x108">
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/joincircle">
+
             <ImageView
-                android:visibility="gone"
                 android:id="@+id/ivNoCircle"
                 android:layout_width="@dimen/x80"
-                android:layout_height="@dimen/x80" />
+                android:layout_height="@dimen/x80"
+                android:visibility="gone" />
+
             <com.stratagile.pnrouter.view.ImageButtonWithText
-                android:visibility="gone"
                 android:id="@+id/ivAvatar"
-                app:withShape="true"
                 android:layout_width="@dimen/x80"
-                android:layout_height="@dimen/x80">
+                android:layout_height="@dimen/x80"
+                android:visibility="gone"
+                app:withShape="true">
 
             </com.stratagile.pnrouter.view.ImageButtonWithText>
+
             <TextView
                 android:id="@+id/routerNameTips"
                 android:layout_width="0px"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text=""
                 android:layout_marginLeft="@dimen/x15"
+                android:layout_weight="1"
+                android:text=""
                 android:textColor="@color/white"
                 android:textSize="14sp" />
+
             <ImageView
                 android:id="@+id/routerNameTipsmore"
                 android:layout_width="wrap_content"
-                android:src="@mipmap/arrow_enter"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:src="@mipmap/arrow_enter" />
         </LinearLayout>
 
         <View

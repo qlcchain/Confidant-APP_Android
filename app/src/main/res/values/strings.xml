@@ -24,6 +24,10 @@
     <string name="Fingerprint_init_failed_Try_again">Fingerprint init failed! Try again!</string>
     <string name="No_fingerprints_do_you_want_to_set_them_up">No fingerprints, do you want to set them up?</string>
     <string name="details">Details</string>
+    <string name="Settings">Settings</string>
+    <string name="MyQRCode">My QR Code</string>
+    <string name="Exportaccount">Export account</string>
+
     <string name="help">Help</string>
     <string name="shareApp">Share App</string>
     <string name="shareContact">Share Contact</string>
@@ -381,6 +385,7 @@
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
     <string name="setting_">Settings</string>
     <string name="scan_qr_code_to_add_me">Scan QR code to add me</string>
+    <string name="scan_qr_code_to_export_account">Scan QR code to export account</string>
     <string name="erase">Please confirm you would like to erase the data and format the hard disk?</string>
     <string name="erasechoose">Please choose to agree.</string>
 
@@ -544,5 +549,6 @@
     <string name="formatting_in_progress">Formatting in progress...</string>
     <string name="create_an_account">Create an account</string>
     <string name="Create_failure">Create failure</string>
+    <string name="Export_account">Export account</string>
 
 </resources>

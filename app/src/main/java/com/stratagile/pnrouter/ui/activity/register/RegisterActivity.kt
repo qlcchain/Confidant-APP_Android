@@ -195,12 +195,11 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             newRouterEntity.userSn = registerRsp.params.userSn
             newRouterEntity.username = createName.text.toString()
             newRouterEntity.userId = registerRsp.params.userId
-            newRouterEntity.index = registerRsp.params.index
             newRouterEntity.loginKey = userName3.text.toString();
             newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
             newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
             var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-            newRouterEntity.routerName = "Router " + (localData.size + 1)
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
             val myRouter = MyRouter()
             myRouter.setType(0)
             myRouter.setRouterEntity(newRouterEntity)
@@ -281,6 +280,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 }
             }
         }
+        createName.setText(ConstantValue.localUserName!!)
         if( AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.registerListener = this
         registerBtn.setOnClickListener {

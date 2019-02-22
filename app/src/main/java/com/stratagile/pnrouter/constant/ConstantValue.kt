@@ -41,8 +41,10 @@ object ConstantValue {
 
         var libsodiumprivateSignKeySp ="libsodiumprivateSignKeySp"
         var libsodiumpublicSignKeySp ="libsodiumpublicSignKeySp"
+        var localUserNameSp ="localUserNameSp"
         var libsodiumprivateSignKey:String? = ""
         var libsodiumpublicSignKey:String? = ""
+        var localUserName:String? = ""
 
         var libsodiumprivateMiKeySp ="libsodiumprivateMiKeySp"
         var libsodiumpublicMiKeySp ="libsodiumpublicMiKeySp"

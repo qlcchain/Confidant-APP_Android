@@ -91,6 +91,7 @@
                             android:layout_height="wrap_content" />
 
                         <EditText
+                            android:id="@+id/routerName"
                             android:layout_width="match_parent"
                             android:hint="Please input router alias"
                             android:background="@null"

@@ -86,7 +86,6 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                     newRouterEntity.dataFilePay = ""
                     newRouterEntity.loginKey = ""
                     var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
-                    newRouterEntity.routerName = "Router " + (localData.size + 1)
                     newRouterEntity.routerName = String(RxEncodeTool.base64Decode(recoveryRsp.params!!.routerName))
                     val myRouter = MyRouter()
                     myRouter.setType(0)
@@ -220,6 +219,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
         ConstantValue.libsodiumpublicSignKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, "")
         ConstantValue.libsodiumprivateMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, "")
         ConstantValue.libsodiumpublicMiKey = SpUtil.getString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, "")
+        ConstantValue.localUserName = SpUtil.getString(AppConfig.instance, ConstantValue.localUserNameSp, "")
         if(ConstantValue.libsodiumprivateSignKey.equals("") && ConstantValue.libsodiumpublicSignKey.equals(""))
         {
             val gson = Gson()
@@ -237,8 +237,10 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 val strSignPublic =  RxEncodeTool.base64Encode2String(dst_public_SignKey)
                 ConstantValue.libsodiumprivateSignKey = strSignPrivate
                 ConstantValue.libsodiumpublicSignKey = strSignPublic
+                ConstantValue.localUserName = userName
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                 localSignArrayList = ArrayList()
                 var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
                 SignData.privateKey = strSignPrivate
@@ -257,8 +259,10 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
                 ConstantValue.libsodiumprivateMiKey = strMiPrivate
                 ConstantValue.libsodiumpublicMiKey = strMiPublic
+                ConstantValue.localUserName = userName
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
                 localMiArrayList = ArrayList()
                 var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
                 RSAData.privateKey = strMiPrivate

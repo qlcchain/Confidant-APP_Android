@@ -59,11 +59,22 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         setContentView(R.layout.activity_qrcode)
     }
     override fun initData() {
+        var flag = intent.getIntExtra("flag",0)
+
         var nickName = SpUtil.getString(this, ConstantValue.username, "")
         if ("".equals(nickName)) {
             title.text = getString(R.string.details)
         } else {
             title.text = nickName
+        }
+        if(flag == 1)
+        {
+            title.text = getString(R.string.Export_account)
+            tvShare.visibility = View.GONE
+            tips.text = getString(R.string.scan_qr_code_to_export_account)
+        }else{
+            tvShare.visibility = View.VISIBLE
+            tips.text = getString(R.string.scan_qr_code_to_add_me)
         }
         var userId = FileUtil.getLocalUserData("userid")
         tvShare.setOnClickListener {
@@ -99,9 +110,15 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
             run() {
 
                 val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
-               var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+               var  bitmap: Bitmap? = null
+                if(flag == 1)
+                {
+                    bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                }else{
+                    bitmap =   QRCodeEncoder.syncEncodeQRCode("type_0,"+userId+","+selfNickNameBase64+","+ConstantValue.libsodiumpublicSignKey!!, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                }
                 runOnUiThread {
-                    ivQrCodeMy.setImageBitmap(bitmap)
+                    ivQrCodeMy.setImageBitmap(bitmap!!)
                 }
 
             }

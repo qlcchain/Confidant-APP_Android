@@ -2,21 +2,28 @@ package com.stratagile.pnrouter.ui.activity.router
 
 import android.content.Intent
 import android.os.Bundle
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JResetRouterNameRsp
-import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
+import com.stratagile.pnrouter.entity.ResetRouterNameReq
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterAliasSetComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterAliasSetContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterAliasSetModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterAliasSetPresenter
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_routeraliasset.*
-
-import javax.inject.Inject;
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -27,6 +34,29 @@ import javax.inject.Inject;
 
 class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
     override fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp) {
+
+        if(jResetRouterNameRsp.retCode == 0)
+        {
+            runOnUiThread {
+                var intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
+                intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
+                intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
+                intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
+                intent.putExtra("routerName",routerName.text.toString())
+                startActivity(intent)
+                finish()
+            }
+        }else  if(jResetRouterNameRsp.retCode == 1)
+        {
+            runOnUiThread {
+                toast("No authority")
+            }
+        }else{
+            runOnUiThread {
+                toast("Other mistakes")
+            }
+        }
 
     }
 
@@ -43,13 +73,27 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
     }
     override fun initData() {
         LoginInBtn.setOnClickListener {
-            var intent = Intent(this, AdminLoginSuccessActivity::class.java)
-            intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
-            intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
-            intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
-            intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
-            intent.putExtra("routerName",intent.getStringExtra("routerName"))
-            startActivity(intent)
+            if(routerName.text.toString().equals(""))
+            {
+                toast(getString(R.string.Cannot_be_empty))
+                return@setOnClickListener
+            }
+            var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+            showProgressDialog("waiting...")
+            var resetRouterNameReq = ResetRouterNameReq(intent.getStringExtra("adminRouterId"),routerName)
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,resetRouterNameReq))
+            }else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(4,resetRouterNameReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
         }
     }
 

@@ -734,6 +734,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
+
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            if (routerList.size == 0) {
+                return@setOnClickListener
+            }
             startLogin()
         }
         scanIconLogin.setOnClickListener {
@@ -1183,6 +1188,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     private fun startLogin()
     {
+
         isStartLogin = true
         if(!ConstantValue.lastNetworkType.equals(""))
         {

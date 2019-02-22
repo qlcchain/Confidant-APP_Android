@@ -45,9 +45,24 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         setContentView(R.layout.activity_my_detail)
     }
     override fun initData() {
-        title.text = getString(R.string.details)
+        var flag = intent.getIntExtra("flag",0)
+        if(flag == 1)
+        {
+            llAvatar.visibility = View.GONE
+            nickName.visibility = View.GONE
+            title.text = getString(R.string.Settings)
+            qrCode.setTitleText(getString(R.string.Exportaccount))
+        }else{
+            llAvatar.visibility = View.VISIBLE
+            nickName.visibility = View.VISIBLE
+            title.text = getString(R.string.details)
+            qrCode.setTitleText(getString(R.string.MyQRCode))
+        }
+
         qrCode.setOnClickListener {
-            startActivity(Intent(this, QRCodeActivity::class.java))
+            var intent = Intent(this, QRCodeActivity::class.java)
+            intent.putExtra("flag",flag)
+            startActivity(intent)
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
