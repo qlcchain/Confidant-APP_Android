@@ -42,7 +42,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         tools:replace="android:allowBackup"
-        android:hardwareAccelerated="false"
+        android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme.Base">
         <service
