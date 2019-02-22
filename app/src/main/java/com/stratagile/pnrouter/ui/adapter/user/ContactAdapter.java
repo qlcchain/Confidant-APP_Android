@@ -10,8 +10,11 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import com.hyphenate.easeui.EaseConstant;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
@@ -41,8 +44,10 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 String nickNameSouce = new String(RxEncodeTool.base64Decode(lv0.getUserName()));
                 if(lv0.getSubItems() != null && lv0.getSubItems().size() > 1)
                 {
+                    helper.setVisible(R.id.ivArrow, true);
                     helper.setText(R.id.tvNickName, nickNameSouce + "(" + lv0.getSubItems().size() + ")");
                 }else{
+                    helper.setVisible(R.id.ivArrow, false);
                     helper.setText(R.id.tvNickName, nickNameSouce);
                 }
                 //helper.setText(R.id.ivAvatar, nickNameSouce);
@@ -57,8 +62,10 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                         {
                             int pos = helper.getAdapterPosition();
                             if (lv0.isExpanded()) {
+                                helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_down);
                                 collapse(pos);
                             } else {
+                                helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_upper);
                                 expand(pos);
                             }
                         }else{
@@ -66,7 +73,7 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                             final UserHead data = (UserHead) getItem(pos);
                             Intent intent = new Intent(AppConfig.instance, UserInfoActivity.class);
                             intent.putExtra("user", data.getUserEntity());
-                            AppConfig.instance.startActivity(intent);
+                            mContext.startActivity(intent);
                         }
 
                     }
@@ -83,7 +90,16 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                         final UserItem data = (UserItem) getItem(pos);
                         Intent intent = new Intent(AppConfig.instance, UserInfoActivity.class);
                         intent.putExtra("user", data.getUserEntity());
-                        AppConfig.instance.startActivity(intent);
+                        mContext.startActivity(intent);
+                    }
+                });
+                helper.setOnClickListener(R.id.tvChat, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int pos = helper.getAdapterPosition();
+                        final UserItem data = (UserItem) getItem(pos);
+                        UserDataManger.curreantfriendUserData = data.getUserEntity();
+                        mContext.startActivity(new Intent(mContext, ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, data.getUserEntity().getUserId()));
                     }
                 });
                 break;

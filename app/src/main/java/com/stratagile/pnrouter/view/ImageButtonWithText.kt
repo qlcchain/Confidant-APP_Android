@@ -16,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.utils.GlideCircleTransform
 import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
 import com.stratagile.pnrouter.utils.SpUtil
 import java.io.File
@@ -24,6 +25,7 @@ import java.util.*
 class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs) {
     var imageView: ImageView
     var textView: TextView
+    var withShape = false
     var options = RequestOptions()
             .centerCrop()
             .transform(GlideCircleTransformMainColor(context))
@@ -35,6 +37,8 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         val a = context.obtainStyledAttributes(attrs, R.styleable.ImageButtonWithText)
         val view = LayoutInflater.from(context).inflate(R.layout.image_button_with_text, this, true)
         val textSize = a.getFloat(R.styleable.ImageButtonWithText_imageButtonTextSize, 16F)
+        //是否包含边框
+        withShape = a.getBoolean(R.styleable.ImageButtonWithText_withShape, false)
         /**
          * Recycle the TypedArray, to be re-used by a later caller. After calling
          * this function you must not ever touch the typed array again.
@@ -97,6 +101,9 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                 showText += realList[i].substring(0, 1)
             }
         }
+        if (withShape) {
+            textView.background = context.resources.getDrawable(R.drawable.imagebutton_withtext_shape_bg)
+        }
         textView.text = showText
     }
 
@@ -130,10 +137,22 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
                     imageView.visibility = View.VISIBLE
-                    Glide.with(this)
-                            .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
-                            .apply(options)
-                            .into(imageView)
+                    if (withShape) {
+                        var options1 = RequestOptions()
+                                .centerCrop()
+                                .transform(GlideCircleTransform())
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .priority(Priority.HIGH)
+                        Glide.with(this)
+                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
+                                .apply(options1)
+                                .into(imageView)
+                    } else {
+                        Glide.with(this)
+                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
+                                .apply(options)
+                                .into(imageView)
+                    }
                 } else {
 
                 }
