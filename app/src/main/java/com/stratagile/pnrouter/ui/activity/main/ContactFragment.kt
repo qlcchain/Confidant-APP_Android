@@ -533,12 +533,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             var userHead = UserHead()
             userHead.userName = it.userName
             userHead.userEntity = it.userEntity
-            if (!isIn) {
-                isIn = true
-                userHead.addSubItem(UserItem(it.userEntity))
-                userHead.addSubItem(UserItem(it.userEntity))
-                userHead.addSubItem(UserItem(it.userEntity))
-            }
+//            if (!isIn) {
+//                isIn = true
+//                userHead.addSubItem(UserItem(it.userEntity))
+//                userHead.addSubItem(UserItem(it.userEntity))
+//                userHead.addSubItem(UserItem(it.userEntity))
+//            }
             if(it.routerItemList.size > 1)
             {
                 it.routerItemList?.forEach {
