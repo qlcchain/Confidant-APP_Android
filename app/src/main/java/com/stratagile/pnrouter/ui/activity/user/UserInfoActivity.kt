@@ -208,6 +208,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 
     override fun initView() {
         setContentView(R.layout.activity_user_info)
+//        getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
         EventBus.getDefault().register(this)
 //        AppConfig.instance.messageReceiver!!.delFriendCallBack = this
 //        AppConfig.instance.messageReceiver!!.addfrendCallBack = this

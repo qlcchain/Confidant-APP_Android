@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.ui.activity.router.module.RouterManagementModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterManagementPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.MutableListToArrayList
 import events.ToxStatusEvent
 import kotlinx.android.synthetic.main.activity_router_management.*
@@ -66,6 +67,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
         tvRouterName.text = selectedRouter.routerName
         routerListAdapter = RouterListAdapter(routerList.MutableListToArrayList())
         recyclerView.adapter = routerListAdapter
+        LogUtil.addLog("列表中的路由数量为：" + routerListAdapter.data.size)
         routerListAdapter.setOnItemClickListener { adapter, view, position ->
             var intent = Intent(this, RouterInfoActivity::class.java)
             intent.putExtra("router", routerListAdapter.getItem(position))

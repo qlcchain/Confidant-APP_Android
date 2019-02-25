@@ -71,6 +71,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         {
             title.text = getString(R.string.Export_account)
             tvShare.visibility = View.GONE
+            viewLine.visibility = View.GONE
             tips.text = getString(R.string.scan_qr_code_to_export_account)
         }else{
             tvShare.visibility = View.VISIBLE

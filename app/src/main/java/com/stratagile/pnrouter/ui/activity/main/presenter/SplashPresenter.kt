@@ -70,8 +70,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
         }*/
         if( ConstantValue.libsodiumprivateSignKey.equals(""))
         {
+            jumpToGuest = true
         }
-        jumpToGuest = true
     }
 
     override fun getPermission() {

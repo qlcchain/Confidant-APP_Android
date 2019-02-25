@@ -124,6 +124,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
 
     override fun initView() {
         setContentView(R.layout.activity_create_local_account)
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
     }
     override fun initData() {
         var isStartWebsocket = false

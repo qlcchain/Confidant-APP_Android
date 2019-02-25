@@ -30,8 +30,8 @@
     <ImageView
         android:id="@+id/ivContent"
         android:layout_marginRight="@dimen/x24"
-        android:layout_width="@dimen/x50"
-        android:layout_height="@dimen/x50" />
+        android:layout_width="@dimen/x33"
+        android:layout_height="@dimen/x33" />
     <ImageView
         android:id="@+id/ivNext"
         android:layout_width="@dimen/x30"

@@ -89,6 +89,7 @@
                 android:layout_height="@dimen/x85" />
         </android.support.v7.widget.CardView>
         <View
+            android:id="@+id/viewLine"
             android:layout_width="@dimen/x20"
             android:layout_height="@dimen/x2"/>
 

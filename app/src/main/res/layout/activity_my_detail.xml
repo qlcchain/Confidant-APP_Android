@@ -86,17 +86,23 @@
         app:showImg="false"
         app:text1="Occupation">
     </com.stratagile.pnrouter.view.DetailView>
-    <include layout="@layout/divide_line"/>
 
-    <com.stratagile.pnrouter.view.DetailView
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
         android:visibility="gone"
-        android:id="@+id/location"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x92"
-        app:contentStr="Not set"
-        app:showImg="false"
-        app:text1="Region">
-    </com.stratagile.pnrouter.view.DetailView>
+        android:layout_height="wrap_content">
+        <include layout="@layout/divide_line"/>
 
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:contentStr="Not set"
+            app:showImg="false"
+            app:text1="Region">
+        </com.stratagile.pnrouter.view.DetailView>
+    </LinearLayout>
 
 </LinearLayout>

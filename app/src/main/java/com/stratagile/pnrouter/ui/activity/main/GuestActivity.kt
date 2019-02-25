@@ -365,11 +365,11 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
     private fun addDot() {
         val viewAnimation = ViewAnimation(dot)
         viewAnimation.add(WoWoPositionAnimation.builder().page(0)
-                .fromX( dot0.x + dot.width).toX(dot1.x)
+                .fromX( dot0.x).toX(dot1.x)
                 .keepY(0f)
                 .ease(Ease.Linear).build())
         viewAnimation.add(WoWoPositionAnimation.builder().page(1)
-                .fromX(dot1.x + dot.width).toX(dot2.x)
+                .fromX(dot1.x).toX(dot2.x)
                 .keepY(0f)
                 .ease(Ease.Linear).build())
         wowo.addAnimation(viewAnimation)

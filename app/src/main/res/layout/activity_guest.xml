@@ -160,7 +160,7 @@
     <LinearLayout
         android:id="@+id/llNext"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/x84"
         android:layout_marginBottom="@dimen/x60"
         android:layout_marginEnd="@dimen/x52"
         android:background="@drawable/btn_white"
@@ -176,8 +176,7 @@
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
             android:text="@string/start"
-            android:textColor="@color/color_2c2c2c"
-            android:textSize="18sp"/>
+            android:textColor="@color/color_2c2c2c" />
     </LinearLayout>
 
 </RelativeLayout>

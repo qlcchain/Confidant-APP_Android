@@ -43,6 +43,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_import_account)
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
     }
     override fun initData() {
         title.text = "Log in"
