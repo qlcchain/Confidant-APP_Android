@@ -28,6 +28,7 @@ object ConstantValue {
         var deleteMsgId = ""
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
+        var unlockTime = "unlocktime"
         var realKeyboardHeight = "realKeyboardHeight"
         var port =":18006"
         var currentIp= ""//当前选择的ip

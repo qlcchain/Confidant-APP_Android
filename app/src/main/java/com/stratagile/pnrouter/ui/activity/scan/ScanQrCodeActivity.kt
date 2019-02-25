@@ -77,9 +77,13 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
 
     override fun onScanQRCodeSuccess(result: String) {
         KLog.i( "result:$result")
-        initDialogResult(result)
+        //initDialogResult(result)
         mZXingView.stopSpot()
         vibrate()
+        val intent = Intent()
+        intent.putExtra("result", result)
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     override fun onScanQRCodeOpenCameraError() {

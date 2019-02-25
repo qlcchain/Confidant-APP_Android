@@ -18,19 +18,22 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
+import com.stratagile.pnrouter.data.web.Optional
 import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JPushMsgRsp
-import com.stratagile.pnrouter.utils.AppActivityManager
-import com.stratagile.pnrouter.utils.AppFrontBackHelper
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.GlideCircleTransformMainColor
+import com.stratagile.pnrouter.entity.events.ForegroundCallBack
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
 import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
+import org.greenrobot.eventbus.EventBus
+import java.util.*
 
 /**
  * 作者：Android on 2017/8/1
@@ -221,11 +224,25 @@ class AppConfig : MultiDexApplication() {
         ForegroundCallbacks.getInstance().addListener(object : ForegroundCallbacks.Listener {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
+                var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0);
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60 * 1000)
+                {
+                    EventBus.getDefault().post(ForegroundCallBack(true,true))
+                }
+                if ( !ConstantValue.loginOut) {
+                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
+                }
             }
 
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
-
+                SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
+                //EventBus.getDefault().post(ForegroundCallBack(false))
+                if ( !ConstantValue.loginOut) {
+                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,1)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
+                }
             }
         })
     }

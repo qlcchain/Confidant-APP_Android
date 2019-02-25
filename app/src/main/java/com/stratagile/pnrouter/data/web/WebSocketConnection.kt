@@ -384,7 +384,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Thread.sleep(1500)
                     isReconnectting = false
                     KLog.i("重连中：onClosed")
-                    LogUtil.addLog("开始重连中：onClosed：${webSocketClient!!.request().url()}")
+                    LogUtil.addLog("开始重连中：onClosed：")
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()
@@ -519,7 +519,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Thread.sleep(1500)
                     isReconnectting = false
                     KLog.i("重连中：onFailure")
-                    LogUtil.addLog("开始重连中：onFailure：${webSocketClient!!.request().url()}")
+                    LogUtil.addLog("开始重连中：onFailure：")
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()
