@@ -597,14 +597,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             2 -> {
                 if(isCanShotNetCoonect)
                 {
-                    showProgressDialog(getString(R.string.network_reconnecting))
+                    //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }
             3 -> {
                 if(isCanShotNetCoonect)
                 {
-                    showProgressDialog(getString(R.string.network_reconnecting))
+                    //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
             }

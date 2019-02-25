@@ -85,7 +85,7 @@
         android:id="@+id/reConnect"
         android:visibility="gone"
         android:gravity="center_vertical"
-        android:text="ReConnectting..."
+        android:text="Connection..."
         android:paddingLeft="@dimen/x30"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x90" />

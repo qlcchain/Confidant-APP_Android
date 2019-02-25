@@ -45,7 +45,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var isLocalLogin = false //是否本地路由器登录
     private var webSocketClient: WebSocket? = null
     private var keepAliveSender: KeepAliveSender? = null
-    //private var reConnectThread: ReConnectThread? = null
+    private var reConnectThread: ReConnectThread? = null
     private var attempts: Int = 0
     private var connected: Boolean = false
     private var reConnectTimeOut = false
@@ -298,10 +298,15 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             attempts = 0
             connected = true
             reconnectCount = 0
-            /* Log.w(TAG, "ReConnectThread_onOpen_id:"+reConnectThread!!.getId())
-             reConnectThread!!.shutdown()
-             reConnectThread = null
-             Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())*/
+            if(reConnectThread  != null)
+            {
+                Log.w(TAG, "ReConnectThread_onOpen_id:"+reConnectThread!!.getId())
+                reConnectThread!!.shutdown()
+                reConnectThread = null
+                KLog.i("哈哈：1")
+            }
+
+             Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())
             if(countDownTimerUtilsOnVpnServer != null)
             {
                 countDownTimerUtilsOnVpnServer!!.cancel()
@@ -382,13 +387,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         listener?.onDisconnected()
 
-        /*if(reConnectThread == null)
+        if(reConnectThread == null)
         {
             reConnectThread = ReConnectThread()
             Log.w(TAG, "ReConnectThread_"+"new ReConnectThread"+reConnectThread!!.getId())
         }else{
             Log.w(TAG, "ReConnectThread_"+"old ReConnectThread"+reConnectThread!!.getId())
-        }*/
+        }
 
 //        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
 
@@ -401,7 +406,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         Log.i(TAG, "ReConnectThread_"+"isNeedReConnect:"+isNeedReConnect)
         if(isNeedReConnect)
         {
-            reconnectCount ++
+            //reconnectCount ++
             Log.i(TAG, "ReConnectThread_"+"reconnectCount:[$reconnectCount]")
             val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
             KLog.i("开启线程1：")
@@ -411,7 +416,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()*/
-            if (countDownTimerUtilsOnVpnServer == null) {
+          /*  if (countDownTimerUtilsOnVpnServer == null) {
                 Looper.prepare()
                 countDownTimerUtilsOnVpnServer = CountDownTimerUtils.creatNewInstance();
                 countDownTimerUtilsOnVpnServer!!.setMillisInFuture(Long.MAX_VALUE)
@@ -424,7 +429,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         }).start();
                 countDownTimerUtilsOnVpnServer!!.doOnce()
                 Looper.loop()
-            }
+            }*/
             /*Thread(Runnable() {
                 run() {
                     Thread.sleep(2000)
@@ -495,14 +500,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             }).start()*/
 
 
-            if(reconnectCount > 2)
+            /*if(reconnectCount > 2)
             {
                 reconnectCount = 0
-            }
+            }*/
         }else{
             isNeedReConnect = true
         }
-        /*if (reConnectThread != null && isNeedReConnect) {
+        if (reConnectThread != null && isNeedReConnect) {
             isLocalLogin = false;
             Log.w(TAG, "ReConnectThread_reStart_id:"+reConnectThread!!.getId())
             reConnectThread?.reStart()
@@ -520,7 +525,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 isNeedReConnect = true
             }
 
-        }*/
+        }
 
 //        notifyAll()
     }
@@ -715,51 +720,16 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             Log.w(TAG, "ReConnectThread_"+"beginreConnect..."+(!stop.get() &&! reConnectTimeOut)+"_id:"+this.getId())
             while (!stop.get() &&! reConnectTimeOut) {
                 try {
-                    if (reconnectCount > retryInterval.size) {
-                        reConnectTimeOut = true
-                        return
-                    }
-                    if(reconnectCount > retryInterval.size -1)
+                    KLog.i("哈哈：2")
+                    if(reconnectCount == 0)
                     {
-                        KLog.i("ReConnectThread_重新计数……")
-                        reconnectCount = 0;
+                        Thread.sleep(1500)
+                    }else{
+                        Thread.sleep(3000)
                     }
-                    Log.w(TAG, "ReConnectThread_reConnect1..." + retryInterval[reconnectCount]+"_id:"+this.getId())
-                    Thread.sleep(retryInterval[reconnectCount].toLong())
-                    Log.w(TAG, "ReConnectThread_afterSleeep..." + retryInterval[reconnectCount]+"_id:"+this.getId()+"_"+this.isInterrupted()+"_"+stop.get())
-                    if (this.isInterrupted() || stop.get()) {
-                        reconnectCount = 0
-                        KLog.i("ReConnectThread_中断任务"+"_id:"+this.getId())
-                        return;
-                    }
-                    reconnectCount++
-                    Log.w(TAG, "ReConnectThread_reConnect2..."+"_id:"+this.getId())
-                    if (connected) {
-                        //shutdown()
-                        reconnectCount = 0
-                        KLog.i("ReConnectThread_websocket已经连接上了，此处将继续重连的逻辑清除")
-                        return
-                    }
-
-                    /*//测试服务器，测试用
-                    if (reconnectCount >=3) {
-                        KLog.i("重连次数过多，切换公网服务器连接。。")
-                        filledUri = wsUri
-                        *//*webSocketClient!!.cancel()
-                        webSocketClient = null
-                        connected = false
-                        listener?.onConnectFail()
-                        return*//*
-                    }*/
-                    KLog.i("ReConnectThread_websocket继续重连"+webSocketClient)
-                    if (webSocketClient != null) {
-//                        webSocketClient!!.close(1000, "OK")
-                        webSocketClient!!.cancel()
-                        webSocketClient = null
-                        connected = false
-                    }
-                    KLog.i("ReConnectThread_websocket继续重连2")
-                    reConnect()
+                    KLog.i("哈哈：3")
+                    getServer(ConstantValue.currentRouterId)
+                    KLog.i("哈哈：3")
                 } catch (e: Throwable) {
                     Log.w(TAG, e)
                 }
@@ -780,8 +750,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         }
         fun begin()
         {
-            /*if(!reConnectThread!!.isAlive)
-                reConnectThread!!.start()*/
+            if(!reConnectThread!!.isAlive)
+                reConnectThread!!.start()
         }
         fun reStart() {
             stop.set(false)
@@ -810,7 +780,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
     private fun getServer(routerId:String)
     {
+        if(ConstantValue.isWebsocketConnected )
+        {
+            KLog.i("哈哈：5")
+            return
+        }
+        KLog.i("哈哈：6")
         ConstantValue.currentRouterIp = ""
+        reconnectCount ++
         if(WiFiUtil.isWifiConnect())
         {
             var count =0;
@@ -820,7 +797,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
                     while (true)
                     {
-                        if(count >=3)
+                        if(count >=2)
                         {
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
@@ -829,7 +806,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                 KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                 filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                 val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
-                                wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                buildConnect()
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
@@ -855,7 +832,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                                     KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                                     val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
-                                                    wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                                    buildConnect()
                                                     /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                      AppConfig.instance.messageReceiver!!.loginBackListener = this*/
 
@@ -914,7 +891,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                         KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                         filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                         val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
-                                        wsMainHandler.postDelayed(reconnectRunnable, delay)
+                                        buildConnect()
                                         /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                          AppConfig.instance.messageReceiver!!.loginBackListener = this*/
                                         Thread.currentThread().interrupt() //方法调用终止线程
