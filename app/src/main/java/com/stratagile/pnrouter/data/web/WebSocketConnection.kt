@@ -810,6 +810,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
+                                KLog.i("http判断是否走远程2：" + ConstantValue.httpUrl + routerId)
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
                                         KLog.i("Tox不管：")
@@ -869,7 +870,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             Thread(Runnable() {
                 run() {
-
+                    KLog.i("http判断是否走远程2：" + ConstantValue.httpUrl + routerId)
                     OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                         override fun onFailure( e :Exception) {
                             KLog.i("Tox不管：")
