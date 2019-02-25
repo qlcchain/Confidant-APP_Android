@@ -217,6 +217,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "ReadMsgPush" -> {
                     val JReadMsgPushRsp = gson.fromJson(text, JReadMsgPushRsp::class.java)
                     chatCallBack?.readMsgPushRsp(JReadMsgPushRsp)
+                    mainInfoBack?.readMsgPushRsp(JReadMsgPushRsp)
                 }
                 //发送文件_Tox消息回馈
                 "SendFile" -> {
@@ -518,6 +519,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
         fun OnlineStatusPush(jOnlineStatusPushRsp : JOnlineStatusPushRsp)
+        fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
     }
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)

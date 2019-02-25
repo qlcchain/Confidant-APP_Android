@@ -74,6 +74,24 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = ReadMsgPushReq(0, "", userId!!)
+        var msgId:String = ""
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jReadMsgPushRsp.msgid))
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2,msgData,jReadMsgPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+    }
+
     override fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp) {
 
     }
