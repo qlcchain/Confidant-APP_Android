@@ -229,7 +229,7 @@ class AppConfig : MultiDexApplication() {
                 {
                     EventBus.getDefault().post(ForegroundCallBack(true,true))
                 }
-                if ( !ConstantValue.loginOut) {
+               if (ConstantValue.logining) {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
                 }
@@ -239,7 +239,7 @@ class AppConfig : MultiDexApplication() {
                 KLog.i("当前程序切换到后台")
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))
-                if ( !ConstantValue.loginOut) {
+                if (ConstantValue.logining) {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,1)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
                 }

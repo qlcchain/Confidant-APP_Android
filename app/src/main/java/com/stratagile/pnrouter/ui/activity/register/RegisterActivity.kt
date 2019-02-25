@@ -86,6 +86,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             }
         } else {
             ConstantValue.loginOut = false
+            ConstantValue.logining = true
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
             FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")

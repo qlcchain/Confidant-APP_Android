@@ -186,6 +186,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                         AppConfig.instance.messageReceiver!!.close()
 
                     ConstantValue.loginOut = true
+                    ConstantValue.logining = false
                     ConstantValue.isHeart = false
                     isUserExit = true
                     resetUnCompleteFileRecode()
