@@ -80,7 +80,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             }
         }catch (e:Exception)
         {
-
+           e.printStackTrace()
         }
 
     }
