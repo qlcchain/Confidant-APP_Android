@@ -1168,8 +1168,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             getServer(routerId,userSn,false)
         }
         if (routerList.size > 0) {
-            routerNameTips.setOnClickListener { view1 ->
-                PopWindowUtil.showSelectRouterPopWindow(this, routerNameTips, object : PopWindowUtil.OnSelectListener{
+            llCircle.setOnClickListener { view1 ->
+                PopWindowUtil.showSelectRouterPopWindow(this, llCircle, object : PopWindowUtil.OnSelectListener{
                     override fun onSelect(position: Int, obj : Any) {
                         /* routerList.forEach {
                              if(it.lastCheck) {
