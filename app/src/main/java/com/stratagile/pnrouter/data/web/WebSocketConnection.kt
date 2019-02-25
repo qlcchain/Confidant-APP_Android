@@ -60,6 +60,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var mLock: Lock? = null
     private var mCurrentStatus = WsStatus.DISCONNECTED     //websocket连接状态
     private val wsMainHandler = Handler(Looper.getMainLooper())
+    var isReconnectting:Boolean = false
     //private var countDownTimerUtilsOnVpnServer:CountDownTimerUtils? = null;
     private var handler = object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -294,10 +295,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             this.webSocketClient = webSocket
             KLog.i("onConnected()")
             KLog.i(webSocketClient!!.request().url())
+            KLog.i("重连中：onOpen")
             LogUtil.addLog("连接成功：${webSocketClient!!.request().url()}")
             attempts = 0
             connected = true
             reconnectCount = 0
+            isReconnectting = false
             if (listener != null) listener!!.onConnected()
             /* if(reConnectThread  != null)
              {
@@ -307,7 +310,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                  KLog.i("哈哈：1")
              }*/
 
-            Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())
+            //Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())
             /* if(countDownTimerUtilsOnVpnServer != null)
              {
                  countDownTimerUtilsOnVpnServer!!.cancel()
@@ -349,17 +352,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             } else {
                 onMessageReceiveListener!!.onMessage(baseData, text)
             }
-//            KLog.i("解析消息")
-//            KLog.i(baseData.toString())
-//            KLog.i(baseData.timestamp)
-//            KLog.i(baseData.appid)
-//            KLog.i(baseData.params.toString())
-//            Log.i(TAG, baseData.params.toString())
-//            var jsonObject  = JSONObject.parseObject(text)
-//            Log.i(TAG, JSONObject.parseObject(text).getString("timestamp")!!)
-//            Log.i(TAG, (JSONObject.parseObject(text)).get("params").toString())
-//            Log.i(TAG, JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action"))
-//            incomingRequests.add(baseData)
         } catch (e : Exception) {
             e.printStackTrace()
         }
@@ -370,15 +362,6 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
         Log.w(TAG, "onClosed()..."+code+"+"+reason)
         this.connected = false
-
-//        val iterator = outgoingRequests.entries.iterator()
-//
-//        while (iterator.hasNext()) {
-//            val entry = iterator.next()
-//            entry.value.setException(IOException("Closed: $code, $reason"))
-//            iterator.remove()
-//        }
-
         if (keepAliveSender != null) {
             keepAliveSender!!.shutdown()
             keepAliveSender = null
@@ -386,153 +369,25 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
         listener?.onDisconnected()
 
-        /* if(reConnectThread == null)
-         {
-             reConnectThread = ReConnectThread()
-             Log.w(TAG, "ReConnectThread_"+"new ReConnectThread"+reConnectThread!!.getId())
-         }else{
-             Log.w(TAG, "ReConnectThread_"+"old ReConnectThread"+reConnectThread!!.getId())
-         }*/
-
-//        Util.wait(this, Math.min((++attempts * 200).toLong(), TimeUnit.SECONDS.toMillis(15)))
-
         if (webSocketClient != null) {
             webSocketClient!!.close(1000, "OK")
 //            webSocketClient!!.cancel()
             webSocketClient = null
             connected = false
         }
-        Log.i(TAG, "ReConnectThread_"+"isNeedReConnect:"+isNeedReConnect)
-        if(isNeedReConnect)
+        if(isNeedReConnect && !isReconnectting)
         {
+            isReconnectting = true
             Thread(Runnable() {
                 run() {
                     Thread.sleep(1500)
+                    isReconnectting = false
+                    KLog.i("重连中：onClosed")
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()
-            //reconnectCount ++
-            Log.i(TAG, "ReConnectThread_"+"reconnectCount:[$reconnectCount]")
-            val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
-            KLog.i("开启线程1：")
-            /* Thread(Runnable() {
-                 run() {
-                     Thread.sleep(2000)
-                     getServer(ConstantValue.currentRouterId)
-                 }
-             }).start()*/
-            /*  if (countDownTimerUtilsOnVpnServer == null) {
-                  Looper.prepare()
-                  countDownTimerUtilsOnVpnServer = CountDownTimerUtils.creatNewInstance();
-                  countDownTimerUtilsOnVpnServer!!.setMillisInFuture(Long.MAX_VALUE)
-                          .setCountDownInterval(5 * 1000)
-                          .setTickDelegate( object :CountDownTimerUtils.TickDelegate {
-                              override fun  onTick(pMillisUntilFinished:Long){
-                                  getServer(ConstantValue.currentRouterId)
-                                  KLog.i("开启倒计时：")
-                              }
-                          }).start();
-                  countDownTimerUtilsOnVpnServer!!.doOnce()
-                  Looper.loop()
-              }*/
-            /*Thread(Runnable() {
-                run() {
-                    Thread.sleep(2000)
-                    KLog.i("开启线程2：")
-                    if(WiFiUtil.isMobile())
-                    {
-                        KLog.i("开启线程3：")
-                        OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + ConstantValue.currentRouterId,  object : OkHttpUtils.OkCallback {
-                            override fun onFailure( e :Exception) {
-                                if(!ConstantValue.localCurrentRouterIp.equals(""))
-                                {
-                                    ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
-                                    ConstantValue.port= ":18006"
-                                    ConstantValue.filePort = ":18007"
-                                    KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                    filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
-                                }
-                                wsMainHandler.postDelayed(reconnectRunnable, delay)
-                                Thread.currentThread().interrupt(); //方法调用终止线程
-                            }
-                            override fun  onResponse(json:String ) {
 
-                                val gson = GsonUtil.getIntGson()
-                                var httpData: HttpData? = null
-                                try {
-                                    if (json != null) {
-                                        httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                        if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                        {
-                                            ConstantValue.curreantNetworkType = "WIFI"
-                                            ConstantValue.currentRouterIp = httpData.serverHost
-                                            ConstantValue.port = ":"+httpData.serverPort.toString()
-                                            ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                            KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                            filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
-                                            wsMainHandler.postDelayed(reconnectRunnable, delay)
-                                            Thread.currentThread().interrupt(); //方法调用终止线程
-                                        }
-
-                                    }
-                                } catch (e: Exception) {
-                                    if(!ConstantValue.localCurrentRouterIp.equals(""))
-                                    {
-                                        ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
-                                        ConstantValue.port= ":18006"
-                                        ConstantValue.filePort = ":18007"
-                                        KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                        filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
-                                    }
-                                    wsMainHandler.postDelayed(reconnectRunnable, delay)
-                                    Thread.currentThread().interrupt(); //方法调用终止线程
-                                }
-                            }
-                        })
-                    }else{
-                        if(!ConstantValue.localCurrentRouterIp.equals(""))
-                        {
-                            ConstantValue.currentRouterIp =  ConstantValue.localCurrentRouterIp
-                            ConstantValue.port= ":18006"
-                            ConstantValue.filePort = ":18007"
-                            KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp+ConstantValue.port)
-                            filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
-
-                        }
-                        wsMainHandler.postDelayed(reconnectRunnable, delay)
-                    }
-                }
-            }).start()*/
-
-
-            /*if(reconnectCount > 2)
-            {
-                reconnectCount = 0
-            }*/
-        }else{
-            isNeedReConnect = true
         }
-        /* if (reConnectThread != null && isNeedReConnect) {
-             isLocalLogin = false;
-             Log.w(TAG, "ReConnectThread_reStart_id:"+reConnectThread!!.getId())
-             reConnectThread?.reStart()
-         }else{
-             filledUri = wsUri  //局域登录不了立即跳转外网
-             if (webSocketClient != null) {
-     //                        webSocketClient!!.close(1000, "OK")
-                 webSocketClient!!.cancel()
-                 webSocketClient = null
-                 connected = false
-             }
-             if(isNeedReConnect)
-             {
-                 reConnect()
-                 isNeedReConnect = true
-             }
-
-         }*/
-
-//        notifyAll()
     }
 
     fun buildConnect() {
@@ -652,6 +507,20 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         isNeedReConnect = true;
         if (webSocketClient != null) {
             onClosed(webSocket, 1000, "OK")
+        }
+
+        if(isNeedReConnect && !isReconnectting)
+        {
+            isReconnectting = true
+            Thread(Runnable() {
+                run() {
+                    Thread.sleep(1500)
+                    isReconnectting = false
+                    KLog.i("重连中：onFailure")
+                    getServer(ConstantValue.currentRouterId)
+                }
+            }).start()
+
         }
     }
 
