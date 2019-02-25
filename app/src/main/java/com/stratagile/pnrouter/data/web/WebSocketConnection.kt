@@ -361,6 +361,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
         Log.w(TAG, "onClosed()..."+code+"+"+reason)
+        LogUtil.addLog("收到事件：onClosed：")
         this.connected = false
         if (keepAliveSender != null) {
             keepAliveSender!!.shutdown()
@@ -383,6 +384,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Thread.sleep(1500)
                     isReconnectting = false
                     KLog.i("重连中：onClosed")
+                    LogUtil.addLog("开始重连中：onClosed：${webSocketClient!!.request().url()}")
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()
@@ -500,7 +502,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
         KLog.i("ReConnectThread_onFailure()")
         KLog.i( t!!.printStackTrace())
-
+        LogUtil.addLog("收到事件：onFailure：")
         if (response != null && (response.code() == 401 || response.code() == 403)) {
             if (listener != null) listener!!.onAuthenticationFailure()
         }
@@ -517,6 +519,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                     Thread.sleep(1500)
                     isReconnectting = false
                     KLog.i("重连中：onFailure")
+                    LogUtil.addLog("开始重连中：onFailure：${webSocketClient!!.request().url()}")
                     getServer(ConstantValue.currentRouterId)
                 }
             }).start()
