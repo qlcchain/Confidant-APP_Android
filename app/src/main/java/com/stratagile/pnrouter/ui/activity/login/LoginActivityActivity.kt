@@ -1862,7 +1862,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitToast()
+            if (CustomPopWindow.onBackPressed()) {
+            } else {
+                exitToast()
+            }
+
         }
         return false
     }
