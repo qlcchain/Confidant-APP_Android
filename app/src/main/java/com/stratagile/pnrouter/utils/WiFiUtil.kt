@@ -6,6 +6,9 @@ import android.net.wifi.WifiManager
 import android.text.format.Formatter
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import android.support.v4.content.ContextCompat.getSystemService
+
+
 
 /**
  * Created by zl on 2018/9/7.
@@ -30,12 +33,14 @@ object WiFiUtil {
         var mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
         return mWifi.isConnected()
     }
-    //判断移动数据是否打开
-    fun isMobile() : Boolean {
-        var connManager = AppConfig.instance.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        var networkInfo = connManager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-            return true
+    fun isNetworkConnected(): Boolean {
+        if (AppConfig.instance != null) {
+            val mConnectivityManager = AppConfig.instance
+                    .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val mNetworkInfo = mConnectivityManager.activeNetworkInfo
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable
+            }
         }
         return false
     }

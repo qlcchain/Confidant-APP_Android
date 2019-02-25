@@ -22,6 +22,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -893,6 +894,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if (routerList.size == 0) {
                 return@setOnClickListener
             }
+            if(!WiFiUtil.isNetworkConnected())
+            {
+                toast("Please check the network")
+                return@setOnClickListener
+            }
             startLogin()
         }
         scanIconLogin.setOnClickListener {
@@ -1221,7 +1227,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
-        if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
