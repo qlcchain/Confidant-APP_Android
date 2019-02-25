@@ -70,8 +70,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
         }*/
         if( ConstantValue.libsodiumprivateSignKey.equals(""))
         {
-            jumpToGuest = true
         }
+        jumpToGuest = true
     }
 
     override fun getPermission() {
@@ -79,7 +79,8 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                 .requestCode(101)
                 .permission(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_PHONE_STATE
                 )
                 .callback(permission)
                 .start()

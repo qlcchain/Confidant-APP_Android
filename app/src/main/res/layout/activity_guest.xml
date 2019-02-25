@@ -120,8 +120,9 @@
 
     <RelativeLayout
         android:id="@+id/rlDot"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_above="@+id/llNext"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/x60">
@@ -152,8 +153,7 @@
             android:id="@+id/dot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x20"
-            android:layout_toRightOf="@+id/dot0"
+            android:layout_alignLeft="@+id/dot0"
             android:src="@mipmap/icon_inprogress" />
     </RelativeLayout>
 
@@ -176,8 +176,8 @@
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
             android:text="@string/start"
-            android:textColor="@color/mainColor"
-            android:textSize="23sp"/>
+            android:textColor="@color/color_2c2c2c"
+            android:textSize="18sp"/>
     </LinearLayout>
 
 </RelativeLayout>

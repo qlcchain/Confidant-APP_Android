@@ -88,7 +88,8 @@ object ConstantValue {
         var isWebsocketReConnect = false  //websocket是否重连过
         var isToxReConnect = false  //tox是否重连过
         var mRegId = ""
-        var pushURL = "http://47.96.76.184:9000/v1/pareg"
+//        var pushURL = "http://47.96.76.184:9000/v1/pareg"
+        var pushURL = "https://pprouter.online:9001/v1/pareg"
         var loginOut = false
         var freindStatus = 0
         var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn

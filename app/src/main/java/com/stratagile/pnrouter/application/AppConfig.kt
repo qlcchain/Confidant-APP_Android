@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.channel.commonutils.logger.LoggerInterface
+import com.xiaomi.mipush.sdk.Logger
 import com.xiaomi.mipush.sdk.MiPushClient
 
 /**
@@ -80,6 +81,7 @@ class AppConfig : MultiDexApplication() {
         initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
+        initResumeListener()
 
 
 //        MessageProvider.init()
@@ -195,6 +197,7 @@ class AppConfig : MultiDexApplication() {
 
     private fun initMiPush() {
         if (shouldInit()) {
+            KLog.i("注册小米推送")
             MiPushClient.registerPush(this, MI_PUSH_APP_ID, MI_PUSH_APP_KEY)
         }
         val newLogger = object : LoggerInterface {
@@ -203,13 +206,28 @@ class AppConfig : MultiDexApplication() {
             }
 
             override  fun log(content: String, t: Throwable) {
-                //KLog.i(content, t)
+                KLog.i("小米推送" + content + t)
             }
 
             override  fun log(content: String) {
-                //KLog.i(content)
+                KLog.i("小米推送" + content)
             }
         }
+//        Logger.setLogger(this, newLogger)
+    }
+
+    private fun initResumeListener() {
+        ForegroundCallbacks.init(this)
+        ForegroundCallbacks.getInstance().addListener(object : ForegroundCallbacks.Listener {
+            override fun onBecameForeground() {
+                KLog.i("当前程序切换到前台")
+            }
+
+            override fun onBecameBackground() {
+                KLog.i("当前程序切换到后台")
+
+            }
+        })
     }
 
     private fun shouldInit(): Boolean {

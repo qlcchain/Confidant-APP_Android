@@ -5,12 +5,81 @@
     android:layout_height="match_parent"
     android:background="#000"
     android:orientation="vertical" >
-
     <com.hyphenate.easeui.widget.photoview.EasePhotoView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/mainColor_40"
+        android:gravity="center"
+        android:textColor="@color/color_333"
+        android:textSize="9sp" />
+
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/statusBar"
+        android:background="@color/mainColor_40"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/llSort"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="@dimen/x40"
+                android:src="@mipmap/arrow_exit"
+                android:scaleType="centerCrop"
+                android:layout_marginLeft="@dimen/x5"
+                android:layout_height="@dimen/x40" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Select Pictrue"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:background="@color/mainColor_40"
+        android:layout_height="@dimen/x90">
+        <CheckBox
+            android:id="@+id/chooseCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginStart="20dp"
+            android:button="@drawable/checkbox_style"
+            android:text="@string/originalgraph"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/sureBtn"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_alignParentRight="true"
+            android:text="@string/ok" />
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/pb_load_local"
@@ -18,28 +87,6 @@
         android:layout_height="36dp"
         android:layout_centerInParent="true"
         android:visibility="gone" />
-
-    <CheckBox
-        android:id="@+id/chooseCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="15dp"
-        android:layout_marginStart="20dp"
-        android:button="@drawable/checkbox_style"
-        android:text="@string/originalgraph"
-        android:textColor="@color/white" />
-
-    <Button
-        android:id="@+id/sureBtn"
-        android:layout_width="69dp"
-        android:layout_height="36dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="@dimen/x580"
-        android:text="@string/ok" />
 
 
 </RelativeLayout>

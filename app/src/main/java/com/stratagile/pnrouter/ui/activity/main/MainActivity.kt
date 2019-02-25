@@ -719,11 +719,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 LogUtil.addLog("小米推送注册RegId= "+ConstantValue.mRegId,"MainActivity")
                 OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
                     override fun onFailure( e :Exception) {
+                        KLog.i(e.printStackTrace())
                         LogUtil.addLog("小米推送注册失败:","MainActivity")
+                        KLog.i("小米推送注册失败:MainActivity")
                     }
 
                     override fun  onResponse(json:String ) {
                         LogUtil.addLog("小米推送注册成功:","MainActivity")
+                        KLog.i("小米推送注册成功:MainActivity" + json)
                         //Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
                     }
                 });
@@ -1367,8 +1370,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
             this.startActivity(intent);
-            android.os.Process.killProcess(android.os.Process.myPid());
-            //System.runFinalizersOnExit(true);
+//            android.os.Process.killProcess(android.os.Process.myPid());
+            //System.runFinalizersOnExit(true);、
             System.exit(0)
         }
         return false

@@ -19,13 +19,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
@@ -37,6 +41,7 @@ import com.hyphenate.easeui.widget.photoview.EasePhotoView;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.ImageUtils;
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.base.BaseActivity;
 import com.stratagile.pnrouter.utils.UIUtils;
 
 import java.io.File;
@@ -45,7 +50,7 @@ import java.io.File;
  * download and show original image
  * 
  */
-public class EaseShowChooseImageActivity extends EaseBaseActivity {
+public class EaseShowChooseImageActivity extends BaseActivity {
 	private static final String TAG = "ShowBigImage"; 
 	private ProgressDialog pd;
 	private EasePhotoView image;
@@ -57,24 +62,38 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 	private Button sureBtn;
 	private boolean isCheck;
 	private String path;
+	private TextView statusBar;
 
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.ease_activity_show_choose_image);
+		setNeedFront(true);
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.ease_activity_show_choose_image);
 		isCheck = false;
 		image = (EasePhotoView) findViewById(R.id.image);
 		chooseCheckBox = (CheckBox) findViewById(R.id.chooseCheckBox);
 		sureBtn = (Button) findViewById(R.id.sureBtn);
 		ProgressBar loadLocalPb = (ProgressBar) findViewById(R.id.pb_load_local);
+		statusBar = findViewById(R.id.statusBar);
+
+		findViewById(R.id.llSort).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onBackPressed();
+			}
+		});
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);//设置状态栏白色字体
+		}
+
+		statusBar.setLayoutParams(new RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this)));
 		default_res = getIntent().getIntExtra("default_image", R.drawable.ease_default_avatar);
 		Uri uri = getIntent().getParcelableExtra("uri");
 		localFilePath = getIntent().getExtras().getString("localUrl");
 		path  = getIntent().getStringExtra("path");
 		String msgId = getIntent().getExtras().getString("messageId");
 		EMLog.d(TAG, "show big deleteMsgId:" + msgId );
-
 		//show the image if it exist in local path
 		if (uri != null && new File(uri.getPath()).exists()) {
 			EMLog.d(TAG, "showbigimage file exists. directly show it");
@@ -244,5 +263,25 @@ public class EaseShowChooseImageActivity extends EaseBaseActivity {
 //		intent.putExtra("path", path);
 //		setResult(RESULT_OK,intent);
 		finish();
+	}
+
+	@Override
+	protected void initData() {
+
+	}
+
+	@Override
+	protected void initView() {
+
+	}
+
+	@Override
+	protected void setupActivityComponent() {
+
+	}
+
+	@Override
+	public void onPointerCaptureChanged(boolean hasCapture) {
+
 	}
 }

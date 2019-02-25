@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.model.styles.EaseMessageListItemStyle;
@@ -90,6 +91,7 @@ public class EaseChatMessageList extends RelativeLayout{
      * refresh
      */
     public void refresh(){
+        KLog.i("刷新");
         if (messageAdapter != null) {
             messageAdapter.refresh();
         }
@@ -99,6 +101,7 @@ public class EaseChatMessageList extends RelativeLayout{
      * refresh and jump to the last
      */
     public void refreshSelectLast(){
+        KLog.i("刷新到底");
         if (messageAdapter != null) {
             messageAdapter.refreshSelectLast();
         }

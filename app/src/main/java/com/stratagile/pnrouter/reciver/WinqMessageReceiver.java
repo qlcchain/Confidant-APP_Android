@@ -1,9 +1,11 @@
 package com.stratagile.pnrouter.reciver;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.application.ForegroundCallbacks;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -11,6 +13,9 @@ import com.xiaomi.mipush.sdk.MiPushCommandMessage;
 import com.xiaomi.mipush.sdk.MiPushMessage;
 import com.xiaomi.mipush.sdk.PushMessageReceiver;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Calendar;
 import java.util.List;
 
 public class WinqMessageReceiver extends PushMessageReceiver {
@@ -51,6 +56,10 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         } else if(!TextUtils.isEmpty(message.getUserAccount())) {
             mUserAccount=message.getUserAccount();
         }
+        KLog.i("点击通知");
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
         //这里可以根据消息的不同进行不一样的跳转
     }
     @Override
@@ -64,6 +73,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
             mUserAccount=message.getUserAccount();
         }
     }
+
 
     /**
      * 推送本身的回调？
@@ -114,6 +124,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         String cmdArg1 = ((arguments != null && arguments.size() > 0) ? arguments.get(0) : null);
         String cmdArg2 = ((arguments != null && arguments.size() > 1) ? arguments.get(1) : null);
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
+            KLog.i(message.toString());
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
                 ConstantValue.INSTANCE.setMRegId(mRegId);

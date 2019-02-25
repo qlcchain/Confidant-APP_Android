@@ -284,7 +284,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             var reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
             LogUtil.addLog("发送结果：${reslut}")
             KLog.i("发送心跳消息"+isBack)
-            //KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+//            KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }
 
