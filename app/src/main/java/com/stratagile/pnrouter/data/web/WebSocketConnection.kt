@@ -60,6 +60,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var mLock: Lock? = null
     private var mCurrentStatus = WsStatus.DISCONNECTED     //websocket连接状态
     private val wsMainHandler = Handler(Looper.getMainLooper())
+    private var countDownTimerUtilsOnVpnServer:CountDownTimerUtils? = null;
     private var handler = object : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
@@ -301,6 +302,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
              reConnectThread!!.shutdown()
              reConnectThread = null
              Log.w(TAG, "ReConnectThread_onOpen_shutdown_mainid:"+Thread.currentThread().getId())*/
+            if(countDownTimerUtilsOnVpnServer != null)
+            {
+                countDownTimerUtilsOnVpnServer!!.cancel()
+                countDownTimerUtilsOnVpnServer == null
+                KLog.i("取消倒计时：")
+            }
             keepAliveSender = KeepAliveSender()
             keepAliveSender!!.start()
 
@@ -398,13 +405,26 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             Log.i(TAG, "ReConnectThread_"+"reconnectCount:[$reconnectCount]")
             val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
             KLog.i("开启线程1：")
-            Thread(Runnable() {
+           /* Thread(Runnable() {
                 run() {
                     Thread.sleep(2000)
                     getServer(ConstantValue.currentRouterId)
                 }
-            }).start()
-
+            }).start()*/
+            if (countDownTimerUtilsOnVpnServer == null) {
+                Looper.prepare()
+                countDownTimerUtilsOnVpnServer = CountDownTimerUtils.creatNewInstance();
+                countDownTimerUtilsOnVpnServer!!.setMillisInFuture(Long.MAX_VALUE)
+                        .setCountDownInterval(5 * 1000)
+                        .setTickDelegate( object :CountDownTimerUtils.TickDelegate {
+                            override fun  onTick(pMillisUntilFinished:Long){
+                                getServer(ConstantValue.currentRouterId)
+                                KLog.i("开启倒计时：")
+                            }
+                        }).start();
+                countDownTimerUtilsOnVpnServer!!.doOnce()
+                Looper.loop()
+            }
             /*Thread(Runnable() {
                 run() {
                     Thread.sleep(2000)
@@ -489,7 +509,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         }else{
             filledUri = wsUri  //局域登录不了立即跳转外网
             if (webSocketClient != null) {
-//                        webSocketClient!!.close(1000, "OK")
+    //                        webSocketClient!!.close(1000, "OK")
                 webSocketClient!!.cancel()
                 webSocketClient = null
                 connected = false
@@ -538,7 +558,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         Log.w(TAG, "WSC reConnect()...")
         KLog.i("ReConnectThread_websocket_reConnect"+webSocketClient)
         /*if (webSocketClient == null) {
-//            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
+    //            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()
@@ -548,14 +568,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                             return true
                         }
                     })
-//                    .sslSocketFactory(socketFactory.first, socketFactory.second)
+    //                    .sslSocketFactory(socketFactory.first, socketFactory.second)
                     .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .build()
             val requestBuilder = Request.Builder().url(filledUri)
 
             if (userAgent != null) {
-//                requestBuilder.addHeader("X-Signal-Agent", userAgent)
+    //                requestBuilder.addHeader("X-Signal-Agent", userAgent)
                 requestBuilder.addHeader("Sec-WebSocket-Protocol", userAgent)
             }
 
