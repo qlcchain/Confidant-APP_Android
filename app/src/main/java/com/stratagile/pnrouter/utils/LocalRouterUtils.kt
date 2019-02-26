@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.utils
 
+import android.os.Environment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.stratagile.pnrouter.application.AppConfig
@@ -68,10 +69,12 @@ object LocalRouterUtils {
                 localAssetArrayList = gson.fromJson<ArrayList<MyRouter>>(routerStr, object : TypeToken<ArrayList<MyRouter>>() {
 
                 }.type)
+            }else{
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
             }
 
         } catch (e: Exception) {
-            FileUtil.deleteFile(ConstantValue.localPath + "/RouterList/" + userId + ".json")
+            FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/" + userId + ".json")
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
         } finally {
 

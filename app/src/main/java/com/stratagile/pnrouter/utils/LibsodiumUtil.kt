@@ -294,7 +294,7 @@ object LibsodiumUtil {
             val dst_share_key = ByteArray(32)
             val crypto_box_beforenm_result = Sodium.crypto_box_beforenm(dst_share_key, dst_Friend_TempPublicKey, RxEncodeTool.base64Decode(myMiPrivateBase64))
 
-            KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
+            //KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_share_key))
             val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(msg, nonce, RxEncodeTool.base64Encode2String(dst_share_key))
             return msgSouce
         }catch (e:Exception)

@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -46,7 +47,6 @@ import com.stratagile.pnrouter.ui.activity.login.module.LoginActivityModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.LoginActivityPresenter
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
-import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -117,6 +117,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var threadInit = false
     var RouterMacStr = ""
     var scanType = 0 // 0 admin   1 其他
+    var adminUserSn:String?  = null
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -881,7 +882,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             delay(10000)
         }
         var adminRouterId = intent.getStringExtra("adminRouterIdOK")
-        var adminUserSn = intent.getStringExtra("adminUserSnOK")
+        adminUserSn = intent.getStringExtra("adminUserSnOK")
         var adminUserId = intent.getStringExtra("adminUserIdOK")
         var adminUserName = intent.getStringExtra("adminUserNameOK")
 
@@ -1009,224 +1010,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
         }
-        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-        if (routerList.size != 0) {
-            var hasCheckedRouter = false
-            run breaking@ {
-                routerList.forEach {
-                    if(adminUserSn != null && !adminUserSn.equals(""))
-                    {
-                        if (it.userSn.equals(adminUserSn)) {
-                            routerId = it.routerId
-                            userSn = it.userSn
-                            userId = it.userId
-                            username = it.username
-                            dataFileVersion = it.dataFileVersion
-                            routerNameTips.setTextColor(resources.getColor(R.color.white))
-                            if(it.routerName != null){
-                                routerNameTips.text = it.routerName
-                                ivAvatar.setText(it.routerName)
-                            }else{
-                                routerNameTips.text =  "Router 1"
-                                ivAvatar.setText("Router 1")
-                            }
-                            tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
-                            if(it.loginKey != null){
-                                loginKey.setText(it.loginKey)
-                            }else{
-                                loginKey.setText("")
-                            }
-
-                            hasCheckedRouter = true
-                            return@breaking
-                        }
-                    }else{
-                        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
-                        if(!autoLoginRouterSn.equals(""))
-                        {
-                            if (it.userSn.equals(autoLoginRouterSn)) {
-                                routerId = it.routerId
-                                userSn = it.userSn
-                                userId = it.userId
-                                username = it.username
-                                dataFileVersion = it.dataFileVersion
-
-                                if(it.routerName != null){
-                                    routerNameTips.text = it.routerName
-                                    ivAvatar.setText(it.routerName)
-                                }else{
-                                    routerNameTips.text =  "Router 1"
-                                    ivAvatar.setText("Router 1")
-                                }
-                                desc.text = getString(R.string.login_has_router)
-                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
-                                if(it.loginKey != null){
-                                    loginKey.setText(it.loginKey)
-                                }else{
-                                    loginKey.setText("")
-                                }
-
-                                hasCheckedRouter = true
-                                return@breaking
-                            }
-                        }else{
-                            if (it.lastCheck) {
-                                routerId = it.routerId
-                                userSn = it.userSn
-                                userId = it.userId
-                                username = it.username
-                                dataFileVersion = it.dataFileVersion
-                                routerNameTips.setTextColor(resources.getColor(R.color.white))
-                                if(it.routerName != null){
-                                    routerNameTips.text = it.routerName
-                                    ivAvatar.setText(it.routerName)
-                                }else{
-                                    routerNameTips.text =  "Router 1"
-                                    ivAvatar.setText("Router 1")
-                                }
-                                desc.text = getString(R.string.login_has_router)
-                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
-                                if(it.loginKey != null){
-                                    loginKey.setText(it.loginKey)
-                                }else{
-                                    loginKey.setText("")
-                                }
-
-                                hasCheckedRouter = true
-                                return@breaking
-                            }
-                        }
-
-                    }
-
-                }
-            }
-            if (!hasCheckedRouter) {
-                routerId = routerList[0].routerId
-                userSn =  routerList[0].userSn
-                userId = routerList[0].userId
-                username = routerList[0].username
-                desc.text = getString(R.string.login_has_router)
-                tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
-                dataFileVersion = routerList[0].dataFileVersion
-                routerNameTips.setTextColor(resources.getColor(R.color.white))
-                if(routerList[0].routerName != null){
-                    routerNameTips.text = routerList[0].routerName
-                    ivAvatar.setText(routerList[0].routerName)
-                }else{
-                    routerNameTips.text = "Router 1"
-                    ivAvatar.setText("Router 1")
-                }
-
-                if(routerList[0].loginKey != null){
-                    loginKey.setText(routerList[0].loginKey)
-                }else{
-                    loginKey.setText("")
-                }
-            }
-            ivAvatar.visibility = View.VISIBLE
-            tvUserName.visibility = View.VISIBLE
-            ivNoCircle.visibility = View.GONE
-            joincircle.visibility = View.INVISIBLE
-            loginBtn.background = resources.getDrawable(R.drawable.btn_white)
-            if(routerList.size > 1)
-            {
-                routerNameTipsmore.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
-                routerNameTipsmore.visibility = View.VISIBLE
-            }else{
-                routerNameTipsmore.visibility = View.INVISIBLE
-            }
-            hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.GONE
-            scanParentLogin.visibility = View.GONE
-        } else {
-            var options = RequestOptions()
-                    .centerCrop()
-                    .transform(GlideCircleTransform())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .priority(Priority.HIGH)
-            Glide.with(this)
-                    .load(R.mipmap.icon_no_circle)
-                    .apply(options)
-                    .into(ivNoCircle)
-            ivNoCircle.visibility = View.VISIBLE
-            joincircle.visibility = View.VISIBLE
-            ivAvatar.visibility = View.GONE
-            tvUserName.visibility = View.VISIBLE
-            username = ConstantValue.localUserName!!
-            tvUserName.text = "Hello\n"+ ConstantValue.localUserName + "\nWelcome back!"
-            routerNameTips.text = "You haven't joined any circle"
-            desc.text = resources.getString(R.string.login_no_router)
-            loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
-            routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
-            routerNameTipsmore.visibility = View.VISIBLE
-            hasRouterParentLogin.visibility = View.GONE
-            noRoutergroupLogin.visibility = View.GONE
-            scanParentLogin.visibility = View.GONE
-        }
-        if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
-        {
-            getServer(routerId,userSn,false)
-        }
-        if (routerList.size > 0) {
-            llCircle.setOnClickListener { view1 ->
-                PopWindowUtil.showSelectRouterPopWindow(this, llCircle, object : PopWindowUtil.OnSelectListener{
-                    override fun onSelect(position: Int, obj : Any) {
-                        /* routerList.forEach {
-                             if(it.lastCheck) {
-                                 it.lastCheck = false
-                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
-                             }
-                         }*/
-                        try
-                        {
-                            routerId = routerList[position].routerId
-                            userSn = routerList[position].userSn
-                            userId = routerList[position].userId
-                            username = routerList[position].username
-                            dataFileVersion = routerList[position].dataFileVersion
-                            routerNameTips.text = routerList[position].routerName
-
-                            ivAvatar.setText(routerList[position].routerName)
-                            if(routerList[position].loginKey != null){
-                                loginKey.setText(routerList[position].loginKey)
-                            }else{
-                                loginKey.setText("")
-                            }
-                            ConstantValue.currentRouterIp = ""
-                            //ConstantValue.scanRouterId = routerId;
-                            //MessageRetrievalService.stopThisService(this_)
-                            if(AppConfig.instance.messageReceiver != null)
-                                AppConfig.instance.messageReceiver!!.close()
-                            ConstantValue.isWebsocketConnected = false
-                            ConstantValue.lastRouterId=""
-                            ConstantValue.lastPort=""
-                            ConstantValue.lastFilePort=""
-                            ConstantValue.lastRouterId=""
-                            ConstantValue.lastRouterSN=""
-                            ConstantValue.lastNetworkType =""
-                            isClickLogin = false
-                            try {
-                                MessageHelper.clearAllMessage()
-                            }catch (e:Exception)
-                            {
-                                e.printStackTrace()
-                            }
-                            isStartLogin = true
-                            /* if(AppConfig.instance.messageReceiver != null)
-                                 AppConfig.instance.messageReceiver!!.close()*/
-                            getServer(routerId,userSn,false)
-                            //routerList[position].lastCheck = true
-                            //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
-                        }catch (e:Exception)
-                        {
-
-                        }
-
-                    }
-                })
-            }
-        }
+        initRouterUI()
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
@@ -2122,6 +1906,83 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             toast(R.string.code_error)
                         }
                     }
+                }else if(type.equals("type_3"))
+                {
+                    var left = result.substring(7,result.length)
+                    var signprivatek = left.substring(0,left.indexOf(","))
+                    left = left.substring(signprivatek.length+1,left.length)
+                    var usersn = left.substring(0,left.indexOf(","))
+                    left = left.substring(usersn.length+1,left.length)
+                    var username = left.substring(0,left.length)
+                    username = String(RxEncodeTool.base64Decode(username))
+                    var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+                    var isHas = false
+                    routerList.forEach {
+                        if (it.userSn.equals(usersn)) {
+                            isHas = true
+                            return@forEach
+                        }
+                    }
+                    if(isHas)
+                    {
+                        toast("Same account, no need to import")
+                        return;
+                    }else{
+                        FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
+                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+                    }
+                    val localSignArrayList: ArrayList<CryptoBoxKeypair>
+                    val localMiArrayList: ArrayList<CryptoBoxKeypair>
+                    val gson = Gson()
+
+                    var strSignPublicSouce = ByteArray(32)
+                    var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                    System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
+
+
+                    var dst_public_SignKey = strSignPublicSouce
+                    var dst_private_Signkey = signprivatekByteArray
+                    val strSignPrivate:String =  signprivatek
+                    val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
+                    ConstantValue.libsodiumprivateSignKey = strSignPrivate
+                    ConstantValue.libsodiumpublicSignKey = strSignPublic
+                    ConstantValue.localUserName = username
+                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                    localSignArrayList = ArrayList()
+                    var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
+                    SignData.privateKey = strSignPrivate
+                    SignData.publicKey = strSignPublic
+                    SignData.userName = username
+                    localSignArrayList.add(SignData)
+                    FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+
+
+                    var dst_public_MiKey = ByteArray(32)
+                    var dst_private_Mikey = ByteArray(32)
+                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+                    var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+
+                    val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                    val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                    ConstantValue.libsodiumprivateMiKey = strMiPrivate
+                    ConstantValue.libsodiumpublicMiKey = strMiPublic
+                    ConstantValue.localUserName = username
+                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                    localMiArrayList = ArrayList()
+                    var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
+                    RSAData.privateKey = strMiPrivate
+                    RSAData.publicKey = strMiPublic
+                    RSAData.userName = username
+                    localMiArrayList.add(RSAData)
+                    FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+                    runOnUiThread {
+                        toast("Import success")
+                        initRouterUI()
+                    }
                 }
             }catch (e:Exception)
             {
@@ -2183,6 +2044,227 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
 
+    fun initRouterUI()
+    {
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        if (routerList.size != 0) {
+            var hasCheckedRouter = false
+            run breaking@ {
+                routerList.forEach {
+                    if(adminUserSn != null && !adminUserSn.equals(""))
+                    {
+                        if (it.userSn.equals(adminUserSn)) {
+                            routerId = it.routerId
+                            userSn = it.userSn
+                            userId = it.userId
+                            username = it.username
+                            dataFileVersion = it.dataFileVersion
+                            routerNameTips.setTextColor(resources.getColor(R.color.white))
+                            if(it.routerName != null){
+                                routerNameTips.text = it.routerName
+                                ivAvatar.setText(it.routerName)
+                            }else{
+                                routerNameTips.text =  "Router 1"
+                                ivAvatar.setText("Router 1")
+                            }
+                            tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+                            if(it.loginKey != null){
+                                loginKey.setText(it.loginKey)
+                            }else{
+                                loginKey.setText("")
+                            }
+
+                            hasCheckedRouter = true
+                            return@breaking
+                        }
+                    }else{
+                        var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+                        if(!autoLoginRouterSn.equals(""))
+                        {
+                            if (it.userSn.equals(autoLoginRouterSn)) {
+                                routerId = it.routerId
+                                userSn = it.userSn
+                                userId = it.userId
+                                username = it.username
+                                dataFileVersion = it.dataFileVersion
+
+                                if(it.routerName != null){
+                                    routerNameTips.text = it.routerName
+                                    ivAvatar.setText(it.routerName)
+                                }else{
+                                    routerNameTips.text =  "Router 1"
+                                    ivAvatar.setText("Router 1")
+                                }
+                                desc.text = getString(R.string.login_has_router)
+                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+                                if(it.loginKey != null){
+                                    loginKey.setText(it.loginKey)
+                                }else{
+                                    loginKey.setText("")
+                                }
+
+                                hasCheckedRouter = true
+                                return@breaking
+                            }
+                        }else{
+                            if (it.lastCheck) {
+                                routerId = it.routerId
+                                userSn = it.userSn
+                                userId = it.userId
+                                username = it.username
+                                dataFileVersion = it.dataFileVersion
+                                routerNameTips.setTextColor(resources.getColor(R.color.white))
+                                if(it.routerName != null){
+                                    routerNameTips.text = it.routerName
+                                    ivAvatar.setText(it.routerName)
+                                }else{
+                                    routerNameTips.text =  "Router 1"
+                                    ivAvatar.setText("Router 1")
+                                }
+                                desc.text = getString(R.string.login_has_router)
+                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+                                if(it.loginKey != null){
+                                    loginKey.setText(it.loginKey)
+                                }else{
+                                    loginKey.setText("")
+                                }
+
+                                hasCheckedRouter = true
+                                return@breaking
+                            }
+                        }
+
+                    }
+
+                }
+            }
+            if (!hasCheckedRouter) {
+                routerId = routerList[0].routerId
+                userSn =  routerList[0].userSn
+                userId = routerList[0].userId
+                username = routerList[0].username
+                desc.text = getString(R.string.login_has_router)
+                tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
+                dataFileVersion = routerList[0].dataFileVersion
+                routerNameTips.setTextColor(resources.getColor(R.color.white))
+                if(routerList[0].routerName != null){
+                    routerNameTips.text = routerList[0].routerName
+                    ivAvatar.setText(routerList[0].routerName)
+                }else{
+                    routerNameTips.text = "Router 1"
+                    ivAvatar.setText("Router 1")
+                }
+
+                if(routerList[0].loginKey != null){
+                    loginKey.setText(routerList[0].loginKey)
+                }else{
+                    loginKey.setText("")
+                }
+            }
+            ivAvatar.visibility = View.VISIBLE
+            tvUserName.visibility = View.VISIBLE
+            ivNoCircle.visibility = View.GONE
+            joincircle.visibility = View.INVISIBLE
+            loginBtn.background = resources.getDrawable(R.drawable.btn_white)
+            if(routerList.size > 1)
+            {
+                routerNameTipsmore.setImageDrawable(resources.getDrawable(R.mipmap.arrow_down))
+                routerNameTipsmore.visibility = View.VISIBLE
+            }else{
+                routerNameTipsmore.visibility = View.INVISIBLE
+            }
+            hasRouterParentLogin.visibility = View.GONE
+            noRoutergroupLogin.visibility = View.GONE
+            scanParentLogin.visibility = View.GONE
+        } else {
+            var options = RequestOptions()
+                    .centerCrop()
+                    .transform(GlideCircleTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .priority(Priority.HIGH)
+            Glide.with(this)
+                    .load(R.mipmap.icon_no_circle)
+                    .apply(options)
+                    .into(ivNoCircle)
+            ivNoCircle.visibility = View.VISIBLE
+            joincircle.visibility = View.VISIBLE
+            ivAvatar.visibility = View.GONE
+            tvUserName.visibility = View.VISIBLE
+            username = ConstantValue.localUserName!!
+            tvUserName.text = "Hello\n"+ ConstantValue.localUserName + "\nWelcome back!"
+            routerNameTips.text = "You haven't joined any circle"
+            desc.text = resources.getString(R.string.login_no_router)
+            loginBtn.background = resources.getDrawable(R.drawable.btn_login_norouter)
+            routerNameTips.setTextColor(resources.getColor(R.color.color_b2b2b2))
+            routerNameTipsmore.visibility = View.VISIBLE
+            hasRouterParentLogin.visibility = View.GONE
+            noRoutergroupLogin.visibility = View.GONE
+            scanParentLogin.visibility = View.GONE
+        }
+        if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
+        {
+            getServer(routerId,userSn,false)
+        }
+        if (routerList.size > 0) {
+            llCircle.setOnClickListener { view1 ->
+                PopWindowUtil.showSelectRouterPopWindow(this, llCircle, object : PopWindowUtil.OnSelectListener{
+                    override fun onSelect(position: Int, obj : Any) {
+                        /* routerList.forEach {
+                             if(it.lastCheck) {
+                                 it.lastCheck = false
+                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
+                             }
+                         }*/
+                        try
+                        {
+                            routerId = routerList[position].routerId
+                            userSn = routerList[position].userSn
+                            userId = routerList[position].userId
+                            username = routerList[position].username
+                            dataFileVersion = routerList[position].dataFileVersion
+                            routerNameTips.text = routerList[position].routerName
+
+                            ivAvatar.setText(routerList[position].routerName)
+                            if(routerList[position].loginKey != null){
+                                loginKey.setText(routerList[position].loginKey)
+                            }else{
+                                loginKey.setText("")
+                            }
+                            ConstantValue.currentRouterIp = ""
+                            //ConstantValue.scanRouterId = routerId;
+                            //MessageRetrievalService.stopThisService(this_)
+                            if(AppConfig.instance.messageReceiver != null)
+                                AppConfig.instance.messageReceiver!!.close()
+                            ConstantValue.isWebsocketConnected = false
+                            ConstantValue.lastRouterId=""
+                            ConstantValue.lastPort=""
+                            ConstantValue.lastFilePort=""
+                            ConstantValue.lastRouterId=""
+                            ConstantValue.lastRouterSN=""
+                            ConstantValue.lastNetworkType =""
+                            isClickLogin = false
+                            try {
+                                MessageHelper.clearAllMessage()
+                            }catch (e:Exception)
+                            {
+                                e.printStackTrace()
+                            }
+                            isStartLogin = true
+                            /* if(AppConfig.instance.messageReceiver != null)
+                                 AppConfig.instance.messageReceiver!!.close()*/
+                            getServer(routerId,userSn,false)
+                            //routerList[position].lastCheck = true
+                            //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
+                        }catch (e:Exception)
+                        {
+
+                        }
+
+                    }
+                })
+            }
+        }
+    }
     fun loadLibrary() {
         try{
             KLog.i("load tox库")

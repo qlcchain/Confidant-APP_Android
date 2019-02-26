@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.user
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import com.google.gson.Gson
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
@@ -84,6 +85,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 var usersn = left.substring(0,left.indexOf(","))
                 left = left.substring(usersn.length+1,left.length)
                 var username = left.substring(0,left.length)
+                username = String(RxEncodeTool.base64Decode(username))
                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
                 var isHas = false
                 routerList.forEach {
@@ -97,7 +99,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                     toast("Same account, no need to import")
                     return;
                 }else{
-                    FileUtil.deleteFile(ConstantValue.localPath + "/RouterList/routerData.json")
+                    FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                 }
                 val localSignArrayList: ArrayList<CryptoBoxKeypair>

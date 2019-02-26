@@ -105,7 +105,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
         CreateEnglishUserQRCode.execute()*/
         tvSaveToPhone.setOnClickListener {
-            saveQrCodeToPhone()
+            saveQrCodeToPhone(flag)
         }
         Thread(Runnable() {
             run() {
@@ -131,7 +131,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         //CreateEnglishUserQRCode.cancel(true)
     }
 
-    fun saveQrCodeToPhone() {
+    fun saveQrCodeToPhone(flag: Int) {
         showProgressDialog()
         thread {
             val dView = cardView
@@ -141,10 +141,14 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
             if (bitmap != null) {
                 try {
                     // 获取内置SD卡路径
-                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + "/Router"
+                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath
                     // 图片文件路径
                     var username = SpUtil.getString(this, ConstantValue.username, "")
-                    val filePath = sdCardPath + File.separator + username + ".png"
+                    var filePath = sdCardPath + File.separator + username + ".png"
+                    if(flag == 1)
+                    {
+                        filePath = sdCardPath + File.separator + username + "_data.png"
+                    }
                     val file = File(filePath)
                     val os = FileOutputStream(file)
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)

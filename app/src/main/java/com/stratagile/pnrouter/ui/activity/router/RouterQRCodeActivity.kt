@@ -163,7 +163,7 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
             if (bitmap != null) {
                 try {
                     // 获取内置SD卡路径
-                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + "/Router"
+                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath
                     // 图片文件路径
                     val filePath = sdCardPath + File.separator + routerEntity.routerName + ".png"
                     val file = File(filePath)

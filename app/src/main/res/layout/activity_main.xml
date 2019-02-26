@@ -6,6 +6,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/reConnect"
+        android:background="@color/color_3091F2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/Connecting"
+            android:textColor="@color/white"
+            android:textSize="@dimen/x22" />
+    </RelativeLayout>
     <TextView
         android:id="@+id/statusBar"
         android:layout_width="match_parent"
@@ -71,14 +85,14 @@
 
     </RelativeLayout>
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/reConnect"
         android:visibility="gone"
         android:gravity="center_vertical"
         android:text="Connection..."
         android:paddingLeft="@dimen/x30"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x90" />
+        android:layout_height="@dimen/x90" />-->
 
     <android.support.v4.view.ViewPager
         android:layout_below="@+id/rl1"

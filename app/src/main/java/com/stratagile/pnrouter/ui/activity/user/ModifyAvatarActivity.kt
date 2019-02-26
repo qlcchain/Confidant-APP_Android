@@ -176,7 +176,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
         showProgressDialog()
         Thread(Runnable {
             try {
-                val dataFile = File(Environment.getExternalStorageDirectory().toString() + "/Router", "")
+                val dataFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath, "")
                 if (!dataFile.exists()) {
                     dataFile.mkdir()
                 }
