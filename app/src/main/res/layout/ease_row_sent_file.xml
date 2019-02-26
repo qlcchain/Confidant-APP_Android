@@ -61,7 +61,7 @@
                     android:layout_gravity="center_vertical"
                     android:ellipsize="middle"
                     android:singleLine="true"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/color_2c2c2c"
                     android:textSize="15sp" />
 
                 <RelativeLayout

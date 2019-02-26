@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <selector
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/rounded_fectanglewhite" />
-    <item android:drawable="@drawable/rounded_fectanglewhite" />
+    <item android:state_pressed="true" android:drawable="@mipmap/chat_box_left" />
+    <item android:drawable="@mipmap/chat_box_left" />
 </selector>

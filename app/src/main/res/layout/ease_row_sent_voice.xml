@@ -4,8 +4,9 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
+    android:paddingBottom="@dimen/x13"
     android:orientation="vertical"
-    android:paddingTop="13dp">
+    android:paddingTop="@dimen/x13">
 
     <TextView
         android:id="@+id/timestamp"
@@ -31,17 +32,16 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/x55"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/x70"
             android:layout_toLeftOf="@id/iv_userhead"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="@dimen/x12"
              android:background="@drawable/ease_chatto_bg"
             >
 	        <ImageView
 	            android:id="@+id/iv_voice"
 	            android:layout_centerInParent="true"
-	            android:paddingLeft="12dp"
-	            android:paddingRight="10dp"
+                app:layout_constraintRight_toRightOf="parent"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:src="@drawable/ease_chatto_voice_playing" />
@@ -52,25 +52,25 @@
                 android:clickable="true"
                 android:src="@drawable/send"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/bubble"
-                app:layout_constraintEnd_toEndOf="@+id/bubble" />
+                app:layout_constraintTop_toBottomOf="@+id/iv_voice"
+                app:layout_constraintEnd_toEndOf="@+id/iv_voice" />
+            <TextView
+                android:id="@+id/tv_length"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginLeft="@dimen/x10"
+                style="@style/chat_text_name_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/x22"
+                android:gravity="center_vertical" />
 		</android.support.constraint.ConstraintLayout>
-        <TextView
-            android:id="@+id/tv_length"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x22"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/bubble"
-            android:gravity="center" />
 
         <ImageView
             android:id="@+id/msg_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/tv_length"
+            android:layout_toLeftOf="@id/bubble"
             android:clickable="true"
             android:src="@drawable/ease_msg_state_failed_resend"
             android:visibility="gone" />

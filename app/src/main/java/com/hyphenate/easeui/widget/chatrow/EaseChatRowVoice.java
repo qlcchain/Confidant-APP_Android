@@ -55,6 +55,13 @@ public class EaseChatRowVoice extends EaseChatRowFile {
         int len = voiceBody.getLength();
         if (len > 0) {
             voiceLengthView.setText(voiceBody.getLength() + "\"");
+            if (voiceBody.getLength() <= 5) {
+                voiceLengthView.setWidth(5 * (int) context.getResources().getDimension(R.dimen.x12));
+            } else if (voiceBody.getLength() >= 30){
+                voiceLengthView.setWidth(30 * (int) context.getResources().getDimension(R.dimen.x12));
+            } else {
+                voiceLengthView.setWidth(voiceBody.getLength() * (int) context.getResources().getDimension(R.dimen.x12));
+            }
             voiceLengthView.setVisibility(View.VISIBLE);
         } else {
             voiceLengthView.setVisibility(View.INVISIBLE);
