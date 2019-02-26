@@ -187,9 +187,9 @@ public class EaseChatRowVideo extends EaseChatRowFile{
     {
         Bitmap bitmap_bg;
         if (message.direct() == EMMessage.Direct.RECEIVE) {
-            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.drawable.rounded_fectanglewhite);
+            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.mipmap.chat_box_left);
         } else {
-            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.drawable.rounded_rectangle);
+            bitmap_bg = BitmapFactory.decodeResource(getResources(), R.mipmap.chat_box_right);
         }
         Bitmap roundConcerImage = Bitmap.createBitmap(widht,height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(roundConcerImage);

@@ -199,14 +199,14 @@ public abstract class EaseChatRow extends LinearLayout {
             if (sendStatusView != null) {
                 if(message.isDelivered())
                 {
-                    sendStatusView.setImageResource(R.drawable.senddelivered);
+                    sendStatusView.setImageResource(R.mipmap.ic_in_sending);
                     sendStatusView.setVisibility(View.VISIBLE);
                     if (message.isAcked()) {
-                        sendStatusView.setImageResource(R.drawable.send);
+                        sendStatusView.setImageResource(R.mipmap.ic_unread);
                         sendStatusView.setVisibility(View.VISIBLE);
                         if(message.isUnread() == false)
                         {
-                            sendStatusView.setImageResource(R.drawable.sendout);
+                            sendStatusView.setImageResource(R.mipmap.already_read);
                             sendStatusView.setVisibility(View.VISIBLE);
                         }
                     }

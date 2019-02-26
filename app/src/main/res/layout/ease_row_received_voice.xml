@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="13dp">
+    android:paddingBottom="@dimen/x13"
+    android:paddingTop="@dimen/x13">
 
     <TextView
         android:id="@+id/timestamp"
@@ -32,10 +33,9 @@
         <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/x55"
+            android:layout_height="@dimen/x75"
             android:layout_toRightOf="@id/iv_userhead"
             android:layout_marginLeft="@dimen/margin_chat_activity"
-            android:layout_marginTop="@dimen/x10"
             android:layout_below="@+id/tv_userid"
             android:background="@drawable/ease_chatfrom_bg"
             >
@@ -44,24 +44,21 @@
                 android:id="@+id/iv_voice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-	            android:paddingRight="12dp"
-	            android:layout_centerInParent="true"
+	            android:layout_centerVertical="true"
                 android:src="@drawable/ease_chatfrom_voice_playing" />
+            <TextView
+                android:id="@+id/tv_length"
+                style="@style/chat_text_name_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/x10"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/iv_voice"
+                android:layout_alignTop="@id/iv_voice"
+                android:gravity="center_vertical|right"
+                android:text="3&apos;&apos;"
+                tools:ignore="HardcodedText" />
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tv_length"
-            style="@style/chat_text_name_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x10"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/bubble"
-            android:layout_alignTop="@id/bubble"
-            android:gravity="center"
-            android:text="3&apos;&apos;"
-            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/iv_unread_voice"
@@ -69,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_alignTop="@id/bubble"
-            android:layout_toRightOf="@id/tv_length"
+            android:layout_toRightOf="@id/bubble"
             android:src="@drawable/ease_voice_unread" />
 
         <ProgressBar

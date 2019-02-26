@@ -36,7 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="46dp"
-            android:layout_marginTop="@dimen/margin_chat_activity2"
             android:layout_marginRight="@dimen/margin_chat_activity"
             android:layout_toLeftOf="@id/iv_userhead"
             android:background="@drawable/ease_chatto_bg"
@@ -47,13 +46,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
-                android:layout_centerInParent="true"
-                android:gravity="center|left"
-                android:paddingRight="6dp"
-                android:paddingLeft="1dp"
-                android:minHeight="32dp"
                 android:lineSpacingExtra="2dp"
-              	android:textColor="#FFFFFF"
+              	android:textColor="@color/color_2c2c2c"
                 android:maxWidth="225.0dip"
                 android:textSize="15sp" />
 
@@ -61,12 +55,11 @@
                 android:id="@+id/msg_sendstatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
                 android:clickable="true"
                 android:src="@drawable/send"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/tv_chatcontent"
-                app:layout_constraintTop_toTopOf="@+id/tv_chatcontent" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_chatcontent" />
         </android.support.constraint.ConstraintLayout>
 
        <!--  <TextView

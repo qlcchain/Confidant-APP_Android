@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="13dp">
+    android:paddingBottom="@dimen/x13"
+    android:paddingTop="@dimen/x13">
 
     <TextView
         android:id="@+id/timestamp"
