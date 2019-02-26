@@ -376,7 +376,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
         var userEntity = UserEntity()
         userEntity.userId = jAddFriendReplyRsp.params.friendId
-        userEntity.nickName = jAddFriendReplyRsp.params.friendName
+        userEntity.nickName = jAddFriendReplyRsp.params.nickname
         userEntity.routeId = jAddFriendReplyRsp.params.routeId
         userEntity.routeName = jAddFriendReplyRsp.params.routeName
        /* if (jAddFriendReplyRsp.params.result == 0) {
