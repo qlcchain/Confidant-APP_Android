@@ -89,6 +89,7 @@
     <string name="delete_voice">Delete voice</string>
     <string name="delete_video">Delete video</string>
     <string name="delete">Delete</string>
+    <string name="Importing_users">Importing users</string>
     <string name="resend">Resend</string>
     <string name="confirm_resend">Confirm to resend？</string>
     <string name="connect_failuer_toast">Please check the network or try again later</string>
@@ -553,6 +554,7 @@
     <string name="login_no_router">*Scan the invitation QR code to join your friend\'s Confidant circle.  *Scan the QR code on your Confidant router to launch your circle.</string>
     <string name="login_has_router">*Select to re-join an existing circle or Scan the invitation QR code to join a new circle.</string>
     <string name="Connecting"> Connecting you to the circle</string>
+    <string name="overwritten">Are you sure you want to import account data? Local data will be overwritten!</string>
 
 
 </resources>

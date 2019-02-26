@@ -58,6 +58,7 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -1928,60 +1929,82 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         toast("Same account, no need to import")
                         return;
                     }else{
-                        FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
-                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
-                    }
-                    val localSignArrayList: ArrayList<CryptoBoxKeypair>
-                    val localMiArrayList: ArrayList<CryptoBoxKeypair>
-                    val gson = Gson()
+                        runOnUiThread {
+                            val realContent = getString(R.string.overwritten)
+                            val builder = android.app.AlertDialog.Builder(this)
+                            val view = View.inflate(this, R.layout.dialog_layout, null)
+                            builder.setView(view)
+                            builder.setCancelable(true)
+                            val title = view.findViewById<View>(R.id.title) as TextView//设置标题
+                            val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
+                            val btn_cancel = view.findViewById<View>(R.id.btn_left) as Button//取消按钮
+                            val btn_comfirm = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
+                            title.setText(R.string.Importing_users)
+                            tvContent.setText(realContent)
+                            //取消或确定按钮监听事件处l
+                            val dialog = builder.create()
+                            btn_cancel.text = getString(R.string.cancel).toLowerCase()
+                            btn_cancel.setOnClickListener {
+                                dialog.dismiss()
+                            }
+                            btn_comfirm.setOnClickListener {
+                                FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
+                                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+                                val localSignArrayList: ArrayList<CryptoBoxKeypair>
+                                val localMiArrayList: ArrayList<CryptoBoxKeypair>
+                                val gson = Gson()
 
-                    var strSignPublicSouce = ByteArray(32)
-                    var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
-                    System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
+                                var strSignPublicSouce = ByteArray(32)
+                                var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                                System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
 
 
-                    var dst_public_SignKey = strSignPublicSouce
-                    var dst_private_Signkey = signprivatekByteArray
-                    val strSignPrivate:String =  signprivatek
-                    val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
-                    ConstantValue.libsodiumprivateSignKey = strSignPrivate
-                    ConstantValue.libsodiumpublicSignKey = strSignPublic
-                    ConstantValue.localUserName = username
-                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
-                    localSignArrayList = ArrayList()
-                    var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
-                    SignData.privateKey = strSignPrivate
-                    SignData.publicKey = strSignPublic
-                    SignData.userName = username
-                    localSignArrayList.add(SignData)
-                    FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+                                var dst_public_SignKey = strSignPublicSouce
+                                var dst_private_Signkey = signprivatekByteArray
+                                val strSignPrivate:String =  signprivatek
+                                val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
+                                ConstantValue.libsodiumprivateSignKey = strSignPrivate
+                                ConstantValue.libsodiumpublicSignKey = strSignPublic
+                                ConstantValue.localUserName = username
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                localSignArrayList = ArrayList()
+                                var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
+                                SignData.privateKey = strSignPrivate
+                                SignData.publicKey = strSignPublic
+                                SignData.userName = username
+                                localSignArrayList.add(SignData)
+                                FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
 
 
-                    var dst_public_MiKey = ByteArray(32)
-                    var dst_private_Mikey = ByteArray(32)
-                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
-                    var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+                                var dst_public_MiKey = ByteArray(32)
+                                var dst_private_Mikey = ByteArray(32)
+                                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+                                var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
 
-                    val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
-                    val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
-                    ConstantValue.libsodiumprivateMiKey = strMiPrivate
-                    ConstantValue.libsodiumpublicMiKey = strMiPublic
-                    ConstantValue.localUserName = username
-                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
-                    SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
-                    localMiArrayList = ArrayList()
-                    var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
-                    RSAData.privateKey = strMiPrivate
-                    RSAData.publicKey = strMiPublic
-                    RSAData.userName = username
-                    localMiArrayList.add(RSAData)
-                    FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
-                    runOnUiThread {
-                        toast("Import success")
-                        initRouterUI()
+                                val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                                val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                                ConstantValue.libsodiumprivateMiKey = strMiPrivate
+                                ConstantValue.libsodiumpublicMiKey = strMiPublic
+                                ConstantValue.localUserName = username
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                localMiArrayList = ArrayList()
+                                var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
+                                RSAData.privateKey = strMiPrivate
+                                RSAData.publicKey = strMiPublic
+                                RSAData.userName = username
+                                localMiArrayList.add(RSAData)
+                                FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+                                runOnUiThread {
+                                    toast("Import success")
+                                    initRouterUI()
+                                }
+                            }
+                            dialog.show()
+                        }
                     }
                 }
             }catch (e:Exception)
