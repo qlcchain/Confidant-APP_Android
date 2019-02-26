@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent">
+
+    <com.nightonke.wowoviewpager.WoWoViewPager
+        android:id="@+id/wowo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/ivBack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/main_color" />
+
+    <TextView
+        android:id="@+id/funTv0"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/iv0"
+        android:layout_marginTop="@dimen/x54"
+        android:layout_width="wrap_content"
+        android:text="Confidant"
+        android:textColor="@color/white"
+        android:textSize="26sp"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/iv0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/x357"
+        android:scaleType="fitEnd"
+        android:src="@mipmap/guide_1"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/iv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/x123"
+        android:scaleType="fitEnd"
+        android:src="@mipmap/guide_3"
+        tools:ignore="ContentDescription" />
+
+
+    <LinearLayout
+        android:id="@+id/llNext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x84"
+        android:layout_marginBottom="@dimen/x60"
+        android:layout_marginEnd="@dimen/x52"
+        android:background="@drawable/btn_white"
+        android:layout_marginStart="@dimen/x52"
+        android:paddingBottom="@dimen/x16"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:paddingTop="@dimen/x16"
+        android:layout_marginTop="@dimen/x84">
+        <com.stratagile.pnrouter.view.DrawablePicTextView
+            android:id="@+id/tvNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:text="@string/Unlock_Confidant"
+            android:textColor="@color/color_2c2c2c" />
+    </LinearLayout>
+
+</RelativeLayout>

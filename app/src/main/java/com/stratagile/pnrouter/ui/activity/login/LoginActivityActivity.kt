@@ -1948,6 +1948,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 dialog.dismiss()
                             }
                             btn_comfirm.setOnClickListener {
+                                dialog.dismiss()
                                 FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                 val localSignArrayList: ArrayList<CryptoBoxKeypair>

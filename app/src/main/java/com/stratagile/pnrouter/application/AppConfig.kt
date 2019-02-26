@@ -1,10 +1,16 @@
 package com.stratagile.pnrouter.application
 
 import android.app.ActivityManager
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
+import android.support.v4.app.NotificationCompat
+import android.support.v4.content.ContextCompat
 import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -14,8 +20,10 @@ import com.message.MessageProvider
 import com.message.UserProvider
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
+import com.stratagile.pnrouter.data.service.MyService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
 import com.stratagile.pnrouter.data.web.*
 import com.stratagile.pnrouter.data.web.Optional
@@ -25,6 +33,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
+import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.tox.toxcore.KotlinToxService
@@ -46,6 +55,7 @@ class AppConfig : MultiDexApplication() {
 
     val MI_PUSH_APP_ID = "2882303761517914075"
     val MI_PUSH_APP_KEY = "5221791411075"
+    val FOREGROUND_ID = 313399
     var applicationComponent: AppComponent? = null
 
     var onToxMessageReceiveListener : WebSocketConnection.OnMessageReceiveListener? = null
@@ -85,8 +95,14 @@ class AppConfig : MultiDexApplication() {
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
+        /*if (TextSecurePreferences.isFcmDisabled(this)) {
+           ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
+        }*/
 
-
+        var intent =  Intent(this, MyService::class.java)
+        var sender= PendingIntent.getService(this, 0, intent, 0);
+        var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);
 //        MessageProvider.init()
     }
     fun getMessageReceiverInstance():  PNRouterServiceMessageReceiver{
@@ -225,11 +241,12 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0);
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60 * 1000)
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60 * 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
                 {
-                    EventBus.getDefault().post(ForegroundCallBack(true,true))
+                    val intent = Intent(AppConfig.instance, VerifyingFingerprintActivity::class.java)
+                    startActivity(intent)
                 }
-               if (ConstantValue.logining) {
+                if (ConstantValue.logining) {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
                 }
@@ -262,6 +279,26 @@ class AppConfig : MultiDexApplication() {
         return false
     }
 
+    class ForegroundService : Service() {
+
+        override fun onBind(intent: Intent): IBinder? {
+            return null
+        }
+
+        override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+            super.onStartCommand(intent, flags, startId)
+
+            val builder = NotificationCompat.Builder(AppConfig.instance, "other_v2")
+            builder.setContentTitle(AppConfig.instance.getString(R.string.app_name))
+            builder.setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
+            builder.priority = NotificationCompat.PRIORITY_MIN
+            builder.setWhen(0)
+            builder.setSmallIcon(R.mipmap.ic_launcher)
+            startForeground(313399, builder.build())
+
+            return Service.START_STICKY
+        }
+    }
     fun loadLibrary() {
         try{
             KLog.i("load tox库")

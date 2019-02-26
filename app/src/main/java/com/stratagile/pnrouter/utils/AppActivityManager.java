@@ -219,5 +219,4 @@ public class AppActivityManager {
             e.printStackTrace();
         }
     }
-
 }

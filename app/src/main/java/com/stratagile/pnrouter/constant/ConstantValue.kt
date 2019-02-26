@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.constant
 
+import android.app.Activity
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
 import com.stratagile.pnrouter.entity.LoginReq_V4
@@ -40,6 +41,7 @@ object ConstantValue {
         var privateRAS:String? = ""
         var publicRAS:String? = ""
 
+        var mainActivity:Activity? = null
         var libsodiumprivateSignKeySp ="libsodiumprivateSignKeySp"
         var libsodiumpublicSignKeySp ="libsodiumpublicSignKeySp"
         var localUserNameSp ="localUserNameSp"

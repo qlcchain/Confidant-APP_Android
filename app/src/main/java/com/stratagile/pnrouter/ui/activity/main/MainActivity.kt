@@ -717,6 +717,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }catch (e : Exception) {
             e.printStackTrace()
         }
+        ConstantValue.mainActivity = this
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)
         Thread(Runnable() {
