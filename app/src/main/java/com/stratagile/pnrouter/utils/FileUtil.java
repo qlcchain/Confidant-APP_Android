@@ -1489,7 +1489,7 @@ public class FileUtil {
         return 0;
     }
 
-    public static void recordRecentFile(String fileName, int opreateType, int fileType) {
+    public static void recordRecentFile(String fileName, int opreateType, int fileType, String friendName) {
         RecentFile recentFile = AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().queryBuilder().where(RecentFileDao.Properties.FileName.eq(fileName), RecentFileDao.Properties.OpreateType.eq(opreateType)).unique();
         if (recentFile != null) {
             recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
@@ -1499,7 +1499,7 @@ public class FileUtil {
             recentFile.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             recentFile.setFileName(fileName);
             recentFile.setFileType(fileType);
-            recentFile.setFriendName("");
+            recentFile.setFriendName(friendName);
             recentFile.setOpreateType(opreateType);
             recentFile.setTimeStamp(Calendar.getInstance().getTimeInMillis());
             AppConfig.instance.getMDaoMaster().newSession().getRecentFileDao().insert(recentFile);

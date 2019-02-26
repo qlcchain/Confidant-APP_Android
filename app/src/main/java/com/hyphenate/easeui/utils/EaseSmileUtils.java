@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.Spannable;
 import android.text.Spannable.Factory;
@@ -30,6 +31,7 @@ import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.EaseUI.EaseEmojiconInfoProvider;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.model.EaseDefaultEmojiconDatas;
+import com.stratagile.pnrouter.R;
 
 public class EaseSmileUtils {
     public static final String DELETE_KEY = "em_delete_delete_expression";
@@ -137,7 +139,9 @@ public class EaseSmileUtils {
 	                            matcher.start(), matcher.end(),
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	                }else{
-	                    spannable.setSpan(new ImageSpan(context, (Integer)value),
+						Drawable drawable = context.getResources().getDrawable((Integer)value);
+						drawable.setBounds(0, 0, (int) context.getResources().getDimension(R.dimen.x38), (int) context.getResources().getDimension(R.dimen.x38));//这里设置图片的大小
+	                    spannable.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM),
 	                            matcher.start(), matcher.end(),
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	                }

@@ -81,7 +81,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
         when (jDelFileRsp.params.retCode) {
             0 -> {
-                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1)
+                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1, "")
                 runOnUiThread {
                     fileListChooseAdapter!!.data.remove(waitDeleteData!!)
                     fileListChooseAdapter!!.notifyDataSetChanged()
@@ -244,7 +244,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 1 -> {
-                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1)
+                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
@@ -647,6 +647,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     }
     override fun onDestroy() {
         super.onDestroy()
+        AppConfig.instance.messageReceiver?.fileManageBack = null
         EventBus.getDefault().unregister(this)
     }
 }

@@ -734,7 +734,7 @@ public class FileMangerUtil {
                             return;
                         }
                         String files_dir = imagePath;
-                        FileUtil.recordRecentFile(fileName, 0, 0);
+                        FileUtil.recordRecentFile(fileName, 0, 0, "Router");
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
@@ -892,7 +892,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(videoPath,3));
                             return;
                         }
-                        FileUtil.recordRecentFile(videoFileName, 0, 4);
+                        FileUtil.recordRecentFile(videoFileName, 0, 4, "Router");
 
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
@@ -1045,7 +1045,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(filePath,2));
                             return;
                         }
-                        FileUtil.recordRecentFile(fileName, 0, 4);
+                        FileUtil.recordRecentFile(fileName, 0, 4, "Router");
                         if(file.length() == 0)
                         {
                             EventBus.getDefault().post(new FileStatus(filePath,3));

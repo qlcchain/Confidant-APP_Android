@@ -70,10 +70,12 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:maxLines="3"
+                android:includeFontPadding="false"
+                android:textColor="@color/color_2c2c2c"
                 android:minHeight="33dp"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:imeOptions="actionSend"/>
 
         </RelativeLayout>

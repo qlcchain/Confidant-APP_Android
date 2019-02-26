@@ -262,6 +262,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
                     chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
                     fileManageBack?.pullFileMsgRsp(jToxPullFileRsp)
+                    if (fileManageBack == null) {
+                        fileMainManageBack?.pullFileMsgRsp(jToxPullFileRsp)
+                    }
                 }
                 //admin登陆
                 "RouterLogin" -> {
@@ -297,11 +300,17 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "PullFileList" -> {
                     val jPullFileListRsp = gson.fromJson(text, JPullFileListRsp::class.java)
                     fileManageBack?.pullFileListRsp(jPullFileListRsp)
+                    if (fileManageBack == null) {
+                        fileMainManageBack?.pullFileListRsp(jPullFileListRsp)
+                    }
                 }
                 //删除文件
                 "DelFile" -> {
                     val jDelFileRsp = gson.fromJson(text, JDelFileRsp::class.java)
                     fileManageBack?.deleFileRsp(jDelFileRsp)
+                    if (fileManageBack == null) {
+                        fileMainManageBack?.deleFileRsp(jDelFileRsp)
+                    }
                 }
                 //50.	设备磁盘统计信息
                 "GetDiskTotalInfo" -> {
@@ -382,6 +391,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var fileTaskBack: FileTaskBack? = null
 
     var fileManageBack : FileManageBack? = null
+    var fileMainManageBack : FileMainManageBack? = null
 
     var getDiskTotalInfoBack : GetDiskTotalInfoBack? = null
 
@@ -599,6 +609,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     interface FileManageBack {
+        fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
+        fun deleFileRsp(jDelFileRsp :JDelFileRsp)
+        fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+    }
+    //主页面文件对文件的操作回调
+    interface FileMainManageBack {
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
         fun deleFileRsp(jDelFileRsp :JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
