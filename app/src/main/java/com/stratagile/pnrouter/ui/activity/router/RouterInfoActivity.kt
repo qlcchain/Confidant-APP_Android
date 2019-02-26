@@ -188,6 +188,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
                     ConstantValue.loginOut = true
                     ConstantValue.logining = false
                     ConstantValue.isHeart = false
+                    ConstantValue.currentRouterIp = ""
                     isUserExit = true
                     resetUnCompleteFileRecode()
                     if (ConstantValue.isWebsocketConnected) {
