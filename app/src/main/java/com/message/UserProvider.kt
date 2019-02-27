@@ -7,6 +7,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
@@ -81,14 +82,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
      */
     override fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp) {
         if (jDelFriendCmdRsp.params.retCode == 0) {
-           /* userList.forEach {
-                if (it.userId.equals(jDelFriendCmdRsp.params.friendId)) {
-                    it.friendStatus = 6
-                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                    refreshFriend(jDelFriendCmdRsp.params.friendId)
-                    return@forEach
-                }
-            }*/
+            /* userList.forEach {
+                 if (it.userId.equals(jDelFriendCmdRsp.params.friendId)) {
+                     it.friendStatus = 6
+                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+                     refreshFriend(jDelFriendCmdRsp.params.friendId)
+                     return@forEach
+                 }
+             }*/
 
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
@@ -115,10 +116,29 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         KLog.i("推送过来了添加好友的请求")
 
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
+        var sendAddFriendPushReq = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendAddFriendPushReq = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
+        }
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendAddFriendPushReq)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendAddFriendPushReq
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {
             if (j.userId.equals(userId)) {
-                if (jAddFriendPushRsp.params.friendId.equals(j.friendId)) {
+                if (jAddFriendPushRsp.params.friendId.equals(j.friendId))
+                {
 
                     if(j.friendLocalStatus == 0)//自动同意
                     {
@@ -159,42 +179,47 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                             }
                         }
                         j.friendLocalStatus = 0
+                        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                        return
                     }else
                     {
                         j.friendLocalStatus = 3
+                        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                        EventBus.getDefault().post(FriendChange())
                     }
-                    AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-                    break
+
                 }
 
             }
         }
 
+        var ifHas = false
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
-               /* if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
-                {
-                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    val selfNickNameBase64 = it.nickName
-                    //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-                    var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
-                    if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                    }else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(addFriendDealReq)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }
-                    it.friendStatus = 0
-                }else
-                {
-                    it.friendStatus = 3
-                }*/
+                /* if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
+                 {
+                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                     val selfNickNameBase64 = it.nickName
+                     //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
+                     var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
+                     if (ConstantValue.isWebsocketConnected) {
+                         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+                     }else if (ConstantValue.isToxConnected) {
+                         var baseData = BaseData(addFriendDealReq)
+                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                         //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                     }
+                     it.friendStatus = 0
+                 }else
+                 {
+                     it.friendStatus = 3
+                 }*/
+                ifHas = true
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.signPublicKey = jAddFriendPushRsp.params.userKey
-                it.routeName = jAddFriendPushRsp.params.routeName
-                it.routeId = jAddFriendPushRsp.params.routeId
+                it.routeName = jAddFriendPushRsp.params.routerName
+                it.routeId = jAddFriendPushRsp.params.routerId
                 var dst_public_MiKey_Friend = ByteArray(32)
                 var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
                 if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
@@ -206,64 +231,57 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+                return@forEach
 
-
-                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
-                var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
-                if(ConstantValue.encryptionType.equals("1"))
-                {
-                    sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
-                }
-                if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                }else if (ConstantValue.isToxConnected) {
-                    var baseData = sendData
-                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                    if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                    }
-                }
-                EventBus.getDefault().post(FriendChange())
-                return
+                /*
+                  EventBus.getDefault().post(FriendChange())
+                  return@forEach*/
             }
         }
 
-        var newFriend = UserEntity();
-        newFriend.nickName = jAddFriendPushRsp.params.nickName
-        //newFriend.friendStatus = 3
-        newFriend.userId = jAddFriendPushRsp.params.friendId
-        newFriend.routeName = jAddFriendPushRsp.params.routeName
-        newFriend.routeId = jAddFriendPushRsp.params.routeId
-        newFriend.addFromMe = false
-        newFriend.timestamp = jAddFriendPushRsp.timestamp
-        newFriend.noteName = ""
-        newFriend.validationInfo = jAddFriendPushRsp.params.msg
-        newFriend.signPublicKey = jAddFriendPushRsp.params.userKey
-
-        var dst_public_MiKey_Friend = ByteArray(32)
-        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
-        if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+        if(!ifHas)
         {
-            newFriend.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+            var newFriend = UserEntity();
+            newFriend.nickName = jAddFriendPushRsp.params.nickName
+            //newFriend.friendStatus = 3
+            newFriend.userId = jAddFriendPushRsp.params.friendId
+            newFriend.routeName = jAddFriendPushRsp.params.routerName
+            newFriend.routeId = jAddFriendPushRsp.params.routerId
+            newFriend.addFromMe = false
+            newFriend.timestamp = jAddFriendPushRsp.timestamp
+            newFriend.noteName = ""
+            newFriend.validationInfo = jAddFriendPushRsp.params.msg
+            newFriend.signPublicKey = jAddFriendPushRsp.params.userKey
+
+            var dst_public_MiKey_Friend = ByteArray(32)
+            var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+            if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+            {
+                newFriend.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+            }
+            userList.add(newFriend)
+
+            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            newFriend.routerUserId = selfUserId
+            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         }
-        userList.add(newFriend)
 
-        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        newFriend.routerUserId = selfUserId
-        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
+        if (localFriendList.size > 0)
+        {
+            var localFriend =  localFriendList.get(0)
+            localFriend.friendLocalStatus = 3
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(localFriend)
+        }else{
+            var newFriendStatus = FriendEntity()
+            newFriendStatus.userId = selfUserId;
+            newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
+            newFriendStatus.friendLocalStatus = 3
+            newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+        }
 
-        var newFriendStatus = FriendEntity()
-        newFriendStatus.userId = selfUserId;
-        newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
-        newFriendStatus.friendLocalStatus = 3
-        newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
-        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
-
-        var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
+        /*var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
 
         var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
         if(ConstantValue.encryptionType.equals("1"))
@@ -275,13 +293,13 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-             if (ConstantValue.isAntox) {
+            if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
-        }
+        }*/
 
         EventBus.getDefault().post(FriendChange())
     }
@@ -379,11 +397,11 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         userEntity.nickName = jAddFriendReplyRsp.params.nickname
         userEntity.routeId = jAddFriendReplyRsp.params.routeId
         userEntity.routeName = jAddFriendReplyRsp.params.routeName
-       /* if (jAddFriendReplyRsp.params.result == 0) {
-            userEntity.friendStatus = 0
-        } else if (jAddFriendReplyRsp.params.result == 1) {
-            userEntity.friendStatus = 2
-        }*/
+        /* if (jAddFriendReplyRsp.params.result == 0) {
+             userEntity.friendStatus = 0
+         } else if (jAddFriendReplyRsp.params.result == 1) {
+             userEntity.friendStatus = 2
+         }*/
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         userEntity.routerUserId = selfUserId
         AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
@@ -423,14 +441,14 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     override fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp) {
-       /* userList.forEach {
-            if (it.userId.equals(jDelFriendPushRsp.params.friendId)) {
-                it.friendStatus = 6
-                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                MessageProvider.getInstance().deletConversationByDeleteFriend(jDelFriendPushRsp.params.friendId)
-                return@forEach
-            }
-        }*/
+        /* userList.forEach {
+             if (it.userId.equals(jDelFriendPushRsp.params.friendId)) {
+                 it.friendStatus = 6
+                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+                 MessageProvider.getInstance().deletConversationByDeleteFriend(jDelFriendPushRsp.params.friendId)
+                 return@forEach
+             }
+         }*/
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {

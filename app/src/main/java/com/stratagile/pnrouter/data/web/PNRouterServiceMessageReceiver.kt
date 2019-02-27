@@ -328,6 +328,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     formatDiskBack?.formatDiskReq(jFormatDiskRsp)
                     getDiskTotalInfoBack?.formatDiskReq(jFormatDiskRsp)
                 }
+                //被踢
+                "PushLogout" -> {
+                    val jPushLogoutRsp = gson.fromJson(text, JPushLogoutRsp::class.java)
+                    mainInfoBack?.pushLogoutRsp(jPushLogoutRsp)
+                }
                 //60.	用户在线状态通知_V4
                 "OnlineStatusPush" -> {
                     val jOnlineStatusPushRsp = gson.fromJson(text, JOnlineStatusPushRsp::class.java)
@@ -530,6 +535,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
         fun OnlineStatusPush(jOnlineStatusPushRsp : JOnlineStatusPushRsp)
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
+        fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp)
     }
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)

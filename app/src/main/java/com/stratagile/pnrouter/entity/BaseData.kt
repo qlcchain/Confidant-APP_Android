@@ -422,4 +422,9 @@ data class ResetRouterNameReq(var RouterId :String,var Name : String,var Action 
  * (2)	响应（APP->Router）
  */
 data class OnlineStatusPushRsp(var RetCode :Int, var Msg : String, var ToId : String,var Action : String = "OnlineStatusPush")
+/**
+ * 46.	用户登出推送
+ * (2)	响应（APP->Router）
+ */
+data class PushLogoutRsp(var RetCode :Int, var ToId : String, var Msg : String,var Action : String = "PushLogout")
 

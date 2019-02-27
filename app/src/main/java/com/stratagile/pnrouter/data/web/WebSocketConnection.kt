@@ -222,6 +222,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             keepAliveSender!!.shutdown()
         }
 
+
     }
     @Synchronized
     @Throws(TimeoutException::class, IOException::class)

@@ -557,5 +557,6 @@
     <string name="overwritten">This operation will overwrite the current account. Do you want to continue?</string>
     <string name="Unlock_Confidant">Unlock Confidant</string>
     <string name="MessageRetrievalService_background_connection_enabled">Background connection enabled</string>
-
+    <string name="Other_devices">Other devices logged into the account</string>
+    <string name="System_Upgrade">System Upgrade, Forced Exit</string>
 </resources>

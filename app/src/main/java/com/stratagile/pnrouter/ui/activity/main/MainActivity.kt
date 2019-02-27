@@ -52,6 +52,7 @@ import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -60,6 +61,7 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import events.ToxFriendStatusEvent
@@ -81,6 +83,94 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+    override fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = PushLogoutRsp(0, userId!!,"")
+        var msgId: String = ""
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData, jPushLogoutRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2, msgData, jPushLogoutRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+        if (jPushLogoutRsp.params.reason == 1) {
+            runOnUiThread {
+                toast(R.string.Other_devices)
+                ConstantValue.isHasWebsocketInit = true
+                if(AppConfig.instance.messageReceiver != null)
+                    AppConfig.instance.messageReceiver!!.close()
+
+                ConstantValue.loginOut = true
+                ConstantValue.logining = false
+                ConstantValue.isHeart = false
+                ConstantValue.currentRouterIp = ""
+                resetUnCompleteFileRecode()
+                if (ConstantValue.isWebsocketConnected) {
+                    FileMangerDownloadUtils.init()
+                    ConstantValue.webSockeFileMangertList.forEach {
+                        it.disconnect(true)
+                        //ConstantValue.webSockeFileMangertList.remove(it)
+                    }
+                    ConstantValue.webSocketFileList.forEach {
+                        it.disconnect(true)
+                        //ConstantValue.webSocketFileList.remove(it)
+                    }
+                }else{
+                    val intentTox = Intent(this, KotlinToxService::class.java)
+                    this.stopService(intentTox)
+                }
+                ConstantValue.isWebsocketConnected = false
+                onLogOutSuccess()
+            }
+        }else{
+            runOnUiThread {
+                toast(R.string.System_Upgrade)
+
+            }
+        }
+        runOnUiThread {
+            ConstantValue.isHasWebsocketInit = true
+            if(AppConfig.instance.messageReceiver != null)
+                AppConfig.instance.messageReceiver!!.close()
+
+            ConstantValue.loginOut = true
+            ConstantValue.logining = false
+            ConstantValue.isHeart = false
+            ConstantValue.currentRouterIp = ""
+            resetUnCompleteFileRecode()
+            if (ConstantValue.isWebsocketConnected) {
+                FileMangerDownloadUtils.init()
+                ConstantValue.webSockeFileMangertList.forEach {
+                    it.disconnect(true)
+                    //ConstantValue.webSockeFileMangertList.remove(it)
+                }
+                ConstantValue.webSocketFileList.forEach {
+                    it.disconnect(true)
+                    //ConstantValue.webSocketFileList.remove(it)
+                }
+            }else{
+                val intentTox = Intent(this, KotlinToxService::class.java)
+                this.stopService(intentTox)
+            }
+            ConstantValue.isWebsocketConnected = false
+            onLogOutSuccess()
+        }
+    }
+    fun onLogOutSuccess() {
+        ConstantValue.loginReq = null
+        ConstantValue.isWebsocketReConnect = false
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+        var intent = Intent(this, LoginActivityActivity::class.java)
+        intent.putExtra("flag", "logout")
+        startActivity(intent)
+        finish()
+    }
     override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = ReadMsgPushReq(0, "", userId!!)

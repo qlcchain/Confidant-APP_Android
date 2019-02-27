@@ -117,6 +117,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var maxLogin = 0
     var threadInit = false
     var RouterMacStr = ""
+    var islogining = false
+    var isloginOutTime = false
     var scanType = 0 // 0 admin   1 其他
     var adminUserSn:String?  = null
 
@@ -184,10 +186,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
             var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
-
+            islogining = true
             ConstantValue.loginReq = login
             if(ConstantValue.isWebsocketConnected)
             {
+
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
             }
             else if(ConstantValue.isToxConnected)
@@ -316,7 +319,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             //ConstantValue.scanRouterId = routerId;
                             isClickLogin = false
                             isStartLogin = true
-                            getServer(routerId,userSn,true)
+                            getServer(routerId,userSn,true,true)
                         }
                     }
                 }else{
@@ -377,6 +380,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var exitTime: Long = 0
     private var loginGoMain:Boolean = false
     override fun loginBack(loginRsp: JLoginRsp) {
+        islogining = false
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
@@ -429,6 +433,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 closeProgressDialog()
             }
         } else {
+            islogining = false
             ConstantValue.loginOut = false
             ConstantValue.logining = true
             LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
@@ -590,6 +595,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         routerNameTips.text = nameChange.name
         ivAvatar.setText(nameChange.name)
         loginKey.setText(nameChange.loginkey)
+        getServer(routerId,userSn,true,true)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
@@ -704,6 +710,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
+                                    isloginOutTime = true
                                     toast("login time out")
                                 }
                             }
@@ -825,6 +832,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
+                                    isloginOutTime = true
                                     toast("login time out")
                                 }
                             }
@@ -902,6 +910,29 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 toast("Please check the network")
                 return@setOnClickListener
             }
+            if(islogining)
+            {
+                if(isloginOutTime)
+                {
+                    isloginOutTime = false
+                    runOnUiThread {
+                        var tips = "login..."
+                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                if(standaloneCoroutine != null)
+                                    standaloneCoroutine.cancel()
+                                EventBus.getDefault().post(StopTox())
+                                false
+                            } else false
+                        })
+                    }
+                }else{
+                    toast("logining")
+                }
+
+                return@setOnClickListener
+            }
+            islogining = true
             startLogin()
         }
         scanIconLogin.setOnClickListener {
@@ -1141,6 +1172,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private fun startLogin()
     {
 
+        isloginOutTime = false
         isStartLogin = true
         if(!ConstantValue.lastNetworkType.equals(""))
         {
@@ -1193,6 +1225,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     if (!loginBack) {
                         runOnUiThread {
                             closeProgressDialog()
+                            isloginOutTime = true
                             toast("login time out")
                         }
                     }
@@ -1340,6 +1373,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     if (!loginBack) {
                         runOnUiThread {
                             closeProgressDialog()
+                            isloginOutTime = true
                             toast("login time out")
                         }
                     }
@@ -1354,7 +1388,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
 
-    private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean)
+    private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean,autoLogin:Boolean)
     {
         runOnUiThread {
             closeProgressDialog()
@@ -1378,7 +1412,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 }
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -1392,7 +1426,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1424,7 +1458,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                         closeProgressDialog()
                                                     }
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1435,7 +1469,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 }else{
                                                     startTox(startToxFlag)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                                     {
                                                         runOnUiThread {
                                                             startLogin()
@@ -1449,7 +1483,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         } catch (e: Exception) {
                                             startTox(startToxFlag)
                                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                            if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                             {
                                                 runOnUiThread {
                                                     startLogin()
@@ -1485,7 +1519,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         override fun onFailure( e :Exception) {
                             startTox(startToxFlag)
                             var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                            if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                             {
                                 runOnUiThread {
                                     startLogin()
@@ -1517,7 +1551,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             closeProgressDialog()
                                         }
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1528,7 +1562,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     }else{
                                         startTox(startToxFlag)
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                         {
                                             runOnUiThread {
                                                 startLogin()
@@ -1542,7 +1576,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             } catch (e: Exception) {
                                 startTox(startToxFlag)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin)
+                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                 {
                                     runOnUiThread {
                                         startLogin()
@@ -2227,7 +2261,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
         {
-            getServer(routerId,userSn,false)
+            getServer(routerId,userSn,false,false)
         }
         if (routerList.size > 0) {
             llCircle.setOnClickListener { view1 ->
@@ -2276,7 +2310,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             isStartLogin = true
                             /* if(AppConfig.instance.messageReceiver != null)
                                  AppConfig.instance.messageReceiver!!.close()*/
-                            getServer(routerId,userSn,false)
+                            getServer(routerId,userSn,false,false)
                             //routerList[position].lastCheck = true
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)
