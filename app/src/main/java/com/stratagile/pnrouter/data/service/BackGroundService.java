@@ -29,6 +29,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static android.app.Notification.PRIORITY_MAX;
+import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
+import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
 
 /**
  * Created by zl on 2019/2/27
@@ -52,7 +54,7 @@ public class BackGroundService extends Service {
         NotificationChannel notificationChannel = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(CHANNEL_ONE_ID,
-                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_HIGH);
+                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_NONE);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.setShowBadge(true);
@@ -69,8 +71,9 @@ public class BackGroundService extends Service {
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(true)
-                    .setPriority(PRIORITY_MAX)
+                    .setPriority(PRIORITY_LOW)
                     .setAutoCancel(false)
+                    .setSound(null)
                     .build();
         }else{
             notification = new Notification.Builder(mContext)
@@ -80,14 +83,15 @@ public class BackGroundService extends Service {
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(true)
-                    .setPriority(PRIORITY_MAX)
+                    .setPriority(PRIORITY_LOW)
                     .setAutoCancel(false)
+                    .setSound(null,null)
                     .build();
         }
         /*使用startForeground,如果id为0，那么notification将不会显示*/
-        startForeground(100, notification);
+        startForeground(313399, notification);
         //2.开启线程（或者需要定时操作的事情）
-        new Thread() {
+      /*  new Thread() {
             @Override
             public void run() {
                 super.run();
@@ -116,14 +120,14 @@ public class BackGroundService extends Service {
                 }
                 //进行自己的操作
             }
-        }.start();
+        }.start();*/
         //3.最关键的神来之笔，也是最投机的动作，没办法要骗过CPU
         //这就是播放音乐类APP不被杀的做法，自己找个无声MP3放进来循环播放
-        if (bgmediaPlayer == null) {
+       /* if (bgmediaPlayer == null) {
             bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
             bgmediaPlayer.setLooping(true);
             bgmediaPlayer.start();
-        }
+        }*/
 
         return START_STICKY;
     }

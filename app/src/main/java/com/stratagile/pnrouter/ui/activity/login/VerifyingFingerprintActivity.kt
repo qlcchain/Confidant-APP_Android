@@ -103,11 +103,11 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         btn_cancel.visibility = View.VISIBLE
                         btn_cancel.setOnClickListener {
                             builderTips?.dismiss()
-                            /*if (cancellationSignal != null) {
+                            if (cancellationSignal != null) {
                                 cancellationSignal?.cancel()
                                 cancellationSignal = null
                             }
-                            CrashReport.closeBugly()
+                            /*CrashReport.closeBugly()
                             CrashReport.closeCrashReport()
                             //MiPushClient.unregisterPush(this)
                             AppConfig.instance.stopAllService()
