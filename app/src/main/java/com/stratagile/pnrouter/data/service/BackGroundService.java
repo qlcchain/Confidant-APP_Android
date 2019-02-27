@@ -60,9 +60,6 @@ public class BackGroundService extends Service {
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             manager.createNotificationChannel(notificationChannel);
         }
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         //1.通知栏占用，不清楚的看官网或者音乐类APP的效果
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notification = new Notification.Builder(mContext).setChannelId(CHANNEL_ONE_ID)
@@ -73,7 +70,6 @@ public class BackGroundService extends Service {
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(true)
                     .setPriority(PRIORITY_MAX)
-                    .setContentIntent(pendingIntent)
                     .setAutoCancel(false)
                     .build();
         }else{
@@ -85,7 +81,6 @@ public class BackGroundService extends Service {
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(true)
                     .setPriority(PRIORITY_MAX)
-                    .setContentIntent(pendingIntent)
                     .setAutoCancel(false)
                     .build();
         }

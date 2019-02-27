@@ -23,6 +23,7 @@ import com.stratagile.pnrouter.ui.activity.login.module.VerifyingFingerprintModu
 import com.stratagile.pnrouter.ui.activity.login.presenter.VerifyingFingerprintPresenter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.tencent.bugly.crashreport.CrashReport
+import kotlinx.android.synthetic.main.activity_fingerprint.*
 import javax.inject.Inject
 
 /**
@@ -69,6 +70,13 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                 }
             }
         }
+        llNext.setOnClickListener {
+            showDialog()
+        }
+        showDialog()
+    }
+    private fun showDialog()
+    {
         if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
@@ -95,11 +103,11 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         btn_cancel.visibility = View.VISIBLE
                         btn_cancel.setOnClickListener {
                             builderTips?.dismiss()
-                            if (cancellationSignal != null) {
+                            /*if (cancellationSignal != null) {
                                 cancellationSignal?.cancel()
                                 cancellationSignal = null
                             }
-                              CrashReport.closeBugly()
+                            CrashReport.closeBugly()
                             CrashReport.closeCrashReport()
                             //MiPushClient.unregisterPush(this)
                             AppConfig.instance.stopAllService()
@@ -115,7 +123,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                             this.startActivity(intent);
 //            android.os.Process.killProcess(android.os.Process.myPid());
                             //System.runFinalizersOnExit(true);、
-                            System.exit(0)
+                            System.exit(0)*/
                         }
                         finger = view.findViewById<View>(R.id.finger) as ImageView
                         tvContent.setText(R.string.choose_finger_dialog_title)
@@ -180,7 +188,8 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                     }
                     dialog.setNegativeButton(android.R.string.cancel
                     ) { dialog, which ->
-                        finish();
+                        dialog.dismiss()
+                       /* finish();
                         //android进程完美退出方法。
                         var intent = Intent(Intent.ACTION_MAIN);
                         intent.addCategory(Intent.CATEGORY_HOME);
@@ -191,7 +200,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         this.startActivity(intent);
                         android.os.Process.killProcess(android.os.Process.myPid());
                         //System.runFinalizersOnExit(true);
-                        System.exit(0);
+                        System.exit(0);*/
                     }
                     dialog.create().show()
                 }

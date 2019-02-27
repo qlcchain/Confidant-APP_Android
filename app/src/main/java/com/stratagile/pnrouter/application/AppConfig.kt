@@ -187,7 +187,8 @@ class AppConfig : MultiDexApplication() {
             val intentTox = Intent(this, KotlinToxService::class.java)
             this.stopService(intentTox)
         }
-
+        val backGroundService = Intent(this, BackGroundService::class.java)
+        this.stopService(backGroundService)
     }
     companion object {
         lateinit var instance: AppConfig
@@ -244,7 +245,7 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0);
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60 * 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60* 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
                 {
                     val intent = Intent(AppConfig.instance, VerifyingFingerprintActivity::class.java)
                     startActivity(intent)
