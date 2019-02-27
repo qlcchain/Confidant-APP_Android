@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -199,6 +202,13 @@ public abstract class EaseChatRow extends LinearLayout {
             if (sendStatusView != null) {
                 if(message.isDelivered())
                 {
+//                    Animation rotateAnimation  = new RotateAnimation(360, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1);
+//                    rotateAnimation.setFillAfter(true);
+//                    rotateAnimation.setDuration(50);
+//                    rotateAnimation.setRepeatCount(-1);
+//                    rotateAnimation.setInterpolator(new LinearInterpolator());
+//                    sendStatusView.startAnimation(rotateAnimation);
+
                     sendStatusView.setImageResource(R.mipmap.ic_in_sending);
                     sendStatusView.setVisibility(View.VISIBLE);
                     if (message.isAcked()) {

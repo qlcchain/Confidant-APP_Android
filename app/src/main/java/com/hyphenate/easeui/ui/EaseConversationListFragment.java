@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.db.FriendEntity;
 import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
+import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 
@@ -54,20 +55,19 @@ import java.util.Map;
 
 /**
  * conversation list fragment
- *
  */
-public class EaseConversationListFragment extends EaseBaseFragment{
+public class EaseConversationListFragment extends EaseBaseFragment {
     private final static int MSG_REFRESH = 2;
     protected EditText query;
     protected ImageButton clearSearch;
     protected boolean hidden;
-    protected List<EMMessage> conversationList = new ArrayList<EMMessage>();
+    protected List<UnReadEMMessage> conversationList = new ArrayList<UnReadEMMessage>();
     protected EaseConversationList conversationListView;
     protected FrameLayout errorItemContainer;
 
     protected boolean isConflict;
 
-    protected EMConversationListener convListener = new EMConversationListener(){
+    protected EMConversationListener convListener = new EMConversationListener() {
 
         @Override
         public void onCoversationUpdate() {
@@ -83,7 +83,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
+        if (savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
             return;
         super.onActivityCreated(savedInstanceState);
     }
@@ -103,29 +103,28 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         conversationList.addAll(loadLocalConversationList());
         conversationListView.init(conversationList);
 
-        if(listItemClickListener != null){
+        if (listItemClickListener != null) {
             conversationListView.setOnItemClickListener(new OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    EMMessage conversation = conversationListView.getItem(position);
-                    EMMessage lastMessage = conversation;
+                    UnReadEMMessage conversation = conversationListView.getItem(position);
+                    UnReadEMMessage lastMessage = conversation;
                     UserEntity friendInfo = null;
                     List<UserEntity> localFriendList = null;
-                    if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()) )
-                    {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
-                        if(localFriendList.size() > 0)
+                    if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                        if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
-                    }else{
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
-                        if(localFriendList.size() > 0)
+                    } else {
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
+                        if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
                     }
 
-                    lastMessage.setUnread(false);
+                    lastMessage.getEmMessage().setUnread(false);
                     UserDataManger.curreantfriendUserData = friendInfo;
-                    if(friendInfo !=null)
+                    if (friendInfo != null)
                         listItemClickListener.onListItemClicked(friendInfo.getUserId());
                 }
             });
@@ -223,7 +222,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     };
     private EaseConversationListItemClickListener listItemClickListener;
 
-    protected Handler handler = new Handler(){
+    protected Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0:
@@ -233,11 +232,11 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                     onConnectionConnected();
                     break;
 
-                case MSG_REFRESH:
-                {
+                case MSG_REFRESH: {
+                    KLog.i("刷新会话列表");
                     conversationList.clear();
                     conversationList.addAll(loadLocalConversationList());
-                    if(conversationListView != null)
+                    if (conversationListView != null)
                         conversationListView.refresh();
                     break;
                 }
@@ -250,14 +249,14 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     /**
      * connected to server
      */
-    protected void onConnectionConnected(){
+    protected void onConnectionConnected() {
         errorItemContainer.setVisibility(View.GONE);
     }
 
     /**
      * disconnected with server
      */
-    protected void onConnectionDisconnected(){
+    protected void onConnectionDisconnected() {
         errorItemContainer.setVisibility(View.VISIBLE);
     }
 
@@ -267,69 +266,64 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      */
     public void refresh() {
 
-        if(!handler.hasMessages(MSG_REFRESH)){
+        if (!handler.hasMessages(MSG_REFRESH)) {
             handler.sendEmptyMessage(MSG_REFRESH);
         }
     }
-    public int removeFriend()
-    {
+
+    public int removeFriend() {
         conversationList.clear();
-        List<EMMessage> list = loadLocalConversationList();
+        List<UnReadEMMessage> list = loadLocalConversationList();
         conversationList.addAll(list);
         conversationListView.init(conversationList);
         refresh();
         return list.size();
     }
+
     /**
      * load conversation list
      *
-     * @return
-    +    */
-    protected List<EMMessage> loadLocalConversationList(){
+     * @return +
+     */
+    protected List<UnReadEMMessage> loadLocalConversationList() {
         // get all conversations
-        List<EMMessage> list = new ArrayList<EMMessage>();
-        try
-        {
-            Map<String, EMMessage> conversations = new HashMap<>();
-            List<Pair<Long, EMMessage>> sortList = new ArrayList<Pair<Long, EMMessage>>();
+        List<UnReadEMMessage> list = new ArrayList<UnReadEMMessage>();
+        try {
+            Map<String, UnReadEMMessage> conversations = new HashMap<>();
+            List<Pair<Long, UnReadEMMessage>> sortList = new ArrayList<Pair<Long, UnReadEMMessage>>();
             /**
              * lastMsgTime will change if there is new message during sorting
              * so use synchronized to make sure timestamp of last message won't change.
              */
-            Map<String, Object> keyMap  = SpUtil.INSTANCE.getAll(AppConfig.instance);
-            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            Map<String, Object> keyMap = SpUtil.INSTANCE.getAll(AppConfig.instance);
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             for (String key : keyMap.keySet()) {
 
-                if(key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId +"_"))
-                {
-                    String toChatUserId = key.substring(key.lastIndexOf("_")+1,key.length());
-                    if(toChatUserId != null && !toChatUserId.equals("")&& !toChatUserId.equals("null"))
-                    {
+                if (key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId + "_")) {
+                    String toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length());
+                    if (toChatUserId != null && !toChatUserId.equals("") && !toChatUserId.equals("null")) {
                         List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
-                        if(localFriendList.size() == 0)//如果找不到用户
+                        if (localFriendList.size() == 0)//如果找不到用户
                         {
-                            SpUtil.INSTANCE.putString(getActivity(),key,"");
+                            SpUtil.INSTANCE.putString(getActivity(), key, "");
                             continue;
                         }
                         FriendEntity freindStatusData = new FriendEntity();
                         freindStatusData.setFriendLocalStatus(7);
-                        List<FriendEntity>  localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId),FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+                        List<FriendEntity> localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
                         if (localFriendStatusList.size() > 0)
                             freindStatusData = localFriendStatusList.get(0);
-                        if(freindStatusData.getFriendLocalStatus() != 0)
-                        {
-                            SpUtil.INSTANCE.putString(getActivity(),key,"");
+                        if (freindStatusData.getFriendLocalStatus() != 0) {
+                            SpUtil.INSTANCE.putString(getActivity(), key, "");
                             continue;
                         }
-                        String cachStr =  SpUtil.INSTANCE.getString(AppConfig.instance,key,"");
+                        String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, key, "");
 
-                        if(!"".equals(cachStr))
-                        {
+                        if (!"".equals(cachStr)) {
                             Gson gson = GsonUtil.getIntGson();
-                            Message Message = gson.fromJson(cachStr,Message.class);
+                            Message Message = gson.fromJson(cachStr, Message.class);
                             EMMessage message = null;
-                            if(Message != null)
-                            {
+                            if (Message != null) {
                                 switch (Message.getMsgType()) {
                                     case 0:
                                         if (Message.getMsg().contains("/[draft]/")) {
@@ -339,33 +333,31 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                         }
                                         break;
                                     case 1:
-                                        String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
+                                        String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
                                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                                         break;
                                     case 2:
-                                        String ease_default_amr =  PathUtils.getInstance().getVoicePath()+"/" + "ease_default_amr.amr";
+                                        String ease_default_amr = PathUtils.getInstance().getVoicePath() + "/" + "ease_default_amr.amr";
                                         message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
                                         break;
                                     case 3:
                                         break;
                                     case 4:
-                                        String thumbPath =  PathUtils.getInstance().getImagePath()+"/" + "ease_default_image.png";
-                                        String videoPath =  PathUtils.getInstance().getVideoPath()+"/" + "ease_default_vedio.mp4";
-                                        message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
+                                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                                        String videoPath = PathUtils.getInstance().getVideoPath() + "/" + "ease_default_vedio.mp4";
+                                        message = EMMessage.createVideoSendMessage(videoPath, thumbPath, 1000, toChatUserId);
                                         break;
                                     case 5:
-                                        String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "file_downloading.*";
+                                        String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + "file_downloading.*";
                                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                         break;
                                 }
-                                if(message == null)
-                                {
+                                if (message == null) {
                                     continue;
                                 }
                                 //message.setTo(Message.getTo());
                                 message.setUnread(false);
-                                switch (Message.getStatus())
-                                {
+                                switch (Message.getStatus()) {
                                     case 0:
                                         message.setDelivered(true);
                                         message.setAcked(false);
@@ -384,20 +376,19 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                                     default:
                                         break;
                                 }
-                                if(Message.getSender() == 0)
-                                {
+                                if (Message.getSender() == 0) {
                                     message.setFrom(userId);
                                     message.setTo(toChatUserId);
 
-                                    message.setDirection(EMMessage.Direct.SEND );
-                                }else {
+                                    message.setDirection(EMMessage.Direct.SEND);
+                                } else {
                                     message.setFrom(toChatUserId);
                                     message.setTo(userId);
-                                    message.setDirection(EMMessage.Direct.RECEIVE );
+                                    message.setDirection(EMMessage.Direct.RECEIVE);
                                 }
                                 message.setMsgTime(Message.getTimeStatmp());
-                                message.setMsgId( Message.getMsgId()+"");
-                                conversations.put(toChatUserId,message);
+                                message.setMsgId(Message.getMsgId() + "");
+                                conversations.put(toChatUserId, new UnReadEMMessage(message));
                             }
 
                         }
@@ -405,11 +396,11 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
                 }
             }
-        synchronized (conversations) {
-            for (EMMessage conversation : conversations.values()) {
-                sortList.add(new Pair<Long, EMMessage>(conversation.getMsgTime(), conversation));
+            synchronized (conversations) {
+                for (UnReadEMMessage conversation : conversations.values()) {
+                    sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime(), conversation));
+                }
             }
-        }
             try {
                 // Internal is TimSort algorithm, has bug
                 sortConversationByLastChatTime(sortList);
@@ -417,12 +408,11 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                 e.printStackTrace();
             }
 
-            for (Pair<Long, EMMessage> sortItem : sortList) {
+            for (Pair<Long, UnReadEMMessage> sortItem : sortList) {
                 list.add(sortItem.second);
             }
 
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
         return list;
@@ -433,10 +423,10 @@ public class EaseConversationListFragment extends EaseBaseFragment{
      *
      * @param conversationList
      */
-    private void sortConversationByLastChatTime(List<Pair<Long, EMMessage>> conversationList) {
-        Collections.sort(conversationList, new Comparator<Pair<Long, EMMessage>>() {
+    private void sortConversationByLastChatTime(List<Pair<Long, UnReadEMMessage>> conversationList) {
+        Collections.sort(conversationList, new Comparator<Pair<Long, UnReadEMMessage>>() {
             @Override
-            public int compare(final Pair<Long, EMMessage> con1, final Pair<Long, EMMessage> con2) {
+            public int compare(final Pair<Long, UnReadEMMessage> con1, final Pair<Long, UnReadEMMessage> con2) {
 
                 if (con1.first.equals(con2.first)) {
                     return 0;
@@ -484,7 +474,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(isConflict){
+        if (isConflict) {
             outState.putBoolean("isConflict", true);
         }
     }
@@ -492,6 +482,7 @@ public class EaseConversationListFragment extends EaseBaseFragment{
     public interface EaseConversationListItemClickListener {
         /**
          * click event for conversation list
+         *
          * @param usersid -- clicked item
          */
         void onListItemClicked(String usersid);
@@ -499,9 +490,10 @@ public class EaseConversationListFragment extends EaseBaseFragment{
 
     /**
      * set conversation list item click listener
+     *
      * @param listItemClickListener
      */
-    public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener){
+    public void setConversationListItemClickListener(EaseConversationListItemClickListener listItemClickListener) {
         this.listItemClickListener = listItemClickListener;
     }
 
