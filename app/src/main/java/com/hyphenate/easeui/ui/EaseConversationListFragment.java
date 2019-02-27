@@ -332,7 +332,11 @@ public class EaseConversationListFragment extends EaseBaseFragment{
                             {
                                 switch (Message.getMsgType()) {
                                     case 0:
-                                        message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+                                        if (Message.getMsg().contains("/[draft]/")) {
+                                            message = EMMessage.createTxtSendMessage(Message.getMsg().replace("/[draft]/", "[draft]"), toChatUserId);
+                                        } else {
+                                            message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+                                        }
                                         break;
                                     case 1:
                                         String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";

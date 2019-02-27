@@ -1,57 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:id="@+id/reConnect"
-        android:background="@color/color_3091F2">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/statusBar"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/main_color"
+            android:gravity="center"
+            android:textColor="@color/color_333"
+            android:textSize="9sp" />
+        <TextView
+            android:id="@+id/reConnect"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="@color/color_3091F2"
             android:text="@string/Connecting"
             android:textColor="@color/white"
             android:textSize="@dimen/x22" />
     </RelativeLayout>
-    <TextView
-        android:id="@+id/statusBar"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/main_color"
-        android:gravity="center"
-        android:textColor="@color/color_333"
-        android:textSize="9sp" />
+
 
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/statusBar"
         android:background="@color/mainColor"
-        android:minHeight="?attr/actionBarSize"
-        android:layout_height="wrap_content">
+        android:minHeight="?attr/actionBarSize">
+
         <LinearLayout
             android:id="@+id/llSort"
             android:layout_width="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/x10"
-            android:layout_height="wrap_content">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="@dimen/x40"
-                android:src="@mipmap/up_dowload"
-                android:scaleType="centerCrop"
+                android:layout_height="@dimen/x40"
                 android:layout_marginLeft="@dimen/x5"
-                android:layout_height="@dimen/x40" />
+                android:scaleType="centerCrop"
+                android:src="@mipmap/up_dowload" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
@@ -63,57 +66,59 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/x20"
-            android:layout_height="wrap_content">
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/x20">
+
             <ImageView
                 android:id="@+id/mainIv1"
-                android:visibility="gone"
                 android:layout_width="@dimen/x40"
+                android:layout_height="@dimen/x40"
                 android:src="@mipmap/add_file"
-                android:layout_height="@dimen/x40" />
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/ivQrCode"
-                android:visibility="visible"
                 android:layout_width="@dimen/x40"
-                android:src="@mipmap/icon_scan"
                 android:layout_height="@dimen/x40"
-                />
+                android:src="@mipmap/icon_scan"
+                android:visibility="visible" />
         </RelativeLayout>
 
 
     </RelativeLayout>
 
-   <!-- <TextView
-        android:id="@+id/reConnect"
-        android:visibility="gone"
-        android:gravity="center_vertical"
-        android:text="Connection..."
-        android:paddingLeft="@dimen/x30"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x90" />-->
+    <!-- <TextView
+         android:id="@+id/reConnect"
+         android:visibility="gone"
+         android:gravity="center_vertical"
+         android:text="Connection..."
+         android:paddingLeft="@dimen/x30"
+         android:layout_width="match_parent"
+         android:layout_height="@dimen/x90" />-->
 
     <android.support.v4.view.ViewPager
-        android:layout_below="@+id/rl1"
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
+        android:layout_height="0px"
         android:layout_above="@+id/rl2"
-        android:layout_weight="1"
-        android:layout_height="0px">
+        android:layout_below="@+id/rl1"
+        android:layout_weight="1">
 
     </android.support.v4.view.ViewPager>
 
     <RelativeLayout
         android:id="@+id/rl2"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x100">
+        android:layout_height="@dimen/x100"
+        android:layout_alignParentBottom="true">
+
         <com.lzy.widget.AlphaIndicator
-            android:background="@color/white"
             android:id="@+id/alphaIndicator"
             android:layout_width="match_parent"
             android:layout_height="55dp"
+            android:background="@color/white"
             android:orientation="horizontal">
 
             <com.lzy.widget.AlphaView
@@ -125,7 +130,7 @@
                 app:av_tabIconNormal="@mipmap/bbtn_chat_n"
                 app:av_tabIconSelected="@mipmap/btn_chat_h"
                 app:av_tabText="@string/news"
-                app:av_tabTextSize="12sp"
+                app:av_tabTextSize="10sp"
                 app:av_textColorNormal="#999999"
                 app:av_textColorSelected="@color/main_color" />
 
@@ -138,7 +143,7 @@
                 app:av_tabIconNormal="@mipmap/btn_file_n"
                 app:av_tabIconSelected="@mipmap/btn_file_h"
                 app:av_tabText="@string/file_"
-                app:av_tabTextSize="12sp"
+                app:av_tabTextSize="10sp"
                 app:av_textColorNormal="#999999"
                 app:av_textColorSelected="@color/main_color" />
 
@@ -151,7 +156,7 @@
                 app:av_tabIconNormal="@mipmap/btn_contact_n"
                 app:av_tabIconSelected="@mipmap/btn_contact_h"
                 app:av_tabText="@string/contacts"
-                app:av_tabTextSize="12sp"
+                app:av_tabTextSize="10sp"
                 app:av_textColorNormal="#999999"
                 app:av_textColorSelected="@color/main_color" />
 
@@ -159,20 +164,21 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="6dp"
                 android:background="@color/white"
+                android:padding="6dp"
                 app:av_tabIconNormal="@mipmap/btn_me_n"
                 app:av_tabIconSelected="@mipmap/btn_me_h"
                 app:av_tabText="@string/my"
-                app:av_tabTextSize="12sp"
+                app:av_tabTextSize="10sp"
                 app:av_textColorNormal="#999999"
                 app:av_textColorSelected="@color/main_color" />
 
         </com.lzy.widget.AlphaIndicator>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -184,8 +190,8 @@
                     android:layout_width="@dimen/x20"
                     android:layout_height="@dimen/x20"
                     android:layout_gravity="right"
-                    android:layout_marginRight="@dimen/x60"
                     android:layout_marginTop="@dimen/x10"
+                    android:layout_marginRight="@dimen/x60"
                     android:background="@drawable/new_message_flag_bg"
                     android:gravity="center"
                     android:text=""
@@ -193,10 +199,12 @@
                     android:textSize="7sp"
                     android:visibility="invisible" />
             </FrameLayout>
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
+
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -204,11 +212,11 @@
 
                 <TextView
                     android:id="@+id/new_contact"
-                    android:layout_marginRight="@dimen/x57"
-                    android:layout_marginTop="@dimen/x2"
                     android:layout_width="@dimen/x22"
                     android:layout_height="@dimen/x22"
                     android:layout_gravity="right"
+                    android:layout_marginTop="@dimen/x2"
+                    android:layout_marginRight="@dimen/x57"
                     android:background="@drawable/new_message_flag_bg"
                     android:gravity="center"
                     android:text=""

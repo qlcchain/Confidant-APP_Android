@@ -1,17 +1,23 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.NotificationCompat
 import android.support.v4.view.ViewPager
 import android.view.KeyEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -78,16 +84,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = ReadMsgPushReq(0, "", userId!!)
-        var msgId:String = ""
+        var msgId: String = ""
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jReadMsgPushRsp.msgid))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData,jReadMsgPushRsp.msgid)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData, jReadMsgPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2, msgData, jReadMsgPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -111,16 +117,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = UserInfoPushRsp(0, userId!!,"")
+        var msgData = UserInfoPushRsp(0, userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData,jUserInfoPushRsp.msgid))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData,jUserInfoPushRsp.msgid)
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData, jUserInfoPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(2, msgData, jUserInfoPushRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -148,16 +154,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var msgDataPushFileRsp = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
+            var msgDataPushFileRsp = PushFileRespone(0, jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, jPushFileMsgRsp.params.msgId)
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp, jPushFileMsgRsp.msgid))
             } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid)
+                var baseData = BaseData(msgDataPushFileRsp, jPushFileMsgRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
@@ -199,16 +205,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(delMsgPushRsp.params.friendId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
-            var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
+            var msgData = DelMsgRsp(0, "", delMsgPushRsp.params.friendId)
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData,delMsgPushRsp.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData, delMsgPushRsp.msgid))
             } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgData,delMsgPushRsp.msgid)
+                var baseData = BaseData(msgData, delMsgPushRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
@@ -241,8 +247,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.timeStatmp = delMsgPushRsp?.timestamp
                                 Message.msgId = delMsgPushRsp?.params.msgId
                                 var baseDataJson = gson.toJson(Message)
-                                var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+delMsgPushRsp.params.userId,baseDataJson)
+                                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId, baseDataJson)
                                 if (ConstantValue.isInit) {
                                     runOnUiThread {
                                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
@@ -258,42 +264,42 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
 
-           /* var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            var conversation2: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-            if (conversation2 != null) {
-                val lastMessage2 = conversation2.lastMessage
-                var all2 = conversation2.allMessages
-                var aa = "";
-            }
-            if (conversation != null) {
-                val lastMessage = conversation.lastMessage
-                if(lastMessage != null && lastMessage.msgId.equals(delMsgPushRsp.params.msgId.toString()))
-                {
-                    var gson = Gson()
-                    var Message = Message()
-                    Message.setMsg(resources.getString(R.string.withdrawn))
-                    Message.setMsgId(delMsgPushRsp.getParams().getMsgId())
-                    Message.setFrom(delMsgPushRsp.getParams().userId)
-                    Message.setTo(delMsgPushRsp.getParams().friendId)
-                    Message.msgType = 0
-                    Message.sender = 1
-                    Message.status = 1
-                    Message.timeStatmp = delMsgPushRsp?.timestamp
-                    Message.msgId = delMsgPushRsp?.params.msgId
-                    var baseDataJson = gson.toJson(Message)
-                    var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+delMsgPushRsp.params.userId,baseDataJson)
-                    if (ConstantValue.isInit) {
-                        runOnUiThread {
-                            var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
-                            controlleMessageUnReadCount(UnReadMessageCount)
-                        }
-                        conversationListFragment?.refresh()
-                        ConstantValue.isRefeshed = true
-                    }
-                }
+            /* var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+             var conversation2: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+             if (conversation2 != null) {
+                 val lastMessage2 = conversation2.lastMessage
+                 var all2 = conversation2.allMessages
+                 var aa = "";
+             }
+             if (conversation != null) {
+                 val lastMessage = conversation.lastMessage
+                 if(lastMessage != null && lastMessage.msgId.equals(delMsgPushRsp.params.msgId.toString()))
+                 {
+                     var gson = Gson()
+                     var Message = Message()
+                     Message.setMsg(resources.getString(R.string.withdrawn))
+                     Message.setMsgId(delMsgPushRsp.getParams().getMsgId())
+                     Message.setFrom(delMsgPushRsp.getParams().userId)
+                     Message.setTo(delMsgPushRsp.getParams().friendId)
+                     Message.msgType = 0
+                     Message.sender = 1
+                     Message.status = 1
+                     Message.timeStatmp = delMsgPushRsp?.timestamp
+                     Message.msgId = delMsgPushRsp?.params.msgId
+                     var baseDataJson = gson.toJson(Message)
+                     var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                     SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+delMsgPushRsp.params.userId,baseDataJson)
+                     if (ConstantValue.isInit) {
+                         runOnUiThread {
+                             var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
+                             controlleMessageUnReadCount(UnReadMessageCount)
+                         }
+                         conversationListFragment?.refresh()
+                         ConstantValue.isRefeshed = true
+                     }
+                 }
 
-            }*/
+             }*/
 
         }
 
@@ -347,28 +353,53 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
     }
 
+
+    /**
+     * 播放系统默认提示音
+     *
+     * @return MediaPlayer对象
+     *
+     * @throws Exception
+     */
+    fun defaultMediaPlayer() {
+        var notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        var r = RingtoneManager.getRingtone(this, notification)
+        r.play()
+    }
+
+    fun defaultNotification() {
+        KLog.i("播放通知声音")
+        var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        var mBuilder = NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.mipmap.ic_launcher)
+//                .setVisibility(View.GONE)
+//                .setSound(soundUri)
+        notificationManager.notify(0, mBuilder.build())
+    }
+
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
+            defaultMediaPlayer()
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!,0, "")
+            var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
 
-            var sendData = BaseData(msgData,pushMsgRsp?.msgid)
-            if(ConstantValue.encryptionType.equals("1"))
-            {
-                sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+            var sendData = BaseData(msgData, pushMsgRsp?.msgid)
+            if (ConstantValue.encryptionType.equals("1")) {
+                sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            }else if (ConstantValue.isToxConnected) {
+            } else if (ConstantValue.isToxConnected) {
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
 
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
@@ -376,10 +407,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
             var msgSouce = "";
 
-            if(ConstantValue.encryptionType.equals("1"))
-            {
+            if (ConstantValue.encryptionType.equals("1")) {
                 msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
-            }else{
+            } else {
                 msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
             }
             var message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
@@ -395,21 +425,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             message.isAcked = true
             message.setStatus(EMMessage.Status.SUCCESS)
             //if (conversation != null){
-                var gson = Gson()
-                var Message = Message()
-                Message.setMsg(msgSouce)
-                Message.setMsgId(pushMsgRsp.getParams().getMsgId())
-                Message.setFrom(pushMsgRsp.getParams().getFromId())
-                Message.setTo(pushMsgRsp.getParams().getToId())
-                Message.msgType = 0
-                Message.sender = 1
-                Message.status = 1
-                Message.timeStatmp = pushMsgRsp?.timestamp
-                Message.msgId = pushMsgRsp?.params.msgId
-                var baseDataJson = gson.toJson(Message)
-                SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
-                KLog.i("insertMessage:" + "MainActivity"+"_pushMsgRsp")
-                //conversation.insertMessage(message)
+            var gson = Gson()
+            var Message = Message()
+            Message.setMsg(msgSouce)
+            Message.setMsgId(pushMsgRsp.getParams().getMsgId())
+            Message.setFrom(pushMsgRsp.getParams().getFromId())
+            Message.setTo(pushMsgRsp.getParams().getToId())
+            Message.msgType = 0
+            Message.sender = 1
+            Message.status = 1
+            Message.timeStatmp = pushMsgRsp?.timestamp
+            Message.msgId = pushMsgRsp?.params.msgId
+            var baseDataJson = gson.toJson(Message)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+            KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
+            //conversation.insertMessage(message)
             //}
             if (ConstantValue.isInit) {
                 runOnUiThread {
@@ -449,21 +479,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
 
-        var delFriendPushReq = DelFriendPushReq(0,userId!!, "")
+        var delFriendPushReq = DelFriendPushReq(0, userId!!, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(delFriendPushReq))
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = BaseData(delFriendPushReq)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
 
-        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId,jDelFriendPushRsp.params.userId))
+        EventBus.getDefault().post(FriendChange(jDelFriendPushRsp.params.friendId, jDelFriendPushRsp.params.userId))
     }
 
     /**
@@ -502,28 +532,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 i.routeName = jAddFriendReplyRsp.params.routeName
 
                 var dst_public_MiKey_Friend = ByteArray(32)
-                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
-                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
-                {
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
+                if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
                     i.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
                 }
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var addFriendReplyReq = AddFriendReplyReq(0,userId!!, "")
-                var sendData = BaseData(addFriendReplyReq,jAddFriendReplyRsp.msgid)
-                if(ConstantValue.encryptionType.equals("1"))
-                {
-                    sendData = BaseData(4,addFriendReplyReq,jAddFriendReplyRsp.msgid)
+                var addFriendReplyReq = AddFriendReplyReq(0, userId!!, "")
+                var sendData = BaseData(addFriendReplyReq, jAddFriendReplyRsp.msgid)
+                if (ConstantValue.encryptionType.equals("1")) {
+                    sendData = BaseData(4, addFriendReplyReq, jAddFriendReplyRsp.msgid)
                 }
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                }else if (ConstantValue.isToxConnected) {
+                } else if (ConstantValue.isToxConnected) {
                     var baseData = sendData
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
+                    } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
@@ -582,9 +610,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriend.signPublicKey = jAddFriendPushRsp.params.userKey
 
         var dst_public_MiKey_Friend = ByteArray(32)
-        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
-        if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
-        {
+        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+        if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
             newFriend.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
         }
         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -598,25 +625,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
 
-        var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
+        var addFriendPushReq = AddFriendPushReq(0, userId!!, "")
         runOnUiThread {
             viewModel.freindChange.value = Calendar.getInstance().timeInMillis
         }
-        var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
+        var sendData = BaseData(addFriendPushReq, jAddFriendPushRsp.msgid)
+        if (ConstantValue.encryptionType.equals("1")) {
+            sendData = BaseData(4, addFriendPushReq, jAddFriendPushRsp.msgid)
         }
 
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
@@ -632,14 +658,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun showToast() {
         showProgressDialog()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
-        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+        LogUtil.addLog("Tox发送消息：" + toxSendInfoEvent.info)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onNikNameChange(editnickName : EditNickName) {
+    fun onNikNameChange(editnickName: EditNickName) {
         contactFragment?.initData()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendChange(friendChange: FriendChange) {
         if (friendChange.userId != null && !friendChange.userId.equals("")) {
@@ -647,8 +676,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    var count =  conversationListFragment?.removeFriend()
-                    var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(count!!)
+                    var count = conversationListFragment?.removeFriend()
+                    var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                     controlleMessageUnReadCount(UnReadMessageCount)
                     ConstantValue.isRefeshed = true
                 }
@@ -659,8 +688,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    var count=    conversationListFragment?.removeFriend()
-                    var UnReadMessageCount:UnReadMessageCount = UnReadMessageCount(count!!)
+                    var count = conversationListFragment?.removeFriend()
+                    var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
                     controlleMessageUnReadCount(UnReadMessageCount)
                     ConstantValue.isRefeshed = true
                 }
@@ -682,40 +711,41 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        KLog.i("websocket状态MainActivity:"+connectStatus.status)
-        if(connectStatus.status != 0)
-        {
+        KLog.i("websocket状态MainActivity:" + connectStatus.status)
+        if (connectStatus.status != 0) {
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
-        KLog.i("tox状态MainActivity:"+toxStatusEvent.status)
-        if(toxStatusEvent.status != 0)
-        {
+        KLog.i("tox状态MainActivity:" + toxStatusEvent.status)
+        if (toxStatusEvent.status != 0) {
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
-        KLog.i("tox好友状态MainActivity:"+toxFriendStatusEvent.status)
-        if(toxFriendStatusEvent.status == 0)
-        {
+        KLog.i("tox好友状态MainActivity:" + toxFriendStatusEvent.status)
+        if (toxFriendStatusEvent.status == 0) {
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
         }
 
     }
+
     override fun initData() {
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
         try {
             AppConfig.instance.getPNRouterServiceMessageReceiver().mainInfoBack = this
-        }catch (e : Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         val backGroundService = Intent(this, BackGroundService::class.java)
@@ -726,28 +756,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         Thread(Runnable() {
             run() {
 
-                var map:HashMap<String, String>  =  HashMap()
+                var map: HashMap<String, String> = HashMap()
                 var os = VersionUtil.getDeviceBrand()
-                map.put("os",os.toString())
-                map.put("appversion","1.0.1")
-                map.put("regid",ConstantValue.mRegId)
-                map.put("topicid","")
+                map.put("os", os.toString())
+                map.put("appversion", "1.0.1")
+                map.put("regid", ConstantValue.mRegId)
+                map.put("topicid", "")
                 var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-                map.put("routerid",ConstantValue.currentRouterId)
-                map.put("userid",selfUserId!!)
+                map.put("routerid", ConstantValue.currentRouterId)
+                map.put("userid", selfUserId!!)
                 var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
-                map.put("usersn",lastLoginUserSn)
-                KLog.i("小米推送注册RegId= "+ConstantValue.mRegId)
-                LogUtil.addLog("小米推送注册RegId= "+ConstantValue.mRegId,"MainActivity")
-                OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map,  object : OkHttpUtils.OkCallback {
-                    override fun onFailure( e :Exception) {
+                map.put("usersn", lastLoginUserSn)
+                KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
+                LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
+                OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
+                    override fun onFailure(e: Exception) {
                         KLog.i(e.printStackTrace())
-                        LogUtil.addLog("小米推送注册失败:","MainActivity")
+                        LogUtil.addLog("小米推送注册失败:", "MainActivity")
                         KLog.i("小米推送注册失败:MainActivity")
                     }
 
-                    override fun  onResponse(json:String ) {
-                        LogUtil.addLog("小米推送注册成功:","MainActivity")
+                    override fun onResponse(json: String) {
+                        LogUtil.addLog("小米推送注册成功:", "MainActivity")
                         KLog.i("小米推送注册成功:MainActivity" + json)
                         //Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
                     }
@@ -768,7 +798,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 return@Observer
             }
             if (!"".equals(toAddUserId)) {
-                var toAddUserIdTemp = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
+                var toAddUserIdTemp = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
                 var intent = Intent(this, SendAddFriendActivity::class.java)
                 var useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                 for (i in useEntityList) {
@@ -779,11 +809,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         if (localFriendStatusList.size > 0)
                             freindStatusData = localFriendStatusList[0]
 
-                        if(freindStatusData.friendLocalStatus == 0)
-                        {
+                        if (freindStatusData.friendLocalStatus == 0) {
                             intent.putExtra("user", i)
                             startActivity(intent)
-                        }else{
+                        } else {
                             intent = Intent(this, SendAddFriendActivity::class.java)
                             intent.putExtra("user", i)
                             startActivity(intent)
@@ -795,9 +824,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 intent = Intent(this, SendAddFriendActivity::class.java)
                 var userEntity = UserEntity()
                 //userEntity.friendStatus = 7
-                userEntity.userId = toAddUserId!!.substring(0,toAddUserId!!.indexOf(","))
-                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") +1,toAddUserId.lastIndexOf(","))
-                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") +1,toAddUserId.length)
+                userEntity.userId = toAddUserId!!.substring(0, toAddUserId!!.indexOf(","))
+                userEntity.nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                userEntity.signPublicKey = toAddUserId!!.substring(toAddUserId!!.lastIndexOf(",") + 1, toAddUserId.length)
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                 userEntity.routerUserId = selfUserId
@@ -822,11 +851,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         llSort.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
-        mainIv1.setOnClickListener{
+        mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
-                override fun onSelect(position: Int, obj : Any) {
+                override fun onSelect(position: Int, obj: Any) {
                     KLog.i("" + position)
-                    when(position) {
+                    when (position) {
                         0 -> {
 //                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 1), 0)
                             PictureSelector.create(this@MainActivity)
@@ -902,19 +931,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
             var pullFriend = PullFriendReq_V4(selfUserId!!)
             var sendData = BaseData(pullFriend)
-            if(ConstantValue.encryptionType.equals("1"))
-            {
-                sendData = BaseData(4,pullFriend)
+            if (ConstantValue.encryptionType.equals("1")) {
+                sendData = BaseData(4, pullFriend)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            }else if (ConstantValue.isToxConnected) {
+            } else if (ConstantValue.isToxConnected) {
                 var baseData = sendData
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
+                } else {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
@@ -932,30 +960,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     Thread.sleep(1000);
                     for (pushMsgRsp in AppConfig.instance.tempPushMsgList) {
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-                        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
-                        if(ConstantValue.encryptionType.equals("1"))
-                        {
-                            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
+                        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
+                        var sendData = BaseData(msgData, pushMsgRsp?.msgid)
+                        if (ConstantValue.encryptionType.equals("1")) {
+                            sendData = BaseData(3, msgData, pushMsgRsp?.msgid)
                         }
                         if (ConstantValue.isWebsocketConnected) {
                             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-                        }else if (ConstantValue.isToxConnected) {
+                        } else if (ConstantValue.isToxConnected) {
                             var baseData = sendData
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
                         }
                         var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(pushMsgRsp.params.fromId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
                         var msgSouce = ""
-                        if(ConstantValue.encryptionType.equals("1"))
-                        {
+                        if (ConstantValue.encryptionType.equals("1")) {
                             msgSouce = LibsodiumUtil.DecryptFriendMsg(pushMsgRsp.getParams().getMsg(), pushMsgRsp.getParams().getNonce(), pushMsgRsp.getParams().getFrom(), pushMsgRsp.getParams().getSign())
-                        }else{
+                        } else {
                             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
                         }
                         val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
@@ -966,8 +992,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         message.isUnread = true
                         message.isAcked = true
                         message.setStatus(EMMessage.Status.SUCCESS)
-                        if(conversation !=null)
-                        {
+                        if (conversation != null) {
                             var gson = Gson()
                             var Message = Message()
                             Message.setMsg(pushMsgRsp.getParams().getMsg())
@@ -975,9 +1000,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.setFrom(pushMsgRsp.getParams().getFromId())
                             Message.setTo(pushMsgRsp.getParams().getToId())
                             var baseDataJson = gson.toJson(Message)
-                            var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                            SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+pushMsgRsp.params.fromId,baseDataJson)
-                            KLog.i("insertMessage:" + "MainActivity"+"_tempPushMsgList")
+                            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+                            KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
                             //conversation.insertMessage(message)
                         }
 
@@ -1048,13 +1073,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
-    fun resetUnCompleteFileRecode()
-    {
+    fun resetUnCompleteFileRecode() {
         var localFilesList = LocalFileUtils.localFilesList
-        for (myFie in localFilesList)
-        {
-            if(myFie.upLoadFile.isComplete == false)
-            {
+        for (myFie in localFilesList) {
+            if (myFie.upLoadFile.isComplete == false) {
                 myFie.upLoadFile.SendGgain = true
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
@@ -1065,6 +1087,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
+
     override fun onResume() {
         exitTime = System.currentTimeMillis() - 2001
         super.onResume()
@@ -1098,26 +1121,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         val gson = GsonUtil.getIntGson()
                         val Message = gson.fromJson(cachStr, Message::class.java)
                         if (Message != null) {
-                            hasLinShi += toChatUserId +"#"
+                            hasLinShi += toChatUserId + "#"
                         }
                     }
                 }
             }
         }
-       /* var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-        for (j in localFriendStatusList) {
-            if (j.userId.equals(userId)) {
-                var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(j.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                if (conversation != null) {
-                    val msgs: List<EMMessage> = conversation.allMessages
-                    for (msg in msgs) {
-                        if (msg.isUnread && !userId.equals(msg.from) && hasLinShi.contains(msg.from)) {
-                            hasUnReadMsg = true
-                        }
-                    }
-                }
-            }
-        }*/
+        /* var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
+         for (j in localFriendStatusList) {
+             if (j.userId.equals(userId)) {
+                 var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(j.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
+                 if (conversation != null) {
+                     val msgs: List<EMMessage> = conversation.allMessages
+                     for (msg in msgs) {
+                         if (msg.isUnread && !userId.equals(msg.from) && hasLinShi.contains(msg.from)) {
+                             hasUnReadMsg = true
+                         }
+                     }
+                 }
+             }
+         }*/
         for (key in keyMap.keys) {
 
             if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
@@ -1143,8 +1166,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     if ("" != cachStr) {
                         val gson = GsonUtil.getIntGson()
                         val Message = gson.fromJson(cachStr, Message::class.java)
-                        if(Message.sender == 1 && Message.status != 2)
-                        {
+                        if (Message.sender == 1 && Message.status != 2) {
                             hasUnReadMsg = true
                         }
                     }
@@ -1176,8 +1198,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
-        if(unread_count!= null)
-        {
+        if (unread_count != null) {
             if (unReadMessageCount.messageCount == 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
@@ -1193,19 +1214,23 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun connectStatusChange(statusChange: ConnectStatus) {
         when (statusChange.status) {
             0 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 reConnect.visibility = View.GONE
             }
             1 -> {
 
             }
             2 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 reConnect.visibility = View.VISIBLE
             }
             3 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 reConnect.visibility = View.VISIBLE
             }
         }
     }
+
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
@@ -1218,10 +1243,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
             2 -> {
-                if(isCanShotNetCoonect)
-                {
-                    if(!ConstantValue.loginOut)
-                    {
+                if (isCanShotNetCoonect) {
+                    if (!ConstantValue.loginOut) {
                         closeProgressDialog()
                         //showProgressDialog(getString(R.string.network_reconnecting))
                     }
@@ -1229,8 +1252,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
             3 -> {
-                if(isCanShotNetCoonect)
-                {
+                if (isCanShotNetCoonect) {
                     closeProgressDialog()
                     //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
@@ -1238,6 +1260,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
@@ -1248,7 +1271,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //    }
 
     fun setToNews() {
-        tvTitle.text = getString(R.string.private_faith)
+        tvTitle.text = getString(R.string.app_name)
         mainIv1.visibility = View.GONE
         llSort.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
@@ -1279,13 +1302,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun initView() {
         setContentView(R.layout.activity_main)
         tvTitle.text = getString(R.string.news)
-        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         statusBar.setLayoutParams(llp)
+        val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        reConnect.setLayoutParams(llp1)
+
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
         contactListFragment = EaseContactListFragment()
         contactListFragment?.hideTitleBar()
-        contactFragment  = ContactFragment()
+        contactFragment = ContactFragment()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
@@ -1319,12 +1345,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             var result = data!!.getStringExtra("result")
-            if(!result.contains("type_0"))
-            {
+            if (!result.contains("type_0")) {
                 toast(getString(R.string.codeerror))
                 return;
             }
-            viewModel.toAddUserId.value = result.substring(7,result.length)
+            viewModel.toAddUserId.value = result.substring(7, result.length)
             return
         } else if (requestCode == SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             var list = data?.getParcelableArrayListExtra<LocalMedia>(PictureConfig.EXTRA_RESULT_SELECTION)
@@ -1359,6 +1384,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         return contacts
     }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1398,6 +1424,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         return false
     }
+
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {

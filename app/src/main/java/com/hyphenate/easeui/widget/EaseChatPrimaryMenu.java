@@ -13,12 +13,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hyphenate.easeui.utils.EaseSmileUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.util.EMLog;
@@ -57,6 +59,22 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     public EaseChatPrimaryMenu(Context context) {
         super(context);
         init(context, null);
+    }
+
+    public String getEdittext() {
+        return editText.getText().toString();
+    }
+
+    public void setEdittext(String edittext) {
+        editText.setText(EaseSmileUtils.getSmiledText(editText.getContext(),edittext));
+        editText.setSelection(editText.getText().length());
+        editText.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+            }
+        }, 300);
     }
 
     private void init(final Context context, AttributeSet attrs) {

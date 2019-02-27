@@ -192,7 +192,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
                 holder.msgState.setVisibility(View.GONE);
             }
         }
-
+        holder.message.setTextColor(secondaryColor);
         String content = null;
         if(cvsListHelper != null){
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
@@ -202,10 +202,13 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         if(content != null){
             holder.message.setText(content);
         }
-
+        if (holder.message.getText().toString().contains("[draft]")) {
+            holder.message.setTextColor(getContext().getResources().getColor(R.color.material_red_a700));
+        } else {
+            holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
+        }
         //set property
         holder.name.setTextColor(primaryColor);
-        holder.message.setTextColor(secondaryColor);
         holder.time.setTextColor(timeColor);
         if(primarySize != 0)
             holder.name.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);

@@ -128,7 +128,6 @@ import im.tox.tox4j.core.enums.ToxMessageType;
  * <br/>
  * <br/>
  * you can see ChatActivity in demo for your reference
- *
  */
 public class EaseChatFragment extends EaseBaseFragment implements EMMessageListener {
     protected static final String TAG = "EaseChatFragment";
@@ -179,20 +178,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected ChatRoomListener chatRoomListener;
     protected EMMessage contextMenuMessage;
 
-    static final int ITEM_PICTURE= 1;
+    static final int ITEM_PICTURE = 1;
     static final int ITEM_TAKE_PICTURE = 2;
     static final int ITEM_SHORTVIDEO = 3;
     static final int ITEM_FILE = 4;
     static final int ITEM_LOCATION = 5;
-    static final int ITEM_MEETING= 6;
+    static final int ITEM_MEETING = 6;
     static final int ITEM_VIDEOCALL = 7;
     static final int ITEM_PRIVATEFILE = 8;
 
     protected static final int sendFileSizeMax = 1024 * 1024 * 2;
-    protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file };
-    protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
+    protected int[] itemStrings = {R.string.attach_picture, R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file};
+    protected int[] itemdrawables = {R.drawable.ease_chat_image_selector, R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector};
-    protected int[] itemIds = { ITEM_PICTURE,ITEM_TAKE_PICTURE,ITEM_SHORTVIDEO ,ITEM_FILE,ITEM_LOCATION,ITEM_MEETING,ITEM_VIDEOCALL,ITEM_PRIVATEFILE};
+    protected int[] itemIds = {ITEM_PICTURE, ITEM_TAKE_PICTURE, ITEM_SHORTVIDEO, ITEM_FILE, ITEM_LOCATION, ITEM_MEETING, ITEM_VIDEOCALL, ITEM_PRIVATEFILE};
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
     protected boolean isRoaming = false;
@@ -204,7 +203,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected Handler handler = new Handler();
     List<Message> messageListTemp;
 
-    private  int currentPage = 0;
+    private int currentPage = 0;
     private int MsgStartId = 0;
     private EMMessage currentSendMsg;
 
@@ -228,7 +227,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
     private HashMap<String, Message> receiveToxFileDataMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
-    private long  faBegin;
+    private long faBegin;
     private long faEnd;
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
@@ -270,68 +269,62 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         this.turnOnTyping = turnOnTyping();
         super.onActivityCreated(savedInstanceState);
     }
-    public void setChatUserId(String id)
-    {
+
+    public void setChatUserId(String id) {
         toChatUserId = id;
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectWebSocket(FileTransformEntity fileTransformEntity){
+    public void onConnectWebSocket(FileTransformEntity fileTransformEntity) {
 
-        EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
-        if(EMMessage == null)
-        {
+        EMMessage EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
+        if (EMMessage == null) {
             return;
         }
-        if(fileTransformEntity.getMessage() == 0)
-        {
+        if (fileTransformEntity.getMessage() == 0) {
             return;
         }
-        switch (fileTransformEntity.getMessage())
-        {
+        switch (fileTransformEntity.getMessage()) {
             case 1:
-                new Thread(new Runnable(){
-                    public void run(){
+                new Thread(new Runnable() {
+                    public void run() {
 
-                        try
-                        {
-                            EMMessage  EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
+                        try {
+                            EMMessage EMMessage = sendMsgMap.get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
-                            String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                            String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
                             String fileKey = sendFileKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] SrcKey = sendFileMyKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] DstKey = sendFileFriendKeyByteMap.get(fileTransformEntity.getToId());
                             File file = new File(filePath);
-                            if(file.exists())
-                            {
+                            if (file.exists()) {
                                 long fileSize = file.length();
-                                byte[] fileBuffer= FileUtil.file2Byte(filePath);
-                                int fileId = (int)(System.currentTimeMillis()/1000);
-                                 byte[] fileBufferMi = new byte[0];
-                                try{
-                                    long  miBegin = System.currentTimeMillis();
+                                byte[] fileBuffer = FileUtil.file2Byte(filePath);
+                                int fileId = (int) (System.currentTimeMillis() / 1000);
+                                byte[] fileBufferMi = new byte[0];
+                                try {
+                                    long miBegin = System.currentTimeMillis();
                                     /*if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                     {
                                         fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
                                     }else{
                                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     }*/
-                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
-                                    long miend  = System.currentTimeMillis();
-                                    KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
+                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey.getBytes("UTF-8"));
+                                    long miend = System.currentTimeMillis();
+                                    KLog.i("jiamiTime:" + (miend - miBegin) / 1000);
                                     faBegin = System.currentTimeMillis();
-                                    if(!deleteFileMap.get(fileTransformEntity.getToId()))
-                                    {
-                                        sendFileByteData(fileBufferMi,fileName,EMMessage.getFrom(),EMMessage.getTo(),fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
-                                    }else{
+                                    if (!deleteFileMap.get(fileTransformEntity.getToId())) {
+                                        sendFileByteData(fileBufferMi, fileName, EMMessage.getFrom(), EMMessage.getTo(), fileTransformEntity.getToId(), fileId, 1, fileKey, SrcKey, DstKey);
+                                    } else {
                                         KLog.i("websocket文件发送前取消！");
-                                        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                                        EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
+                                        String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                        EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     }
 
-                                }catch (Exception e)
-                                {
-                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                                    EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
+                                } catch (Exception e) {
+                                    String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                    EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -340,8 +333,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     });
                                 }
                             }
-                        }catch (Exception e)
-                        {
+                        } catch (Exception e) {
 
                         }
                     }
@@ -362,11 +354,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectWebSocket(TransformReceiverFileMessage transformReceiverFileMessage){
-        EMMessage  EMMessageData = sendMsgMap.get(transformReceiverFileMessage.getToId());
-        if(EMMessageData == null)
-        {
+    public void onConnectWebSocket(TransformReceiverFileMessage transformReceiverFileMessage) {
+        EMMessage EMMessageData = sendMsgMap.get(transformReceiverFileMessage.getToId());
+        if (EMMessageData == null) {
             return;
         }
         byte[] retMsg = transformReceiverFileMessage.getMessage();
@@ -386,70 +378,64 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         System.arraycopy(retMsg, 18, Code, 0, 2);
         System.arraycopy(retMsg, 20, FromId, 0, 76);
         System.arraycopy(retMsg, 97, ToId, 0, 76);
-        int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action)) ;
+        int ActionResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(Action));
         int FileIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(FileId));
         int LogIdIdResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(LogId));
         int SegSeqResult = FormatTransfer.reverseInt(FormatTransfer.lBytesToInt(SegSeq));
         short CRCResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(CRC));
         short CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code));
-        String FromIdResult  = new String(FromId);
-        String ToIdResult  = new String(ToId);
+        String FromIdResult = new String(FromId);
+        String ToIdResult = new String(ToId);
         String aa = "";
-        KLog.i("CodeResult:"+ CodeResult);
-        switch (CodeResult)
-        {
+        KLog.i("CodeResult:" + CodeResult);
+        switch (CodeResult) {
             case 0:
-                int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
-                byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
-                int leftSize =fileBuffer.length - lastSendSize;
-                String msgId = sendMsgIdMap.get(FileIdResult+"");
-                if(leftSize >0)
-                {
-                    new Thread(new Runnable(){
-                        public void run(){
+                int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult + "");
+                byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult + "");
+                int leftSize = fileBuffer.length - lastSendSize;
+                String msgId = sendMsgIdMap.get(FileIdResult + "");
+                if (leftSize > 0) {
+                    new Thread(new Runnable() {
+                        public void run() {
 
-                            try
-                            {
+                            try {
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
-                                String fileName = sendFileNameMap.get(FileIdResult+"");
-                                String fileKey = sendFileKeyByteMap.get(FileIdResult+"");
-                                byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult+"");
-                                byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult+"");
-                                if(!deleteFileMap.get(msgId))
-                                {
-                                    sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"",ToIdResult+"",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
-                                }else{
+                                String fileName = sendFileNameMap.get(FileIdResult + "");
+                                String fileKey = sendFileKeyByteMap.get(FileIdResult + "");
+                                byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult + "");
+                                byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult + "");
+                                if (!deleteFileMap.get(msgId)) {
+                                    sendFileByteData(fileLeftBuffer, fileName, FromIdResult + "", ToIdResult + "", msgId, FileIdResult, SegSeqResult + 1, fileKey, SrcKey, DstKey);
+                                } else {
                                     KLog.i("websocket文件发送中取消！");
-                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                                    EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+                                    String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                    EventBus.getDefault().post(new FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"));
                                 }
-                            }catch (Exception e)
-                            {
+                            } catch (Exception e) {
 
                             }
                         }
                     }).start();
 
-                }else{
-                    if(!deleteFileMap.get(msgId))
-                    {
+                } else {
+                    if (!deleteFileMap.get(msgId)) {
                         EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
                         conversation.removeMessage(msgId);
-                        EMMessage.setMsgId(LogIdIdResult+"");
+                        EMMessage.setMsgId(LogIdIdResult + "");
                         EMMessage.setAcked(true);
                         sendMessageTo(EMMessage);
                         conversation.updateMessage(EMMessage);
                         KLog.i("websocket文件发送成功！");
-                    }else{
-                        DelMsgReq msgData = new DelMsgReq(FromIdResult, ToIdResult,LogIdIdResult ,"DelMsg");
+                    } else {
+                        DelMsgReq msgData = new DelMsgReq(FromIdResult, ToIdResult, LogIdIdResult, "DelMsg");
                         AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
                         KLog.i("websocket文件发送成功后取消！");
                     }
                     faEnd = System.currentTimeMillis();
-                    KLog.i("faTime:"+ (faEnd - faBegin)/1000);
-                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                    EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+                    KLog.i("faTime:" + (faEnd - faBegin) / 1000);
+                    String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    EventBus.getDefault().post(new FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"));
 
 
                 }
@@ -487,16 +473,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 5:
-                String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+ToIdResult,"");
+                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + ToIdResult, "");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
-                        if(conversation !=null )
-                        {
+                        if (conversation != null) {
                             conversation.removeMessage(currentSendMsg.getMsgId());
-                            if(isMessageListInited) {
+                            if (isMessageListInited) {
                                 easeChatMessageList.refresh();
                             }
                         }
@@ -505,8 +490,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
         }
     }
-    private void sendFileByteData(byte[] fileLeftBuffer,String fileName,String From,String To,String msgId,int fileId,int segSeq,String fileKey,byte[] SrcKey,byte[] DstKey)
-    {
+
+    private void sendFileByteData(byte[] fileLeftBuffer, String fileName, String From, String To, String msgId, int fileId, int segSeq, String fileKey, byte[] SrcKey, byte[] DstKey) {
         String FriendPublicKey = sendFileFriendKeyMap.get(msgId);
         //String fileKey =  RxEncryptTool.generateAESKey();
       /*  byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -516,11 +501,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         try {
           /*  SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(fileKey.getBytes(),my));
             DstKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(fileKey.getBytes(),friend));*/
-            KLog.i("发送中>>>刚调用"+"From:"+From+"  To:"+To);
-            String MsgType = fileName.substring(fileName.lastIndexOf(".")+1);
+            KLog.i("发送中>>>刚调用" + "From:" + From + "  To:" + To);
+            String MsgType = fileName.substring(fileName.lastIndexOf(".") + 1);
             int action = 1;
-            switch (MsgType)
-            {
+            switch (MsgType) {
                 case "png":
                 case "jpg":
                     action = 1;
@@ -536,18 +520,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     break;
             }
             SendFileData sendFileData = new SendFileData();
-            int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
+            int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int) fileLeftBuffer.length;
             sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
             sendFileData.setAction(FormatTransfer.reverseInt(action));
             sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
             int aa = FormatTransfer.reverseInt(9437440);
             sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
             int fileOffset = 0;
-            fileOffset = (segSeq -1) * sendFileSizeMax;
+            fileOffset = (segSeq - 1) * sendFileSizeMax;
             sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
             sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
-            sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-            int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
+            sendFileData.setCRC(FormatTransfer.reverseShort((short) 0));
+            int segMore = fileLeftBuffer.length > sendFileSizeMax ? 1 : 0;
             sendFileData.setSegMore((byte) segMore);
             sendFileData.setCotinue((byte) 0);
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
@@ -563,31 +547,31 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             byte[] sendData = sendFileData.toByteArray();
             //int newCRC = CRC16Util.getCRC(sendData,sendData.length);
             int newCRC = 1;
-            sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
+            sendFileData.setCRC(FormatTransfer.reverseShort((short) newCRC));
             sendData = sendFileData.toByteArray();
-            sendFileNameMap.put(fileId+"",fileName);
-            sendFileLastByteSizeMap.put(fileId+"",segSize);
-            sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
-            sendMsgIdMap.put(fileId+"",msgId);
-            sendFileKeyByteMap.put(fileId+"",fileKey);
-            sendFileMyKeyByteMap.put(fileId+"",SrcKey);
-            sendFileFriendKeyByteMap.put(fileId+"",DstKey);
+            sendFileNameMap.put(fileId + "", fileName);
+            sendFileLastByteSizeMap.put(fileId + "", segSize);
+            sendFileLeftByteMap.put(fileId + "", fileLeftBuffer);
+            sendMsgIdMap.put(fileId + "", msgId);
+            sendFileKeyByteMap.put(fileId + "", fileKey);
+            sendFileMyKeyByteMap.put(fileId + "", SrcKey);
+            sendFileFriendKeyByteMap.put(fileId + "", DstKey);
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            KLog.i("发送中>>>"+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
-            EventBus.getDefault().post(new TransformFileMessage(msgId,sendData));
+            KLog.i("发送中>>>" + "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.length - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + sendFileData.getSegSize() + " CRC:" + newCRC);
+            EventBus.getDefault().post(new TransformFileMessage(msgId, sendData));
 
-        }catch (Exception e)
-        {
-            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-            EventBus.getDefault().post(new FileTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+        } catch (Exception e) {
+            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+            EventBus.getDefault().post(new FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"));
             Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
         }
     }
+
     /**
      * 锁定内容高度，防止跳闪
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void lockContentHeight(ChatKeyboard chatKeyboard){
+    public void lockContentHeight(ChatKeyboard chatKeyboard) {
 //        if (chatKeyboard.isLock()) {
 //            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) easeChatMessageList.getLayoutParams();
 //            params.height = easeChatMessageList.getHeight();
@@ -604,8 +588,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //        ((LinearLayout.LayoutParams) easeChatMessageList.getLayoutParams()).weight = 1.0F;
 //    }
 //
-
-
     protected boolean turnOnTyping() {
         return false;
     }
@@ -620,7 +602,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         // message list layout
         easeChatMessageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
-        if(chatType != EaseConstant.CHATTYPE_SINGLE)
+        if (chatType != EaseConstant.CHATTYPE_SINGLE)
             easeChatMessageList.setShowUserNick(true);
 //        easeChatMessageList.setAvatarShape(1);
         listView = easeChatMessageList.getListView();
@@ -736,18 +718,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         };
 
     }
+
     protected void setUpView() {
-        if(UserDataManger.curreantfriendUserData == null)
+        if (UserDataManger.curreantfriendUserData == null)
             return;
         String usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getNickName()));
-        if(UserDataManger.curreantfriendUserData.getRemarks() != null && !UserDataManger.curreantfriendUserData.getRemarks().equals(""))
-        {
-            usernameSouce = new  String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getRemarks()));
+        if (UserDataManger.curreantfriendUserData.getRemarks() != null && !UserDataManger.curreantfriendUserData.getRemarks().equals("")) {
+            usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getRemarks()));
         }
-        titleBar.setTitle( usernameSouce);
+        titleBar.setTitle(usernameSouce);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
             // set title
-            if(EaseUserUtils.getUserInfo(toChatUserId) != null){
+            if (EaseUserUtils.getUserInfo(toChatUserId) != null) {
                 EaseUser user = EaseUserUtils.getUserInfo(toChatUserId);
                 if (user != null) {
                     titleBar.setTitle(user.getNick());
@@ -809,23 +791,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (forward_msg_id != null) {
             forwardMessage(forward_msg_id);
         }
+        setDraft();
     }
 
     /**
      * register extend menu, item id need > 3 if you override this method and keep exist item
      */
-    protected void registerExtendMenuItem(){
-        for(int i = 0; i < itemStrings.length; i++){
+    protected void registerExtendMenuItem() {
+        for (int i = 0; i < itemStrings.length; i++) {
             inputMenu.registerExtendMenuItem(itemStrings[i], itemdrawables[i], itemIds[i], extendMenuItemClickListener);
         }
     }
 
 
-    protected void onConversationInit(){
-        if(conversation == null)
+    protected void onConversationInit() {
+        if (conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         EMMessage lastMessage = conversation.getLastMessage();
-        if(lastMessage != null)
+        if (lastMessage != null)
             lastMessage.setUnread(false);
         //conversation.markAllMessagesAsRead();
         // the number of messages loaded into conversation is getChatOptions().getNumberOfMessagesLoaded
@@ -865,51 +848,43 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
     }
-    public void delMyMsgOnSuccess(String msgId)
-    {
+
+    public void delMyMsgOnSuccess(String msgId) {
         EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(msgId);
-        if(forward_msg == null)
-        {
+        if (forward_msg == null) {
             return;
         }
-        if(conversation !=null)
+        if (conversation != null)
             conversation.removeMessage(msgId);
         //refresh ui
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
-        if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
-        {
+        if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
             EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
-        }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
-        {
+        } else if (forward_msg.getType().equals(EMMessage.Type.VIDEO)) {
             EMVideoMessageBody imgBody = (EMVideoMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
-        }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
-        {
+        } else if (forward_msg.getType().equals(EMMessage.Type.VOICE)) {
             EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
-        }else if(forward_msg.getType().equals(EMMessage.Type.FILE) )
-        {
+        } else if (forward_msg.getType().equals(EMMessage.Type.FILE)) {
             EMNormalFileMessageBody imgBody = (EMNormalFileMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
         }
-        if(conversation !=null)
-        {
-            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-            EMMessage eMMessage =  conversation.getLastMessage();
+        if (conversation != null) {
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg("");
-            if(eMMessage != null)
-            {
-                switch (eMMessage.getType())
-                {
+            if (eMMessage != null) {
+                switch (eMMessage.getType()) {
                     case LOCATION:
                         break;
                     case IMAGE:
@@ -936,35 +911,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-            }else{
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            } else {
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
             }
 
         }
 
     }
-    public void delMyMsgOnSending(String msgId)
-    {
+
+    public void delMyMsgOnSending(String msgId) {
         EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(msgId);
-        if(conversation !=null )
+        if (conversation != null)
             conversation.removeMessage(msgId);
         //refresh ui
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
-        deleteFileMap.put(msgId,true);
-        if(conversation !=null)
-        {
-            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-            EMMessage eMMessage =  conversation.getLastMessage();
+        deleteFileMap.put(msgId, true);
+        if (conversation != null) {
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg("");
-            if(eMMessage!= null)
-            {
-                switch (eMMessage.getType())
-                {
+            if (eMMessage != null) {
+                switch (eMMessage.getType()) {
                     case LOCATION:
                         break;
                     case IMAGE:
@@ -992,31 +964,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-            }else{
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            } else {
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
             }
 
         }
     }
-    public void  refreshReadData(String readMsgs)
-    {
-        if(readMsgs == null || readMsgs.equals(""))
-        {
+
+    public void refreshReadData(String readMsgs) {
+        if (readMsgs == null || readMsgs.equals("")) {
             return;
         }
-        String [] readMsgsArray =  readMsgs.split(",");
+        String[] readMsgsArray = readMsgs.split(",");
         int length = readMsgsArray.length;
-        for(int i = 0 ; i < length ;i++)
-        {
-            if(!readMsgsArray[i].equals(""))
-            {
+        for (int i = 0; i < length; i++) {
+            if (!readMsgsArray[i].equals("")) {
                 EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(readMsgsArray[i]);
-                if(forward_msg != null)
-                {
+                if (forward_msg != null) {
                     forward_msg.setAcked(true);
                     forward_msg.setUnread(false);
-                    if(conversation !=null )
+                    if (conversation != null)
                         conversation.updateMessage(forward_msg);
                 }
 
@@ -1025,122 +993,107 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //refresh ui
         easeChatMessageList.refresh();
     }
-    public void setFriendStatus(int status)
-    {
+
+    public void setFriendStatus(int status) {
         friendStatus = status;
     }
-    public void  onToxFileSendFinished(int fileNumber,String key)
-    {
 
-        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
-        if(toxFileData != null)
-        {
-            if(!deleteFileMap.get(toxFileData.getFileId() + ""))
-            {
-                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice( toxFileData.getFromId(),toxFileData.getToId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getFileId(),toxFileData.getSrcKey(),toxFileData.getDstKey(),"SendFile");
+    public void onToxFileSendFinished(int fileNumber, String key) {
+
+        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber + "");
+        if (toxFileData != null) {
+            if (!deleteFileMap.get(toxFileData.getFileId() + "")) {
+                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
                 BaseData baseData = new BaseData(sendToxFileNotice);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                if(ConstantValue.INSTANCE.isAntox())
-                {
-                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                if (ConstantValue.INSTANCE.isAntox()) {
+                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                }else{
+                } else {
                     ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
 
 
-            }else{
-                EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(toxFileData.getFileId()+"");
+            } else {
+                EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(toxFileData.getFileId() + "");
                 KLog.i("tox文件发送成功后取消！");
             }
         }
     }
-    public void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
-    {
-        if(ConstantValue.INSTANCE.isAntox())
-        {
+
+    public void onAgreeReceivwFileStart(int fileNumber, String key, String fileName) {
+        if (ConstantValue.INSTANCE.isAntox()) {
             FriendKey friendKey = new FriendKey(key);
-            if(friendKey != null)
-            {
-                receiveToxFileNameMap.put(fileNumber+"",fileName);
-                MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance,fileNumber,friendKey);
+            if (friendKey != null) {
+                receiveToxFileNameMap.put(fileNumber + "", fileName);
+                MessageHelper.sendAgreeReceiveFileFromKotlin(AppConfig.instance, fileNumber, friendKey);
             }
-        }else{
-            receiveToxFileNameMap.put(fileNumber+"",fileName);
+        } else {
+            receiveToxFileNameMap.put(fileNumber + "", fileName);
         }
 
     }
-    public String getToxReceiveFileName(int fileNumber,String key)
-    {
-        String fileName = receiveToxFileNameMap.get(fileNumber+"");
+
+    public String getToxReceiveFileName(int fileNumber, String key) {
+        String fileName = receiveToxFileNameMap.get(fileNumber + "");
         return fileName;
     }
-    public void  onToxReceiveFileFinished(String fileName)
-    {
+
+    public void onToxReceiveFileFinished(String fileName) {
         Message message = receiveToxFileDataMap.get(fileName);
         String msgId = receiveToxFileIdMap.get(fileName);
-        if(message != null)
-        {
+        if (message != null) {
             conversation.removeMessage(msgId);
             String files_dir = "";
             EMMessage messageData = null;
-            if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
-            {
-                if(message != null)
-                {
+            if (conversation != null && ConstantValue.INSTANCE.getUserId() != null) {
+                if (message != null) {
                     String fileNameTemp = message.getFileName();
                     String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileNameTemp;
                     String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileNameTemp;
                     String fileKey = "";
 
-                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                    {
+                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
                         fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getPriKey());
-                    }else{
+                    } else {
                         //fileKey =  RxEncodeTool.getAESKey(message.getUserKey());
                     }
-                    int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
-                    if(code == 1)
-                    {
-                        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-                        switch (message.getMsgType())
-                        {
+                    int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dirTemp, fileKey);
+                    if (code == 1) {
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        switch (message.getMsgType()) {
                             case 1:
-                                files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                 messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                                 break;
                             case 2:
-                                files_dir = PathUtils.getInstance().getVoicePath()+"/" +message.getFileName();
+                                files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
                                 int longTime = FileUtil.getAmrDuration(new File(files_dir));
                                 messageData = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                                 break;
                             case 4:
-                                files_dir = PathUtils.getInstance().getVideoPath()+"/" +message.getFileName();
-                                String videoName = files_dir.substring(files_dir.lastIndexOf("/")+1,files_dir.lastIndexOf(".")+1);
-                                String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                                files_dir = PathUtils.getInstance().getVideoPath() + "/" + message.getFileName();
+                                String videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf(".") + 1);
+                                String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                 Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                                FileUtil.saveBitmpToFile(bitmap,thumbPath);
-                                messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
+                                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                                 break;
                             case 5:
-                                files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                 messageData = EMMessage.createFileSendMessage(files_dir, toChatUserId);
                                 break;
                         }
-                        if(messageData != null)
-                        {
+                        if (messageData != null) {
                             messageData.setFrom(message.getFrom());
                             messageData.setTo(message.getTo());
                             messageData.setUnread(false);
 
-                            if(message.getFrom() == null)
-                            {
-                                if(message.getSender() == 0)
-                                {
+                            if (message.getFrom() == null) {
+                                if (message.getSender() == 0) {
                                     messageData.setFrom(userId);
                                     messageData.setTo(toChatUserId);
-                                    switch (message.getStatus())
-                                    {
+                                    switch (message.getStatus()) {
                                         case 0:
                                             messageData.setDelivered(true);
                                             messageData.setAcked(false);
@@ -1159,23 +1112,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                         default:
                                             break;
                                     }
-                                    messageData.setDirection(EMMessage.Direct.SEND );
-                                }else {
+                                    messageData.setDirection(EMMessage.Direct.SEND);
+                                } else {
                                     messageData.setFrom(toChatUserId);
                                     messageData.setTo(userId);
-                                    messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                    messageData.setDirection(EMMessage.Direct.RECEIVE);
                                 }
-                            }else{
-                                if(message.getFrom()!= null && message.getFrom().equals(userId))
-                                {
-                                    messageData.setDirection(EMMessage.Direct.SEND );
-                                }else {
-                                    messageData.setDirection(EMMessage.Direct.RECEIVE );
+                            } else {
+                                if (message.getFrom() != null && message.getFrom().equals(userId)) {
+                                    messageData.setDirection(EMMessage.Direct.SEND);
+                                } else {
+                                    messageData.setDirection(EMMessage.Direct.RECEIVE);
                                 }
                             }
 
-                            messageData.setMsgTime(message.getTimeStatmp()* 1000);
-                            messageData.setMsgId( message.getMsgId()+"");
+                            messageData.setMsgTime(message.getTimeStatmp() * 1000);
+                            messageData.setMsgId(message.getMsgId() + "");
                             sendMessageTo(messageData);
                         }
                     }
@@ -1185,19 +1137,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }
     }
-    public void updatFriendName(JUserInfoPushRsp jUserInfoPushRsp)
-    {
-        if(jUserInfoPushRsp.getParams().getFriendId().equals(toChatUserId))
-        {
+
+    public void updatFriendName(JUserInfoPushRsp jUserInfoPushRsp) {
+        if (jUserInfoPushRsp.getParams().getFriendId().equals(toChatUserId)) {
 
         }
     }
-    public void  onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp)
-    {
-        if(jSendToxFileRsp.getParams().getRetCode() == 0)
-        {
-            String msgId = jSendToxFileRsp.getParams().getFileId()+"";
-            String msgServerId = jSendToxFileRsp.getParams().getMsgId()+"";
+
+    public void onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp) {
+        if (jSendToxFileRsp.getParams().getRetCode() == 0) {
+            String msgId = jSendToxFileRsp.getParams().getFileId() + "";
+            String msgServerId = jSendToxFileRsp.getParams().getMsgId() + "";
             EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
             conversation.removeMessage(msgId);
             EMMessage.setMsgId(msgServerId);
@@ -1205,10 +1155,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendMessageTo(EMMessage);
             conversation.updateMessage(EMMessage);
 
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
-        }else{
+        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1218,19 +1168,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
-    public void  refreshData(List<Message> messageList,String UserId,String FriendId)
-    {
+
+    public void refreshData(List<Message> messageList, String UserId, String FriendId) {
         toChatUserId = FriendId;
-        if(conversation == null)
+        if (conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(FriendId, EaseCommonUtils.getConversationType(chatType), true);
-        KLog.i("insertMessage:" + "EaseChatFragment"+"_refreshData1_"+conversation+"_"+toChatUserId);
+        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData1_" + conversation + "_" + toChatUserId);
         if (conversation != null) {
-            if(currentPage == 0)
-            {
+            if (currentPage == 0) {
                 conversation.clearAllMessages();
-                KLog.i("insertMessage:" + "EaseChatFragment"+"_refreshData2"+conversation.getAllMessages().size());
+                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData2" + conversation.getAllMessages().size());
             }
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
         }
@@ -1241,11 +1190,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 swipeRefreshLayout.setRefreshing(false);
             }
         }, 50);
-        if(size > 0)
-            currentPage ++;
+        if (size > 0)
+            currentPage++;
         else {
-            if(currentPage !=0)
-            {
+            if (currentPage != 0) {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -1255,77 +1203,65 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
         }
-        if(messageListTemp == null)
-        {
+        if (messageListTemp == null) {
             messageListTemp = messageList;
         }
-        String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        for(int i= 0 ; i < size ;i++)
-        {
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        for (int i = 0; i < size; i++) {
             Message Message = messageList.get(i);
             EMMessage message = null;
-            String msgSouce =  "";
-            if(Message.getMsg() != null  && !Message.getMsg().equals(""))
-            {
-                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                {
-                    if(Message.getSender() == 0)
-                    {
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(),Message.getNonce(),Message.getPriKey());
-                    }else{
-                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(),Message.getNonce(),FriendId,Message.getSign());
+            String msgSouce = "";
+            if (Message.getMsg() != null && !Message.getMsg().equals("")) {
+                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                    if (Message.getSender() == 0) {
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Message.getMsg(), Message.getNonce(), Message.getPriKey());
+                    } else {
+                        msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(Message.getMsg(), Message.getNonce(), FriendId, Message.getSign());
                     }
-                }else{
+                } else {
                     //msgSouce =  RxEncodeTool.RestoreMessage( Message.getUserKey(),Message.getMsg());
                 }
             }
-            if(msgSouce != null && !msgSouce.equals(""))
-            {
+            if (msgSouce != null && !msgSouce.equals("")) {
                 Message.setMsg(msgSouce);
             }
-            switch (Message.getMsgType())
-            {
+            switch (Message.getMsgType()) {
                 case 0:
                     message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                     break;
                 case 1:
-                    String ease_default_image = PathUtils.getInstance().getImagePath()+"/"  + "ease_default_image.png";
-                    String files_dir =  PathUtils.getInstance().getImagePath().toString()+"/" +Message.getFileName();
+                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                    String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + Message.getFileName();
                     File filesFile = new File(files_dir);
-                    if(filesFile.exists())
-                    {
+                    if (filesFile.exists()) {
                         message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
-                    }else{
+                    } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                            String save_dir = PathUtils.getInstance().getImagePath()+"/";
-                            if(Message.getSender() == 0)
-                            {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getSign());
-                            }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getPriKey());
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String save_dir = PathUtils.getInstance().getImagePath() + "/";
+                            if (Message.getSender() == 0) {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
+                            } else {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
                             }
 
-                        }else{
-                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
-                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
-                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                        } else {
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
+                            String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if(Message.getSender() == 0)
-                            {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
-                            }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
+                            if (Message.getSender() == 0) {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
+                            } else {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                            if(ConstantValue.INSTANCE.isAntox())
-                            {
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            if (ConstantValue.INSTANCE.isAntox()) {
+                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
 
@@ -1334,45 +1270,40 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                     break;
                 case 2:
-                    String ease_default_amr =  PathUtils.getInstance().getVoicePath()+"/" + "ease_default_amr.amr";
-                    String files_dir_amr = PathUtils.getInstance().getVoicePath()+"/" +Message.getFileName();
+                    String ease_default_amr = PathUtils.getInstance().getVoicePath() + "/" + "ease_default_amr.amr";
+                    String files_dir_amr = PathUtils.getInstance().getVoicePath() + "/" + Message.getFileName();
                     File filesFileAmr = new File(files_dir_amr);
-                    if(filesFileAmr.exists())
-                    {
+                    if (filesFileAmr.exists()) {
                         long sizea = filesFileAmr.length();
                         int longTime = FileUtil.getAmrDuration(filesFileAmr);
                         message = EMMessage.createVoiceSendMessage(files_dir_amr, longTime, toChatUserId);
-                    }else{
+                    } else {
                         message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                            String save_dir =  PathUtils.getInstance().getVoicePath()+"/";
-                            if(Message.getSender() == 0)
-                            {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getSign());
-                            }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getPriKey());
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String save_dir = PathUtils.getInstance().getVoicePath() + "/";
+                            if (Message.getSender() == 0) {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
+                            } else {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
                             }
 
-                        }else{
-                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
-                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
-                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                        } else {
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
+                            String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if(Message.getSender() == 0)
-                            {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
-                            }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
+                            if (Message.getSender() == 0) {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
+                            } else {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                            if(ConstantValue.INSTANCE.isAntox())
-                            {
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            if (ConstantValue.INSTANCE.isAntox()) {
+                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
 
@@ -1383,48 +1314,43 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 case 3:
                     break;
                 case 4:
-                    String thumbPath =  PathUtils.getInstance().getImagePath()+"/" + "ease_default_image.png";
-                    String files_dir_video = PathUtils.getInstance().getVideoPath()+"/" +Message.getFileName();
+                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                    String files_dir_video = PathUtils.getInstance().getVideoPath() + "/" + Message.getFileName();
                     File filesFileAmrVideo = new File(files_dir_video);
-                    if(filesFileAmrVideo.exists())
-                    {
-                        String videoName = files_dir_video.substring(files_dir_video.lastIndexOf("/")+1,files_dir_video.lastIndexOf(".")+1);
-                        thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                    if (filesFileAmrVideo.exists()) {
+                        String videoName = files_dir_video.substring(files_dir_video.lastIndexOf("/") + 1, files_dir_video.lastIndexOf(".") + 1);
+                        thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir_video);
-                        FileUtil.saveBitmpToFile(bitmap,thumbPath);
-                        message = EMMessage.createVideoSendMessage(files_dir_video, thumbPath,1000, toChatUserId);
-                    }else{
-                        String videoPath =  PathUtils.getInstance().getVideoPath()+"/" + "ease_default_vedio.mp4";
-                        message = EMMessage.createVideoSendMessage(videoPath, thumbPath,1000, toChatUserId);
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                            String save_dir =  PathUtils.getInstance().getVideoPath()+"/";
-                            if(Message.getSender() == 0)
-                            {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getSign());
-                            }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getPriKey());
+                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        message = EMMessage.createVideoSendMessage(files_dir_video, thumbPath, 1000, toChatUserId);
+                    } else {
+                        String videoPath = PathUtils.getInstance().getVideoPath() + "/" + "ease_default_vedio.mp4";
+                        message = EMMessage.createVideoSendMessage(videoPath, thumbPath, 1000, toChatUserId);
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String save_dir = PathUtils.getInstance().getVideoPath() + "/";
+                            if (Message.getSender() == 0) {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
+                            } else {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
                             }
-                        }else{
-                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
-                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
-                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                        } else {
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
+                            String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if(Message.getSender() == 0)
-                            {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
-                            }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
+                            if (Message.getSender() == 0) {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
+                            } else {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
-                            if(ConstantValue.INSTANCE.isAntox())
-                            {
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            if (ConstantValue.INSTANCE.isAntox()) {
+                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
 
@@ -1433,42 +1359,37 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                     break;
                 case 5:
-                    String ease_default_file = PathUtils.getInstance().getImagePath()+"/"  + "file_downloading.*";
-                    String file_dir =  PathUtils.getInstance().getImagePath().toString()+"/" +Message.getFileName();
+                    String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + "file_downloading.*";
+                    String file_dir = PathUtils.getInstance().getImagePath().toString() + "/" + Message.getFileName();
                     File fileFile = new File(file_dir);
-                    if(fileFile.exists())
-                    {
+                    if (fileFile.exists()) {
                         message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
-                    }else{
+                    } else {
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort()+Message.getFilePath();
-                            String save_dir = PathUtils.getInstance().getFilePath()+"/";
-                            if(Message.getSender() == 0)
-                            {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getSign());
-                            }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(),Message.getMsgId(), handlerDown,Message.getPriKey());
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String save_dir = PathUtils.getInstance().getFilePath() + "/";
+                            if (Message.getSender() == 0) {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
+                            } else {
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
                             }
-                        }else{
-                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()),Message);
-                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()),Message.getMsgId()+"");
-                            String base58Name =  Base58.encode(Message.getFileName().getBytes());
+                        } else {
+                            receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
+                            receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
+                            String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if(Message.getSender() == 0)
-                            {
-                                msgData = new PullFileReq(toChatUserId, userId,base58Name,Message.getMsgId(),1,1,"PullFile");
-                            }else{
-                                msgData = new PullFileReq(toChatUserId,userId,base58Name,Message.getMsgId(),2,1,"PullFile");
+                            if (Message.getSender() == 0) {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
+                            } else {
+                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
                             }
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                            if(ConstantValue.INSTANCE.isAntox())
-                            {
-                                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            if (ConstantValue.INSTANCE.isAntox()) {
+                                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             }
 
@@ -1479,17 +1400,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 default:
                     break;
             }
-            if(message == null)
-            {
+            if (message == null) {
                 continue;
             }
             message.setUnread(false);
-            if(Message.getSender() == 0)
-            {
+            if (Message.getSender() == 0) {
                 message.setFrom(userId);
                 message.setTo(toChatUserId);
-                switch (Message.getStatus())
-                {
+                switch (Message.getStatus()) {
                     case 0:
                         message.setDelivered(true);
                         message.setAcked(false);
@@ -1508,83 +1426,73 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     default:
                         break;
                 }
-                message.setDirection(EMMessage.Direct.SEND );
-            }else {
+                message.setDirection(EMMessage.Direct.SEND);
+            } else {
                 message.setFrom(toChatUserId);
                 message.setTo(userId);
-                message.setDirection(EMMessage.Direct.RECEIVE );
+                message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStatmp()* 1000);
-            if(i == 0)
-            {
+            message.setMsgTime(Message.getTimeStatmp() * 1000);
+            if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
-            message.setMsgId( Message.getMsgId()+"");
-            if(Message.getMsgType() != 0)
-            {
-                receiveFileDataMap.put(Message.getMsgId()+"",Message);
+            message.setMsgId(Message.getMsgId() + "");
+            if (Message.getMsgType() != 0) {
+                receiveFileDataMap.put(Message.getMsgId() + "", Message);
             }
             sendMessageTo(message);
-            if(i == size -1)
-            {
+            if (i == size - 1) {
                 Gson gson = new Gson();
                 Message.setUnRead(false);
                 Message.setStatus(2);
                 String baseDataJson = gson.toJson(Message);
-                if(Message.getSender() == 0)
-                {
-                    SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-                }else{
-                    SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                if (Message.getSender() == 0) {
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                } else {
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 }
             }
         }
 
     }
-    public void  delFreindMsg(JDelMsgPushRsp jDelMsgRsp)
-    {
+
+    public void delFreindMsg(JDelMsgPushRsp jDelMsgRsp) {
         try {
-            EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId()+"");
+            EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId() + "");
             /*EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));
             forward_msg.addBody(var3);*/
-            if(conversation !=null )
-                conversation.removeMessage(jDelMsgRsp.getParams().getMsgId()+"");
+            if (conversation != null)
+                conversation.removeMessage(jDelMsgRsp.getParams().getMsgId() + "");
             //conversation.removeMessage(jDelMsgRsp.getParams().getDeleteMsgId()+"");
             //refresh ui
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
-            if(forward_msg.getType().equals(EMMessage.Type.IMAGE))
-            {
+            if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
                 EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
-            }else if( forward_msg.getType().equals(EMMessage.Type.VIDEO))
-            {
+            } else if (forward_msg.getType().equals(EMMessage.Type.VIDEO)) {
                 EMVideoMessageBody imgBody = (EMVideoMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
-            }else if(forward_msg.getType().equals(EMMessage.Type.VOICE) )
-            {
+            } else if (forward_msg.getType().equals(EMMessage.Type.VOICE)) {
                 EMVoiceMessageBody imgBody = (EMVoiceMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
-            }else if(forward_msg.getType().equals(EMMessage.Type.FILE) )
-            {
+            } else if (forward_msg.getType().equals(EMMessage.Type.FILE)) {
                 EMNormalFileMessageBody imgBody = (EMNormalFileMessageBody) forward_msg.getBody();
                 String localUrl = imgBody.getLocalUrl();
                 FileUtil.deleteFile(localUrl);
             }
 
-            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-            EMMessage eMMessage =  conversation.getLastMessage();
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg("");
-            if(eMMessage != null)
-            {
-                switch (eMMessage.getType())
-                {
+            if (eMMessage != null) {
+                switch (eMMessage.getType()) {
                     case LOCATION:
                         break;
                     case IMAGE:
@@ -1611,18 +1519,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-            }else{
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            } else {
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
             }
 
 
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
     }
-    protected void onMessageListInit(){
+
+    protected void onMessageListInit() {
         easeChatMessageList.init(toChatUserId, chatType, chatFragmentHelper != null ?
                 chatFragmentHelper.onSetCustomChatRowProvider() : null);
         setListItemClickListener();
@@ -1645,7 +1553,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             @Override
             public void onUserAvatarClick(String username) {
-                if(chatFragmentHelper != null){
+                if (chatFragmentHelper != null) {
                     chatFragmentHelper.onAvatarClick(username);
                 }
             }
@@ -1668,7 +1576,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             @Override
             public void onUserAvatarLongClick(String username) {
-                if(chatFragmentHelper != null){
+                if (chatFragmentHelper != null) {
                     chatFragmentHelper.onAvatarLongClick(username);
                 }
             }
@@ -1676,14 +1584,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             @Override
             public void onBubbleLongClick(EMMessage message) {
                 contextMenuMessage = message;
-                if(chatFragmentHelper != null){
+                if (chatFragmentHelper != null) {
                     chatFragmentHelper.onMessageBubbleLongClick(message);
                 }
             }
 
             @Override
             public boolean onBubbleClick(EMMessage message) {
-                if(chatFragmentHelper == null){
+                if (chatFragmentHelper == null) {
                     return false;
                 }
                 return chatFragmentHelper.onMessageBubbleClick(message);
@@ -1715,27 +1623,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private void loadMoreRoamingMessages() {
 
         swipeRefreshLayout.setRefreshing(true);
-        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        PullMsgReq pullMsgList = new PullMsgReq( userId,toChatUserId,1,MsgStartId,10,"PullMsg");
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        PullMsgReq pullMsgList = new PullMsgReq(userId, toChatUserId, 1, MsgStartId, 10, "PullMsg");
         BaseData sendData = new BaseData(pullMsgList);
-        if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-        {
-            sendData = new BaseData(3,pullMsgList);
+        if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+            sendData = new BaseData(3, pullMsgList);
         }
 
-        if(ConstantValue.INSTANCE.isWebsocketConnected())
-        {
+        if (ConstantValue.INSTANCE.isWebsocketConnected()) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData);
-        }else if(ConstantValue.INSTANCE.isToxConnected())
-        {
+        } else if (ConstantValue.INSTANCE.isToxConnected()) {
             BaseData baseData = sendData;
             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
-            if(ConstantValue.INSTANCE.isAntox())
-            {
-                FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+            if (ConstantValue.INSTANCE.isAntox()) {
+                FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-            }else{
+            } else {
                 ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
             }
 
@@ -1750,19 +1654,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
-                if (cameraFile != null && cameraFile.exists())
-                {
+                if (cameraFile != null && cameraFile.exists()) {
                     chooseOriginalImage(cameraFile.getAbsolutePath());
                     //sendCameraImageMessage(cameraFile.getAbsolutePath());
                 }
-            }else if(requestCode == REQUEST_CODE_VIDEO)
-            {
-                if (videoFile != null && videoFile.exists())
-                {
+            } else if (requestCode == REQUEST_CODE_VIDEO) {
+                if (videoFile != null && videoFile.exists()) {
                     //String thumbPath = EaseImageUtils.saveVideoThumb(videoFile,128,128,1);
-                    sendVideoMessage(videoFile.getAbsolutePath(),false);
+                    sendVideoMessage(videoFile.getAbsolutePath(), false);
                 }
-            }else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
+            } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
                 if (data != null) {
                     Uri selectedImage = data.getData();
                     sendPicByUri(selectedImage);
@@ -1790,19 +1691,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 // Send the ding-type msg.
                 EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUserId, msgContent);
                 sendMessageTo(dingMsg);
-            }else  if (requestCode == REQUEST_CODE_FILE) {
+            } else if (requestCode == REQUEST_CODE_FILE) {
                 String filePath = data.getStringExtra("path");
                 File file = new File(filePath);
                 String md5Data = "";
-                if(file.exists())
-                {
+                if (file.exists()) {
                     sendFileMessage(filePath);
                 }
-            }else if (requestCode == CHOOSE_PIC )
-            {
+            } else if (requestCode == CHOOSE_PIC) {
                 String filePath = data.getStringExtra("path");
-                Boolean isCheck = data.getBooleanExtra("isCheck",false);
-                sendImageMessage(filePath,!isCheck);
+                Boolean isCheck = data.getBooleanExtra("isCheck", false);
+                sendImageMessage(filePath, !isCheck);
             }
         }
     }
@@ -1817,7 +1716,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         // register the event listener when enter the foreground
         EMClient.getInstance().chatManager().addMessageListener(this);
 
-        if(chatType == EaseConstant.CHATTYPE_GROUP){
+        if (chatType == EaseConstant.CHATTYPE_GROUP) {
             EaseAtMessageHelper.get().removeAtMeGroup(toChatUserId);
         }
     }
@@ -1849,16 +1748,50 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EMClient.getInstance().chatroomManager().removeChatRoomListener(chatRoomListener);
         }
 
-        if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+        if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUserId);
         }
     }
 
+    /**
+     * 设置草稿内容
+     */
+    private void setDraft() {
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        String content = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+        Message message = new Gson().fromJson(content, Message.class);
+        if (message.getMsg()!= null && message.getMsg().contains("/[draft]/")) {
+            inputMenu.setEdittext(message.getMsg().replace("/[draft]/", ""));
+        }
+    }
+
+    /**
+     * 保存草稿
+     */
+    private void saveDraft() {
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        String draft = inputMenu.getEdittext();
+        if (draft == null || draft.equals("")) {
+            return;
+        }
+        KLog.i("草稿为：" + draft);
+        Message message = new Message();
+        message.setMsg("");
+        message.setMsgType(0);
+        message.setMsg("/[draft]/" +draft);
+        message.setFrom(userId);
+        message.setTo(toChatUserId);
+        message.setTimeStatmp(System.currentTimeMillis());
+        String baseDataJson = new Gson().toJson(message);
+        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+    }
+
     public void onBackPressed() {
         hideKeyboard();
+        saveDraft();
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
-            if(chatType == EaseConstant.CHATTYPE_GROUP){
+            if (chatType == EaseConstant.CHATTYPE_GROUP) {
                 EaseAtMessageHelper.get().removeAtMeGroup(toChatUserId);
                 EaseAtMessageHelper.get().cleanToAtUserList();
             }
@@ -1877,7 +1810,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(getActivity().isFinishing() || !toChatUserId.equals(value.getId()))
+                        if (getActivity().isFinishing() || !toChatUserId.equals(value.getId()))
                             return;
                         pd.dismiss();
                         EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(toChatUserId);
@@ -1953,42 +1886,41 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onMessageRead(List<EMMessage> messages) {
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageDelivered(List<EMMessage> messages) {
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageRecalled(List<EMMessage> messages) {
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
     }
 
     @Override
     public void onMessageChanged(EMMessage emMessage, Object change) {
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
     }
 
     /**
      * handle the click event for extend menu
-     *
      */
-    class MyItemClickListener implements EaseChatExtendMenu.EaseChatExtendMenuItemClickListener{
+    class MyItemClickListener implements EaseChatExtendMenu.EaseChatExtendMenuItemClickListener {
 
         @Override
         public void onClick(int itemId, View view) {
-            if(chatFragmentHelper != null){
-                if(chatFragmentHelper.onExtendMenuItemClick(itemId, view)){
+            if (chatFragmentHelper != null) {
+                if (chatFragmentHelper.onExtendMenuItemClick(itemId, view)) {
                     return;
                 }
             }
@@ -2043,6 +1975,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
+
     private PermissionListener permission = new PermissionListener() {
         @Override
         public void onSucceed(int requestCode, List<String> grantedPermissions) {
@@ -2081,21 +2014,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         }
     };
+
     /**
      * input @
+     *
      * @param username
      */
-    protected void inputAtUsername(String username, boolean autoAddAtSymbol){
-        if(EMClient.getInstance().getCurrentUser().equals(username) ||
-                chatType != EaseConstant.CHATTYPE_GROUP){
+    protected void inputAtUsername(String username, boolean autoAddAtSymbol) {
+        if (EMClient.getInstance().getCurrentUser().equals(username) ||
+                chatType != EaseConstant.CHATTYPE_GROUP) {
             return;
         }
         EaseAtMessageHelper.get().addAtUser(username);
         EaseUser user = EaseUserUtils.getUserInfo(username);
-        if (user != null){
+        if (user != null) {
             username = user.getNick();
         }
-        if(autoAddAtSymbol)
+        if (autoAddAtSymbol)
             inputMenu.insertText("@" + username + " ");
         else
             inputMenu.insertText(username + " ");
@@ -2104,37 +2039,35 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * input @
+     *
      * @param username
      */
-    protected void inputAtUsername(String username){
+    protected void inputAtUsername(String username) {
         inputAtUsername(username, true);
     }
 
 
     //send message
     protected void sendTextMessage(String content) {
-        if(friendStatus != 0)
-        {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
-        if(EaseAtMessageHelper.get().containsAtUsername(content)){
+        if (EaseAtMessageHelper.get().containsAtUsername(content)) {
             sendAtMessage(content);
-        }else{
+        } else {
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
-            String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
-            if ( AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null)
-            {
-                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                {
-                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getMiPublicKey(),content);
-                }else{
-                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(),UserDataManger.curreantfriendUserData.getSignPublicKey(),content);
+            if (AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null) {
+                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
+                } else {
+                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getSignPublicKey(), content);
                 }
 
                 message.setFrom(userId);
-                message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                 message.setDelivered(true);
                 message.setAcked(false);
                 message.setUnread(true);
@@ -2147,30 +2080,27 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 sendMessageTo(message);
             }
 
         }
     }
-    public void deleteMessage()
-    {
-        if(conversation !=null )
-        {
+
+    public void deleteMessage() {
+        if (conversation != null) {
             conversation.removeMessage(currentSendMsg.getMsgId());
-            KLog.i("insertMessage:" + "EaseChatFragment"+"_upateMessage");
-            if(isMessageListInited) {
+            KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
-            String userId =   SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-            EMMessage eMMessage =  conversation.getLastMessage();
+            String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+            EMMessage eMMessage = conversation.getLastMessage();
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg("");
-            if(eMMessage != null)
-            {
-                switch (eMMessage.getType())
-                {
+            if (eMMessage != null) {
+                switch (eMMessage.getType()) {
                     case LOCATION:
                         break;
                     case IMAGE:
@@ -2197,38 +2127,35 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
-            }else{
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,"");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+            } else {
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
             }
         }
 
     }
-    public void upateMessage(JSendMsgRsp jSendMsgRsp)
-    {
-        if(jSendMsgRsp.getParams().getRetCode() == 0){
+
+    public void upateMessage(JSendMsgRsp jSendMsgRsp) {
+        if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
         }
-        switch (jSendMsgRsp.getParams().getRetCode())
-        {
+        switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
-                if(conversation !=null )
-                {
+                if (conversation != null) {
                     conversation.removeMessage(currentSendMsg.getMsgId());
-                    currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId()+"");
+                    currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                     currentSendMsg.setAcked(true);
                     conversation.insertMessage(currentSendMsg);
-                    KLog.i("insertMessage:" + "EaseChatFragment"+"_upateMessage");
-                    if(isMessageListInited) {
+                    KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
+                    if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
                 }
                 break;
             case 1:
-                if(conversation !=null )
-                {
+                if (conversation != null) {
                     conversation.removeMessage(currentSendMsg.getMsgId());
-                    if(isMessageListInited) {
+                    if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
                 }
@@ -2240,16 +2167,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 2:
-                if(conversation !=null )
-                {
+                if (conversation != null) {
                     conversation.removeMessage(currentSendMsg.getMsgId());
-                    if(isMessageListInited) {
+                    if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
                 }
                 friendStatus = 1;
-                String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jSendMsgRsp.getParams().getToId(),"");
+                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jSendMsgRsp.getParams().getToId(), "");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -2261,21 +2187,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
+
     /**
      * send @ message, only support group chat message
+     *
      * @param content
      */
     @SuppressWarnings("ConstantConditions")
-    private void sendAtMessage(String content){
-        if(chatType != EaseConstant.CHATTYPE_GROUP){
+    private void sendAtMessage(String content) {
+        if (chatType != EaseConstant.CHATTYPE_GROUP) {
             EMLog.e(TAG, "only support group chat message");
             return;
         }
         EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
         EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUserId);
-        if(EMClient.getInstance().getCurrentUser().equals(group.getOwner()) && EaseAtMessageHelper.get().containsAtAll(content)){
+        if (EMClient.getInstance().getCurrentUser().equals(group.getOwner()) && EaseAtMessageHelper.get().containsAtAll(content)) {
             message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG, EaseConstant.MESSAGE_ATTR_VALUE_AT_MSG_ALL);
-        }else {
+        } else {
             message.setAttribute(EaseConstant.MESSAGE_ATTR_AT_MSG,
                     EaseAtMessageHelper.get().atListToJsonArray(EaseAtMessageHelper.get().getAtMessageUsernames(content)));
         }
@@ -2284,83 +2212,78 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
 
-    protected void sendBigExpressionMessage(String name, String identityCode){
+    protected void sendBigExpressionMessage(String name, String identityCode) {
         EMMessage message = EaseCommonUtils.createExpressionMessage(toChatUserId, name, identityCode);
         sendMessageTo(message);
     }
 
     protected void sendVoiceMessage(String filePath, int length) {
-        if(friendStatus != 0)
-        {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
         try {
             File file = new File(filePath);
             boolean isHas = file.exists();
-            if(isHas)
-            {
-                String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+            if (isHas) {
+                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
-                String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                 message.setFrom(userId);
-                message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                 message.setDelivered(true);
                 message.setAcked(false);
                 message.setUnread(true);
 
-                if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                {
+                if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     message.setMsgId(uuid);
                     currentSendMsg = message;
-                    sendMsgMap.put(uuid,message);
-                    sendMsgLocalMap.put(uuid,false);
-                    sendFilePathMap.put(uuid,filePath);
-                    deleteFileMap.put(uuid,false);
-                    sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+                    sendMsgMap.put(uuid, message);
+                    sendMsgLocalMap.put(uuid, false);
+                    sendFilePathMap.put(uuid, filePath);
+                    deleteFileMap.put(uuid, false);
+                    sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                    String fileKey =  RxEncryptTool.generateAESKey();
+                    String fileKey = RxEncryptTool.generateAESKey();
                     byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                     byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                     byte[] SrcKey = new byte[256];
                     byte[] DstKey = new byte[256];
                     try {
 
-                        if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                        {
-                            SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                            DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                        }else{
+                        if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                            SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                            DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                        } else {
                             SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                             DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                         }
-                        sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                        sendFileMyKeyByteMap.put(uuid,SrcKey);
-                        sendFileFriendKeyByteMap.put(uuid,DstKey);
-                    }catch (Exception e){
+                        sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                        sendFileMyKeyByteMap.put(uuid, SrcKey);
+                        sendFileFriendKeyByteMap.put(uuid, DstKey);
+                    } catch (Exception e) {
                         Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                         return;
                     }
 
 
-                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                    EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                    String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
-                    String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                    String fileKey =  RxEncryptTool.generateAESKey();
-                    int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
-                    if(code == 1)
-                    {
-                        int uuid = (int)(System.currentTimeMillis()/1000);
-                        message.setMsgId(uuid+"");
+                    String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                    String fileKey = RxEncryptTool.generateAESKey();
+                    int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
+                    if (code == 1) {
+                        int uuid = (int) (System.currentTimeMillis() / 1000);
+                        message.setMsgId(uuid + "");
                         currentSendMsg = message;
-                        sendMsgMap.put(uuid+"",message);
-                        sendMsgLocalMap.put(uuid+"",false);
-                        sendFilePathMap.put(uuid+"",base58files_dir);
-                        deleteFileMap.put(uuid+"",false);
-                        sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+                        sendMsgMap.put(uuid + "", message);
+                        sendMsgLocalMap.put(uuid + "", false);
+                        sendFilePathMap.put(uuid + "", base58files_dir);
+                        deleteFileMap.put(uuid + "", false);
+                        sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
                         ToxFileData toxFileData = new ToxFileData();
                         toxFileData.setFromId(userId);
                         toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2369,7 +2292,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String fileMD5 = FileUtil.getFileMD5(fileMi);
                         toxFileData.setFileName(strBase58);
                         toxFileData.setFileMD5(fileMD5);
-                        toxFileData.setFileSize((int)fileSize);
+                        toxFileData.setFileSize((int) fileSize);
                         toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AUDIO);
                         toxFileData.setFileId(uuid);
                         String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
@@ -2379,29 +2302,26 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         byte[] DstKey = new byte[256];
                         try {
 
-                            if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                            {
-                                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                            }else{
+                            if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                            } else {
                                 SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                 DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                             }
-                        }catch (Exception e)
-                        {
+                        } catch (Exception e) {
 
                         }
                         toxFileData.setSrcKey(new String(SrcKey));
                         toxFileData.setDstKey(new String(DstKey));
                         String fileNumber = "";
-                        if(ConstantValue.INSTANCE.isAntox())
-                        {
-                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                        }else{
-                            fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                        if (ConstantValue.INSTANCE.isAntox()) {
+                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                        } else {
+                            fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                         }
-                        sendToxFileDataMap.put(fileNumber,toxFileData);
+                        sendToxFileDataMap.put(fileNumber, toxFileData);
                     }
                 }
                 Gson gson = new Gson();
@@ -2413,97 +2333,89 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
                 String baseDataJson = gson.toJson(Message);
-                SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 sendMessageTo(message);
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
 
     }
 
-    protected void sendImageMessage(String imagePath,boolean isCompress) {
-        if(friendStatus != 0)
-        {
+    protected void sendImageMessage(String imagePath, boolean isCompress) {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
-        new Thread(new Runnable(){
-            public void run(){
+        new Thread(new Runnable() {
+            public void run() {
 
-                try
-                {
+                try {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
-                    if(isHas)
-                    {
-                        String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+imagePath.substring(imagePath.lastIndexOf("/")+1);
-                        String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
-                        int codeSave = FileUtil.copySdcardPicAndCompress(imagePath,files_dir,isCompress);
+                    if (isHas) {
+                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
+                        String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
+                        int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
-                        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
-                        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            sendMsgMap.put(uuid,message);
-                            sendMsgLocalMap.put(uuid,false);
-                            sendFilePathMap.put(uuid,files_dir);
-                            deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            sendMsgMap.put(uuid, message);
+                            sendMsgLocalMap.put(uuid, false);
+                            sendFilePathMap.put(uuid, files_dir);
+                            deleteFileMap.put(uuid, false);
+                            sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String fileKey =  RxEncryptTool.generateAESKey();
+                            String fileKey = RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                }else{
+                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                } else {
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                 }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                                sendFileMyKeyByteMap.put(uuid,SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid,DstKey);
-                            }catch (Exception e){
+                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                                sendFileMyKeyByteMap.put(uuid, SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid, DstKey);
+                            } catch (Exception e) {
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            if(codeSave == 1)
-                            {
-                                String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                                EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-                            }else{
+                            if (codeSave == 1) {
+                                String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
+                            } else {
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                        }else{
+                        } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey,isCompress);
-                            if(code == 1)
-                            {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
-                                message.setMsgId(uuid+"");
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                            String fileKey = RxEncryptTool.generateAESKey();
+                            int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey, isCompress);
+                            if (code == 1) {
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                sendMsgMap.put(uuid+"",message);
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                sendMsgMap.put(uuid + "", message);
+                                sendMsgLocalMap.put(uuid + "", false);
+                                sendFilePathMap.put(uuid + "", base58files_dir);
+                                deleteFileMap.put(uuid + "", false);
+                                sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2512,7 +2424,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
                                 toxFileData.setFileMD5(fileMD5);
-                                toxFileData.setFileSize((int)fileSize);
+                                toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
@@ -2522,32 +2434,29 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] DstKey = new byte[256];
                                 try {
 
-                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                    {
-                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                    }else{
+                                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    } else {
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                     }
-                                   }catch (Exception e)
-                                {
+                                } catch (Exception e) {
 
                                 }
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
 
                                 String fileNumber = "";
-                                if(ConstantValue.INSTANCE.isAntox())
-                                {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                                }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                if (ConstantValue.INSTANCE.isAntox()) {
+                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                } else {
+                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber,toxFileData);
-                            }else{
+                                sendToxFileDataMap.put(fileNumber, toxFileData);
+                            } else {
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -2562,14 +2471,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
 
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
             }
@@ -2577,80 +2485,75 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }).start();
 
     }
+
     protected void sendCameraImageMessage(String imagePath) {
-        if(friendStatus != 0)
-        {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
-        new Thread(new Runnable(){
-            public void run(){
+        new Thread(new Runnable() {
+            public void run() {
 
-                try
-                {
-                    String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
+                try {
+                    String fileName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
-                    if(isHas)
-                    {
+                    if (isHas) {
                         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
-                        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
-                        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
                         currentSendMsg = message;
 
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            sendMsgMap.put(uuid,message);
-                            sendMsgLocalMap.put(uuid,false);
-                            sendFilePathMap.put(uuid,imagePath);
-                            deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            sendMsgMap.put(uuid, message);
+                            sendMsgLocalMap.put(uuid, false);
+                            sendFilePathMap.put(uuid, imagePath);
+                            deleteFileMap.put(uuid, false);
+                            sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String fileKey =  RxEncryptTool.generateAESKey();
+                            String fileKey = RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
 
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                }else{
+                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                } else {
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                 }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                                sendFileMyKeyByteMap.put(uuid,SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid,DstKey);
-                            }catch (Exception e){
+                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                                sendFileMyKeyByteMap.put(uuid, SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid, DstKey);
+                            } catch (Exception e) {
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-                        }else{
+                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
+                        } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(imagePath,base58files_dir,fileKey);
-                            if(code == 1)
-                            {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
-                                message.setMsgId(uuid+"");
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                            String fileKey = RxEncryptTool.generateAESKey();
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(imagePath, base58files_dir, fileKey);
+                            if (code == 1) {
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                sendMsgMap.put(uuid+"",message);
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                sendMsgMap.put(uuid + "", message);
+                                sendMsgLocalMap.put(uuid + "", false);
+                                sendFilePathMap.put(uuid + "", base58files_dir);
+                                deleteFileMap.put(uuid + "", false);
+                                sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2659,7 +2562,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
                                 toxFileData.setFileMD5(fileMD5);
-                                toxFileData.setFileSize((int)fileSize);
+                                toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
@@ -2669,39 +2572,35 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] DstKey = new byte[256];
                                 try {
 
-                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                    {
-                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                    }else{
+                                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    } else {
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                     }
-                                }catch (Exception e)
-                                {
+                                } catch (Exception e) {
 
                                 }
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
 
                                 String fileNumber = "";
-                                if(ConstantValue.INSTANCE.isAntox())
-                                {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                                }else {
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                if (ConstantValue.INSTANCE.isAntox()) {
+                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                } else {
+                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
-                                sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendToxFileDataMap.put(fileNumber, toxFileData);
                             }
                         }
 
                         sendMessageTo(message);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
             }
@@ -2709,91 +2608,87 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }).start();
 
     }
+
     protected void sendLocationMessage(double latitude, double longitude, String locationAddress) {
         EMMessage message = EMMessage.createLocationSendMessage(latitude, longitude, locationAddress, toChatUserId);
         sendMessageTo(message);
     }
 
-    protected void sendVideoMessage(String videoPath,boolean isLocal) {
-        if(friendStatus != 0)
-        {
+    protected void sendVideoMessage(String videoPath, boolean isLocal) {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
-        new Thread(new Runnable(){
+        new Thread(new Runnable() {
             public void run() {
 
                 try {
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
-                    if(isHas)
-                    {
-                        String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
-                        String videoName = videoPath.substring(videoPath.lastIndexOf("/")+1,videoPath.lastIndexOf(".")+1);
-                        String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                    if (isHas) {
+                        String videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
+                        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1);
+                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
-                        FileUtil.saveBitmpToFile(bitmap,thumbPath);
+                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
                         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
-                        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
-                        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
 
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            sendMsgMap.put(uuid,message);
-                            sendMsgLocalMap.put(uuid,false);
-                            sendFilePathMap.put(uuid,videoPath);
-                            deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            sendMsgMap.put(uuid, message);
+                            sendMsgLocalMap.put(uuid, false);
+                            sendFilePathMap.put(uuid, videoPath);
+                            deleteFileMap.put(uuid, false);
+                            sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String fileKey =  RxEncryptTool.generateAESKey();
+                            String fileKey = RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
 
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                }else{
+                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                } else {
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                 }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                                sendFileMyKeyByteMap.put(uuid,SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid,DstKey);
-                            }catch (Exception e){
+                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                                sendFileMyKeyByteMap.put(uuid, SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid, DstKey);
+                            } catch (Exception e) {
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
+                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
 
-                        }else{
+                        } else {
                             String strBase58 = Base58.encode(videoFileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey);
-                            if(code == 1)
-                            {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
-                                message.setMsgId(uuid+"");
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                            String fileKey = RxEncryptTool.generateAESKey();
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey);
+                            if (code == 1) {
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                sendMsgMap.put(uuid+"",message);
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                sendMsgMap.put(uuid + "", message);
+                                sendMsgLocalMap.put(uuid + "", false);
+                                sendFilePathMap.put(uuid + "", base58files_dir);
+                                deleteFileMap.put(uuid + "", false);
+                                sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2802,7 +2697,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
                                 toxFileData.setFileMD5(fileMD5);
-                                toxFileData.setFileSize((int)fileSize);
+                                toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
                                 toxFileData.setFileId(uuid);
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
@@ -2812,31 +2707,28 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] DstKey = new byte[256];
                                 try {
 
-                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                    {
-                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                    }else{
+                                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    } else {
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                     }
-                                }catch (Exception e)
-                                {
+                                } catch (Exception e) {
 
                                 }
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
 
-                                String fileNumber  = "";
-                                if(ConstantValue.INSTANCE.isAntox())
-                                {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                                }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                String fileNumber = "";
+                                if (ConstantValue.INSTANCE.isAntox()) {
+                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                } else {
+                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendToxFileDataMap.put(fileNumber, toxFileData);
                             }
                         }
                         Gson gson = new Gson();
@@ -2848,13 +2740,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
             }
@@ -2867,83 +2758,77 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void sendFileMessage(String filePath) {
        /* EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
         sendMessageTo(message);*/
-        if(friendStatus != 0)
-        {
+        if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
         }
-        new Thread(new Runnable(){
-            public void run(){
+        new Thread(new Runnable() {
+            public void run() {
 
-                try
-                {
+                try {
                     File file = new File(filePath);
                     boolean isHas = file.exists();
-                    if(isHas)
-                    {
-                        String fileName = ((int)(System.currentTimeMillis()/1000))+"_"+filePath.substring(filePath.lastIndexOf("/")+1);
+                    if (isHas) {
+                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
 
-                        String files_dir = PathUtils.getInstance().getImagePath().toString()+"/" + fileName;
+                        String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
-                        String userId =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(),"");
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
-                        message.setTo( UserDataManger.curreantfriendUserData.getUserId());
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
 
 
-                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
-                        {
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            sendMsgMap.put(uuid,message);
-                            sendMsgLocalMap.put(uuid,false);
-                            sendFilePathMap.put(uuid,files_dir);
-                            deleteFileMap.put(uuid,false);
-                            sendFileFriendKeyMap.put(uuid,UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            sendMsgMap.put(uuid, message);
+                            sendMsgLocalMap.put(uuid, false);
+                            sendFilePathMap.put(uuid, files_dir);
+                            deleteFileMap.put(uuid, false);
+                            sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            String fileKey =  RxEncryptTool.generateAESKey();
+                            String fileKey = RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                             byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
 
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                }else{
+                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                } else {
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                 }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
-                                sendFileMyKeyByteMap.put(uuid,SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid,DstKey);
-                            }catch (Exception e){
+                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                                sendFileMyKeyByteMap.put(uuid, SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid, DstKey);
+                            } catch (Exception e) {
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
-                        }else{
+                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
+                        } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
-                            String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey);
-                            if(code == 1)
-                            {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
-                                message.setMsgId(uuid+"");
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                            String fileKey = RxEncryptTool.generateAESKey();
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
+                            if (code == 1) {
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                sendMsgMap.put(uuid+"",message);
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                deleteFileMap.put(uuid+"",false);
-                                sendFileFriendKeyMap.put(uuid+"",UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                sendMsgMap.put(uuid + "", message);
+                                sendMsgLocalMap.put(uuid + "", false);
+                                sendFilePathMap.put(uuid + "", base58files_dir);
+                                deleteFileMap.put(uuid + "", false);
+                                sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(userId);
                                 toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
@@ -2952,7 +2837,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
                                 toxFileData.setFileMD5(fileMD5);
-                                toxFileData.setFileSize((int)fileSize);
+                                toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_FILE);
                                 toxFileData.setFileId(uuid);
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
@@ -2962,35 +2847,32 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 byte[] DstKey = new byte[256];
                                 try {
 
-                                    if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
-                                    {
-                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                    }else{
+                                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    } else {
                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
                                     }
-                                }catch (Exception e)
-                                {
+                                } catch (Exception e) {
 
                                 }
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
 
                                 String fileNumber = "";
-                                if(ConstantValue.INSTANCE.isAntox())
-                                {
-                                    FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
-                                }else {
-                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                if (ConstantValue.INSTANCE.isAntox()) {
+                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                } else {
+                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendToxFileDataMap.put(fileNumber, toxFileData);
                             }
 
                         }
-                        FileUtil.copySdcardFile(filePath,files_dir);
+                        FileUtil.copySdcardFile(filePath, files_dir);
                         Gson gson = new Gson();
                         Message Message = new Message();
                         Message.setMsgType(5);
@@ -3000,14 +2882,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
                         String baseDataJson = gson.toJson(Message);
-                        SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+toChatUserId,baseDataJson);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
 
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                 }
             }
@@ -3017,13 +2898,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * 接受文字和表情消息
+     *
      * @param jPushMsgRsp
      */
-    public void receiveTxtMessage(JPushMsgRsp jPushMsgRsp)
-    {
-        String msgSouce =  RxEncodeTool.RestoreMessage(jPushMsgRsp.getParams().getDstKey(),jPushMsgRsp.getParams().getMsg());
-        if(msgSouce != null && !msgSouce.equals(""))
-        {
+    public void receiveTxtMessage(JPushMsgRsp jPushMsgRsp) {
+        String msgSouce = RxEncodeTool.RestoreMessage(jPushMsgRsp.getParams().getDstKey(), jPushMsgRsp.getParams().getMsg());
+        if (msgSouce != null && !msgSouce.equals("")) {
             jPushMsgRsp.getParams().setMsg(msgSouce);
         }
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
@@ -3040,25 +2920,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setTo(jPushMsgRsp.getParams().getToId());
         Message.setTimeStatmp(System.currentTimeMillis());
         String baseDataJson = gson.toJson(Message);
-        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if(Message.getSender() == 0)
-        {
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFromId(),baseDataJson);
-        }else{
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFromId(),baseDataJson);
+        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        if (Message.getSender() == 0) {
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jPushMsgRsp.getParams().getFromId(), baseDataJson);
+        } else {
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jPushMsgRsp.getParams().getFromId(), baseDataJson);
         }
         sendMessageTo(message);
     }
 
     /**
      * 接受文字和表情消息V3
+     *
      * @param jPushMsgRsp
      */
-    public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp)
-    {
-        String msgSouce =  LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(),jPushMsgRsp.getParams().getNonce(),jPushMsgRsp.getParams().getFrom(),jPushMsgRsp.getParams().getSign());
-        if(msgSouce != null && !msgSouce.equals(""))
-        {
+    public void receiveTxtMessageV3(JPushMsgRsp jPushMsgRsp) {
+        String msgSouce = LibsodiumUtil.INSTANCE.DecryptFriendMsg(jPushMsgRsp.getParams().getMsg(), jPushMsgRsp.getParams().getNonce(), jPushMsgRsp.getParams().getFrom(), jPushMsgRsp.getParams().getSign());
+        if (msgSouce != null && !msgSouce.equals("")) {
             jPushMsgRsp.getParams().setMsg(msgSouce);
         }
         EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
@@ -3075,47 +2953,46 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setTo(jPushMsgRsp.getParams().getTo());
         Message.setTimeStatmp(System.currentTimeMillis());
         String baseDataJson = gson.toJson(Message);
-        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if(Message.getSender() == 0)
-        {
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFrom(),baseDataJson);
-        }else{
-            SpUtil.INSTANCE.putString(AppConfig.instance,ConstantValue.INSTANCE.getMessage()+userId+"_"+jPushMsgRsp.getParams().getFrom(),baseDataJson);
+        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        if (Message.getSender() == 0) {
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jPushMsgRsp.getParams().getFrom(), baseDataJson);
+        } else {
+            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jPushMsgRsp.getParams().getFrom(), baseDataJson);
         }
         sendMessageTo(message);
     }
+
     /**
      * 接受文件消息
+     *
      * @param url
      * @param msgId
      * @param fromId
      * @param toId
      */
-    public void receiveFileMessage(String url,String msgId, String fromId,String toId,int FileType)
-    {
+    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType) {
         String files_dir = "";
         EMMessage message = null;
-        switch (FileType)
-        {
+        switch (FileType) {
             case 1:
-                files_dir = PathUtils.getInstance().getFilePath() + "/" +url;
+                files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                 break;
             case 2:
-                files_dir = PathUtils.getInstance().getFilePath() + "/" +url;
+                files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 int longTime = FileUtil.getAmrDuration(new File(files_dir));
                 message = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                 break;
             case 4:
-                files_dir = PathUtils.getInstance().getFilePath() + "/" +url;
-                String videoName = files_dir.substring(files_dir.lastIndexOf("/")+1,files_dir.lastIndexOf(".")+1);
-                String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
+                String videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf(".") + 1);
+                String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                 Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                FileUtil.saveBitmpToFile(bitmap,thumbPath);
-                message = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
+                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                message = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                 break;
             case 5:
-                files_dir = PathUtils.getInstance().getFilePath() + "/" +url;
+                files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 message = EMMessage.createFileSendMessage(files_dir, toChatUserId);
                 break;
             default:
@@ -3127,19 +3004,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setTo(toId);
         sendMessageTo(message);
     }
-    protected void sendMessageTo(EMMessage message){
+
+    protected void sendMessageTo(EMMessage message) {
         if (message == null) {
             return;
         }
-        if(conversation == null)
+        if (conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
-        if(chatFragmentHelper != null){
+        if (chatFragmentHelper != null) {
             //set extension
             chatFragmentHelper.onSetMessageAttributes(message);
         }
-        if (chatType == EaseConstant.CHATTYPE_GROUP){
+        if (chatType == EaseConstant.CHATTYPE_GROUP) {
             message.setChatType(ChatType.GroupChat);
-        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
+        } else if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             message.setChatType(ChatType.ChatRoom);
         }
 
@@ -3149,14 +3027,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         //EMClient.getInstance().chatManager().sendMessageTo(message);
         //message.setDirection(EMMessage.Direct.RECEIVE );
         message.setStatus(EMMessage.Status.SUCCESS);
-        if(conversation == null)
+        if (conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
-        if(conversation != null)
-        {
+        if (conversation != null) {
             //KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo1");
             conversation.insertMessage(message);
             //refresh ui
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 //KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2_"+conversation.getAllMessages().size());
                 easeChatMessageList.refreshSelectLast();
 //                easeChatMessageList.postDelayed(new Runnable() {
@@ -3166,28 +3043,25 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //                    }
 //                }, 500);
             }
-        }else{
-            new Thread(new Runnable(){
+        } else {
+            new Thread(new Runnable() {
 
-                public void run(){
+                public void run() {
 
-                    try
-                    {
+                    try {
                         Thread.sleep(1000);
-                        if(conversation == null)
+                        if (conversation == null)
                             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
-                        if(conversation != null)
-                        {
-                            KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2");
+                        if (conversation != null) {
+                            KLog.i("insertMessage:" + "EaseChatFragment" + "_sendMessageTo2");
                             conversation.insertMessage(message);
                             //SpUtil.INSTANCE.putString(conversation.conversationId());
                             //refresh ui
-                            if(isMessageListInited) {
+                            if (isMessageListInited) {
                                 easeChatMessageList.refreshSelectLast();
                             }
                         }
-                    }catch (Exception e)
-                    {
+                    } catch (Exception e) {
 
                     }
                 }
@@ -3206,7 +3080,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected EMCallBack messageStatusCallback = new EMCallBack() {
         @Override
         public void onSuccess() {
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
         }
@@ -3214,7 +3088,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         @Override
         public void onError(int code, String error) {
             Log.i("EaseChatRowPresenter", "onError: " + code + ", error: " + error);
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
         }
@@ -3222,7 +3096,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         @Override
         public void onProgress(int progress, String status) {
             Log.i(TAG, "onProgress: " + progress);
-            if(isMessageListInited) {
+            if (isMessageListInited) {
                 easeChatMessageList.refresh();
             }
         }
@@ -3234,7 +3108,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param selectedImage
      */
     protected void sendPicByUri(Uri selectedImage) {
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
         Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -3265,29 +3139,31 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         inputMenu.hideExtendMenuContainer();
     }
-    protected void chooseOriginalImage(String path)
-    {
+
+    protected void chooseOriginalImage(String path) {
         Intent intent = new Intent(getContext(), EaseShowChooseImageActivity.class);
         File file = new File(path);
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);
             intent.putExtra("path", path);
-            startActivityForResult(intent,CHOOSE_PIC);
-        }else{
+            startActivityForResult(intent, CHOOSE_PIC);
+        } else {
             Toast toast = Toast.makeText(getActivity(), R.string.cant_find_pictures, Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
         }
     }
+
     /**
      * send file
+     *
      * @param uri
      */
-    protected void sendFileByUri(Uri uri){
+    protected void sendFileByUri(Uri uri) {
         String filePath = null;
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = null;
 
             try {
@@ -3325,18 +3201,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        cameraFile = new File(PathUtils.getInstance().getTempPath(),  System.currentTimeMillis() + ".jpg");
+        cameraFile = new File(PathUtils.getInstance().getTempPath(), System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         try {
             cameraFile.getParentFile().mkdirs();
             startActivityForResult(
                     new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), cameraFile)),
                     REQUEST_CODE_CAMERA);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             Toast.makeText(getActivity(), R.string.Permissionerror, Toast.LENGTH_SHORT).show();
         }
     }
+
     /**
      * capture new video
      */
@@ -3345,7 +3221,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        videoFile = new File(PathUtils.getInstance().getVideoPath(),  System.currentTimeMillis() + ".mp4");
+        videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
         KLog.i(videoFile.getPath());
         //noinspection ResultOfMethodCallIgnored
         videoFile.getParentFile().mkdirs();
@@ -3353,6 +3229,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 new Intent(MediaStore.ACTION_VIDEO_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, EaseCompat.getUriForFile(getContext(), videoFile)).putExtra(MediaStore.EXTRA_DURATION_LIMIT, 30).putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0),
                 REQUEST_CODE_VIDEO);
     }
+
     /**
      * select local image
      */
@@ -3390,15 +3267,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * clear the conversation history
-     *
      */
     protected void emptyHistory() {
         String msg = getResources().getString(R.string.Whether_to_empty_all_chats);
-        new EaseAlertDialog(getActivity(),null, msg, null,new AlertDialogUser() {
+        new EaseAlertDialog(getActivity(), null, msg, null, new AlertDialogUser() {
 
             @Override
             public void onResult(boolean confirmed, Bundle bundle) {
-                if(confirmed){
+                if (confirmed) {
                     if (conversation != null) {
                         conversation.clearAllMessages();
                     }
@@ -3411,7 +3287,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * open group detail
-     *
      */
     protected void toGroupDetails() {
         if (chatType == EaseConstant.CHATTYPE_GROUP) {
@@ -3420,11 +3295,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Toast.makeText(getActivity(), R.string.gorup_not_found, Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(chatFragmentHelper != null){
+            if (chatFragmentHelper != null) {
                 chatFragmentHelper.onEnterToChatDetails();
             }
-        }else if(chatType == EaseConstant.CHATTYPE_CHATROOM){
-            if(chatFragmentHelper != null){
+        } else if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
+            if (chatFragmentHelper != null) {
                 chatFragmentHelper.onEnterToChatDetails();
             }
         }
@@ -3451,10 +3326,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         EMMessage.Type type = forward_msg.getType();
         switch (type) {
             case TXT:
-                if(forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)){
+                if (forward_msg.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
                     sendBigExpressionMessage(((EMTextMessageBody) forward_msg.getBody()).getMessage(),
                             forward_msg.getStringAttribute(EaseConstant.MESSAGE_ATTR_EXPRESSION_ID, null));
-                }else{
+                } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
                     sendTextMessage(content);
@@ -3469,21 +3344,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         // send thumb nail if original image does not exist
                         filePath = ((EMImageMessageBody) forward_msg.getBody()).thumbnailLocalPath();
                     }
-                    sendImageMessage(filePath,false);
+                    sendImageMessage(filePath, false);
                 }
                 break;
             default:
                 break;
         }
 
-        if(forward_msg.getChatType() == ChatType.ChatRoom){
+        if (forward_msg.getChatType() == ChatType.ChatRoom) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(forward_msg.getTo());
         }
     }
 
     /**
      * listen the group event
-     *
      */
     class GroupListener extends EaseGroupListener {
 
@@ -3563,7 +3437,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
 
-
         @Override
         public void onMemberJoined(final String roomId, final String participant) {
             if (roomId.equals(toChatUserId)) {
@@ -3590,11 +3463,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     }
 
     protected EaseChatFragmentHelper chatFragmentHelper;
-    public void setChatFragmentHelper(EaseChatFragmentHelper chatFragmentHelper){
+
+    public void setChatFragmentHelper(EaseChatFragmentHelper chatFragmentHelper) {
         this.chatFragmentHelper = chatFragmentHelper;
     }
 
-    public interface EaseChatFragmentHelper{
+    public interface EaseChatFragmentHelper {
         /**
          * set message attribute
          */
@@ -3607,12 +3481,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         /**
          * on avatar clicked
+         *
          * @param username
          */
         void onAvatarClick(String username);
 
         /**
          * on avatar long pressed
+         *
          * @param username
          */
         void onAvatarLongClick(String username);
@@ -3629,6 +3505,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         /**
          * on extend menu item clicked, return true if you want to override
+         *
          * @param view
          * @param itemId
          * @return
@@ -3637,16 +3514,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         /**
          * on set custom chat row provider
+         *
          * @return
          */
         EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
-    protected Handler handlerDown = new Handler(){
+
+    protected Handler handlerDown = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0x404:
                     Bundle errdata = msg.getData();
-                    String errmsgId = errdata.getInt("msgID")+"";
+                    String errmsgId = errdata.getInt("msgID") + "";
                     Message messageError = receiveFileDataMap.get(errmsgId);
                    /* getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -3654,63 +3533,55 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             Toast.makeText(getActivity(),messageError.getFileName()+ " Download failed", Toast.LENGTH_SHORT).show();
                         }
                     });*/
-                     break;
+                    break;
                 case 0x55:
-                    if(conversation !=null && ConstantValue.INSTANCE.getUserId() != null)
-                    {
-                        String userId =   SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                    if (conversation != null && ConstantValue.INSTANCE.getUserId() != null) {
+                        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         Bundle data = msg.getData();
-                        String msgId = data.getInt("msgID")+"";
+                        String msgId = data.getInt("msgID") + "";
                         Message message = receiveFileDataMap.get(msgId);
                         conversation.removeMessage(msgId);
                         String files_dir = "";
                         EMMessage messageData = null;
-                        if(message != null)
-                        {
-                            switch (message.getMsgType())
-                            {
+                        if (message != null) {
+                            switch (message.getMsgType()) {
                                 case 1:
-                                    files_dir = PathUtils.getInstance().getImagePath()+"/" +message.getFileName();
+                                    files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                     messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                                     break;
                                 case 2:
-                                    files_dir = PathUtils.getInstance().getVoicePath()+"/" +message.getFileName();
+                                    files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
                                     int longTime = FileUtil.getAmrDuration(new File(files_dir));
                                     messageData = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
                                     break;
                                 case 4:
-                                    files_dir = PathUtils.getInstance().getVideoPath()+"/" +message.getFileName();
-                                    int beginIndex = files_dir.lastIndexOf("/")+1;
-                                    int endIndex = files_dir.lastIndexOf(".")+1;
-                                    if(endIndex < beginIndex)
-                                    {
+                                    files_dir = PathUtils.getInstance().getVideoPath() + "/" + message.getFileName();
+                                    int beginIndex = files_dir.lastIndexOf("/") + 1;
+                                    int endIndex = files_dir.lastIndexOf(".") + 1;
+                                    if (endIndex < beginIndex) {
                                         return;
                                     }
-                                    String videoName = files_dir.substring(beginIndex,endIndex);
-                                    String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
+                                    String videoName = files_dir.substring(beginIndex, endIndex);
+                                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                                    FileUtil.saveBitmpToFile(bitmap,thumbPath);
-                                    messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
+                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                                     break;
                                 case 5:
-                                    files_dir = PathUtils.getInstance().getFilePath()+"/" +message.getFileName();
+                                    files_dir = PathUtils.getInstance().getFilePath() + "/" + message.getFileName();
                                     messageData = EMMessage.createFileSendMessage(files_dir, toChatUserId);
                                     break;
                             }
-                            if(messageData != null)
-                            {
+                            if (messageData != null) {
                                 messageData.setFrom(message.getFrom());
                                 messageData.setTo(message.getTo());
                                 messageData.setUnread(false);
 
-                                if(message.getFrom() == null)
-                                {
-                                    if(message.getSender() == 0)
-                                    {
+                                if (message.getFrom() == null) {
+                                    if (message.getSender() == 0) {
                                         messageData.setFrom(userId);
                                         messageData.setTo(toChatUserId);
-                                        switch (message.getStatus())
-                                        {
+                                        switch (message.getStatus()) {
                                             case 0:
                                                 messageData.setDelivered(true);
                                                 messageData.setAcked(false);
@@ -3729,23 +3600,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                             default:
                                                 break;
                                         }
-                                        messageData.setDirection(EMMessage.Direct.SEND );
-                                    }else {
+                                        messageData.setDirection(EMMessage.Direct.SEND);
+                                    } else {
                                         messageData.setFrom(toChatUserId);
                                         messageData.setTo(userId);
-                                        messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                        messageData.setDirection(EMMessage.Direct.RECEIVE);
                                     }
-                                }else{
-                                    if(message.getFrom()!= null && message.getFrom().equals(userId))
-                                    {
-                                        messageData.setDirection(EMMessage.Direct.SEND );
-                                    }else {
-                                        messageData.setDirection(EMMessage.Direct.RECEIVE );
+                                } else {
+                                    if (message.getFrom() != null && message.getFrom().equals(userId)) {
+                                        messageData.setDirection(EMMessage.Direct.SEND);
+                                    } else {
+                                        messageData.setDirection(EMMessage.Direct.RECEIVE);
                                     }
                                 }
 
-                                messageData.setMsgTime(message.getTimeStatmp()* 1000);
-                                messageData.setMsgId( message.getMsgId()+"");
+                                messageData.setMsgTime(message.getTimeStatmp() * 1000);
+                                messageData.setMsgId(message.getMsgId() + "");
                                 sendMessageTo(messageData);
                             }
                         }

@@ -243,6 +243,14 @@ public class EaseChatInputMenu extends LinearLayout {
         chatExtendMenu.registerMenuItem(nameRes, drawableRes, itemId, listener);
     }
 
+    public String getEdittext() {
+        return chatPrimaryMenu.getEdittext();
+    }
+
+    public void setEdittext(String content) {
+        chatPrimaryMenu.setEdittext(content);
+    }
+
 
     protected void processChatMenu() {
         // send message button
