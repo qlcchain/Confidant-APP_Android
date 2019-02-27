@@ -275,6 +275,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         initData()
     }
     fun pullFriendList() {
+        Log.i("pullFriendList", "webosocket" + ConstantValue.isWebsocketConnected)
         if(refreshLayout != null)
             refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
@@ -284,6 +285,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         {
             sendData = BaseData(4,pullFriend)
         }
+        Log.i("pullFriendList", "tox " + ConstantValue.isToxConnected)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

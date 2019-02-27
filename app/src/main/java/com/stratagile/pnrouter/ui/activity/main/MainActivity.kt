@@ -34,6 +34,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
@@ -717,6 +718,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }catch (e : Exception) {
             e.printStackTrace()
         }
+        val backGroundService = Intent(this, BackGroundService::class.java)
+        this.startService(backGroundService)
         ConstantValue.mainActivity = this
         var startFileDownloadUploadService = Intent(this, FileDownloadUploadService::class.java)
         startService(startFileDownloadUploadService)

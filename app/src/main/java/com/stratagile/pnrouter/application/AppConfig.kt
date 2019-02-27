@@ -22,6 +22,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.MessageRetrievalService
 import com.stratagile.pnrouter.data.service.MyService
 import com.stratagile.pnrouter.data.tox.ToxMessageReceiver
@@ -99,10 +100,12 @@ class AppConfig : MultiDexApplication() {
            ContextCompat.startForegroundService(this, Intent(this, ForegroundService::class.java))
         }*/
 
-        var intent =  Intent(this, MyService::class.java)
+
+
+       /* var intent =  Intent(this, MyService::class.java)
         var sender= PendingIntent.getService(this, 0, intent, 0);
         var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);*/
 //        MessageProvider.init()
     }
     fun getMessageReceiverInstance():  PNRouterServiceMessageReceiver{
