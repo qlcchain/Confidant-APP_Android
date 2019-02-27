@@ -1759,10 +1759,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private void setDraft() {
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         String content = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
-        Message message = new Gson().fromJson(content, Message.class);
-        if (message.getMsg()!= null && message.getMsg().contains("/[draft]/")) {
-            inputMenu.setEdittext(message.getMsg().replace("/[draft]/", ""));
+        if(content != null  && !content.equals(""))
+        {
+            Message message = new Gson().fromJson(content, Message.class);
+            if (message != null && message.getMsg()!= null && message.getMsg().contains("/[draft]/")) {
+                inputMenu.setEdittext(message.getMsg().replace("/[draft]/", ""));
+            }
         }
+
     }
 
     /**
