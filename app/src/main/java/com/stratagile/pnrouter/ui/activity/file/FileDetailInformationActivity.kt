@@ -44,7 +44,11 @@ class FileDetailInformationActivity : BaseActivity(), FileDetailInformationContr
         file = intent.getParcelableExtra("file")
         var fileName1 = String(Base58.decode(file.fileName.substring(file.fileName.lastIndexOf("/") + 1)))
         fileName.text = fileName1
-        fileType.text = fileName1.substring(fileName1.lastIndexOf(".") + 1)
+        if (fileName1.contains(".")) {
+            fileType.text = fileName1.substring(fileName1.lastIndexOf(".") + 1)
+        } else {
+            fileType.text = "unknown"
+        }
         fileTime.text = TimeUtil.getFileListTime(file.timestamp.toLong())
         fileSize.text = NetUtils.parseSize(file.fileSize.toLong())
         fileSource.text = ""

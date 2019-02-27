@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FileStatus
+import com.stratagile.pnrouter.entity.events.PullFileList
 import com.stratagile.pnrouter.entity.file.TaskFile
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileTaskListComponent
@@ -506,8 +507,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     }
     override fun onDestroy() {
-        super.onDestroy()
+        EventBus.getDefault().post(PullFileList())
         EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver?.fileTaskBack = null
+        super.onDestroy()
     }
 }
