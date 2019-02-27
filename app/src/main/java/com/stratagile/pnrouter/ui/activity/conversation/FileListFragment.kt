@@ -23,6 +23,7 @@ import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.db.RecentFileDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
+import com.stratagile.pnrouter.entity.events.PullFileList
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
@@ -187,6 +188,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver?.fileMainManageBack = this
         pullFileList()
         fileListChooseAdapter = FileListChooseAdapter(arrayListOf())
@@ -350,7 +352,13 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     }
 
     override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun refreshList(pullFileList: PullFileList) {
+        pullFileList()
     }
 
 

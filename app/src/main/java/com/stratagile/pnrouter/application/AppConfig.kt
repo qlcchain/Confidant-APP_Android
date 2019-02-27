@@ -59,6 +59,8 @@ class AppConfig : MultiDexApplication() {
     val FOREGROUND_ID = 313399
     var applicationComponent: AppComponent? = null
 
+    var isBackGroud = false
+
     var onToxMessageReceiveListener : WebSocketConnection.OnMessageReceiveListener? = null
 
     var messageReceiver: PNRouterServiceMessageReceiver? = null
@@ -244,6 +246,7 @@ class AppConfig : MultiDexApplication() {
         ForegroundCallbacks.getInstance().addListener(object : ForegroundCallbacks.Listener {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
+                isBackGroud = false
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0);
                 if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60* 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
                 {
@@ -258,6 +261,7 @@ class AppConfig : MultiDexApplication() {
 
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
+                isBackGroud = true
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))
                 if (ConstantValue.logining) {

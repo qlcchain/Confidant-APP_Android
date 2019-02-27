@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
+import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -39,10 +40,10 @@ import java.util.List;
  * conversation list adapter
  *
  */
-public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
+public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
     private static final String TAG = "EaseConversationNewAdapter";
-    private List<EMMessage> conversationEmmessageList;
-    private List<EMMessage> copyConversationEmmessageList;
+    private List<UnReadEMMessage> conversationEmmessageList;
+    private List<UnReadEMMessage> copyConversationEmmessageList;
     private ConversationFilter conversationFilter;
     private boolean notiyfyByFilter;
 
@@ -54,10 +55,10 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
     protected float timeSize;
 
     public EaseConversationNewAdapter(Context context, int resource,
-                                      List<EMMessage> objects) {
+                                      List<UnReadEMMessage> objects) {
         super(context, resource, objects);
         conversationEmmessageList = objects;
-        copyConversationEmmessageList = new ArrayList<EMMessage>();
+        copyConversationEmmessageList = new ArrayList<UnReadEMMessage>();
         copyConversationEmmessageList.addAll(objects);
     }
 
@@ -67,7 +68,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
     }
 
     @Override
-    public EMMessage getItem(int arg0) {
+    public UnReadEMMessage getItem(int arg0) {
         if (arg0 < conversationEmmessageList.size()) {
             return conversationEmmessageList.get(arg0);
         }
@@ -91,6 +92,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
             holder.userRouter = (TextView) convertView.findViewById(R.id.userRouter);
             holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.message = (TextView) convertView.findViewById(R.id.message);
+            holder.draft = (TextView) convertView.findViewById(R.id.draft);
             holder.time = (TextView) convertView.findViewById(R.id.time);
             holder.avatar = (ImageButtonWithText) convertView.findViewById(R.id.avatar);
             holder.msgState = convertView.findViewById(R.id.msg_state);
@@ -101,23 +103,23 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
 
         // get conversation
-        EMMessage conversation = getItem(position);
+        UnReadEMMessage conversation = getItem(position);
         // get username or group id
-        String conversationId = conversation.conversationId();
-        EMMessage lastMessage = conversation;
+        String conversationId = conversation.getEmMessage().conversationId();
+        UnReadEMMessage lastMessage = conversation;
         if(lastMessage == null)
         {
             return convertView;
         }
         UserEntity friendUser = null;
         List<UserEntity> localFriendList = null;
-        if(UserDataManger.myUserData != null && !lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
+        if(UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
         {
-            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
             if(localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }else{
-            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
             if(localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }
@@ -131,8 +133,8 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
             username = friendUser.getRemarks();
         }
         String usernameSouce = new  String(RxEncodeTool.base64Decode(username));
-        if (conversation.getChatType() == EMMessage.ChatType.GroupChat) {
-            String groupId = conversation.conversationId();
+        if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.GroupChat) {
+            String groupId = conversation.getEmMessage().conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
                 holder.motioned.setVisibility(View.VISIBLE);
             }else{
@@ -142,7 +144,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
             holder.name.setText(group != null ? group.getGroupName() : usernameSouce);
-        } else if(conversation.getChatType() == EMMessage.ChatType.ChatRoom){
+        } else if(conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom){
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(conversationId);
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : usernameSouce);
@@ -169,24 +171,24 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
 //                avatarView.setRadius(avatarOptions.getAvatarRadius());
 //        }
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if (lastMessage.isUnread() && !userId.equals(lastMessage.getFrom())) {
-            // show unread message count
-            //holder.//convsationCallBack.setText(String.valueOf(conversation.getUnreadMsgCount()));
-            holder.unreadLabel.setText("");
+        if (lastMessage.getEmMessage().isUnread() && !userId.equals(lastMessage.getEmMessage().getFrom())) {
+//             show unread message count
+//            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+            holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : "" + lastMessage.getUnReadCount());
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
-        String time = lastMessage.getMsgTime() +"";
+        String time = lastMessage.getEmMessage().getMsgTime() +"";
         if(time.length() == 10)
         {
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getMsgTime() *1000)));
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() *1000)));
         }else{
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getMsgTime())));
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime())));
         }
-        if (lastMessage.isUnread()) {
+        if (lastMessage.getEmMessage().isUnread()) {
             // show the content of latest message
-            if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
+            if (lastMessage.getEmMessage().direct() == EMMessage.Direct.SEND && lastMessage.getEmMessage().status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
             } else {
                 holder.msgState.setVisibility(View.GONE);
@@ -197,16 +199,18 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         if(cvsListHelper != null){
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))),
                 TextView.BufferType.SPANNABLE);
         if(content != null){
             holder.message.setText(content);
         }
         if (holder.message.getText().toString().contains("[draft]")) {
-            holder.message.setTextColor(getContext().getResources().getColor(R.color.material_red_a700));
+            holder.draft.setVisibility(View.VISIBLE);
         } else {
-            holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
+            holder.draft.setVisibility(View.GONE);
         }
+        holder.message.setText(holder.message.getText().toString().replace("[draft]", ""));
+        holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
         //set property
         holder.name.setTextColor(primaryColor);
         holder.time.setTextColor(timeColor);
@@ -267,13 +271,13 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
 
 
     private class ConversationFilter extends Filter {
-        List<EMMessage> mOriginalValues = null;
+        List<UnReadEMMessage> mOriginalValues = null;
 
-        public ConversationFilter(List<EMMessage> mList) {
+        public ConversationFilter(List<UnReadEMMessage> mList) {
             mOriginalValues = mList;
         }
 
-        public void  updata(List<EMMessage> mList) {
+        public void  updata(List<UnReadEMMessage> mList) {
             mOriginalValues = mList;
         }
         @Override
@@ -281,7 +285,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
             FilterResults results = new FilterResults();
 
             if (mOriginalValues == null) {
-                mOriginalValues = new ArrayList<EMMessage>();
+                mOriginalValues = new ArrayList<UnReadEMMessage>();
             }
             if (prefix == null || prefix.length() == 0) {
                 results.values = copyConversationEmmessageList;
@@ -292,21 +296,21 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
                 }
                 String prefixString = prefix.toString();
                 final int count = mOriginalValues.size();
-                final ArrayList<EMMessage> newValues = new ArrayList<EMMessage>();
+                final ArrayList<UnReadEMMessage> newValues = new ArrayList<UnReadEMMessage>();
 
                 for (int i = 0; i < count; i++) {
 
-                    final EMMessage value = mOriginalValues.get(i);
-                    EMMessage lastMessage = value;
+                    final UnReadEMMessage value = mOriginalValues.get(i);
+                    UnReadEMMessage lastMessage = value;
                     UserEntity friendUser = null;
                     List<UserEntity> localFriendList = null;
-                    if(!lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
+                    if(!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
                     {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
                         if(localFriendList.size() > 0)
                             friendUser = localFriendList.get(0);
                     }else{
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
                         if(localFriendList.size() > 0)
                             friendUser = localFriendList.get(0);
                     }
@@ -342,7 +346,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         protected void publishResults(CharSequence constraint, FilterResults results) {
             conversationEmmessageList.clear();
             if (results.values != null) {
-                conversationEmmessageList.addAll((List<EMMessage>) results.values);
+                conversationEmmessageList.addAll((List<UnReadEMMessage>) results.values);
             }
             if (results.count > 0) {
                 notiyfyByFilter = true;
@@ -376,6 +380,8 @@ public class EaseConversationNewAdapter extends ArrayAdapter<EMMessage> {
         RelativeLayout list_itease_layout;
         TextView motioned;
         TextView userRouter;
+
+        TextView draft;
     }
 }
 

@@ -22,7 +22,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             fileOriginalName = fileName
             if(fileName.indexOf(".") < 0)
             {
-                fileOriginalName =  String(Base58.decode(fileName))
+                try {
+                    fileOriginalName =  String(Base58.decode(fileName))
+                } catch (e : Exception) {
+
+                }
             }
             helper.setText(R.id.tvFileName,fileOriginalName)
         }else{

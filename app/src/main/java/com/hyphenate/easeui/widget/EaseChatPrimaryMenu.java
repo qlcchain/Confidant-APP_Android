@@ -74,7 +74,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
             }
-        }, 300);
+        }, 100);
     }
 
     private void init(final Context context, AttributeSet attrs) {

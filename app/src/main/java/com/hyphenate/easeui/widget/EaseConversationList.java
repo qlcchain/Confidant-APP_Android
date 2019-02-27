@@ -7,9 +7,9 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.ListView;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMessage;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.adapter.EaseConversationNewAdapter;
+import com.stratagile.pnrouter.entity.UnReadEMMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,8 @@ public class EaseConversationList extends ListView{
     
     protected Context context;
     protected EaseConversationNewAdapter adapter;
-    protected List<EMMessage> conversations = new ArrayList<EMMessage>();
-    protected List<EMMessage> passedListRef = null;
+    protected List<UnReadEMMessage> conversations = new ArrayList<UnReadEMMessage>();
+    protected List<UnReadEMMessage> passedListRef = null;
     
     
     public EaseConversationList(Context context, AttributeSet attrs) {
@@ -57,11 +57,11 @@ public class EaseConversationList extends ListView{
         
     }
 
-    public void init(List<EMMessage> conversationList){
+    public void init(List<UnReadEMMessage> conversationList){
         this.init(conversationList, null);
     }
 
-    public void init(List<EMMessage> conversationList, EaseConversationListHelper helper){
+    public void init(List<UnReadEMMessage> conversationList, EaseConversationListHelper helper){
         conversations = conversationList;
         if(helper != null){
             this.conversationListHelper = helper;
@@ -92,8 +92,8 @@ public class EaseConversationList extends ListView{
         }
     };
 
-    public EMMessage getItem(int position) {
-        return (EMMessage)adapter.getItem(position);
+    public UnReadEMMessage getItem(int position) {
+        return (UnReadEMMessage)adapter.getItem(position);
     }
     
     public void refresh() {
@@ -116,7 +116,7 @@ public class EaseConversationList extends ListView{
          * @param lastMessage
          * @return
          */
-        String onSetItemSecondaryText(EMMessage lastMessage);
+        String onSetItemSecondaryText(UnReadEMMessage lastMessage);
     }
     public void setConversationListHelper(EaseConversationListHelper helper){
         conversationListHelper = helper;

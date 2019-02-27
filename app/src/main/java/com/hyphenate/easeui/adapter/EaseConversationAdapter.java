@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
+import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -108,20 +109,21 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         EMConversation conversation = getItem(position);
         // get username or group id
         String conversationId = conversation.conversationId();
-        EMMessage lastMessage = conversation.getLastMessage();
+        EMMessage message = conversation.getLastMessage();
+        UnReadEMMessage lastMessage = new UnReadEMMessage(message);
         if(lastMessage == null)
         {
             return convertView;
         }
         UserEntity friendUser = null;
         List<UserEntity> localFriendList = null;
-        if(UserDataManger.myUserData != null && !lastMessage.getTo().equals(UserDataManger.myUserData.getUserId()))
+        if(UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
         {
-            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getTo())).list();
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
             if(localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }else{
-            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getFrom())).list();
+            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
             if(localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }
@@ -172,7 +174,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
 //                avatarView.setRadius(avatarOptions.getAvatarRadius());
 //        }
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if (lastMessage.isUnread() && !userId.equals(lastMessage.getFrom())) {
+        if (lastMessage.getEmMessage().isUnread() && !userId.equals(lastMessage.getEmMessage().getFrom())) {
             // show unread message count
             //holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
             holder.unreadLabel.setText("");
@@ -180,10 +182,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
-        if (lastMessage.isUnread()) {
+        if (lastMessage.getEmMessage().isUnread()) {
             // show the content of latest message
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getMsgTime())));
-            if (lastMessage.direct() == EMMessage.Direct.SEND && lastMessage.status() == EMMessage.Status.FAIL) {
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime())));
+            if (lastMessage.getEmMessage().direct() == EMMessage.Direct.SEND && lastMessage.getEmMessage().status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
             } else {
                 holder.msgState.setVisibility(View.GONE);
@@ -194,7 +196,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         if(cvsListHelper != null){
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage, (this.getContext()))),
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))),
                 TextView.BufferType.SPANNABLE);
         if(content != null){
             holder.message.setText(content);

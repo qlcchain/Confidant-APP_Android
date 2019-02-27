@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -543,6 +544,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun initView() {
         setContentView(R.layout.activity_chat)
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         activityInstance = this
         //user or group id
         AppConfig.instance.isChatWithFirend = toChatUserID
