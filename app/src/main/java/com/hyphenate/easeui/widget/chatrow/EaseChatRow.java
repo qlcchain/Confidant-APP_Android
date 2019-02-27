@@ -202,24 +202,27 @@ public abstract class EaseChatRow extends LinearLayout {
             if (sendStatusView != null) {
                 if(message.isDelivered())
                 {
-//                    Animation rotateAnimation  = new RotateAnimation(360, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1);
-//                    rotateAnimation.setFillAfter(true);
-//                    rotateAnimation.setDuration(50);
-//                    rotateAnimation.setRepeatCount(-1);
-//                    rotateAnimation.setInterpolator(new LinearInterpolator());
-//                    sendStatusView.startAnimation(rotateAnimation);
+                    Animation rotateAnimation  = new RotateAnimation(-3590, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotateAnimation.setFillAfter(true);
+                    rotateAnimation.setDuration(9000);
+                    rotateAnimation.setRepeatCount(-1);
+                    rotateAnimation.setInterpolator(new LinearInterpolator());
+                    sendStatusView.startAnimation(rotateAnimation);
 
                     sendStatusView.setImageResource(R.mipmap.ic_in_sending);
                     sendStatusView.setVisibility(View.VISIBLE);
-                    if (message.isAcked()) {
-                        sendStatusView.setImageResource(R.mipmap.ic_unread);
-                        sendStatusView.setVisibility(View.VISIBLE);
-                        if(message.isUnread() == false)
-                        {
-                            sendStatusView.setImageResource(R.mipmap.already_read);
-                            sendStatusView.setVisibility(View.VISIBLE);
-                        }
-                    }
+
+                }
+                if (message.isAcked()) {
+                    sendStatusView.setImageResource(R.mipmap.ic_unread);
+                    sendStatusView.setVisibility(View.VISIBLE);
+                    sendStatusView.setAnimation(null);
+                }
+                if(message.isUnread() == false)
+                {
+                    sendStatusView.setImageResource(R.mipmap.already_read);
+                    sendStatusView.setVisibility(View.VISIBLE);
+                    sendStatusView.setAnimation(null);
                 }
 
             }
