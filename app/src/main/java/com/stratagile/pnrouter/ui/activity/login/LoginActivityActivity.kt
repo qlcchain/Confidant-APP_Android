@@ -1390,6 +1390,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean,autoLogin:Boolean)
     {
+        islogining = false
         runOnUiThread {
             closeProgressDialog()
             showProgressDialog("")
@@ -1951,14 +1952,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var username = left.substring(0,left.length)
                     username = String(RxEncodeTool.base64Decode(username))
                     var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-                    var isHas = false
-                    routerList.forEach {
-                        if (it.userSn.equals(usersn)) {
-                            isHas = true
-                            return@forEach
-                        }
-                    }
-                    if(isHas)
+
+                    if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
                     {
                         toast("Same account, no need to import")
                         return;

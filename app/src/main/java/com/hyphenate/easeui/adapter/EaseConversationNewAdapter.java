@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
@@ -174,7 +175,21 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         if (lastMessage.getEmMessage().isUnread() && !userId.equals(lastMessage.getEmMessage().getFrom())) {
 //             show unread message count
 //            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
-            holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : "" + lastMessage.getUnReadCount());
+            EMConversation conversationTemp =  null;
+            if(!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
+            {
+                conversationTemp = EMClient.getInstance().chatManager().getConversation(lastMessage.getEmMessage().getTo(), EaseCommonUtils.getConversationType(1), true);
+            }else{
+                conversationTemp = EMClient.getInstance().chatManager().getConversation(lastMessage.getEmMessage().getFrom(), EaseCommonUtils.getConversationType(1), true);
+            }
+
+             if(conversationTemp != null)
+             {
+                 holder.unreadLabel.setText(String.valueOf(conversationTemp.getUnreadMsgCount()));
+             }else{
+                 holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : lastMessage.getUnReadCount() +"");
+             }
+            holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : lastMessage.getUnReadCount() +"");
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
