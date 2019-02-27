@@ -1,10 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
+import android.app.Notification
 import android.app.NotificationManager
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
@@ -28,12 +30,14 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
+import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -356,7 +360,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     /**
      * 播放系统默认提示音
-     *
+     * 铃声的实现方式
      * @return MediaPlayer对象
      *
      * @throws Exception
@@ -367,22 +371,39 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         r.play()
     }
 
+    /**
+     * 音乐的实现方式
+     */
+    fun defaultMedia() {
+        KLog.i("播放通知声音")
+        var notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        var bgmediaPlayer = MediaPlayer.create(this, notification)
+        bgmediaPlayer.start()
+        bgmediaPlayer.setVolume(0.7f, 0.7f)
+    }
+
     fun defaultNotification() {
         KLog.i("播放通知声音")
         var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         var soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        var mBuilder = NotificationCompat.Builder(getApplicationContext())
+        var vnotification = Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-//                .setVisibility(View.GONE)
-//                .setSound(soundUri)
-        notificationManager.notify(0, mBuilder.build())
+                .setWhen(System.currentTimeMillis())
+                .setTicker(AppConfig.instance.getString(R.string.app_name))
+                .setContentTitle(AppConfig.instance.getString(R.string.app_name))
+                .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
+                .setSound(soundUri)
+                .build()
+        notificationManager.notify(0, vnotification)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
-            defaultMediaPlayer()
+            if (!AppConfig.instance.isBackGroud) {
+                defaultMedia()
+            }
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
 
@@ -1214,7 +1235,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun connectStatusChange(statusChange: ConnectStatus) {
         when (statusChange.status) {
             0 -> {
-                window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 reConnect.visibility = View.GONE
             }
             1 -> {

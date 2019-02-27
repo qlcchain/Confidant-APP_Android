@@ -1774,7 +1774,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     private void saveDraft() {
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        String draft = inputMenu.getEdittext();
+        String draft = inputMenu.getEdittext().trim();
         if (draft == null || draft.equals("")) {
             return;
         }

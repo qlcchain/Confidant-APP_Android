@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.reciver;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.ForegroundCallbacks;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.ui.activity.main.MainActivity;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushCommandMessage;
@@ -57,9 +59,17 @@ public class WinqMessageReceiver extends PushMessageReceiver {
             mUserAccount=message.getUserAccount();
         }
         KLog.i("点击通知");
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.startActivity(intent);
+        if (isAppAlive(context, context.getPackageName()) == 1) {
+            Intent intent = new Intent(context, MainActivity.class);
+            context.startActivity(intent);
+        } else if (isAppAlive(context, context.getPackageName()) == 2) {
+            Intent intent = new Intent(context, MainActivity.class);
+            context.startActivity(intent);
+        } else {
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(intent);
+        }
         //这里可以根据消息的不同进行不一样的跳转
     }
     @Override
@@ -71,6 +81,34 @@ public class WinqMessageReceiver extends PushMessageReceiver {
             mAlias=message.getAlias();
         } else if(!TextUtils.isEmpty(message.getUserAccount())) {
             mUserAccount=message.getUserAccount();
+        }
+    }
+
+    /**
+     * 返回app运行状态
+     *
+     * @param context
+     *            一个context
+     * @param packageName
+     *            要判断应用的包名
+     * @return int 1:前台 2:后台 0:不存在
+     */
+    public static int isAppAlive(Context context, String packageName) {
+        ActivityManager activityManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> listInfos = activityManager
+                .getRunningTasks(20);
+        // 判断程序是否在栈顶
+        if (listInfos.get(0).topActivity.getPackageName().equals(packageName)) {
+            return 1;
+        } else {
+            // 判断程序是否在栈里
+            for (ActivityManager.RunningTaskInfo info : listInfos) {
+                if (info.topActivity.getPackageName().equals(packageName)) {
+                    return 2;
+                }
+            }
+            return 0;// 栈里找不到，返回3
         }
     }
 

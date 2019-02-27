@@ -70,7 +70,7 @@ public class BackGroundService extends Service {
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
-                    .setOngoing(true)
+                    .setOngoing(false)
                     .setPriority(PRIORITY_LOW)
                     .setAutoCancel(false)
                     .setSound(null)
@@ -82,7 +82,7 @@ public class BackGroundService extends Service {
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
-                    .setOngoing(true)
+                    .setOngoing(false)
                     .setPriority(PRIORITY_LOW)
                     .setAutoCancel(false)
                     .setSound(null,null)
@@ -141,7 +141,9 @@ public class BackGroundService extends Service {
     public void onDestroy() {
         isrun = false;
         stopForeground(true);
-        bgmediaPlayer.release();
+        if (bgmediaPlayer != null) {
+            bgmediaPlayer.release();
+        }
         stopSelf();
         super.onDestroy();
     }

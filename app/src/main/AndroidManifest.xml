@@ -32,6 +32,7 @@
     <permission android:name="com.stratagile.pnrouter.permission.MIPUSH_RECEIVE" android:protectionLevel="signature" />
     <!--这里com.xiaomi.mipushdemo改成app的包名-->
     <uses-permission android:name="com.stratagile.pnrouter.permission.MIPUSH_RECEIVE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <!--这里com.xiaomi.mipushdemo改成app的包名-->
 
     <application
@@ -57,6 +58,7 @@
         <activity
             android:name=".ui.activity.main.MainActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.activity.register.RegisterActivity"
