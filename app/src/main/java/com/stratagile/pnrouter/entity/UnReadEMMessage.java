@@ -11,7 +11,7 @@ public class UnReadEMMessage {
         this.emMessage = emMessage;
     }
 
-    public UnReadEMMessage(int unReadCount, EMMessage emMessage) {
+    public UnReadEMMessage(EMMessage emMessage,int unReadCount) {
         this.unReadCount = unReadCount;
         this.emMessage = emMessage;
     }

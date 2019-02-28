@@ -35,6 +35,7 @@ public class Message {
     private String Nonce;
     private String Sign;
     private String PriKey;
+    private int unReadCount;
 
     public String getFileName() {
         //bas58解码
@@ -76,6 +77,7 @@ public class Message {
                 ", Nonce=" + Nonce +
                 ", Sign=" + Sign +
                 ", PriKey=" + PriKey +
+                ", unReadCount=" + unReadCount +
                 '}';
     }
 
@@ -300,5 +302,13 @@ public class Message {
 
     public void setPriKey(String priKey) {
         PriKey = priKey;
+    }
+
+    public int getUnReadCount() {
+        return unReadCount;
+    }
+
+    public void setUnReadCount(int unReadCount) {
+        this.unReadCount = unReadCount;
     }
 }

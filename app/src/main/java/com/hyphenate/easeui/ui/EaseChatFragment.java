@@ -910,6 +910,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
             } else {
@@ -963,6 +964,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
             } else {
@@ -1445,6 +1447,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Gson gson = new Gson();
                 Message.setUnRead(false);
                 Message.setStatus(2);
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 if (Message.getSender() == 0) {
                     SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -1518,6 +1521,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+
+                /*String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
+                Message MessageLocal = gson.fromJson(cachStr, Message.class);
+                int unReadCount = 0;
+                if(MessageLocal != null && Integer.valueOf(MessageLocal.getUnReadCount()) != null ){
+                    unReadCount = MessageLocal.getUnReadCount();
+                }
+                if(unReadCount >0)
+                {
+                    Message.setUnReadCount(unReadCount -1);
+                }else{
+                    Message.setUnReadCount(0);
+                }*/
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
             } else {
@@ -1786,6 +1803,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         message.setFrom(userId);
         message.setTo(toChatUserId);
         message.setTimeStatmp(System.currentTimeMillis());
+        message.setUnReadCount(0);
         String baseDataJson = new Gson().toJson(message);
         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
     }
@@ -2083,6 +2101,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 sendMessageTo(message);
@@ -2130,6 +2149,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+
+               /* String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
+                Message MessageLocal = gson.fromJson(cachStr, Message.class);
+                int unReadCount = 0;
+                if(MessageLocal != null && Integer.valueOf(MessageLocal.getUnReadCount()) != null ){
+                    unReadCount = MessageLocal.getUnReadCount();
+                }
+                Message.setUnReadCount(unReadCount);*/
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
             } else {
@@ -2336,6 +2364,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 sendMessageTo(message);
@@ -2474,6 +2503,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
@@ -2743,6 +2773,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
@@ -2885,6 +2916,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
                         Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
@@ -2923,6 +2955,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setFrom(jPushMsgRsp.getParams().getFromId());
         Message.setTo(jPushMsgRsp.getParams().getToId());
         Message.setTimeStatmp(System.currentTimeMillis());
+        Message.setUnReadCount(0);
         String baseDataJson = gson.toJson(Message);
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if (Message.getSender() == 0) {
@@ -2956,6 +2989,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setFrom(jPushMsgRsp.getParams().getFrom());
         Message.setTo(jPushMsgRsp.getParams().getTo());
         Message.setTimeStatmp(System.currentTimeMillis());
+        Message.setUnReadCount(0);
         String baseDataJson = gson.toJson(Message);
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if (Message.getSender() == 0) {

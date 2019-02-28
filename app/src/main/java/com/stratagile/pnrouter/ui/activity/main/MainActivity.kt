@@ -13,12 +13,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.app.NotificationCompat
 import android.support.v4.view.ViewPager
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
@@ -30,14 +28,12 @@ import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
-import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
-import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -272,6 +268,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.status = 1
             Message.fileName = jPushFileMsgRsp.params.fileName
             Message.timeStatmp = jPushFileMsgRsp.timestamp
+
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId,"")
+            val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+            var unReadCount = 0
+            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                unReadCount = MessageLocal.unReadCount
+            }
+            Message.unReadCount = unReadCount +1;
+
             val baseDataJson = gson.toJson(Message)
             if (Message.sender == 0) {
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
@@ -340,6 +345,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.status = 2
                                 Message.timeStatmp = delMsgPushRsp?.timestamp
                                 Message.msgId = delMsgPushRsp?.params.msgId
+
+                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId,"")
+                                val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+                                var unReadCount = 0
+                                if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                                    unReadCount = MessageLocal.unReadCount
+                                }
+                                if(unReadCount > 0)
+                                {
+                                    Message.unReadCount = unReadCount -1;
+                                }else{
+                                    Message.unReadCount = 0;
+                                }
+
                                 var baseDataJson = gson.toJson(Message)
                                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId, baseDataJson)
@@ -492,7 +511,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             if (!AppConfig.instance.isBackGroud) {
-                defaultMedia()
+                //defaultMedia()
             }
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
@@ -547,6 +566,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.status = 1
             Message.timeStatmp = pushMsgRsp?.timestamp
             Message.msgId = pushMsgRsp?.params.msgId
+
+
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId,"")
+            val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+            var unReadCount = 0
+            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                unReadCount = MessageLocal.unReadCount
+            }
+            Message.unReadCount = unReadCount +1;
+
+
             var baseDataJson = gson.toJson(Message)
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
             KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
@@ -1110,6 +1140,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.setMsgId(pushMsgRsp.getParams().getMsgId())
                             Message.setFrom(pushMsgRsp.getParams().getFromId())
                             Message.setTo(pushMsgRsp.getParams().getToId())
+
+                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId,"")
+                            val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+                            var unReadCount = 0
+                            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                                unReadCount = MessageLocal.unReadCount
+                            }
+                            Message.unReadCount = unReadCount + AppConfig.instance.tempPushMsgList.size;
+
                             var baseDataJson = gson.toJson(Message)
                             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)

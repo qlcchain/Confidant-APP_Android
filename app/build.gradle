@@ -18,8 +18,10 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     dexOptions {
-        javaMaxHeapSize "2012m"
-        // preDexLibraries = true
+        javaMaxHeapSize "4g"
+        jumboMode true
+        preDexLibraries = false
+        maxProcessCount 8
     }
     defaultConfig {
         applicationId "com.stratagile.pnrouter"

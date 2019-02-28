@@ -388,7 +388,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                 }
                                 message.setMsgTime(Message.getTimeStatmp());
                                 message.setMsgId(Message.getMsgId() + "");
-                                conversations.put(toChatUserId, new UnReadEMMessage(message));
+                                conversations.put(toChatUserId, new UnReadEMMessage(message,Message.getUnReadCount()));
                             }
 
                         }
