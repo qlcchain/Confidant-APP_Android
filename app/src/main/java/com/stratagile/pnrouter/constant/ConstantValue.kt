@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.constant
 
 import android.app.Activity
+import com.hyphenate.chat.EMMessage
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
 import com.stratagile.pnrouter.entity.LoginReq_V4
@@ -40,7 +41,7 @@ object ConstantValue {
         var publicRASSp ="publicRAS"
         var privateRAS:String? = ""
         var publicRAS:String? = ""
-
+        var sendMsgMap = HashMap<String, EMMessage>();
         var mainActivity:Activity? = null
         var libsodiumprivateSignKeySp ="libsodiumprivateSignKeySp"
         var libsodiumpublicSignKeySp ="libsodiumpublicSignKeySp"
