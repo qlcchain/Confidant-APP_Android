@@ -7,9 +7,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 
@@ -29,8 +32,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static android.app.Notification.PRIORITY_MAX;
+import static android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT;
 import static android.support.v4.app.NotificationCompat.PRIORITY_LOW;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MIN;
+
 
 /**
  * Created by zl on 2019/2/27
@@ -54,36 +58,44 @@ public class BackGroundService extends Service {
         NotificationChannel notificationChannel = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(CHANNEL_ONE_ID,
-                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_LOW);
             notificationChannel.enableLights(false);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.setShowBadge(false);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             manager.createNotificationChannel(notificationChannel);
         }
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         //1.通知栏占用，不清楚的看官网或者音乐类APP的效果
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notification = new Notification.Builder(mContext).setChannelId(CHANNEL_ONE_ID)
                     .setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher))
                     .setWhen(System.currentTimeMillis())
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(false)
-                    .setPriority(PRIORITY_LOW)
+                    .setPriority(PRIORITY_DEFAULT)
                     .setAutoCancel(false)
                     .setSound(null)
+                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                    .setVisibility(Notification.VISIBILITY_PRIVATE)
+                    .setFullScreenIntent(pendingIntent,false)
                     .build();
         }else{
             notification = new Notification.Builder(mContext)
                     .setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher))
                     .setWhen(System.currentTimeMillis())
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
                     .setContentTitle(AppConfig.instance.getString(R.string.app_name))
                     .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
                     .setOngoing(false)
-                    .setPriority(PRIORITY_LOW)
+                    .setPriority(PRIORITY_DEFAULT)
                     .setAutoCancel(false)
                     .setSound(null,null)
                     .build();
@@ -124,7 +136,11 @@ public class BackGroundService extends Service {
         //3.最关键的神来之笔，也是最投机的动作，没办法要骗过CPU
         //这就是播放音乐类APP不被杀的做法，自己找个无声MP3放进来循环播放
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
+            if (bgmediaPlayer == null) {
+                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
+                bgmediaPlayer.setLooping(true);
+                bgmediaPlayer.start();
+            }
         }else{
             if (bgmediaPlayer == null) {
                 bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
