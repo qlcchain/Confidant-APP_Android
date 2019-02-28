@@ -356,7 +356,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         var messageList: List<Message> = pushMsgRsp.params.payload
         KLog.i("insertMessage:ChatActivity"+chatFragment)
-        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
         val size = messageList.size
         var msgIdStr:String = "";
         for (mesage in messageList)
@@ -387,7 +386,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
         }
-
+        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {

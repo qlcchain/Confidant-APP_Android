@@ -54,10 +54,10 @@ public class BackGroundService extends Service {
         NotificationChannel notificationChannel = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(CHANNEL_ONE_ID,
-                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_HIGH);
-            notificationChannel.enableLights(true);
+                    CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.enableLights(false);
             notificationChannel.setLightColor(Color.RED);
-            notificationChannel.setShowBadge(true);
+            notificationChannel.setShowBadge(false);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             manager.createNotificationChannel(notificationChannel);
@@ -123,10 +123,14 @@ public class BackGroundService extends Service {
         }.start();*/
         //3.最关键的神来之笔，也是最投机的动作，没办法要骗过CPU
         //这就是播放音乐类APP不被杀的做法，自己找个无声MP3放进来循环播放
-        if (bgmediaPlayer == null) {
-            bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
-            bgmediaPlayer.setLooping(true);
-            bgmediaPlayer.start();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+        }else{
+            if (bgmediaPlayer == null) {
+                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
+                bgmediaPlayer.setLooping(true);
+                bgmediaPlayer.start();
+            }
         }
 
         return START_STICKY;
