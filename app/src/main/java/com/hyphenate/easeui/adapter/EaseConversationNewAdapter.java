@@ -172,9 +172,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
 //                avatarView.setRadius(avatarOptions.getAvatarRadius());
 //        }
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if (lastMessage.getEmMessage().isUnread() && !userId.equals(lastMessage.getEmMessage().getFrom())) {
-//             show unread message count
-//            holder.unreadLabel.setText(String.valueOf(conversation.getUnreadMsgCount()));
+        if (lastMessage.getUnReadCount() != 0) {
             holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : lastMessage.getUnReadCount() +"");
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {

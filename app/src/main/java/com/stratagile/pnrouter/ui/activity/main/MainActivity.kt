@@ -332,8 +332,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         val cachStr = SpUtil.getString(AppConfig.instance, key, "")
                         if ("" != cachStr) {
                             val gson = GsonUtil.getIntGson()
-                            val Message = gson.fromJson(cachStr, Message::class.java)
-                            if (Message.from.equals(delMsgPushRsp.params.userId)) {
+                            val MessageLocal = gson.fromJson(cachStr, Message::class.java)
+                            if (MessageLocal.from.equals(delMsgPushRsp.params.userId)) {
                                 var gson = Gson()
                                 var Message = Message()
                                 Message.setMsg(resources.getString(R.string.withdrawn))
@@ -346,9 +346,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.timeStatmp = delMsgPushRsp?.timestamp
                                 Message.msgId = delMsgPushRsp?.params.msgId
 
-                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId,"")
-                                val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
-                                var unReadCount = 0
+                                var unReadCount = MessageLocal.unReadCount
                                 if(MessageLocal != null && MessageLocal.unReadCount != null ){
                                     unReadCount = MessageLocal.unReadCount
                                 }
@@ -361,10 +359,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                 var baseDataJson = gson.toJson(Message)
                                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + delMsgPushRsp.params.userId, baseDataJson)
+                                SpUtil.putString(AppConfig.instance, key, baseDataJson)
                                 if (ConstantValue.isInit) {
                                     runOnUiThread {
                                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
+                                        if(Message.unReadCount > 0)
+                                        {
+                                            UnReadMessageCount = UnReadMessageCount(1)
+                                        }
                                         controlleMessageUnReadCount(UnReadMessageCount)
                                     }
                                     conversationListFragment?.refresh()
@@ -1241,56 +1243,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun onResume() {
         exitTime = System.currentTimeMillis() - 2001
         super.onResume()
-        var localFriendList: List<UserEntity> = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+
+        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
+        controlleMessageUnReadCount(UnReadMessageCount)
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
+        if (unReadContactCount.messageCount == 0) {
+            new_contact.visibility = View.INVISIBLE
+            new_contact.text = ""
+        } else {
+            new_contact.visibility = View.VISIBLE
+            //new_contact.text = "" + unReadContactCount.messageCount
+            new_contact.text = ""
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
+
+        var hasUnReadMsgCount = 0
         var hasUnReadMsg: Boolean = false;
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        /* for (friendData in localFriendList) {
-             var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(friendData.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-             if (conversation != null) {
-                 val msgs: List<EMMessage> = conversation.allMessages
-                 for (msg in msgs) {
-                     if (msg.isUnread && !userId.equals(msg.from)) {
-                         hasUnReadMsg = true
-                     }
-                 }
-             }
-         }*/
         val keyMap = SpUtil.getAll(AppConfig.instance)
-        var hasLinShi = ""
-        for (key in keyMap.keys) {
-
-            if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
-                val toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length)
-                if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
-                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
-                    if (localFriendList.size == 0) {
-                        continue
-                    }
-                    val cachStr = SpUtil.getString(AppConfig.instance, key, "")
-                    if ("" != cachStr) {
-                        val gson = GsonUtil.getIntGson()
-                        val Message = gson.fromJson(cachStr, Message::class.java)
-                        if (Message != null) {
-                            hasLinShi += toChatUserId + "#"
-                        }
-                    }
-                }
-            }
-        }
-        /* var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-         for (j in localFriendStatusList) {
-             if (j.userId.equals(userId)) {
-                 var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(j.friendId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-                 if (conversation != null) {
-                     val msgs: List<EMMessage> = conversation.allMessages
-                     for (msg in msgs) {
-                         if (msg.isUnread && !userId.equals(msg.from) && hasLinShi.contains(msg.from)) {
-                             hasUnReadMsg = true
-                         }
-                     }
-                 }
-             }
-         }*/
         for (key in keyMap.keys) {
 
             if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
@@ -1316,7 +1293,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     if ("" != cachStr) {
                         val gson = GsonUtil.getIntGson()
                         val Message = gson.fromJson(cachStr, Message::class.java)
-                        if (Message.sender == 1 && Message.status != 2) {
+                        hasUnReadMsgCount += Message.unReadCount
+                        if (hasUnReadMsgCount > 0) {
                             hasUnReadMsg = true
                         }
                     }
@@ -1324,37 +1302,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
         }
-        if (hasUnReadMsg) {
-            var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
-            controlleMessageUnReadCount(UnReadMessageCount)
-        } else {
-            var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
-            controlleMessageUnReadCount(UnReadMessageCount)
-        }
-
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
-        if (unReadContactCount.messageCount == 0) {
-            new_contact.visibility = View.INVISIBLE
-            new_contact.text = ""
-        } else {
-            new_contact.visibility = View.VISIBLE
-            //new_contact.text = "" + unReadContactCount.messageCount
-            new_contact.text = ""
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
         if (unread_count != null) {
-            if (unReadMessageCount.messageCount == 0) {
+            if (hasUnReadMsgCount == 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
             } else {
                 unread_count.visibility = View.VISIBLE
-                unread_count.text = ""
+                unread_count.text = hasUnReadMsgCount.toString()
             }
         }
     }
