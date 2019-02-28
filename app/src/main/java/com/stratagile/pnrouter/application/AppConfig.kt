@@ -34,6 +34,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
+import com.stratagile.pnrouter.entity.events.StartVerify
 import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
@@ -247,11 +248,13 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
                 isBackGroud = false
-                var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0);
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 2 * 60* 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
+                var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0)
+                KLog.i(unlockTime)
+                KLog.i(ConstantValue.logining)
+                KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && ConstantValue.logining)
                 {
-                    val intent = Intent(AppConfig.instance, VerifyingFingerprintActivity::class.java)
-                    startActivity(intent)
+                    EventBus.getDefault().post(StartVerify())
                 }
                 if (ConstantValue.logining) {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)

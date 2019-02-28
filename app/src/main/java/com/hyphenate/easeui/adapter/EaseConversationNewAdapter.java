@@ -101,7 +101,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             holder.motioned = (TextView) convertView.findViewById(R.id.mentioned);
             convertView.setTag(holder);
         }
-        holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
+//        holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
 
         // get conversation
         UnReadEMMessage conversation = getItem(position);

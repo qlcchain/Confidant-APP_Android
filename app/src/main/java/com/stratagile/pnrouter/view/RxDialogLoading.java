@@ -45,6 +45,11 @@ public class RxDialogLoading {
 
     public void setDialogText(CharSequence text) {
         tvProgress.setText(text);
+        if ("".equals(text.toString())) {
+            tvProgress.setVisibility(View.GONE);
+        } else {
+            tvProgress.setVisibility(View.VISIBLE);
+        }
     }
     public void setBackground(int color) {
         GradientDrawable gradientDrawable = (GradientDrawable) mDialogContentView.getBackground();

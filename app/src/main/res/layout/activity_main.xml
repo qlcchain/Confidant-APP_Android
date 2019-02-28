@@ -107,7 +107,10 @@
         android:layout_weight="1">
 
     </android.support.v4.view.ViewPager>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x1"
+        android:background="@color/color_f2"/>
     <RelativeLayout
         android:id="@+id/rl2"
         android:layout_width="match_parent"
@@ -187,17 +190,17 @@
 
                 <TextView
                     android:id="@+id/unread_count"
-                    android:layout_width="@dimen/x20"
-                    android:layout_height="@dimen/x20"
+                    android:layout_width="@dimen/x28"
+                    android:layout_height="@dimen/x28"
                     android:layout_gravity="right"
-                    android:layout_marginTop="@dimen/x10"
-                    android:layout_marginRight="@dimen/x60"
+                    android:layout_marginTop="@dimen/x6"
+                    android:layout_marginRight="@dimen/x54"
                     android:background="@drawable/new_message_flag_bg"
                     android:gravity="center"
                     android:text=""
                     android:textColor="@color/white"
-                    android:textSize="7sp"
-                    android:visibility="invisible" />
+                    android:textSize="8sp"
+                    android:visibility="visible" />
             </FrameLayout>
 
             <View

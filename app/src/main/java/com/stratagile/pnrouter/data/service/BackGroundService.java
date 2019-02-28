@@ -72,7 +72,7 @@ public class BackGroundService extends Service {
         //1.通知栏占用，不清楚的看官网或者音乐类APP的效果
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notification = new Notification.Builder(mContext).setChannelId(CHANNEL_ONE_ID)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.mipush_small_notification)
                     .setLargeIcon(BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher))
                     .setWhen(System.currentTimeMillis())
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
@@ -84,11 +84,10 @@ public class BackGroundService extends Service {
                     .setSound(null)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setVisibility(Notification.VISIBILITY_PRIVATE)
-                    .setFullScreenIntent(pendingIntent,false)
                     .build();
         }else{
             notification = new Notification.Builder(mContext)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.mipush_small_notification)
                     .setLargeIcon(BitmapFactory.decodeResource(Resources.getSystem(),R.mipmap.ic_launcher))
                     .setWhen(System.currentTimeMillis())
                     .setTicker(AppConfig.instance.getString(R.string.app_name))
@@ -135,19 +134,19 @@ public class BackGroundService extends Service {
         }.start();*/
         //3.最关键的神来之笔，也是最投机的动作，没办法要骗过CPU
         //这就是播放音乐类APP不被杀的做法，自己找个无声MP3放进来循环播放
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            if (bgmediaPlayer == null) {
-                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
-                bgmediaPlayer.setLooping(true);
-                bgmediaPlayer.start();
-            }
-        }else{
-            if (bgmediaPlayer == null) {
-                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
-                bgmediaPlayer.setLooping(true);
-                bgmediaPlayer.start();
-            }
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            if (bgmediaPlayer == null) {
+//                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
+//                bgmediaPlayer.setLooping(true);
+//                bgmediaPlayer.start();
+//            }
+//        }else{
+//            if (bgmediaPlayer == null) {
+//                bgmediaPlayer = MediaPlayer.create(this, R.raw.silent);
+//                bgmediaPlayer.setLooping(true);
+//                bgmediaPlayer.start();
+//            }
+//        }
 
         return START_STICKY;
     }

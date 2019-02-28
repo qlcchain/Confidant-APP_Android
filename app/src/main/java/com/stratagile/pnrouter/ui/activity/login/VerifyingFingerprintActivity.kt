@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.login
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
@@ -25,6 +26,10 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 import javax.inject.Inject
+import android.support.v4.view.ViewCompat.getTranslationY
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.SweetAlertDialog
+
 
 /**
  * @author zl
@@ -50,6 +55,9 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
 
     override fun initView() {
         setContentView(R.layout.activity_fingerprint)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
+        }
     }
     override fun initData() {
         handler = object : Handler() {
@@ -60,6 +68,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         setResultInfo(R.string.fingerprint_success)
                         cancellationSignal = null
                         finish()
+                        overridePendingTransition(0, R.anim.activity_translate_out_1)
                     }
                     MyAuthCallback.MSG_AUTH_FAILED -> {
                         setResultInfo(R.string.fingerprint_not_recognized)
@@ -75,8 +84,32 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
         }
         showDialog()
     }
+
+    fun showFingerAnimation() {
+        val curTranslationY = llLogo.getTranslationY()
+        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY - 500f)
+        animator.setDuration(600)
+        animator.start()
+
+        val curNexY = llNext.translationY
+        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY + 300f)
+        nextAnimator.setDuration(600)
+        nextAnimator.start()
+    }
+    fun hideFingerAnimation() {
+        val curTranslationY = llLogo.getTranslationY()
+        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY + 500f)
+        animator.setDuration(600)
+        animator.start()
+
+        val curNexY = llNext.translationY
+        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY - 300f)
+        nextAnimator.setDuration(600)
+        nextAnimator.start()
+    }
     private fun showDialog()
     {
+        showFingerAnimation()
         if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
@@ -92,17 +125,24 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         }
                         fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
                                 myAuthCallback, null)
-                        val builder = AlertDialog.Builder(this)
+
                         val view = View.inflate(this, R.layout.finger_dialog_layout, null)
-                        builder.setView(view)
-                        builder.setCancelable(false)
+//                        val builder = AlertDialog.Builder(this)
+//                        builder.setView(view)
+//                        builder.setCancelable(false)
+
+                        var formatDialog = CommonDialog(this)
+                        formatDialog?.setCancelable(false)
+
                         val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
 
                         val btn_cancel = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
 
                         btn_cancel.visibility = View.VISIBLE
                         btn_cancel.setOnClickListener {
-                            builderTips?.dismiss()
+                            hideFingerAnimation()
+                            formatDialog.dismissWithAnimation()
+//                            builderTips?.dismiss()
                             if (cancellationSignal != null) {
                                 cancellationSignal?.cancel()
                                 cancellationSignal = null
@@ -128,8 +168,12 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                         finger = view.findViewById<View>(R.id.finger) as ImageView
                         tvContent.setText(R.string.choose_finger_dialog_title)
                         val currentContext = this
-                        builderTips = builder.create()
-                        builderTips?.show()
+                        val window = formatDialog?.window
+                        window?.setBackgroundDrawableResource(android.R.color.transparent)
+                        formatDialog?.setView(view)
+                        formatDialog?.show()
+//                        builderTips = builder.create()
+//                        builderTips?.show()
                     } catch (e: Exception) {
                         try {
                             myAuthCallback = MyAuthCallback(handler)
@@ -220,6 +264,14 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                 setResultInfo(R.string.ErrorHwUnavailable_warning)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+
     }
 
     private fun handleHelpCode(code: Int) {

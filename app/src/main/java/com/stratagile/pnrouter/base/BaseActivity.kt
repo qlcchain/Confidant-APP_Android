@@ -71,6 +71,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate,  BGASwipeBa
         initData()
     }
 
+    override fun onDestroy() {
+        AppConfig.instance.mAppActivityManager.removeActivity(this)
+        super.onDestroy()
+    }
+
     /**
      * 初始化滑动返回。在 super.onCreate(savedInstanceState) 之前调用该方法
      */
