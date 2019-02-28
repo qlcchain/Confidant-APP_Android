@@ -1,25 +1,31 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
+import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
+    lateinit var msgHashMap: HashMap<String,Queue<BaseData>>
     lateinit var toSendChatMessage: Queue<BaseData>
     lateinit var toSendMessage: Queue<BaseData>
     lateinit var thread: Thread
 
     init {
+        msgHashMap = HashMap<String,Queue<BaseData>>()
         toSendMessage = LinkedList()
-        toSendChatMessage = LinkedList()
+        //toSendChatMessage = LinkedList()
         this.pipe = AtomicReference(pipe)
         initThread()
     }
@@ -37,6 +43,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
     fun sendChatMsg(message: BaseData){
         Log.i("sender", "添加")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        if(msgHashMap.get(userId) == null)
+        {
+            msgHashMap.put(userId!!,LinkedList())
+        }else{
+            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+        }
         toSendChatMessage.offer(message)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         if (thread.state == Thread.State.NEW) {
@@ -88,24 +101,25 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     fun sendChatMessage(sendNow:Boolean,remove:Boolean) {
         try {
-
-            if (toSendChatMessage != null && toSendChatMessage.isNotEmpty()){
-                Log.i("sendChat_size", toSendChatMessage.size.toString())
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var toSendChatMessageQueue = msgHashMap.get(userId!!) as Queue<BaseData>
+            if (toSendChatMessageQueue != null && toSendChatMessageQueue.isNotEmpty()){
+                Log.i("sendChat_size", toSendChatMessageQueue.size.toString())
                 if(sendNow)
                 {
                     var message = BaseData()
                     if(remove)
                     {
-                        message = toSendChatMessage.poll()
+                        message = toSendChatMessageQueue.poll()
                     }else{
-                        message = toSendChatMessage.peek()
+                        message = toSendChatMessageQueue.peek()
                     }
                     Log.i("sendChat_message", message.baseDataToJson().replace("\\", ""))
                     LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
                     var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                     LogUtil.addLog("发送结果：${reslut}")
                 }else{
-                    for (item in toSendChatMessage)
+                    for (item in toSendChatMessageQueue)
                     {
                         if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
                         {

@@ -247,6 +247,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
+            AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
+        }
         sendMsgLocalMap = new HashMap<>();
         sendFilePathMap = new HashMap<>();
         sendFileResultMap = new HashMap<>();
