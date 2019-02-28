@@ -2081,9 +2081,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
+            String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();;
             if (AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null) {
                 if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-                    AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
+                 msgId = AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
                 } else {
                     AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getSignPublicKey(), content);
                 }
@@ -2093,8 +2094,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setDelivered(true);
                 message.setAcked(false);
                 message.setUnread(true);
+                message.setMsgId(msgId);
                 currentSendMsg = message;
-
+                sendMsgMap.put(msgId,message);
                 Gson gson = new Gson();
                 Message Message = new Message();
                 Message.setMsg(content);
@@ -2171,13 +2173,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
         }
+
+        EMMessage currentSendMsgTemp =  sendMsgMap.get(jSendMsgRsp.getMsgid()+"");
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
                 if (conversation != null) {
-                    conversation.removeMessage(currentSendMsg.getMsgId());
-                    currentSendMsg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
-                    currentSendMsg.setAcked(true);
-                    conversation.insertMessage(currentSendMsg);
+                    /*conversation.removeMessage(jSendMsgRsp.getMsgid()+"");*/
+                    //currentSendMsgTemp.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                    currentSendMsgTemp.setAcked(true);
+                    conversation.updateMessage(currentSendMsgTemp);
                     KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
@@ -2186,7 +2190,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case 1:
                 if (conversation != null) {
-                    conversation.removeMessage(currentSendMsg.getMsgId());
+                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
@@ -2200,7 +2204,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case 2:
                 if (conversation != null) {
-                    conversation.removeMessage(currentSendMsg.getMsgId());
+                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }

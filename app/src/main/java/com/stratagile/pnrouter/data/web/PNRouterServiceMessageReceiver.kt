@@ -206,11 +206,21 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //发送消息服务器给的返回，代表消息服务器已经收到
                 "SendMsg" -> {
                     val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
+                   var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
+                    for (item in toSendMessage)
+                    {
+                        if(item.msgid == JSendMsgRsp.msgid)
+                        {
+                            toSendMessage.remove(item)
+                            break
+                        }
+                    }
                     chatCallBack?.sendMsgRsp(JSendMsgRsp)
                     convsationCallBack?.sendMsgRsp(JSendMsgRsp)
                 }
                 "QueryFriend" -> {
                     val jQueryFriendRsp = gson.fromJson(text, JQueryFriendRsp::class.java)
+
                     chatCallBack?.QueryFriendRep(jQueryFriendRsp)
                 }
                 //发送消息对方已读
@@ -587,7 +597,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface ChatCallBack {
         fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);
-        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey:String,Msg: String);
+        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey:String,Msg: String):String;
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)

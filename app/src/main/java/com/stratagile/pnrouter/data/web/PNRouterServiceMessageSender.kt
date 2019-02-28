@@ -13,11 +13,13 @@ import kotlin.concurrent.thread
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
+    lateinit var toSendChatMessage: Queue<BaseData>
     lateinit var toSendMessage: Queue<BaseData>
     lateinit var thread: Thread
 
     init {
         toSendMessage = LinkedList()
+        toSendChatMessage = LinkedList()
         this.pipe = AtomicReference(pipe)
         initThread()
     }
@@ -26,9 +28,21 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         Log.i("sender", "添加")
         toSendMessage.offer(message)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
+        /*if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }*/
+        sendOtherMessage()
+//        javaObject.notifyAll()
+//        return sendMessageTo()
+    }
+    fun sendChatMsg(message: BaseData){
+        Log.i("sender", "添加")
+        toSendChatMessage.offer(message)
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         if (thread.state == Thread.State.NEW) {
             thread.start()
         }
+        sendChatMessage(true,false)
 //        javaObject.notifyAll()
 //        return sendMessageTo()
     }
@@ -59,33 +73,74 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     @Synchronized
     fun  initThread() {
-       thread =  thread {
-           while (true) {
-               sendMessage()
+        thread =  thread {
+            while (true) {
+                Log.i("sender", "发送线程运行中等待。。。")
+                Thread.sleep(10 * 1000)
+                Log.i("sender", "发送线程运行中。。。")
+                sendChatMessage(false,false)
 //               Log.i("sender", "线程运行中。。。")
-           }
+            }
         }
+        thread.name = "sendThread"
     }
 
-    fun sendMessage() {
+
+    fun sendChatMessage(sendNow:Boolean,remove:Boolean) {
         try {
-            if (toSendMessage != null && toSendMessage.isNotEmpty()) {
-                var message = toSendMessage.poll()
-                Log.i("send", message.baseDataToJson().replace("\\", ""))
-                LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
-                var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
-                LogUtil.addLog("发送结果：${reslut}")
-            } else {
+
+            if (toSendChatMessage != null && toSendChatMessage.isNotEmpty()){
+                Log.i("sendChat_size", toSendChatMessage.size.toString())
+                if(sendNow)
+                {
+                    var message = BaseData()
+                    if(remove)
+                    {
+                        message = toSendChatMessage.poll()
+                    }else{
+                        message = toSendChatMessage.peek()
+                    }
+                    Log.i("sendChat_message", message.baseDataToJson().replace("\\", ""))
+                    LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
+                    var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
+                    LogUtil.addLog("发送结果：${reslut}")
+                }else{
+                    for (item in toSendChatMessage)
+                    {
+                        if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
+                        {
+                            Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
+                            LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
+                            var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
+                            LogUtil.addLog("发送结果：${reslut}")
+                        }
+                    }
+                }
 
             }
         }catch (e:Exception)
         {
-           e.printStackTrace()
+            e.printStackTrace()
         }
 
     }
+    fun sendOtherMessage() {
+        try {
+            if (toSendMessage != null && toSendMessage.isNotEmpty()){
 
+                    var message = toSendMessage.poll()
+                    Log.i("send", message.baseDataToJson().replace("\\", ""))
+                    LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
+                    var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
+                    LogUtil.addLog("发送结果：${reslut}")
 
+            }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
+    }
     interface EventListener {
         fun onSecurityEvent(address: SignalServiceAddress)
     }

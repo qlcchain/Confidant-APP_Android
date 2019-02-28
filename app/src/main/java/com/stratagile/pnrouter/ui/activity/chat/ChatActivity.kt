@@ -43,6 +43,7 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import scalaz.Alpha
 import java.util.*
 import javax.inject.Inject
 
@@ -485,17 +486,18 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             toast(R.string.Encryptionerror)
         }
     }
-    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String) {
+    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String):String {
+        var msgId = 0
         try {
             if(FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals(""))
             {
                 toast(R.string.Empty_with_parameters)
-                return
+                return msgId.toString()
             }
             if(Msg.length >264)
             {
                 toast(R.string.nomorecharacters)
-                return
+                return msgId.toString()
             }
 
             var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
@@ -503,10 +505,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
             var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))
+            var baseData = BaseData(3,msgData)
+            msgId = baseData.msgid!!
+            if (ConstantValue.curreantNetworkType.equals("WIFI")) {
+                AppConfig.instance.getPNRouterServiceMessageSender().sendChatMsg(baseData)
+
             }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(3,msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -515,11 +519,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
+            return msgId.toString()
         }catch (e:Exception)
         {
             LogUtil.addLog("sendMsg2 错误:",e.toString())
             toast(R.string.Encryptionerror)
         }
+        return msgId.toString()
     }
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
         chatFragment?.upateMessage(sendMsgRsp)

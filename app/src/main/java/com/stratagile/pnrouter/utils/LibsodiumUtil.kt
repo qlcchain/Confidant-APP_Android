@@ -315,7 +315,7 @@ object LibsodiumUtil {
             //非对称解密方式crypto_box_seal_open解密出对称密钥
             var dst_shared_key_Soucre_My = ByteArray(32)
             var crypto_box_seal_open = Sodium.crypto_box_seal_open(dst_shared_key_Soucre_My,dst_shared_key_Mi_My,dst_shared_key_Mi_My.size,RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicMiKey),RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateMiKey))
-            KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_shared_key_Soucre_My))
+            //KLog.i("shared_keyBase64:_receive" + RxEncodeTool.base64Encode2String(dst_shared_key_Soucre_My))
             val msgSouce = LibsodiumUtil.decrypt_data_symmetric_string(msg, nonce, RxEncodeTool.base64Encode2String(dst_shared_key_Soucre_My))
             return msgSouce
         }catch (e:Exception)

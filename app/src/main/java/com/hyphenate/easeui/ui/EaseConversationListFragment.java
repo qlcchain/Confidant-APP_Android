@@ -44,6 +44,7 @@ import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.utils.GsonUtil;
+import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 
 import java.util.ArrayList;
@@ -108,20 +109,29 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    KLog.i("点击会话层:");
+                    LogUtil.addLog("点击会话层:","EaseConversationListFragment");
                     UnReadEMMessage conversation = conversationListView.getItem(position);
                     UnReadEMMessage lastMessage = conversation;
                     UserEntity friendInfo = null;
                     List<UserEntity> localFriendList = null;
+                    KLog.i("点击会话层lastMessage:"+lastMessage.getEmMessage() +"_from:"+lastMessage.getEmMessage().getFrom()+"_to:"+lastMessage.getEmMessage().getTo());
+                    LogUtil.addLog("点击会话层lastMessage:"+lastMessage.getEmMessage() +"_from:"+lastMessage.getEmMessage().getFrom()+"_to:"+lastMessage.getEmMessage().getTo(),"EaseConversationListFragment");
                     if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                        KLog.i("点击会话层1_localFriendList:"+localFriendList.size());
+                        LogUtil.addLog("点击会话层1_localFriendList:"+localFriendList.size(),"EaseConversationListFragment");
                         if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
                     } else {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
+                        KLog.i("点击会话层2_localFriendList:"+localFriendList.size());
+                        LogUtil.addLog("点击会话层2_localFriendList:"+localFriendList.size(),"EaseConversationListFragment");
                         if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
                     }
-
+                    KLog.i("点击会话层:"+friendInfo);
+                    LogUtil.addLog("点击会话层:"+friendInfo,"EaseConversationListFragment");
                     lastMessage.getEmMessage().setUnread(false);
                     UserDataManger.curreantfriendUserData = friendInfo;
                     if (friendInfo != null)

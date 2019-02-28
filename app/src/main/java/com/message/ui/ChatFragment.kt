@@ -294,8 +294,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
             var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
             var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
 
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3,msgData))
+            if (ConstantValue.curreantNetworkType.equals("WIFI")) {
+                AppConfig.instance.getPNRouterServiceMessageSender().sendChatMsg(BaseData(3,msgData))
             }else if (ConstantValue.isToxConnected) {
                 var baseData = BaseData(3,msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")

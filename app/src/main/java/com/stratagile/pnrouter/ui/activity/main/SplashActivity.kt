@@ -69,6 +69,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
     }
     override fun initData() {
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
+        ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
         var this_ = this
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
