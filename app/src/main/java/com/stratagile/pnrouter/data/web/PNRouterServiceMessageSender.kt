@@ -47,6 +47,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         if(msgHashMap.get(userId) == null)
         {
             msgHashMap.put(userId!!,LinkedList())
+            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
         }else{
             toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
         }

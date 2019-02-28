@@ -524,6 +524,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         {
             LogUtil.addLog("sendMsg2 错误:",e.toString())
             toast(R.string.Encryptionerror)
+            chatFragment?.removeLastMessage()
         }
         return msgId.toString()
     }

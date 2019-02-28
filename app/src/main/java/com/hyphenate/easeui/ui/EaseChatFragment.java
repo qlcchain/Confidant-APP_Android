@@ -1460,7 +1460,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
-
+    public void removeLastMessage()
+    {
+        if(conversation != null)
+        {
+            EMMessage eMMessage = conversation.getLastMessage();
+            if(eMMessage != null)
+            {
+                conversation.removeMessage(eMMessage.getMsgId());
+            }
+        }
+    }
     public void delFreindMsg(JDelMsgPushRsp jDelMsgRsp) {
         try {
             EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId() + "");
