@@ -4,7 +4,6 @@
     android:id="@+id/list_itease_layout"
     android:layout_width="match_parent"
     android:layout_height="59dp"
-    android:background="#fff"
     android:gravity="center_vertical">
 
     <RelativeLayout
@@ -126,4 +125,11 @@
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="9sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_toRightOf="@id/avatar_container"
+        android:layout_height="@dimen/x1"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="7dp"
+        android:background="@color/color_f2f2f2"/>
 </RelativeLayout>

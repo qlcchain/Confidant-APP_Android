@@ -32,7 +32,7 @@
     <string name="shareApp">Share App</string>
     <string name="shareContact">Share Contact</string>
     <string name="collection">Save</string>
-    <string name="routerManagement">Router management</string>
+    <string name="routerManagement">Management Circles</string>
     <string name="addRecentStatus">Add to my status</string>
     <string name="qr_code_business_card">QR code business Card</string>
     <string name="search">Search</string>
@@ -439,7 +439,7 @@
 
 
     <string name="Router_QR_Code">Router QR Code</string>
-    <string name="Router_Alias">Router Alias</string>
+    <string name="Router_Alias">Circle Name</string>
     <string name="Adam_Grason">Adam Grason</string>
     <string name="User_Management">User Management</string>
     <string name="Create_user_accounts">Create user accounts</string>
@@ -559,4 +559,5 @@
     <string name="MessageRetrievalService_background_connection_enabled">Background connection enabled</string>
     <string name="Other_devices">Other devices logged into the account</string>
     <string name="System_Upgrade">System Upgrade, Forced Exit</string>
+    <string name="other_circle">Other circle</string>
 </resources>

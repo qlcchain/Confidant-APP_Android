@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/color_f5f5f5"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/llCOnfigQRCode"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:paddingLeft="@dimen/x30"
+        android:paddingRight="@dimen/x30"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="Configuration QR code"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x30"
+            android:src="@mipmap/arrow_enter"
+            android:layout_height="@dimen/x30" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/llAboutUs"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:paddingLeft="@dimen/x30"
+        android:paddingRight="@dimen/x30"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="About us"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="@dimen/x30"
+            android:src="@mipmap/arrow_enter"
+            android:layout_height="@dimen/x30" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x1"
+        android:paddingLeft="@dimen/x30"
+        android:paddingRight="@dimen/x30"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="Version number"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/versionNumber"
+            android:layout_width="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/color_808080"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/llLogout"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x38"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/x30"
+        android:paddingRight="@dimen/x30"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="@string/logout"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

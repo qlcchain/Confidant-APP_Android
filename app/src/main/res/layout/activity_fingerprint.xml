@@ -3,51 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-
+    android:background="@color/main_color"
     android:layout_height="match_parent">
 
-    <com.nightonke.wowoviewpager.WoWoViewPager
-        android:id="@+id/wowo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <ImageView
-        android:id="@+id/ivBack"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/main_color" />
-
-    <TextView
-        android:id="@+id/funTv0"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iv0"
-        android:layout_marginTop="@dimen/x54"
+    <LinearLayout
+        android:id="@+id/llLogo"
         android:layout_width="wrap_content"
-        android:text="Confidant"
-        android:textColor="@color/white"
-        android:textSize="26sp"
-        android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/iv0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
         android:layout_marginTop="@dimen/x357"
-        android:scaleType="fitEnd"
-        android:src="@mipmap/guide_1"
-        tools:ignore="ContentDescription" />
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/x123"
-        android:scaleType="fitEnd"
-        android:src="@mipmap/guide_3"
-        tools:ignore="ContentDescription" />
+        <ImageView
+            android:id="@+id/iv0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitEnd"
+            android:src="@mipmap/guide_1"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/funTv0"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/iv0"
+            android:layout_marginTop="@dimen/x54"
+            android:layout_width="wrap_content"
+            android:text="Confidant"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
     <LinearLayout

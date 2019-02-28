@@ -204,7 +204,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 {
                     Animation rotateAnimation  = new RotateAnimation(-3590, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     rotateAnimation.setFillAfter(true);
-                    rotateAnimation.setDuration(9000);
+                    rotateAnimation.setDuration(12000);
                     rotateAnimation.setRepeatCount(-1);
                     rotateAnimation.setInterpolator(new LinearInterpolator());
                     sendStatusView.startAnimation(rotateAnimation);

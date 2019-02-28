@@ -112,10 +112,6 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 
         </android.support.v7.widget.RecyclerView>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x1"
-            android:background="@color/color_f2f2f2"/>
     </LinearLayout>
     <!--</android.support.v4.widget.NestedScrollView>-->
 </android.support.v4.widget.SwipeRefreshLayout>

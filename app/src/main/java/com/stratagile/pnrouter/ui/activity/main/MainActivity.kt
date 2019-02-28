@@ -34,6 +34,9 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
+import com.pawegio.kandroid.activityManager
+import com.pawegio.kandroid.notificationManager
+import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -53,6 +56,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
+import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
@@ -884,6 +888,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
         try {
@@ -1419,6 +1424,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun startVerify(startVerify: StartVerify) {
+        if ((AppConfig.instance.mAppActivityManager.currentActivity() as Activity) is VerifyingFingerprintActivity) {
+            return
+        }
+        runDelayed(50, {
+            val intent = Intent(AppConfig.instance, VerifyingFingerprintActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out_1)
+        })
     }
 
     override fun setupActivityComponent() {
