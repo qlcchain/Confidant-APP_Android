@@ -100,6 +100,7 @@ import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 import com.stratagile.pnrouter.utils.LibsodiumUtil;
+import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -2175,13 +2176,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
         EMMessage currentSendMsgTemp =  sendMsgMap.get(jSendMsgRsp.getMsgid()+"");
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getMsgid()+"");
+        KLog.i("upateMessage:"+"forward_msg"+(forward_msg != null));
+        LogUtil.addLog("upateMessage:","forward_msg"+(forward_msg != null));
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
                 if (conversation != null) {
-                    /*conversation.removeMessage(jSendMsgRsp.getMsgid()+"");*/
-                    //currentSendMsgTemp.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
+                    currentSendMsgTemp.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                     currentSendMsgTemp.setAcked(true);
-                    conversation.updateMessage(currentSendMsgTemp);
+                    conversation.insertMessage(currentSendMsgTemp);
                     KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
