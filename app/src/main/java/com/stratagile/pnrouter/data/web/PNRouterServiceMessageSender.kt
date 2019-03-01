@@ -325,7 +325,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         {
                             if(ConstantValue.sendFileMsgTimeMap[item.msgId] != null)
                             {
-                                if(Calendar.getInstance().timeInMillis - ConstantValue.sendFileMsgTimeMap[item.msgId]!!.toLong() > 60 *100)
+                                if(Calendar.getInstance().timeInMillis - ConstantValue.sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
                                 {
                                     val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
                                     ConstantValue.sendFileMsgMap[item.msgId] = message
