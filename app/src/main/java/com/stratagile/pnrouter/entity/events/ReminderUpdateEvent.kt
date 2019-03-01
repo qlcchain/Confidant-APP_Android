@@ -18,6 +18,8 @@ class TransformFileMessage(var toId : String, var message : ByteArray)
 //发送文件接收的反馈
 class TransformReceiverFileMessage(var toId : String, var message : ByteArray)
 
+//status 0 失败要移除 ，成功 更新显示
+class FileTransformStatus(var msgid : String,var LogIdIdResult:String,var friendId:String, var status : Int = 0 )
 
 
 //meesage默认为0，只传toid，往websocket发、      1= websocket 连接成功, 2 发送成功， 3 收到信息, 4断开websocket连接

@@ -20,31 +20,25 @@ public class MessageEntity implements Parcelable{
 
     private String sendTime;//发送时间
 
-    private String type;  // 0 文本，1文件
+    private String type;  // 0 文本，1图片，2语音，3视频，4其他文件
 
     private Boolean complete;//是否完成
 
     private String baseData; //文本数据
 
-    private String fileLeftBuffer; //文件数据
+    private String filePath; //文件路径
 
-    private String fileName; //文件数据
+    private String friendSignPublicKey; //文件数据
 
-    private String fileId; //文件数据
+    private String friendMiPublicKey; //文件数据
 
-    private String segSeq; //文件数据
+    private int voiceTimeLen;//语音长度
 
-    private String fileKey; //文件数据
-
-    private String SrcKey; //文件数据
-
-    private String DstKey; //文件数据
-
-    @Generated(hash = 327849575)
+    @Generated(hash = 1429837954)
     public MessageEntity(Long id, String userId, String friendId, String msgId,
             String sendTime, String type, Boolean complete, String baseData,
-            String fileLeftBuffer, String fileName, String fileId, String segSeq,
-            String fileKey, String SrcKey, String DstKey) {
+            String filePath, String friendSignPublicKey, String friendMiPublicKey,
+            int voiceTimeLen) {
         this.id = id;
         this.userId = userId;
         this.friendId = friendId;
@@ -53,13 +47,10 @@ public class MessageEntity implements Parcelable{
         this.type = type;
         this.complete = complete;
         this.baseData = baseData;
-        this.fileLeftBuffer = fileLeftBuffer;
-        this.fileName = fileName;
-        this.fileId = fileId;
-        this.segSeq = segSeq;
-        this.fileKey = fileKey;
-        this.SrcKey = SrcKey;
-        this.DstKey = DstKey;
+        this.filePath = filePath;
+        this.friendSignPublicKey = friendSignPublicKey;
+        this.friendMiPublicKey = friendMiPublicKey;
+        this.voiceTimeLen = voiceTimeLen;
     }
 
     @Generated(hash = 1797882234)
@@ -80,13 +71,10 @@ public class MessageEntity implements Parcelable{
         byte tmpComplete = in.readByte();
         complete = tmpComplete == 0 ? null : tmpComplete == 1;
         baseData = in.readString();
-        fileLeftBuffer = in.readString();
-        fileName = in.readString();
-        fileId = in.readString();
-        segSeq = in.readString();
-        fileKey = in.readString();
-        SrcKey = in.readString();
-        DstKey = in.readString();
+        filePath = in.readString();
+        friendSignPublicKey = in.readString();
+        friendMiPublicKey = in.readString();
+        voiceTimeLen = in.readInt();
     }
 
     @Override
@@ -104,13 +92,10 @@ public class MessageEntity implements Parcelable{
         dest.writeString(type);
         dest.writeByte((byte) (complete == null ? 0 : complete ? 1 : 2));
         dest.writeString(baseData);
-        dest.writeString(fileLeftBuffer);
-        dest.writeString(fileName);
-        dest.writeString(fileId);
-        dest.writeString(segSeq);
-        dest.writeString(fileKey);
-        dest.writeString(SrcKey);
-        dest.writeString(DstKey);
+        dest.writeString(filePath);
+        dest.writeString(friendSignPublicKey);
+        dest.writeString(friendMiPublicKey);
+        dest.writeInt(voiceTimeLen);
     }
 
     @Override
@@ -194,59 +179,35 @@ public class MessageEntity implements Parcelable{
         this.baseData = baseData;
     }
 
-    public String getFileLeftBuffer() {
-        return fileLeftBuffer;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFileLeftBuffer(String fileLeftBuffer) {
-        this.fileLeftBuffer = fileLeftBuffer;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFriendSignPublicKey() {
+        return friendSignPublicKey;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFriendSignPublicKey(String friendSignPublicKey) {
+        this.friendSignPublicKey = friendSignPublicKey;
     }
 
-    public String getFileId() {
-        return fileId;
+    public String getFriendMiPublicKey() {
+        return friendMiPublicKey;
     }
 
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
+    public void setFriendMiPublicKey(String friendMiPublicKey) {
+        this.friendMiPublicKey = friendMiPublicKey;
     }
 
-    public String getSegSeq() {
-        return segSeq;
+    public int getVoiceTimeLen() {
+        return voiceTimeLen;
     }
 
-    public void setSegSeq(String segSeq) {
-        this.segSeq = segSeq;
-    }
-
-    public String getFileKey() {
-        return fileKey;
-    }
-
-    public void setFileKey(String fileKey) {
-        this.fileKey = fileKey;
-    }
-
-    public String getSrcKey() {
-        return SrcKey;
-    }
-
-    public void setSrcKey(String srcKey) {
-        SrcKey = srcKey;
-    }
-
-    public String getDstKey() {
-        return DstKey;
-    }
-
-    public void setDstKey(String dstKey) {
-        DstKey = dstKey;
+    public void setVoiceTimeLen(int voiceTimeLen) {
+        this.voiceTimeLen = voiceTimeLen;
     }
 }

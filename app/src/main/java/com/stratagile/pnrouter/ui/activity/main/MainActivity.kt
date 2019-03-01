@@ -1004,7 +1004,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             messageEntityList.sortBy { it.sendTime }
             for (i in messageEntityList) {
-                AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId,i.baseData)
+                if(i.type.equals("0"))
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId,i.baseData)
+                }
+
             }
         }
 
@@ -1528,7 +1532,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (!CustomPopWindow.onBackPressed()) {
                 moveTaskToBack(true)
-//                exitToast()
+//\                exitToast()
             }
         }
         return false

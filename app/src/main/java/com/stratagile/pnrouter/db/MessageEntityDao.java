@@ -30,13 +30,10 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
         public final static Property Type = new Property(5, String.class, "type", false, "TYPE");
         public final static Property Complete = new Property(6, Boolean.class, "complete", false, "COMPLETE");
         public final static Property BaseData = new Property(7, String.class, "baseData", false, "BASE_DATA");
-        public final static Property FileLeftBuffer = new Property(8, String.class, "fileLeftBuffer", false, "FILE_LEFT_BUFFER");
-        public final static Property FileName = new Property(9, String.class, "fileName", false, "FILE_NAME");
-        public final static Property FileId = new Property(10, String.class, "fileId", false, "FILE_ID");
-        public final static Property SegSeq = new Property(11, String.class, "segSeq", false, "SEG_SEQ");
-        public final static Property FileKey = new Property(12, String.class, "fileKey", false, "FILE_KEY");
-        public final static Property SrcKey = new Property(13, String.class, "SrcKey", false, "SRC_KEY");
-        public final static Property DstKey = new Property(14, String.class, "DstKey", false, "DST_KEY");
+        public final static Property FilePath = new Property(8, String.class, "filePath", false, "FILE_PATH");
+        public final static Property FriendSignPublicKey = new Property(9, String.class, "friendSignPublicKey", false, "FRIEND_SIGN_PUBLIC_KEY");
+        public final static Property FriendMiPublicKey = new Property(10, String.class, "friendMiPublicKey", false, "FRIEND_MI_PUBLIC_KEY");
+        public final static Property VoiceTimeLen = new Property(11, int.class, "voiceTimeLen", false, "VOICE_TIME_LEN");
     }
 
 
@@ -60,13 +57,10 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
                 "\"TYPE\" TEXT," + // 5: type
                 "\"COMPLETE\" INTEGER," + // 6: complete
                 "\"BASE_DATA\" TEXT," + // 7: baseData
-                "\"FILE_LEFT_BUFFER\" TEXT," + // 8: fileLeftBuffer
-                "\"FILE_NAME\" TEXT," + // 9: fileName
-                "\"FILE_ID\" TEXT," + // 10: fileId
-                "\"SEG_SEQ\" TEXT," + // 11: segSeq
-                "\"FILE_KEY\" TEXT," + // 12: fileKey
-                "\"SRC_KEY\" TEXT," + // 13: SrcKey
-                "\"DST_KEY\" TEXT);"); // 14: DstKey
+                "\"FILE_PATH\" TEXT," + // 8: filePath
+                "\"FRIEND_SIGN_PUBLIC_KEY\" TEXT," + // 9: friendSignPublicKey
+                "\"FRIEND_MI_PUBLIC_KEY\" TEXT," + // 10: friendMiPublicKey
+                "\"VOICE_TIME_LEN\" INTEGER NOT NULL );"); // 11: voiceTimeLen
     }
 
     /** Drops the underlying database table. */
@@ -119,40 +113,21 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             stmt.bindString(8, baseData);
         }
  
-        String fileLeftBuffer = entity.getFileLeftBuffer();
-        if (fileLeftBuffer != null) {
-            stmt.bindString(9, fileLeftBuffer);
+        String filePath = entity.getFilePath();
+        if (filePath != null) {
+            stmt.bindString(9, filePath);
         }
  
-        String fileName = entity.getFileName();
-        if (fileName != null) {
-            stmt.bindString(10, fileName);
+        String friendSignPublicKey = entity.getFriendSignPublicKey();
+        if (friendSignPublicKey != null) {
+            stmt.bindString(10, friendSignPublicKey);
         }
  
-        String fileId = entity.getFileId();
-        if (fileId != null) {
-            stmt.bindString(11, fileId);
+        String friendMiPublicKey = entity.getFriendMiPublicKey();
+        if (friendMiPublicKey != null) {
+            stmt.bindString(11, friendMiPublicKey);
         }
- 
-        String segSeq = entity.getSegSeq();
-        if (segSeq != null) {
-            stmt.bindString(12, segSeq);
-        }
- 
-        String fileKey = entity.getFileKey();
-        if (fileKey != null) {
-            stmt.bindString(13, fileKey);
-        }
- 
-        String SrcKey = entity.getSrcKey();
-        if (SrcKey != null) {
-            stmt.bindString(14, SrcKey);
-        }
- 
-        String DstKey = entity.getDstKey();
-        if (DstKey != null) {
-            stmt.bindString(15, DstKey);
-        }
+        stmt.bindLong(12, entity.getVoiceTimeLen());
     }
 
     @Override
@@ -199,40 +174,21 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             stmt.bindString(8, baseData);
         }
  
-        String fileLeftBuffer = entity.getFileLeftBuffer();
-        if (fileLeftBuffer != null) {
-            stmt.bindString(9, fileLeftBuffer);
+        String filePath = entity.getFilePath();
+        if (filePath != null) {
+            stmt.bindString(9, filePath);
         }
  
-        String fileName = entity.getFileName();
-        if (fileName != null) {
-            stmt.bindString(10, fileName);
+        String friendSignPublicKey = entity.getFriendSignPublicKey();
+        if (friendSignPublicKey != null) {
+            stmt.bindString(10, friendSignPublicKey);
         }
  
-        String fileId = entity.getFileId();
-        if (fileId != null) {
-            stmt.bindString(11, fileId);
+        String friendMiPublicKey = entity.getFriendMiPublicKey();
+        if (friendMiPublicKey != null) {
+            stmt.bindString(11, friendMiPublicKey);
         }
- 
-        String segSeq = entity.getSegSeq();
-        if (segSeq != null) {
-            stmt.bindString(12, segSeq);
-        }
- 
-        String fileKey = entity.getFileKey();
-        if (fileKey != null) {
-            stmt.bindString(13, fileKey);
-        }
- 
-        String SrcKey = entity.getSrcKey();
-        if (SrcKey != null) {
-            stmt.bindString(14, SrcKey);
-        }
- 
-        String DstKey = entity.getDstKey();
-        if (DstKey != null) {
-            stmt.bindString(15, DstKey);
-        }
+        stmt.bindLong(12, entity.getVoiceTimeLen());
     }
 
     @Override
@@ -251,13 +207,10 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // type
             cursor.isNull(offset + 6) ? null : cursor.getShort(offset + 6) != 0, // complete
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // baseData
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // fileLeftBuffer
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // fileName
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // fileId
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // segSeq
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // fileKey
-            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13), // SrcKey
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // DstKey
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // filePath
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // friendSignPublicKey
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // friendMiPublicKey
+            cursor.getInt(offset + 11) // voiceTimeLen
         );
         return entity;
     }
@@ -272,13 +225,10 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
         entity.setType(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setComplete(cursor.isNull(offset + 6) ? null : cursor.getShort(offset + 6) != 0);
         entity.setBaseData(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setFileLeftBuffer(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setFileName(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setFileId(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setSegSeq(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setFileKey(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setSrcKey(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
-        entity.setDstKey(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setFilePath(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setFriendSignPublicKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setFriendMiPublicKey(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setVoiceTimeLen(cursor.getInt(offset + 11));
      }
     
     @Override
