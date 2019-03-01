@@ -66,6 +66,7 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
+import com.xiaomi.mipush.sdk.MiPushClient
 import events.ToxFriendStatusEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
@@ -198,6 +199,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var SELECT_PHOTO = 2
     var SELECT_VIDEO = 3
     var SELECT_DEOCUMENT = 4
+    var isSendRegId = true
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
 
@@ -901,33 +903,39 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         startService(startFileDownloadUploadService)
         Thread(Runnable() {
             run() {
+                while (isSendRegId)
+                {
+                    var map: HashMap<String, String> = HashMap()
+                    var os = VersionUtil.getDeviceBrand()
+                    map.put("os", os.toString())
+                    map.put("appversion", "1.0.1")
+                    map.put("regid", ConstantValue.mRegId)
+                    map.put("topicid", "")
+                    var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+                    map.put("routerid", ConstantValue.currentRouterId)
+                    map.put("userid", selfUserId!!)
+                    var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
+                    map.put("usersn", lastLoginUserSn)
+                    KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
+                    LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
+                    OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
+                        override fun onFailure(e: Exception) {
+                            isSendRegId = true
+                            KLog.i(e.printStackTrace())
+                            LogUtil.addLog("小米推送注册失败:", "MainActivity")
+                            KLog.i("小米推送注册失败:MainActivity")
+                        }
 
-                var map: HashMap<String, String> = HashMap()
-                var os = VersionUtil.getDeviceBrand()
-                map.put("os", os.toString())
-                map.put("appversion", "1.0.1")
-                map.put("regid", ConstantValue.mRegId)
-                map.put("topicid", "")
-                var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-                map.put("routerid", ConstantValue.currentRouterId)
-                map.put("userid", selfUserId!!)
-                var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
-                map.put("usersn", lastLoginUserSn)
-                KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
-                LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
-                OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
-                    override fun onFailure(e: Exception) {
-                        KLog.i(e.printStackTrace())
-                        LogUtil.addLog("小米推送注册失败:", "MainActivity")
-                        KLog.i("小米推送注册失败:MainActivity")
-                    }
+                        override fun onResponse(json: String) {
+                            isSendRegId = false
+                            LogUtil.addLog("小米推送注册成功:", "MainActivity")
+                            KLog.i("小米推送注册成功:MainActivity" + json)
+                            //Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
+                        }
+                    });
+                    Thread.sleep(10 * 1000)
+                }
 
-                    override fun onResponse(json: String) {
-                        LogUtil.addLog("小米推送注册成功:", "MainActivity")
-                        KLog.i("小米推送注册成功:MainActivity" + json)
-                        //Toast.makeText(AppConfig.instance,"成功",Toast.LENGTH_SHORT).show()
-                    }
-                });
             }
         }).start()
         MessageProvider.getInstance().messageListenter = this
@@ -1535,7 +1543,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            }
             CrashReport.closeBugly()
             CrashReport.closeCrashReport()
-            //MiPushClient.unregisterPush(this)
+            MiPushClient.unregisterPush(this)
             AppConfig.instance.stopAllService()
             //android进程完美退出方法。
 //            AppConfig.instance.mAppActivityManager.AppExit()

@@ -1488,6 +1488,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             int len = messageEntityList.size();
             for (int i = 0; i < len; i++)
             {
+                KLog.i("开始插入没有发送成功的文本消息：" +len);
                 MessageEntity messageEntity = messageEntityList.get(i);
                 BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
                 SendMsgReqV3 SendMsgReqV3 = (SendMsgReqV3) baseData.getParams();
