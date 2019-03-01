@@ -72,9 +72,11 @@
                 android:maxLines="3"
                 android:includeFontPadding="false"
                 android:textColor="@color/color_2c2c2c"
+                android:paddingTop="@dimen/x10"
+                android:paddingBottom="@dimen/x10"
                 android:minHeight="33dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="2dp"
                 android:textSize="15sp"
                 android:imeOptions="actionSend"/>
 

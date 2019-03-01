@@ -87,23 +87,23 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
 
     fun showFingerAnimation() {
         val curTranslationY = llLogo.getTranslationY()
-        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY - 500f)
+        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY - resources.getDimension(R.dimen.x300))
         animator.setDuration(600)
         animator.start()
 
         val curNexY = llNext.translationY
-        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY + 300f)
+        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY + resources.getDimension(R.dimen.x300))
         nextAnimator.setDuration(600)
         nextAnimator.start()
     }
     fun hideFingerAnimation() {
         val curTranslationY = llLogo.getTranslationY()
-        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY + 500f)
+        val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY + resources.getDimension(R.dimen.x300))
         animator.setDuration(600)
         animator.start()
 
         val curNexY = llNext.translationY
-        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY - 300f)
+        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY - resources.getDimension(R.dimen.x300))
         nextAnimator.setDuration(600)
         nextAnimator.start()
     }

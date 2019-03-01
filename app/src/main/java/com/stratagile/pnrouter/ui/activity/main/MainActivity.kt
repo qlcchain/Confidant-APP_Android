@@ -34,6 +34,7 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
+import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -1262,8 +1263,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun onResume() {
         exitTime = System.currentTimeMillis() - 2001
-        super.onResume()
 
+        super.onResume()
+        notificationManager?.cancelAll()
         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
         controlleMessageUnReadCount(UnReadMessageCount)
 
@@ -1525,7 +1527,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (!CustomPopWindow.onBackPressed()) {
-                exitToast()
+                moveTaskToBack(true)
+//                exitToast()
             }
         }
         return false

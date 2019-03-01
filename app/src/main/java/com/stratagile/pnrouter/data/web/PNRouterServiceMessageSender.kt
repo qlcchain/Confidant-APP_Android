@@ -117,7 +117,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     @Synchronized
     fun  initThread() {
-        thread =  thread {
+        thread =  thread(true, false, null, "senderThread") {
             while (true) {
                 Log.i("sender", "发送线程运行中等待。。。")
                 Thread.sleep(10 * 1000)

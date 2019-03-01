@@ -8,7 +8,7 @@
     <string name="file_">Files</string>
     <string name="contacts">Contacts</string>
     <string name="my">Me</string>
-    <string name="loginScanTips">Click here to scan the router’s QR code.</string>
+    <string name="loginScanTips">Click here to scan the circle’s QR code.</string>
     <string name="Login">Login</string>
     <string name="Username">Username</string>
     <string name="Please_type_your_username_here">Please type your username here</string>
@@ -173,7 +173,7 @@
     <string name="LoginAdmin">Log in</string>
     <string name="Administrator_account">Administrator’s account</string>
     <string name="Modify_Activation_Code">Modify Activation Code</string>
-    <string name="Modify_Router_Password">Modify Router Password</string>
+    <string name="Modify_Router_Password">Modify Circle Password</string>
 
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
@@ -406,8 +406,8 @@
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
     <string name="guest_viewpager_1">Dedicated encrypted messaging system created for enterprises and individual customers to facilitate secure communication and carefree file sharing.</string>
-    <string name="guest_viewpager_2">Password is saved locally and securely against hacking or misuse.\nSecurity of the local data, all data is saved in the router ROM and never exposed to any intermediary server.\nUnique system architecture that serves as a decentralised private network communication tunnel.</string>
-    <string name="guest_viewpager_3">Scan the QR code on the Confidant Router to activate your administrator account.\nScan your QR code of the private key to import an existing account.\nScan the invation code to join your friend\'s Confidant circle.</string>
+    <string name="guest_viewpager_2">Password is saved locally and securely against hacking or misuse.\nSecurity of the local data, all data is saved in the circle ROM and never exposed to any intermediary server.\nUnique system architecture that serves as a decentralised private network communication tunnel.</string>
+    <string name="guest_viewpager_3">Scan the QR code on the Confidant Circle to activate your administrator account.\nScan your QR code of the private key to import an existing account.\nScan the invation code to join your friend\'s Confidant circle.</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
@@ -435,10 +435,10 @@
     <string name="Press_again">Press again</string>
     <string name="code_error">code error</string>
     <string name="Please_connect_to_WiFi">Please connect to WiFi</string>
-    <string name="Unable_to_connect_to_router">Unable to connect to the router</string>
+    <string name="Unable_to_connect_to_router">Unable to connect to the circle</string>
 
 
-    <string name="Router_QR_Code">Router QR Code</string>
+    <string name="Router_QR_Code">Circle QR Code</string>
     <string name="Router_Alias">Circle Name</string>
     <string name="Adam_Grason">Adam Grason</string>
     <string name="User_Management">User Management</string>
@@ -449,7 +449,7 @@
 
 
     <string name="adduserTips">*The nickname filling is convenient for users to manage, and the invitation code is set to designate users safely.</string>
-    <string name="routerpasswordTips">*Please input your router password as indicated in the user manual book.</string>
+    <string name="routerpasswordTips">*Please input your circle password as indicated in the user manual book.</string>
     <string name="routercodeupdata">*Your activation code must include 8 characters.</string>
     <string name="routerpasswordupdata">*Your password must include 8 characters.</string>
 
@@ -479,7 +479,7 @@
     <string name="nomorecharacters">No more than 264 characters</string>
     <string name="needs8">Lnvitation code needs 8 characters.</string>
     <string name="needs35">at most 35 characters.</string>
-    <string name="fixedtwo">fixed two-dimensional code sharing out, users scan the two-dimensional code can automatically generate a temporary account, login, temporary account does not support recovery, default to a router to support up to 20 temporary accounts.</string>
+    <string name="fixedtwo">fixed two-dimensional code sharing out, users scan the two-dimensional code can automatically generate a temporary account, login, temporary account does not support recovery, default to a circle to support up to 20 temporary accounts.</string>
     <string name="temporaryaccounts"> Temporary accounts</string>
     <string name="logoutfailed">Exit failed, please try again</string>
     <string name="nofile">file does not exist</string>
@@ -545,13 +545,13 @@
     <string name="Configuration_success">Configuration success</string>
     <string name="rebooting">Rebooting...</string>
     <string name="your_hard_disk_has_been_n_formatted">Your hard disk has been   formatted</string>
-    <string name="please_reboot_your_router">Please reboot your router</string>
+    <string name="please_reboot_your_router">Please reboot your circle</string>
     <string name="reboot">Reboot</string>
     <string name="formatting_in_progress">Formatting in progress...</string>
     <string name="create_an_account">Create an account</string>
     <string name="Create_failure">Create failure</string>
     <string name="Export_account">Export account</string>
-    <string name="login_no_router">*Scan the invitation QR code to join your friend\'s Confidant circle.  *Scan the QR code on your Confidant router to launch your circle.</string>
+    <string name="login_no_router">*Scan the invitation QR code to join your friend\'s Confidant circle.  *Scan the QR code on your Confidant circle to launch your circle.</string>
     <string name="login_has_router">*Select to re-join an existing circle or Scan the invitation QR code to join a new circle.</string>
     <string name="Connecting"> Connecting you to the circle</string>
     <string name="overwritten">This operation will overwrite the current account. Do you want to continue?</string>
@@ -560,4 +560,5 @@
     <string name="Other_devices">Other devices logged into the account</string>
     <string name="System_Upgrade">System Upgrade, Forced Exit</string>
     <string name="other_circle">Other circle</string>
+    <string name="internet_unavailable">internet unavailable</string>
 </resources>
