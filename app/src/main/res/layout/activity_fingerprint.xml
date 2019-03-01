@@ -41,7 +41,7 @@
         android:id="@+id/llNext"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x84"
-        android:layout_marginBottom="@dimen/x60"
+        android:layout_marginBottom="@dimen/x110"
         android:layout_marginEnd="@dimen/x52"
         android:background="@drawable/btn_white"
         android:layout_marginStart="@dimen/x52"

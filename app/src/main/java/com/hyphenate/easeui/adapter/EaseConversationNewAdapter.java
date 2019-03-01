@@ -198,8 +198,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         if(cvsListHelper != null){
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))),
-                TextView.BufferType.SPANNABLE);
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))), TextView.BufferType.SPANNABLE);
         if(content != null){
             holder.message.setText(content);
         }
@@ -208,7 +207,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         } else {
             holder.draft.setVisibility(View.GONE);
         }
-        holder.message.setText(holder.message.getText().toString().replace("[draft]", ""));
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("[draft]", "")));
         holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
         //set property
         holder.name.setTextColor(primaryColor);

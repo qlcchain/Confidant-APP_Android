@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_itease_layout"
     android:layout_width="match_parent"
-    android:layout_height="59dp"
+    android:background="@color/white"
+    android:layout_height="@dimen/x123"
     android:gravity="center_vertical">
 
     <RelativeLayout

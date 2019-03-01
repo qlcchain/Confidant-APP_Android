@@ -71,7 +71,9 @@ import kotlin.collections.HashMap
 
 class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMessageReceiver.PullFriendCallBack {
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
+        //用户表，每个手机是一个用户
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+        //关系表，我和其他用户的关系
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size ==0) {
@@ -273,6 +275,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendChange(friendChange: FriendChange) {
         initData()
+        pullFriendList()
     }
     fun pullFriendList() {
         Log.i("pullFriendList", "webosocket" + ConstantValue.isWebsocketConnected)

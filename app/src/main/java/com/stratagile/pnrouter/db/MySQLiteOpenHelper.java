@@ -28,7 +28,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
             public void onDropAllTables(Database db, boolean ifExists) {
                 DaoMaster.dropAllTables(db, ifExists);
             }
-        },RouterEntityDao.class, UserEntityDao.class, RecentFileDao.class);
+        },RouterEntityDao.class, UserEntityDao.class, RecentFileDao.class, FriendEntityDao.class, MessageEntityDao.class);
     }
     public void deleSQL(){
         SQLiteDatabase db = getWritableDatabase();

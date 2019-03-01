@@ -134,6 +134,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
+        //关系表，我和其他用户的关系
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {
             if (j.userId.equals(userId)) {
@@ -142,6 +143,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                     if(j.friendLocalStatus == 0)//自动同意
                     {
+                        KLog.i("对方删除我，对方又加我为好友，自动同意为好友")
+                        LogUtil.addLog("对方删除我，对方又加我为好友，自动同意为好友")
                         var itUserEntity = UserEntity()
                         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
                         if (localFriendList.size > 0)
@@ -180,12 +183,15 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         }
                         j.friendLocalStatus = 0
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-                        return
+//                        return
                     }else
                     {
+                        KLog.i("以前是好友，后来我删除了，现在对方又想加我为好友")
+                        LogUtil.addLog("以前是好友，后来我删除了，现在对方又想加我为好友")
                         j.friendLocalStatus = 3
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
                         EventBus.getDefault().post(FriendChange())
+//                        return
                     }
 
                 }
@@ -196,25 +202,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         var ifHas = false
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
-                /* if(it.friendStatus == 0)//如果记录已经是好友，直接添加（有可能对方删除我，我没有删除对方）
-                 {
-                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                     val selfNickNameBase64 = it.nickName
-                     //val toNickNameBase64 = RxEncodeTool.base64Encode2String(toNickName!!.toByteArray())
-                     var addFriendDealReq = AddFriendDealReq(selfNickNameBase64!!, it.nickName, selfUserId!!, it.userId, ConstantValue.publicRAS!!, it.publicKey,0)
-                     if (ConstantValue.isWebsocketConnected) {
-                         AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                     }else if (ConstantValue.isToxConnected) {
-                         var baseData = BaseData(addFriendDealReq)
-                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                         //var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                     }
-                     it.friendStatus = 0
-                 }else
-                 {
-                     it.friendStatus = 3
-                 }*/
+                KLog.i("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
+                LogUtil.addLog("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
                 ifHas = true
                 it.nickName = jAddFriendPushRsp.params.nickName;
                 it.signPublicKey = jAddFriendPushRsp.params.userKey
@@ -231,7 +220,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 it.routerUserId = selfUserId
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
-                return@forEach
+                return
 
                 /*
                   EventBus.getDefault().post(FriendChange())
@@ -241,6 +230,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
         if(!ifHas)
         {
+            KLog.i("以前没有这个好友，现在新增用户信息")
+            LogUtil.addLog("以前没有这个好友，现在新增用户信息")
             var newFriend = UserEntity();
             newFriend.nickName = jAddFriendPushRsp.params.nickName
             //newFriend.friendStatus = 3
@@ -265,7 +256,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             newFriend.routerUserId = selfUserId
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         }
-
+        KLog.i("以前没有这个好友, 新增好友关系，关系为等待我处理好友请求")
+        LogUtil.addLog("以前没有这个好友, 新增好友关系，关系为等待我处理好友请求")
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
         if (localFriendList.size > 0)
         {
@@ -280,27 +272,6 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
             AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
         }
-
-        /*var addFriendPushReq = AddFriendPushReq(0,userId!!, "")
-
-        var sendData = BaseData(addFriendPushReq,jAddFriendPushRsp.msgid)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(4,addFriendPushReq,jAddFriendPushRsp.msgid)
-        }
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        } else if (ConstantValue.isToxConnected) {
-            var baseData = sendData
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }*/
-
         EventBus.getDefault().post(FriendChange())
     }
 

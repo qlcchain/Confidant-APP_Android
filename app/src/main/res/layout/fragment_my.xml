@@ -109,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:srcmy="@mipmap/shareapp"
-            app:textmy="@string/shareApp">
+            app:textmy="@string/MyQRCode">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 

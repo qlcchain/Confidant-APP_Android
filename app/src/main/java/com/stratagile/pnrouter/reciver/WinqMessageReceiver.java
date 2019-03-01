@@ -61,9 +61,11 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         KLog.i("点击通知");
         if (isAppAlive(context, context.getPackageName()) == 1) {
             Intent intent = new Intent(context, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } else if (isAppAlive(context, context.getPackageName()) == 2) {
             Intent intent = new Intent(context, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } else {
             Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());

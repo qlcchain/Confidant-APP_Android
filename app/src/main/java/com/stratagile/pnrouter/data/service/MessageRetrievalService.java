@@ -196,35 +196,11 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
                 Log.i(TAG, "Making websocket connection....");
                 pipe = receiver.createMessagePipe();
-
-                SignalServiceMessagePipe localPipe = pipe;
-
                 try {
-                    while (isConnectionNecessary() && !stopThread.get()) {
-//                        try {
-//                            Log.i(TAG, "Reading message...");
-//                            localPipe.read(REQUEST_TIMEOUT_MINUTES, TimeUnit.MINUTES,
-//                                    envelope -> {
-//                                        Log.i(TAG, "Retrieved envelope! " + envelope.getSource());
-//
-//                                        PushContentReceiveJob receiveJob = new PushContentReceiveJob(MessageRetrievalService.this);
-//                                        receiveJob.handle(envelope);
-//
-//                                        decrementPushReceived();
-//                                    });
-//                        } catch (TimeoutException e) {
-//                            Log.w(TAG, "Application level read timeout...");
-//                        } catch (InvalidVersionException e) {
-//                            Log.w(TAG, e);
-//                        }
-                    }
-                } catch (Throwable e) {
-                    Log.w(TAG, e);
-                } finally {
-                    Log.w(TAG, "Shutting down pipe...");
-                    shutdown(localPipe);
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
                 Log.i(TAG, "Looping...");
             }
 

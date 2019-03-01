@@ -16,6 +16,7 @@
 		android:id="@+id/progress"
 		android:layout_width="60dp"
 		android:layout_height="60dp"
+		android:indeterminateDuration="2000"
 		android:layout_centerHorizontal="true"
 		/>
 	<TextView
@@ -26,6 +27,7 @@
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true"
 		android:textColor="@android:color/white"
+		android:gravity="center"
 		android:textSize="17sp"
 		android:layout_marginTop="10px"
 		android:layout_marginLeft="50px"

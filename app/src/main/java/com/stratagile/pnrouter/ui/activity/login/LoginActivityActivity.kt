@@ -886,7 +886,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
 
     }
+    var isNetEnable = true
     override fun initData() {
+        isNetEnable = NetUtils.isNetworkAvalible(this)
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
@@ -900,40 +902,51 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            if (routerList.size == 0) {
-                return@setOnClickListener
-            }
-            if(!WiFiUtil.isNetworkConnected())
-            {
-                toast("Please check the network")
-                return@setOnClickListener
-            }
-            if(islogining)
-            {
-                if(isloginOutTime)
-                {
-                    isloginOutTime = false
-                    runOnUiThread {
-                        var tips = "login..."
-                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
-                                    standaloneCoroutine.cancel()
-                                EventBus.getDefault().post(StopTox())
-                                false
-                            } else false
-                        })
+            if (isNetEnable) {
+                if (NetUtils.isNetworkAvalible(this)) {
+                    var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+                    if (routerList.size == 0) {
+                        return@setOnClickListener
                     }
-                }else{
-                    toast("logining")
-                }
+                    if(!WiFiUtil.isNetworkConnected())
+                    {
+                        toast("Please check the network")
+                        return@setOnClickListener
+                    }
+                    if(islogining)
+                    {
+                        if(isloginOutTime)
+                        {
+                            isloginOutTime = false
+                            runOnUiThread {
+                                var tips = "login..."
+                                showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                        if(standaloneCoroutine != null)
+                                            standaloneCoroutine.cancel()
+                                        EventBus.getDefault().post(StopTox())
+                                        false
+                                    } else false
+                                })
+                            }
+                        }else{
+                            toast("logining")
+                        }
 
-                return@setOnClickListener
+                        return@setOnClickListener
+                    }
+                    islogining = true
+                    startLogin()
+                } else {
+                    toast(getString(R.string.internet_unavailable))
+                }
+            } else {
+                if (NetUtils.isNetworkAvalible(this)) {
+                    getServer(routerId, userSn, true, true)
+                } else {
+                    toast(getString(R.string.internet_unavailable))
+                }
             }
-            islogining = true
-            startLogin()
         }
         scanIconLogin.setOnClickListener {
             mPresenter.getScanPermission()
@@ -1044,6 +1057,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         initRouterUI()
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
+        //!BuildConfig.DEBUG &&
         if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
@@ -1060,7 +1074,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
                                 myAuthCallback, null)
                         val builder = AlertDialog.Builder(this)
-                        val view = View.inflate(this, R.layout.finger_dialog_layout, null)
+                        val view = View.inflate(this, R.layout.finger_dialog_layout_2, null)
                         builder.setView(view)
                         builder.setCancelable(false)
                         val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
