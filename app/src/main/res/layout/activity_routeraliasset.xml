@@ -80,20 +80,20 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:textSize="12sp"
-                            android:text="The circle alias indicates which router you are connected to."
+                            android:text="The circle alias indicates which node you are connected to."
                             android:layout_marginTop="@dimen/x10"
                             android:layout_height="wrap_content" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_marginTop="@dimen/x70"
-                            android:text="Cirle Alias"
+                            android:text="Circle Alias"
                             android:textColor="@color/mainColor"
                             android:layout_height="wrap_content" />
 
                         <EditText
                             android:id="@+id/routerName"
                             android:layout_width="match_parent"
-                            android:hint="Please input router alias"
+                            android:hint="Alice's Cabinet"
                             android:background="@null"
                             android:layout_height="wrap_content" />
                         <View
@@ -128,9 +128,10 @@
 
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/llNext"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/x50"
-                android:background="@drawable/btn_maincolor"
+                android:background="@drawable/btn_d5d5d5"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_marginRight="@dimen/x31"
                 android:layout_marginBottom="@dimen/x50"

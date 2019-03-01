@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -100,8 +102,12 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if (oldPassword.text.toString().length != 8 || newPassword.text.toString().length != 8) {
+            if (oldPassword.text.toString().length != 8 || newPassword.text.toString().length != 8 || repeatNewPassword.text.toString().length != 8) {
                 toast(getString(R.string.routerpasswordupdata))
+                return@setOnClickListener
+            }
+            if (!repeatNewPassword.text.toString().equals(repeatNewPassword.text.toString())) {
+                toast(getString(R.string.two_password_different))
                 return@setOnClickListener
             }
             var oldPassword = RxEncryptTool.encryptSHA256ToString(oldPassword.text.toString())
@@ -121,6 +127,24 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
+            repeatNewPassword.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(p0: Editable?) {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    if (p0?.length == 8) {
+                        updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
+                    } else {
+                        updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                    }
+                }
+
+            })
         }
     }
     override fun onDestroy() {

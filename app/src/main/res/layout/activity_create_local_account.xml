@@ -6,18 +6,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:textSize="19sp"
-        android:text="Set a username"
+        android:text="@string/set_a_username"
         android:textColor="@color/color_2c2c2c"
         android:layout_marginTop="@dimen/x38"
         android:layout_marginLeft="@dimen/x31"
         android:layout_height="wrap_content" />
     <TextView
         android:layout_width="wrap_content"
-        android:text="Your username will be visible to all your Confidant contacts"
+        android:text="@string/your_username_will_be_visible_to_all_your_confidant_contacts"
         android:textSize="11sp"
         android:layout_marginLeft="@dimen/x31"
+        android:layout_marginTop="@dimen/x12"
         android:layout_marginRight="@dimen/x10"
-        android:textColor="@color/color_2c2c2c"
+        android:textColor="@color/color_999999"
         android:layout_height="wrap_content" />
 
     <TextView
@@ -56,7 +57,7 @@
         android:text="@string/next"
         android:textColor="@color/white"
         android:gravity="center"
-        android:background="@drawable/btn_maincolor"
+        android:background="@drawable/btn_d5d5d5"
         android:layout_height="@dimen/x84" />
 
     <TextView

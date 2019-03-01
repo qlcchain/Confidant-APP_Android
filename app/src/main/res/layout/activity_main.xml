@@ -48,9 +48,9 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="@dimen/x40"
-                android:layout_height="@dimen/x40"
-                android:layout_marginLeft="@dimen/x5"
+                android:layout_width="@dimen/x60"
+                android:layout_height="@dimen/x60"
+                android:padding="@dimen/x10"
                 android:scaleType="centerCrop"
                 android:src="@mipmap/up_dowload" />
         </LinearLayout>
@@ -69,19 +69,21 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/x20">
+            android:layout_marginRight="@dimen/x10">
 
             <ImageView
                 android:id="@+id/mainIv1"
-                android:layout_width="@dimen/x40"
-                android:layout_height="@dimen/x40"
+                android:layout_width="@dimen/x60"
+                android:layout_height="@dimen/x60"
+                android:padding="@dimen/x10"
                 android:src="@mipmap/add_file"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/ivQrCode"
-                android:layout_width="@dimen/x40"
-                android:layout_height="@dimen/x40"
+                android:layout_width="@dimen/x60"
+                android:padding="@dimen/x10"
+                android:layout_height="@dimen/x60"
                 android:src="@mipmap/icon_scan"
                 android:visibility="visible" />
         </RelativeLayout>

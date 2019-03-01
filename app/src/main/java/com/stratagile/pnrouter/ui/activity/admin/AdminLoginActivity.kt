@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -122,6 +124,24 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
                 }
             }
         }
+        adminPassWord.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if ("".equals(p0)) {
+                    loginBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
+                } else {
+                    loginBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                }
+            }
+
+        })
     }
 
     override fun setupActivityComponent() {

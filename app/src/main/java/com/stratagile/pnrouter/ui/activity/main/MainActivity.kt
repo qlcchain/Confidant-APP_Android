@@ -1388,13 +1388,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+//        reRegesterMiPush()
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
-//    fun getEaseConversationListFragment(): EaseConversationListFragment? {
-//        return conversationListFragment
-//    }
+    fun clear(content : String) {
+        var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
+        var editor = preferences.edit()
+        editor.clear()
+        editor.apply()
+    }
+
 
     fun setToNews() {
         tvTitle.text = getString(R.string.app_name)
@@ -1533,6 +1538,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         return false
     }
+
 
     fun exitToast(): Boolean {
         if (System.currentTimeMillis() - exitTime > 2000) {

@@ -109,7 +109,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var loginBack = false
     var isFromScan = false
     var isFromScanAdmim = false
+    //是否点击了登陆按钮
     var isClickLogin = false
+    //是否正在登陆
     var isStartLogin = false
     var stopTox = false;
     var loginOk = false
@@ -703,7 +705,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     {
                         loginBack = false
                         runOnUiThread {
-                            showProgressDialog("login...")
+                            showProgressDialog(getString(R.string.login_))
                         }
                         standaloneCoroutine = launch(CommonPool) {
                             delay(10000)
@@ -790,7 +792,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
 
                     runOnUiThread {
-                        var tips = "login..."
+                        var tips = getString(R.string.login_)
                         if(ConstantValue.freindStatus == 1)
                         {
                             tips = "wait..."
@@ -838,10 +840,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }
                         runOnUiThread {
-                            var tips = "login..."
+                            var tips = getString(R.string.login_)
                             if(ConstantValue.freindStatus == 1)
                             {
-                                tips = "login..."
+                                tips = getString(R.string.login_)
                             }else{
                                 tips = "router connecting..."
                             }
@@ -886,9 +888,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
 
     }
-    var isNetEnable = true
     override fun initData() {
-        isNetEnable = NetUtils.isNetworkAvalible(this)
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
@@ -902,50 +902,43 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
-            if (isNetEnable) {
-                if (NetUtils.isNetworkAvalible(this)) {
-                    var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-                    if (routerList.size == 0) {
-                        return@setOnClickListener
-                    }
-                    if(!WiFiUtil.isNetworkConnected())
+            if (NetUtils.isNetworkAvalible(this)) {
+                var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+                if (routerList.size == 0) {
+                    return@setOnClickListener
+                }
+                if(!WiFiUtil.isNetworkConnected())
+                {
+                    toast("Please check the network")
+                    return@setOnClickListener
+                }
+                if(islogining)
+                {
+                    if(isloginOutTime)
                     {
-                        toast("Please check the network")
-                        return@setOnClickListener
-                    }
-                    if(islogining)
-                    {
-                        if(isloginOutTime)
-                        {
-                            isloginOutTime = false
-                            runOnUiThread {
-                                var tips = "login..."
-                                showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                        if(standaloneCoroutine != null)
-                                            standaloneCoroutine.cancel()
-                                        EventBus.getDefault().post(StopTox())
-                                        false
-                                    } else false
-                                })
-                            }
-                        }else{
-                            toast("logining")
+                        isloginOutTime = false
+                        runOnUiThread {
+                            var tips = getString(R.string.login_)
+                            showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                    if(standaloneCoroutine != null)
+                                        standaloneCoroutine.cancel()
+                                    EventBus.getDefault().post(StopTox())
+                                    false
+                                } else false
+                            })
                         }
-
-                        return@setOnClickListener
+                    }else{
+                        toast("logining")
                     }
-                    islogining = true
-                    startLogin()
-                } else {
-                    toast(getString(R.string.internet_unavailable))
+
+                    return@setOnClickListener
                 }
+                islogining = true
+                getServer(routerId, userSn, true, true)
+//                    startLogin()
             } else {
-                if (NetUtils.isNetworkAvalible(this)) {
-                    getServer(routerId, userSn, true, true)
-                } else {
-                    toast(getString(R.string.internet_unavailable))
-                }
+                toast(getString(R.string.internet_unavailable))
             }
         }
         scanIconLogin.setOnClickListener {
@@ -1245,10 +1238,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                 }
                 runOnUiThread {
-                    var tips = "login..."
+                    var tips = getString(R.string.login_)
                     if(ConstantValue.freindStatus == 1)
                     {
-                        tips = "login..."
+                        tips = getString(R.string.login_)
                     }else{
                         tips = "router connecting..."
                     }
@@ -1321,16 +1314,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                     runOnUiThread {
-                        closeProgressDialog()
-                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
-                                    standaloneCoroutine.cancel()
-                                if(AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                false
-                            } else false
-                        })
+//                        closeProgressDialog()
+//                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+//                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                                if(standaloneCoroutine != null)
+//                                    standaloneCoroutine.cancel()
+//                                if(AppConfig.instance.messageReceiver != null)
+//                                    AppConfig.instance.messageReceiver!!.close()
+//                                false
+//                            } else false
+//                        })
                     }
 //                onWebSocketConnected(ConnectStatus(0))
                 } else {
@@ -1354,16 +1347,16 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                     runOnUiThread {
-                        closeProgressDialog()
-                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                                if(standaloneCoroutine != null)
-                                    standaloneCoroutine.cancel()
-                                if(AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                false
-                            } else false
-                        })
+//                        closeProgressDialog()
+//                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+//                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                                if(standaloneCoroutine != null)
+//                                    standaloneCoroutine.cancel()
+//                                if(AppConfig.instance.messageReceiver != null)
+//                                    AppConfig.instance.messageReceiver!!.close()
+//                                false
+//                            } else false
+//                        })
                     }
 
                 }
@@ -1393,7 +1386,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                 }
                 runOnUiThread {
-                    showProgressDialog("login...")
+                    showProgressDialog(getString(R.string.login_))
                 }
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
@@ -1407,7 +1400,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         islogining = false
         runOnUiThread {
             closeProgressDialog()
-            showProgressDialog("")
+            showProgressNoCanelDialog("Connecting...")
         }
         if(WiFiUtil.isWifiConnect())
         {
@@ -1422,9 +1415,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
-                                runOnUiThread {
-                                    closeProgressDialog()
-                                }
+//                                runOnUiThread {
+//                                    closeProgressDialog()
+//                                }
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                 if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1469,9 +1462,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                      AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-                                                    runOnUiThread {
-                                                        closeProgressDialog()
-                                                    }
+//                                                    runOnUiThread {
+//                                                        closeProgressDialog()
+//                                                    }
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                                     if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                                     {
@@ -1512,6 +1505,25 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 break
                             }
 
+                        } else {
+//                            KLog.i("count小于3。。。")
+//                            if(!ConstantValue.currentRouterIp.equals(""))
+//                            {
+//                                runOnUiThread {
+//                                    closeProgressDialog()
+//                                }
+//                                KLog.i("走本地：" + ConstantValue.currentRouterIp)
+//                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+//                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
+//                                {
+//                                    runOnUiThread {
+//                                        startLogin()
+//                                    }
+//
+//                                }
+//                                Thread.currentThread().interrupt(); //方法调用终止线程
+//                                break;
+//                            }
                         }
                         count ++;
                         MobileSocketClient.getInstance().init(handler,this)
@@ -2270,18 +2282,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if(routerId!= null && !routerId.equals("") && ConstantValue.currentRouterIp.equals(""))
         {
-            getServer(routerId,userSn,false,false)
+//            getServer(routerId,userSn,false,false)
         }
         if (routerList.size > 0) {
             llCircle.setOnClickListener { view1 ->
                 PopWindowUtil.showSelectRouterPopWindow(this, llCircle, object : PopWindowUtil.OnSelectListener{
                     override fun onSelect(position: Int, obj : Any) {
-                        /* routerList.forEach {
-                             if(it.lastCheck) {
-                                 it.lastCheck = false
-                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(it)
-                             }
-                         }*/
                         try
                         {
                             routerId = routerList[position].routerId
@@ -2317,9 +2323,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 e.printStackTrace()
                             }
                             isStartLogin = true
+//                            getServer(routerId,userSn,false,false)
                             /* if(AppConfig.instance.messageReceiver != null)
                                  AppConfig.instance.messageReceiver!!.close()*/
-                            getServer(routerId,userSn,false,false)
                             //routerList[position].lastCheck = true
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)

@@ -17,106 +17,108 @@
         android:layout_height="match_parent"
         android:background="@color/main_color" />
 
-    <TextView
-        android:id="@+id/tvPage0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/funTv0"
-        android:layout_marginLeft="@dimen/x110"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_marginRight="@dimen/x110"
-        android:text="@string/guest_viewpager_1"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/funTv0"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iv0"
-        android:layout_marginTop="@dimen/x54"
-        android:layout_width="wrap_content"
-        android:text="Confidant"
-        android:textColor="@color/white"
-        android:textSize="26sp"
-        android:layout_height="wrap_content" />
+    <!--<TextView-->
+        <!--android:id="@+id/funTv0"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_below="@+id/iv0"-->
+        <!--android:layout_marginTop="@dimen/x54"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="Confidant"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="26sp"-->
+        <!--android:layout_height="wrap_content" />-->
 
     <ImageView
         android:id="@+id/iv0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/x307"
+        android:layout_marginTop="@dimen/x253"
         android:scaleType="fitEnd"
-        android:src="@mipmap/guide_1"
-        tools:ignore="ContentDescription" />
+        android:src="@mipmap/guide_1" />
+
+    <TextView
+        android:id="@+id/tvPage0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv0"
+        android:layout_marginLeft="@dimen/x75"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/x58"
+        android:layout_marginRight="@dimen/x75"
+        android:text="@string/guest_viewpager_1"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/tvPage1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/funTv1"
+        android:layout_below="@+id/iv1"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="@dimen/x110"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_marginRight="@dimen/x110"
+        android:layout_marginLeft="@dimen/x75"
+        android:layout_marginTop="@dimen/x58"
+        android:gravity="center"
+        android:layout_marginRight="@dimen/x75"
         android:text="@string/guest_viewpager_2"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/iv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/x123"
+        android:layout_marginTop="@dimen/x253"
         android:scaleType="fitEnd"
         android:src="@mipmap/guide_2"
         tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/funTv1"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iv1"
-        android:layout_marginTop="@dimen/x2"
-        android:layout_width="wrap_content"
-        android:text="Secure Chat"
-        android:textColor="@color/white"
-        android:textSize="26sp"
-        android:layout_height="wrap_content" />
+    <!--<TextView-->
+        <!--android:id="@+id/funTv1"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_below="@+id/iv1"-->
+        <!--android:layout_marginTop="@dimen/x2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="Secure Chat"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="26sp"-->
+        <!--android:layout_height="wrap_content" />-->
 
     <TextView
         android:id="@+id/tvPage2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/funTv2"
+        android:layout_below="@+id/iv2"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="@dimen/x110"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_marginRight="@dimen/x110"
+        android:layout_marginLeft="@dimen/x75"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/x58"
+        android:layout_marginRight="@dimen/x75"
         android:text="@string/guest_viewpager_3"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/iv2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/x123"
+        android:layout_marginTop="@dimen/x253"
         android:scaleType="fitEnd"
         android:src="@mipmap/guide_3"
         tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/funTv2"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iv2"
-        android:layout_marginTop="@dimen/x2"
-        android:layout_width="wrap_content"
-        android:text="Scan to talk freely !"
-        android:textColor="@color/white"
-        android:textSize="26sp"
-        android:layout_height="wrap_content" />
+    <!--<TextView-->
+        <!--android:id="@+id/funTv2"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_below="@+id/iv2"-->
+        <!--android:layout_marginTop="@dimen/x2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="Scan to talk freely !"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="26sp"-->
+        <!--android:layout_height="wrap_content" />-->
 
     <RelativeLayout
         android:id="@+id/rlDot"

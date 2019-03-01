@@ -3,6 +3,8 @@ package com.stratagile.pnrouter.ui.activity.router
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -23,7 +25,6 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
-import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import kotlinx.android.synthetic.main.activity_routeraliasset.*
 import javax.inject.Inject
 
@@ -110,6 +111,24 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                 }
             }
         }
+        routerName.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if ("".equals(p0)) {
+                    llNext.background = resources.getDrawable(R.drawable.btn_maincolor)
+                } else {
+                    llNext.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                }
+            }
+
+        })
     }
 
     override fun setupActivityComponent() {

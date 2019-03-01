@@ -224,6 +224,7 @@ class AppConfig : MultiDexApplication() {
     private fun initMiPush() {
         if (shouldInit()) {
             KLog.i("注册小米推送")
+            reRegesterMiPush()
             MiPushClient.registerPush(this, MI_PUSH_APP_ID, MI_PUSH_APP_KEY)
         }
         val newLogger = object : LoggerInterface {
@@ -240,6 +241,21 @@ class AppConfig : MultiDexApplication() {
             }
         }
 //        Logger.setLogger(this, newLogger)
+    }
+
+    fun reRegesterMiPush() {
+        if (VersionUtil.getAppVersionCode(this) <= 675 && !SpUtil.getBoolean(this, ConstantValue.isReRegesterMiPush, false)) {
+            clear("mipush")
+            SpUtil.putBoolean(this, ConstantValue.isReRegesterMiPush, true)
+            KLog.i("RegId解注册小米推送")
+        }
+    }
+
+    fun clear(content : String) {
+        var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
+        var editor = preferences.edit()
+        editor.clear()
+        editor.apply()
     }
 
     private fun initResumeListener() {
