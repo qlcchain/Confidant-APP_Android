@@ -515,7 +515,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         when (CodeResult) {
             0 -> {
 
-                if (leftSize > 0) {
+                if (leftSize > 0)
+                {
                     Thread(Runnable {
                         try {
                             val fileLeftBuffer = ByteArray(leftSize)
@@ -603,16 +604,6 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }
             }
             else -> {
-                var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-                if(messageEntityList != null)
-                {
-                    messageEntityList.forEach {
-                        if (it.msgId.equals(msgId)) {
-                            AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                            KLog.i("消息数据删除")
-                        }
-                    }
-                }
                 EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
                 val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + ToIdResult, "")
