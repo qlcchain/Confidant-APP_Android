@@ -69,7 +69,6 @@ import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallba
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
-import com.luck.picture.lib.entity.LocalMediaFolder;
 import com.message.Message;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -79,7 +78,6 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
-import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
@@ -91,7 +89,6 @@ import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendFileInfo;
-import com.stratagile.pnrouter.entity.SendMsgReqV3;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
@@ -295,7 +292,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void onBeginSendFile(FileTransformEntity fileTransformEntity) {
 
 
-        EMMessage EMMessage = ConstantValue.INSTANCE.getSendMsgMap().get(fileTransformEntity.getToId());
+        EMMessage EMMessage = ConstantValue.INSTANCE.getSendFileMsgMap().get(fileTransformEntity.getToId());
         if (EMMessage == null) {
             return;
         }
@@ -308,7 +305,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     public void run() {
 
                         try {
-                            EMMessage EMMessage = ConstantValue.INSTANCE.getSendMsgMap().get(fileTransformEntity.getToId());
+                            EMMessage EMMessage = ConstantValue.INSTANCE.getSendFileMsgMap().get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
                             if(filePath == null)
                             {
@@ -429,7 +426,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     //@Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendFileing(TransformReceiverFileMessage transformReceiverFileMessage) {
-        EMMessage EMMessageData = ConstantValue.INSTANCE.getSendMsgMap().get(transformReceiverFileMessage.getToId());
+        EMMessage EMMessageData = ConstantValue.INSTANCE.getSendFileMsgMap().get(transformReceiverFileMessage.getToId());
         if (EMMessageData == null) {
             return;
         }
@@ -2287,7 +2284,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setUnread(true);
                 message.setMsgId(msgId);
                 currentSendMsg = message;
-                ConstantValue.INSTANCE.getSendMsgMap().put(msgId,message);
+                ConstantValue.INSTANCE.getSendFileMsgMap().put(msgId,message);
                 Gson gson = new Gson();
                 Message Message = new Message();
                 Message.setMsg(content);
@@ -2473,7 +2470,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     message.setMsgId(uuid);
                     currentSendMsg = message;
-                    //ConstantValue.INSTANCE.getSendMsgMap().put(uuid, message);
+                    //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
                     sendMsgLocalMap.put(uuid, false);
                     sendFilePathMap.put(uuid, filePath);
                     deleteFileMap.put(uuid, false);
@@ -2523,7 +2520,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     SendFileInfo.setFriendId(toChatUserId);
                     SendFileInfo.setFiles_dir(filePath);
                     SendFileInfo.setMsgId(uuid);
-                    SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                    SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
@@ -2541,7 +2538,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         int uuid = (int) (System.currentTimeMillis() / 1000);
                         message.setMsgId(uuid + "");
                         currentSendMsg = message;
-                        ConstantValue.INSTANCE.getSendMsgMap().put(uuid + "", message);
+                        ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
                         sendMsgLocalMap.put(uuid + "", false);
                         sendFilePathMap.put(uuid + "", base58files_dir);
                         deleteFileMap.put(uuid + "", false);
@@ -2631,7 +2628,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            //ConstantValue.INSTANCE.getSendMsgMap().put(uuid, message);
+                            //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
                             sendMsgLocalMap.put(uuid, false);
                             sendFilePathMap.put(uuid, files_dir);
                             deleteFileMap.put(uuid, false);
@@ -2677,7 +2674,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 SendFileInfo.setFriendId(toChatUserId);
                                 SendFileInfo.setFiles_dir(files_dir);
                                 SendFileInfo.setMsgId(uuid);
-                                SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
@@ -2700,7 +2697,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                ConstantValue.INSTANCE.getSendMsgMap().put(uuid + "", message);
+                                ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
                                 sendMsgLocalMap.put(uuid + "", false);
                                 sendFilePathMap.put(uuid + "", base58files_dir);
                                 deleteFileMap.put(uuid + "", false);
@@ -2800,7 +2797,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            //ConstantValue.INSTANCE.getSendMsgMap().put(uuid, message);
+                            //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
                             sendMsgLocalMap.put(uuid, false);
                             sendFilePathMap.put(uuid, imagePath);
                             deleteFileMap.put(uuid, false);
@@ -2839,7 +2836,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                ConstantValue.INSTANCE.getSendMsgMap().put(uuid + "", message);
+                                ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
                                 sendMsgLocalMap.put(uuid + "", false);
                                 sendFilePathMap.put(uuid + "", base58files_dir);
                                 deleteFileMap.put(uuid + "", false);
@@ -2934,7 +2931,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            //ConstantValue.INSTANCE.getSendMsgMap().put(uuid, message);
+                            //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
                             sendMsgLocalMap.put(uuid, false);
                             sendFilePathMap.put(uuid, videoPath);
                             deleteFileMap.put(uuid, false);
@@ -2982,7 +2979,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendId(toChatUserId);
                             SendFileInfo.setFiles_dir(videoPath);
                             SendFileInfo.setMsgId(uuid);
-                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
@@ -3002,7 +2999,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                ConstantValue.INSTANCE.getSendMsgMap().put(uuid + "", message);
+                                ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
                                 sendMsgLocalMap.put(uuid + "", false);
                                 sendFilePathMap.put(uuid + "", base58files_dir);
                                 deleteFileMap.put(uuid + "", false);
@@ -3104,7 +3101,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
-                            //ConstantValue.INSTANCE.getSendMsgMap().put(uuid, message);
+                            //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
                             sendMsgLocalMap.put(uuid, false);
                             sendFilePathMap.put(uuid, files_dir);
                             deleteFileMap.put(uuid, false);
@@ -3152,7 +3149,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendId(toChatUserId);
                             SendFileInfo.setFiles_dir(files_dir);
                             SendFileInfo.setMsgId(uuid);
-                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
@@ -3171,7 +3168,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
-                                ConstantValue.INSTANCE.getSendMsgMap().put(uuid + "", message);
+                                ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
                                 sendMsgLocalMap.put(uuid + "", false);
                                 sendFilePathMap.put(uuid + "", base58files_dir);
                                 deleteFileMap.put(uuid + "", false);

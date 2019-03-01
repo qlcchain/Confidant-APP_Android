@@ -59,7 +59,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     fun connect() {
-        Log.w(TAG, "WSC connect()...")
+        Log.w(TAG, "FileWebSocketConnection_WSC connect()...")
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = wsUri
@@ -100,7 +100,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     fun disconnect(isShutDown : Boolean) {
-        Log.w(TAG, "WSC disconnect()...")
+        Log.w(TAG, "FileWebSocketConnection_WSC disconnect()...")
         this.isShutDown = isShutDown
         if (client != null) {
             client!!.close(1000, "OK")
@@ -216,7 +216,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         if (client != null) {
-            KLog.i("onConnected()")
+            KLog.i("FileWebSocketConnection_onConnected()")
             KLog.i(client!!.request().url())
             LogUtil.addLog("websocket连接成功：${client!!.request().url()}")
             attempts = 0
@@ -270,7 +270,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        KLog.i("onClosed()...")
+        KLog.i("FileWebSocketConnection_onClosed()...")
         this.connected = false
 
         listener?.onDisconnected()
@@ -285,7 +285,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
 
     @Synchronized
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        KLog.i("onFailure()")
+        KLog.i("FileWebSocketConnection_onFailure()")
         KLog.i(t)
 
         if (response != null && (response.code() == 401 || response.code() == 403)) {

@@ -41,7 +41,8 @@ object ConstantValue {
         var publicRASSp ="publicRAS"
         var privateRAS:String? = ""
         var publicRAS:String? = ""
-        var sendMsgMap = HashMap<String, EMMessage>();
+        var sendFileMsgMap = HashMap<String, EMMessage>();
+        var sendFileMsgTimeMap = HashMap<String, String>();
         var mainActivity:Activity? = null
         var libsodiumprivateSignKeySp ="libsodiumprivateSignKeySp"
         var libsodiumpublicSignKeySp ="libsodiumpublicSignKeySp"

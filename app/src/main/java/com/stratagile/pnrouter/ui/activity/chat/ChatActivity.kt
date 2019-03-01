@@ -589,8 +589,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }
         EventBus.getDefault().register(this)
-        var intent = Intent(this, FileTransformService::class.java)
-        startService(intent)
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)

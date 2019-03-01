@@ -65,10 +65,16 @@ class FileTransformService : Service() {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun sendMessage(transfromFileMessage: TransformFileMessage) {
         ConstantValue.webSocketFileList.forEach {
-            if (it.toId.equals(transfromFileMessage.toId)) {
-                it.sendByteString(transfromFileMessage.message)
-                return
+            if(transfromFileMessage != null )
+            {
+                if (it.toId.equals(transfromFileMessage.toId)) {
+                    it.sendByteString(transfromFileMessage.message)
+                    return
+                }
+            }else{
+                KLog.i("transfromFileMessage为空")
             }
+
         }
     }
     @Subscribe(threadMode = ThreadMode.ASYNC)

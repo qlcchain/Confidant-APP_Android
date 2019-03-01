@@ -6,11 +6,10 @@ import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
-import com.pawegio.kandroid.i
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.MessageEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -142,7 +141,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         if (thread.state == Thread.State.NEW) {
             thread.start()
         }
-        sendChatMessage(true,false)
+        if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
+        {
+            sendChatMessage(true,false)
+        }
 //        javaObject.notifyAll()
 //        return sendMessageTo()
     }
@@ -177,7 +179,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         if (thread.state == Thread.State.NEW) {
             thread.start()
         }
-        sendChatFileMessage(true,false)
+        if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
+        {
+            sendChatFileMessage(true,false)
+        }
+
     }
     /**
      * Send a read receipt for a received message.
@@ -211,8 +217,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 Log.i("sender", "发送线程运行中等待。。。")
                 Thread.sleep(10 * 1000)
                 Log.i("sender", "发送线程运行中。。。")
-                sendChatMessage(false,false)
-                sendChatFileMessage(false,false)
+                if(WiFiUtil.isNetworkConnected() && ConstantValue.logining && ConstantValue.curreantNetworkType.equals("WIFI"))
+                {
+                    sendChatMessage(false,false)
+                    sendChatFileMessage(false,false)
+                }else{
+                    ConstantValue.sendFileMsgMap.clear()
+                }
 //               Log.i("sender", "线程运行中。。。")
             }
         }
@@ -246,10 +257,12 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }else{
                     if(ConstantValue.logining)
                     {
+                        Log.i("sendChat_size_Auto", toSendChatMessageQueue.size.toString())
                         for (item in toSendChatMessageQueue)
                         {
                             if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
                             {
+                                item.timestamp = Calendar.getInstance().timeInMillis.toString();
                                 Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
                                 LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
                                 var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
@@ -276,7 +289,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             }
             var toSendChatFileQueue = fileHashMap.get(userId!!) as Queue<SendFileInfo>
             if (toSendChatFileQueue != null && toSendChatFileQueue.isNotEmpty()){
-                Log.i("sendChat_size", toSendChatFileQueue.size.toString())
+                Log.i("sendFile_size", toSendChatFileQueue.size.toString())
                 if(sendNow)
                 {
                     var message = SendFileInfo()
@@ -307,28 +320,39 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }else{
                     if(ConstantValue.logining)
                     {
+                        Log.i("sendFile_size_Auto", toSendChatFileQueue.size.toString())
                         for (item in toSendChatFileQueue)
                         {
-                            if(Calendar.getInstance().timeInMillis - item.sendTime!!.toLong() > 10 * 1000)
+                            if(ConstantValue.sendFileMsgTimeMap[item.msgId] != null)
+                            {
+                                if(Calendar.getInstance().timeInMillis - ConstantValue.sendFileMsgTimeMap[item.msgId]!!.toLong() > 60 *100)
+                                {
+                                    val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                                    ConstantValue.sendFileMsgMap[item.msgId] = message
+                                }
+                            }
+                            /*if(Calendar.getInstance().timeInMillis - item.sendTime!!.toLong() > 30 * 1000)
                             {
 
-                                when(item.type){
-                                    "1" ->
-                                    {
-                                      sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                    }
-                                    "2" ->
-                                    {
-                                        sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
-                                    }
-                                    "3" ->
-                                    {
-                                        sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                    }
-                                    "4" ->
-                                    {
-                                        sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                    }
+
+                            }*/
+                            item.sendTime = Calendar.getInstance().timeInMillis.toString();
+                            when(item.type){
+                                "1" ->
+                                {
+                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                }
+                                "2" ->
+                                {
+                                    sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                }
+                                "3" ->
+                                {
+                                    sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                }
+                                "4" ->
+                                {
+                                    sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
                                 }
                             }
                         }
@@ -378,14 +402,23 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onBeginSendFile(fileTransformEntity: FileTransformEntity) {
-        val EMMessage = ConstantValue.sendMsgMap[fileTransformEntity.toId] ?: return
+        val EMMessage = ConstantValue.sendFileMsgMap[fileTransformEntity.toId] ?: return
+        if(EMMessage.from == null)
+        {
+            return
+        }
         if (fileTransformEntity.message == 0) {
             return
         }
         when (fileTransformEntity.message) {
             1 -> Thread(Runnable {
                 try {
-                    val EMMessage = ConstantValue.sendMsgMap[fileTransformEntity.toId]
+                    ConstantValue.sendFileMsgTimeMap[fileTransformEntity.toId] =  System.currentTimeMillis().toString()
+                    val EMMessage = ConstantValue.sendFileMsgMap[fileTransformEntity.toId]
+                    if(EMMessage!!.from == null)
+                    {
+                        return@Runnable
+                    }
                     val filePath = sendFilePathMap[fileTransformEntity.toId] ?: return@Runnable
                     val fileName = filePath.substring(filePath.lastIndexOf("/") + 1)
                     val fileKey = sendFileKeyByteMap[fileTransformEntity.toId]
@@ -443,7 +476,12 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSendFileing(transformReceiverFileMessage: TransformReceiverFileMessage) {
-        val EMMessageData = ConstantValue.sendMsgMap[transformReceiverFileMessage.toId] ?: return
+        val EMMessageData = ConstantValue.sendFileMsgMap[transformReceiverFileMessage.toId] ?: return
+        if(EMMessageData.from == null)
+        {
+            return
+        }
+        ConstantValue.sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  System.currentTimeMillis().toString()
         val retMsg = transformReceiverFileMessage.message
         val Action = ByteArray(4)
         val FileId = ByteArray(4)
@@ -527,6 +565,19 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 }
                             }
                         }
+                        var  toSendMessage = toSendChatFileMessage
+                        if(toSendMessage != null)
+                        {
+                            for (item in toSendMessage)
+                            {
+                                if(item.msgId.equals(msgId))
+                                {
+                                    toSendMessage.remove(item)
+                                    break
+                                }
+                            }
+                        }
+
                         EventBus.getDefault().post(FileTransformStatus(msgId!!, LogIdIdResult.toString(),ToIdResult,1))
                         KLog.i("websocket文件发送成功！")
                     } else {
@@ -636,9 +687,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     }
     fun sendImageMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
-        val EMMessageData = ConstantValue.sendMsgMap[msgId]
-        if(EMMessageData != null)
+        val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
+        if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
+            KLog.i("检测到文件发送中:"+files_dir)
             return;
         }
         Thread(Runnable {
@@ -650,14 +702,15 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     val message = EMMessage.createImageSendMessage(files_dir, true, friendId)
 
                     message.from = userId
-                    message.to = UserDataManger.curreantfriendUserData.userId
+                    message.to = friendId
                     message.isDelivered = true
                     message.isAcked = false
                     message.isUnread = true
 
                     if (ConstantValue.curreantNetworkType == "WIFI") {
 
-                        ConstantValue.sendMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                         sendMsgLocalMap.put(msgId, false)
                         sendFilePathMap.put(msgId, files_dir)
                         deleteFileMap.put(msgId, false)
@@ -709,9 +762,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
 
     fun sendVoiceMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, length: Int) {
-        val EMMessageData = ConstantValue.sendMsgMap[msgId]
-        if(EMMessageData != null)
+        val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
+        if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
+            KLog.i("检测到文件发送中:"+files_dir)
             return;
         }
         try {
@@ -721,13 +775,14 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 val fileName = files_dir.substring(files_dir.lastIndexOf("/") + 1)
                 val message = EMMessage.createVoiceSendMessage(files_dir, length, friendId)
                 message.from = userId
-                message.to = UserDataManger.curreantfriendUserData.userId
+                message.to = friendId
                 message.isDelivered = true
                 message.isAcked = false
                 message.isUnread = true
                 if (ConstantValue.curreantNetworkType == "WIFI") {
 
-                    ConstantValue.sendMsgMap[msgId] = message
+                    ConstantValue.sendFileMsgMap[msgId] = message
+                    ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                     sendMsgLocalMap[msgId] = false
                     sendFilePathMap[msgId] = files_dir
                     deleteFileMap[msgId] = false
@@ -779,9 +834,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
 
     fun sendVideoMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
-        val EMMessageData = ConstantValue.sendMsgMap[msgId]
-        if(EMMessageData != null)
+        val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
+        if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
+            KLog.i("检测到文件发送中:"+files_dir)
             return;
         }
         Thread(Runnable {
@@ -807,7 +863,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
                         message.msgId = msgId
 
-                        ConstantValue.sendMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
@@ -863,9 +920,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     }
 
     fun sendFileMessage(userId: String, friendId: String, filePath: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
-        val EMMessageData = ConstantValue.sendMsgMap[msgId]
-        if(EMMessageData != null)
+        val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
+        if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
+            KLog.i("检测到文件发送中:"+filePath)
             return;
         }
         Thread(Runnable {
@@ -887,7 +945,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if (ConstantValue.curreantNetworkType == "WIFI") {
 
                         message.msgId = msgId
-                        ConstantValue.sendMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgMap[msgId] = message
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
