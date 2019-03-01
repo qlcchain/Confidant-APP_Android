@@ -135,11 +135,13 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             }
         }
         //关系表，我和其他用户的关系
+        var ifhasFriend = false
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {
             if (j.userId.equals(userId)) {
                 if (jAddFriendPushRsp.params.friendId.equals(j.friendId))
                 {
+                    ifhasFriend = true
                     if(j.friendLocalStatus == 0)//自动同意
                     {
                         KLog.i("对方删除我，对方又加我为好友，自动同意为好友")
@@ -197,13 +199,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
             }
         }
-        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
-        if (localFriendList.size > 0)
+        if(!ifhasFriend)
         {
-            var localFriend =  localFriendList.get(0)
-            localFriend.friendLocalStatus = 3
-            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(localFriend)
-        }else{
             var newFriendStatus = FriendEntity()
             newFriendStatus.userId = selfUserId;
             newFriendStatus.friendId = jAddFriendPushRsp.params.friendId

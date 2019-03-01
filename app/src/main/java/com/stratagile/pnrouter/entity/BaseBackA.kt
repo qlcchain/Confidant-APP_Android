@@ -4,7 +4,7 @@ package com.stratagile.pnrouter.entity
  * Created by huzhipeng on 2018/1/9.
  */
 
-open class BaseBack {
+open class BaseBackA {
 
     /**
      * code : 0

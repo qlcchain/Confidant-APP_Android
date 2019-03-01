@@ -2,23 +2,17 @@ package com.stratagile.pnrouter.data.api
 
 
 import com.socks.library.KLog
-import com.stratagile.pnrouter.entity.BaseBack
+import com.stratagile.pnrouter.entity.BaseBackA
 
 import javax.inject.Inject
 
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.ObservableSource
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
-import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.http.Part
 
 /**
  * @author hu
@@ -29,7 +23,7 @@ class HttpAPIWrapper @Inject constructor(private val mHttpAPI: HttpApi) {
 
     //, head : RequestBody
     //map: MultipartBody.Part,
-    fun upLoadFile(file : MultipartBody.Part): Observable<BaseBack> {
+    fun upLoadFile(file : MultipartBody.Part): Observable<BaseBackA> {
         //head,
         return wrapper(mHttpAPI.upLoad(file)).compose(ObservableTransformer {
             it.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -47,7 +41,7 @@ class HttpAPIWrapper @Inject constructor(private val mHttpAPI: HttpApi) {
     //        }
     //    };
 
-    private fun <T : BaseBack> wrapper(resourceObservable: Observable<T>): Observable<T> {
+    private fun <T : BaseBackA> wrapper(resourceObservable: Observable<T>): Observable<T> {
         return resourceObservable
                 .flatMap(Function<T, ObservableSource<out T>> { baseResponse ->
                     KLog.i(baseResponse)

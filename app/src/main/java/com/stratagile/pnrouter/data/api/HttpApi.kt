@@ -1,9 +1,8 @@
 package com.stratagile.pnrouter.data.api
 
-import com.stratagile.pnrouter.entity.BaseBack
+import com.stratagile.pnrouter.entity.BaseBackA
 import io.reactivex.Observable
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.http.*
 
 
@@ -16,5 +15,5 @@ interface HttpApi {
     @Multipart
     //@Part("filename") map: RequestBody,
     //@Part head : MultipartBody.Part
-    fun upLoad(@Part file: MultipartBody.Part): Observable<BaseBack>
+    fun upLoad(@Part file: MultipartBody.Part): Observable<BaseBackA>
 }

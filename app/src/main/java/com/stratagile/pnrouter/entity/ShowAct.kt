@@ -1,6 +1,6 @@
 package com.stratagile.pnrouter.entity
 
-class ShowAct : BaseBack() {
+class ShowAct : BaseBackA() {
 
     /**
      * data : {"isShow":1}

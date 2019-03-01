@@ -1,17 +1,14 @@
 package com.stratagile.pnrouter.ui.activity.login.presenter
 import android.os.Environment
-import android.support.annotation.NonNull
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.api.HttpAPIWrapper
-import com.stratagile.pnrouter.entity.BaseBack
+import com.stratagile.pnrouter.entity.BaseBackA
 import com.stratagile.pnrouter.ui.activity.login.contract.SelectRouterContract
-import com.stratagile.pnrouter.ui.activity.login.SelectRouterActivity
 import com.stratagile.pnrouter.utils.SpUtil
 import javax.inject.Inject
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import okhttp3.MediaType
@@ -33,7 +30,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Sele
         val photo = MultipartBody.Part.createFormData("", SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png", image)
 //        RequestBody.create(MediaType.parse("text/plain"), SpUtil.getString(AppConfig.instance, ConstantValue.username, "") + ".png")
         val disposable = httpAPIWrapper.upLoadFile(photo)     //userId, nickName
-                .subscribe(Consumer<BaseBack> { upLoadAvatar ->
+                .subscribe(Consumer<BaseBackA> { upLoadAvatar ->
                     //isSuccesse
                     KLog.i("onSuccesse")
                     mView.closeProgressDialog()
