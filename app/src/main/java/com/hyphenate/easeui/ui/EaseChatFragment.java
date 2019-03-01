@@ -90,6 +90,7 @@ import com.stratagile.pnrouter.entity.JUserInfoPushRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
+import com.stratagile.pnrouter.entity.SendFileInfo;
 import com.stratagile.pnrouter.entity.SendMsgReqV3;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
@@ -1550,6 +1551,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 String msgId = messageEntity.getMsgId();
                 String userIdL = messageEntity.getUserId();
                 String friendId = messageEntity.getFriendId();
+                String type = messageEntity.getType();
+                int length = messageEntity.getVoiceTimeLen();
                 if(messageEntity.getType().equals("0"))
                 {
                     BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
@@ -1581,14 +1584,54 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }else{
                     if(!filePath.equals(""))
                     {
-                        EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
-                        message.setFrom(userIdL);
-                        message.setTo(friendId);
-                        message.setDelivered(true);
-                        message.setAcked(false);
-                        message.setUnread(true);
-                        message.setMsgId(msgId);
-                        sendMessageTo(message);
+                        switch (type)
+                        {
+                            case "1":
+                                EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
+                                message.setFrom(userIdL);
+                                message.setTo(friendId);
+                                message.setDelivered(true);
+                                message.setAcked(false);
+                                message.setUnread(true);
+                                message.setMsgId(msgId);
+                                sendMessageTo(message);
+                                break;
+                            case "2":
+                                message = EMMessage.createVoiceSendMessage(filePath, length, friendId);
+                                message.setFrom(userIdL);
+                                message.setTo(friendId);
+                                message.setDelivered(true);
+                                message.setAcked(false);
+                                message.setUnread(true);
+                                message.setMsgId(msgId);
+                                sendMessageTo(message);
+                                break;
+                            case "3":
+                                String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
+                                String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                                Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
+                                int videoLength = EaseImageUtils.getVideoDuration(filePath);
+                                message = EMMessage.createVideoSendMessage(filePath, thumbPath, videoLength, friendId);
+                                message.setFrom(userIdL);
+                                message.setTo(friendId);
+                                message.setDelivered(true);
+                                message.setAcked(false);
+                                message.setUnread(true);
+                                message.setMsgId(msgId);
+                                sendMessageTo(message);
+                                break;
+                            case "4":
+                                message = EMMessage.createFileSendMessage(filePath, friendId);
+                                message.setFrom(userIdL);
+                                message.setTo(friendId);
+                                message.setDelivered(true);
+                                message.setAcked(false);
+                                message.setUnread(true);
+                                message.setMsgId(msgId);
+                                sendMessageTo(message);
+                                break;
+                        }
+
                     }
 
                 }
@@ -2438,7 +2481,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
                     //数据库记录
-                    MessageEntity messageEntity  = new MessageEntity();
+                    /*MessageEntity messageEntity  = new MessageEntity();
                     messageEntity.setUserId(userId);
                     messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
                     messageEntity.setSendTime(System.currentTimeMillis() +"");
@@ -2451,7 +2494,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     messageEntity.setVoiceTimeLen(length);
                     KLog.i("消息数据增加语音文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
                     AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);
-
+*/
 
                    /* String fileKey = RxEncryptTool.generateAESKey();
                     byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -2474,7 +2517,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                         return;
                     }*/
-                    AppConfig.instance.getPNRouterServiceMessageSender().sendVoiceMessage(userId,toChatUserId,filePath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey(),length);
+
+                    SendFileInfo SendFileInfo = new SendFileInfo();
+                    SendFileInfo.setUserId(userId);
+                    SendFileInfo.setFriendId(toChatUserId);
+                    SendFileInfo.setFiles_dir(filePath);
+                    SendFileInfo.setMsgId(uuid);
+                    SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                    SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                    SendFileInfo.setVoiceTimeLen(length);
+                    SendFileInfo.setType("2");
+                    SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                    AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
                     /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
@@ -2584,7 +2638,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
                             //数据库记录
-                            MessageEntity messageEntity  = new MessageEntity();
+                           /* MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
                             messageEntity.setSendTime(System.currentTimeMillis() +"");
@@ -2595,7 +2649,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             messageEntity.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             messageEntity.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             KLog.i("消息数据增加图片文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
-                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);
+                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);*/
 
                            /* String fileKey = RxEncryptTool.generateAESKey();
                             byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -2618,7 +2672,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 return;
                             }*/
                             if (codeSave == 1) {
-                                AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
+                                SendFileInfo SendFileInfo = new SendFileInfo();
+                                SendFileInfo.setUserId(userId);
+                                SendFileInfo.setFriendId(toChatUserId);
+                                SendFileInfo.setFiles_dir(files_dir);
+                                SendFileInfo.setMsgId(uuid);
+                                SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                                SendFileInfo.setVoiceTimeLen(0);
+                                SendFileInfo.setType("1");
+                                SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
+                                //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
                                /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                 EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
                             } else {
@@ -2877,7 +2942,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
                             //数据库记录
-                            MessageEntity messageEntity  = new MessageEntity();
+                            /*MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
                             messageEntity.setSendTime(System.currentTimeMillis() +"");
@@ -2888,7 +2953,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             messageEntity.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             messageEntity.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             KLog.i("消息数据增加视频文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
-                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);
+                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);*/
 
 
                          /*   String fileKey = RxEncryptTool.generateAESKey();
@@ -2912,8 +2977,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }*/
-
-                            AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            SendFileInfo SendFileInfo = new SendFileInfo();
+                            SendFileInfo.setUserId(userId);
+                            SendFileInfo.setFriendId(toChatUserId);
+                            SendFileInfo.setFiles_dir(videoPath);
+                            SendFileInfo.setMsgId(uuid);
+                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            SendFileInfo.setVoiceTimeLen(0);
+                            SendFileInfo.setType("3");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
+                            //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
                             /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
@@ -3037,7 +3112,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
                             //数据库记录
-                            MessageEntity messageEntity  = new MessageEntity();
+                           /* MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
                             messageEntity.setSendTime(System.currentTimeMillis() +"");
@@ -3048,7 +3123,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             messageEntity.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                             messageEntity.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             KLog.i("消息数据增加文件文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
-                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);
+                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);*/
 
 
                            /* String fileKey = RxEncryptTool.generateAESKey();
@@ -3072,7 +3147,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }*/
-                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            SendFileInfo SendFileInfo = new SendFileInfo();
+                            SendFileInfo.setUserId(userId);
+                            SendFileInfo.setFriendId(toChatUserId);
+                            SendFileInfo.setFiles_dir(files_dir);
+                            SendFileInfo.setMsgId(uuid);
+                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            SendFileInfo.setVoiceTimeLen(0);
+                            SendFileInfo.setType("4");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
+                            //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
                            /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/

@@ -1,17 +1,13 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
-import android.widget.Toast
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
-import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
+import com.pawegio.kandroid.i
 import com.socks.library.KLog
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
@@ -19,7 +15,6 @@ import com.stratagile.pnrouter.db.MessageEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.tox.toxcore.ToxCoreJni
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -151,6 +146,39 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 //        javaObject.notifyAll()
 //        return sendMessageTo()
     }
+    fun sendFileMsg(message: SendFileInfo){
+
+        Log.i("senderFile", "添加")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        if(fileHashMap.get(userId) == null)
+        {
+            fileHashMap.put(userId!!,LinkedList())
+            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+        }else{
+            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+        }
+        toSendChatFileMessage.offer(message)
+
+        var messageEntity  = MessageEntity()
+        messageEntity.userId = userId;
+        messageEntity.friendId = message.friendId
+        messageEntity.sendTime = message.sendTime
+        messageEntity.type = message.type
+        messageEntity.msgId = message.msgId
+        messageEntity.baseData = ""
+        messageEntity.complete = false
+        messageEntity.filePath = message.files_dir
+        messageEntity.friendSignPublicKey = message.friendSignPublicKey
+        messageEntity.friendMiPublicKey = message.friendMiPublicKey
+        messageEntity.voiceTimeLen = message.voiceTimeLen
+        KLog.i("消息数据增加文件：userId："+userId +" friendId:"+message.friendId)
+        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.insert(messageEntity)
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
+        if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }
+        sendChatFileMessage(true,false)
+    }
     /**
      * Send a read receipt for a received message.
      *
@@ -184,6 +212,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 Thread.sleep(10 * 1000)
                 Log.i("sender", "发送线程运行中。。。")
                 sendChatMessage(false,false)
+                sendChatFileMessage(false,false)
 //               Log.i("sender", "线程运行中。。。")
             }
         }
@@ -245,33 +274,62 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             {
                 return
             }
-            var toSendChatMessageQueue = fileHashMap.get(userId!!) as Queue<BaseData>
-            if (toSendChatMessageQueue != null && toSendChatMessageQueue.isNotEmpty()){
-                Log.i("sendChat_size", toSendChatMessageQueue.size.toString())
+            var toSendChatFileQueue = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            if (toSendChatFileQueue != null && toSendChatFileQueue.isNotEmpty()){
+                Log.i("sendChat_size", toSendChatFileQueue.size.toString())
                 if(sendNow)
                 {
-                    var message = BaseData()
+                    var message = SendFileInfo()
                     if(remove)
                     {
-                        message = toSendChatMessageQueue.poll()
+                        message = toSendChatFileQueue.poll()
                     }else{
-                        message = toSendChatMessageQueue.peek()
+                        message = toSendChatFileQueue.peek()
                     }
-                    Log.i("sendChat_message", message.baseDataToJson().replace("\\", ""))
-                    LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
-                    var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
-                    LogUtil.addLog("发送结果：${reslut}")
+                    when(message.type){
+                        "1" ->
+                        {
+                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                        }
+                        "2" ->
+                        {
+                            sendVoiceMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.voiceTimeLen)
+                        }
+                        "3" ->
+                        {
+                            sendVideoMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                        }
+                        "4" ->
+                        {
+                            sendFileMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                        }
+                    }
                 }else{
                     if(ConstantValue.logining)
                     {
-                        for (item in toSendChatMessageQueue)
+                        for (item in toSendChatFileQueue)
                         {
-                            if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
+                            if(Calendar.getInstance().timeInMillis - item.sendTime!!.toLong() > 10 * 1000)
                             {
-                                Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
-                                LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
-                                var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
-                                LogUtil.addLog("发送结果：${reslut}")
+
+                                when(item.type){
+                                    "1" ->
+                                    {
+                                      sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                    }
+                                    "2" ->
+                                    {
+                                        sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                    }
+                                    "3" ->
+                                    {
+                                        sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                    }
+                                    "4" ->
+                                    {
+                                        sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                    }
+                                }
                             }
                         }
                     }
@@ -411,7 +469,6 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val CodeResult = FormatTransfer.reverseShort(FormatTransfer.lBytesToShort(Code)).toInt()
         val FromIdResult = String(FromId)
         val ToIdResult = String(ToId)
-        val aa = ""
         KLog.i("CodeResult:$CodeResult")
         val lastSendSize = sendFileLastByteSizeMap.get(FileIdResult.toString() + "")
         val fileBuffer = sendFileLeftByteMap.get(FileIdResult.toString() + "")

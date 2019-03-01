@@ -16,6 +16,7 @@ public class SendFileInfo implements Serializable {
     private String friendSignPublicKey;
     private String friendMiPublicKey;
     private int  voiceTimeLen;
+    private String sendTime;//发送时间
 
     public String getUserId() {
         return userId;
@@ -79,5 +80,13 @@ public class SendFileInfo implements Serializable {
 
     public void setVoiceTimeLen(int voiceTimeLen) {
         this.voiceTimeLen = voiceTimeLen;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
     }
 }

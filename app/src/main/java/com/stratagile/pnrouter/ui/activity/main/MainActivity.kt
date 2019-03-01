@@ -1002,11 +1002,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
         if(messageEntityList != null)
         {
+            KLog.i("开始添加本地数据到重发列表"+messageEntityList.size)
+            LogUtil.addLog("开始添加本地数据到重发列表"+messageEntityList.size)
             messageEntityList.sortBy { it.sendTime }
             for (i in messageEntityList) {
                 if(i.type.equals("0"))
                 {
+                    KLog.i("开始添加本地数据到重发列表 文本"+messageEntityList.size)
+                    LogUtil.addLog("开始添加本地数据到重发列表 文本"+messageEntityList.size)
+                    //文本消息
                     AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId,i.baseData)
+                }else{
+                    //文件消息
+                    var SendFileInfo = SendFileInfo();
+                    SendFileInfo.userId = i.userId
+                    SendFileInfo.friendId = i.friendId
+                    SendFileInfo.files_dir = i.filePath
+                    SendFileInfo.msgId = i.msgId
+                    SendFileInfo.friendSignPublicKey = i.friendSignPublicKey
+                    SendFileInfo.friendMiPublicKey = i.friendMiPublicKey
+                    SendFileInfo.voiceTimeLen = i.voiceTimeLen
+                    SendFileInfo.type = i.type
+                    SendFileInfo.sendTime = i.sendTime
+                    KLog.i("开始添加本地数据到重发列表 文件"+messageEntityList.size)
+                    LogUtil.addLog("开始添加本地数据到重发列表 文件"+messageEntityList.size)
+                    AppConfig.instance.getPNRouterServiceMessageSender().addFileDataFromSql(i.userId,SendFileInfo)
                 }
 
             }
