@@ -60,6 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
+                    android:visibility="gone"
                     android:text="@string/Modify"
                     android:textColor="@color/color_2c2c2c"
                     android:layout_marginLeft="15dp"
@@ -67,6 +68,7 @@
                 <ImageView
                     android:id="@+id/ivNext"
                     android:layout_width="@dimen/x30"
+                    android:visibility="gone"
                     android:rotation="180"
                     android:layout_height="@dimen/x30"
                     android:src="@mipmap/icon_back"
@@ -81,8 +83,10 @@
             <com.stratagile.pnrouter.view.DrawableTextView
                 android:id="@+id/Routerpassword"
                 android:layout_width="match_parent"
+                app:showNext="true"
+                app:textColor2="@string/Modify"
                 android:layout_height="@dimen/x92"
-                app:text="@string/Routerpassword">
+                app:text="@string/password_management">
 
             </com.stratagile.pnrouter.view.DrawableTextView>
 

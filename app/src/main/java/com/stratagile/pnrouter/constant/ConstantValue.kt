@@ -99,5 +99,6 @@ object ConstantValue {
         var freindStatus = 0
         var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn
         var isFormat = false
+        var isReRegesterMiPush = "isReRegesterMiPush"
 
 }

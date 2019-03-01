@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.KeyEvent
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.tox.ToxService
@@ -149,6 +151,24 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 toast(getString(R.string.Create_failure))
             }
         }
+        imputUserName.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if ("".equals(p0)) {
+                    setNext.background = resources.getDrawable(R.drawable.btn_maincolor)
+                } else {
+                    setNext.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                }
+            }
+
+        })
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)

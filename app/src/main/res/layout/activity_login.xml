@@ -161,9 +161,10 @@
 
         <ImageView
             android:id="@+id/miniScanIconLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x70"
+            android:layout_width="@dimen/x60"
+            android:layout_height="@dimen/x60"
+            android:padding="@dimen/x10"
+            android:layout_marginTop="@dimen/x60"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginRight="@dimen/x30"

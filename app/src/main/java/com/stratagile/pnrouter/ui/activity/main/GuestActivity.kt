@@ -170,7 +170,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
 
         r = Math.sqrt((screenW * screenW + screenH * screenH).toDouble()).toInt() + 10
 
-        wowo.addTemporarilyInvisibleViews(1, llNext, funTv2, iv2, tvPage2)
+        wowo.addTemporarilyInvisibleViews(1, llNext, iv2, tvPage2)
 
         wowo.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
 
@@ -248,7 +248,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
         addIv2()
         addTvPage2()
         addGotIt()
-        addFun()
+//        addFun()
         addDot()
 
         wowo.ready()
@@ -284,24 +284,24 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                         .keepY(0f).toY(0f).build())
     }
     private fun addFun() {
-        wowo.addAnimation(funTv0)
-                .add(WoWoTranslationAnimation.builder().page(0)
-                        .fromX(0f).toX((-screenW).toFloat())
-                        .keepY(0f).toY(0f).build())
-        wowo.addAnimation(funTv1)
-                .add(WoWoTranslationAnimation.builder().page(0)
-                        .fromX((screenW).toFloat()).toX(0f)
-                        .fromY(0f).toY(0f).build())
-                .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX(0f).toX(-screenW.toFloat())
-                        .fromY(0f).toY(0f).build())
-        wowo.addAnimation(funTv2)
-                .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX((screenW).toFloat()).toX(0f)
-                        .fromY(0f).toY(0f).build())
-                .add(WoWoTranslationAnimation.builder().page(1)
-                        .fromX(0f).toX(screenW.toFloat())
-                        .fromY(0f).toY(0f).build())
+//        wowo.addAnimation(funTv0)
+//                .add(WoWoTranslationAnimation.builder().page(0)
+//                        .fromX(0f).toX((-screenW).toFloat())
+//                        .keepY(0f).toY(0f).build())
+//        wowo.addAnimation(funTv1)
+//                .add(WoWoTranslationAnimation.builder().page(0)
+//                        .fromX((screenW).toFloat()).toX(0f)
+//                        .fromY(0f).toY(0f).build())
+//                .add(WoWoTranslationAnimation.builder().page(1)
+//                        .fromX(0f).toX(-screenW.toFloat())
+//                        .fromY(0f).toY(0f).build())
+//        wowo.addAnimation(funTv2)
+//                .add(WoWoTranslationAnimation.builder().page(1)
+//                        .fromX((screenW).toFloat()).toX(0f)
+//                        .fromY(0f).toY(0f).build())
+//                .add(WoWoTranslationAnimation.builder().page(1)
+//                        .fromX(0f).toX(screenW.toFloat())
+//                        .fromY(0f).toY(0f).build())
     }
 
     private fun addTvPage1() {

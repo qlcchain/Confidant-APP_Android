@@ -173,7 +173,7 @@
     <string name="LoginAdmin">Log in</string>
     <string name="Administrator_account">Administrator’s account</string>
     <string name="Modify_Activation_Code">Modify Activation Code</string>
-    <string name="Modify_Router_Password">Modify Circle Password</string>
+    <string name="Modify_Router_Password">Modify node Password</string>
 
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
@@ -405,9 +405,9 @@
     <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
-    <string name="guest_viewpager_1">Dedicated encrypted messaging system created for enterprises and individual customers to facilitate secure communication and carefree file sharing.</string>
-    <string name="guest_viewpager_2">Password is saved locally and securely against hacking or misuse.\nSecurity of the local data, all data is saved in the circle ROM and never exposed to any intermediary server.\nUnique system architecture that serves as a decentralised private network communication tunnel.</string>
-    <string name="guest_viewpager_3">Scan the QR code on the Confidant Circle to activate your administrator account.\nScan your QR code of the private key to import an existing account.\nScan the invation code to join your friend\'s Confidant circle.</string>
+    <string name="guest_viewpager_1">Complete ownership of a communication network</string>
+    <string name="guest_viewpager_2">Complete ownership of the data</string>
+    <string name="guest_viewpager_3">Unique ID and complete ownership of the account</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
@@ -449,7 +449,7 @@
 
 
     <string name="adduserTips">*The nickname filling is convenient for users to manage, and the invitation code is set to designate users safely.</string>
-    <string name="routerpasswordTips">*Please input your circle password as indicated in the user manual book.</string>
+    <string name="routerpasswordTips">*Please input the password in the user manual book.</string>
     <string name="routercodeupdata">*Your activation code must include 8 characters.</string>
     <string name="routerpasswordupdata">*Your password must include 8 characters.</string>
 
@@ -459,7 +459,7 @@
     <string name="upPasswordTips">You are advised to change your activation code on a regular basis to safeguard your privacy.</string>
 
 
-    <string name="Routerpassword">Circle password</string>
+    <string name="Routerpassword">Node Password</string>
     <string name="Activationcode">Activation code</string>
     <string name="User_QR_Code">User\'s QR Code</string>
 
@@ -548,11 +548,11 @@
     <string name="please_reboot_your_router">Please reboot your circle</string>
     <string name="reboot">Reboot</string>
     <string name="formatting_in_progress">Formatting in progress...</string>
-    <string name="create_an_account">Create an account</string>
+    <string name="create_an_account">Create an Account</string>
     <string name="Create_failure">Create failure</string>
     <string name="Export_account">Export account</string>
-    <string name="login_no_router">*Scan the invitation QR code to join your friend\'s Confidant circle.  *Scan the QR code on your Confidant circle to launch your circle.</string>
-    <string name="login_has_router">*Select to re-join an existing circle or Scan the invitation QR code to join a new circle.</string>
+    <string name="login_no_router">*Scan the invitation QR code to join a Confidant Circle. /n*Scan the QR Code on your Confidant node to launch your Circle.</string>
+    <string name="login_has_router">*Select to re-join a circle or scan to join a new one.</string>
     <string name="Connecting"> Connecting you to the circle</string>
     <string name="overwritten">This operation will overwrite the current account. Do you want to continue?</string>
     <string name="Unlock_Confidant">Unlock Confidant</string>
@@ -561,4 +561,11 @@
     <string name="System_Upgrade">System Upgrade, Forced Exit</string>
     <string name="other_circle">Other circle</string>
     <string name="internet_unavailable">internet unavailable</string>
+    <string name="login_">Login...</string>
+    <string name="your_username_will_be_visible_to_all_your_confidant_contacts">Your username will be visible to all your Confidant contacts</string>
+    <string name="set_a_username">Set a Username</string>
+    <string name="password_management">Password Management</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="confirm_modification">Confirm Modification</string>
+    <string name="two_password_different">Two passwords are different</string>
 </resources>
