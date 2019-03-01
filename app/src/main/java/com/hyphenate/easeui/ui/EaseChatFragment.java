@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
@@ -121,6 +122,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -1474,15 +1476,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
             }
         }
+        List<MessageEntity> messageEntityList11 = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().loadAll();
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId),MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+        KLog.i("开始插入没有发送成功的文本消息查询：userId："+userId +" friendId:"+toChatUserId +" messageEntityList:"+messageEntityList);
         if(messageEntityList != null)
         {
             Collections.sort(messageEntityList,new Comparator<MessageEntity>() {
                 @Override
                 public int compare(MessageEntity lhs, MessageEntity rhs) {
-                    int lsize = Integer.parseInt(lhs.getSendTime());
-                    int rsize = Integer.parseInt(rhs.getSendTime());
-                    return lsize == rsize ? 0 : (lsize < rsize ? 1 : -1);
+                    long lsize = Long.valueOf(lhs.getSendTime());
+                    long rsize = Long.valueOf(rhs.getSendTime());
+                    return lsize == rsize ? 0 : (lsize > rsize ? 1 : -1);
                 }
             });
             int len = messageEntityList.size();
@@ -1490,17 +1494,36 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             {
                 KLog.i("开始插入没有发送成功的文本消息：" +len);
                 MessageEntity messageEntity = messageEntityList.get(i);
-                BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
-                SendMsgReqV3 SendMsgReqV3 = (SendMsgReqV3) baseData.getParams();
-                String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(SendMsgReqV3.getMsg(), SendMsgReqV3.getNonce(), SendMsgReqV3.getPriKey());
-                EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
-                message.setFrom(userId);
-                message.setTo(UserDataManger.curreantfriendUserData.getUserId());
-                message.setDelivered(true);
-                message.setAcked(false);
-                message.setUnread(true);
-                message.setMsgId(messageEntity.getMsgId());
-                sendMessageTo(message);
+                if(messageEntity.getType().equals("0"))
+                {
+                    BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
+                    LinkedTreeMap tm = (LinkedTreeMap)baseData.getParams();
+                    Iterator it = tm.keySet().iterator();
+                    String Msg = "";
+                    String Nonce = "";
+                    String PriKey= "";
+                    while (it.hasNext()) {
+                        String key = (String) it.next();
+                        Msg = (String) tm.get("Msg");
+                        Nonce = (String) tm.get("Nonce");
+                        PriKey = (String) tm.get("PriKey");
+                        break;
+                    }
+                    if(!PriKey.equals("") && !PriKey.equals("") && !PriKey.equals(""))
+                    {
+                        String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey);
+                        EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
+                        message.setFrom(userId);
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
+                        message.setDelivered(true);
+                        message.setAcked(false);
+                        message.setUnread(true);
+                        message.setMsgId(messageEntity.getMsgId());
+                        sendMessageTo(message);
+                    }
+
+                }
+
             }
         }
     }
@@ -2140,7 +2163,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();;
             if (AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null) {
                 if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-                 msgId = AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
+                    msgId = AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
                 } else {
                     AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getSignPublicKey(), content);
                 }
@@ -2231,21 +2254,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }
 
-        EMMessage currentSendMsgTemp =  ConstantValue.INSTANCE.getSendMsgMap().get(jSendMsgRsp.getMsgid()+"");
         EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getMsgid()+"");
         KLog.i("upateMessage:"+"forward_msg"+(forward_msg != null));
         LogUtil.addLog("upateMessage:","forward_msg"+(forward_msg != null));
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
                 if (conversation != null) {
-                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
-                    currentSendMsgTemp.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
-                    currentSendMsgTemp.setAcked(true);
-                    conversation.insertMessage(currentSendMsgTemp);
-                    KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
-                    if (isMessageListInited) {
-                        easeChatMessageList.refresh();
+                    if(forward_msg != null)
+                    {
+                        conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
+                        forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setAcked(true);
+                        conversation.insertMessage(forward_msg);
+                        KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
+                        if (isMessageListInited) {
+                            easeChatMessageList.refresh();
+                        }
                     }
+
                 }
                 break;
             case 1:

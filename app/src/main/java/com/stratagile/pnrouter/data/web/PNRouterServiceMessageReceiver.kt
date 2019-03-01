@@ -218,6 +218,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                                 messageEntityList.forEach {
                                     if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
                                         AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
                                     }
                                 }
                             }

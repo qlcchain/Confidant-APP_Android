@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
+import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.MessageEntity
@@ -79,6 +80,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         messageEntity.msgId = message.msgid.toString()
         messageEntity.baseData = message.baseDataToJson().replace("\\", "")
         messageEntity.complete = false
+        KLog.i("消息数据增加：userId："+userId +" friendId:"+SendMsgReqV3.To)
         AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.insert(messageEntity)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         if (thread.state == Thread.State.NEW) {
