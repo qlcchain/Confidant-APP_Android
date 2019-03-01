@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.ui.activity.user.contract.NewFriendContract
 import com.stratagile.pnrouter.ui.activity.user.module.NewFriendModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.NewFriendPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_contact.*
 import org.greenrobot.eventbus.EventBus
@@ -139,8 +140,15 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View, UserProvider.A
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {
             if (j.userId.equals(userId)) {
-
-                if (j.friendLocalStatus != 7) {
+                var hasSame = false
+                for (i in showlist) {
+                    if (i.userId.equals(j.friendId)) {
+                        hasSame = true
+                        KLog.i("同一个好友至少有两条好友状态 " + j.friendId)
+                        LogUtil.addLog("同一个好友至少有两条好友状态 " + j.friendId)
+                    }
+                }
+                if (j.friendLocalStatus != 7 && !hasSame) {
                     var it = UserEntity()
                     var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
                     if (localFriendList.size > 0)

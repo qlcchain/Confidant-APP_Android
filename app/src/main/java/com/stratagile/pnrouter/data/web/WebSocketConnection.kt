@@ -658,6 +658,10 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
     private fun getServer(routerId:String)
     {
+        if(!ConstantValue.logining)
+            return
+
+        KLog.i("Login：重连"+Thread.currentThread().name)
         if(ConstantValue.isWebsocketConnected )
         {
             KLog.i("哈哈：5"+Thread.currentThread().name)
