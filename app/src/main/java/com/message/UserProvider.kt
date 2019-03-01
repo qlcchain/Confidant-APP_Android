@@ -201,6 +201,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
         if(!ifhasFriend)
         {
+            KLog.i("没有好友关系，新增好友关系")
             var newFriendStatus = FriendEntity()
             newFriendStatus.userId = selfUserId;
             newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
@@ -266,8 +267,22 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         }
 
-        KLog.i("以前没有这个好友, 新增好友关系，关系为等待我处理好友请求")
-        LogUtil.addLog("以前没有这个好友, 新增好友关系，关系为等待我处理好友请求")
+        KLog.i("更新好友关系，关系为等待我处理好友请求")
+        LogUtil.addLog("更新好友关系，关系为等待我处理好友请求")
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
+        if (localFriendList.size > 1)
+        {
+            KLog.i("好友关系大于1，清零，再生成一个")
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.deleteInTx(localFriendList)
+            var newFriendStatus = FriendEntity()
+            newFriendStatus.userId = selfUserId;
+            newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
+            newFriendStatus.friendLocalStatus = 3
+            newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+        }else{
+            KLog.i("好友关系小于1")
+        }
         EventBus.getDefault().post(FriendChange())
     }
 

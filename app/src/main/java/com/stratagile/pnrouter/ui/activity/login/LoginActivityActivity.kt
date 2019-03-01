@@ -382,6 +382,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var exitTime: Long = 0
     private var loginGoMain:Boolean = false
     override fun loginBack(loginRsp: JLoginRsp) {
+        if (!loginRsp.params.userId.equals(userId)) {
+            KLog.i("过滤掉userid错误的请求")
+            return
+        }
         islogining = false
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
@@ -703,6 +707,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }else{
                     if(isClickLogin)
                     {
+                        KLog.i("开始用websocket登录路由器")
                         loginBack = false
                         runOnUiThread {
                             showProgressDialog(getString(R.string.login_))
@@ -797,7 +802,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             tips = "wait..."
                         }else{
-                            tips = "router connecting..."
+                            tips = "circle connecting..."
                         }
                         showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                             if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -845,7 +850,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             {
                                 tips = getString(R.string.login_)
                             }else{
-                                tips = "router connecting..."
+                                tips = "Circle connecting..."
                             }
                             showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -935,6 +940,26 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     return@setOnClickListener
                 }
                 islogining = true
+                ConstantValue.currentRouterIp = ""
+                //ConstantValue.scanRouterId = routerId;
+                //MessageRetrievalService.stopThisService(this_)
+                if(AppConfig.instance.messageReceiver != null)
+                    AppConfig.instance.messageReceiver!!.close()
+                ConstantValue.isWebsocketConnected = false
+                ConstantValue.lastRouterId=""
+                ConstantValue.lastPort=""
+                ConstantValue.lastFilePort=""
+                ConstantValue.lastRouterId=""
+                ConstantValue.lastRouterSN=""
+                ConstantValue.lastNetworkType =""
+                isClickLogin = false
+                try {
+                    MessageHelper.clearAllMessage()
+                }catch (e:Exception)
+                {
+                    e.printStackTrace()
+                }
+                isStartLogin = true
                 getServer(routerId, userSn, true, true)
 //                    startLogin()
             } else {
@@ -970,6 +995,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     MSG_AUTH_ERROR -> handleErrorCode(msg.arg1)
                     MSG_AUTH_HELP -> handleHelpCode(msg.arg1)
                     MyAuthCallback.MSG_UPD_DATA -> {
+                        KLog.i("收到了组播的回复了 ")
                         var obj:String = msg.obj.toString()
                         if(!obj.equals(""))
                         {
@@ -1243,7 +1269,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     {
                         tips = getString(R.string.login_)
                     }else{
-                        tips = "router connecting..."
+                        tips = "Circle connecting..."
                     }
                     showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1303,7 +1329,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     standaloneCoroutine = launch(CommonPool) {
-                        delay(10000)
+                        delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
@@ -1336,7 +1362,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     standaloneCoroutine = launch(CommonPool) {
-                        delay(10000)
+                        delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
@@ -1397,6 +1423,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean,autoLogin:Boolean)
     {
+        ConstantValue.currentRouterIp = ""
         islogining = false
         runOnUiThread {
             closeProgressDialog()
@@ -1411,8 +1438,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                     while (true)
                     {
+                        KLog.i("currentRouterIp== " + ConstantValue.currentRouterIp)
                         if(count >=3)
                         {
+                            //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
 //                                runOnUiThread {
@@ -1430,6 +1459,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                 break;
                             }else{
+                                // 通过http看是否有远程的路由器可以登录
+                                KLog.i("通过http看是否有远程的路由器可以登录")
                                 OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
                                     override fun onFailure( e :Exception) {
                                         startTox(startToxFlag)
@@ -1451,6 +1482,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         try {
                                             if (json != null) {
                                                 httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                KLog.i("http的返回为：" + httpData)
                                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                                 {
                                                     ConstantValue.curreantNetworkType = "WIFI"
@@ -1459,7 +1491,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
-                                                    KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
+                                                    KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                      AppConfig.instance.messageReceiver!!.loginBackListener = this*/
 //                                                    runOnUiThread {
@@ -1475,6 +1507,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     }
                                                     Thread.currentThread().interrupt() //方法调用终止线程
                                                 }else{
+                                                    //没有远程，开启tox
+                                                    KLog.i("没有远程，开启tox")
                                                     startTox(startToxFlag)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                                     if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1505,26 +1539,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 break
                             }
 
-                        } else {
-//                            KLog.i("count小于3。。。")
-//                            if(!ConstantValue.currentRouterIp.equals(""))
-//                            {
-//                                runOnUiThread {
-//                                    closeProgressDialog()
-//                                }
-//                                KLog.i("走本地：" + ConstantValue.currentRouterIp)
-//                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-//                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-//                                {
-//                                    runOnUiThread {
-//                                        startLogin()
-//                                    }
-//
-//                                }
-//                                Thread.currentThread().interrupt(); //方法调用终止线程
-//                                break;
-//                            }
                         }
+                        // 走广播，本地的路由器
                         count ++;
                         MobileSocketClient.getInstance().init(handler,this)
                         var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")

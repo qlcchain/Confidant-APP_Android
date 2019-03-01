@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:scaleType="fitEnd"
-            android:src="@mipmap/guide_1"
+            android:src="@mipmap/img_logo"
             tools:ignore="ContentDescription" />
 
         <TextView
