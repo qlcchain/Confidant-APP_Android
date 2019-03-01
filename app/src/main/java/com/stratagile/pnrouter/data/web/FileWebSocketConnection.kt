@@ -182,7 +182,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         if (!client!!.send(FileUtil.toByteString(bytes))) {
             return false
         } else {
-            KLog.i("发送成功")
+            KLog.i("文件片段发送成功")
             EventBus.getDefault().post(FileTransformEntity(toId, 2))
             return true
         }

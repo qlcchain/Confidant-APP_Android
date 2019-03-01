@@ -68,13 +68,17 @@ import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallba
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
+import com.luck.picture.lib.entity.LocalMediaFolder;
 import com.message.Message;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.MessageEntity;
+import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
@@ -85,6 +89,7 @@ import com.stratagile.pnrouter.entity.JUserInfoPushRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileData;
+import com.stratagile.pnrouter.entity.SendMsgReqV3;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
@@ -113,6 +118,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -276,8 +283,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         toChatUserId = id;
     }
 
+    /**
+     * 开始发送文件
+     * @param fileTransformEntity
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectWebSocket(FileTransformEntity fileTransformEntity) {
+    public void onBeginSendFile(FileTransformEntity fileTransformEntity) {
 
         EMMessage EMMessage = ConstantValue.INSTANCE.getSendMsgMap().get(fileTransformEntity.getToId());
         if (EMMessage == null) {
@@ -357,8 +368,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
     }
 
+    /**
+     * 片段发送中
+     * @param transformReceiverFileMessage
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConnectWebSocket(TransformReceiverFileMessage transformReceiverFileMessage) {
+    public void onSendFileing(TransformReceiverFileMessage transformReceiverFileMessage) {
         EMMessage EMMessageData = ConstantValue.INSTANCE.getSendMsgMap().get(transformReceiverFileMessage.getToId());
         if (EMMessageData == null) {
             return;
@@ -1211,7 +1226,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageListTemp = messageList;
         }
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
+        {
             Message Message = messageList.get(i);
             EMMessage message = null;
             String msgSouce = "";
@@ -1458,7 +1474,34 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
             }
         }
-
+        List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId),MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+        if(messageEntityList != null)
+        {
+            Collections.sort(messageEntityList,new Comparator<MessageEntity>() {
+                @Override
+                public int compare(MessageEntity lhs, MessageEntity rhs) {
+                    int lsize = Integer.parseInt(lhs.getSendTime());
+                    int rsize = Integer.parseInt(rhs.getSendTime());
+                    return lsize == rsize ? 0 : (lsize < rsize ? 1 : -1);
+                }
+            });
+            int len = messageEntityList.size();
+            for (int i = 0; i < len; i++)
+            {
+                MessageEntity messageEntity = messageEntityList.get(i);
+                BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
+                SendMsgReqV3 SendMsgReqV3 = (SendMsgReqV3) baseData.getParams();
+                String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(SendMsgReqV3.getMsg(), SendMsgReqV3.getNonce(), SendMsgReqV3.getPriKey());
+                EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
+                message.setFrom(userId);
+                message.setTo(UserDataManger.curreantfriendUserData.getUserId());
+                message.setDelivered(true);
+                message.setAcked(false);
+                message.setUnread(true);
+                message.setMsgId(messageEntity.getMsgId());
+                sendMessageTo(message);
+            }
+        }
     }
     public void removeLastMessage()
     {

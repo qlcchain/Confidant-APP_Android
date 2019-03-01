@@ -3,7 +3,11 @@ package com.stratagile.pnrouter.data.web
 import android.util.Log
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.MessageEntity
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JRegisterRsp
+import com.stratagile.pnrouter.entity.SendMsgReqV3
+import com.stratagile.pnrouter.utils.GsonUtil
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -30,6 +34,19 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         initThread()
     }
 
+    fun addDataFromSql(userId:String, BaseDataStr:String)
+    {
+        var gson = GsonUtil.getIntGson()
+        val message = gson.fromJson(BaseDataStr, BaseData::class.java)
+        if(msgHashMap.get(userId) == null)
+        {
+            msgHashMap.put(userId!!,LinkedList())
+            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+        }else{
+            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+        }
+        toSendChatMessage.offer(message)
+    }
     fun send(message: BaseData){
         Log.i("sender", "添加")
         toSendMessage.offer(message)
@@ -52,6 +69,17 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
         }
         toSendChatMessage.offer(message)
+        var messageEntity  = MessageEntity()
+        messageEntity.userId = userId;
+        var gson = GsonUtil.getIntGson()
+        val SendMsgReqV3 =  message.params as SendMsgReqV3
+        messageEntity.friendId = SendMsgReqV3.To
+        messageEntity.sendTime = message.timestamp
+        messageEntity.type = "0"
+        messageEntity.msgId = message.msgid.toString()
+        messageEntity.baseData = message.baseDataToJson().replace("\\", "")
+        messageEntity.complete = false
+        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.insert(messageEntity)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
         if (thread.state == Thread.State.NEW) {
             thread.start()
@@ -103,6 +131,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     fun sendChatMessage(sendNow:Boolean,remove:Boolean) {
         try {
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(msgHashMap.get(userId!!) == null)
+            {
+                return
+            }
             var toSendChatMessageQueue = msgHashMap.get(userId!!) as Queue<BaseData>
             if (toSendChatMessageQueue != null && toSendChatMessageQueue.isNotEmpty()){
                 Log.i("sendChat_size", toSendChatMessageQueue.size.toString())
@@ -120,16 +152,20 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                     LogUtil.addLog("发送结果：${reslut}")
                 }else{
-                    for (item in toSendChatMessageQueue)
+                    if(ConstantValue.logining)
                     {
-                        if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
+                        for (item in toSendChatMessageQueue)
                         {
-                            Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
-                            LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
-                            var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
-                            LogUtil.addLog("发送结果：${reslut}")
+                            if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
+                            {
+                                Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
+                                LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
+                                var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
+                                LogUtil.addLog("发送结果：${reslut}")
+                            }
                         }
                     }
+
                 }
 
             }

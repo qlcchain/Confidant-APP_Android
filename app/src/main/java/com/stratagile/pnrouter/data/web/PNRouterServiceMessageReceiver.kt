@@ -212,6 +212,15 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         if(item.msgid == JSendMsgRsp.msgid)
                         {
                             toSendMessage.remove(item)
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                    }
+                                }
+                            }
                             break
                         }
                     }

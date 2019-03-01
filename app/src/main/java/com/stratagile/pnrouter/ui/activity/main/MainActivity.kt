@@ -34,8 +34,6 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.message.Message
 import com.message.MessageProvider
-import com.pawegio.kandroid.activityManager
-import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -992,6 +990,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 startActivity(intent)
             }
         })
+        var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+        if(messageEntityList != null)
+        {
+            messageEntityList.sortBy { it.sendTime }
+            for (i in messageEntityList) {
+                AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId,i.baseData)
+            }
+        }
+
         setToNews()
         ivQrCode.setOnClickListener {
             mPresenter.getScanPermission()
