@@ -37,7 +37,7 @@ class LogActivity : BaseActivity(), LogContract.View {
         title.text = "Log"
     }
     override fun initData() {
-        tvLog.text = LogUtil.mLogInfo
+        tvLog.text = LogUtil.mLogInfo.toString()
     }
 
     override fun setupActivityComponent() {
@@ -68,8 +68,8 @@ class LogActivity : BaseActivity(), LogContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear -> {
-                LogUtil.mLogInfo = ""
-                tvLog.text = LogUtil.mLogInfo
+                LogUtil.mLogInfo.setLength(0)
+                tvLog.text = LogUtil.mLogInfo.toString()
             }
             else -> {
             }

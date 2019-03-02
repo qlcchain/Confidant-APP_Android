@@ -205,24 +205,36 @@
         <activity android:name=".ui.activity.file.PdfViewActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.file.FileManagerActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.activity.file.FileDetailInformationActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.activity.file.FileShareSetActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".ui.activity.file.UploadFileActivity" />
-        <activity android:name=".ui.activity.file.FileTaskListActivity" />
-        <activity android:name=".ui.activity.router.DiskManagementActivity" />
-        <activity android:name=".ui.activity.router.DiskConfigureActivity" />
-        <activity android:name=".ui.activity.router.DiskInformationActivity" />
-        <activity android:name=".ui.activity.router.DiskReconfigureActivity" />
-        <activity android:name=".ui.activity.user.CreateLocalAccountActivity">
+        <activity android:name=".ui.activity.file.UploadFileActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.file.FileTaskListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.DiskManagementActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.DiskConfigureActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.DiskInformationActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.DiskReconfigureActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.user.CreateLocalAccountActivity" android:screenOrientation="portrait" />
 
-        </activity>
-        <activity android:name=".ui.activity.user.ImportAccountActivity" />
-        <activity android:name=".ui.activity.router.RouterAliasSetActivity" />
-        <activity android:name=".ui.activity.login.VerifyingFingerprintActivity" />
-        <activity android:name=".ui.activity.main.SettingsActivity" />
+        <activity android:name=".ui.activity.user.ImportAccountActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.router.RouterAliasSetActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.login.VerifyingFingerprintActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.main.SettingsActivity"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name=".utils.MyShareFileProvider"
