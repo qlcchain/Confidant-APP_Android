@@ -395,6 +395,28 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
         deleteFileMap[deleteMsgEvent.msgId] = true
+        var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+        if(messageEntityList != null)
+        {
+            messageEntityList.forEach {
+                if (it.msgId.equals(deleteMsgEvent.msgId)) {
+                    AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                    KLog.i("消息数据删除")
+                }
+            }
+        }
+        var  toSendMessage = toSendChatFileMessage
+        if(toSendMessage != null)
+        {
+            for (item in toSendMessage)
+            {
+                if(item.msgId.equals(deleteMsgEvent.msgId))
+                {
+                    toSendMessage.remove(item)
+                    break
+                }
+            }
+        }
     }
     /**
      * 开始发送文件
@@ -699,7 +721,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     message.isUnread = true
 
                     if (ConstantValue.curreantNetworkType == "WIFI") {
-
+                        message.msgId = msgId
                         ConstantValue.sendFileMsgMap[msgId] = message
                         ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                         sendMsgLocalMap.put(msgId, false)
@@ -771,7 +793,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 message.isAcked = false
                 message.isUnread = true
                 if (ConstantValue.curreantNetworkType == "WIFI") {
-
+                    message.msgId = msgId
                     ConstantValue.sendFileMsgMap[msgId] = message
                     ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                     sendMsgLocalMap[msgId] = false
@@ -841,11 +863,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + videoName + ".png"
                     val bitmap = EaseImageUtils.getVideoPhoto(files_dir)
                     val videoLength = EaseImageUtils.getVideoDuration(files_dir)
-                    FileUtil.saveBitmpToFile(bitmap, thumbPath)
                     val message = EMMessage.createVideoSendMessage(files_dir, thumbPath, videoLength, friendId)
 
                     message.from = userId
-                    message.to = files_dir
+                    message.to = friendId
                     message.isDelivered = true
                     message.isAcked = false
                     message.isUnread = true
