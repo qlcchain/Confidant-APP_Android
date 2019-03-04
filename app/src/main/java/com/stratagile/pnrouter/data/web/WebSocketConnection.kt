@@ -348,7 +348,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
                 val heartBeatRsp  = gson.fromJson(text, JHeartBeatRsp::class.java)
                 if (heartBeatRsp.params.retCode == 0) {
-                    //KLog.i("心跳监测和服务器的连接正常~~~")
+                    LogUtil.addLog("心跳监测和服务器的连接正常~~~")
                 }
             } else {
                 onMessageReceiveListener!!.onMessage(baseData, text)
