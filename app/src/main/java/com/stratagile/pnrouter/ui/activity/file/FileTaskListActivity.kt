@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.activity.file
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -64,7 +66,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg" -> {
-                           var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -203,6 +205,29 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         }
 
         initUI()
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.tasklist_file, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.optaskList)
+        {
+            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 1
+                    fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                }
+            }
+            fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 1
+                    fileCompleteTaskLisytAdapter.notifyItemChanged(index)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {

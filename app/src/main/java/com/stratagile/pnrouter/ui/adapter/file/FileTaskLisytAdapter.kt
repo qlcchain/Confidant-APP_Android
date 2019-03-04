@@ -17,6 +17,14 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
         var fileOriginalName = ""
         var fileName =  item.t.fileKey
+        if(item.t.status == 1)
+        {
+            helper.setGone(R.id.checkBox, true)
+            helper.setGone(R.id.status, false)
+        }else{
+            helper.setGone(R.id.checkBox, false)
+            helper.setGone(R.id.status, true)
+        }
         if(!item.t.isDownLoad)
         {
             fileOriginalName = fileName

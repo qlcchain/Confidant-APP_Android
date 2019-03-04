@@ -51,7 +51,7 @@ public class FileMangerDownloadUtils {
         {
             KLog.i("FiledoDownLoadWork:"+path+"_TO::"+to);
             String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key,FileFrom);
+            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, false,0,1,0,false,key,FileFrom,0);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

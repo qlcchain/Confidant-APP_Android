@@ -152,7 +152,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					{
 						DeleteUtils.deleteFile(temp);
 						String fileNiName = fileUlr.substring(fileUlr.lastIndexOf("/")+1,fileUlr.length());
-						UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr,fileFrom);
+						UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,bytesCopiedFlag, true, true, false,1,1,0,false,keyStr,fileFrom,0);
 						MyFile myRouter = new MyFile();
 						myRouter.setType(0);
 						myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -276,7 +276,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				int num = (int)(count / average) + 1;
 				if(progressReceiveMap.get(fileNiName+"_"+num) == null)
 				{
-					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr,fileFrom);
+					UpLoadFile uploadFile = new UpLoadFile(fileNiName,fileUlr,length, true, false, false,count,length,0,false,keyStr,fileFrom,0);
 					MyFile myRouter = new MyFile();
 					myRouter.setType(0);
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
