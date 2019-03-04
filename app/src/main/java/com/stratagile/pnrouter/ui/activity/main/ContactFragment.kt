@@ -231,6 +231,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     var  fromId:String? = null
     var message: EMMessage? = null
+    var refreshEnable1 = true
     var onViewCreated = false;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -269,7 +270,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             pullFriendList()
             KLog.i("拉取好友列表")
         }
+        refreshLayout.isEnabled = refreshEnable1
         pullFriendList()
+    }
+
+    fun setRefreshEnable(enable : Boolean) {
+        refreshEnable1 = enable
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -440,7 +446,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
         contactAdapter1 = ContactAdapter(list1)
         recyclerView.adapter = contactAdapter1
-        contactAdapter1!!.expandAll()
         if (bundle != null) {
             contactAdapter1!!.isCheckMode = true
         }

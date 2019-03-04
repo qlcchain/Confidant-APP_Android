@@ -125,6 +125,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
             fragment!!.selectOrCancelAll()
         }
+        fragment!!.setRefreshEnable(false)
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)

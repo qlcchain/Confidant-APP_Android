@@ -49,6 +49,7 @@ import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -90,6 +91,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var handler: Handler? = null
 
     private var builderTips: AlertDialog? = null
+
+    var formatDialog : CommonDialog? = null
 
     internal var finger: ImageView? = null
 
@@ -579,9 +582,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             cancellationSignal!!.cancel()
             cancellationSignal = null
         }
-        if (builderTips != null) {
-            builderTips?.dismiss()
-            builderTips = null
+        if (formatDialog != null) {
+            formatDialog?.dismissWithAnimation()
+            formatDialog = null
         }
         if (myAuthCallback != null) {
             myAuthCallback?.removeHandle()
@@ -1077,7 +1080,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         initRouterUI()
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         //!BuildConfig.DEBUG &&
-        if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
@@ -1092,17 +1095,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                         fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
                                 myAuthCallback, null)
-                        val builder = AlertDialog.Builder(this)
-                        val view = View.inflate(this, R.layout.finger_dialog_layout_2, null)
-                        builder.setView(view)
-                        builder.setCancelable(false)
+//                        val builder = AlertDialog.Builder(this)
+                        val view = View.inflate(this, R.layout.finger_dialog_layout, null)
+//                        builder.setView(view)
+//                        builder.setCancelable(false)
+
+                        formatDialog = CommonDialog(this)
+                        formatDialog?.setCancelable(false)
+
                         val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
 
                         val btn_cancel = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
 
                         btn_cancel.visibility = View.VISIBLE
                         btn_cancel.setOnClickListener {
-                            builderTips?.dismiss()
+                            formatDialog?.dismissWithAnimation()
+//                            builderTips?.dismiss()
                             if (cancellationSignal != null) {
                                 cancellationSignal?.cancel()
                                 cancellationSignal = null
@@ -1123,8 +1131,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         finger = view.findViewById<View>(R.id.finger) as ImageView
                         tvContent.setText(R.string.choose_finger_dialog_title)
                         val currentContext = this
-                        builderTips = builder.create()
-                        builderTips?.show()
+
+                        formatDialog?.setView(view)
+                        formatDialog?.show()
+
+//                        builderTips = builder.create()
+//                        builderTips?.show()
                     } catch (e: Exception) {
                         try {
                             myAuthCallback = MyAuthCallback(handler)
@@ -1145,11 +1157,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             btn_comfirm.setText(R.string.cancel_btn_dialog)
                             tvContent.setText(R.string.choose_finger_dialog_title)
                             val currentContext = this
-                            builderTips = builder.create()
-                            builderTips?.show()
+                            formatDialog = CommonDialog(this)
+                            formatDialog?.setView(view)
+                            formatDialog?.show()
+//                            builderTips = builder.create()
+//                            builderTips?.show()
                         } catch (er: Exception) {
                             er.printStackTrace()
-                            builderTips?.dismiss()
+                            formatDialog?.dismissWithAnimation()
                             toast(R.string.Fingerprint_init_failed_Try_again)
                         }
 
@@ -1688,7 +1703,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             finger?.setImageDrawable(resources.getDrawable(R.mipmap.icon_fingerprint_complete))
             setResult(RESULT_OK, intent)
             SpUtil.putString(this, ConstantValue.fingerPassWord, "888888")
-            builderTips?.dismiss()
+            formatDialog?.dismissWithAnimation()
         } else {
             toast(stringId)
         }

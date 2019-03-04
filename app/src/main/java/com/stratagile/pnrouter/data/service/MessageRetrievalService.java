@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.data.web.SignalServiceMessagePipe;
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver;
@@ -107,13 +108,13 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
     private synchronized void incrementActive() {
         activeActivities++;
-        Log.d(TAG, "Active Count: " + activeActivities);
+        KLog.d("Active Count: " + activeActivities);
         notifyAll();
     }
 
     private synchronized void decrementActive() {
         activeActivities--;
-        Log.d(TAG, "Active Count: " + activeActivities);
+        KLog.d("Active Count: " + activeActivities);
         notifyAll();
     }
 
@@ -155,7 +156,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         try {
             pipe.shutdown();
         } catch (Throwable t) {
-            Log.w(TAG, t);
+            KLog.w( t);
         }
     }
 
@@ -191,20 +192,20 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         @Override
         public void run() {
             while (!stopThread.get()) {
-                Log.i(TAG, "Waiting for websocket state change....");
+                KLog.i("Waiting for websocket state change....");
                 waitForConnectionNecessary();
 
-                Log.i(TAG, "Making websocket connection....");
+                KLog.i("Making websocket connection....");
                 pipe = receiver.createMessagePipe();
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Log.i(TAG, "Looping...");
+                KLog.i( "Looping...");
             }
 
-            Log.i(TAG, "Exiting...");
+            KLog.i("Exiting...");
         }
 
         private void stopThread() {
@@ -213,8 +214,8 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            Log.w(TAG, "*** Uncaught exception!");
-            Log.w(TAG, e);
+            KLog.w("*** Uncaught exception!");
+            KLog.w(e);
         }
     }
 }

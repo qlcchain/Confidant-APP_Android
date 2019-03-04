@@ -332,13 +332,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
-        Log.w(TAG, "WSC onMessage()")
+        KLog.w("WSC onMessage()")
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         if(text!!.indexOf("HeartBeat") < 0)
         {
-            Log.w(TAG, "onMessage(text)! " + text!!)
+            KLog.w("onMessage(text)! " + text!!)
             LogUtil.addLog("websocket接收信息：${text}")
         }
 
@@ -361,7 +361,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.w(TAG, "onClosed()..."+code+"+"+reason)
+        KLog.w("onClosed()..."+code+"+"+reason)
         LogUtil.addLog("收到事件：onClosed：")
         this.connected = false
         if (keepAliveSender != null) {
@@ -428,7 +428,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     fun reConnect() {
         ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
         setCurrentStatus(WsStatus.RECONNECT)
-        Log.w(TAG, "WSC reConnect()...")
+        KLog.w("WSC reConnect()...")
         KLog.i("ReConnectThread_websocket_reConnect"+webSocketClient)
         /*if (webSocketClient == null) {
     //            val filledUri = String.format(wsUri, credentialsProvider.user, credentialsProvider.password)

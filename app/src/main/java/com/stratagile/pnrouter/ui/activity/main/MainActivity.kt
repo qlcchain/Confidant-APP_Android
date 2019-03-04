@@ -1,18 +1,22 @@
 package com.stratagile.pnrouter.ui.activity.main
 
-import android.app.Activity
-import android.app.Notification
-import android.app.NotificationManager
+import android.annotation.TargetApi
+import android.app.*
+import android.app.Notification.BADGE_ICON_SMALL
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.NotificationCompat
 import android.support.v4.view.ViewPager
 import android.view.KeyEvent
 import android.view.View
@@ -90,7 +94,7 @@ import kotlin.collections.ArrayList
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
     override fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = PushLogoutRsp(0, userId!!,"")
+        var msgData = PushLogoutRsp(0, userId!!, "")
         var msgId: String = ""
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2, msgData, jPushLogoutRsp.msgid))
@@ -108,7 +112,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             runOnUiThread {
                 toast(R.string.Other_devices)
                 ConstantValue.isHasWebsocketInit = true
-                if(AppConfig.instance.messageReceiver != null)
+                if (AppConfig.instance.messageReceiver != null)
                     AppConfig.instance.messageReceiver!!.close()
 
                 ConstantValue.loginOut = true
@@ -126,14 +130,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         it.disconnect(true)
                         //ConstantValue.webSocketFileList.remove(it)
                     }
-                }else{
+                } else {
                     val intentTox = Intent(this, KotlinToxService::class.java)
                     this.stopService(intentTox)
                 }
                 ConstantValue.isWebsocketConnected = false
                 onLogOutSuccess()
             }
-        }else{
+        } else {
             runOnUiThread {
                 toast(R.string.System_Upgrade)
 
@@ -141,7 +145,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         runOnUiThread {
             ConstantValue.isHasWebsocketInit = true
-            if(AppConfig.instance.messageReceiver != null)
+            if (AppConfig.instance.messageReceiver != null)
                 AppConfig.instance.messageReceiver!!.close()
 
             ConstantValue.loginOut = true
@@ -159,7 +163,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     it.disconnect(true)
                     //ConstantValue.webSocketFileList.remove(it)
                 }
-            }else{
+            } else {
                 val intentTox = Intent(this, KotlinToxService::class.java)
                 this.stopService(intentTox)
             }
@@ -167,6 +171,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             onLogOutSuccess()
         }
     }
+
     fun onLogOutSuccess() {
         ConstantValue.loginReq = null
         ConstantValue.isWebsocketReConnect = false
@@ -176,6 +181,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         startActivity(intent)
         finish()
     }
+
     override fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = ReadMsgPushReq(0, "", userId!!)
@@ -275,13 +281,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.fileName = jPushFileMsgRsp.params.fileName
             Message.timeStatmp = jPushFileMsgRsp.timestamp
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId,"")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
-            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+            if (MessageLocal != null && MessageLocal.unReadCount != null) {
                 unReadCount = MessageLocal.unReadCount
             }
-            Message.unReadCount = unReadCount +1;
+            Message.unReadCount = unReadCount + 1;
 
             val baseDataJson = gson.toJson(Message)
             if (Message.sender == 0) {
@@ -353,13 +359,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.msgId = delMsgPushRsp?.params.msgId
 
                                 var unReadCount = MessageLocal.unReadCount
-                                if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                                if (MessageLocal != null && MessageLocal.unReadCount != null) {
                                     unReadCount = MessageLocal.unReadCount
                                 }
-                                if(unReadCount > 0)
-                                {
-                                    Message.unReadCount = unReadCount -1;
-                                }else{
+                                if (unReadCount > 0) {
+                                    Message.unReadCount = unReadCount - 1;
+                                } else {
                                     Message.unReadCount = 0;
                                 }
 
@@ -369,8 +374,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 if (ConstantValue.isInit) {
                                     runOnUiThread {
                                         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
-                                        if(Message.unReadCount > 0)
-                                        {
+                                        if (Message.unReadCount > 0) {
                                             UnReadMessageCount = UnReadMessageCount(1)
                                         }
                                         controlleMessageUnReadCount(UnReadMessageCount)
@@ -501,17 +505,89 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     fun defaultNotification() {
         KLog.i("播放通知声音")
-        var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        var soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        var vnotification = Notification.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setWhen(System.currentTimeMillis())
-                .setTicker(AppConfig.instance.getString(R.string.app_name))
-                .setContentTitle(AppConfig.instance.getString(R.string.app_name))
-                .setContentText(AppConfig.instance.getString(R.string.MessageRetrievalService_background_connection_enabled))
-                .setSound(soundUri)
-                .build()
-        notificationManager.notify(0, vnotification)
+        var mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var builder: NotificationCompat.Builder? = null;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            var channel = NotificationChannel("通知渠道ID", "通知渠道名称", NotificationManager.IMPORTANCE_DEFAULT);
+
+            channel.enableLights(true); //设置开启指示灯，如果设备有的话
+
+            channel.setLightColor(Color.RED); //设置指示灯颜色
+
+            channel.setShowBadge(true); //设置是否显示角标
+
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);//设置是否应在锁定屏幕上显示此频道的通知
+
+//            channel.setDescription("通知渠道描述");//设置渠道描述
+
+
+            channel.setBypassDnd(true);//设置是否绕过免打扰模式
+
+            mNotificationManager.createNotificationChannel(channel);
+
+//            createNotificationChannelGroups();
+//
+//            setNotificationChannelGroups(channel);
+
+            builder = NotificationCompat.Builder(this, "通知渠道ID");
+
+            builder.setBadgeIconType(BADGE_ICON_SMALL);//设置显示角标的样式
+
+            builder.setNumber(3);//设置显示角标的数量
+
+            builder.setTimeoutAfter(0);//设置通知被创建多长时间之后自动取消通知栏的通知。
+
+        } else {
+
+            builder = NotificationCompat.Builder(this);
+
+        }
+
+//setContentTitle 通知栏通知的标题
+
+//        builder.setContentTitle("内容标题");
+
+//setContentText 通知栏通知的详细内容
+
+//        builder.setContentText("内容文本信息");
+
+//setAutoCancel 点击通知的清除按钮是否清除该消息（true/false）
+
+        builder.setAutoCancel(true);
+
+//setLargeIcon 通知消息上的大图标
+
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+
+//setSmallIcon 通知上面的小图标
+
+        builder.setSmallIcon(R.mipmap.ic_launcher);//小图标
+
+//创建一个意图
+
+        var intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.baidu.com"));
+
+        var pIntent = PendingIntent.getActivity(this, 1, intent, 0);
+
+//setContentIntent 将意图设置到通知上
+
+        builder.setContentIntent(pIntent);
+
+//通知默认的声音 震动 呼吸灯
+
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+
+//构建通知
+
+        var notification = builder.build();
+
+//将构建好的通知添加到通知管理器中，执行通知
+
+        mNotificationManager.notify(0, notification);
+
+        ivQrCode.postDelayed({mNotificationManager.cancel(0)}, 50)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
@@ -519,7 +595,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在聊天窗口了，不处理该条数据！")
         } else {
             if (!AppConfig.instance.isBackGroud) {
-                //defaultMedia()
+                defaultMediaPlayer()
             }
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId), userId!!, 0, "")
@@ -576,13 +652,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.msgId = pushMsgRsp?.params.msgId
 
 
-            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId,"")
+            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
             var unReadCount = 0
-            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+            if (MessageLocal != null && MessageLocal.unReadCount != null) {
                 unReadCount = MessageLocal.unReadCount
             }
-            Message.unReadCount = unReadCount +1;
+            Message.unReadCount = unReadCount + 1;
 
 
             var baseDataJson = gson.toJson(Message)
@@ -907,8 +983,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         startService(startFileDownloadUploadService)
         Thread(Runnable() {
             run() {
-                while (isSendRegId)
-                {
+                while (isSendRegId) {
                     var map: HashMap<String, String> = HashMap()
                     var os = VersionUtil.getDeviceBrand()
                     map.put("os", os.toString())
@@ -1003,19 +1078,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         })
         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-        if(messageEntityList != null)
-        {
-            KLog.i("开始添加本地数据到重发列表"+messageEntityList.size)
-            LogUtil.addLog("开始添加本地数据到重发列表"+messageEntityList.size)
+        if (messageEntityList != null) {
+            KLog.i("开始添加本地数据到重发列表" + messageEntityList.size)
+            LogUtil.addLog("开始添加本地数据到重发列表" + messageEntityList.size)
             messageEntityList.sortBy { it.sendTime }
             for (i in messageEntityList) {
-                if(i.type.equals("0"))
-                {
-                    KLog.i("开始添加本地数据到重发列表 文本"+messageEntityList.size)
-                    LogUtil.addLog("开始添加本地数据到重发列表 文本"+messageEntityList.size)
+                if (i.type.equals("0")) {
+                    KLog.i("开始添加本地数据到重发列表 文本" + messageEntityList.size)
+                    LogUtil.addLog("开始添加本地数据到重发列表 文本" + messageEntityList.size)
                     //文本消息
-                    AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId,i.baseData)
-                }else{
+                    AppConfig.instance.getPNRouterServiceMessageSender().addDataFromSql(i.userId, i.baseData)
+                } else {
                     //文件消息
                     var SendFileInfo = SendFileInfo();
                     SendFileInfo.userId = i.userId
@@ -1027,9 +1100,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     SendFileInfo.voiceTimeLen = i.voiceTimeLen
                     SendFileInfo.type = i.type
                     SendFileInfo.sendTime = i.sendTime
-                    KLog.i("开始添加本地数据到重发列表 文件"+messageEntityList.size)
-                    LogUtil.addLog("开始添加本地数据到重发列表 文件"+messageEntityList.size)
-                    AppConfig.instance.getPNRouterServiceMessageSender().addFileDataFromSql(i.userId,SendFileInfo)
+                    KLog.i("开始添加本地数据到重发列表 文件" + messageEntityList.size)
+                    LogUtil.addLog("开始添加本地数据到重发列表 文件" + messageEntityList.size)
+                    AppConfig.instance.getPNRouterServiceMessageSender().addFileDataFromSql(i.userId, SendFileInfo)
                 }
 
             }
@@ -1191,10 +1264,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.setFrom(pushMsgRsp.getParams().getFromId())
                             Message.setTo(pushMsgRsp.getParams().getToId())
 
-                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId,"")
+                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
                             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
                             var unReadCount = 0
-                            if(MessageLocal != null && MessageLocal.unReadCount != null ){
+                            if (MessageLocal != null && MessageLocal.unReadCount != null) {
                                 unReadCount = MessageLocal.unReadCount
                             }
                             Message.unReadCount = unReadCount + AppConfig.instance.tempPushMsgList.size;
@@ -1420,7 +1493,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onDestroy()
     }
 
-    fun clear(content : String) {
+    fun clear(content: String) {
         var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
         var editor = preferences.edit()
         editor.clear()
