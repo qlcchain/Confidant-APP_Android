@@ -17,7 +17,7 @@
         android:layout_marginTop="@dimen/x10"
         android:layout_marginRight="@dimen/x31"
         android:layout_marginLeft="@dimen/x31"
-        android:text="To log in to your registered account, please scan your configuration QR code or import it from your /'photos/'."
+        android:text="To log in to your registered account, please scan your configuration QR code or import it from your \'photos\'."
         android:layout_height="wrap_content" />
     <TextView
         android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
         android:layout_marginRight="@dimen/x31"
         android:layout_marginLeft="@dimen/x31"
         android:layout_weight="1"
-        android:text="Want to switch to another device with your account synchronised? Export the configuration QR code for quick login. /n1. Go to /'My/', find /'Settings/' /n2. Export the configuration QR code."
+        android:text="Want to switch to another device with your account synchronised? Export the configuration QR code for quick login.\n1. Go to \'My\', find \'Settings\' \n2. Export the configuration QR code."
         android:layout_height="0px" />
     <!--<TextView-->
         <!--android:layout_width="wrap_content"-->

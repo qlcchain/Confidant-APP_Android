@@ -202,12 +202,12 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         if(content != null){
             holder.message.setText(content);
         }
-        if (holder.message.getText().toString().contains("[draft]")) {
+        if (holder.message.getText().toString().contains("//[draft]//")) {
             holder.draft.setVisibility(View.VISIBLE);
         } else {
             holder.draft.setVisibility(View.GONE);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("[draft]", "")));
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("//[draft]//", "")));
         holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
         //set property
         holder.name.setTextColor(primaryColor);

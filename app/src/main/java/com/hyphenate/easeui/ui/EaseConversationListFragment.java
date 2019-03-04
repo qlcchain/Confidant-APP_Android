@@ -38,6 +38,8 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.DraftEntity;
+import com.stratagile.pnrouter.db.DraftEntityDao;
 import com.stratagile.pnrouter.db.FriendEntity;
 import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
@@ -328,7 +330,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                             continue;
                         }
                         String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, key, "");
-
+                        List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
+                        DraftEntity draftEntity = null;
+                        if (drafts != null && drafts.size() > 0) {
+                            draftEntity = drafts.get(0);
+                        }
                         if (!"".equals(cachStr)) {
                             Gson gson = GsonUtil.getIntGson();
                             Message Message = gson.fromJson(cachStr, Message.class);
@@ -336,10 +342,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                             if (Message != null) {
                                 switch (Message.getMsgType()) {
                                     case 0:
-                                        if (Message.getMsg().contains("/[draft]/")) {
-                                            message = EMMessage.createTxtSendMessage(Message.getMsg().replace("/[draft]/", "[draft]"), toChatUserId);
+                                        if (draftEntity != null && !draftEntity.getContent().equals("")) {
+                                            message = EMMessage.createTxtSendMessage("//[draft]//" + draftEntity.getContent(), toChatUserId);
                                         } else {
-                                            message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
+                                            message = EMMessage.createTxtSendMessage(Message.getMsg().replace("/[draft]/", ""), toChatUserId);
                                         }
                                         break;
                                     case 1:

@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.adapter.user
 
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -16,7 +17,7 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
     override fun convert(helper: BaseViewHolder?, item: UserEntity?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
         helper!!.setText(R.id.tvNickName, nickNameSouce)
-
+        KLog.i(item.toString())
         if(item!!.validationInfo != null)
         {
             var validationInfo = String(RxEncodeTool.base64Decode(item!!.validationInfo))

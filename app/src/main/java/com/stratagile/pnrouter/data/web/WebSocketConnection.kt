@@ -332,13 +332,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     override fun onMessage(webSocket: WebSocket?, payload: ByteString?) {
-        KLog.w("WSC onMessage()")
+        Log.w(TAG,"WSC onMessage()")
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         if(text!!.indexOf("HeartBeat") < 0)
         {
-            KLog.w("onMessage(text)! " + text!!)
+            Log.w(TAG,"onMessage(text)! " + text!!)
             LogUtil.addLog("websocket接收信息：${text}")
         }
 

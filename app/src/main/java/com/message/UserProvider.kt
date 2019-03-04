@@ -184,31 +184,90 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         }
                         j.friendLocalStatus = 0
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
-//                        return
+                        userList.forEach {
+                            if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
+                                KLog.i("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
+                                LogUtil.addLog("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
+                                it.nickName = jAddFriendPushRsp.params.nickName;
+                                it.signPublicKey = jAddFriendPushRsp.params.userKey
+                                it.routeName = jAddFriendPushRsp.params.routerName
+                                it.routeId = jAddFriendPushRsp.params.routerId
+                                var dst_public_MiKey_Friend = ByteArray(32)
+                                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+                                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                                {
+                                    it.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                                }
+                                it.timestamp = jAddFriendPushRsp.timestamp
+                                it.validationInfo = jAddFriendPushRsp.params.msg
+                                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                it.routerUserId = selfUserId
+                                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+                                return@forEach
+
+                                /*
+                                  EventBus.getDefault().post(FriendChange())
+                                  return@forEach*/
+                            }
+                        }
+                        return
                     }else
                     {
                         KLog.i("以前是好友，后来我删除了，现在对方又想加我为好友")
                         LogUtil.addLog("以前是好友，后来我删除了，现在对方又想加我为好友")
                         j.friendLocalStatus = 3
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
+                        userList.forEach {
+                            if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
+                                KLog.i("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
+                                LogUtil.addLog("好友以前存在，不做新增，只是更新用户信息，这里不更新好友状态")
+                                it.nickName = jAddFriendPushRsp.params.nickName;
+                                it.signPublicKey = jAddFriendPushRsp.params.userKey
+                                it.routeName = jAddFriendPushRsp.params.routerName
+                                it.routeId = jAddFriendPushRsp.params.routerId
+                                var dst_public_MiKey_Friend = ByteArray(32)
+                                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
+                                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
+                                {
+                                    it.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                                }
+                                it.timestamp = jAddFriendPushRsp.timestamp
+                                it.validationInfo = jAddFriendPushRsp.params.msg
+                                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                it.routerUserId = selfUserId
+                                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+                                return@forEach
+
+                                /*
+                                  EventBus.getDefault().post(FriendChange())
+                                  return@forEach*/
+                            }
+                        }
                         EventBus.getDefault().post(FriendChange())
-//                        return
+                        return
                     }
 
                 }
 
             }
         }
-        if(!ifhasFriend)
+        KLog.i("更新好友关系，关系为等待我处理好友请求")
+        LogUtil.addLog("更新好友关系，关系为等待我处理好友请求")
+        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
+        if (localFriendList.size > 0)
         {
-            KLog.i("没有好友关系，新增好友关系")
-            var newFriendStatus = FriendEntity()
-            newFriendStatus.userId = selfUserId;
-            newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
-            newFriendStatus.friendLocalStatus = 3
-            newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
-            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+            KLog.i("删除：" + localFriendList.size + "个好友关系")
+            LogUtil.addLog("删除：" + localFriendList.size + "个好友关系")
+            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.deleteInTx(localFriendList)
         }
+        KLog.i("清零，再生成一个")
+        var newFriendStatus = FriendEntity()
+        newFriendStatus.userId = userId
+        newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
+        newFriendStatus.friendLocalStatus = 3
+        newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+        AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+        LogUtil.addLog("新增好友关系：" + newFriendStatus.toString())
         var ifHas = false
         userList.forEach {
             if (it.userId.equals(jAddFriendPushRsp.params.friendId)) {
@@ -267,22 +326,21 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(newFriend)
         }
 
-        KLog.i("更新好友关系，关系为等待我处理好友请求")
-        LogUtil.addLog("更新好友关系，关系为等待我处理好友请求")
-        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
-        if (localFriendList.size > 1)
-        {
-            KLog.i("好友关系大于1，清零，再生成一个")
-            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.deleteInTx(localFriendList)
-            var newFriendStatus = FriendEntity()
-            newFriendStatus.userId = selfUserId;
-            newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
-            newFriendStatus.friendLocalStatus = 3
-            newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
-            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
-        }else{
-            KLog.i("好友关系小于1")
-        }
+//        var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId),FriendEntityDao.Properties.FriendId.eq(jAddFriendPushRsp.params.friendId)).list()
+//        if (localFriendList.size > 0)
+//        {
+//            KLog.i("好友关系大于1，清零，再生成一个")
+//            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.deleteInTx(localFriendList)
+//            var newFriendStatus = FriendEntity()
+//            newFriendStatus.userId = selfUserId;
+//            newFriendStatus.friendId = jAddFriendPushRsp.params.friendId
+//            newFriendStatus.friendLocalStatus = 3
+//            newFriendStatus.timestamp = Calendar.getInstance().timeInMillis
+//            AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.insert(newFriendStatus)
+//        }else{
+//            KLog.i("好友关系小于1")
+//        }
+        KLog.i("更新ui")
         EventBus.getDefault().post(FriendChange())
     }
 

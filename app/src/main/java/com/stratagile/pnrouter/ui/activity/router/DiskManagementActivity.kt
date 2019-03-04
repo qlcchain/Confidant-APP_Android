@@ -109,6 +109,9 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                 progressBar.progress = (usedCapacity  / totalCapacity).toInt()
                 UsedAndTotal.text = getString(R.string.Used_Sapce) + JGetDiskTotalInfoRsp.params.usedCapacity +" / "+JGetDiskTotalInfoRsp.params.totalCapacity +" ("+precent+"% )"
                 storage.text =  getString(R.string.Used_Sapce) + JGetDiskTotalInfoRsp.params.totalCapacity
+                if (JGetDiskTotalInfoRsp.params.info == null) {
+                    return@runOnUiThread
+                }
                 var InfoBeanList = JGetDiskTotalInfoRsp.params.info
                 var index = 0;
                 for(infoBean in InfoBeanList)

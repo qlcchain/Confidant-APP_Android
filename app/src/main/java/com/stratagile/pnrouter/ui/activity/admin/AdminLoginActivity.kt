@@ -134,7 +134,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if ("".equals(p0)) {
+                if (!"".equals(p0.toString())) {
                     loginBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
                 } else {
                     loginBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)

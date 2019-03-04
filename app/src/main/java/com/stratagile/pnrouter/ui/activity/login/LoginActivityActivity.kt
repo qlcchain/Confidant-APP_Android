@@ -385,10 +385,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var exitTime: Long = 0
     private var loginGoMain:Boolean = false
     override fun loginBack(loginRsp: JLoginRsp) {
-        if (!loginRsp.params.userId.equals(userId)) {
-            KLog.i("过滤掉userid错误的请求")
-            return
-        }
+//        if (!loginRsp.params.userId.equals(userId)) {
+//            KLog.i("过滤掉userid错误的请求")
+//            return
+//        }
         islogining = false
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
@@ -990,6 +990,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     MSG_AUTH_SUCCESS -> {
                         setResultInfo(R.string.fingerprint_success)
                         cancellationSignal = null
+                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
+                        if(!autoLoginRouterSn.equals("") && autoLoginRouterSn!!.equals(userSn))
+                        {
+                            runOnUiThread {
+                                getServer(routerId,userSn,true,true)
+                            }
+
+                        }
                     }
                     MSG_AUTH_FAILED -> {
                         setResultInfo(R.string.fingerprint_not_recognized)

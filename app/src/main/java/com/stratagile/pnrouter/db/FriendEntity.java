@@ -99,6 +99,19 @@ public class FriendEntity implements Parcelable{
         return index;
     }
 
+    @Override
+    public String toString() {
+        return "FriendEntity{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", index='" + index + '\'' +
+                ", friendId='" + friendId + '\'' +
+                ", friendLocalStatus=" + friendLocalStatus +
+                ", addFromMe=" + addFromMe +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+
     public void setIndex(String index) {
         this.index = index;
     }

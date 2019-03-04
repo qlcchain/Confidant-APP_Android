@@ -68,13 +68,15 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     public void setEdittext(String edittext) {
         editText.setText(EaseSmileUtils.getSmiledText(editText.getContext(),edittext));
         editText.setSelection(editText.getText().length());
-        editText.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
-            }
-        }, 100);
+        if (!"".equals(edittext)) {
+            editText.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+                }
+            }, 100);
+        }
     }
 
     private void init(final Context context, AttributeSet attrs) {

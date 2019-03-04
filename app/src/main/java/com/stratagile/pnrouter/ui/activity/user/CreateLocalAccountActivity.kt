@@ -161,7 +161,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if ("".equals(p0)) {
+                if (!"".equals(p0.toString())) {
                     setNext.background = resources.getDrawable(R.drawable.btn_maincolor)
                 } else {
                     setNext.background = resources.getDrawable(R.drawable.btn_d5d5d5)

@@ -75,6 +75,8 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.DraftEntity;
+import com.stratagile.pnrouter.db.DraftEntityDao;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
@@ -118,6 +120,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1964,39 +1967,56 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private void setDraft() {
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         String content = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
-        KLog.i("设置草稿: " + content);
-        if(content != null  && !content.equals(""))
-        {
-            Message message = new Gson().fromJson(content, Message.class);
-            if (message != null && message.getMsg()!= null && message.getMsg().contains("/[draft]/")) {
-                inputMenu.setEdittext(message.getMsg().replace("/[draft]/", ""));
-                LogUtil.addLog("设置的草稿为：" + message.getMsg().replace("/[draft]/", ""));
-                KLog.i("设置的草稿为：" + message.getMsg().replace("/[draft]/", ""));
-            }
+        List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
+        if (drafts != null && drafts.size() > 0) {
+            DraftEntity draftEntity = drafts.get(0);
+            inputMenu.setEdittext(draftEntity.getContent());
+            KLog.i("设置草稿: " + draftEntity.getContent());
         }
-
+        KLog.i("设置草稿: " + content);
+//        if(content != null  && !content.equals(""))
+//        {
+//            Message message = new Gson().fromJson(content, Message.class);
+//            if (message != null && message.getMsg()!= null && message.getMsg().contains("/[draft]/")) {
+//                inputMenu.setEdittext(message.getMsg().replace("/[draft]/", ""));
+//                LogUtil.addLog("设置的草稿为：" + message.getMsg().replace("/[draft]/", ""));
+//                KLog.i("设置的草稿为：" + message.getMsg().replace("/[draft]/", ""));
+//            }
+//        }
     }
 
     /**
      * 保存草稿
      */
     private void saveDraft() {
-        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         String draft = inputMenu.getEdittext().trim();
-        if (draft == null || draft.equals("")) {
-            return;
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
+        if (drafts != null && drafts.size() > 0) {
+            DraftEntity draftEntity = drafts.get(0);
+            draftEntity.setContent(draft);
+            draftEntity.setTaimeStamp(Calendar.getInstance().getTimeInMillis());
+            AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().update(draftEntity);
+        } else {
+            DraftEntity draftEntity = new DraftEntity();
+            draftEntity.setMsgType(0);
+            draftEntity.setUserId(userId);
+            draftEntity.setToUserId(toChatUserId);
+            draftEntity.setContent(draft);
+            draftEntity.setTaimeStamp(Calendar.getInstance().getTimeInMillis());
+            AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().insert(draftEntity);
         }
         KLog.i("草稿为：" + draft);
-        Message message = new Message();
-        message.setMsg("");
-        message.setMsgType(0);
-        message.setMsg("/[draft]/" +draft);
-        message.setFrom(userId);
-        message.setTo(toChatUserId);
-        message.setTimeStatmp(System.currentTimeMillis());
-        message.setUnReadCount(0);
-        String baseDataJson = new Gson().toJson(message);
-        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+//        Message message = new Message();
+//        message.setMsg("");
+//        message.setMsgType(0);
+//        message.setMsg("/[draft]/" +draft);
+//        message.setFrom(userId);
+//        message.setTo(toChatUserId);
+//        message.setTimeStatmp(System.currentTimeMillis());
+//        message.setUnReadCount(0);
+//        String baseDataJson = new Gson().toJson(message);
+//        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
     }
 
     public void onBackPressed() {

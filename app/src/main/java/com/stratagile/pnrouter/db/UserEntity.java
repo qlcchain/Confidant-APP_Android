@@ -46,9 +46,28 @@ public class UserEntity implements Parcelable{
 
     private String validationInfo;//添加好友附言
 
-
-
-
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", index='" + index + '\'' +
+                ", routerUserId='" + routerUserId + '\'' +
+                ", signPublicKey='" + signPublicKey + '\'' +
+                ", RouteId='" + RouteId + '\'' +
+                ", RouteName='" + RouteName + '\'' +
+                ", miPublicKey='" + miPublicKey + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", nickSouceName='" + nickSouceName + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", noteName='" + noteName + '\'' +
+                ", friendStatus=" + friendStatus +
+                ", addFromMe=" + addFromMe +
+                ", timestamp=" + timestamp +
+                ", validationInfo='" + validationInfo + '\'' +
+                '}';
+    }
 
     @Generated(hash = 1577789092)
     public UserEntity(Long id, String userId, String index, String routerUserId,
