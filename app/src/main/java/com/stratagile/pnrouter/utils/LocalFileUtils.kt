@@ -194,7 +194,7 @@ object LocalFileUtils {
 
                         if (myRouter!!.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().fileKey.equals(myRouterItem.getUpLoadFile().fileKey)) {
+                            if (myRouterItem.getUpLoadFile() != null && myRouter!!.getUpLoadFile().msgId.equals(myRouterItem.getUpLoadFile().msgId)) {
                                 isHad = true
                                 break
                             }
@@ -222,10 +222,10 @@ object LocalFileUtils {
             }
         }
     }
-    fun getLocalAssets(fileKey: String): UpLoadFile? {
+    fun getLocalAssets(msgId: String): UpLoadFile? {
         synchronized(fileLock){
             var userId = "fileData5"
-            if(fileKey == null && fileKey.equals(""))
+            if(msgId == null && msgId.equals(""))
             {
                 return null
             }
@@ -242,7 +242,7 @@ object LocalFileUtils {
 
                         if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (myRouter.getUpLoadFile().fileKey.equals(fileKey)) {
+                            if (myRouter.getUpLoadFile().msgId.equals(msgId)) {
                                 return  myRouter.getUpLoadFile()
                             }
                         }
@@ -258,10 +258,10 @@ object LocalFileUtils {
             return null
         }
     }
-    fun deleteLocalAssets(deleteFileKey: String): UpLoadFile? {
+    fun deleteLocalAssets(msgId: String): UpLoadFile? {
         synchronized(fileLock){
             var userId = "fileData5"
-            if(deleteFileKey == null && deleteFileKey.equals(""))
+            if(msgId == null && msgId.equals(""))
             {
                 return null
             }
@@ -280,7 +280,7 @@ object LocalFileUtils {
 
                         if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (!myRouter.getUpLoadFile().fileKey.equals(deleteFileKey)) {
+                            if (!myRouter.getUpLoadFile().msgId.equals(msgId)) {
                                 newRouterArrayList.add(myRouter)
                             } else{
                                 deleteRouterEntity = myRouter.getUpLoadFile()
@@ -409,7 +409,7 @@ object LocalFileUtils {
 
                         if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
                         {
-                            if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().fileKey.equals(router!!.getUpLoadFile().fileKey)) {
+                            if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().msgId.equals(router!!.getUpLoadFile().msgId)) {
                                 newRouterArrayList.add(router)
                             } else {
                                 newRouterArrayList.add(myRouter)

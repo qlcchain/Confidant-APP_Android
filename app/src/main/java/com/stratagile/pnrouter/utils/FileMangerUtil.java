@@ -614,12 +614,14 @@ public class FileMangerUtil {
             File file = new File(filePath);
             boolean isHas = file.exists();
             String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+            int uuidTox = (int)(System.currentTimeMillis()/1000);
             if(isHas)
             {
 
                 if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                 {
-                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+
                     sendMsgLocalMap.put(uuid,false);
                     sendFilePathMap.put(uuid,filePath);
                     sendFileSize.put(uuid,file.length());
@@ -659,11 +661,10 @@ public class FileMangerUtil {
                     int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                     if(code == 1)
                     {
-                        int uuid = (int)(System.currentTimeMillis()/1000);
-                        sendMsgLocalMap.put(uuid+"",false);
-                        sendFilePathMap.put(uuid+"",base58files_dir);
-                        sendFileSize.put(uuid+"",file.length());
-                        deleteFileMap.put(uuid+"",false);
+                        sendMsgLocalMap.put(uuidTox+"",false);
+                        sendFilePathMap.put(uuidTox+"",base58files_dir);
+                        sendFileSize.put(uuidTox+"",file.length());
+                        deleteFileMap.put(uuidTox+"",false);
                         ToxFileData toxFileData = new ToxFileData();
                         toxFileData.setFromId(fromUserId);
                         toxFileData.setFilePath(filePath);
@@ -675,7 +676,7 @@ public class FileMangerUtil {
                         toxFileData.setFileMD5(fileMD5);
                         toxFileData.setFileSize((int)fileSize);
                         toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AUDIO);
-                        toxFileData.setFileId(uuid);
+                        toxFileData.setFileId(uuidTox);
                         byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                         byte[] SrcKey = new byte[256];
                         byte[] DstKey = new byte[256];
@@ -707,7 +708,12 @@ public class FileMangerUtil {
                     }
                 }
             }else{
-                LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                {
+                    LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                }else{
+                    LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                }
                 EventBus.getDefault().post(new FileStatus(fileName,1));
             }
         }catch (Exception e)
@@ -735,6 +741,13 @@ public class FileMangerUtil {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
+
+                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    if(!msgId.equals(""))
+                    {
+                        uuid = msgId;
+                    }
+                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
                         if(file.length() == 0)
@@ -746,11 +759,7 @@ public class FileMangerUtil {
                         FileUtil.recordRecentFile(fileName, 0, 0, "Router");
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            if(!msgId.equals(""))
-                            {
-                                uuid = msgId;
-                            }
+
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
@@ -797,11 +806,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
                             if(code == 1)
                             {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
+
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -810,10 +819,10 @@ public class FileMangerUtil {
                                 EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                sendFileSize.put(uuid+"",file.length());
-                                deleteFileMap.put(uuid+"",false);
+                                sendMsgLocalMap.put(uuidTox+"",false);
+                                sendFilePathMap.put(uuidTox+"",base58files_dir);
+                                sendFileSize.put(uuidTox+"",file.length());
+                                deleteFileMap.put(uuidTox+"",false);
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
@@ -826,7 +835,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
-                                toxFileData.setFileId(uuid);
+                                toxFileData.setFileId(uuidTox);
 
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];
@@ -866,7 +875,12 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                        }else{
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                        }
                         EventBus.getDefault().post(new FileStatus(fileName,1));
                     }
 
@@ -891,6 +905,12 @@ public class FileMangerUtil {
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
                     String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
+                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    if(!msgId.equals(""))
+                    {
+                        uuid = msgId;
+                    }
+                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
 
@@ -912,11 +932,7 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
 
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            if(!msgId.equals(""))
-                            {
-                                uuid = msgId;
-                            }
+
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
@@ -965,11 +981,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
+
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
+                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -978,10 +994,10 @@ public class FileMangerUtil {
                                 EventBus.getDefault().post(new FileStatus(videoFileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                sendFileSize.put(uuid+"",file.length());
-                                deleteFileMap.put(uuid+"",false);
+                                sendMsgLocalMap.put(uuidTox+"",false);
+                                sendFilePathMap.put(uuidTox+"",base58files_dir);
+                                sendFileSize.put(uuidTox+"",file.length());
+                                deleteFileMap.put(uuidTox+"",false);
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
@@ -994,7 +1010,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
-                                toxFileData.setFileId(uuid);
+                                toxFileData.setFileId(uuidTox);
 
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
 
@@ -1031,7 +1047,12 @@ public class FileMangerUtil {
                         }
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(videoFileName);
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                        }else{
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                        }
                         EventBus.getDefault().post(new FileStatus(videoFileName,1));
                     }
                 }catch (Exception e)
@@ -1057,6 +1078,12 @@ public class FileMangerUtil {
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                    String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    if(!msgId.equals(""))
+                    {
+                        uuid = msgId;
+                    }
+                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
                         if(file.length() > 1024 * 1024 * 100)
@@ -1073,11 +1100,7 @@ public class FileMangerUtil {
                         String files_dir = filePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                            if(!msgId.equals(""))
-                            {
-                                uuid = msgId;
-                            }
+
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
@@ -1127,11 +1150,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
-                                int uuid = (int)(System.currentTimeMillis()/1000);
+
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1140,10 +1163,10 @@ public class FileMangerUtil {
                                 EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
-                                sendMsgLocalMap.put(uuid+"",false);
-                                sendFilePathMap.put(uuid+"",base58files_dir);
-                                sendFileSize.put(uuid+"",file.length());
-                                deleteFileMap.put(uuid+"",false);
+                                sendMsgLocalMap.put(uuidTox+"",false);
+                                sendFilePathMap.put(uuidTox+"",base58files_dir);
+                                sendFileSize.put(uuidTox+"",file.length());
+                                deleteFileMap.put(uuidTox+"",false);
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
@@ -1156,7 +1179,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_FILE);
-                                toxFileData.setFileId(uuid);
+                                toxFileData.setFileId(uuidTox);
 
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];
@@ -1194,7 +1217,12 @@ public class FileMangerUtil {
                         //FileUtil.copySdcardFile(filePath,files_dir);
 
                     }else{
-                        LocalFileUtils.INSTANCE.deleteLocalAssets(fileName);
+                        if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
+                        {
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                        }else{
+                            LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                        }
                         EventBus.getDefault().post(new FileStatus(fileName,1));
                     }
 

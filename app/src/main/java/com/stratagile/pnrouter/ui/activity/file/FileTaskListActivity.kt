@@ -190,8 +190,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
             }
         }
-        var ongoing = fileGoingTaskLisytAdapter.data.size
-        var complete = fileCompleteTaskLisytAdapter.data.size
+        var ongoing = fileGoingTaskLisytAdapter.data.size -1
+        var complete = fileCompleteTaskLisytAdapter.data.size -1
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
         completeTaskHead.header = "Completed (" + complete + ")"
         mMenu?.getItem(0)?.setVisible(true)
@@ -200,14 +200,17 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
             it.takeUnless { it.isHeader }?.let {
                 it.t.status = 0
+                //fileGoingTaskLisytAdapter.notifyItemChanged(index)
             }
         }
         fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
             it.takeUnless { it.isHeader }?.let {
                 it.t.status = 0
+                //fileCompleteTaskLisytAdapter.notifyItemChanged(index)
             }
         }
         fileGoingTaskLisytAdapter.notifyDataSetChanged()
+        fileCompleteTaskLisytAdapter.notifyDataSetChanged()
     }
 
     lateinit var ongoingTaskHead: TaskFile
@@ -384,7 +387,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         KLog.i("没有下载完")
                                     } else {
                                         listGoing.removeAt(index)
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,myFie.upLoadFile.status,myFie.upLoadFile.msgId)))
+                                        var status  = 0
+                                        if(tvDelete.visibility == View.VISIBLE)
+                                        {
+                                            status = 1
+                                        }
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
@@ -430,6 +438,18 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
+                if(checkBox.visibility ==View.VISIBLE)
+                {
+                    checkBox.setChecked(!checkBox.isChecked)
+                    var status = 0;
+                    if(tvDelete.visibility == View.VISIBLE)
+                    {
+                        status = 1
+                    }
+                    var taskFile =  fileCompleteTaskLisytAdapter!!.getItem(position)
+                    taskFile!!.t.status = status
+                    fileCompleteTaskLisytAdapter.notifyItemChanged(position)
+                }
             }
 
         }
@@ -555,6 +575,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
+                var status = 0;
+                if(checkBox.isChecked)
+                {
+                    status = 1
+                }
+                var taskFile =  fileCompleteTaskLisytAdapter!!.getItem(position)
+                taskFile!!.t.status = status
+                fileCompleteTaskLisytAdapter.notifyItemChanged(position)
             }
 
         }
@@ -608,7 +636,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var fileData = receiveFileDataMap.get(msgId.toString())
                     if(fileData != null)
                     {
-                        LocalFileUtils.deleteLocalAssets(fileData!!.fileKey)
+                        LocalFileUtils.deleteLocalAssets(fileData!!.msgId)
                         EventBus.getDefault().post(AllFileStatus())
                     }
 

@@ -616,7 +616,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                     if(fileData != null)
                     {
                         var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
-                        LocalFileUtils.deleteLocalAssets(fileMiName)
+                        LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }
                     runOnUiThread {

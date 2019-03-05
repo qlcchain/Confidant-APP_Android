@@ -71,7 +71,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     if(fileData != null)
                     {
                         var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
-                        LocalFileUtils.deleteLocalAssets(fileMiName)
+                        LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }
                     runOnUiThread {
