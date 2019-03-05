@@ -23,7 +23,7 @@ object LocalFileUtils {
     fun inspectionLocalData()
     {
         synchronized(fileLock){
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(userId.equals(""))
             {
                 return
@@ -59,7 +59,7 @@ object LocalFileUtils {
     val localFilesList: ArrayList<MyFile>
         get() {
             synchronized(fileLock){
-                var userId = "fileData3"
+                var userId = "fileData5"
                 var localAssetArrayList: ArrayList<MyFile> = ArrayList()
                 if(userId.equals(""))
                 {
@@ -98,7 +98,7 @@ object LocalFileUtils {
      */
     fun updateGreanDaoFromLocal() {
         //wallet = walletList.get(SpUtil.getInt(AppConfig.instance, ConstantValue.currentWallet, 0));
-        var userId = "fileData3"
+        var userId = "fileData5"
         if(userId.equals(""))
         {
             return
@@ -175,7 +175,7 @@ object LocalFileUtils {
             if (myRouter == null) {
                 return
             }
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(userId.equals(""))
             {
                 return
@@ -224,7 +224,7 @@ object LocalFileUtils {
     }
     fun getLocalAssets(fileKey: String): UpLoadFile? {
         synchronized(fileLock){
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(fileKey == null && fileKey.equals(""))
             {
                 return null
@@ -260,7 +260,7 @@ object LocalFileUtils {
     }
     fun deleteLocalAssets(deleteFileKey: String): UpLoadFile? {
         synchronized(fileLock){
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(deleteFileKey == null && deleteFileKey.equals(""))
             {
                 return null
@@ -306,7 +306,7 @@ object LocalFileUtils {
      */
     fun updateList(myAssets: ArrayList<MyFile>?) {
         synchronized(fileLock){
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(userId.equals(""))
             {
                 return
@@ -346,7 +346,7 @@ object LocalFileUtils {
      */
     fun updateLocalAssets(router: MyFile?) {
         synchronized(fileLock){
-            var userId = "fileData3"
+            var userId = "fileData5"
             if(userId.equals(""))
             {
                 return
