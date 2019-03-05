@@ -56,6 +56,7 @@
             app:layout_constraintLeft_toRightOf="@+id/checkBox"
             app:layout_constraintTop_toTopOf="parent"
             android:text="2018/11/07 13:00"
+            android:textSize="9sp"
             android:layout_marginLeft="@dimen/x31" />
 
     </LinearLayout>
@@ -88,7 +89,7 @@
                 android:maxEms="10"
                 android:singleLine="true"
                 android:text="Google project development.zip"
-                android:textColor="@color/color_3f3f3f"
+                android:textColor="@color/color_2B2B2B"
                 android:textSize="15sp" />
 
             <TextView
@@ -96,6 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x31"
+                android:textColor="@color/color_808080"
                 android:text="244k"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -111,7 +113,7 @@
             android:id="@+id/ivDownload"
             android:layout_width="0px"
             android:layout_weight="1"
-            android:src="@mipmap/download_1"
+            android:src="@mipmap/download_2"
             android:scaleType="center"
             android:layout_height="@dimen/x80" />
         <ImageView
