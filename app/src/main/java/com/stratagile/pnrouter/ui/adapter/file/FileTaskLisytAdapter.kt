@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.ui.adapter.file
 
+import android.view.View
+import android.widget.CompoundButton
 import com.chad.library.adapter.base.BaseSectionQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
@@ -17,13 +19,13 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
     override fun convert(helper: BaseViewHolder, item: TaskFile) {
         var fileOriginalName = ""
         var fileName =  item.t.fileKey
-        if(item.t.status == 1)
+        if(item.t.status != 0)
         {
             helper.setGone(R.id.checkBox, true)
-            helper.setGone(R.id.status, false)
+            helper.setChecked(R.id.checkBox,false)
         }else{
             helper.setGone(R.id.checkBox, false)
-            helper.setGone(R.id.status, true)
+            helper.setChecked(R.id.checkBox,false)
         }
         if(!item.t.isDownLoad)
         {

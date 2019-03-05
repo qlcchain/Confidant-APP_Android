@@ -5,6 +5,7 @@ import android.os.Handler
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
 import android.view.*
+import android.widget.CheckBox
 import android.widget.TextView
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -157,7 +158,43 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
 
     fun onDeleteClick() {
+        fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+                var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
+                if(checkBox.isChecked)
+                {
+                    fileGoingTaskLisytAdapter.remove(index)
+                    var localMedia = it!!.t
+                    if(!localMedia.isDownLoad && !localMedia.isComplete)
+                    {
+                        FileMangerUtil.cancelSend(localMedia.msgId)
+                    }
+                    if(localMedia.isDownLoad && !localMedia.isComplete)
+                    {
+                        FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                    }
+                    LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                }
 
+
+            }
+        }
+        fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+                var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
+                if(checkBox.isChecked)
+                {
+                    fileCompleteTaskLisytAdapter.remove(index)
+                    var localMedia = it!!.t
+                    LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                }
+            }
+        }
+        var ongoing = fileGoingTaskLisytAdapter.data.size - 1
+        var complete = fileCompleteTaskLisytAdapter.data.size - 1
+        ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
+        completeTaskHead.header = "Completed (" + complete + ")"
+        fileGoingTaskLisytAdapter.notifyDataSetChanged()
     }
 
     lateinit var ongoingTaskHead: TaskFile
@@ -233,6 +270,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         return super.onCreateOptionsMenu(menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(fileGoingTaskLisytAdapter.data.size == 1 && fileCompleteTaskLisytAdapter.data.size == 1)
+        {
+            return false
+        }
         if (item.itemId == R.id.optaskList)
         {
             mMenu?.getItem(0)?.setVisible(false)
@@ -253,6 +294,19 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         } else if (item.itemId == R.id.cacanlTaskList) {
             mMenu?.getItem(0)?.setVisible(true)
             mMenu?.getItem(1)?.setVisible(false)
+            tvDelete.visibility = View.GONE
+            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 0
+                    fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                }
+            }
+            fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 0
+                    fileCompleteTaskLisytAdapter.notifyItemChanged(index)
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -352,6 +406,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
+        fileGoingTaskLisytAdapter!!.setOnItemClickListener { adapter, view, position ->
+            var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
+            if(checkBox.visibility ==View.VISIBLE)
+            {
+                checkBox.setChecked(!checkBox.isChecked)
+            }
+
+        }
         fileGoingTaskLisytAdapter.setOnItemChildClickListener { adapter, view, position ->
             var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
             var localMedia = taskFile!!.t
@@ -469,6 +531,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         recyclerView2.setNestedScrollingEnabled(false)
         recyclerView2.setHasFixedSize(true)
         reSetHeadTitle()
+        fileCompleteTaskLisytAdapter!!.setOnItemClickListener { adapter, view, position ->
+            var checkBox =  fileCompleteTaskLisytAdapter!!.getViewByPosition(recyclerView2,position,R.id.checkBox) as CheckBox
+            if(checkBox.visibility ==View.VISIBLE)
+            {
+                checkBox.setChecked(!checkBox.isChecked)
+            }
+
+        }
     }
 
     fun reSetHeadTitle() {

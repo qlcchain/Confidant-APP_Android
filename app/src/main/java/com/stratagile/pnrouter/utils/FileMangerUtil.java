@@ -721,7 +721,6 @@ public class FileMangerUtil {
     {
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
-        LocalFileUtils.INSTANCE.deleteLocalAssetsByMsgId(msgId);
     }
     public static int sendImageFile(String imagePath,String msgId,boolean isCompress) {
         if(sendFilePathMap.containsValue(imagePath))
