@@ -66,7 +66,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                     when (localMedia!!.pictureType) {
                         "image/jpeg,image/png" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,localMedia!!.msgId, false)
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -79,7 +79,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         "video/mp4" -> {
-                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path)
+                            var result =  FileMangerUtil.sendVideoFile(localMedia!!.path,"")
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -92,7 +92,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                         else -> {
-                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path)
+                            var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,"")
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -325,7 +325,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             {
                 if (file.exists()) {
                     if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
+                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
                         if(result  == 1)
                         {
                             runOnUiThread {
@@ -337,7 +337,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                     } else if (localMedia!!.path.indexOf("mp4") > -1) {
-                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path)
+                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
                         if(result  == 1)
                         {
                             runOnUiThread {
@@ -349,7 +349,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                     } else {
-                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path)
+                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
                         if(result  == 1)
                         {
                             runOnUiThread {

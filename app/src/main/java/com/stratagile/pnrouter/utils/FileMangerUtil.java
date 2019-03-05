@@ -742,6 +742,10 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                            if(!msgId.equals(""))
+                            {
+                                uuid = msgId;
+                            }
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
@@ -870,7 +874,7 @@ public class FileMangerUtil {
         }).start();
         return 1;
     }
-    public static int sendVideoFile(String videoPath) {
+    public static int sendVideoFile(String videoPath,String msgId) {
         if(sendFilePathMap.containsValue(videoPath))
         {
             return 0;
@@ -904,6 +908,10 @@ public class FileMangerUtil {
                         {
 
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                            if(!msgId.equals(""))
+                            {
+                                uuid = msgId;
+                            }
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
@@ -1031,7 +1039,7 @@ public class FileMangerUtil {
         return 1;
     }
 
-    public static int sendOtherFile(String filePath) {
+    public static int sendOtherFile(String filePath,String msgId) {
         if(sendFilePathMap.containsValue(filePath))
         {
             return 0;
@@ -1061,6 +1069,10 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                            if(!msgId.equals(""))
+                            {
+                                uuid = msgId;
+                            }
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
