@@ -272,13 +272,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(fileGoingTaskLisytAdapter.data.size == 1 && fileCompleteTaskLisytAdapter.data.size == 1)
         {
-            return false
+            return true
         }
         if (item.itemId == R.id.optaskList)
         {
             mMenu?.getItem(0)?.setVisible(false)
             mMenu?.getItem(1)?.setVisible(true)
             tvDelete.visibility = View.VISIBLE
+            tvDelete.setText(R.string.delete)
             fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
                 it.takeUnless { it.isHeader }?.let {
                     it.t.status = 1
