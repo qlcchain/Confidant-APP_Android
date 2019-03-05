@@ -318,6 +318,7 @@ object PopWindowUtil {
         list.add(Arrange(context.getString(R.string.arrange_by_name), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1) == 0))
         list.add(Arrange(context.getString(R.string.arrange_by_time), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1) == 1))
         list.add(Arrange(context.getString(R.string.arrange_by_size), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1) == 2))
+        list.add(Arrange(context.getString(R.string.arrange_by_contact), SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1) == 3))
         return list
     }
 

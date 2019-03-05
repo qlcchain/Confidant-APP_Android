@@ -509,11 +509,12 @@
     <string name="send_to_friend">Send it to Friends</string>
     <string name="download">Download</string>
     <string name="other_application_open">Other application open</string>
-    <string name="detailed_information">Detailed Information</string>
+    <string name="detailed_information">Details</string>
     <string name="rename">Rename</string>
     <string name="arrange_by_name">Arrange by name</string>
     <string name="arrange_by_time">Arrange by time</string>
     <string name="arrange_by_size">Arrange by size</string>
+    <string name="arrange_by_contact">Arrange by Contact</string>
     <string name="upload_photos">Upload Photos</string>
     <string name="upload_video">Upload Video</string>
     <string name="upload_document">Upload document</string>

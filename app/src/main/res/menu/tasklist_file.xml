@@ -6,4 +6,8 @@
         app:showAsAction="always"
         android:icon="@mipmap/multiple_selection"
         android:title="" />
+    <item
+        android:id="@+id/cacanlTaskList"
+        app:showAsAction="always"
+        android:title="@string/Cancel" />
 </menu>

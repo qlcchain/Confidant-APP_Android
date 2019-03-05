@@ -131,6 +131,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
     override fun initView() {
         setContentView(R.layout.activity_file_task_list)
+        tvDelete.setOnClickListener {
+            onDeleteClick()
+        }
+    }
+
+    fun onDeleteClick() {
+
     }
 
     lateinit var ongoingTaskHead: TaskFile
@@ -197,14 +204,19 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         initUI()
     }
+    var mMenu : Menu? = null
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.tasklist_file, menu)
+        mMenu = menu
+        mMenu?.getItem(1)?.setVisible(false)
         return super.onCreateOptionsMenu(menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.optaskList)
         {
+            mMenu?.getItem(0)?.setVisible(false)
+            mMenu?.getItem(1)?.setVisible(true)
             tvDelete.visibility = View.VISIBLE
             fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
                 it.takeUnless { it.isHeader }?.let {
@@ -218,6 +230,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     fileCompleteTaskLisytAdapter.notifyItemChanged(index)
                 }
             }
+        } else if (item.itemId == R.id.cacanlTaskList) {
+            mMenu?.getItem(0)?.setVisible(true)
+            mMenu?.getItem(1)?.setVisible(false)
         }
         return super.onOptionsItemSelected(item)
     }

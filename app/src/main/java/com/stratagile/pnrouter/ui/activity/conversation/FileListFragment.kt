@@ -380,6 +380,9 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         2 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }.toMutableList())
                         }
+                        3 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileFrom }.toMutableList())
+                        }
                     }
                 }
 

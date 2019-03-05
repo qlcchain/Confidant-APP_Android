@@ -4,9 +4,7 @@
     android:layout_height="wrap_content"
     android:paddingTop="7dp"
     android:paddingBottom="7dp"
-    android:background="@color/white"
-    android:paddingLeft="@dimen/padding_search_bar"
-    android:paddingRight="@dimen/padding_search_bar">
+    android:background="@color/white">
 
     <EditText
       	android:paddingTop="5dp"
@@ -25,8 +23,8 @@
         android:textColorHint="#8C8C8C"
         android:textSize="16sp"
         android:hint="@string/search"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x31"
         android:singleLine="true"
         android:imeOptions="actionSearch"/>
 

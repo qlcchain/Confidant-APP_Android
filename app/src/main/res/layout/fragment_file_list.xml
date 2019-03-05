@@ -17,8 +17,9 @@
 
         <ImageView
             android:id="@+id/sort"
-            android:layout_width="@dimen/x108"
+            android:layout_width="wrap_content"
             android:src="@mipmap/sort"
+            android:paddingRight="@dimen/x31"
             android:background="@color/white"
             android:scaleType="center"
             android:layout_height="match_parent" />
