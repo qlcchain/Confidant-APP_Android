@@ -576,7 +576,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             {
                 checkBox.setChecked(!checkBox.isChecked)
                 var status = 0;
-                if(checkBox.isChecked)
+                if(tvDelete.visibility == View.VISIBLE)
                 {
                     status = 1
                 }
