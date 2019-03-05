@@ -52,7 +52,7 @@
                 android:layout_height="@dimen/x60"
                 android:padding="@dimen/x10"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/up_dowload" />
+                android:src="@mipmap/up_download" />
         </LinearLayout>
 
         <TextView

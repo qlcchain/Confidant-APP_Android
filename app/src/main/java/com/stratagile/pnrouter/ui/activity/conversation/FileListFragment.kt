@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +38,7 @@ import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_file_list.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -195,17 +198,12 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         recyclerView.adapter = fileListChooseAdapter
         fileListChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
             var taskFile = fileListChooseAdapter!!.getItem(position)
-            /*var filePath = "" + Environment.getExternalStorageDirectory() + "/1/接口介绍.pdf"
-            if (position == 0) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/test.txt"
-            } else if (position == 1) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/tupian.jpg"
-            } else if (position == 2) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/xxx.jpg"
-            } else if (position == 3) {
-                filePath = "" + Environment.getExternalStorageDirectory() + "/1/vpn.xlsx"
-            }*/
             startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", taskFile!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
+        }
+
+        refreshLayout.setOnRefreshListener {
+            pullFileList()
+            refreshLayout.isRefreshing = false
         }
 
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
@@ -275,47 +273,6 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     }
 
                                 }
-//                                2 -> {
-//                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-//                                    var fileOrginName = String(Base58.decode(fileMiName))
-//                                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
-//                                    var file = File(filePath)
-//                                    if (!file.exists()) {
-//                                        runOnUiThread {
-//                                            toast(R.string.You_need_to_download)
-//                                        }
-//                                        wantOpen = true
-//                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
-//                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-//                                        if (ConstantValue.isWebsocketConnected) {
-//                                            receiveFileDataMap.put(data.msgId.toString(), data)
-//                                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
-//                                        } else {
-//                                            receiveToxFileDataMap.put(fileOrginName,data)
-//                                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-//                                            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,data.userKey, data.fileFrom)
-//                                            val myRouter = MyFile()
-//                                            myRouter.type = 0
-//                                            myRouter.userSn = ConstantValue.currentRouterSN
-//                                            myRouter.upLoadFile = uploadFile
-//                                            LocalFileUtils.insertLocalAssets(myRouter)
-//
-//                                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-//                                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
-//                                            var baseData = BaseData(msgData)
-//                                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-//                                            if (ConstantValue.isAntox) {
-//                                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-//                                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-//                                            } else {
-//                                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-//                                            }
-//                                        }
-//                                    } else {
-//                                        openFile(filePath)
-//
-//                                    }
-//                                }
                                 2 -> {
                                     startActivity(Intent(activity!!, FileDetailInformationActivity::class.java).putExtra("file", data))
                                 }
@@ -347,8 +304,119 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         }
                     })
                 }
+                R.id.ivDownload -> {
+                    var data = fileListChooseAdapter!!.data[position]
+                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
+                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    var fileOrginName = String(Base58.decode(fileMiName))
+                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
+                    var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
+                    var file = File(filePath)
+                    if(file.exists())
+                    {
+                        startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", data!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
+                        return@setOnItemChildClickListener
+                    }
+                    var fileMi = File(fileMiPath)
+                    if(fileMi.exists())
+                    {
+                        DeleteUtils.deleteFile(fileMiPath)
+                    }
+                    if (false) {
+                        runOnUiThread {
+                            toast(R.string.no_download_is_required)
+                        }
+                    } else {
+                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                        if (ConstantValue.isWebsocketConnected) {
+                            receiveFileDataMap.put(data.msgId.toString(), data)
+
+                            Thread(Runnable() {
+                                run() {
+                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
+                                }
+                            }).start()
+
+                        } else {
+                            receiveToxFileDataMap.put(fileOrginName,data)
+                            ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
+                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom)
+                            val myRouter = MyFile()
+                            myRouter.type = 0
+                            myRouter.userSn = ConstantValue.currentRouterSN
+                            myRouter.upLoadFile = uploadFile
+                            LocalFileUtils.insertLocalAssets(myRouter)
+                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, data.msgId, data.fileFrom, 2)
+                            var baseData = BaseData(msgData)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            } else {
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+                        }
+
+                    }
+
+                }
             }
         }
+        sort.setOnClickListener {
+            PopWindowUtil.showFileSortWindow(activity!!, sort, object : PopWindowUtil.OnSelectListener {
+                override fun onSelect(position: Int, obj: Any) {
+                    SpUtil.putInt(activity!!, ConstantValue.currentArrangeType, position)
+                    when (position) {
+                        0 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileName }.toMutableList())
+                        }
+                        1 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }.toMutableList())
+                        }
+                        2 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }.toMutableList())
+                        }
+                    }
+                }
+
+            })
+        }
+        query.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                KLog.i("beforeTextChanged " + charSequence.toString())
+                if ("".equals(charSequence.toString())) {
+                    beforeList = fileListChooseAdapter!!.data
+                }
+            }
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                KLog.i("onTextChanged " + charSequence.toString())
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+                KLog.i("afterTextChanged " + editable.toString())
+                if ("".equals(editable.toString())) {
+                    fileListChooseAdapter!!.setNewData(beforeList)
+                } else {
+                    fileListChooseAdapter!!.setNewData(searchListByName(editable.toString()))
+                }
+            }
+        })
+    }
+
+    var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
+
+    fun searchListByName(name: String): MutableList<JPullFileListRsp.ParamsBean.PayloadBean> {
+        var retList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
+        beforeList.forEach {
+            var fileName = String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1)))
+            if (fileName.contains(name)) {
+                retList.add(it)
+            }
+        }
+        return retList
     }
 
     override fun onDestroy() {

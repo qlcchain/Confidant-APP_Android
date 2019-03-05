@@ -1,102 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/x123"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/x31"
+    android:layout_marginTop="@dimen/x17"
+    android:paddingRight="@dimen/x31"
+    android:layout_height="wrap_content"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/tvFileTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/x15"
-        android:text="2018/11/07 13:00"
-        android:layout_marginLeft="@dimen/x31" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_height="@dimen/x77">
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/userAvatar"
+            android:layout_width="@dimen/x38"
+            app:imageButtonTextSize="10"
+            android:layout_height="@dimen/x38">
 
-    <ImageView
-        android:id="@+id/fileForm"
-        android:layout_width="@dimen/x23"
-        android:layout_marginLeft="@dimen/x20"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
-        app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
-        app:layout_constraintTop_toTopOf="@+id/tvFileTime"
-        android:layout_height="@dimen/x23" />
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
 
-    <TextView
-        android:id="@+id/friendName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:text="tom"
-        android:layout_marginLeft="@dimen/x20"
-        app:layout_constraintBottom_toBottomOf="@+id/fileForm"
-        app:layout_constraintLeft_toRightOf="@+id/fileForm"
-        app:layout_constraintTop_toTopOf="@+id/fileForm" />
-    <View
-        android:id="@+id/line"
-        style="@style/divide_line"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <TextView
+            android:id="@+id/friendName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="tom"
+            android:textSize="11sp"
+            android:textColor="@color/color_2B2B2B"
+            android:layout_marginLeft="@dimen/x10" />
 
-    <com.stratagile.pnrouter.view.SmoothCheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="@dimen/x31"
-        android:layout_height="@dimen/x31"
-        android:layout_marginStart="@dimen/x31"
-        app:color_checked="@color/mainColor"
-        app:color_unchecked="@color/white"
-        app:color_unchecked_stroke="@color/gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:stroke_width="@dimen/x2" />
-    <ImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/x42"
-        android:layout_height="@dimen/x46"
-        android:layout_marginLeft="@dimen/x31"
-        app:layout_constraintLeft_toRightOf="@+id/checkBox"
-        android:src="@mipmap/icon_ppt"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
+        <ImageView
+            android:id="@+id/fileForm"
+            android:layout_width="@dimen/x23"
+            android:layout_marginLeft="@dimen/x10"
+            app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
+            app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
+            app:layout_constraintTop_toTopOf="@+id/tvFileTime"
+            android:layout_height="@dimen/x23" />
+        <TextView
+            android:id="@+id/tvOpreateType"
+            android:layout_width="0px"
+            android:layout_marginLeft="@dimen/x10"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/tvFileName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/x30"
-        android:ellipsize="middle"
-        android:maxEms="10"
-        android:singleLine="true"
-        android:text="Google project development.zip"
-        android:textColor="@color/color_3f3f3f"
-        android:textSize="15sp"
-        app:layout_constraintLeft_toRightOf="@+id/ivAvatar"
-        app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
-        app:layout_constraintTop_toTopOf="@+id/ivAvatar" />
+        <TextView
+            android:id="@+id/tvFileTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@+id/checkBox"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="2018/11/07 13:00"
+            android:layout_marginLeft="@dimen/x31" />
 
-    <TextView
-        android:id="@+id/tvFileSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/x31"
-        android:layout_marginTop="@dimen/x45"
-        android:text="244k"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
 
-    <ImageView
-        android:id="@+id/fileOpreate"
-        android:layout_width="@dimen/x80"
-        android:scaleType="center"
-        android:layout_height="@dimen/x60"
-        android:layout_marginRight="@dimen/x20"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/hedo_n" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/file_list_bg"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x106">
+        <ImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/x42"
+            android:layout_height="@dimen/x46"
+            android:layout_marginLeft="@dimen/x31"
+            app:layout_constraintLeft_toRightOf="@+id/checkBox"
+            android:src="@mipmap/icon_ppt"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/x20"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvFileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:singleLine="true"
+                android:text="Google project development.zip"
+                android:textColor="@color/color_3f3f3f"
+                android:textSize="15sp" />
 
-</android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvFileSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/x31"
+                android:text="244k"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_height="@dimen/x94">
+        <ImageView
+            android:id="@+id/ivDownload"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:src="@mipmap/download_1"
+            android:scaleType="center"
+            android:layout_height="@dimen/x80" />
+        <ImageView
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:src="@mipmap/forward_2"
+            android:scaleType="center"
+            android:layout_height="@dimen/x80" />
+        <ImageView
+            android:id="@+id/fileOpreate"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:layout_height="@dimen/x80"
+            android:layout_marginRight="@dimen/x20"
+            app:srcCompat="@mipmap/more_2" />
+    </LinearLayout>
+
+</LinearLayout>

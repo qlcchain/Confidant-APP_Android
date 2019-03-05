@@ -57,6 +57,7 @@ import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -1294,7 +1295,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             override fun getItem(position: Int): Fragment {
                 when (position) {
                     0 -> return conversationListFragment!!
-                    1 -> return FileFragment()
+                    1 -> return FileListFragment()
                     2 -> return contactFragment!!
                     else -> return MyFragment()
                 }
