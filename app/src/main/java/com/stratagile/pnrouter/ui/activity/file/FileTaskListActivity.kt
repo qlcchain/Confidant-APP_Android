@@ -190,10 +190,23 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
             }
         }
-        var ongoing = fileGoingTaskLisytAdapter.data.size - 1
-        var complete = fileCompleteTaskLisytAdapter.data.size - 1
+        var ongoing = fileGoingTaskLisytAdapter.data.size
+        var complete = fileCompleteTaskLisytAdapter.data.size
         ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
         completeTaskHead.header = "Completed (" + complete + ")"
+        mMenu?.getItem(0)?.setVisible(true)
+        mMenu?.getItem(1)?.setVisible(false)
+        tvDelete.visibility = View.GONE
+        fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+                it.t.status = 0
+            }
+        }
+        fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+                it.t.status = 0
+            }
+        }
         fileGoingTaskLisytAdapter.notifyDataSetChanged()
     }
 
@@ -361,7 +374,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
                                         it.t.fileSize = myFie.upLoadFile.fileSize
-                                        it.t.status = myFie.upLoadFile.status
+                                        if(tvDelete.visibility == View.VISIBLE)
+                                        {
+                                            it.t.status = 1
+                                        }else{
+                                            it.t.status = 0
+                                        }
                                         fileGoingTaskLisytAdapter.notifyItemChanged(index)
                                         KLog.i("没有下载完")
                                     } else {
