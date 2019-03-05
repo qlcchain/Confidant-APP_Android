@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/rl_detail"
+            android:layout_marginTop="@dimen/x20"
+            android:orientation="horizontal"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_marginRight="@dimen/x25"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x70">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_sub_user"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x40"
+                android:fontFamily="@font/vagroun_q"
+                android:gravity="center_vertical"
+                android:text="create a group"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/color_f2f2f2"
+            android:layout_marginTop="@dimen/x10"
+            android:layout_marginLeft="@dimen/x1"
+            android:layout_marginRight="@dimen/x1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x1"/>
+        <LinearLayout
+            android:id="@+id/rl_rank"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/x10"
+            android:layout_marginLeft="@dimen/x35"
+            android:layout_marginBottom="@dimen/x10"
+            android:layout_marginRight="@dimen/x25"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/x70">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_sub_user"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/vagroun_q"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/x40"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

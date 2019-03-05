@@ -156,6 +156,9 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 2 -> {
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileSize }?.toMutableList())
                 }
+                3 -> {
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { RxEncodeTool.base64Decode(it.sender).toString() }?.toMutableList())
+                }
             }
         }
     }
@@ -381,7 +384,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }.toMutableList())
                         }
                         3 -> {
-                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileFrom }.toMutableList())
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { RxEncodeTool.base64Decode(it.sender).toString() }.toMutableList())
                         }
                     }
                 }
