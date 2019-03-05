@@ -205,6 +205,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.optaskList)
         {
+            tvDelete.visibility = View.VISIBLE
             fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
                 it.takeUnless { it.isHeader }?.let {
                     it.t.status = 1

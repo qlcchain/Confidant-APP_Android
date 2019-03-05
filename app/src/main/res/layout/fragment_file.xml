@@ -29,11 +29,26 @@
             android:layout_marginRight="@dimen/x30"
             android:layout_height="@dimen/x30" />
     </LinearLayout>
-    <include
-        android:id="@+id/include"
-        layout="@layout/ease_search_bar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/include"
+            layout="@layout/ease_search_bar"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/sort"
+            android:layout_width="@dimen/x108"
+            android:src="@mipmap/sort"
+            android:background="@color/white"
+            android:scaleType="center"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -45,6 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/status">
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:visibility="gone"
             android:id="@+id/myFile"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
@@ -55,9 +71,10 @@
 
 
 
-        <View style="@style/divide_line2" />
+        <!--<View style="@style/divide_line2" />-->
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:visibility="gone"
             android:id="@+id/iShare"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
@@ -66,10 +83,11 @@
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 
-        <View style="@style/divide_line2" />
+        <!--<View style="@style/divide_line2" />-->
 
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:visibility="gone"
             android:id="@+id/docReceived"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
@@ -80,12 +98,13 @@
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:background="@color/color_efefef"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_height="@dimen/x1"/>
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:background="@color/color_efefef"-->
+        <!--android:layout_marginTop="@dimen/x20"-->
+        <!--android:layout_height="@dimen/x1"/>-->
     <com.stratagile.pnrouter.view.DrawableTextView
+        android:visibility="gone"
         android:id="@+id/documents_shared"
         android:layout_width="match_parent"
         app:showNext="false"
@@ -93,9 +112,10 @@
         app:text="@string/most_recent">
 
     </com.stratagile.pnrouter.view.DrawableTextView>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 </LinearLayout>
