@@ -128,7 +128,6 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:layout_height="@dimen/x80"
-            android:layout_marginRight="@dimen/x20"
             app:srcCompat="@mipmap/more_2" />
     </LinearLayout>
 

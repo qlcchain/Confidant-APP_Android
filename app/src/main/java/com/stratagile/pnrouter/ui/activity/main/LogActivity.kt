@@ -29,7 +29,11 @@ import javax.inject.Inject;
  * @date 2018/09/18 09:45:46
  */
 
-class LogActivity : BaseActivity(), LogContract.View {
+class LogActivity : BaseActivity(), LogContract.View, LogUtil.OnLogListener {
+    override fun onLog(string: String) {
+        logAdapter?.addData(string)
+//        recyclerView.scrollToPosition(logAdapter!!.data.size)
+    }
 
     @Inject
     internal lateinit var mPresenter: LogPresenter
@@ -61,11 +65,18 @@ class LogActivity : BaseActivity(), LogContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_log)
+        LogUtil.onLogListener = this
         title.text = "Log"
     }
+
+    override fun onDestroy() {
+        LogUtil.onLogListener = null
+        super.onDestroy()
+    }
     override fun initData() {
-        logAdapter = LogAdapter(arrayListOf())
+        logAdapter = LogAdapter(LogUtil.logList)
         recyclerView.adapter = logAdapter
+        recyclerView.smoothScrollToPosition(logAdapter!!.data.size)
     }
 
     override fun setupActivityComponent() {
@@ -96,8 +107,8 @@ class LogActivity : BaseActivity(), LogContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.clear -> {
-                LogUtil.mLogInfo.setLength(0)
-
+                LogUtil.logList.clear()
+                logAdapter?.setNewData(LogUtil.logList)
             }
             else -> {
             }

@@ -183,10 +183,10 @@ class ToxMessageReceiver(){
                 var isBack = SystemUtil.isBackground(AppConfig.instance)
                 if(isBack)
                 {
-                    LogUtil.addLog("APP切换到后台")
+                    LogUtil.addLog("APP在后台")
                     active = 1
                 }else{
-                    LogUtil.addLog("APP切换到前台")
+                    LogUtil.addLog("APP在前台")
                 }
                 var heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!,active)
                 //LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
