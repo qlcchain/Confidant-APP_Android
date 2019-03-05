@@ -57,6 +57,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String outPath = "";
 	private String files_Temp_dir = "";
 	private String FileNameOld;
+	private boolean isCancel = false;
 
 	/**
 	 *
@@ -92,6 +93,11 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 	}
 
+	public void cancelWork()
+	{
+		isCancel = true;
+		this.cancel(true);
+	}
 	@Override
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
@@ -135,7 +141,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					handler.sendMessage(msg);
 					return;
 				}
-				if(bytesCopiedFlag != 0)
+				if(bytesCopiedFlag != 0 && !isCancel)
 				{
 					String temp = files_Temp_dir +FileNameOld;
 					String out = outPath +FileNameOld;
@@ -260,7 +266,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		int count =0,n=0;
 		try {
 			while((n=in.read(buffer, 0, 1024*1024*10))!=-1){
-				if(ConstantValue.INSTANCE.getLoginOut())
+				if(ConstantValue.INSTANCE.getLoginOut() || isCancel)
 				{
 					return 0;
 				}

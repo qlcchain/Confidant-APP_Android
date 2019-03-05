@@ -299,6 +299,47 @@ object LocalFileUtils {
             return deleteRouterEntity
         }
     }
+    fun deleteLocalAssetsByMsgId(deleteMsgId: String): UpLoadFile? {
+        synchronized(fileLock){
+            var userId = "fileData5"
+            if(deleteMsgId == null && deleteMsgId.equals(""))
+            {
+                return null
+            }
+            val gson = Gson()
+            val localRouterArrayList: ArrayList<MyFile>
+            val newRouterArrayList = ArrayList<MyFile>()
+            var deleteRouterEntity:UpLoadFile? = null
+            try {
+                //开始读取sd卡的文件数据
+                var assetStr = FileUtil.readRoutersData(userId)
+                if (assetStr != "") {
+                    localRouterArrayList = gson.fromJson<ArrayList<MyFile>>(assetStr, object : TypeToken<ArrayList<MyFile>>() {
+
+                    }.type)
+                    for (myRouter in localRouterArrayList) {
+
+                        if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
+                        {
+                            if (!myRouter.getUpLoadFile().msgId.equals(deleteMsgId)) {
+                                newRouterArrayList.add(myRouter)
+                            } else{
+                                deleteRouterEntity = myRouter.getUpLoadFile()
+                            }
+                        }
+                    }
+                    FileUtil.saveRouterData(userId, gson.toJson(newRouterArrayList))
+                }
+
+            } catch (e: Exception) {
+                System.out.println("出错啦_localFilesList")
+                //e.printStackTrace()
+            } finally {
+
+            }
+            return deleteRouterEntity
+        }
+    }
     /**
      * 批量更新
      *

@@ -67,5 +67,13 @@ public class FileMangerDownloadUtils {
 
         }
     }
+    public static void cancelWork(int msgId){
+
+        FileMangerDownLoaderTask task = taskListMap.get(msgId+"");
+        if(task != null)
+        {
+            task.cancelWork();
+        }
+    }
 
 }

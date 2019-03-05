@@ -271,11 +271,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
                                         it.t.fileSize = myFie.upLoadFile.fileSize
+                                        it.t.status = myFie.upLoadFile.status
                                         fileGoingTaskLisytAdapter.notifyItemChanged(index)
                                         KLog.i("没有下载完")
                                     } else {
                                         listGoing.removeAt(index)
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,myFie.upLoadFile.status,myFie.upLoadFile.msgId)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
