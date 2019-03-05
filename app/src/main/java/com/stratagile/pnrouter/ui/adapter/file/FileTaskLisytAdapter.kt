@@ -22,7 +22,6 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         if(item.t.status != 0)
         {
             helper.setGone(R.id.checkBox, true)
-
         }else{
             helper.setGone(R.id.checkBox, false)
         }
@@ -60,13 +59,13 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
         } else {
+
             if (item.t.isStop) {
                 helper.setGone(R.id.status, true)
             } else {
                 helper.setGone(R.id.status, false)
             }
             helper.setGone(R.id.progressBar, true)
-            helper.setGone(R.id.status, true)
             helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))
             helper.setProgress(R.id.progressBar,item.t.segSeqResult,item.t.segSeqTotal)
             KLog.i("" + item.t.segSeqResult)
@@ -83,7 +82,12 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
             if (item.t.SendGgain) {
-                helper.setGone(R.id.status, true)
+                if(item.t.status != 0)
+                {
+                    helper.setGone(R.id.status, false)
+                }else{
+                    helper.setGone(R.id.status, true)
+                }
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
             } else {
                 helper.setGone(R.id.status, false)

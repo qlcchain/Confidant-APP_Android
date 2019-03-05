@@ -158,59 +158,74 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
 
     fun onDeleteClick() {
-        fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
-            it.takeUnless { it.isHeader }?.let {
-                var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
-                if(checkBox.isChecked)
-                {
-                    fileGoingTaskLisytAdapter.remove(index)
-                    var localMedia = it!!.t
-                    if(!localMedia.isDownLoad && !localMedia.isComplete)
+        if(fileGoingTaskLisytAdapter.data!= null && fileGoingTaskLisytAdapter.data.size >0)
+        {
+            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
+                    if(checkBox.isChecked)
                     {
-                        FileMangerUtil.cancelSend(localMedia.msgId)
+                        fileGoingTaskLisytAdapter.remove(index)
+                        var localMedia = it!!.t
+                        if(!localMedia.isDownLoad && !localMedia.isComplete)
+                        {
+                            FileMangerUtil.cancelSend(localMedia.msgId)
+                        }
+                        if(localMedia.isDownLoad && !localMedia.isComplete)
+                        {
+                            FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                        }
+                        LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
                     }
-                    if(localMedia.isDownLoad && !localMedia.isComplete)
-                    {
-                        FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
-                    }
-                    LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
-                }
 
 
-            }
-        }
-        fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
-            it.takeUnless { it.isHeader }?.let {
-                var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
-                if(checkBox.isChecked)
-                {
-                    fileCompleteTaskLisytAdapter.remove(index)
-                    var localMedia = it!!.t
-                    LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
                 }
             }
         }
-        var ongoing = fileGoingTaskLisytAdapter.data.size -1
-        var complete = fileCompleteTaskLisytAdapter.data.size -1
-        ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
-        completeTaskHead.header = "Completed (" + complete + ")"
+        if(fileCompleteTaskLisytAdapter.data!= null && fileCompleteTaskLisytAdapter.data.size >0)
+        {
+            fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
+                    if(checkBox.isChecked)
+                    {
+                        fileCompleteTaskLisytAdapter.remove(index)
+                        var localMedia = it!!.t
+                        LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                    }
+                }
+            }
+        }
+
         mMenu?.getItem(0)?.setVisible(true)
         mMenu?.getItem(1)?.setVisible(false)
         tvDelete.visibility = View.GONE
-        fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
-            it.takeUnless { it.isHeader }?.let {
-                it.t.status = 0
-                //fileGoingTaskLisytAdapter.notifyItemChanged(index)
+        if(fileGoingTaskLisytAdapter.data!= null && fileGoingTaskLisytAdapter.data.size >0)
+        {
+            var ongoing = fileGoingTaskLisytAdapter.data.size -1
+            ongoingTaskHead.header = "Ongoing (" + ongoing + ")"
+            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 0
+                    //fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                }
             }
+            fileGoingTaskLisytAdapter.notifyDataSetChanged()
         }
-        fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
-            it.takeUnless { it.isHeader }?.let {
-                it.t.status = 0
-                //fileCompleteTaskLisytAdapter.notifyItemChanged(index)
+        if(fileCompleteTaskLisytAdapter.data!= null && fileCompleteTaskLisytAdapter.data.size >0)
+        {
+            var complete = fileCompleteTaskLisytAdapter.data.size -1
+            completeTaskHead.header = "Completed (" + complete + ")"
+            fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    it.t.status = 0
+                    //fileCompleteTaskLisytAdapter.notifyItemChanged(index)
+                }
             }
+            fileCompleteTaskLisytAdapter.notifyDataSetChanged()
         }
-        fileGoingTaskLisytAdapter.notifyDataSetChanged()
-        fileCompleteTaskLisytAdapter.notifyDataSetChanged()
+
+
     }
 
     lateinit var ongoingTaskHead: TaskFile
@@ -438,18 +453,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
-                if(checkBox.visibility ==View.VISIBLE)
-                {
-                    checkBox.setChecked(!checkBox.isChecked)
-                    var status = 0;
-                    if(tvDelete.visibility == View.VISIBLE)
-                    {
-                        status = 1
-                    }
-                    var taskFile =  fileCompleteTaskLisytAdapter!!.getItem(position)
-                    taskFile!!.t.status = status
-                    fileCompleteTaskLisytAdapter.notifyItemChanged(position)
-                }
+                /*  var status = 0;
+                  if(tvDelete.visibility == View.VISIBLE)
+                  {
+                      status = 1
+                  }
+                  var taskFile =  fileGoingTaskLisytAdapter!!.getItem(position)
+                  taskFile!!.t.status = status
+                  fileGoingTaskLisytAdapter.notifyItemChanged(position)*/
             }
 
         }
@@ -575,14 +586,14 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
-                var status = 0;
+                /*var status = 0;
                 if(tvDelete.visibility == View.VISIBLE)
                 {
                     status = 1
                 }
                 var taskFile =  fileCompleteTaskLisytAdapter!!.getItem(position)
                 taskFile!!.t.status = status
-                fileCompleteTaskLisytAdapter.notifyItemChanged(position)
+                fileCompleteTaskLisytAdapter.notifyItemChanged(position)*/
             }
 
         }
