@@ -220,6 +220,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                 1 -> {
                                     FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
                                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    var msgId = data.msgId
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                                     var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
@@ -252,7 +253,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                         } else {
                                             receiveToxFileDataMap.put(fileOrginName,data)
                                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom)
+                                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom,0,msgId.toString())
                                             val myRouter = MyFile()
                                             myRouter.type = 0
                                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -308,6 +309,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     var data = fileListChooseAdapter!!.data[position]
                     FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    var msgId= data.msgId
                     var fileOrginName = String(Base58.decode(fileMiName))
                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
                     var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
@@ -341,7 +343,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         } else {
                             receiveToxFileDataMap.put(fileOrginName,data)
                             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,data.userKey)
-                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom)
+                            val uploadFile = UpLoadFile(fileMiName, filledUri,0, true, false, false, 0, 1, 0, false,data.userKey,data.fileFrom,0,msgId.toString())
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN

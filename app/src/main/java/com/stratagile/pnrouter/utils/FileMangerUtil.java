@@ -222,7 +222,7 @@ public class FileMangerUtil {
                                     {
                                         sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
                                         int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0);
+                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId());
                                         MyFile myRouter = new MyFile();
                                         myRouter.setType(0);
                                         myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -322,7 +322,7 @@ public class FileMangerUtil {
                                     if(sended < 0 )
                                         sended = 0;
                                     KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
-                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false,"",0,0);
+                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false,"",0,0,msgId);
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
                                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -346,7 +346,7 @@ public class FileMangerUtil {
 
                     int segSeqTotal = sendFileTotalSegment.get(filePath);
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,"",0,0);
+                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,"",0,0,msgId);
                     MyFile myRouter = new MyFile();
                     myRouter.setType(0);
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -468,7 +468,7 @@ public class FileMangerUtil {
         {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"",0,0);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"",0,0,toxFileData.getFileId() +"");
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -499,7 +499,7 @@ public class FileMangerUtil {
         if(toxFileData != null) {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,"",0,0);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,"",0,0,toxFileData.getFileId()+"");
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -530,13 +530,15 @@ public class FileMangerUtil {
             String fileMiUrl = fileMiName;
             String userKey = "";
             int fileFrom = 0;
+            String msgId = "";
             if(localUpLoadFile != null)
             {
                 fileMiUrl = localUpLoadFile.getPath();
                 userKey = localUpLoadFile.getUserKey();
                 fileFrom = localUpLoadFile.getFileFrom();
+                msgId = localUpLoadFile.getMsgId();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0,msgId);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -560,13 +562,15 @@ public class FileMangerUtil {
             String fileMiUrl = fileMiName;
             String userKey = "";
             int fileFrom = 0;
+            String msgId = "";
             if(localUpLoadFile != null)
             {
                 fileMiUrl = localUpLoadFile.getPath();
                 userKey = localUpLoadFile.getUserKey();
                 fileFrom = localUpLoadFile.getFileFrom();
+                msgId = localUpLoadFile.getMsgId();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, false,position,filesize,0,false,userKey,fileFrom,0);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, false,position,filesize,0,false,userKey,fileFrom,0,msgId);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -737,9 +741,10 @@ public class FileMangerUtil {
                         FileUtil.recordRecentFile(fileName, 0, 0, "Router");
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -747,7 +752,7 @@ public class FileMangerUtil {
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
@@ -783,11 +788,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
                             if(code == 1)
                             {
-
+                                int uuid = (int)(System.currentTimeMillis()/1000);
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -796,8 +801,6 @@ public class FileMangerUtil {
                                 EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
-
-                                int uuid = (int)(System.currentTimeMillis()/1000);
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());
@@ -899,9 +902,11 @@ public class FileMangerUtil {
 
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+
+                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -909,7 +914,7 @@ public class FileMangerUtil {
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus(videoFileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
                             sendFileSize.put(uuid,file.length());
@@ -947,10 +952,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(videoPath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
+                                int uuid = (int)(System.currentTimeMillis()/1000);
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -958,7 +964,7 @@ public class FileMangerUtil {
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                                 EventBus.getDefault().post(new FileStatus(videoFileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-                                int uuid = (int)(System.currentTimeMillis()/1000);
+
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());
@@ -1054,9 +1060,10 @@ public class FileMangerUtil {
                         String files_dir = filePath;
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1064,7 +1071,7 @@ public class FileMangerUtil {
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+
 
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
@@ -1103,10 +1110,11 @@ public class FileMangerUtil {
                             int code =  FileUtil.copySdcardToxFileAndEncrypt(filePath,base58files_dir,fileKey.substring(0,16));
                             if(code == 1)
                             {
+                                int uuid = (int)(System.currentTimeMillis()/1000);
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid+"");
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1114,7 +1122,7 @@ public class FileMangerUtil {
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                                 EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-                                int uuid = (int)(System.currentTimeMillis()/1000);
+
                                 sendMsgLocalMap.put(uuid+"",false);
                                 sendFilePathMap.put(uuid+"",base58files_dir);
                                 sendFileSize.put(uuid+"",file.length());

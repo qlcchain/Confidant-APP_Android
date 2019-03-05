@@ -202,7 +202,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         } else {
             //receiveToxFileDataMap.put(fileOrginName,data)
             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.userKey)
-            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,payLoad!!.userKey, payLoad!!.fileFrom)
+            val uploadFile = UpLoadFile(fileMiName,filledUri, 0, true, false, false, 0, 1, 0, false,payLoad!!.userKey, payLoad!!.fileFrom,0,payLoad!!.msgId.toString())
             val myRouter = MyFile()
             myRouter.type = 0
             myRouter.userSn = ConstantValue.currentRouterSN
