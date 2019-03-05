@@ -694,7 +694,7 @@ public class RxEncryptTool {
             byte[] bytes_key = new byte[20];
             localSecureRandom.nextBytes(bytes_key);
             String str_key = toHex(bytes_key);
-            return str_key.substring(str_key.length());
+            return str_key.substring(0,32);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -710,7 +710,7 @@ public class RxEncryptTool {
             byte[] bytes_key = new byte[20];
             localSecureRandom.nextBytes(bytes_key);
             String str_key = toHex(bytes_key);
-            return str_key.substring(str_key.length());
+            return str_key.substring(0,32);
         } catch (Exception e) {
             e.printStackTrace();
         }

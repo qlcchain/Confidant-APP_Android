@@ -467,6 +467,28 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             if (deleteFileMap[fileTransformEntity.toId] != null) {
                                 sendFileByteData(fileBufferMi, fileName, EMMessage!!.getFrom(), EMMessage!!.getTo(), fileTransformEntity.toId, fileId, 1, fileKey, SrcKey!!, DstKey!!)
                             } else {
+                                var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                                if(messageEntityList != null)
+                                {
+                                    messageEntityList.forEach {
+                                        if (it.msgId.equals(fileTransformEntity.toId)) {
+                                            AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                            KLog.i("消息数据删除")
+                                        }
+                                    }
+                                }
+                                var  toSendMessage = toSendChatFileMessage
+                                if(toSendMessage != null)
+                                {
+                                    for (item in toSendMessage)
+                                    {
+                                        if(item.msgId.equals(fileTransformEntity.toId))
+                                        {
+                                            toSendMessage.remove(item)
+                                            break
+                                        }
+                                    }
+                                }
                                 KLog.i("websocket文件发送前取消！")
                                 val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
                                 EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
@@ -551,6 +573,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 sendFileByteData(fileLeftBuffer, fileName!!, FromIdResult + "", ToIdResult + "", msgId!!, FileIdResult, SegSeqResult + 1, fileKey!!, SrcKey!!, DstKey!!)
                             } else {
                                 KLog.i("websocket文件发送中取消！")
+
                                 val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
                                 EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
                                 EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
@@ -561,6 +584,18 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         if (it.msgId.equals(msgId)) {
                                             AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
                                             KLog.i("消息数据删除")
+                                        }
+                                    }
+                                }
+                                var  toSendMessage = toSendChatFileMessage
+                                if(toSendMessage != null)
+                                {
+                                    for (item in toSendMessage)
+                                    {
+                                        if(item.msgId.equals(msgId))
+                                        {
+                                            toSendMessage.remove(item)
+                                            break
                                         }
                                     }
                                 }
@@ -616,6 +651,18 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 }
                             }
                         }
+                        var  toSendMessage = toSendChatFileMessage
+                        if(toSendMessage != null)
+                        {
+                            for (item in toSendMessage)
+                            {
+                                if(item.msgId.equals(msgId))
+                                {
+                                    toSendMessage.remove(item)
+                                    break
+                                }
+                            }
+                        }
                         EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
                         KLog.i("websocket文件发送成功后取消！")
                     }
@@ -626,6 +673,28 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }
             }
             else -> {
+                var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                if(messageEntityList != null)
+                {
+                    messageEntityList.forEach {
+                        if (it.msgId.equals(msgId)) {
+                            AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                            KLog.i("消息数据删除")
+                        }
+                    }
+                }
+                var  toSendMessage = toSendChatFileMessage
+                if(toSendMessage != null)
+                {
+                    for (item in toSendMessage)
+                    {
+                        if(item.msgId.equals(msgId))
+                        {
+                            toSendMessage.remove(item)
+                            break
+                        }
+                    }
+                }
                 EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
                 val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + ToIdResult, "")
@@ -746,7 +815,29 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileMyKeyByteMap.put(msgId, SrcKey)
                             sendFileFriendKeyByteMap.put(msgId, DstKey)
                         } catch (e: Exception) {
-                            //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(msgId)) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
+                                    }
+                                }
+                            }
+                            var  toSendMessage = toSendChatFileMessage
+                            if(toSendMessage != null)
+                            {
+                                for (item in toSendMessage)
+                                {
+                                    if(item.msgId.equals(msgId))
+                                    {
+                                        toSendMessage.remove(item)
+                                        break
+                                    }
+                                }
+                            }
+                            EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 0))
                             return@Runnable
                         }
 
@@ -819,7 +910,29 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         sendFileMyKeyByteMap[msgId] = SrcKey
                         sendFileFriendKeyByteMap[msgId] = DstKey
                     } catch (e: Exception) {
-                        //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show()
+                        var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                        if(messageEntityList != null)
+                        {
+                            messageEntityList.forEach {
+                                if (it.msgId.equals(msgId)) {
+                                    AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                    KLog.i("消息数据删除")
+                                }
+                            }
+                        }
+                        var  toSendMessage = toSendChatFileMessage
+                        if(toSendMessage != null)
+                        {
+                            for (item in toSendMessage)
+                            {
+                                if(item.msgId.equals(msgId))
+                                {
+                                    toSendMessage.remove(item)
+                                    break
+                                }
+                            }
+                        }
+                        EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 0))
                         return
                     }
 
@@ -900,7 +1013,29 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileMyKeyByteMap[msgId] = SrcKey
                             sendFileFriendKeyByteMap[msgId] = DstKey
                         } catch (e: Exception) {
-                            //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show()
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(msgId)) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
+                                    }
+                                }
+                            }
+                            var  toSendMessage = toSendChatFileMessage
+                            if(toSendMessage != null)
+                            {
+                                for (item in toSendMessage)
+                                {
+                                    if(item.msgId.equals(msgId))
+                                    {
+                                        toSendMessage.remove(item)
+                                        break
+                                    }
+                                }
+                            }
+                            EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 0))
                             return@Runnable
                         }
 
@@ -982,7 +1117,29 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileMyKeyByteMap[msgId] = SrcKey
                             sendFileFriendKeyByteMap[msgId] = DstKey
                         } catch (e: Exception) {
-                            //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show()
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(msgId)) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
+                                    }
+                                }
+                            }
+                            var  toSendMessage = toSendChatFileMessage
+                            if(toSendMessage != null)
+                            {
+                                for (item in toSendMessage)
+                                {
+                                    if(item.msgId.equals(msgId))
+                                    {
+                                        toSendMessage.remove(item)
+                                        break
+                                    }
+                                }
+                            }
+                            EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 0))
                             return@Runnable
                         }
 
