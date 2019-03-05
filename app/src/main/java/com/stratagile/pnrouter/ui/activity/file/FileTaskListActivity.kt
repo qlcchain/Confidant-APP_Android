@@ -2,9 +2,10 @@ package com.stratagile.pnrouter.ui.activity.file
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.support.v4.view.LayoutInflaterCompat
+import android.support.v4.view.LayoutInflaterFactory
+import android.view.*
+import android.widget.TextView
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
@@ -126,6 +127,25 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     var receiveFileDataMap = HashMap<String, UpLoadFile>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
+            if (name.equals("com.android.internal.view.menu.IconMenuItemView", ignoreCase = true) || name.equals("com.android.internal.view.menu.ActionMenuItemView", ignoreCase = true) || name.equals("android.support.v7.view.menu.ActionMenuItemView", ignoreCase = true)) {
+                try {
+                    val f = layoutInflater
+                    val view = f.createView(name, null, attrs)
+                    if (view is TextView) {
+                        view.setTextColor(resources.getColor(R.color.mainColor))
+                        view.isAllCaps = false
+                    }
+                    return@LayoutInflaterFactory view
+                } catch (e: InflateException) {
+                    e.printStackTrace()
+                } catch (e: ClassNotFoundException) {
+                    e.printStackTrace()
+                }
+
+            }
+            null
+        })
         super.onCreate(savedInstanceState)
     }
 
