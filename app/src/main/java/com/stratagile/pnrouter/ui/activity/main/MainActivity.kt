@@ -69,6 +69,7 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.ActiveTogglePopWindow
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -92,7 +93,7 @@ import kotlin.collections.ArrayList
 /**
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
-class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener {
+class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
     override fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushLogoutRsp(0, userId!!, "")
@@ -1111,6 +1112,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         setToNews()
         ivQrCode.setOnClickListener {
+//            val morePopWindow = ActiveTogglePopWindow(this)
+//            morePopWindow.setOnItemClickListener(this@MainActivity)
+//            morePopWindow.showPopupWindow(ivQrCode)
             mPresenter.getScanPermission()
         }
         llSort.setOnClickListener {
@@ -1432,6 +1436,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             } else {
                 unread_count.visibility = View.VISIBLE
                 unread_count.text = hasUnReadMsgCount.toString()
+            }
+        }
+    }
+
+
+    override fun onItemClick(id: Int) {
+        when (id) {
+//            R.id.rl_detail -> startActivity(Intent(this, FreeConnectActivity::class.java))
+//            R.id.rl_rank -> startActivity(Intent(this, RankActivity::class.java))
+            else -> {
             }
         }
     }

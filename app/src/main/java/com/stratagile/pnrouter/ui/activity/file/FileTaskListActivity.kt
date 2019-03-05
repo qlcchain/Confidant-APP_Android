@@ -285,7 +285,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(fileGoingTaskLisytAdapter.data.size == 1 && fileCompleteTaskLisytAdapter.data.size == 1)
         {
-            return true
+            return super.onOptionsItemSelected(item)
         }
         if (item.itemId == R.id.optaskList)
         {
