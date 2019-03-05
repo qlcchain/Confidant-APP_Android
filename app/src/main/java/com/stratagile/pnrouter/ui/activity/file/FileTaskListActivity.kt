@@ -65,17 +65,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 if (file.exists()) {
 
                     when (localMedia!!.pictureType) {
-                        "image/jpeg" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
-                            if(result  == 1)
-                            {
-                                runOnUiThread {
-                                    toast(getString(R.string.Start_uploading))
-                                }
-                            }
-                        }
-                        "image/png" -> {
-                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                        "image/jpeg,image/png" -> {
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,localMedia!!.msgId, false)
                             if(result  == 1)
                             {
                                 runOnUiThread {
@@ -333,7 +324,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             {
                 if (file.exists()) {
                     if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path, false)
+                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
                         if(result  == 1)
                         {
                             runOnUiThread {

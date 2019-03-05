@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 public class LocalMedia implements Parcelable {
     private String path;
+    private String msgId;
     private String compressPath;
     private String cutPath;
     private long duration;
@@ -32,13 +33,6 @@ public class LocalMedia implements Parcelable {
 
     }
 
-    public LocalMedia(String path, long duration, int mimeType, String pictureType) {
-        this.path = path;
-        this.duration = duration;
-        this.mimeType = mimeType;
-        this.pictureType = pictureType;
-    }
-
     public LocalMedia(String path, long duration, int mimeType, String pictureType, int width, int height) {
         this.path = path;
         this.duration = duration;
@@ -46,16 +40,6 @@ public class LocalMedia implements Parcelable {
         this.pictureType = pictureType;
         this.width = width;
         this.height = height;
-    }
-
-    public LocalMedia(String path, long duration,
-                      boolean isChecked, int position, int num, int mimeType) {
-        this.path = path;
-        this.duration = duration;
-        this.isChecked = isChecked;
-        this.position = position;
-        this.num = num;
-        this.mimeType = mimeType;
     }
 
     public String getPictureType() {
@@ -75,6 +59,14 @@ public class LocalMedia implements Parcelable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
     }
 
     public String getCompressPath() {

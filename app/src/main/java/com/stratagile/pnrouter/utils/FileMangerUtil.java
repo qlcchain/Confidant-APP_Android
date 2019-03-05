@@ -713,7 +713,7 @@ public class FileMangerUtil {
 
     }
 
-    public static int sendImageFile(String imagePath,boolean isCompress) {
+    public static int sendImageFile(String imagePath,String msgId,boolean isCompress) {
         if(sendFilePathMap.containsValue(imagePath))
         {
             return 0;

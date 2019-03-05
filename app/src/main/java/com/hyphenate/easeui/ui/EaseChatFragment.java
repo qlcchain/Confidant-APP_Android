@@ -2620,7 +2620,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 sendMessageTo(message);
             }
         } catch (Exception e) {
-
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
     }
@@ -2636,7 +2641,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 try {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
-                    if (isHas) {
+                    if (isHas)
+                    {
                         String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
@@ -2788,7 +2794,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
 
                 } catch (Exception e) {
-
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
@@ -3085,7 +3096,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
-
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
@@ -3257,7 +3273,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
 
                 } catch (Exception e) {
-
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
