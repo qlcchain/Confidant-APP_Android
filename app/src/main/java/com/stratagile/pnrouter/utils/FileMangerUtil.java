@@ -474,7 +474,7 @@ public class FileMangerUtil {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName,toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
 
             if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
@@ -505,7 +505,7 @@ public class FileMangerUtil {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, false, false,position,filesize,0,false,0));
         }
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
@@ -544,7 +544,7 @@ public class FileMangerUtil {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName,fileSize, true, true, false,1,1,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,fileSize, true, true, false,1,1,0,false,0));
         }
     }
     public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
@@ -576,7 +576,7 @@ public class FileMangerUtil {
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
             myRouter.setUpLoadFile(uploadFile);
             LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName,filesize, true, false, false,position,filesize,0,false,0));
+            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,filesize, true, false, false,position,filesize,0,false,0));
         }
     }
     public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
@@ -714,7 +714,7 @@ public class FileMangerUtil {
                 }else{
                     LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
                 }
-                EventBus.getDefault().post(new FileStatus(fileName,1));
+                EventBus.getDefault().post(new FileStatus(fileName+"__"+uuidTox,1));
             }
         }catch (Exception e)
         {
@@ -817,7 +817,7 @@ public class FileMangerUtil {
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                                EventBus.getDefault().post(new FileStatus(fileName+"__"+uuidTox,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
@@ -882,7 +882,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,1));
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
-                            EventBus.getDefault().post(new FileStatus(fileName,1));
+                            EventBus.getDefault().post(new FileStatus(fileName+"__"+uuidTox,1));
                         }
 
                     }
@@ -994,7 +994,7 @@ public class FileMangerUtil {
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus(videoFileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                                EventBus.getDefault().post(new FileStatus(videoFileName+"__"+uuidTox,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
@@ -1057,7 +1057,7 @@ public class FileMangerUtil {
 
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
-                            EventBus.getDefault().post(new FileStatus(videoFileName,1));
+                            EventBus.getDefault().post(new FileStatus(videoFileName+"__"+uuidTox,1));
                         }
 
                     }
@@ -1166,7 +1166,7 @@ public class FileMangerUtil {
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                 myRouter.setUpLoadFile(uploadFile);
                                 LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                                EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                                EventBus.getDefault().post(new FileStatus(fileName+"__"+uuidTox,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
@@ -1230,7 +1230,7 @@ public class FileMangerUtil {
 
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
-                            EventBus.getDefault().post(new FileStatus(fileName,1));
+                            EventBus.getDefault().post(new FileStatus(fileName+"__"+uuidTox,1));
                         }
 
                     }
