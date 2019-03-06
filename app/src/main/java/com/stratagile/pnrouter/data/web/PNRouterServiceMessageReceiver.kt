@@ -376,7 +376,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //77.	文件重命名
                 "FileRename" -> {
                     val JFileRenameRsp = gson.fromJson(text, JFileRenameRsp::class.java)
-                    fileRenameBack?.fileRenameReq(JFileRenameRsp)
+                    fileMainManageBack?.fileRenameReq(JFileRenameRsp)
                 }
                 //78.	文件转发
                 "FileForward" -> {
@@ -433,7 +433,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var getDiskDetailInfoBack : GetDiskDetailInfoBack? = null
 
     var formatDiskBack: FormatDiskBack? = null
-    var fileRenameBack: FileRenameBack? = null
+
     var fileForwardBack: FileForwardBack? = null
 
     /**
@@ -657,6 +657,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
         fun deleFileRsp(jDelFileRsp :JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+        fun fileRenameReq(jFileRenameRsp: JFileRenameRsp)
     }
     interface GetDiskTotalInfoBack {
         fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
@@ -668,9 +669,6 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface FormatDiskBack {
         fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
-    }
-    interface FileRenameBack {
-        fun fileRenameReq(jFileRenameRsp: JFileRenameRsp)
     }
     interface FileForwardBack {
         fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)

@@ -15,6 +15,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
@@ -38,7 +39,10 @@ import javax.inject.Inject
  * @date 2019/03/06 15:41:57
  */
 
-class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContract.View {
+class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContract.View, PNRouterServiceMessageReceiver.FileForwardBack {
+    override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
+
+    }
 
     @Inject
     internal lateinit var mPresenter: selectFriendSendFilePresenter
@@ -67,8 +71,6 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         statusBar.setLayoutParams(llp)
     }
     override fun initData() {
-        EventBus.getDefault().unregister(this)
-        EventBus.getDefault().register(this)
         fragment = ContactFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")

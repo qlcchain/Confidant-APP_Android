@@ -79,7 +79,7 @@
                     android:layout_height="match_parent"
                     android:textColor="@color/black"
                     android:layout_weight="1"
-                    android:text="@string/button_confirm"
+                    android:text="@string/Confirm"
                     />
             </LinearLayout>
         </LinearLayout>

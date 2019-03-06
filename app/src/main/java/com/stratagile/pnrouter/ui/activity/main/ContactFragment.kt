@@ -239,7 +239,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         if(arguments != null && arguments!!.get("fromId") != null)
         {
             fromId = arguments!!.get("fromId") as String
-            message = arguments!!.get("message") as EMMessage
+            //message = arguments!!.get("message") as EMMessage
         }
 
         var view = inflater.inflate(R.layout.fragment_contact, null);

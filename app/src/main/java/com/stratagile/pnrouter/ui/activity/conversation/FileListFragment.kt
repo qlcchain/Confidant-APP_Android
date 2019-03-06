@@ -2,24 +2,17 @@ package com.stratagile.pnrouter.ui.activity.conversation
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.TranslateAnimation
 import android.widget.Button
 import android.widget.EditText
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.chad.library.adapter.base.BaseQuickAdapter
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
@@ -29,8 +22,6 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.RecentFile
-import com.stratagile.pnrouter.db.RecentFileDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.PullFileList
@@ -42,13 +33,9 @@ import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileListPresen
 import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendSendFileActivity
-import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
-import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CommonDialog
-import com.stratagile.pnrouter.view.CustomPopWindow
-import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
@@ -68,9 +55,32 @@ import javax.inject.Inject
  */
 
 class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMessageReceiver.FileMainManageBack {
+    override fun fileRenameReq(jFileRenameRsp: JFileRenameRsp) {
+        when(jFileRenameRsp.params.retCode)
+        {
+            0 ->{
+                runOnUiThread {
+                    toast(R.string.success)
+                }
+                waitRenameData!!.fileName = reName
+                fileListChooseAdapter!!.notifyItemChanged(index)
+                fileListChooseAdapter!!.data.forEachIndexed { index, it ->
+
+                }
+            }
+            else ->{
+                runOnUiThread {
+                    toast(R.string.fail)
+                }
+            }
+        }
+
+    }
 
     var waitDeleteData: JPullFileListRsp.ParamsBean.PayloadBean? = null
-
+    var index = 0;
+    var reName = ""
+    var waitRenameData:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
 
@@ -225,14 +235,20 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.fileOpreate -> {
+                    index = position
                     PopWindowUtil.showFileOpreatePopWindow(activity!!, recyclerView, fileListChooseAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
                             var data = obj as JPullFileListRsp.ParamsBean.PayloadBean
                             when (position) {
                                 0 -> {
+                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    var fileOrginName = String(Base58.decode(fileMiName))
+                                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                     var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
-
+                                    intent.putExtra("fromId", selfUserId);
+                                    intent.putExtra("msgId",data.msgId);
+                                    intent.putExtra("fileName",fileOrginName);
                                     startActivity(intent);
                                 }
                                 1 -> {
@@ -296,6 +312,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     startActivity(Intent(activity!!, FileDetailInformationActivity::class.java).putExtra("file", data))
                                 }
                                 3 -> {
+                                    waitRenameData = data
+
                                     showRenameDialog(data)
                                 }
                                 4 -> {
@@ -460,12 +478,42 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         var formatDialog = CommonDialog(activity)
         formatDialog?.setView(view)
         formatDialog?.show()
-        etContent.setText(String(Base58.decode(data.fileName.substring(data.fileName.lastIndexOf("/") + 1))))
+        var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+        var nameAndType = String(Base58.decode(fileMiName))
+        var name = nameAndType.substring(0,nameAndType.lastIndexOf("."))
+        var type =  nameAndType.substring(nameAndType.lastIndexOf("."),nameAndType.length)
+        etContent.setText(name)
         etContent.setSelection(etContent.text.length)
         btnLeft.setOnClickListener {
             formatDialog.dismissWithAnimation()
         }
         btnRight.setOnClickListener {
+            formatDialog.dismissWithAnimation()
+            var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+            var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+            var rename = Base58.encode((etContent.text.toString()+type).toByteArray())
+            var fileRenameReq = FileRenameReq(selfUserId!!, data.msgId, fileMiName, rename )
+            if(fileMiName.equals(rename))
+            {
+                toast(R.string.Name_not_changed)
+                return@setOnClickListener
+            }
+            reName = rename
+            var sendData = BaseData(4, fileRenameReq)
+            if (ConstantValue.isWebsocketConnected) {
+                Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            } else if (ConstantValue.isToxConnected) {
+                Log.i("pullFriendList", "tox")
+                var baseData = sendData
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
             KLog.i(etContent.text.toString())
         }
     }

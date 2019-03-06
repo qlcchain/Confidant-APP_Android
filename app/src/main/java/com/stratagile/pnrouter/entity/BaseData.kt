@@ -432,7 +432,7 @@ data class PushLogoutRsp(var RetCode :Int, var ToId : String, var Msg : String,v
  * 77.	文件重命名
  * (2)	响应（APP->Router）
  */
-data class FileRenameReq(var UserId :Int, var MsgId : String, var Filename : String, var Rename : String,var Action : String = "FileRename")
+data class FileRenameReq(var UserId :String, var MsgId : Int, var Filename : String, var Rename : String,var Action : String = "FileRename")
 /**
  * 78.	文件转发
  * (2)	响应（APP->Router）
