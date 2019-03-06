@@ -42,6 +42,45 @@ import javax.inject.Inject
 class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContract.View, PNRouterServiceMessageReceiver.FileForwardBack {
     override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
 
+        when(jFileForwardRsp.params.retCode)
+        {
+            0->
+            {
+                runOnUiThread {
+                    toast(R.string.hasbeensent)
+                    super.onBackPressed()
+                }
+            }
+            1->
+            {
+                runOnUiThread {
+                    toast(R.string.User_ID_error)
+                    super.onBackPressed()
+                }
+            }
+            2->
+            {
+                runOnUiThread {
+                    toast(R.string.file_error)
+                    super.onBackPressed()
+                }
+            }
+            3->
+            {
+                runOnUiThread {
+                    toast(R.string.Goals_are_not_achievable)
+                    super.onBackPressed()
+                }
+            }
+            4->
+            {
+                runOnUiThread {
+                    toast(R.string.Other_mistakes)
+                    super.onBackPressed()
+                }
+            }
+
+        }
     }
 
     @Inject
@@ -111,9 +150,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         } else {
             for (i in contactSelectedList) {
                 var fileKey =  RxEncryptTool.generateAESKey()
-                var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                var friend = RxEncodeTool.base64Decode(i.signPublicKey)
-                var FileKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                var FileKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, i.miPublicKey));
                 var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!, strBase58, RxEncodeTool.base64Encode2String(FileKey))
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,fileForwardReq))
@@ -128,8 +165,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                     }
                 }
             }
-            toast(R.string.hasbeensent)
-            super.onBackPressed()
+
         }
     }
     override fun setupActivityComponent() {

@@ -64,9 +64,6 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 }
                 waitRenameData!!.fileName = reName
                 fileListChooseAdapter!!.notifyItemChanged(index)
-                fileListChooseAdapter!!.data.forEachIndexed { index, it ->
-
-                }
             }
             else ->{
                 runOnUiThread {
