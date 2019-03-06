@@ -20,6 +20,7 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
     var isChooseMode = false
     override fun convert(helper: BaseViewHolder, item: JPullFileListRsp.ParamsBean.PayloadBean) {
         helper.addOnClickListener(R.id.fileOpreate)
+        helper.addOnClickListener(R.id.sendFriend)
         helper.addOnClickListener(R.id.ivDownload)
 //        var checkBox = helper.getView<SmoothCheckBox>(R.id.checkBox)
         helper.setText(R.id.tvFileTime, TimeUtil.getFileListTime(item.timestamp.toLong()))
