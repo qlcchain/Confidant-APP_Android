@@ -4,22 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/x31"
-    android:layout_marginTop="@dimen/x17"
-    android:paddingRight="@dimen/x31"
+    android:paddingLeft="@dimen/x24"
+    android:layout_marginTop="@dimen/x19"
+    android:paddingRight="@dimen/x24"
     android:layout_height="wrap_content"
     android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center_vertical"
+        android:paddingLeft="@dimen/x8"
+        android:paddingRight="@dimen/x8"
         android:orientation="horizontal"
-        android:layout_height="@dimen/x77">
+        android:layout_height="@dimen/x98">
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/userAvatar"
-            android:layout_width="@dimen/x38"
-            app:imageButtonTextSize="10"
-            android:layout_height="@dimen/x38">
+            android:layout_width="@dimen/x48"
+            app:imageButtonTextSize="11"
+            android:layout_height="@dimen/x48">
 
         </com.stratagile.pnrouter.view.ImageButtonWithText>
 
@@ -28,8 +30,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="left"
+            android:maxEms="8"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:text="tom"
-            android:textSize="11sp"
+            android:textSize="13sp"
             android:textColor="@color/color_2B2B2B"
             android:layout_marginLeft="@dimen/x10" />
 
@@ -37,15 +42,12 @@
             android:id="@+id/fileForm"
             android:layout_width="@dimen/x23"
             android:layout_marginLeft="@dimen/x10"
-            app:layout_constraintBottom_toBottomOf="@+id/tvFileTime"
-            app:layout_constraintLeft_toRightOf="@+id/tvFileTime"
-            app:layout_constraintTop_toTopOf="@+id/tvFileTime"
             android:layout_height="@dimen/x23" />
         <TextView
             android:id="@+id/tvOpreateType"
             android:layout_width="0px"
             android:layout_marginLeft="@dimen/x10"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
 
@@ -53,11 +55,9 @@
             android:id="@+id/tvFileTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="@+id/checkBox"
-            app:layout_constraintTop_toTopOf="parent"
             android:text="2018/11/07 13:00"
-            android:textSize="9sp"
-            android:layout_marginLeft="@dimen/x31" />
+            android:textSize="10sp"
+            android:layout_marginLeft="@dimen/x10" />
 
     </LinearLayout>
 
@@ -66,7 +66,7 @@
         android:orientation="horizontal"
         android:background="@drawable/file_list_bg"
         android:gravity="center_vertical"
-        android:layout_height="@dimen/x106">
+        android:layout_height="@dimen/x112">
         <ImageView
             android:id="@+id/ivAvatar"
             android:layout_width="@dimen/x42"
@@ -90,13 +90,14 @@
                 android:singleLine="true"
                 android:text="Google project development.zip"
                 android:textColor="@color/color_2B2B2B"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tvFileSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x31"
+                android:textSize="12sp"
                 android:textColor="@color/color_808080"
                 android:text="244k"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +109,7 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_height="@dimen/x94">
+        android:layout_height="@dimen/x98">
         <ImageView
             android:id="@+id/ivDownload"
             android:layout_width="0px"

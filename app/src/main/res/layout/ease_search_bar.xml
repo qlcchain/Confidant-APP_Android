@@ -3,13 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="7dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:paddingBottom="7dp"
     android:background="@color/white">
 
     <EditText
       	android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        android:paddingLeft="5dp"
+        android:paddingLeft="@dimen/x18"
+        android:paddingRight="@dimen/x18"
         android:id="@+id/query"
         android:inputType="textEmailAddress"
         android:layout_width="match_parent"
@@ -17,7 +20,7 @@
         android:layout_centerVertical="true"
         android:background="@drawable/search_background"
         android:drawableLeft="@mipmap/icon_search"
-        android:drawablePadding="@dimen/x17"
+        android:drawablePadding="@dimen/x16"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:textColorHint="#8C8C8C"

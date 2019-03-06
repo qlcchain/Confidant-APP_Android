@@ -42,6 +42,7 @@ import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -970,7 +971,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        if (!BuildConfig.DEBUG) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
         try {
