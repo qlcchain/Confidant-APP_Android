@@ -338,7 +338,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         }
                     })
                 }
-                R.id.ivDownload -> {
+                R.id.ivDownload ->
+                {
                     var data = fileListChooseAdapter!!.data[position]
                     FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
@@ -395,6 +396,10 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         }
 
                     }
+
+                }
+                R.id.sendFriend ->
+                {
 
                 }
             }

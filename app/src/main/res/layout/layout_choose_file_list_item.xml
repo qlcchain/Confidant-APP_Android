@@ -117,6 +117,7 @@
             android:scaleType="center"
             android:layout_height="@dimen/x80" />
         <ImageView
+            android:id="@+id/sendFriend"
             android:layout_width="0px"
             android:layout_weight="1"
             android:src="@mipmap/forward_2"

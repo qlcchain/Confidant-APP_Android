@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.PullFileList
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendSendFileComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendSendFileContract
@@ -115,6 +116,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         bundle.putString(ConstantValue.selectFriend, "select")
         bundle.putString("fromId", fromId)
         bundle.putParcelable("message",message)
+        AppConfig.instance.messageReceiver?.fileForwardBack = this
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
@@ -194,5 +196,9 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             super.onBackPressed()
             overridePendingTransition(0, R.anim.activity_translate_out_1)
         }
+    }
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.fileForwardBack = null
+        super.onDestroy()
     }
 }
