@@ -373,6 +373,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         }
                     }
                 }
+                //77.	文件重命名
+                "FileRename" -> {
+                    val JFileRenameRsp = gson.fromJson(text, JFileRenameRsp::class.java)
+                    fileMainManageBack?.fileRenameReq(JFileRenameRsp)
+                }
+                //78.	文件转发
+                "FileForward" -> {
+                    val JFileForwardRsp = gson.fromJson(text, JFileForwardRsp::class.java)
+                    fileForwardBack?.fileForwardReq(JFileForwardRsp)
+                }
             }
         }
 
@@ -423,6 +433,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var getDiskDetailInfoBack : GetDiskDetailInfoBack? = null
 
     var formatDiskBack: FormatDiskBack? = null
+
+    var fileForwardBack: FileForwardBack? = null
+
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -644,6 +657,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
         fun deleFileRsp(jDelFileRsp :JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+        fun fileRenameReq(jFileRenameRsp: JFileRenameRsp)
     }
     interface GetDiskTotalInfoBack {
         fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
@@ -655,6 +669,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface FormatDiskBack {
         fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
+    }
+    interface FileForwardBack {
+        fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
     }
 }
 

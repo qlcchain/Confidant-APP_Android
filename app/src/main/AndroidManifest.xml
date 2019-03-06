@@ -198,6 +198,9 @@
         <activity
             android:name=".ui.activity.selectfriend.selectFriendActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.selectfriend.selectFriendSendFileActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.activity.router.RouterManagementActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.router.RouterQRCodeActivity"

@@ -13,6 +13,7 @@
     <string name="Username">Username</string>
     <string name="Please_type_your_username_here">Please type your username here</string>
     <string name="Cancel">Cancel</string>
+    <string name="Confirm">Confirm</string>
     <string name="fingerprint_success">Fingerprint recognized.</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again.</string>
     <string name="choose_finger_dialog_title">Use the fingerprint continue</string>
@@ -54,6 +55,8 @@
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
     <string name="success">success</string>
+    <string name="Name_not_changed">Name not changed</string>
+
     <string name="fail">fail</string>
     <string name="Alreadyagoodfriend">Already a good friend</string>
 
@@ -489,6 +492,13 @@
     <string name="notFreinds">The other person is not your good friend.</string>
     <string name="noSelected">Please choose your friends</string>
     <string name="hasbeensent">has been sent</string>
+    <string name="User_ID_error">User ID error</string>
+
+    <string name="file_error">file error</string>
+    <string name="Other_mistakes">Other mistakes</string>
+
+    <string name="Goals_are_not_achievable">Goals are not achievable</string>
+
     <string name="Addnickname">nickname</string>
     <string name="Inputnickname">Input nickname</string>
     <string name="Permissionerror">Permission error</string>
