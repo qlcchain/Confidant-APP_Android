@@ -10,6 +10,7 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.MyFile;
+import com.stratagile.pnrouter.entity.events.AllFileStatus;
 import com.stratagile.pnrouter.entity.events.FileStatus;
 import com.stratagile.pnrouter.entity.file.UpLoadFile;
 
@@ -136,6 +137,8 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				msg.setData(data);
 				if(isCancelled())
 				{
+					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
+					EventBus.getDefault().post(new AllFileStatus());
 					msg.what = 0x404;
 					downFilePathTaskMap.remove(msgID+"");
 					handler.sendMessage(msg);
@@ -172,6 +175,8 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				}
 				else
 				{
+					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
+					EventBus.getDefault().post(new AllFileStatus());
 					downFilePathTaskMap.remove(msgID+"");
 					msg.what = 0x404;
 				}
