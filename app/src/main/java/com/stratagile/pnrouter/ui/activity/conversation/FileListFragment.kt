@@ -455,6 +455,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 }
             }
         })
+        var view = layoutInflater.inflate(R.layout.layout_filelist_empty, null, false)
+        fileListChooseAdapter!!.emptyView = view
     }
 
     var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
