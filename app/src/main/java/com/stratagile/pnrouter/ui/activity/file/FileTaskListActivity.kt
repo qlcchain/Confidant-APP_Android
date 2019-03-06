@@ -473,7 +473,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         {
                                             status = 1
                                         }
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId,false)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId,it.t.isCheck)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
