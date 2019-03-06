@@ -258,6 +258,18 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     var file = File(filePath)
                                     if(file.exists())
                                     {
+                                        val fileMD5 = FileUtil.getFileMD5(file)
+                                        if(fileMD5.equals(data.fileMD5))
+                                        {
+                                            runOnUiThread {
+                                                toast(R.string.no_download_is_required)
+                                            }
+                                            return
+                                        }
+
+                                    }
+                                    if(file.exists())
+                                    {
                                         DeleteUtils.deleteFile(filePath)
                                     }
                                     var fileMi = File(fileMiPath)
@@ -350,8 +362,13 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     var file = File(filePath)
                     if(file.exists())
                     {
-                        startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", data!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
-                        return@setOnItemChildClickListener
+                        val fileMD5 = FileUtil.getFileMD5(file)
+                        if(fileMD5.equals(data.fileMD5))
+                        {
+                            startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", data!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
+                            return@setOnItemChildClickListener
+                        }
+
                     }
                     var fileMi = File(fileMiPath)
                     if(fileMi.exists())
