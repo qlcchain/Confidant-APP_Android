@@ -153,7 +153,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         }else {
             runOnUiThread {
                 var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
-                if(fileStatus.fileKey.equals(fileMiName))
+                if(fileStatus.fileKey.contains(payLoad!!.msgId.toString()))
                 {
                     progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
                     if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
@@ -196,9 +196,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
         var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
         if (ConstantValue.isWebsocketConnected) {
-            var msgId = (System.currentTimeMillis() / 1000).toInt()
-            receiveFileDataMap.put(msgId.toString(), payLoad!!)
-            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
+            receiveFileDataMap.put(payLoad!!.msgId.toString(), payLoad!!)
+            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, payLoad!!.msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
         } else {
             //receiveToxFileDataMap.put(fileOrginName,data)
             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.userKey)
@@ -208,9 +207,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             myRouter.userSn = ConstantValue.currentRouterSN
             myRouter.upLoadFile = uploadFile
             LocalFileUtils.insertLocalAssets(myRouter)
-            var msgId = (System.currentTimeMillis() / 1000).toInt()
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, msgId, payLoad!!.fileFrom, 2)
+            var msgData = PullFileReq(selfUserId!!, selfUserId!!, fileMiName, payLoad!!.msgId, payLoad!!.fileFrom, 2)
             var baseData = BaseData(msgData)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {

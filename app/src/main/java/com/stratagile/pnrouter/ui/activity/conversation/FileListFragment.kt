@@ -33,6 +33,7 @@ import com.stratagile.pnrouter.ui.activity.conversation.module.FileListModule
 import com.stratagile.pnrouter.ui.activity.conversation.presenter.FileListPresenter
 import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
+import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendSendFileActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
 import com.stratagile.pnrouter.utils.*
@@ -218,7 +219,9 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             var data = obj as JPullFileListRsp.ParamsBean.PayloadBean
                             when (position) {
                                 0 -> {
+                                    var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
 
+                                    startActivity(intent);
                                 }
                                 1 -> {
                                     FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")

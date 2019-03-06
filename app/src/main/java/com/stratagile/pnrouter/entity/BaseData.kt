@@ -428,3 +428,15 @@ data class OnlineStatusPushRsp(var RetCode :Int, var Msg : String, var ToId : St
  */
 data class PushLogoutRsp(var RetCode :Int, var ToId : String, var Msg : String,var Action : String = "PushLogout")
 
+/**
+ * 77.	文件重命名
+ * (2)	响应（APP->Router）
+ */
+data class FileRenameReq(var UserId :Int, var MsgId : String, var Filename : String, var Rename : String,var Action : String = "FileRename")
+/**
+ * 78.	文件转发
+ * (2)	响应（APP->Router）
+ */
+data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FileName : String, var FileKey : String,var Action : String = "FileForward")
+
+
