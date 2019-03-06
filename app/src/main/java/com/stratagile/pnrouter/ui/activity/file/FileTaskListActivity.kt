@@ -163,31 +163,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         if(fileGoingTaskLisytAdapter.data!= null && fileGoingTaskLisytAdapter.data.size >0)
         {
             var index = 0;
-          /*  var iterator =  fileGoingTaskLisytAdapter.data.listIterator()
-            while (iterator.hasNext())
-            {
-                var localMedia = iterator.next().t
-                if(localMedia != null)
-                {
-                    var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
-                    if(checkBox!= null && checkBox.isChecked)
-                    {
-                        fileGoingTaskLisytAdapter.remove(index)
 
-                        if(!localMedia.isDownLoad && !localMedia.isComplete)
-                        {
-                            FileMangerUtil.cancelSend(localMedia.msgId)
-                        }
-                        if(localMedia.isDownLoad && !localMedia.isComplete)
-                        {
-                            FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
-                        }
-                        LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
-                    }
-                }
-
-                index ++;
-            }*/
              fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
                  it.takeUnless { it.isHeader }?.let {
                      var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
@@ -224,22 +200,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         if(fileCompleteTaskLisytAdapter.data!= null && fileCompleteTaskLisytAdapter.data.size >0)
         {
             var index = 0;
-            /* var iterator =  fileCompleteTaskLisytAdapter.data.listIterator()
-             while (iterator.hasNext())
-             {
-                 var localMedia = iterator.next().t
-                 if(localMedia != null)
-                 {
-                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
-                     if(checkBox!= null && checkBox.isChecked)
-                     {
-                         deleteStr += index.toString() +","
-                         //fileCompleteTaskLisytAdapter.remove(index)
-                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
-                     }
-                 }
-                 index ++;
-             }*/
             fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
                 it.takeUnless { it.isHeader }?.let {
                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
@@ -277,6 +237,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     //fileGoingTaskLisytAdapter.notifyItemChanged(index)
                 }
             }
+            if(fileGoingTaskLisytAdapter.data.size == 1)
+            {
+                fileGoingTaskLisytAdapter.remove(0)
+            }
             fileGoingTaskLisytAdapter.notifyDataSetChanged()
         }
         if(fileCompleteTaskLisytAdapter.data!= null && fileCompleteTaskLisytAdapter.data.size >0)
@@ -288,6 +252,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     it.t.status = 0
                     //fileCompleteTaskLisytAdapter.notifyItemChanged(index)
                 }
+            }
+            if(fileCompleteTaskLisytAdapter.data.size == 1)
+            {
+                fileCompleteTaskLisytAdapter.remove(0)
             }
             fileCompleteTaskLisytAdapter.notifyDataSetChanged()
         }

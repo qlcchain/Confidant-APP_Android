@@ -51,7 +51,7 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         helper.addOnClickListener(R.id.status)
         if (item.t.isComplete) {
             helper.setGone(R.id.progressBar, false)
-            helper.setGone(R.id.status, false)
+            helper.setVisible(R.id.status, false)
             helper.setGone(R.id.speed, false)
             if (item.t.isDownLoad) {
                 helper.setText(R.id.filesize,"Download to: Local")
@@ -63,9 +63,9 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         } else {
 
             if (item.t.isStop) {
-                helper.setGone(R.id.status, true)
+                helper.setVisible(R.id.status, true)
             } else {
-                helper.setGone(R.id.status, false)
+                helper.setVisible(R.id.status, false)
             }
             helper.setGone(R.id.progressBar, true)
             helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))
@@ -88,11 +88,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 {
                     helper.setGone(R.id.status, false)
                 }else{
-                    helper.setGone(R.id.status, true)
+                    helper.setVisible(R.id.status, true)
                 }
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
             } else {
-                helper.setGone(R.id.status, false)
+                helper.setVisible(R.id.status, false)
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
