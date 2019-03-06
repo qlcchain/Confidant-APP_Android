@@ -400,7 +400,15 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 }
                 R.id.sendFriend ->
                 {
-
+                    var data = fileListChooseAdapter!!.data[position]
+                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    var fileOrginName = String(Base58.decode(fileMiName))
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
+                    intent.putExtra("fromId", selfUserId);
+                    intent.putExtra("msgId",data.msgId);
+                    intent.putExtra("fileName",fileOrginName);
+                    startActivity(intent);
                 }
             }
         }

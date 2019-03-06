@@ -152,8 +152,8 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         } else {
             for (i in contactSelectedList) {
                 var fileKey =  RxEncryptTool.generateAESKey()
-                var FileKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(fileKey, i.miPublicKey));
-                var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!, strBase58, RxEncodeTool.base64Encode2String(FileKey))
+                var FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(fileKey, i.miPublicKey));
+                var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!, strBase58, FileKey)
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,fileForwardReq))
                 } else if (ConstantValue.isToxConnected) {
