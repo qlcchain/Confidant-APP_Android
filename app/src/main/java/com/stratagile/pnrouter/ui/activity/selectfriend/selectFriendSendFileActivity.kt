@@ -9,7 +9,6 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.chat.*
 import com.message.Message
-import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -48,35 +47,35 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             0->
             {
                 runOnUiThread {
-                    toast(R.string.hasbeensent)
+                    //toast(R.string.hasbeensent)
                     super.onBackPressed()
                 }
             }
             1->
             {
                 runOnUiThread {
-                    toast(R.string.User_ID_error)
+                    //toast(R.string.User_ID_error)
                     super.onBackPressed()
                 }
             }
             2->
             {
                 runOnUiThread {
-                    toast(R.string.file_error)
+                    //toast(R.string.file_error)
                     super.onBackPressed()
                 }
             }
             3->
             {
                 runOnUiThread {
-                    toast(R.string.Goals_are_not_achievable)
+                    //toast(R.string.Goals_are_not_achievable)
                     super.onBackPressed()
                 }
             }
             4->
             {
                 runOnUiThread {
-                    toast(R.string.Other_mistakes)
+                    //toast(R.string.Other_mistakes)
                     super.onBackPressed()
                 }
             }
@@ -148,7 +147,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         val strBase58 = Base58.encode(fileName!!.toByteArray())
         var contactSelectedList: ArrayList<UserEntity> = fragment!!.getAllSelectedFriend()
         if (contactSelectedList.size == 0) {
-            toast(R.string.noSelected)
+            //toast(R.string.noSelected)
         } else {
             for (i in contactSelectedList) {
                 var fileKey =  RxEncryptTool.generateAESKey()
