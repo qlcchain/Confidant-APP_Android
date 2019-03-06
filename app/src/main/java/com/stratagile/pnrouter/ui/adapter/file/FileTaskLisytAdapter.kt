@@ -22,8 +22,10 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         if(item.t.status != 0)
         {
             helper.setGone(R.id.checkBox, true)
+            helper.setChecked(R.id.checkBox,item.t.isCheck)
         }else{
             helper.setGone(R.id.checkBox, false)
+            helper.setChecked(R.id.checkBox,false)
         }
         if(!item.t.isDownLoad)
         {

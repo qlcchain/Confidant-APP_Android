@@ -158,15 +158,21 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     }
 
     fun onDeleteClick() {
+        var deleteStr = ""
         if(fileGoingTaskLisytAdapter.data!= null && fileGoingTaskLisytAdapter.data.size >0)
         {
-            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
-                it.takeUnless { it.isHeader }?.let {
+            var index = 0;
+          /*  var iterator =  fileGoingTaskLisytAdapter.data.listIterator()
+            while (iterator.hasNext())
+            {
+                var localMedia = iterator.next().t
+                if(localMedia != null)
+                {
                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
-                    if(checkBox.isChecked)
+                    if(checkBox!= null && checkBox.isChecked)
                     {
                         fileGoingTaskLisytAdapter.remove(index)
-                        var localMedia = it!!.t
+
                         if(!localMedia.isDownLoad && !localMedia.isComplete)
                         {
                             FileMangerUtil.cancelSend(localMedia.msgId)
@@ -177,24 +183,84 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         }
                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
                     }
+                }
+
+                index ++;
+            }*/
+             fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                 it.takeUnless { it.isHeader }?.let {
+                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
+                     if(checkBox.isChecked)
+                     {
+                         deleteStr += index.toString() +","
+                         //fileGoingTaskLisytAdapter.remove(index)
+                         var localMedia = it!!.t
+                         if(!localMedia.isDownLoad && !localMedia.isComplete)
+                         {
+                             FileMangerUtil.cancelSend(localMedia.msgId)
+                         }
+                         if(localMedia.isDownLoad && !localMedia.isComplete)
+                         {
+                             FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                         }
+                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                     }
 
 
+                 }
+             }
+            var deleteArray = deleteStr.split(",")
+            var len = deleteArray.size
+            for (i in len -1 downTo 0){
+                var index = deleteArray[i]
+                if(!index.equals(""))
+                {
+                    fileGoingTaskLisytAdapter.remove(index.toInt())
                 }
             }
         }
+        deleteStr = ""
         if(fileCompleteTaskLisytAdapter.data!= null && fileCompleteTaskLisytAdapter.data.size >0)
         {
+            var index = 0;
+            /* var iterator =  fileCompleteTaskLisytAdapter.data.listIterator()
+             while (iterator.hasNext())
+             {
+                 var localMedia = iterator.next().t
+                 if(localMedia != null)
+                 {
+                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
+                     if(checkBox!= null && checkBox.isChecked)
+                     {
+                         deleteStr += index.toString() +","
+                         //fileCompleteTaskLisytAdapter.remove(index)
+                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                     }
+                 }
+                 index ++;
+             }*/
             fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
                 it.takeUnless { it.isHeader }?.let {
                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView2,index,R.id.checkBox) as CheckBox
                     if(checkBox.isChecked)
                     {
-                        fileCompleteTaskLisytAdapter.remove(index)
+                        deleteStr += index.toString() +","
+                        //fileCompleteTaskLisytAdapter.remove(index)
                         var localMedia = it!!.t
                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
                     }
                 }
             }
+            var deleteArray = deleteStr.split(",")
+            var len = deleteArray.size
+            for (i in len -1 downTo 0){
+                var index = deleteArray[i]
+                if(!index.equals(""))
+                {
+                    fileCompleteTaskLisytAdapter.remove(index.toInt())
+                }
+            }
+
         }
 
         mMenu?.getItem(0)?.setVisible(true)
@@ -407,7 +473,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         {
                                             status = 1
                                         }
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId,false)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
@@ -421,7 +487,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
                 for (myFie in localFilesList) {
                     if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.equals(myFie.upLoadFile.fileKey)) {
-                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId)))
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                         KLog.i("新下载")
@@ -441,10 +507,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         for (myFie in localFilesList) {
 
             if (myFie.upLoadFile.isComplete == false) {
-                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId)))
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
             } else {
 
-                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId)))
+                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
@@ -453,14 +519,16 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
-                /*  var status = 0;
-                  if(tvDelete.visibility == View.VISIBLE)
-                  {
-                      status = 1
-                  }
-                  var taskFile =  fileGoingTaskLisytAdapter!!.getItem(position)
-                  taskFile!!.t.status = status
-                  fileGoingTaskLisytAdapter.notifyItemChanged(position)*/
+                var status = 0;
+                var isCheck = checkBox.isChecked
+                if(tvDelete.visibility == View.VISIBLE)
+                {
+                    status = 1
+                }
+                var taskFile =  fileGoingTaskLisytAdapter!!.getItem(position)
+                taskFile!!.t.status = status
+                taskFile!!.t.isCheck = isCheck
+                fileGoingTaskLisytAdapter.notifyItemChanged(position)
             }
 
         }
@@ -539,7 +607,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     receiveFileDataMap.put(msgId.toString(),localMedia)
                     Thread(Runnable() {
                         run() {
-                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId)
+                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -552,7 +620,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 } else {
                     var msgId =  (System.currentTimeMillis() / 1000).toInt()
                     ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
-                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId)
+                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                     val myRouter = MyFile()
                     myRouter.type = 0
                     myRouter.userSn = ConstantValue.currentRouterSN
@@ -586,14 +654,16 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(checkBox.visibility ==View.VISIBLE)
             {
                 checkBox.setChecked(!checkBox.isChecked)
-                /*var status = 0;
+                var status = 0;
+                var isCheck = checkBox.isChecked
                 if(tvDelete.visibility == View.VISIBLE)
                 {
                     status = 1
                 }
                 var taskFile =  fileCompleteTaskLisytAdapter!!.getItem(position)
                 taskFile!!.t.status = status
-                fileCompleteTaskLisytAdapter.notifyItemChanged(position)*/
+                taskFile!!.t.isCheck = isCheck
+                fileCompleteTaskLisytAdapter.notifyItemChanged(position)
             }
 
         }
