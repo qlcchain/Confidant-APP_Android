@@ -4,14 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.TranslateAnimation
+import android.widget.Button
+import android.widget.EditText
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
@@ -35,7 +43,11 @@ import com.stratagile.pnrouter.ui.activity.file.FileDetailInformationActivity
 import com.stratagile.pnrouter.ui.activity.file.PdfViewActivity
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListAdapter
 import com.stratagile.pnrouter.ui.adapter.conversation.FileListChooseAdapter
+import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
@@ -44,7 +56,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.HashMap
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -281,7 +293,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     startActivity(Intent(activity!!, FileDetailInformationActivity::class.java).putExtra("file", data))
                                 }
                                 3 -> {
-
+                                    showRenameDialog(data)
                                 }
                                 4 -> {
                                     showProgressDialog("wait…")
@@ -435,6 +447,24 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun refreshList(pullFileList: PullFileList) {
         pullFileList()
+    }
+
+    fun showRenameDialog(data : JPullFileListRsp.ParamsBean.PayloadBean) {
+        val view = View.inflate(activity, R.layout.rename_dialog_layout, null)
+        val etContent = view.findViewById<EditText>(R.id.etContent)
+        val btnLeft = view.findViewById<Button>(R.id.btn_left)
+        val btnRight = view.findViewById<Button>(R.id.btn_right)
+        var formatDialog = CommonDialog(activity)
+        formatDialog?.setView(view)
+        formatDialog?.show()
+        etContent.setText(String(Base58.decode(data.fileName.substring(data.fileName.lastIndexOf("/") + 1))))
+        etContent.setSelection(etContent.text.length)
+        btnLeft.setOnClickListener {
+            formatDialog.dismissWithAnimation()
+        }
+        btnRight.setOnClickListener {
+            KLog.i(etContent.text.toString())
+        }
     }
 
 
