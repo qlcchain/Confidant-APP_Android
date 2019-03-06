@@ -451,9 +451,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 var localFilesList = LocalFileUtils.localFilesList
                 listGoing.forEachIndexed { index, it ->
                     it.takeUnless { it.isHeader }?.let {
-                        if (it.t.fileKey.equals(fileStatus.fileKey)) {
+                        if (fileStatus.fileKey.contains(it.t.msgId)) {
                             for (myFie in localFilesList) {
-                                if (myFie.upLoadFile.fileKey.equals(fileStatus.fileKey)) {
+                                if (fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
                                     if (myFie.upLoadFile.isComplete == false) {
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
@@ -486,7 +486,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }
                 }
                 for (myFie in localFilesList) {
-                    if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.equals(myFie.upLoadFile.fileKey)) {
+                    if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
                         listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()

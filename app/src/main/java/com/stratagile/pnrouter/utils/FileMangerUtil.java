@@ -228,7 +228,7 @@ public class FileMangerUtil {
                                         myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                                         myRouter.setUpLoadFile(uploadFile);
                                         LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                                        EventBus.getDefault().post(new FileStatus(fileName,fileSize, false, false, false,0,segSeqTotal,10,false,0));
+                                        EventBus.getDefault().post(new FileStatus(fileName+"__"+fileTransformEntity.getToId(),fileSize, false, false, false,0,segSeqTotal,10,false,0));
                                     }else{
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -329,7 +329,7 @@ public class FileMangerUtil {
                                     myRouter.setUpLoadFile(uploadFile);
                                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
 
-                                    EventBus.getDefault().post(new FileStatus(fileName,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
+                                    EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
                                 }else{
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -352,7 +352,7 @@ public class FileMangerUtil {
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                     myRouter.setUpLoadFile(uploadFile);
                     LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                    EventBus.getDefault().post(new FileStatus(fileName,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,0));
+                    EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,0));
 
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
@@ -702,7 +702,7 @@ public class FileMangerUtil {
                             FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                             fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                         }else{
-                            fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                            fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                         }
                         sendToxFileDataMap.put(fileNumber,toxFileData);
                     }
@@ -725,6 +725,7 @@ public class FileMangerUtil {
 
     public static void cancelSend(String msgId)
     {
+        sendFilePathMap.remove(msgId);
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
     }
@@ -752,7 +753,7 @@ public class FileMangerUtil {
                     {
                         if(file.length() == 0)
                         {
-                            EventBus.getDefault().post(new FileStatus(imagePath,3));
+                            EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,3));
                             return;
                         }
                         String files_dir = imagePath;
@@ -768,7 +769,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                            EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
                             sendMsgLocalMap.put(uuid,false);
@@ -863,7 +864,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
@@ -878,10 +879,12 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                            EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,1));
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                            EventBus.getDefault().post(new FileStatus(fileName,1));
                         }
-                        EventBus.getDefault().post(new FileStatus(fileName,1));
+
                     }
 
                 }catch (Exception e)
@@ -916,12 +919,12 @@ public class FileMangerUtil {
 
                        if(file.length() > 1024 * 1024 * 100)
                         {
-                            EventBus.getDefault().post(new FileStatus(videoPath,2));
+                            EventBus.getDefault().post(new FileStatus(videoPath+"__"+uuid,2));
                             return;
                         }
                         if(file.length() == 0)
                         {
-                            EventBus.getDefault().post(new FileStatus(videoPath,3));
+                            EventBus.getDefault().post(new FileStatus(videoPath+"__"+uuid,3));
                             return;
                         }
                         FileUtil.recordRecentFile(videoFileName, 0, 4, "Router");
@@ -941,7 +944,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus(videoFileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                            EventBus.getDefault().post(new FileStatus(videoFileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
                             sendMsgLocalMap.put(uuid,false);
@@ -1039,7 +1042,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
@@ -1050,10 +1053,13 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                            EventBus.getDefault().post(new FileStatus(videoFileName +"__"+uuid,1));
+
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                            EventBus.getDefault().post(new FileStatus(videoFileName,1));
                         }
-                        EventBus.getDefault().post(new FileStatus(videoFileName,1));
+
                     }
                 }catch (Exception e)
                 {
@@ -1088,13 +1094,13 @@ public class FileMangerUtil {
                     {
                         if(file.length() > 1024 * 1024 * 100)
                         {
-                            EventBus.getDefault().post(new FileStatus(filePath,2));
+                            EventBus.getDefault().post(new FileStatus(filePath+"__"+uuid,2));
                             return;
                         }
                         FileUtil.recordRecentFile(fileName, 0, 4, "Router");
                         if(file.length() == 0)
                         {
-                            EventBus.getDefault().post(new FileStatus(filePath,3));
+                            EventBus.getDefault().post(new FileStatus(filePath+"__"+uuid,3));
                             return;
                         }
                         String files_dir = filePath;
@@ -1109,7 +1115,7 @@ public class FileMangerUtil {
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-                            EventBus.getDefault().post(new FileStatus(fileName,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                            EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
 
@@ -1207,7 +1213,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
                                 }else {
-                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
@@ -1220,10 +1226,13 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuid);
+                            EventBus.getDefault().post(new FileStatus(fileName +"__"+uuid,1));
+
                         }else{
                             LocalFileUtils.INSTANCE.deleteLocalAssets(uuidTox +"");
+                            EventBus.getDefault().post(new FileStatus(fileName,1));
                         }
-                        EventBus.getDefault().post(new FileStatus(fileName,1));
+
                     }
 
                 }catch (Exception e)

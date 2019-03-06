@@ -136,7 +136,7 @@ public class ToxCoreJni {
         LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
         return result;
     }
-    public int senToxFileInManger(String filePath, String friendId)
+    public int senToxFileInManger(String filePath, String friendId,String msgId)
     {
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
         KLog.i(filePath);

@@ -164,7 +164,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 						myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 						myRouter.setUpLoadFile(uploadFile);
 						LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-						EventBus.getDefault().post(new FileStatus(fileNiName,bytesCopiedFlag, true, true, false,1,1,0,false,0));
+						EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgID,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 						msg.what = 0x55;
 					}else{
 						msg.what = 0x404;
@@ -288,7 +288,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
 					myRouter.setUpLoadFile(uploadFile);
 					LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-					EventBus.getDefault().post(new FileStatus(fileNiName,length, true, false, false,count,length,0,false,0));
+					EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgID,length, true, false, false,count,length,0,false,0));
 					progressReceiveMap.put(fileNiName+"_"+num,true);
 				}
 
