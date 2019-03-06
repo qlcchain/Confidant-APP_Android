@@ -12,6 +12,7 @@ import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
+import com.pawegio.kandroid.inflateLayout
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -290,8 +291,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             }
             fileCompleteTaskLisytAdapter.notifyDataSetChanged()
         }
-
-
     }
 
     lateinit var ongoingTaskHead: TaskFile
@@ -685,6 +684,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             recyclerView2.visibility = View.GONE
         } else {
             recyclerView2.visibility = View.VISIBLE
+        }
+        if (ongoing == 0 && complete == 0) {
+            flEmpty.visibility = View.VISIBLE
+        } else {
+            flEmpty.visibility = View.GONE
         }
     }
 

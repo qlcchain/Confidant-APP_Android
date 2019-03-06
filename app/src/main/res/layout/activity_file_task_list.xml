@@ -38,4 +38,11 @@
         android:background="@color/mainColor"
         android:layout_width="match_parent"
         android:layout_height="@dimen/x84" />
+    <FrameLayout
+        android:id="@+id/flEmpty"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/layout_tasklist_empty"/>
+    </FrameLayout>
 </RelativeLayout>
