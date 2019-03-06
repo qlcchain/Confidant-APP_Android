@@ -104,7 +104,7 @@ public class sendUnCompleteFile {
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(friendId);
-                        Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + friendId, baseDataJson);

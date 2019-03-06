@@ -207,7 +207,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
 //    fun sendCallMessage(recipient: SignalServiceAddress, message: SignalServiceCallMessage) {
 //        val content = createCallContent(message)
-//        sendMessageTo(recipient, System.currentTimeMillis(), content, true)
+//        sendMessageTo(recipient, System.currentTimeMillis() / 1000, content, true)
 //    }
 
     @Synchronized
@@ -435,7 +435,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         when (fileTransformEntity.message) {
             1 -> Thread(Runnable {
                 try {
-                    ConstantValue.sendFileMsgTimeMap[fileTransformEntity.toId] =  System.currentTimeMillis().toString()
+                    ConstantValue.sendFileMsgTimeMap[fileTransformEntity.toId] = (System.currentTimeMillis() / 1000).toString()
                     val EMMessage = ConstantValue.sendFileMsgMap[fileTransformEntity.toId]
                     if(EMMessage!!.from == null)
                     {
@@ -450,10 +450,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if (file.exists()) {
                         val fileSize = file.length()
                         val fileBuffer = FileUtil.file2Byte(filePath)
-                        val fileId = (System.currentTimeMillis() / 1000).toInt()
+                        val fileId = (System.currentTimeMillis() / 1000 / 1000).toInt()
                         var fileBufferMi = ByteArray(0)
                         try {
-                            val miBegin = System.currentTimeMillis()
+                            val miBegin = System.currentTimeMillis() / 1000
                             /*if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                             {
                                 fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
@@ -461,7 +461,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                             }*/
                             fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
-                            val miend = System.currentTimeMillis()
+                            val miend = System.currentTimeMillis() / 1000
                             KLog.i("jiamiTime:" + (miend - miBegin) / 1000)
 
                             if (deleteFileMap[fileTransformEntity.toId] != null) {
@@ -525,7 +525,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         {
             return
         }
-        ConstantValue.sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  System.currentTimeMillis().toString()
+        ConstantValue.sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  (System.currentTimeMillis() / 1000).toString()
         val retMsg = transformReceiverFileMessage.message
         val Action = ByteArray(4)
         val FileId = ByteArray(4)
@@ -780,7 +780,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 val file = File(files_dir)
                 val isHas = file.exists()
                 if (isHas) {
-                    val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + files_dir.substring(files_dir.lastIndexOf("/") + 1)
+                    val fileName = (System.currentTimeMillis() / 1000 / 1000).toInt().toString() + "_" + files_dir.substring(files_dir.lastIndexOf("/") + 1)
                     val message = EMMessage.createImageSendMessage(files_dir, true, friendId)
 
                     message.from = userId
@@ -792,7 +792,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if (ConstantValue.curreantNetworkType == "WIFI") {
                         message.msgId = msgId
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  (System.currentTimeMillis() / 1000).toString()
                         sendMsgLocalMap.put(msgId, false)
                         sendFilePathMap.put(msgId, files_dir)
                         deleteFileMap.put(msgId, false)
@@ -852,7 +852,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis()
+                    Message.timeStatmp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -886,7 +886,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 if (ConstantValue.curreantNetworkType == "WIFI") {
                     message.msgId = msgId
                     ConstantValue.sendFileMsgMap[msgId] = message
-                    ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                    ConstantValue.sendFileMsgTimeMap[msgId] =  (System.currentTimeMillis() / 1000).toString()
                     sendMsgLocalMap[msgId] = false
                     sendFilePathMap[msgId] = files_dir
                     deleteFileMap[msgId] = false
@@ -947,7 +947,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 Message.msg = ""
                 Message.from = userId
                 Message.to = friendId
-                Message.timeStatmp = System.currentTimeMillis()
+                Message.timeStatmp = System.currentTimeMillis() / 1000
                 Message.unReadCount = 0
                 val baseDataJson = gson.toJson(Message)
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -989,7 +989,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         message.msgId = msgId
 
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  (System.currentTimeMillis() / 1000).toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
@@ -1050,7 +1050,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis()
+                    Message.timeStatmp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -1078,7 +1078,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 val file = File(filePath)
                 val isHas = file.exists()
                 if (isHas) {
-                    val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
+                    val fileName = (System.currentTimeMillis() / 1000 / 1000).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
 
                     val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                     val message = EMMessage.createFileSendMessage(filePath, friendId)
@@ -1093,7 +1093,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
                         message.msgId = msgId
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                        ConstantValue.sendFileMsgTimeMap[msgId] =  (System.currentTimeMillis() / 1000).toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
@@ -1154,7 +1154,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis()
+                    Message.timeStatmp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)

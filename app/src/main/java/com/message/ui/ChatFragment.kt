@@ -231,7 +231,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         message.from = SpUtil.getString(activity!!, ConstantValue.userId, "")
         message.msg = content
         message.status = 4
-        message.timeStatmp = Calendar.getInstance().timeInMillis
+        message.timeStatmp = Calendar.getInstance().timeInMillis / 1000
         messageListAdapter.addData(message)
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
         KLog.i(messageList?.size)

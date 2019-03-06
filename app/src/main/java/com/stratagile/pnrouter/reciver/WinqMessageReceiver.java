@@ -9,6 +9,7 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.ForegroundCallbacks;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.ui.activity.main.MainActivity;
+import com.stratagile.pnrouter.utils.AppShortCutUtil;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushCommandMessage;
@@ -19,6 +20,8 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.Calendar;
 import java.util.List;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class WinqMessageReceiver extends PushMessageReceiver {
     private String mRegId;
@@ -74,9 +77,13 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         }
         //这里可以根据消息的不同进行不一样的跳转
     }
+    public static int count  = 0;
     @Override
     public void onNotificationMessageArrived(Context context, MiPushMessage message) {
+        count++;
         mMessage = message.getContent();
+        ShortcutBadger.applyCount(context, count);
+//        AppShortCutUtil.addNumShortCut(context, MainActivity.class, true, count, false);
         if(!TextUtils.isEmpty(message.getTopic())) {
             mTopic=message.getTopic();
         } else if(!TextUtils.isEmpty(message.getAlias())) {

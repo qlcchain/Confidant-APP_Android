@@ -56,6 +56,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
+import com.stratagile.pnrouter.reciver.WinqMessageReceiver
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
@@ -81,6 +82,7 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_manager.*
 import kotlinx.android.synthetic.main.activity_main.*
+import me.leolin.shortcutbadger.ShortcutBadger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -1367,6 +1369,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onResume() {
+//        AppShortCutUtil.clearBadge(this)
+        WinqMessageReceiver.count = 0
+        ShortcutBadger.removeCount(this)
         exitTime = System.currentTimeMillis() - 2001
 
         super.onResume()
@@ -1374,6 +1379,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
         controlleMessageUnReadCount(UnReadMessageCount)
 
+    }
+
+    override fun onPause() {
+        ShortcutBadger.removeCount(this)
+        super.onPause()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

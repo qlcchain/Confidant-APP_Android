@@ -322,10 +322,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             if (file.exists()) {
                                 long fileSize = file.length();
                                 byte[] fileBuffer = FileUtil.file2Byte(filePath);
-                                int fileId = (int) (System.currentTimeMillis() / 1000);
+                                int fileId = (int) (System.currentTimeMillis() / 1000 / 1000);
                                 byte[] fileBufferMi = new byte[0];
                                 try {
-                                    long miBegin = System.currentTimeMillis();
+                                    long miBegin = System.currentTimeMillis() / 1000;
                                     /*if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                     {
                                         fileBufferMi = LibsodiumUtil.INSTANCE.EncryptSendFile(fileBuffer,fileKey);
@@ -333,9 +333,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     }*/
                                     fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey.getBytes("UTF-8"));
-                                    long miend = System.currentTimeMillis();
+                                    long miend = System.currentTimeMillis() / 1000;
                                     KLog.i("jiamiTime:" + (miend - miBegin) / 1000);
-                                    faBegin = System.currentTimeMillis();
+                                    faBegin = System.currentTimeMillis() / 1000;
                                     if (!deleteFileMap.get(fileTransformEntity.getToId())) {
                                         sendFileByteData(fileBufferMi, fileName, EMMessage.getFrom(), EMMessage.getTo(), fileTransformEntity.getToId(), fileId, 1, fileKey, SrcKey, DstKey);
                                     } else {
@@ -504,7 +504,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
                         KLog.i("websocket文件发送成功后取消！");
                     }
-                    faEnd = System.currentTimeMillis();
+                    faEnd = System.currentTimeMillis() / 1000;
                     KLog.i("faTime:" + (faEnd - faBegin) / 1000);
                     String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"));
@@ -981,7 +981,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFileName("abc");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -1035,7 +1035,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -1711,7 +1711,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFileName("abc");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
 
                 /*String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -2013,7 +2013,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //        message.setMsg("/[draft]/" +draft);
 //        message.setFrom(userId);
 //        message.setTo(toChatUserId);
-//        message.setTimeStatmp(System.currentTimeMillis());
+//        message.setTimeStatmp(System.currentTimeMillis() / 1000);
 //        message.setUnReadCount(0);
 //        String baseDataJson = new Gson().toJson(message);
 //        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -2314,7 +2314,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -2362,7 +2362,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setFileName("abc");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
 
                /* String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -2504,7 +2504,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     /*MessageEntity messageEntity  = new MessageEntity();
                     messageEntity.setUserId(userId);
                     messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
-                    messageEntity.setSendTime(System.currentTimeMillis() +"");
+                    messageEntity.setSendTime(System.currentTimeMillis() / 1000 +"");
                     messageEntity.setType("2");//这里要改
                     messageEntity.setMsgId(uuid);
                     messageEntity.setComplete(false);
@@ -2547,7 +2547,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
-                    SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                    SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
                     /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2558,7 +2558,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileKey = RxEncryptTool.generateAESKey();
                     int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
                     if (code == 1) {
-                        int uuid = (int) (System.currentTimeMillis() / 1000);
+                        int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
                         message.setMsgId(uuid + "");
                         currentSendMsg = message;
                         ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -2613,7 +2613,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setMsg("");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis());
+                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -2643,7 +2643,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     boolean isHas = file.exists();
                     if (isHas)
                     {
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
+                        String fileName = ((int) (System.currentTimeMillis() / 1000 / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -2667,7 +2667,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                            /* MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
-                            messageEntity.setSendTime(System.currentTimeMillis() +"");
+                            messageEntity.setSendTime(System.currentTimeMillis() / 1000 +"");
                             messageEntity.setType("1");//这里要改
                             messageEntity.setMsgId(uuid);
                             messageEntity.setComplete(false);
@@ -2707,7 +2707,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
-                                SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                                SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
                                /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2723,7 +2723,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey, isCompress);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -2784,7 +2784,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -2867,7 +2867,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(imagePath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -2976,7 +2976,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             /*MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
-                            messageEntity.setSendTime(System.currentTimeMillis() +"");
+                            messageEntity.setSendTime(System.currentTimeMillis() / 1000 +"");
                             messageEntity.setType("3");//这里要改
                             messageEntity.setMsgId(uuid);
                             messageEntity.setComplete(false);
@@ -3017,7 +3017,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
@@ -3030,7 +3030,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -3087,7 +3087,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -3124,7 +3124,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     if (isHas) {
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
+                        String fileName = ((int) (System.currentTimeMillis() / 1000 / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
 
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
@@ -3151,7 +3151,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                            /* MessageEntity messageEntity  = new MessageEntity();
                             messageEntity.setUserId(userId);
                             messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
-                            messageEntity.setSendTime(System.currentTimeMillis() +"");
+                            messageEntity.setSendTime(System.currentTimeMillis() / 1000 +"");
                             messageEntity.setType("4");//这里要改
                             messageEntity.setMsgId(uuid);
                             messageEntity.setComplete(false);
@@ -3192,7 +3192,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() +"");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
@@ -3204,7 +3204,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -3263,7 +3263,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis());
+                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -3307,7 +3307,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         Message.setFrom(jPushMsgRsp.getParams().getFromId());
         Message.setTo(jPushMsgRsp.getParams().getToId());
-        Message.setTimeStatmp(System.currentTimeMillis());
+        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
         Message.setUnReadCount(0);
         String baseDataJson = gson.toJson(Message);
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
@@ -3341,7 +3341,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         Message.setFrom(jPushMsgRsp.getParams().getFrom());
         Message.setTo(jPushMsgRsp.getParams().getTo());
-        Message.setTimeStatmp(System.currentTimeMillis());
+        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
         Message.setUnReadCount(0);
         String baseDataJson = gson.toJson(Message);
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
@@ -3592,7 +3592,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        cameraFile = new File(PathUtils.getInstance().getTempPath(), System.currentTimeMillis() + ".jpg");
+        cameraFile = new File(PathUtils.getInstance().getTempPath(), System.currentTimeMillis() / 1000 + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         try {
             cameraFile.getParentFile().mkdirs();
@@ -3612,7 +3612,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
             return;
         }
-        videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
+        videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() / 1000 + ".mp4");
         KLog.i(videoFile.getPath());
         //noinspection ResultOfMethodCallIgnored
         videoFile.getParentFile().mkdirs();

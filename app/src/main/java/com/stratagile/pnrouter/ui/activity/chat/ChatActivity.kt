@@ -278,7 +278,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         Message.msg = ""
         Message.from = userId
         Message.to = jPushFileMsgRsp.params.fromId
-        Message.timeStatmp = System.currentTimeMillis()
+        Message.timeStatmp = System.currentTimeMillis() / 1000
         Message.unReadCount = 0
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {
