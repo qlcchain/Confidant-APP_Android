@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.PullFileList
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendSendFileComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendSendFileContract
@@ -29,6 +30,8 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
 
@@ -112,6 +115,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
     override fun initData() {
         fragment = ContactFragment();
         val bundle = Bundle()
+        EventBus.getDefault().register(this)
         bundle.putString(ConstantValue.selectFriend, "select")
         bundle.putString("fromId", fromId)
         bundle.putParcelable("message",message)
@@ -196,7 +200,17 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             overridePendingTransition(0, R.anim.activity_translate_out_1)
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun selectFriendChange(selectFriendChange: SelectFriendChange) {
+        selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.people)
+        if (selectFriendChange.friendNum == 0) {
+            send.text = "Confirm"
+        } else {
+            send.text = "Confirm (" + selectFriendChange.friendNum + ")"
+        }
+    }
     override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver?.fileForwardBack = null
         super.onDestroy()
     }

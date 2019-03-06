@@ -47,7 +47,7 @@
             android:id="@+id/tvOpreateType"
             android:layout_width="0px"
             android:layout_marginLeft="@dimen/x10"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
 
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2018/11/07 13:00"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:layout_marginLeft="@dimen/x10" />
 
     </LinearLayout>

@@ -407,6 +407,28 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         }
         return super.onOptionsItemSelected(item)
     }
+    fun updataCount()
+    {
+        var count = 0;
+        fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+               if(it.t.isCheck)
+               {
+                   count ++;
+               }
+            }
+        }
+        fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
+            it.takeUnless { it.isHeader }?.let {
+                it.t.status = 1
+                if(it.t.isCheck)
+                {
+                    count ++;
+                }
+            }
+        }
+        tvDelete.setText(getString(R.string.delete)+"("+count+")")
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         KLog.i("websocket状态FileTaskListActivity:"+connectStatus.status)
@@ -528,6 +550,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 taskFile!!.t.status = status
                 taskFile!!.t.isCheck = isCheck
                 fileGoingTaskLisytAdapter.notifyItemChanged(position)
+                updataCount()
             }
 
         }
@@ -663,6 +686,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 taskFile!!.t.status = status
                 taskFile!!.t.isCheck = isCheck
                 fileCompleteTaskLisytAdapter.notifyItemChanged(position)
+                updataCount()
             }
 
         }
