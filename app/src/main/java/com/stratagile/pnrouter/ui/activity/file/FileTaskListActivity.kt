@@ -427,7 +427,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
             }
         }
-        tvDelete.setText(getString(R.string.delete)+"("+count+")")
+        if(count > 0)
+        {
+            tvDelete.setText(getString(R.string.delete)+"("+count+")")
+        }else{
+            tvDelete.setText(getString(R.string.delete))
+        }
+
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
