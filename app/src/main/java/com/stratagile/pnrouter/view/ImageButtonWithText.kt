@@ -143,12 +143,12 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .priority(Priority.HIGH)
                         Glide.with(this)
-                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
+                                .load(lastFile)
                                 .apply(options1)
                                 .into(imageView)
                     } else {
                         Glide.with(this)
-                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
+                                .load(lastFile)
                                 .apply(options)
                                 .into(imageView)
                     }

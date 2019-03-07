@@ -92,7 +92,7 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 }
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
             } else {
-                helper.setVisible(R.id.status, false)
+                helper.setVisible(R.id.status, true)
                 helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }

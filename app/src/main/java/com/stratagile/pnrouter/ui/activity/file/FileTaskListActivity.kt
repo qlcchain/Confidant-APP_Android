@@ -556,6 +556,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
         }
         fileGoingTaskLisytAdapter.setOnItemChildClickListener { adapter, view, position ->
+            when (view.id) {
+                R.id.status ->
+                {
+
+                }
+
+            }
             var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
             var localMedia = taskFile!!.t
             var file = File(localMedia!!.path)

@@ -62,8 +62,16 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 runOnUiThread {
                     toast(R.string.success)
                 }
-                waitRenameData!!.fileName = reName
-                fileListChooseAdapter!!.notifyItemChanged(index)
+                //waitRenameData!!.fileName = reName
+
+                fileListChooseAdapter!!.data.forEachIndexed { index, it ->
+                    if(index == flagIndex)
+                    {
+                        fileListChooseAdapter!!.data[index].fileName = reName
+                        fileListChooseAdapter!!.notifyItemChanged(flagIndex)
+                    }
+
+                }
             }
             else ->{
                 runOnUiThread {
@@ -75,7 +83,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     }
 
     var waitDeleteData: JPullFileListRsp.ParamsBean.PayloadBean? = null
-    var index = 0;
+    var flagIndex = 0;
     var reName = ""
     var waitRenameData:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
@@ -232,7 +240,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         fileListChooseAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.fileOpreate -> {
-                    index = position
+                    flagIndex = position
                     PopWindowUtil.showFileOpreatePopWindow(activity!!, recyclerView, fileListChooseAdapter!!.data[position], object : PopWindowUtil.OnSelectListener {
                         override fun onSelect(position: Int, obj: Any) {
                             KLog.i("" + position)
