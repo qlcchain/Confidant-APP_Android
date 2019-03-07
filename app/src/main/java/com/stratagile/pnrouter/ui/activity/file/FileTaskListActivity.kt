@@ -563,7 +563,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var localMedia = taskFile!!.t
                     var file = File(localMedia!!.path)
                     fileGoingTaskLisytAdapter!!.getItem(position)!!.t.SendGgain = false
-                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+
                     if(!localMedia!!.isDownLoad)
                     {
                         if (file.exists())
@@ -573,6 +573,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 if(result  == 1)
                                 {
                                     runOnUiThread {
+                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                         toast(getString(R.string.Start_uploading))
                                     }
                                 }else{
@@ -585,6 +587,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 if(result  == 1)
                                 {
                                     runOnUiThread {
+                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                         toast(getString(R.string.Start_uploading))
                                     }
                                 }else{
@@ -597,6 +601,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                 if(result  == 1)
                                 {
                                     runOnUiThread {
+                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                         toast(getString(R.string.Start_uploading))
                                     }
                                 }else{
@@ -646,6 +652,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                     myRouter.userSn = ConstantValue.currentRouterSN
                                     myRouter.upLoadFile = uploadFile
                                     LocalFileUtils.updateLocalAssets(myRouter)
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                                    fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                     FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
                                 }
                             }).start()
@@ -663,6 +671,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
                             var baseData = BaseData(msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                            fileGoingTaskLisytAdapter.notifyItemChanged(position)
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
@@ -674,7 +684,29 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
                 R.id.stopBtn ->
                 {
+                    var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
+                    var localMedia = taskFile!!.t
+                    localMedia.isStop = true
+                    fileGoingTaskLisytAdapter.notifyItemChanged(position)
+                    if (ConstantValue.isWebsocketConnected) {
+                        if(!localMedia.isDownLoad && !localMedia.isComplete)
+                        {
+                            FileMangerUtil.cancelSend(localMedia.msgId)
+                        }
+                        else if(localMedia.isDownLoad && !localMedia.isComplete)
+                        {
+                            FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                        }
+                    }else if (ConstantValue.isToxConnected) {
+                        if(!localMedia.isDownLoad && !localMedia.isComplete)
+                        {
 
+                        }
+                        else if(localMedia.isDownLoad && !localMedia.isComplete)
+                        {
+
+                        }
+                    }
                 }
 
             }
