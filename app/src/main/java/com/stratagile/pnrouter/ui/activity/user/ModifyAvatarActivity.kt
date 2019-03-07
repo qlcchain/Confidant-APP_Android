@@ -10,11 +10,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.util.TypeUtils.getClass
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.hyphenate.chat.EMMessage
+import com.hyphenate.chat.EMNormalFileMessageBody
+import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -22,15 +27,18 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.api.API
+import com.stratagile.pnrouter.entity.ToxFileData
+import com.stratagile.pnrouter.entity.events.FileTransformEntity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerModifyAvatarComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.ModifyAvatarContract
 import com.stratagile.pnrouter.ui.activity.user.module.ModifyAvatarModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.ModifyAvatarPresenter
-import com.stratagile.pnrouter.utils.RxFileTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.SystemUtil
+import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_modify_avatar.*
+import org.greenrobot.eventbus.EventBus
 import java.io.*
 import java.util.*
 
@@ -293,6 +301,10 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
 
 //            ToastUtil.displayShortToast(getString(R.string.loadPicError))
         }
+
+    }
+
+    fun upLoadAvatar(filePath : String) {
 
     }
 }

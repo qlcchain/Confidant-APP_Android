@@ -28,13 +28,6 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
         helper.setText(R.id.tvFileName, fileName)
         helper.setText(R.id.tvFileSize, NetUtils.parseSize(item.fileSize.toLong()))
         var userAvatar = helper.getView<ImageButtonWithText>(R.id.userAvatar)
-//        if(isChooseMode) {
-//            checkBox.visibility = View.VISIBLE
-//            checkBox.animation = mContext.loadAnimation(R.anim.file_select_in)
-//        } else {
-//            checkBox.visibility = View.GONE
-//            KLog.i(item.fileName.substring(item.fileName.lastIndexOf("/") + 1))
-//        }
 
         if (fileName.contains("jpg")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
@@ -64,19 +57,19 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
             1 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_i_share))
                 helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
-                userAvatar.setText(RxEncodeTool.base64Decode(item.sender).toString())
+                userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
                 helper.setText(R.id.tvOpreateType, "File Sent")
             }
             2 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))
                 helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
-                userAvatar.setText(RxEncodeTool.base64Decode(item.sender).toString())
+                userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
                 helper.setText(R.id.tvOpreateType, "File Received")
             }
             3 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.upload_h))
                 helper.setText(R.id.friendName, SpUtil.getString(mContext, ConstantValue.username, ""))
-                userAvatar.setText(SpUtil.getString(mContext, ConstantValue.username, ""))
+                userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
                 helper.setText(R.id.tvOpreateType, "My File")
             }
         }

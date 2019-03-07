@@ -96,7 +96,7 @@ public class  ToxFileData {
         DstKey = dstKey;
     }
     public enum FileType {
-        PNR_IM_MSGTYPE_TEXT(0), PNR_IM_MSGTYPE_IMAGE(1), PNR_IM_MSGTYPE_AUDIO(2), PNR_IM_MSGTYPE_SYSTEM(2), PNR_IM_MSGTYPE_MEDIA(4), PNR_IM_MSGTYPE_FILE(5);
+        PNR_IM_MSGTYPE_TEXT(0), PNR_IM_MSGTYPE_IMAGE(1), PNR_IM_MSGTYPE_AUDIO(2), PNR_IM_MSGTYPE_SYSTEM(2), PNR_IM_MSGTYPE_MEDIA(4), PNR_IM_MSGTYPE_FILE(5), PNR_IM_MSGTYPE_AVATAR(6);
         private int value = 0;
 
         private FileType(int value) {    //    必须是private的，否则编译错误

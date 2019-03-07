@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/recyclerView"
-    android:scrollbars="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-    android:layout_height="wrap_content">
-</android.support.v7.widget.RecyclerView>
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:scrollbars="vertical">
+    <LinearLayout
+        android:id="@+id/llSearch"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x94">
+        <include layout="@layout/ease_search_bar"/>
+    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/recyclerView"
+
+        android:scrollbars="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

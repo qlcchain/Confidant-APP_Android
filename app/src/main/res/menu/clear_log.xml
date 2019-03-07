@@ -3,5 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/clear"
         app:showAsAction="always"
-        android:title="clear" />
+        android:title="clean" />
 </menu>
