@@ -206,25 +206,32 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //发送消息服务器给的返回，代表消息服务器已经收到
                 "SendMsg" -> {
                     val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
-                   var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
-                    for (item in toSendMessage)
-                    {
-                        if(item.msgid == JSendMsgRsp.msgid)
-                        {
-                            toSendMessage.remove(item)
-                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-                            if(messageEntityList != null)
+                    if (ConstantValue.isWebsocketConnected) {
+                        try {
+                            var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
+                            for (item in toSendMessage)
                             {
-                                messageEntityList.forEach {
-                                    if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
-                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                                        KLog.i("消息数据删除")
+                                if(item.msgid == JSendMsgRsp.msgid)
+                                {
+                                    toSendMessage.remove(item)
+                                    var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                                    if(messageEntityList != null)
+                                    {
+                                        messageEntityList.forEach {
+                                            if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
+                                                AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                                KLog.i("消息数据删除")
+                                            }
+                                        }
                                     }
+                                    break
                                 }
                             }
-                            break
+                        }catch (e:Exception){
+                            e.printStackTrace()
                         }
                     }
+
                     chatCallBack?.sendMsgRsp(JSendMsgRsp)
                     convsationCallBack?.sendMsgRsp(JSendMsgRsp)
                 }

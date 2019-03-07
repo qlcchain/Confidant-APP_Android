@@ -240,6 +240,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         mMenu?.getItem(0)?.setVisible(true)
         mMenu?.getItem(1)?.setVisible(false)
         tvDelete.visibility = View.GONE
+
         if(fileGoingTaskLisytAdapter.data!= null && fileGoingTaskLisytAdapter.data.size >0)
         {
             var ongoing = fileGoingTaskLisytAdapter.data.size -1
@@ -277,6 +278,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 recyclerView2.visibility= View.VISIBLE
             }
             fileCompleteTaskLisytAdapter.notifyDataSetChanged()
+        }
+        var ongoingTotal = fileGoingTaskLisytAdapter.data.size
+        var completeTotal = fileCompleteTaskLisytAdapter.data.size
+        if (ongoingTotal == 0 && completeTotal == 0) {
+            flEmpty.visibility = View.VISIBLE
+        } else {
+            flEmpty.visibility = View.GONE
         }
     }
 
