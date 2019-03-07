@@ -45,7 +45,7 @@ import javax.inject.Inject
 class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContract.View, PNRouterServiceMessageReceiver.FileForwardBack {
     override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
 
-        when(jFileForwardRsp.params.retCode)
+       /* when(jFileForwardRsp.params.retCode)
         {
             0->
             {
@@ -83,7 +83,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                 }
             }
 
-        }
+        }*/
     }
 
     @Inject
@@ -170,7 +170,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                     }
                 }
             }
-
+            finish()
         }
     }
     override fun setupActivityComponent() {

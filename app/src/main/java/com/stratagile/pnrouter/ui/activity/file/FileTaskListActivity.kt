@@ -535,7 +535,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             fileGoingTaskLisytAdapter!!.getItem(position)!!.t.SendGgain = false
             if(!localMedia!!.isDownLoad)
             {
-                if (file.exists()) {
+                if (file.exists())
+                {
                     if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
                         var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
                         if(result  == 1)
@@ -573,6 +574,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             }
                         }
                     }
+                }else{
+                    LocalFileUtils.deleteLocalAssets(taskFile.t.msgId)
+                    EventBus.getDefault().post(AllFileStatus())
+                    runOnUiThread {
+                        toast(getString(R.string.Local_file_does_not_exist))
+                    }
                 }
             }else{
 
@@ -599,8 +606,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
 
                 if (ConstantValue.isWebsocketConnected) {
-                    var msgId =  (System.currentTimeMillis() / 1000).toInt()
-                    receiveFileDataMap.put(msgId.toString(),localMedia)
+                    receiveFileDataMap.put(localMedia!!.msgId,localMedia)
                     Thread(Runnable() {
                         run() {
                             val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
@@ -609,12 +615,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             myRouter.userSn = ConstantValue.currentRouterSN
                             myRouter.upLoadFile = uploadFile
                             LocalFileUtils.updateLocalAssets(myRouter)
-                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, msgId, handler, localMedia!!.userKey,localMedia!!.fileFrom)
+                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
                         }
                     }).start()
 
                 } else {
-                    var msgId =  (System.currentTimeMillis() / 1000).toInt()
                     ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
                     val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                     val myRouter = MyFile()
@@ -624,7 +629,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     LocalFileUtils.updateLocalAssets(myRouter)
 
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, msgId, localMedia!!.fileFrom, 2)
+                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
                     var baseData = BaseData(msgData)
                     var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
