@@ -93,20 +93,21 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             } else {
                 helper.setVisible(R.id.status, false)
             }
-        }
-        if(item.t.status != 0)
-        {
-            helper.setGone(R.id.status, false)
-        }else{
-            if(item.t.isStop)
+            if(item.t.status != 0)
             {
-                helper.setVisible(R.id.status, true)
-                helper.setVisible(R.id.stopBtn, false)
+                helper.setGone(R.id.status, false)
             }else{
-                helper.setVisible(R.id.status, false)
-                helper.setVisible(R.id.stopBtn, true)
+                if(item.t.isStop)
+                {
+                    helper.setVisible(R.id.status, true)
+                    helper.setVisible(R.id.stopBtn, false)
+                }else{
+                    helper.setVisible(R.id.status, false)
+                    helper.setVisible(R.id.stopBtn, true)
+                }
             }
         }
+
         helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
         helper.setImageDrawable(R.id.stopBtn, mContext.resources.getDrawable(R.mipmap.platform_n))
         if (fileOriginalName.contains("jpg")) {
