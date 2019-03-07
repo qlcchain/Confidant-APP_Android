@@ -168,7 +168,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         runOnUiThread {
             when (SpUtil.getInt(activity!!, ConstantValue.currentArrangeType, 1)) {
                 0 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileName }?.toMutableList())
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
                 }
                 1 -> {
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.timestamp }?.toMutableList())
@@ -177,7 +177,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileSize }?.toMutableList())
                 }
                 3 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { RxEncodeTool.base64Decode(it.sender).toString() }?.toMutableList())
+                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedBy { String(RxEncodeTool.base64Decode(it.sender)) }?.toMutableList())
                 }
             }
         }
@@ -435,7 +435,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     SpUtil.putInt(activity!!, ConstantValue.currentArrangeType, position)
                     when (position) {
                         0 -> {
-                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileName }.toMutableList())
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }.toMutableList())
                         }
                         1 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }.toMutableList())
@@ -444,7 +444,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }.toMutableList())
                         }
                         3 -> {
-                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { RxEncodeTool.base64Decode(it.sender).toString() }.toMutableList())
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedBy { String(RxEncodeTool.base64Decode(it.sender)) }.toMutableList())
                         }
                     }
                 }
