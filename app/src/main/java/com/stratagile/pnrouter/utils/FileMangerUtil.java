@@ -301,6 +301,10 @@ public class FileMangerUtil {
                 String msgId = sendMsgIdMap.get(FileIdResult+"");
                 String filePath = sendFilePathMap.get(msgId+"");
                 long fileSize  = sendFileSize.get(msgId);
+                if(sendFileTotalSegment.get(filePath) == null)
+                {
+                    return;
+                }
                 int fileTotalSegment = sendFileTotalSegment.get(filePath);
                 if(leftSize >0)
                 {

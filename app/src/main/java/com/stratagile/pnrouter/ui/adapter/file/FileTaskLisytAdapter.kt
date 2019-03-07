@@ -88,25 +88,27 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 helper.setImageDrawable(R.id.type, mContext.resources.getDrawable(R.mipmap.upload_h))
             }
             if (item.t.SendGgain) {
-                if(item.t.status != 0)
-                {
-                    helper.setGone(R.id.status, false)
-                }else{
-                    if(item.t.isStop)
-                    {
-                        helper.setVisible(R.id.status, true)
-                        helper.setVisible(R.id.stopBtn, false)
-                    }else{
-                        helper.setVisible(R.id.status, false)
-                        helper.setVisible(R.id.stopBtn, true)
-                    }
-                }
-                //helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
+
+
             } else {
                 helper.setVisible(R.id.status, false)
-                //helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
+        if(item.t.status != 0)
+        {
+            helper.setGone(R.id.status, false)
+        }else{
+            if(item.t.isStop)
+            {
+                helper.setVisible(R.id.status, true)
+                helper.setVisible(R.id.stopBtn, false)
+            }else{
+                helper.setVisible(R.id.status, false)
+                helper.setVisible(R.id.stopBtn, true)
+            }
+        }
+        helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
+        helper.setImageDrawable(R.id.stopBtn, mContext.resources.getDrawable(R.mipmap.platform_n))
         if (fileOriginalName.contains("jpg")) {
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.doc_img))
         } else if (fileOriginalName.contains("pdf")) {

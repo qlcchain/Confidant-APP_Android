@@ -529,7 +529,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         for (myFie in localFilesList) {
 
             if (myFie.upLoadFile.isComplete == false) {
-                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, true, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
             } else {
 
                 listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
@@ -562,8 +562,6 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
                     var localMedia = taskFile!!.t
                     var file = File(localMedia!!.path)
-                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.SendGgain = false
-
                     if(!localMedia!!.isDownLoad)
                     {
                         if (file.exists())
