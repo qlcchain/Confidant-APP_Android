@@ -7,21 +7,17 @@
     android:background="@color/white">
 
     <CheckBox
-        android:visibility="gone"
         android:id="@+id/checkBox"
         android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginLeft="@dimen/x31"
         android:button="@drawable/checkbox_style"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ivAvatar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.51" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <View
         android:id="@+id/line"
         style="@style/divide_line"
@@ -31,23 +27,21 @@
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/x45"
         android:layout_height="@dimen/x45"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="@dimen/x31"
         android:src="@mipmap/icon_ppt"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/group"
-        app:layout_constraintHorizontal_bias="0.916"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/checkBox"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/group"
         android:layout_width="@dimen/x500"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="@dimen/x31"
+        android:layout_marginLeft="@dimen/x20"
+        app:layout_constraintLeft_toRightOf="@+id/ivAvatar"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
-        app:layout_constraintEnd_toStartOf="@+id/status"
         app:layout_constraintTop_toTopOf="@+id/ivAvatar">
 
         <TextView
@@ -112,7 +106,9 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        app:layout_goneMarginRight="@dimen/x30"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginLeft="@dimen/x31"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

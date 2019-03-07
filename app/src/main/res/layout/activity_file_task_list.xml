@@ -31,7 +31,7 @@
         android:id="@+id/tvDelete"
         android:visibility="gone"
         android:text="@string/delete"
-        android:textSize="@dimen/x40"
+        android:textSize="13sp"
         android:gravity="center"
         android:textColor="@color/white"
         android:layout_alignParentBottom="true"
