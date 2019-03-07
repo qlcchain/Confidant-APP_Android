@@ -65,17 +65,18 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             0 ->{
                 runOnUiThread {
                     toast(R.string.success)
+                    fileListChooseAdapter!!.data.forEachIndexed { index, it ->
+                        if(index == flagIndex)
+                        {
+                            fileListChooseAdapter!!.data[index].fileName = reName
+                            fileListChooseAdapter!!.notifyItemChanged(flagIndex)
+                        }
+
+                    }
                 }
                 //waitRenameData!!.fileName = reName
 
-                fileListChooseAdapter!!.data.forEachIndexed { index, it ->
-                    if(index == flagIndex)
-                    {
-                        fileListChooseAdapter!!.data[index].fileName = reName
-                        fileListChooseAdapter!!.notifyItemChanged(flagIndex)
-                    }
 
-                }
             }
             else ->{
                 runOnUiThread {
