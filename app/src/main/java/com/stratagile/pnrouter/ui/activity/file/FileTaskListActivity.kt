@@ -172,14 +172,26 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                          deleteStr += index.toString() +","
                          //fileGoingTaskLisytAdapter.remove(index)
                          var localMedia = it!!.t
-                         if(!localMedia.isDownLoad && !localMedia.isComplete)
-                         {
-                             FileMangerUtil.cancelSend(localMedia.msgId)
+                         if (ConstantValue.isWebsocketConnected) {
+                             if(!localMedia.isDownLoad && !localMedia.isComplete)
+                             {
+                                 FileMangerUtil.cancelSend(localMedia.msgId)
+                             }
+                             else if(localMedia.isDownLoad && !localMedia.isComplete)
+                             {
+                                 FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                             }
+                         }else if (ConstantValue.isToxConnected) {
+                             if(!localMedia.isDownLoad && !localMedia.isComplete)
+                             {
+
+                             }
+                             else if(localMedia.isDownLoad && !localMedia.isComplete)
+                             {
+
+                             }
                          }
-                         if(localMedia.isDownLoad && !localMedia.isComplete)
-                         {
-                             FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
-                         }
+
                          LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
                      }
 

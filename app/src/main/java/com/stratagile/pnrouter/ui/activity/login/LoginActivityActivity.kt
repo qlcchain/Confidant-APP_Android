@@ -1016,48 +1016,54 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             {
                                 if(!item.equals(""))
                                 {
-                                    var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
-                                    var udpRouterArray = udpData.split(";")
+                                    try {
+                                        var udpData = AESCipher.aesDecryptString(objArray[index],"slph\$%*&^@-78231")
+                                        var udpRouterArray = udpData.split(";")
 
-                                    if(udpRouterArray.size > 1)
-                                    {
-                                        println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
-                                        //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
-                                        if(scanType == 1)//不是admin二维码
+                                        if(udpRouterArray.size > 1)
                                         {
-                                            if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                            println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                            //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
+                                            if(scanType == 1)//不是admin二维码
                                             {
+                                                if(!ConstantValue.scanRouterId.equals("") && ConstantValue.scanRouterId.equals(udpRouterArray[1]))
+                                                {
+                                                    ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                    ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
+                                                    ConstantValue.port= ":18006"
+                                                    ConstantValue.filePort = ":18007"
+                                                    ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
+                                                    break;
+                                                }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
+                                                {
+                                                    ConstantValue.currentRouterIp = udpRouterArray[0]
+                                                    ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
+                                                    ConstantValue.port= ":18006"
+                                                    ConstantValue.filePort = ":18007"
+                                                    ConstantValue.currentRouterId = routerId
+                                                    ConstantValue.currentRouterSN =  userSn
+                                                    break;
+                                                }
+                                            }else{
+                                                ConstantValue.curreantNetworkType = "WIFI"
                                                 ConstantValue.currentRouterIp = udpRouterArray[0]
                                                 ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                                ConstantValue.port= ":18006"
-                                                ConstantValue.filePort = ":18007"
                                                 ConstantValue.currentRouterId = ConstantValue.scanRouterId
                                                 ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                                break;
-                                            }else if(!routerId.equals("") && routerId.equals(udpRouterArray[1]))
-                                            {
-                                                ConstantValue.currentRouterIp = udpRouterArray[0]
-                                                ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
                                                 ConstantValue.port= ":18006"
                                                 ConstantValue.filePort = ":18007"
-                                                ConstantValue.currentRouterId = routerId
-                                                ConstantValue.currentRouterSN =  userSn
+                                                ConstantValue.currentRouterMac = RouterMacStr
                                                 break;
                                             }
-                                        }else{
-                                            ConstantValue.curreantNetworkType = "WIFI"
-                                            ConstantValue.currentRouterIp = udpRouterArray[0]
-                                            ConstantValue.localCurrentRouterIp = ConstantValue.currentRouterIp
-                                            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
-                                            ConstantValue.port= ":18006"
-                                            ConstantValue.filePort = ":18007"
-                                            ConstantValue.currentRouterMac = RouterMacStr
-                                            break;
+
+
                                         }
-
-
+                                    }catch (e:Exception)
+                                    {
+                                        e.printStackTrace()
                                     }
+
                                 }
                                 index ++
 
