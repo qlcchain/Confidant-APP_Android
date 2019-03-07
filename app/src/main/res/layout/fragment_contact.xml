@@ -38,11 +38,18 @@
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/x30"
             android:paddingRight="@dimen/x30">
+            
+            <ImageView
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/icon_new_request"
+                android:layout_height="@dimen/x46" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/add_contact" />
+                android:textColor="@color/color_2c2c2c"
+                android:layout_marginLeft="@dimen/x31"
+                android:text="@string/new_requests" />
 
             <View
                 android:layout_width="0px"
@@ -55,6 +62,38 @@
                 android:layout_height="@dimen/x20"
                 android:layout_marginRight="@dimen/x10"
                 android:background="@drawable/new_message_flag_bg" />
+
+            <ImageView
+                android:layout_width="@dimen/x30"
+                android:layout_height="@dimen/x30"
+                android:rotation="180"
+                android:src="@mipmap/icon_back" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/createGroup"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x90"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/x30"
+            android:paddingRight="@dimen/x30">
+
+            <ImageView
+                android:layout_width="@dimen/x46"
+                android:src="@mipmap/icon_create_group"
+                android:layout_height="@dimen/x46" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_marginLeft="@dimen/x31"
+                android:text="@string/create_a_group" />
+
+            <View
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <ImageView
                 android:layout_width="@dimen/x30"
@@ -92,8 +131,10 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/x90"
+            android:layout_height="@dimen/x65"
             android:layout_marginTop="@dimen/x20"
+            android:textSize="13sp"
+            android:textColor="@color/color_999999"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/x30"

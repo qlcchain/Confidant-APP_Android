@@ -1446,6 +1446,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (hasUnReadMsgCount == 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
+            } else if (hasUnReadMsgCount > 99){
+                unread_count.visibility = View.VISIBLE
+                unread_count.text = "99+"
             } else {
                 unread_count.visibility = View.VISIBLE
                 unread_count.text = hasUnReadMsgCount.toString()

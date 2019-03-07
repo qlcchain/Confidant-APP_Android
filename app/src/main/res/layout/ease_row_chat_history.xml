@@ -114,7 +114,10 @@
 
     <TextView
         android:id="@+id/unread_msg_number"
-        android:layout_width="@dimen/x30"
+        android:layout_width="wrap_content"
+        android:minWidth="@dimen/x30"
+        android:paddingLeft="@dimen/x5"
+        android:paddingRight="@dimen/x5"
         android:layout_height="@dimen/x30"
         android:text="20"
         android:layout_alignParentRight="true"

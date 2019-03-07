@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.conversation
 
+import android.content.Context
 import android.content.Intent
+import android.hardware.input.InputManager
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -9,11 +11,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
+import com.pawegio.kandroid.inputManager
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -521,10 +525,19 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         var type =  nameAndType.substring(nameAndType.lastIndexOf("."),nameAndType.length)
         etContent.setText(name)
         etContent.setSelection(etContent.text.length)
+        etContent.requestFocus()
+        etContent.postDelayed({
+            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(etContent, InputMethodManager.SHOW_FORCED);
+        }, 100)
         btnLeft.setOnClickListener {
+            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             formatDialog.dismissWithAnimation()
         }
         btnRight.setOnClickListener {
+            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             formatDialog.dismissWithAnimation()
             var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
             var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)

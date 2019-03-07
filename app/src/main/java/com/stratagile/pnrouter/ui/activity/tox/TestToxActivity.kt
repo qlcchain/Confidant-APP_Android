@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.tox
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.os.Process
 import com.stratagile.pnrouter.R
 
@@ -12,6 +13,7 @@ import com.stratagile.pnrouter.ui.activity.tox.contract.TestToxContract
 import com.stratagile.pnrouter.ui.activity.tox.module.TestToxModule
 import com.stratagile.pnrouter.ui.activity.tox.presenter.TestToxPresenter
 import com.stratagile.tox.toxcore.KotlinToxService
+import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_test_tox.*
 
 import javax.inject.Inject;
@@ -24,7 +26,7 @@ import javax.inject.Inject;
  */
 
 class TestToxActivity : BaseActivity(), TestToxContract.View {
-
+    var toxId = ""
     @Inject
     internal lateinit var mPresenter: TestToxPresenter
 
@@ -45,7 +47,23 @@ class TestToxActivity : BaseActivity(), TestToxContract.View {
             var intent = Intent(this, KotlinToxService::class.java)
             stopService(intent)
         }
+        addFriend.setOnClickListener {
+            toxId = etToxId.text.toString()
+            ToxCoreJni.getInstance().addFriend(etToxId.text.toString())
+        }
+        sendMessage.setOnClickListener {
+            ToxCoreJni.getInstance().senToxMessage("测试", toxId)
+        }
+        sendFile.setOnClickListener {
+            ToxCoreJni.getInstance().sendFile("" + Environment.getExternalStorageDirectory() + "/base.apk", toxId, "base.apk")
+        }
+        cancelSend.setOnClickListener {
+            ToxCoreJni.getInstance().cancelFileSend(65536)
+        }
+
     }
+
+
 
     override fun setupActivityComponent() {
        DaggerTestToxComponent

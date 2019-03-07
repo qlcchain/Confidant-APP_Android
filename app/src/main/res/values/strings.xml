@@ -581,4 +581,6 @@
     <string name="confirm_new_password">Confirm New Password</string>
     <string name="confirm_modification">Confirm Modification</string>
     <string name="two_password_different">Two passwords are different</string>
+    <string name="new_requests">New Requests</string>
+    <string name="create_a_group">Create a Group</string>
 </resources>

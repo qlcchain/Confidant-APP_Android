@@ -38,8 +38,9 @@ import com.pawegio.kandroid.toast
 
 class LogActivity : BaseActivity(), LogContract.View, LogUtil.OnLogListener {
     override fun onLog(string: String) {
-        logAdapter?.addData(string)
-//        recyclerView.scrollToPosition(logAdapter!!.data.size)
+        runOnUiThread {
+            logAdapter?.addData(string)
+        }
     }
 
     @Inject

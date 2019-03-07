@@ -79,6 +79,8 @@ public class ToxCoreJni {
      * @param status
      */
     public void freindStatus(String friendId, int status) {
+        KLog.i("好友的状态为：" + status);
+        KLog.i("好友的toxId为：" + friendId);
         if (toxCallbackListener!= null) {
             toxCallbackListener.toxFreindConnectionStatus(friendId, ToxConnection.Companion.parseToxConnect(status));
         }
@@ -282,14 +284,17 @@ public class ToxCoreJni {
         KLog.i("引导 完成");
     }
 
+    public native void cancelFileSend(int fileNumber);
+
     public String setFileSavePath(String oldName) {
+        //todo
         String origainName = "";
-        if(oldName.contains(":"))
-        {
-            oldName = oldName.substring(oldName.indexOf(":")+1,oldName.length());
-            oldName = oldName.substring(0,oldName.indexOf(":"));
-            origainName = new String(Base58.decode(oldName));
-        }
-        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + origainName;
+//        if(oldName.contains(":"))
+//        {
+//            oldName = oldName.substring(oldName.indexOf(":")+1,oldName.length());
+//            oldName = oldName.substring(0,oldName.indexOf(":"));
+//            origainName = new String(Base58.decode(oldName));
+//        }
+        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + oldName;
     }
 }

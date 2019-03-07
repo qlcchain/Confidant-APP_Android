@@ -38,6 +38,8 @@ static File_Sender file_senders[NUM_FILE_SENDERS];
 static uint8_t numfilesenders;
 static uint64_t received_file_size;
 
+static uint32_t cacenlFileNumber = 0;
+
 Tox *mTox = NULL;
 JNIEnv *Env;
 JavaVM *g_jvm = NULL;
@@ -986,6 +988,11 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize, i
     (*Env)->DeleteLocalRef(Env, jFriendId);
 }
 
+void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileSend(JNIEnv *env, jobject thiz, int fileNumber) {
+    cacenlFileNumber = (uint32_t) fileNumber;
+}
+
+
 
 /**
  * 接收方的片段
@@ -993,6 +1000,12 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize, i
 void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
                         const uint8_t *data, size_t length, void *user_data) {
     LOGD("file_recv_chunk_cb");
+    if (cacenlFileNumber == file_number) {
+        LOGD("取消文件的传输");
+        tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+        cacenlFileNumber = 0;
+        return;
+    }
     if (length == 0) {
         char msg[512];
         //sprintf(msg, "[t] %u file transfer: %u completed", friendnumber, filenumber);

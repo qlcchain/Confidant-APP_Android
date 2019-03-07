@@ -131,5 +131,11 @@ public class Base58 {
         System.arraycopy(source, from, range, 0, range.length);
         return range;
     }
+
+
+
+    public static void main(String[] args) {
+        System.out.println(new String(decode("AeqbC4ECNWYuePyboXGYx2N1mfkvNLPDsPBhZV693Zzc7c8xiKb1ZYJjoNrZ96GPGHEdCyChJRn3RcDuaq7tPfQGN")));
+    }
 }
 

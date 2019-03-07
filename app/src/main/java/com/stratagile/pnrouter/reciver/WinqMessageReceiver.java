@@ -10,6 +10,7 @@ import com.stratagile.pnrouter.application.ForegroundCallbacks;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.ui.activity.main.MainActivity;
 import com.stratagile.pnrouter.utils.AppShortCutUtil;
+import com.stratagile.pnrouter.utils.LogUtil;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushCommandMessage;
@@ -82,6 +83,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
     public void onNotificationMessageArrived(Context context, MiPushMessage message) {
         count++;
         mMessage = message.getContent();
+        LogUtil.addLog("小米推送新消息：" + mMessage);
         ShortcutBadger.applyCount(context, count);
 //        AppShortCutUtil.addNumShortCut(context, MainActivity.class, true, count, false);
         if(!TextUtils.isEmpty(message.getTopic())) {

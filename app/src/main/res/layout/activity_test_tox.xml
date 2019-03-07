@@ -2,15 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     android:layout_height="match_parent">
     <Button
         android:id="@+id/toxCreate"
         android:layout_width="wrap_content"
         android:text="toxCreate"
+        android:textAllCaps="false"
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/toxKill"
         android:layout_width="wrap_content"
         android:text="toxKill"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/etToxId"
+        android:hint="toxId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/addFriend"
+        android:layout_width="wrap_content"
+        android:text="addFriend"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/sendFile"
+        android:layout_width="wrap_content"
+        android:text="sendFile"
+        android:textAllCaps="false"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/cancelSend"
+        android:layout_width="wrap_content"
+        android:textAllCaps="false"
+        android:text="cancelSend"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/sendMessage"
+        android:layout_width="wrap_content"
+        android:textAllCaps="false"
+        android:text="sendMessage"
         android:layout_height="wrap_content" />
 </LinearLayout>
