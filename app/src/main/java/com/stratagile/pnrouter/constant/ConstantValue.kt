@@ -27,6 +27,7 @@ object ConstantValue {
         var userFriendId = "userFriendId"
         var routerId = "routerId"
         var selfImageName = "selfImageName"
+        var uploadAvatarMsgid = "abc12345678"
         var deleteMsgId = ""
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"

@@ -132,8 +132,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         if ("" == url) {
             textView.visibility = View.VISIBLE
         } else {
-            if (SpUtil.getString(context, ConstantValue.selfImageName, "") != "") {
-                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""), "")
+                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
                     imageView.visibility = View.VISIBLE
@@ -144,12 +143,12 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .priority(Priority.HIGH)
                         Glide.with(this)
-                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
+                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
                                 .apply(options1)
                                 .into(imageView)
                     } else {
                         Glide.with(this)
-                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(context, ConstantValue.selfImageName, ""))
+                                .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
                                 .apply(options)
                                 .into(imageView)
                     }
@@ -157,6 +156,5 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
 
                 }
             }
-        }
     }
 }

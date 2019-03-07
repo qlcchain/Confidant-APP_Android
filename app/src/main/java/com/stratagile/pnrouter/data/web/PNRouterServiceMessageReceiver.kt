@@ -390,6 +390,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val JFileForwardRsp = gson.fromJson(text, JFileForwardRsp::class.java)
                     fileForwardBack?.fileForwardReq(JFileForwardRsp)
                 }
+                //79.	用户上传头像
+                "UploadAvatar" -> {
+                    val JUploadAvatarRsp = gson.fromJson(text, JUploadAvatarRsp::class.java)
+                    uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
+                }
+                //80.更新好友用户头像
+                "UpdateAvatar" -> {
+                    val JUpdateAvatarRsp = gson.fromJson(text, JUpdateAvatarRsp::class.java)
+                    updateAvatarBackBack?.updateAvatarReq(JUpdateAvatarRsp)
+                }
             }
         }
 
@@ -442,7 +452,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var formatDiskBack: FormatDiskBack? = null
 
     var fileForwardBack: FileForwardBack? = null
-
+    var uploadAvatarBack: UploadAvatarBack? = null
+    var updateAvatarBackBack: UpdateAvatarBack? = null
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -679,6 +690,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface FileForwardBack {
         fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
+    }
+    interface UploadAvatarBack {
+        fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
+    }
+    interface UpdateAvatarBack {
+        fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
 }
 

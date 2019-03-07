@@ -439,4 +439,14 @@ data class FileRenameReq(var UserId :String, var MsgId : Int, var Filename : Str
  */
 data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FileName : String, var FileKey : String,var Action : String = "FileForward")
 
+/**
+ * 79.	用户上传头像
+ * (2)	响应（APP->Router）
+ */
+data class UploadAvatarReq(var Uid : String, var FileName : String, var FileMd5 : String,var Action : String = "UploadAvatar")
 
+/**
+ * 80.	更新好友用户头像
+ * (2)	响应（APP->Router）
+ */
+data class UpdateAvatarReq(var Uid : String, var Fid : String, var Md5 : String,var Action : String = "UpdateAvatar")

@@ -12,14 +12,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.alibaba.fastjson.util.TypeUtils.getClass
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.hyphenate.chat.EMMessage
-import com.hyphenate.chat.EMNormalFileMessageBody
-import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -27,20 +23,23 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
-import com.stratagile.pnrouter.data.api.API
-import com.stratagile.pnrouter.entity.ToxFileData
-import com.stratagile.pnrouter.entity.events.FileTransformEntity
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerModifyAvatarComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.ModifyAvatarContract
 import com.stratagile.pnrouter.ui.activity.user.module.ModifyAvatarModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.ModifyAvatarPresenter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
+import events.ToxStatusEvent
+import events.UpdataAvatrrEvent
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_modify_avatar.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.*
-import java.util.*
 
 import javax.inject.Inject;
 
@@ -51,7 +50,10 @@ import javax.inject.Inject;
  * @date 2018/09/12 18:33:54
  */
 
-class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
+class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouterServiceMessageReceiver.UploadAvatarBack {
+    override fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp) {
+
+    }
 
     @Inject
     internal lateinit var mPresenter: ModifyAvatarPresenter
@@ -75,13 +77,15 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
         setContentView(R.layout.activity_modify_avatar)
     }
     override fun initData() {
-        title.text = "Profile Pictrue"
+        EventBus.getDefault().register(this)
+        title.text = "Profile Picture"
+        AppConfig.instance.messageReceiver?.uploadAvatarBack = this
         galleryPackName = SystemUtil.getSystemPackagesName(this, "gallery")
         if ("" == galleryPackName) {
             galleryPackName = SystemUtil.getSystemPackagesName(this, "gallery3d")
         }
         if (!SpUtil.getString(this, ConstantValue.selfImageName, "").equals("")) {
-            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/" + SpUtil.getString(this, ConstantValue.selfImageName, ""), "")
+            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + SpUtil.getString(this, ConstantValue.selfImageName, ""), "")
             if (lastFile.exists()) {
                 Glide.with(this)
                         .load(lastFile)
@@ -93,7 +97,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
         val packages = this.packageManager
                 .getInstalledPackages(0)
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/temp.jpg")
+            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/"+ConstantValue.libsodiumpublicSignKey+"_temp.jpg")
             inputUri = RxFileTool.getUriForFile(this, tempFile)
             outputFile = Uri.fromFile(tempFile)
         }
@@ -188,8 +192,8 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
                 if (!dataFile.exists()) {
                     dataFile.mkdir()
                 }
-                val filePic: File
-                filePic = File(dataFile.path + "/" + SpUtil.getString(this, ConstantValue.username, "") + ".jpg")
+                var filePath  =dataFile.path + "/Avatar/" + ConstantValue.libsodiumpublicSignKey + "__Avatar.jpg"
+                val filePic: File = File(dataFile.path + "/Avatar/" + ConstantValue.libsodiumpublicSignKey + "__Avatar.jpg")
                 SpUtil.putString(this, ConstantValue.selfImageName, filePic.name)
                 if (!filePic.exists()) {
                     filePic.parentFile.mkdirs()
@@ -227,18 +231,23 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
                 fos.flush()
                 fos.close()
                 KLog.i(filePic.name)
-                runOnUiThread {
-                    closeProgressDialog()
-                    toast(getString(R.string.save_success))
-                }
+                EventBus.getDefault().post(UpdataAvatrrEvent(filePath))
 //                mPresenter.upLoadImg()
             } catch (e: IOException) {
                 // TODO Auto-generated catch block
                 e.printStackTrace()
             }
         }).start()
-    }
 
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSaveSuccess(UpdataAvatrrEvent: UpdataAvatrrEvent) {
+        FileMangerUtil.sendAvatarFile(UpdataAvatrrEvent.filePath,"", false)
+        runOnUiThread {
+            closeProgressDialog()
+            toast(getString(R.string.save_success))
+        }
+    }
     fun getRatioSize(bitWidth: Int, bitHeight: Int): Int {
         // 图片最大分辨率
         val imageHeight = 540
@@ -306,5 +315,10 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View {
 
     fun upLoadAvatar(filePath : String) {
 
+    }
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        AppConfig.instance.messageReceiver?.uploadAvatarBack = null
+        super.onDestroy()
     }
 }

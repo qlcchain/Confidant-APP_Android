@@ -80,6 +80,10 @@ public class FileUtil {
                 if (!temp.exists()) {
                     temp.mkdir();
                 }
+                File Avatar = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar", "");
+                if (!Avatar.exists()) {
+                    Avatar.mkdir();
+                }
                 KLog.i("文件夹初始化成功。。。。。。。。。。。。。");
             }
         }).start();

@@ -93,6 +93,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
     var fromId:String? = null
     var msgId:Int? = null
     var fileName:String? = null
+    var fileKey:String? = null
     var message: EMMessage? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,6 +107,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         fromId = intent.getStringExtra("fromId")
         msgId = intent.getIntExtra("msgId",0)
         fileName = intent.getStringExtra("fileName")
+        fileKey = intent.getStringExtra("fileKey")
         //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
         tvTitle.text = getString(R.string.Contacts)
@@ -154,8 +156,8 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             //toast(R.string.noSelected)
         } else {
             for (i in contactSelectedList) {
-                var fileKey =  RxEncryptTool.generateAESKey()
-                var FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(fileKey, i.miPublicKey));
+                var fileSouceKey = LibsodiumUtil.DecryptShareKey(fileKey!!)
+                var FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(fileSouceKey+"0000000000000000", i.miPublicKey))
                 var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!, strBase58, FileKey)
                 if (ConstantValue.isWebsocketConnected) {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,fileForwardReq))
