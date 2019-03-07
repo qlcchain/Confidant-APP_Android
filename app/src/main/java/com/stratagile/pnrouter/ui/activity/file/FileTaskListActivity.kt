@@ -685,6 +685,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
                     var localMedia = taskFile!!.t
                     localMedia.isStop = true
+                    localMedia.segSeqResult = 0
+                    localMedia.segSeqTotal = 1
                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
                     if (ConstantValue.isWebsocketConnected) {
                         if(!localMedia.isDownLoad && !localMedia.isComplete)
