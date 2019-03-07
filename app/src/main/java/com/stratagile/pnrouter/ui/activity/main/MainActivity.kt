@@ -1361,6 +1361,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         for (myFie in localFilesList) {
             if (myFie.upLoadFile.isComplete == false) {
                 myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = true
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
                 myRouter.type = 0

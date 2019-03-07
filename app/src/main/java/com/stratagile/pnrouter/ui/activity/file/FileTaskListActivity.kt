@@ -509,7 +509,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
                 for (myFie in localFilesList) {
                     if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
-                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, myFie.upLoadFile.isStop, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                         KLog.i("新下载")
@@ -559,121 +559,126 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             when (view.id) {
                 R.id.status ->
                 {
-
-                }
-
-            }
-            var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
-            var localMedia = taskFile!!.t
-            var file = File(localMedia!!.path)
-            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.SendGgain = false
-            if(!localMedia!!.isDownLoad)
-            {
-                if (file.exists())
-                {
-                    if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
-                        if(result  == 1)
+                    var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
+                    var localMedia = taskFile!!.t
+                    var file = File(localMedia!!.path)
+                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.SendGgain = false
+                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                    if(!localMedia!!.isDownLoad)
+                    {
+                        if (file.exists())
                         {
-                            runOnUiThread {
-                                toast(getString(R.string.Start_uploading))
+                            if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
+                                var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
+                                if(result  == 1)
+                                {
+                                    runOnUiThread {
+                                        toast(getString(R.string.Start_uploading))
+                                    }
+                                }else{
+                                    runOnUiThread {
+                                        toast(getString(R.string.Already_on_the_list))
+                                    }
+                                }
+                            } else if (localMedia!!.path.indexOf("mp4") > -1) {
+                                var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
+                                if(result  == 1)
+                                {
+                                    runOnUiThread {
+                                        toast(getString(R.string.Start_uploading))
+                                    }
+                                }else{
+                                    runOnUiThread {
+                                        toast(getString(R.string.Already_on_the_list))
+                                    }
+                                }
+                            } else {
+                                var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
+                                if(result  == 1)
+                                {
+                                    runOnUiThread {
+                                        toast(getString(R.string.Start_uploading))
+                                    }
+                                }else{
+                                    runOnUiThread {
+                                        toast(getString(R.string.Already_on_the_list))
+                                    }
+                                }
                             }
                         }else{
+                            LocalFileUtils.deleteLocalAssets(taskFile.t.msgId)
+                            EventBus.getDefault().post(AllFileStatus())
                             runOnUiThread {
-                                toast(getString(R.string.Already_on_the_list))
+                                toast(getString(R.string.Local_file_does_not_exist))
                             }
                         }
-                    } else if (localMedia!!.path.indexOf("mp4") > -1) {
-                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
-                        if(result  == 1)
+                    }else{
+
+                        var filledUri = localMedia!!.path
+                        if(localMedia!!.path.indexOf("https://") < 0 )
                         {
-                            runOnUiThread {
-                                toast(getString(R.string.Start_uploading))
-                            }
-                        }else{
-                            runOnUiThread {
-                                toast(getString(R.string.Already_on_the_list))
-                            }
+                            filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
                         }
-                    } else {
-                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
-                        if(result  == 1)
+                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+
+                        var fileMiName = localMedia!!.fileKey
+                        var fileOrginName = String(Base58.decode(fileMiName))
+                        var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
+                        var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
+                        var file = File(filePath)
+                        if(file.exists())
                         {
-                            runOnUiThread {
-                                toast(getString(R.string.Start_uploading))
-                            }
-                        }else{
-                            runOnUiThread {
-                                toast(getString(R.string.Already_on_the_list))
-                            }
+                            DeleteUtils.deleteFile(filePath)
                         }
-                    }
-                }else{
-                    LocalFileUtils.deleteLocalAssets(taskFile.t.msgId)
-                    EventBus.getDefault().post(AllFileStatus())
-                    runOnUiThread {
-                        toast(getString(R.string.Local_file_does_not_exist))
-                    }
-                }
-            }else{
+                        var fileMi = File(fileMiPath)
+                        if(fileMi.exists())
+                        {
+                            DeleteUtils.deleteFile(fileMiPath)
+                        }
 
-                var filledUri = localMedia!!.path
-                if(localMedia!!.path.indexOf("https://") < 0 )
-                {
-                    filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
-                }
-                var files_dir = PathUtils.getInstance().filePath.toString() + "/"
+                        if (ConstantValue.isWebsocketConnected) {
+                            receiveFileDataMap.put(localMedia!!.msgId,localMedia)
+                            Thread(Runnable() {
+                                run() {
+                                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
+                                    val myRouter = MyFile()
+                                    myRouter.type = 0
+                                    myRouter.userSn = ConstantValue.currentRouterSN
+                                    myRouter.upLoadFile = uploadFile
+                                    LocalFileUtils.updateLocalAssets(myRouter)
+                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
+                                }
+                            }).start()
 
-                var fileMiName = localMedia!!.fileKey
-                var fileOrginName = String(Base58.decode(fileMiName))
-                var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
-                var fileMiPath = PathUtils.getInstance().tempPath.toString() + "/" + fileOrginName
-                var file = File(filePath)
-                if(file.exists())
-                {
-                    DeleteUtils.deleteFile(filePath)
-                }
-                var fileMi = File(fileMiPath)
-                if(fileMi.exists())
-                {
-                    DeleteUtils.deleteFile(fileMiPath)
-                }
-
-                if (ConstantValue.isWebsocketConnected) {
-                    receiveFileDataMap.put(localMedia!!.msgId,localMedia)
-                    Thread(Runnable() {
-                        run() {
+                        } else {
+                            ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
                             val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN
                             myRouter.upLoadFile = uploadFile
                             LocalFileUtils.updateLocalAssets(myRouter)
-                            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
+
+                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
+                            var baseData = BaseData(msgData)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            } else {
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
                         }
-                    }).start()
-
-                } else {
-                    ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
-                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
-                    val myRouter = MyFile()
-                    myRouter.type = 0
-                    myRouter.userSn = ConstantValue.currentRouterSN
-                    myRouter.upLoadFile = uploadFile
-                    LocalFileUtils.updateLocalAssets(myRouter)
-
-                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
-                    var baseData = BaseData(msgData)
-                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                    if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    } else {
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
+                R.id.stopBtn ->
+                {
+
+                }
+
             }
+
 
         }
         recyclerView.adapter = fileGoingTaskLisytAdapter
@@ -787,6 +792,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(myFie.upLoadFile.isComplete == false)
             {
                 myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = true
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
                 myRouter.type = 0

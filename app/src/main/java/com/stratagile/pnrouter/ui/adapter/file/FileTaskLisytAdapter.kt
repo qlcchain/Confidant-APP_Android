@@ -49,9 +49,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
         }
         var fileSize = (item.t.fileSize / 1024 / 1024).toString()
         helper.addOnClickListener(R.id.status)
+        helper.addOnClickListener(R.id.stopBtn)
         if (item.t.isComplete) {
             helper.setGone(R.id.progressBar, false)
             helper.setVisible(R.id.status, false)
+            helper.setVisible(R.id.stopBtn, false)
             helper.setGone(R.id.speed, false)
             if (item.t.isDownLoad) {
                 helper.setText(R.id.filesize,"Download to: Local")
@@ -64,8 +66,10 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
 
             if (item.t.isStop) {
                 helper.setVisible(R.id.status, true)
+                helper.setVisible(R.id.stopBtn, false)
             } else {
                 helper.setVisible(R.id.status, false)
+                helper.setVisible(R.id.stopBtn, true)
             }
             helper.setGone(R.id.progressBar, true)
             helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))
@@ -88,12 +92,19 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
                 {
                     helper.setGone(R.id.status, false)
                 }else{
-                    helper.setVisible(R.id.status, true)
+                    if(item.t.isStop)
+                    {
+                        helper.setVisible(R.id.status, true)
+                        helper.setVisible(R.id.stopBtn, false)
+                    }else{
+                        helper.setVisible(R.id.status, false)
+                        helper.setVisible(R.id.stopBtn, true)
+                    }
                 }
-                helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
+                //helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.start_n))
             } else {
-                helper.setVisible(R.id.status, true)
-                helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
+                helper.setVisible(R.id.status, false)
+                //helper.setImageDrawable(R.id.status, mContext.resources.getDrawable(R.mipmap.platform_n))
             }
         }
         if (fileOriginalName.contains("jpg")) {

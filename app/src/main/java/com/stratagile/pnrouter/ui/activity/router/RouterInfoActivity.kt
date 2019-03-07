@@ -224,6 +224,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
             if(myFie.upLoadFile.isComplete == false)
             {
                 myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = true
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
                 myRouter.type = 0
