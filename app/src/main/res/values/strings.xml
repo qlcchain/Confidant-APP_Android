@@ -543,6 +543,8 @@
     <string name="no_download_is_required">Files already exist, no download is required</string>
     <string name="Start_downloading">Start download</string>
     <string name="Already_on_the_list">Already on the list</string>
+    <string name="Local_file_does_not_exist">Local file does not exist</string>
+
     <string name="system_busy">The system is busy. Please check again later.</string>
     <string name="Used_Sapce">Used Sapce：</string>
     <string name="storage">storage：</string>
