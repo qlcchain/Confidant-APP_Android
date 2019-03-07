@@ -422,7 +422,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             contactNewList.add(i)
         }
         contactNewList.sortBy {
-            it.userName
+            String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
@@ -458,31 +458,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             newFriend.visibility = View.GONE
 //            contactAdapter = ContactListAdapter(contactList,true)
         }
-//        recyclerView.adapter = contactAdapter
-//
-//        contactAdapter!!.setOnItemClickListener { adapter, view, position ->
-//            if(bundle == null)
-//            {
-//                var intent = Intent(activity!!, UserInfoActivity::class.java)
-//                intent.putExtra("user", contactAdapter!!.getItem(position))
-//                startActivity(intent)
-//            }else{
-//                var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,position,R.id.checkBox) as CheckBox
-//                checkBox.setChecked(!checkBox.isChecked)
-//                var itemCount =  contactAdapter!!.itemCount -1
-//                var count :Int = 0;
-//                for (i in 0..itemCount) {
-//                    var checkBox =  contactAdapter!!.getViewByPosition(recyclerView,i,R.id.checkBox) as CheckBox
-//                    if(checkBox.isChecked)
-//                    {
-//                        count ++
-//                    }
-//                }
-//                EventBus.getDefault().post(SelectFriendChange(count,0))
-//            }
-//
-//        }
-
 
         query.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
