@@ -13,6 +13,7 @@ import com.hyphenate.easeui.domain.EaseUser;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
@@ -77,7 +78,7 @@ public class EaseUserUtils {
         }
     }
 
-    public static void setUserAvatar(String username, ImageButtonWithText textView) {
+    public static void setUserAvatar(String username, ImageButtonWithText textView,String signPublicKey) {
         if (textView != null) {
             List<UserEntity> userEntityList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().loadAll();
             for (int i = 0; i < userEntityList.size(); i++) {
@@ -88,10 +89,14 @@ public class EaseUserUtils {
                         usernameSouce = new  String(RxEncodeTool.base64Decode(userEntityList.get(i).getRemarks()));
                     }
                     textView.setText(usernameSouce);
+                    String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userEntityList.get(i).getSignPublicKey()))+".jpg";
+                    textView.setImageFile(fileBase58Name);
                     return;
                 }
             }
             textView.setText(username);
+            String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(signPublicKey))+".jpg";
+            textView.setImageFile(fileBase58Name);
         }
     }
 
