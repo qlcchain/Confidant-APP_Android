@@ -52,6 +52,47 @@ import javax.inject.Inject;
 
 class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouterServiceMessageReceiver.UploadAvatarBack {
     override fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp) {
+        runOnUiThread()
+        {
+            closeProgressDialog()
+        }
+        when (jUploadAvatarRsp.params.retCode)
+        {
+            0 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Avatar_Update_Successful))
+                }
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                FileUtil.copySdcardFile(filePath, files_dir)
+            }
+            1 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.User_ID_error))
+                }
+            }
+            2 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.file_error))
+                }
+            }
+            3 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.file_hasnot_changed))
+                }
+            }
+            else ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Other_mistakes))
+                }
+            }
+        }
 
     }
 
@@ -85,19 +126,22 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
             galleryPackName = SystemUtil.getSystemPackagesName(this, "gallery3d")
         }
         if (!SpUtil.getString(this, ConstantValue.selfImageName, "").equals("")) {
-            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + SpUtil.getString(this, ConstantValue.selfImageName, ""), "")
-            if (lastFile.exists()) {
-                Glide.with(this)
-                        .load(lastFile)
-                        .apply(options)
-                        .into(ivPicture)
-            }
+
+        }
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + fileBase58Name, "")
+        if (lastFile.exists()) {
+            Glide.with(this)
+                    .load(lastFile)
+                    .apply(options)
+                    .into(ivPicture)
         }
         val strCamera = ""
         val packages = this.packageManager
                 .getInstalledPackages(0)
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/"+ConstantValue.libsodiumpublicSignKey+"_temp.jpg")
+            var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/"+fileBase58Name+"__Avatar.jpg")
             inputUri = RxFileTool.getUriForFile(this, tempFile)
             outputFile = Uri.fromFile(tempFile)
         }
@@ -131,16 +175,16 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
     }
 
     override fun setupActivityComponent() {
-       DaggerModifyAvatarComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .modifyAvatarModule(ModifyAvatarModule(this))
-               .build()
-               .inject(this)
+        DaggerModifyAvatarComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .modifyAvatarModule(ModifyAvatarModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: ModifyAvatarContract.ModifyAvatarContractPresenter) {
-            mPresenter = presenter as ModifyAvatarPresenter
-        }
+        mPresenter = presenter as ModifyAvatarPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -192,9 +236,10 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 if (!dataFile.exists()) {
                     dataFile.mkdir()
                 }
-                var filePath  =dataFile.path + "/Avatar/" + ConstantValue.libsodiumpublicSignKey + "__Avatar.jpg"
-                val filePic: File = File(dataFile.path + "/Avatar/" + ConstantValue.libsodiumpublicSignKey + "__Avatar.jpg")
-                SpUtil.putString(this, ConstantValue.selfImageName, filePic.name)
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+                var filePath  =dataFile.path + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                val filePic: File = File(filePath)
+                //SpUtil.putString(this, ConstantValue.selfImageName, filePic.name)
                 if (!filePic.exists()) {
                     filePic.parentFile.mkdirs()
                     filePic.createNewFile()
@@ -231,7 +276,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 fos.flush()
                 fos.close()
                 KLog.i(filePic.name)
-                EventBus.getDefault().post(UpdataAvatrrEvent(filePath))
+                EventBus.getDefault().post(UpdataAvatrrEvent(filePath,false))
 //                mPresenter.upLoadImg()
             } catch (e: IOException) {
                 // TODO Auto-generated catch block
@@ -241,12 +286,17 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSaveSuccess(UpdataAvatrrEvent: UpdataAvatrrEvent) {
-        FileMangerUtil.sendAvatarFile(UpdataAvatrrEvent.filePath,"", false)
-        runOnUiThread {
-            closeProgressDialog()
-            toast(getString(R.string.save_success))
+    fun onUpdataAvatrrEvent(UpdataAvatrrEvent: UpdataAvatrrEvent) {
+        if(!UpdataAvatrrEvent.isComplete)
+        {
+            FileMangerUtil.sendAvatarFile(UpdataAvatrrEvent.filePath,"", false)
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+                toast(getString(R.string.save_success))
+            }
         }
+
     }
     fun getRatioSize(bitWidth: Int, bitHeight: Int): Int {
         // 图片最大分辨率

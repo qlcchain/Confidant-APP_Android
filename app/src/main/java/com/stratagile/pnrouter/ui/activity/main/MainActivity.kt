@@ -13,6 +13,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -97,6 +98,46 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
+    override fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp) {
+        when (jUploadAvatarRsp.params.retCode)
+        {
+            0 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Avatar_Update_Successful))
+                }
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                FileUtil.copySdcardFile(filePath, files_dir)
+            }
+            1 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.User_ID_error))
+                }
+            }
+            2 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.file_error))
+                }
+            }
+            3 ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.file_hasnot_changed))
+                }
+            }
+            else ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Other_mistakes))
+                }
+            }
+        }
+    }
+
     override fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushLogoutRsp(0, userId!!, "")

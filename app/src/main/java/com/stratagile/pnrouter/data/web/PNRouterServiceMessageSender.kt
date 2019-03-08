@@ -214,9 +214,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     fun  initThread() {
         thread =  thread(true, false, null, "senderThread") {
             while (true) {
-                KLog.i("发送线程运行中等待。。。")
+                //KLog.i("发送线程运行中等待。。。")
                 Thread.sleep(10 * 1000)
-                KLog.i( "发送线程运行中。。。")
+                //KLog.i( "发送线程运行中。。。")
                 if(WiFiUtil.isNetworkConnected() && ConstantValue.logining && ConstantValue.curreantNetworkType.equals("WIFI"))
                 {
                     sendChatMessage(false,false)

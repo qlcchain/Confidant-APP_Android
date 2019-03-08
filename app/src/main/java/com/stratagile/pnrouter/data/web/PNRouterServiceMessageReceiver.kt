@@ -393,7 +393,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //79.	用户上传头像
                 "UploadAvatar" -> {
                     val JUploadAvatarRsp = gson.fromJson(text, JUploadAvatarRsp::class.java)
-                    uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
+                    if(uploadAvatarBack!= null)
+                    {
+                        uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
+                    }else{
+                        mainInfoBack?.uploadAvatarReq(JUploadAvatarRsp)
+                    }
+
                 }
                 //80.更新好友用户头像
                 "UpdateAvatar" -> {
@@ -587,6 +593,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun OnlineStatusPush(jOnlineStatusPushRsp : JOnlineStatusPushRsp)
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp)
+        fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
     }
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)

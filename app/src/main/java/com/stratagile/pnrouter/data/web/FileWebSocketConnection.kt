@@ -69,6 +69,10 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
                 filledUri = wsUri
             }
             KLog.i("连接的地址为：${filledUri}")
+            if(filledUri == null || filledUri.equals(""))
+            {
+                return
+            }
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()

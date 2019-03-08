@@ -17,6 +17,8 @@ import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponen
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
 import com.stratagile.pnrouter.ui.activity.user.module.MyDetailModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.MyDetailPresenter
+import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_my_detail.*
@@ -66,7 +68,8 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        ivAvatar.setImageFile(fileBase58Name)
         nickName.setOnClickListener {
             startActivityForResult(Intent(this, EditNickNameActivity::class.java), 1)
         }

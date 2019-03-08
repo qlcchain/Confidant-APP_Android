@@ -202,7 +202,7 @@ public class MessageRetrievalService extends Service implements InjectableType, 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                KLog.i( "Looping...");
+                //KLog.i( "Looping...");
             }
 
             KLog.i("Exiting...");
