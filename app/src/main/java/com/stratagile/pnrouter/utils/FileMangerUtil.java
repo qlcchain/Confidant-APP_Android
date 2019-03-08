@@ -213,7 +213,10 @@ public class FileMangerUtil {
                                 byte[] fileBufferMi = new byte[0];
                                 try{
                                     long  miBegin = System.currentTimeMillis();
-                                    fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                    if(!fileName.contains("__Avatar.jpg"))//头像不用加密
+                                    {
+                                        fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
+                                    }
                                     int totlSegment = (int)Math.ceil(fileBufferMi.length / sendFileSizeMax);
                                     sendFileTotalSegment.put(filePath,totlSegment);
                                     long miend  = System.currentTimeMillis();
@@ -221,7 +224,7 @@ public class FileMangerUtil {
                                     faBegin = System.currentTimeMillis();
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
-                                        sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
+                                        sendFileByteData(fileBuffer,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
                                         int segSeqTotal = sendFileTotalSegment.get(filePath);
                                         UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
                                         MyFile myRouter = new MyFile();
@@ -921,6 +924,14 @@ public class FileMangerUtil {
         }).start();
         return 1;
     }
+
+    /**
+     * 头像不用加密
+     * @param imagePath
+     * @param msgId
+     * @param isCompress
+     * @return
+     */
     public static int sendAvatarFile(String imagePath,String msgId,boolean isCompress) {
         new Thread(new Runnable(){
             public void run(){
@@ -945,11 +956,8 @@ public class FileMangerUtil {
                             return;
                         }
                         String files_dir = imagePath;
-                        FileUtil.recordRecentFile(fileName, 0, 0, "Router");
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
-
-
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
                             sendMsgLocalMap.put(uuid,false);
@@ -962,15 +970,15 @@ public class FileMangerUtil {
                             byte[] SrcKey = new byte[256];
                             byte[] DstKey = new byte[256];
                             try {
-                                if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+                               /* if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                 {
                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                     DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey,ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
                                 }else{
                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                }
-                                sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
+                                }*/
+                                sendFileKeyByteMap.put(uuid,"");
                                 sendFileMyKeyByteMap.put(uuid,SrcKey);
                                 sendFileFriendKeyByteMap.put(uuid,DstKey);
                             }catch (Exception e){
@@ -982,18 +990,18 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            //String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
-                            int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
-                            if(code == 1)
+                            //int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
+                            if(true)
                             {
 
-                                File miFile = new File(base58files_dir);
+                                File miFile = new File(imagePath);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
-                                sendFilePathMap.put(uuidTox+"",base58files_dir);
+                                sendFilePathMap.put(uuidTox+"",imagePath);
                                 sendFileSize.put(uuidTox+"",file.length());
                                 deleteFileMap.put(uuidTox+"",false);
 
@@ -1001,7 +1009,7 @@ public class FileMangerUtil {
                                 toxFileData.setFromId(fromUserId);
                                 toxFileData.setFilePath(imagePath);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                File fileMi = new File(base58files_dir);
+                                File fileMi = new File(imagePath);
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
@@ -1013,7 +1021,7 @@ public class FileMangerUtil {
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
-                                try {
+                                /*try {
 
                                     if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
                                     {
@@ -1026,7 +1034,7 @@ public class FileMangerUtil {
                                 }catch (Exception e)
                                 {
 
-                                }
+                                }*/
                                 toxFileData.setSrcKey(new String(SrcKey));
                                 toxFileData.setDstKey(new String(DstKey));
 
@@ -1034,9 +1042,9 @@ public class FileMangerUtil {
                                 if(ConstantValue.INSTANCE.isAntox())
                                 {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,base58files_dir,friendKey);
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,imagePath,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(imagePath,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
 
                                 sendToxFileDataMap.put(fileNumber,toxFileData);

@@ -147,6 +147,15 @@ public class ToxCoreJni {
         LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
         return result;
     }
+    public int senToxAvatarFile(String filePath, String friendId,String msgId)
+    {
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());
+        KLog.i(filePath);
+        int result =  sendFile(filePath, friendId, "a:"+fileName);
+        KLog.i("发送Tox文件:" + fileName +"  result:" +result);
+        LogUtil.addLog("发送Tox文件:",filePath +"  result:" +result);
+        return result;
+    }
     public native int sendFile(String filePath, String friendId, String fileName);
 
     /**

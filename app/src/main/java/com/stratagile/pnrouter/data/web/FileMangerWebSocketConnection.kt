@@ -69,6 +69,10 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
                 filledUri = wsUri
             }
             KLog.i("文件管理连接的地址为：${filledUri}")
+            if(filledUri == null || filledUri.equals(""))
+            {
+                return
+            }
             val socketFactory = createTlsSocketFactory(trustStore)
 
             val okHttpClient = OkHttpClient.Builder()

@@ -54,8 +54,11 @@
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
+    <string name="Avatar_Update_Successful">Avatar Update Successful</string>
+
     <string name="success">success</string>
     <string name="Name_not_changed">Name not changed</string>
+    <string name="file_hasnot_changed">file hasn\'t changed</string>
 
     <string name="fail">fail</string>
     <string name="Alreadyagoodfriend">Already a good friend</string>

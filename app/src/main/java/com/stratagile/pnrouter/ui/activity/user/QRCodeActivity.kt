@@ -101,7 +101,8 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         tvUserName.text = SpUtil.getString(this, ConstantValue.username, "")
 
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.selfImageName, "")!!)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        ivAvatar.setImageFile(fileBase58Name)
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
         CreateEnglishUserQRCode.execute()*/
         tvSaveToPhone.setOnClickListener {

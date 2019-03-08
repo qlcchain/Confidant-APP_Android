@@ -21,6 +21,8 @@ import com.stratagile.pnrouter.ui.activity.router.RouterManagementActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.activity.user.MyDetailActivity
 import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
+import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
@@ -67,7 +69,8 @@ class MyFragment : BaseFragment(), MyContract.View {
         version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
-        avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        avatar.setImageFile(fileBase58Name)
         routerManagement.setOnClickListener {
             var intent  = Intent(activity, RouterManagementActivity::class.java)
             startActivity(intent)
@@ -103,7 +106,8 @@ class MyFragment : BaseFragment(), MyContract.View {
     fun reSetAvatar(resetAvatar: ResetAvatar) {
         nickName.text = SpUtil.getString(activity!!, ConstantValue.username, "")
         avatar.setText(SpUtil.getString(activity!!, ConstantValue.username, "")!!)
-        avatar.setImageFile(SpUtil.getString(activity!!, ConstantValue.selfImageName, "")!!)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        avatar.setImageFile(fileBase58Name)
     }
 
 
