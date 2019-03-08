@@ -68,7 +68,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     fileListChooseAdapter!!.data.forEachIndexed { index, it ->
                         if(index == flagIndex)
                         {
-                            fileListChooseAdapter!!.data[index].fileName = reName
+                            fileListChooseAdapter!!.data[index].fileName = reNameTempName + reName
                             fileListChooseAdapter!!.notifyItemChanged(flagIndex)
                         }
 
@@ -90,6 +90,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     var waitDeleteData: JPullFileListRsp.ParamsBean.PayloadBean? = null
     var flagIndex = 0;
     var reName = ""
+    var reNameTempName = ""
+    var reNamePos = -1
     var waitRenameData:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
@@ -155,7 +157,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             0 -> {
                 FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1, "")
                 runOnUiThread {
-                    fileListChooseAdapter!!.data.remove(waitDeleteData!!)
+                    fileListChooseAdapter!!.data.removeAt(flagIndex)
                     fileListChooseAdapter!!.notifyDataSetChanged()
                     closeProgressDialog()
                     toast(R.string.deletsuccess)
@@ -336,8 +338,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                 }
                                 3 -> {
                                     waitRenameData = data
-
-                                    showRenameDialog(data)
+                                    reNameTempName = data.fileName.substring(0 , data.fileName.lastIndexOf("/") + 1)
+                                    showRenameDialog(data, position)
                                 }
                                 4 -> {
                                     showProgressDialog("wait…")
@@ -512,7 +514,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         pullFileList()
     }
 
-    fun showRenameDialog(data : JPullFileListRsp.ParamsBean.PayloadBean) {
+    fun showRenameDialog(data : JPullFileListRsp.ParamsBean.PayloadBean, postion : Int) {
         val view = View.inflate(activity, R.layout.rename_dialog_layout, null)
         val etContent = view.findViewById<EditText>(R.id.etContent)
         val btnLeft = view.findViewById<Button>(R.id.btn_left)
@@ -549,6 +551,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 toast(R.string.Name_not_changed)
                 return@setOnClickListener
             }
+            reNamePos = postion
             reName = rename
             var sendData = BaseData(4, fileRenameReq)
             if (ConstantValue.isWebsocketConnected) {

@@ -110,9 +110,11 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             }else{
                 if(item.t.isStop)
                 {
+                    KLog.i("暂停。。")
                     helper.setVisible(R.id.status, true)
                     helper.setVisible(R.id.stopBtn, false)
                 }else{
+                    KLog.i("正在进行。。")
                     helper.setVisible(R.id.status, false)
                     helper.setVisible(R.id.stopBtn, true)
                 }
