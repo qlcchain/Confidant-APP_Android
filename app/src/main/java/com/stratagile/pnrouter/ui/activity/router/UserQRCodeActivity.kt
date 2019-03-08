@@ -14,9 +14,6 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserQRCodeComp
 import com.stratagile.pnrouter.ui.activity.router.contract.UserQRCodeContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserQRCodePresenter
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
@@ -24,7 +21,7 @@ import android.content.Intent.ACTION_SEND
 import android.net.Uri
 import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
 import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.utils.ShareUtil
+import com.stratagile.pnrouter.utils.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

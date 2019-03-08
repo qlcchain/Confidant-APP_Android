@@ -58,18 +58,24 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_i_share))
                 helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
                 userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.userKey))+".jpg"
+                userAvatar.setImageFile(fileBase58Name)
                 helper.setText(R.id.tvOpreateType, "File Sent")
             }
             2 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.documents_received))
                 helper.setText(R.id.friendName, String(RxEncodeTool.base64Decode(item.sender)))
                 userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.userKey))+".jpg"
+                userAvatar.setImageFile(fileBase58Name)
                 helper.setText(R.id.tvOpreateType, "File Received")
             }
             3 -> {
                 helper.setImageDrawable(R.id.fileForm, mContext.resources.getDrawable(R.mipmap.upload_h))
                 helper.setText(R.id.friendName, SpUtil.getString(mContext, ConstantValue.username, ""))
                 userAvatar.setText(String(RxEncodeTool.base64Decode(item.sender)))
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.userKey))+".jpg"
+                userAvatar.setImageFile(fileBase58Name)
                 helper.setText(R.id.tvOpreateType, "My File")
             }
         }

@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.entity.events.SelectFriendChange;
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
 
@@ -83,6 +84,8 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 if (nickNameSouce != null) {
                     imagebutton.setText(nickNameSouce);
                 }
+                String avatarPath = Base58.encode( RxEncodeTool.base64Decode(lv0.getUserEntity().getSignPublicKey()))+".jpg";
+                imagebutton.setImageFile(avatarPath);
                 helper.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

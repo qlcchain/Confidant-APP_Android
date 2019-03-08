@@ -32,5 +32,5 @@
 		android:layout_marginTop="10px"
 		android:layout_marginLeft="50px"
 		android:layout_marginRight="50px"
-		android:text="@string/loading"/>
+		android:text="@string/waiting"/>
 </LinearLayout>

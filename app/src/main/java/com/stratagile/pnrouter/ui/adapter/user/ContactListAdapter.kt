@@ -7,6 +7,7 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
@@ -26,6 +27,8 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
             if (nickNameSouce != null) {
                 imagebutton.setText(nickNameSouce)
             }
+            var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.signPublicKey))+".jpg"
+            imagebutton.setImageFile(fileBase58Name)
         }else{
             var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.remarks))
             //var nickNameSouce = item!!.nickName
@@ -34,6 +37,8 @@ class ContactListAdapter(arrayList: ArrayList<UserEntity>,isSelect: Boolean) : B
             if (nickNameSouce != null) {
                 imagebutton.setText(nickNameSouce)
             }
+            var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.signPublicKey))+".jpg"
+            imagebutton.setImageFile(fileBase58Name)
         }
         try {
             AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(item)

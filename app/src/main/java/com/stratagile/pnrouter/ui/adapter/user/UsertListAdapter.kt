@@ -7,6 +7,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.entity.JPullUserRsp
+import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
@@ -34,6 +35,7 @@ class UsertListAdapter(arrayList: ArrayList<RouterUserEntity>, isSelect: Boolean
             var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.mnemonic))
             imagebutton.setText(nickNameSouce)
         }
+
     }
      fun setCheckBox(positon:Int)
     {

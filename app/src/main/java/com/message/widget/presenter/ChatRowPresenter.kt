@@ -15,10 +15,12 @@ import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
+import kotlinx.android.synthetic.main.activity_user_info.*
 import java.util.*
 
 abstract class ChatRowPresenter(var itemView : View, var message: Message, var position : Int, var adapter : MessageListAdapter) : MessageListViewHolder.ChatRowActionCallback {
@@ -68,6 +70,8 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
             usernameSouce = String(RxEncodeTool.base64Decode(userEntity?.remarks))
         }
         avatar.setText(usernameSouce)
+        var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userEntity!!.signPublicKey))+".jpg"
+        avatar.setImageFile(avatarPath)
     }
 
     /**

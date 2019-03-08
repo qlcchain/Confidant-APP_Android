@@ -30,6 +30,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -165,6 +166,8 @@ public abstract class EaseChatRow extends LinearLayout {
 //                EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
                 //设置自己的头像
                 userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
+                String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getLibsodiumpublicMiKey()))+".jpg";
+                userAvatarView.setImageFile(fileBase58Name);
             } else {
                 List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
                 if (user.size() != 0) {

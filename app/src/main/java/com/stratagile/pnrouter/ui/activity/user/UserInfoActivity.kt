@@ -2,10 +2,15 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
 import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
+import com.hyphenate.easeui.utils.PathUtils
+import com.message.Message
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
@@ -13,13 +18,12 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
-import com.stratagile.pnrouter.entity.AddFriendDealReq
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.ChangeRemarksReq
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
@@ -42,6 +46,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
+import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -51,7 +57,34 @@ import javax.inject.Inject
  * @date 2018/09/13 22:03:00
  */
 
-class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener {
+class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.FriendOperateListener, PNRouterServiceMessageReceiver.UpdateAvatarBack {
+    override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
+        if(jUpdateAvatarRsp.params.retCode == 0)
+        {
+
+            var filePath = jUpdateAvatarRsp.params.fileName
+            var fileBase58Name = filePath.substring(8,filePath.length)
+            var fileName = String(Base58.decode(fileBase58Name));
+            val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+            fileName = fileName.replace("__Avatar","")
+            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+            var msgId = Calendar.getInstance().timeInMillis /1000
+            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
+        }
+    }
+
+    internal var handlerDown: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+
+                }
+                0x55 -> {
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
     override fun delFriendRsp(retCode: Int) {
         /* var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
          var delFriendCmdRsp = DelFriendCmdRsp(0,userId!!, "")
@@ -190,6 +223,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 //        AppConfig.instance.messageReceiver!!.addfrendCallBack = null
 //        AppConfig.instance.messageReceiver!!.delFriendCallBack = null
         UserProvider.getInstance().friendOperateListener = null
+        AppConfig.instance.messageReceiver!!.updateAvatarBackBack = null
     }
 
     @Inject
@@ -269,6 +303,8 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         }
         nickName.text = nickNameSouce
         avatar.setText(nickNameSouce)
+        var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
+        avatar.setImageFile(avatarPath);
         var itStatus = FriendEntity()
         itStatus.friendLocalStatus = 7
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -312,6 +348,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         SpUtil.putString(this, ConstantValue.userFriendname, String(RxEncodeTool.base64Decode(userInfo!!.nickName)))
         SpUtil.putString(this, ConstantValue.userFriendId,userInfo!!.userId)
         shareAppFreind.setOnClickListener {
+            UserDataManger.curreantfriendUserData = userInfo
             startActivity(Intent(this, QRFriendCodeActivity::class.java))
         }
         tvAccept.setOnClickListener {
@@ -369,7 +406,27 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 tvAddFriend.visibility = View.VISIBLE
             }
         }
-
+        AppConfig.instance.messageReceiver!!.updateAvatarBackBack = this
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))
+        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var fileMD5 = FileUtil.getFileMD5(File(filePath))
+        if(fileMD5 == null)
+        {
+            fileMD5 = ""
+        }
+        val updateAvatarReq = UpdateAvatarReq(userId!!, userInfo!!.userId, fileMD5)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, updateAvatarReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
     }
 
     fun showDialog() {

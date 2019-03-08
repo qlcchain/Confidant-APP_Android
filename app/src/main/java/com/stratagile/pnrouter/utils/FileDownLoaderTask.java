@@ -55,6 +55,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private int msgID;
 	private String keyStr;
 	private String fileUlr;
+	private String FileNameOld;
 
 	/**
 	 *
@@ -75,9 +76,14 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		try {
 			mUrl = new URL(url);
 			String fileName = new File(mUrl.getFile()).getName();
-			String FileNameOld = new String(Base58.decode(fileName));
-			mFile = new File(out, FileNameOld);
-			KLog.d(TAG+":out="+out+", name="+FileNameOld+",mUrl.getFile()="+mUrl.getFile());
+			FileNameOld = new String(Base58.decode(fileName));
+			String saveName  = FileNameOld;
+			if(FileNameOld.contains("__Avatar"))
+			{
+				saveName = FileNameOld.replace("__Avatar","");
+			}
+			mFile = new File(out, saveName);
+			KLog.d(TAG+":out="+out+", name="+saveName+",mUrl.getFile()="+mUrl.getFile());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -200,17 +206,20 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private int copy(InputStream input, OutputStream output,int length){
 		InputStream newInput = input;
 		try {
-			String aesKey = "";
-			if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+			if(!FileNameOld.contains("__Avatar.jpg"))
 			{
-				aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
-			}else{
-				aesKey =  RxEncodeTool.getAESKey(keyStr);
+				String aesKey = "";
+				if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+				{
+					aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+				}else{
+					aesKey =  RxEncodeTool.getAESKey(keyStr);
 
+				}
+				byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
+				byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
+				newInput = FileUtil.byteTOInputStream(miFile);
 			}
-			byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-			byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
-			newInput = FileUtil.byteTOInputStream(miFile);
 		}catch (Exception e)
 		{
 			KLog.i("FileDownLoaderTask jiemi  error ");

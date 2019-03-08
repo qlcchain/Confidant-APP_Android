@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
+import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.DateUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -154,6 +155,8 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
 //            EaseUserUtils.setUserAvatar(getContext(), conversationId, holder.avatar);
             //EaseUserUtils.setUserNick(username, holder.name);
             holder.avatar.setText(usernameSouce);
+            String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(friendUser.getSignPublicKey()))+".jpg";
+            holder.avatar.setImageFile(fileBase58Name);
             holder.name.setText(usernameSouce);
             holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
             holder.motioned.setVisibility(View.GONE);

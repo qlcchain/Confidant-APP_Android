@@ -9,6 +9,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
@@ -25,6 +26,8 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
         }
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.ivAvatar)
         imagebutton.setText(item!!.nickName)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.signPublicKey))+".jpg"
+        imagebutton.setImageFile(fileBase58Name)
         helper!!.addOnClickListener(R.id.tvRefuse)
         helper!!.addOnClickListener(R.id.tvAccept)
         var it = FriendEntity()

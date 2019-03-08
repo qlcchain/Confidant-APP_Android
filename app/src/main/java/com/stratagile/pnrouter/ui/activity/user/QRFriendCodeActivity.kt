@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerQRFriendCodeComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.QRCodeContract
@@ -24,10 +25,7 @@ import com.stratagile.pnrouter.ui.activity.user.module.QRCodeModule
 import com.stratagile.pnrouter.ui.activity.user.module.QRFriendCodeModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRCodePresenter
 import com.stratagile.pnrouter.ui.activity.user.presenter.QRFriendCodePresenter
-import com.stratagile.pnrouter.utils.FileUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.ShareUtil
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import kotlinx.android.synthetic.main.activity_qrcode.*
 import java.io.File
@@ -91,7 +89,9 @@ class QRFriendCodeActivity : BaseActivity(), QRFriendCodeContract.View , View.On
         tvUserName.text = SpUtil.getString(this, ConstantValue.userFriendname, "")
 
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.userFriendname, "")!!)
-        ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.userFriendname, "")!!)
+        //ivAvatar.setImageFile(SpUtil.getString(this, ConstantValue.userFriendname, "")!!)
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.signPublicKey))+".jpg"
+        ivAvatar.setImageFile(fileBase58Name)
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
         CreateEnglishUserQRCode.execute()*/
         tvSaveToPhone.setOnClickListener {

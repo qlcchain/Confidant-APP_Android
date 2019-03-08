@@ -68,8 +68,8 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
-        ivAvatar.setImageFile(fileBase58Name)
+        var avatarPath = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
+        ivAvatar.setImageFile(avatarPath)
         nickName.setOnClickListener {
             startActivityForResult(Intent(this, EditNickNameActivity::class.java), 1)
         }
