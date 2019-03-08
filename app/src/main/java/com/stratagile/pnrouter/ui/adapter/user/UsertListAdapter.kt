@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.adapter.user
 import android.widget.CheckBox
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.db.RouterUserEntity
@@ -12,6 +13,10 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class UsertListAdapter(arrayList: ArrayList<RouterUserEntity>, isSelect: Boolean) : BaseQuickAdapter<RouterUserEntity, BaseViewHolder>(R.layout.layout_user_list_item, arrayList) {
+    override fun convert(helper: BaseViewHolder?, item: RouterUserEntity?, payloads: MutableList<Any>) {
+        KLog.i("")
+    }
+
     var isSelect = isSelect;
     var helperItem :BaseViewHolder? = null;
     override fun convert(helper: BaseViewHolder?, item: RouterUserEntity?) {

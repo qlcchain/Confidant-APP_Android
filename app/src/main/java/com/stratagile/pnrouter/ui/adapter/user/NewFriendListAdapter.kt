@@ -15,6 +15,10 @@ import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<UserEntity, BaseViewHolder>(R.layout.layout_new_friend_list_item, arrayList) {
+    override fun convert(helper: BaseViewHolder?, item: UserEntity?, payloads: MutableList<Any>) {
+        KLog.i("")
+    }
+
     override fun convert(helper: BaseViewHolder?, item: UserEntity?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
         helper!!.setText(R.id.tvNickName, nickNameSouce)

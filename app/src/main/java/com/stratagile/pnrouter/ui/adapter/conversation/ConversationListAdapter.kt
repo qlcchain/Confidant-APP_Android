@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.adapter.conversation
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.message.Conversation
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.utils.Base58
@@ -13,6 +14,10 @@ import kotlinx.android.synthetic.main.activity_qrcode.*
 import java.util.*
 
 class ConversationListAdapter(arrayList: ArrayList<Conversation>) : BaseQuickAdapter<Conversation, BaseViewHolder>(R.layout.layout_conversation_list_item, arrayList) {
+    override fun convert(helper: BaseViewHolder?, item: Conversation?, payloads: MutableList<Any>) {
+        KLog.i("")
+    }
+
     override fun convert(helper: BaseViewHolder, item: Conversation) {
         if (item.unReadCount == 0) {
             helper.setVisible(R.id.tvNewMessageFlag, false)

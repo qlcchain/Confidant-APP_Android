@@ -1512,7 +1512,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         try {
                                             if (json != null) {
                                                 httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                KLog.i("http的返回为：" + httpData)
+                                                KLog.i("http的返回为：" + httpData.toString())
                                                 if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
                                                 {
                                                     ConstantValue.curreantNetworkType = "WIFI"

@@ -41,6 +41,10 @@ class TestActivity : BaseActivity(), TestContract.View {
         setTitle("TestActivity")
 //        avi.setIndicator("BallSpinFadeLoaderIndicator")
 //        avi.show()
+        image1.setText("ceshi")
+        image2.setText("测试")
+        image3.setImageResource(R.mipmap.ic_empty_task, true)
+        image4.setImageResource(R.mipmap.ic_empty_task, false)
     }
     override fun initData() {
         button.setOnClickListener {
@@ -90,19 +94,6 @@ class TestActivity : BaseActivity(), TestContract.View {
                     //.recordVideoSecond()//录制视频秒数 默认60s
                     .forResult(PictureConfig.CHOOSE_REQUEST)//结果回调onActivityResult code
         }
-//        val list = arrayListOf<MultiItemEntity>()
-//        for (i in 0..9) {
-//            var userHead = UserHead()
-//            userHead.userName = "xx" + i + "yy"
-//            val list1 = arrayListOf<MultiItemEntity>()
-//            for (j in 0..3) {
-////                userHead.addSubItem(UserItem())
-//            }
-//            list.add(userHead)
-//        }
-//        var contactAdapter1 = ContactAdapter(list)
-//        recyclerView.adapter = contactAdapter1
-//        contactAdapter1.expandAll()
     }
 
 

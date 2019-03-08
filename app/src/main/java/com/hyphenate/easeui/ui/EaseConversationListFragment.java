@@ -1,6 +1,7 @@
 package com.hyphenate.easeui.ui;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -19,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.hyphenate.EMConnectionListener;
@@ -33,6 +35,7 @@ import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.EaseConversationList;
 import com.message.CacheMessage;
 import com.message.Message;
+import com.noober.menu.FloatMenu;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -48,6 +51,7 @@ import com.stratagile.pnrouter.entity.UnReadEMMessage;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.view.CommonDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,6 +107,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
     @Override
     protected void setUpView() {
+        conversationList.clear();
         conversationList.addAll(loadLocalConversationList());
         conversationListView.init(conversationList);
 
@@ -141,26 +146,50 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                 }
             });
 
-//            conversationListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//                @Override
-//                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            conversationListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    CommonDialog commonDialog = new CommonDialog(getActivity());
+                    View view1 = getActivity().getLayoutInflater().inflate(R.layout.dialog_conversation_layout, null, false);
+                    commonDialog.setView(view1);
+                    commonDialog.show();
+                    TextView tvDelete = view1.findViewById(R.id.tvDelete);
+                    tvDelete.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            UnReadEMMessage conversation = conversationListView.getItem(i);
+                            String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                            KLog.i("清除和 " + conversation.getEmMessage().getTo() + " 的对话");
+                            if (userId.equals(conversation.getEmMessage().getFrom())) {
+                                KLog.i("自己的id为：" + userId + " 的对话");
+                                LogUtil.addLog("清除和" + conversation.getEmMessage().getTo() + "的对话");
+                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");
+                            } else {
+                                KLog.i("自己的id为：" + userId + " 的对话");
+                                LogUtil.addLog("清除和" + conversation.getEmMessage().getFrom() + "的对话");
+                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getFrom(), "");
+                            }
+                            setUpView();
+                            commonDialog.cancel();
+                        }
+                    });
 //                    FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
 //                    floatMenu.inflate(R.menu.conversation_popup_menu);
 //                    int[] loc1=new int[2];
 //                    view.getLocationOnScreen(loc1);
-//                    floatMenu.show(new Point(loc1[0]-50,loc1[1]-100));
+//                    floatMenu.show(new Point(loc1[0]+200,loc1[1]-100), 0, 0);
 //                    floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
 //                        @Override
 //                        public void onClick(View v, int position) {
 //                            switch (position)
 //                            {
 //                                case 0:
-//                                    String isTop = conversationList.get(position).getExtField();
-//                                    if ("toTop".equals(isTop)) {
-//                                        conversationList.get(position).setExtField("false");
-//                                    } else {
-//                                        conversationList.get(position).setExtField("toTop");
-//                                    }
+////                                    String isTop = conversationList.get(position).getExtField();
+////                                    if ("toTop".equals(isTop)) {
+////                                        conversationList.get(position).setExtField("false");
+////                                    } else {
+////                                        conversationList.get(position).setExtField("toTop");
+////                                    }
 //                                    refresh();
 //                                    break;
 //                                case 1:
@@ -172,9 +201,9 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 //                            }
 //                        }
 //                    });
-//                    return true;
-//                }
-//            });
+                    return true;
+                }
+            });
         }
 
         EMClient.getInstance().addConnectionListener(connectionListener);
@@ -436,6 +465,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         } catch (Exception e) {
 
         }
+        KLog.i("对话的数量为：" + list.size());
         return list;
     }
 

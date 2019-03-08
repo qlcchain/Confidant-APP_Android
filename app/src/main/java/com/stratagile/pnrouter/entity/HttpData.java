@@ -15,6 +15,19 @@ public class HttpData {
     private int RetCode;
     private int ConnStatus;
     private int ServerPort;
+
+    @Override
+    public String toString() {
+        return "HttpData{" +
+                "RetCode=" + RetCode +
+                ", ConnStatus=" + ConnStatus +
+                ", ServerPort=" + ServerPort +
+                ", Rid='" + Rid + '\'' +
+                ", ServerHost='" + ServerHost + '\'' +
+                ", Info='" + Info + '\'' +
+                '}';
+    }
+
     private String Rid;
     private String ServerHost;
     private String Info;

@@ -28,5 +28,40 @@
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/image1"
+            android:layout_width="@dimen/x70"
+            android:layout_height="@dimen/x70">
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/image2"
+            android:layout_width="@dimen/x70"
+            android:layout_height="@dimen/x70">
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/image3"
+            android:layout_width="@dimen/x70"
+            android:layout_height="@dimen/x70">
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/image4"
+            android:layout_width="@dimen/x70"
+            android:layout_height="@dimen/x70">
+
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+    </LinearLayout>
 </LinearLayout>
 

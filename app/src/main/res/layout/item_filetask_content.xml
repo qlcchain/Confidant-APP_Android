@@ -47,7 +47,7 @@
         <TextView
             android:id="@+id/tvFileName"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:ellipsize="middle"
             android:maxEms="10"
             android:singleLine="true"
@@ -60,7 +60,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x8"
-            android:layout_marginTop="@dimen/x10"
+            android:layout_marginTop="@dimen/x2"
             android:indeterminate="false"
             android:max="100"
             android:progressDrawable="@drawable/progress_bar" />
@@ -68,7 +68,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x10"
+            android:layout_marginTop="@dimen/x14"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -104,8 +104,9 @@
     <ImageView
         android:visibility="visible"
         android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x50"
+        android:layout_height="@dimen/x50"
+        android:padding="@dimen/x10"
         app:layout_goneMarginRight="@dimen/x30"
         android:layout_marginRight="@dimen/x31"
         android:layout_marginLeft="@dimen/x31"
@@ -116,8 +117,9 @@
     <ImageView
         android:visibility="invisible"
         android:id="@+id/stopBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/x50"
+        android:layout_height="@dimen/x50"
+        android:padding="@dimen/x10"
         app:layout_goneMarginRight="@dimen/x30"
         android:layout_marginRight="@dimen/x31"
         android:layout_marginLeft="@dimen/x31"

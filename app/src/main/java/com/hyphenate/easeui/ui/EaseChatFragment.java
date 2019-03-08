@@ -1251,7 +1251,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (conversation != null) {
             if (currentPage == 0) {
                 conversation.clearAllMessages();
-                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData2" + conversation.getAllMessages().size());
+                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData2_" + conversation.getAllMessages().size());
             }
             if (isMessageListInited) {
                 easeChatMessageList.refresh();
@@ -1281,6 +1281,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             messageListTemp = messageList;
         }
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
@@ -1507,7 +1508,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setTo(userId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStatmp() * 1000);
+            message.setMsgTime(Message.getTimeStatmp());
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -3426,7 +3427,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             //refresh ui
             if (isMessageListInited) {
                 //KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo2_"+conversation.getAllMessages().size());
-                easeChatMessageList.refreshSelectLast();
+                easeChatMessageList.refresh();
 //                easeChatMessageList.postDelayed(new Runnable() {
 //                    @Override
 //                    public void run() {

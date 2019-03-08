@@ -30,7 +30,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             .centerCrop()
             .transform(GlideCircleTransformMainColor(context))
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
+            .skipMemoryCache(false)
             .priority(Priority.HIGH)
 
     init {
@@ -77,6 +77,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         textView.setTextColor(getContext().resources.getColor(R.color.white))
         textView.setPadding(0, 0, 0, 0)
         imageView.visibility = View.INVISIBLE
+//        imageView.background = getContext().resources.getDrawable(R.drawable.nick_text_bg)
     }
 
     fun setText(resId: Int) {
@@ -85,6 +86,8 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
 
     fun setText(buttonText: CharSequence?) {
 //        KLog.i(buttonText)
+        textView.visibility = View.VISIBLE
+        imageView.visibility = View.GONE
         val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val stringArrayList = Arrays.asList(*strings)
         val itTemp = stringArrayList.iterator()
@@ -123,6 +126,30 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                     .into(imageView)
         }
     }
+    fun setImageResource(url: Int, withShape : Boolean) {
+        if (0 == url) {
+            textView.visibility = View.VISIBLE
+        } else {
+            textView.visibility = View.GONE
+            imageView.visibility = View.VISIBLE
+            if (withShape) {
+                Glide.with(context)
+                        .load(url)
+                        .apply(options)
+                        .into(imageView)
+            } else {
+                var options1 = RequestOptions()
+                        .centerCrop()
+                        .transform(GlideCircleTransform())
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .priority(Priority.HIGH)
+                Glide.with(context)
+                        .load(url)
+                        .apply(options1)
+                        .into(imageView)
+            }
+        }
+    }
 
     fun setTextSize(size : Float) {
         textView.setTextSize(size)
@@ -140,7 +167,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                         var options1 = RequestOptions()
                                 .centerCrop()
                                 .transform(GlideCircleTransform())
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
                                 .priority(Priority.HIGH)
                         Glide.with(this)
                                 .load(lastFile)
@@ -154,6 +181,37 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                     }
                 } else {
 
+                }
+            }
+    }
+    fun setImageFile(url: String, name : String) {
+        if ("" == url) {
+            textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
+            setText(name)
+        } else {
+                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+                if (lastFile.exists()) {
+                    textView.visibility = View.GONE
+                    imageView.visibility = View.VISIBLE
+                    if (withShape) {
+                        var options1 = RequestOptions()
+                                .centerCrop()
+                                .transform(GlideCircleTransform())
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                                .priority(Priority.HIGH)
+                        Glide.with(this)
+                                .load(lastFile)
+                                .apply(options1)
+                                .into(imageView)
+                    } else {
+                        Glide.with(this)
+                                .load(lastFile)
+                                .apply(options)
+                                .into(imageView)
+                    }
+                } else {
+                    setText(name)
                 }
             }
     }

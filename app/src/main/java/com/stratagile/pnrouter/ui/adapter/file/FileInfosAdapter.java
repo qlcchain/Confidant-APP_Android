@@ -1,9 +1,11 @@
 package com.stratagile.pnrouter.ui.adapter.file;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.data.fileInfo.FileInfo;
 
@@ -23,5 +25,10 @@ public class FileInfosAdapter extends BaseQuickAdapter<FileInfo, BaseViewHolder>
         } else {
             helper.setImageResource(R.id.image_view_file_info_icon, R.drawable.ic_folder_light_blue_500_36dp);
         }
+    }
+
+    @Override
+    protected void convert(BaseViewHolder helper, FileInfo item, @NonNull List<Object> payloads) {
+        KLog.i("");
     }
 }

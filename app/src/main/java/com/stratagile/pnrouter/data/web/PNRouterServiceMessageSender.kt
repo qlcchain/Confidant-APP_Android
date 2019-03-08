@@ -50,6 +50,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var receiveFileDataMap:java.util.HashMap<String, Message>
     lateinit var receiveToxFileDataMap:java.util.HashMap<String, Message>
     lateinit var receiveToxFileIdMap:java.util.HashMap<String, String>
+
     init {
 
 

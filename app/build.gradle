@@ -167,7 +167,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:0.3'
 
     //kotlin版本的brah
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
+//    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.pawegio.kandroid:kandroid:0.8.7@aar'
     implementation 'com.google.dagger:dagger:2.16'
@@ -200,6 +200,7 @@ dependencies {
 
     //implementation project(':easeui')
     implementation project(':library')
+    implementation project(':brvaLibrary')
     implementation project(':appTox')
     implementation project(':zxing')
     implementation project(':picture_library')

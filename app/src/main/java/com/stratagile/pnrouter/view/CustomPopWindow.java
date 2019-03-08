@@ -241,6 +241,10 @@ public class CustomPopWindow {
         private CustomPopWindow mCustomPopWindow;
 
         public PopupWindowBuilder(Context context){
+            if (instance != null) {
+                instance.dismiss();
+                instance = null;
+            }
             mCustomPopWindow = new CustomPopWindow(context);
             instance = mCustomPopWindow;
         }

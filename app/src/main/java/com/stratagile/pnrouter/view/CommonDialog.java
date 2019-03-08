@@ -109,7 +109,7 @@ public class CommonDialog extends Dialog {
      */
     @Override
     public void cancel() {
-        dismissWithAnimation(true);
+        CommonDialog.super.cancel();
     }
 
     /**

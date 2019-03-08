@@ -4,11 +4,16 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.RxEncodeTool
 
 class ShareSelfAdapter(arrayList: ArrayList<ShareBean>) : BaseQuickAdapter<ShareBean, BaseViewHolder>(R.layout.layout_share_self_item, arrayList) {
+    override fun convert(helper: BaseViewHolder?, item: ShareBean?, payloads: MutableList<Any>) {
+        KLog.i("")
+    }
+
     override fun convert(helper: BaseViewHolder?, item: ShareBean?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.name))
         helper!!.setText(R.id.name, nickNameSouce)

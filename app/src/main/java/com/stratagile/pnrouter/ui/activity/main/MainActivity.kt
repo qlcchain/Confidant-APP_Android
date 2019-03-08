@@ -99,38 +99,32 @@ import kotlin.collections.ArrayList
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
     override fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp) {
-        when (jUploadAvatarRsp.params.retCode)
-        {
-            0 ->
-            {
+        when (jUploadAvatarRsp.params.retCode) {
+            0 -> {
                 runOnUiThread {
                     toast(getString(R.string.Avatar_Update_Successful))
                 }
-                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+                var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
                 var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
             }
-            1 ->
-            {
+            1 -> {
                 runOnUiThread {
                     toast(getString(R.string.User_ID_error))
                 }
             }
-            2 ->
-            {
+            2 -> {
                 runOnUiThread {
                     toast(getString(R.string.file_error))
                 }
             }
-            3 ->
-            {
+            3 -> {
                 runOnUiThread {
                     toast(getString(R.string.file_hasnot_changed))
                 }
             }
-            else ->
-            {
+            else -> {
                 runOnUiThread {
                     toast(getString(R.string.Other_mistakes))
                 }
@@ -1265,7 +1259,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         contactListFragment?.setContactsMap(getContacts())
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
-                { userid -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid)) })
+                { userid ->
+                    startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                    KLog.i("进入聊天页面，好友id为：" + userid)
+                })
         contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
         if (AppConfig.instance.tempPushMsgList.size != 0) {
             Thread(Runnable() {

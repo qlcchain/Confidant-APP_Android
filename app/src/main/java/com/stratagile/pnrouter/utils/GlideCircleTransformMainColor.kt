@@ -49,7 +49,7 @@ class GlideCircleTransformMainColor(private val context: Context)//        super
         val r = size / 2f
         val r1 = (size - 2 * 4) / 2f
         canvas.drawCircle(r, r, r1, paint)
-        canvas.drawCircle(r, r, r1, mBorderPaint)//画边框
+//        canvas.drawCircle(r, r, r1, mBorderPaint)//画边框
         return result
     }
 

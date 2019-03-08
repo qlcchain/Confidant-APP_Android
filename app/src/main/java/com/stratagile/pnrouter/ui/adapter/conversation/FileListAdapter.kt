@@ -4,6 +4,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.db.RecentFile
 import com.stratagile.pnrouter.entity.MyFile
@@ -11,6 +12,10 @@ import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.utils.TimeUtil
 
 class FileListAdapter(arrayList: MutableList<RecentFile>) : BaseQuickAdapter<RecentFile, BaseViewHolder>(R.layout.layout_file_list_item, arrayList) {
+    override fun convert(helper: BaseViewHolder?, item: RecentFile?, payloads: MutableList<Any>) {
+        KLog.i("")
+    }
+
     override fun convert(helper: BaseViewHolder, item: RecentFile) {
         helper.addOnClickListener(R.id.fileOpreate)
         helper.setText(R.id.tvFileTime, TimeUtil.getFileListTime1(item.timeStamp))

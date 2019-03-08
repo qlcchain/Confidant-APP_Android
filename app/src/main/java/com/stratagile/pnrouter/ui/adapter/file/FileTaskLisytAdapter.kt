@@ -12,6 +12,17 @@ import com.stratagile.pnrouter.utils.Base58
 import java.math.BigDecimal
 
 class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapter<TaskFile, BaseViewHolder>(R.layout.item_filetask_content, R.layout.item_filetask_head, data) {
+    override fun convert(helper: BaseViewHolder, item: TaskFile, payloads: MutableList<Any>) {
+        KLog.i("局部更新触发...")
+        if (item.t.segSeqResult == 0 || item.t.segSeqTotal == 0) {
+            helper.setText(R.id.speed, "0%")
+        } else {
+            var ddd = item.t.segSeqResult.toBigDecimal().divide(item.t.segSeqTotal.toBigDecimal(), 2, BigDecimal.ROUND_HALF_DOWN)
+            helper.setText(R.id.speed, "" + ddd.multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).setScale(0, BigDecimal.ROUND_HALF_UP).toPlainString()+ "%")
+        }
+        helper.setProgress(R.id.progressBar,item.t.segSeqResult,item.t.segSeqTotal)
+    }
+
     override fun convertHead(helper: BaseViewHolder, item: TaskFile) {
         helper.setText(R.id.tvHead, item.header)
     }
@@ -130,4 +141,5 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             helper.setImageDrawable(R.id.ivAvatar, mContext.resources.getDrawable(R.mipmap.other))
         }
     }
+
 }

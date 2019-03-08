@@ -82,10 +82,10 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 //helper.setText(R.id.ivAvatar, nickNameSouce);
                 ImageButtonWithText imagebutton = helper.getView(R.id.ivAvatar);
                 if (nickNameSouce != null) {
-                    imagebutton.setText(nickNameSouce);
+//                    imagebutton.setText(nickNameSouce);
+                    String avatarPath = Base58.encode( RxEncodeTool.base64Decode(lv0.getUserEntity().getSignPublicKey()))+".jpg";
+                    imagebutton.setImageFile(avatarPath, nickNameSouce);
                 }
-                String avatarPath = Base58.encode( RxEncodeTool.base64Decode(lv0.getUserEntity().getSignPublicKey()))+".jpg";
-                imagebutton.setImageFile(avatarPath);
                 helper.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -169,12 +169,18 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                         final UserItem data = (UserItem) getItem(pos);
                         UserDataManger.curreantfriendUserData = data.getUserEntity();
                         mContext.startActivity(new Intent(mContext, ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, data.getUserEntity().getUserId()));
+                        KLog.i("进入聊天页面，好友id为：" + data.getUserEntity().getUserId());
                     }
                 });
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void convert(BaseViewHolder helper, MultiItemEntity item, @NonNull List<Object> payloads) {
+        KLog.i("");
     }
 
     private void getSelectedCount() {
