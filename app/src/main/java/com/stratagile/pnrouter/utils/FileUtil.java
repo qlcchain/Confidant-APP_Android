@@ -651,7 +651,7 @@ public class FileUtil {
         String result =  bigInt.toString(16);
         if(result.length() != 16)
         {
-            int count = result.length();
+            int count = result.length() - 16;
             String addPre = "";
             for(int i = 0; i < count ;i++)
             {
