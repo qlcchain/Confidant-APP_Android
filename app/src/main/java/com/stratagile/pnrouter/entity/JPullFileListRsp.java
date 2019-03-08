@@ -92,6 +92,7 @@ public class JPullFileListRsp extends BaseEntity {
             private String UserKey;
             //1 自己发的， 2 收到的， 3自己上传的
             private int FileFrom;
+            public String SenderKey;
 
             protected PayloadBean(Parcel in) {
                 MsgId = in.readInt();
@@ -102,6 +103,7 @@ public class JPullFileListRsp extends BaseEntity {
                 FileSize = in.readInt();
                 Sender = in.readString();
                 UserKey = in.readString();
+                SenderKey = in.readString();
                 FileFrom = in.readInt();
             }
 
@@ -189,6 +191,14 @@ public class JPullFileListRsp extends BaseEntity {
                 this.FileFrom = FileFrom;
             }
 
+            public String getSenderKey() {
+                return SenderKey;
+            }
+
+            public void setSenderKey(String senderKey) {
+                SenderKey = senderKey;
+            }
+
             @Override
             public int describeContents() {
                 return 0;
@@ -204,6 +214,7 @@ public class JPullFileListRsp extends BaseEntity {
                 parcel.writeInt(FileSize);
                 parcel.writeString(Sender);
                 parcel.writeString(UserKey);
+                parcel.writeString(SenderKey);
                 parcel.writeInt(FileFrom);
             }
         }
