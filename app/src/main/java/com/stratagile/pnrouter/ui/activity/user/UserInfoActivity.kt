@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.FriendAvatarChange
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerUserInfoComponent
@@ -176,7 +177,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         }
     }
 
-//    override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
+    //    override fun addFriendBack(addFriendRsp: JAddFreindRsp) {
 //        standaloneCoroutine.cancel()
 //        friendStatus = 1
 //        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)
@@ -201,7 +202,11 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
 //            finish()
 //        }
 //    }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun FriendAvatarChange(FriendAvatarChange: FriendAvatarChange) {
+        var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
+        avatar.setImageFile(avatarPath);
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun friendRelationshhipChange(friendChange : FriendChange) {
         var friendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()

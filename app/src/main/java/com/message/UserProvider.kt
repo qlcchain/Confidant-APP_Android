@@ -14,6 +14,7 @@ import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.FriendAvatarChange
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.utils.*
@@ -46,6 +47,8 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                 }
                 0x55 -> {
+                    //有头像更新
+                    EventBus.getDefault().post(FriendAvatarChange())
                 }
             }//goMain();
             //goMain();
