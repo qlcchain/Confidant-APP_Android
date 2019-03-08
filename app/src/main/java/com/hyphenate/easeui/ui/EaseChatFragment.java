@@ -670,7 +670,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void initView() {
         // hold to record voice
         //noinspection ConstantConditions
-        currentPage = 0;
+        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData5_initView"+currentPage );
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         // message list layout
         easeChatMessageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
@@ -1245,6 +1245,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     public void refreshData(List<Message> messageList, String UserId, String FriendId) {
         toChatUserId = FriendId;
+        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData0_" + conversation + "_" + toChatUserId);
         if (conversation == null)
             conversation = EMClient.getInstance().chatManager().getConversation(FriendId, EaseCommonUtils.getConversationType(chatType), true);
         KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData1_" + conversation + "_" + toChatUserId);
@@ -3423,6 +3424,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
         if (conversation != null) {
             //KLog.i("insertMessage:" + "EaseChatFragment"+"_sendMessageTo1");
+            KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData4_" + conversation.getAllMessages().size());
             conversation.insertMessage(message);
             //refresh ui
             if (isMessageListInited) {
@@ -3445,7 +3447,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         if (conversation == null)
                             conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
                         if (conversation != null) {
-                            KLog.i("insertMessage:" + "EaseChatFragment" + "_sendMessageTo2");
+                            KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData5_" + conversation.getAllMessages().size());
                             conversation.insertMessage(message);
                             //SpUtil.INSTANCE.putString(conversation.conversationId());
                             //refresh ui
