@@ -996,7 +996,6 @@ public class FileMangerUtil {
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
-                        String fileMD566 = FileUtil.getFileMD5(new File(imagePath));
                         if(file.length()> 500  * 1024)
                         {
                             //EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,3));
