@@ -88,6 +88,7 @@
     </LinearLayout>
     
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/llReConnect"
         android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@+id/view1"

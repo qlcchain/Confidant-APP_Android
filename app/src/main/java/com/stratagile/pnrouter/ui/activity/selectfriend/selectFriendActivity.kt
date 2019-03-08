@@ -798,7 +798,11 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun selectFriendChange(selectFriendChange: SelectFriendChange) {
-        selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.people)
+        if (selectFriendChange.friendNum > 1) {
+            selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.person) + "s"
+        } else {
+            selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.person)
+        }
         if (selectFriendChange.friendNum == 0) {
             send.text = "Confirm"
         } else {

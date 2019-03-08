@@ -70,6 +70,7 @@
                 android:src="@mipmap/icon_back" />
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/createGroup"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x90"

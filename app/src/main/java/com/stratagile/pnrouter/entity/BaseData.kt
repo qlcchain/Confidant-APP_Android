@@ -18,7 +18,7 @@ open class BaseData() {
 
 
     constructor(apiverion:Int,params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
+        this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = apiverion
         this.params = params
@@ -27,7 +27,7 @@ open class BaseData() {
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(apiverion:Int,params : Any,msgId:Int) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
+        this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = apiverion
         this.offset = 0
@@ -42,7 +42,7 @@ open class BaseData() {
         }
     }
     constructor(params : Any) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
+        this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.params = params
@@ -51,7 +51,7 @@ open class BaseData() {
         this.msgid =  ConstantValue.msgIndex++
     }
     constructor(params : Any,msgId:Int) : this() {
-        this.timestamp = (Calendar.getInstance().timeInMillis).toString()
+        this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
         this.offset = 0

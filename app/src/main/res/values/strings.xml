@@ -16,7 +16,7 @@
     <string name="Confirm">Confirm</string>
     <string name="fingerprint_success">Fingerprint recognized.</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again.</string>
-    <string name="choose_finger_dialog_title">Use the fingerprint continue</string>
+    <string name="choose_finger_dialog_title">Use the fingerprint to continue.</string>
     <string name="unlock_wallet">UNLOCK WALLET</string>
     <string name="back_btn">BACK</string>
     <string name="cancel_btn_dialog">Cancel</string>
@@ -586,4 +586,5 @@
     <string name="two_password_different">Two passwords are different</string>
     <string name="new_requests">New Requests</string>
     <string name="create_a_group">Create a Group</string>
+    <string name="person">person</string>
 </resources>
