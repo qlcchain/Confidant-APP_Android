@@ -207,7 +207,7 @@ public class FileMangerUtil {
                                 String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
                                 int fileId = (int)(System.currentTimeMillis()/1000);
-                                byte[] fileBufferMi = new byte[0];
+                                byte[] fileBufferMi = fileBuffer;
                                 try{
                                     long  miBegin = System.currentTimeMillis();
                                     if(!fileName.contains("__Avatar.jpg"))//头像不用加密
@@ -221,15 +221,18 @@ public class FileMangerUtil {
                                     faBegin = System.currentTimeMillis();
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
-                                        sendFileByteData(fileBuffer,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
-                                        int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
-                                        MyFile myRouter = new MyFile();
-                                        myRouter.setType(0);
-                                        myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                                        myRouter.setUpLoadFile(uploadFile);
-                                        LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                                        EventBus.getDefault().post(new FileStatus(fileName+"__"+fileTransformEntity.getToId(),fileSize, false, false, false,0,segSeqTotal,10,false,0));
+                                        sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
+                                        if(!fileName.contains("__Avatar.jpg"))//头像不用加密
+                                        {
+                                            int segSeqTotal = sendFileTotalSegment.get(filePath);
+                                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
+                                            MyFile myRouter = new MyFile();
+                                            myRouter.setType(0);
+                                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                                            myRouter.setUpLoadFile(uploadFile);
+                                            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                                            EventBus.getDefault().post(new FileStatus(fileName+"__"+fileTransformEntity.getToId(),fileSize, false, false, false,0,segSeqTotal,10,false,0));
+                                        }
                                     }else{
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -497,11 +500,11 @@ public class FileMangerUtil {
         {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-
-            if(fileMiName.contains("__Avatar.jpg"))
+            String fileSouceName = new String(Base58.decode(fileMiName));
+            if(fileSouceName.contains("__Avatar.jpg"))
             {
                 String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                String fileBase58Name = Base58.encode(fileMiName.getBytes());
+                String fileBase58Name = Base58.encode(fileSouceName.getBytes());
                 String fileMD5 = FileUtil.getFileMD5(new File(filePath));
                 UploadAvatarReq uploadAvatarReq = new UploadAvatarReq( userId, fileBase58Name,fileMD5,"UploadAvatar");
                 BaseData baseData = new BaseData(4,uploadAvatarReq);

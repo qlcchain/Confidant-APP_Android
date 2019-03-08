@@ -66,7 +66,20 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 if (file.exists()) {
 
                     when (localMedia!!.pictureType) {
-                        "image/jpeg,image/png" -> {
+                        "image/jpeg" -> {
+                            var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
+                            if(result  == 1)
+                            {
+                                runOnUiThread {
+                                    toast(getString(R.string.Start_uploading))
+                                }
+                            }else{
+                                runOnUiThread {
+                                    toast(getString(R.string.Already_on_the_list))
+                                }
+                            }
+                        }
+                        "image/jpeg" -> {
                             var result =  FileMangerUtil.sendImageFile(localMedia!!.path,"", false)
                             if(result  == 1)
                             {

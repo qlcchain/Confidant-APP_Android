@@ -688,8 +688,8 @@ public class RxEncryptTool {
      * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
      */
     public static String generateAESKey() {
-        //return "welcometoqlc01010000000000000000";
-        try {
+        return "welcometoqlc01010000000000000000";
+       /* try {
             SecureRandom localSecureRandom = SecureRandom.getInstance(SHA1PRNG);
             byte[] bytes_key = new byte[20];
             localSecureRandom.nextBytes(bytes_key);
@@ -698,7 +698,7 @@ public class RxEncryptTool {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "welcometoqlc01010000000000000000";
+        return "welcometoqlc01010000000000000000";*/
     }
     /*
      * 生成随机数，可以当做动态的密钥 加密和解密的密钥必须一致，不然将不能解密
