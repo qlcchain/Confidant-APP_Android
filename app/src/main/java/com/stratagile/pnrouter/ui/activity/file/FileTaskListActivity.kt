@@ -195,11 +195,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                          }else if (ConstantValue.isToxConnected) {
                              if(!localMedia.isDownLoad && !localMedia.isComplete)
                              {
-
+                                 FileMangerUtil.cancelToxWork(localMedia.msgId)
                              }
                              else if(localMedia.isDownLoad && !localMedia.isComplete)
                              {
-
+                                 FileMangerUtil.cancelToxWork(localMedia.msgId)
                              }
                          }
 
@@ -710,11 +710,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }else if (ConstantValue.isToxConnected) {
                         if(!localMedia.isDownLoad && !localMedia.isComplete)
                         {
-
+                            FileMangerUtil.cancelToxWork(localMedia.msgId)
                         }
                         else if(localMedia.isDownLoad && !localMedia.isComplete)
                         {
-
+                            FileMangerUtil.cancelToxWork(localMedia.msgId)
                         }
                     }
                 }
