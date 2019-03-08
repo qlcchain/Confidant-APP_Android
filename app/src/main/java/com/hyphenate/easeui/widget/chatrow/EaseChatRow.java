@@ -166,7 +166,7 @@ public abstract class EaseChatRow extends LinearLayout {
 //                EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
                 //设置自己的头像
                 userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
-                String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getLibsodiumpublicMiKey()))+".jpg";
+                String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getLibsodiumprivateSignKey()))+".jpg";
                 userAvatarView.setImageFile(fileBase58Name);
             } else {
                 List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
@@ -176,6 +176,7 @@ public abstract class EaseChatRow extends LinearLayout {
                     {
                         usernameSouce = new  String(RxEncodeTool.base64Decode(user.get(0).getRemarks()));
                     }
+                    userAvatarView.setText(usernameSouce);
                     EaseUserUtils.setUserAvatar(usernameSouce, userAvatarView,user.get(0).getSignPublicKey());
                 } else {
                     EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView,user.get(0).getSignPublicKey());
