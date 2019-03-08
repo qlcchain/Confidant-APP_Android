@@ -54,7 +54,7 @@
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
-    <string name="Avatar_Update_Successful">Avatar Update Successful</string>
+    <string name="Avatar_Update_Successful">success</string>
 
     <string name="success">success</string>
     <string name="Name_not_changed">Name not changed</string>
@@ -540,6 +540,7 @@
     <string name="No_authority">No authority</string>
     <string name="upload_failed">Upload failed</string>
     <string name="Download_failed">Download failed</string>
+    <string name="Download_canceled">Download canceled</string>
     <string name="Upload_success">Upload success</string>
     <string name="Download_success">Download success</string>
     <string name="You_need_to_download">You need to download it before you can view it,Start download</string>

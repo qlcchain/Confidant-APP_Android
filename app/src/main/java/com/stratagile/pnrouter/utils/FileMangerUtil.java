@@ -1036,26 +1036,27 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            //String base58files_dir =  PathUtils.getInstance().getTempPath().toString()+"/" + strBase58;
+                            String base58files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
-                            //int code =  FileUtil.copySdcardToxPicAndEncrypt(imagePath,base58files_dir,fileKey.substring(0,16),isCompress);
-                            if(true)
+                            int code =  FileUtil.copyAppFileToSdcard(imagePath,base58files_dir);
+                            if(code == 1)
                             {
 
-                                File miFile = new File(imagePath);
+
+                                File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
-                                sendFilePathMap.put(uuidTox+"",imagePath);
+                                sendFilePathMap.put(uuidTox+"",base58files_dir);
                                 sendFileSize.put(uuidTox+"",file.length());
                                 deleteFileMap.put(uuidTox+"",false);
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
-                                toxFileData.setFilePath(imagePath);
+                                toxFileData.setFilePath(base58files_dir);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                File fileMi = new File(imagePath);
+                                File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
@@ -1090,7 +1091,7 @@ public class FileMangerUtil {
                                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                     fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance,imagePath,friendKey);
                                 }else{
-                                    fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(imagePath,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
+                                    fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
                                 toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
