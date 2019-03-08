@@ -414,7 +414,12 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             }
             synchronized (conversations) {
                 for (UnReadEMMessage conversation : conversations.values()) {
-                    sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime(), conversation));
+                    if (conversation.getEmMessage().getMsgTime() /1000000000 > 2) {
+                        LogUtil.addLog("用户最后一条的时间为：" + conversation.getEmMessage().getMsgTime());
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() / 1000, conversation));
+                    } else {
+                        sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime(), conversation));
+                    }
                 }
             }
             try {

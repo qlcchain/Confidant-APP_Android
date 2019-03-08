@@ -27,6 +27,8 @@ import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 import javax.inject.Inject
 import android.support.v4.view.ViewCompat.getTranslationY
+import com.stratagile.pnrouter.ui.activity.main.LogActivity
+import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
 
@@ -58,6 +60,18 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
+        var count  = 0
+        iv0.setOnClickListener {
+            count++
+        }
+        funTv0.setOnClickListener {
+            if (count == 2) {
+               startActivity(Intent(this, LogActivity::class.java))
+                count = 0
+            } else {
+                count = 0
+            }
+        }
     }
     override fun initData() {
         handler = object : Handler() {
@@ -86,6 +100,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
     }
 
     fun showFingerAnimation() {
+        LogUtil.addLog("点击重新验证指纹..")
         val curTranslationY = llLogo.getTranslationY()
         val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY - resources.getDimension(R.dimen.x300))
         animator.setDuration(600)
@@ -118,6 +133,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                 {*/
                 if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
                     try {
+                        LogUtil.addLog("开始调用系统的指纹..")
                         myAuthCallback = MyAuthCallback(handler)
                         val cryptoObjectHelper = CryptoObjectHelper()
                         if (cancellationSignal == null) {
@@ -175,6 +191,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
 //                        builderTips = builder.create()
 //                        builderTips?.show()
                     } catch (e: Exception) {
+                        LogUtil.addLog("调用系统指纹错误..")
                         try {
                             myAuthCallback = MyAuthCallback(handler)
                             val cryptoObjectHelper = CryptoObjectHelper()

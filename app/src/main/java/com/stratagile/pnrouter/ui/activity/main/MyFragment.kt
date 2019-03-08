@@ -11,6 +11,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMyComponent
@@ -78,6 +79,19 @@ class MyFragment : BaseFragment(), MyContract.View {
             intent.putExtra("alias", status.text!!)
             intent.putExtra("hint", "What's new")
             startActivityForResult(intent, 1)
+        }
+        var count = 0
+        version.setOnClickListener {
+            count++
+
+        }
+        viewDot.setOnClickListener {
+            if (count == 5) {
+                EventBus.getDefault().post(Sceen())
+                count = 0
+            } else {
+                count = 0
+            }
         }
     }
 

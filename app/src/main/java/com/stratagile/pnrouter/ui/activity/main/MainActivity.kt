@@ -592,7 +592,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         mNotificationManager.notify(0, notification);
 
-        ivQrCode.postDelayed({mNotificationManager.cancel(0)}, 50)
+        ivQrCode.postDelayed({ mNotificationManager.cancel(0) }, 50)
     }
 
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
@@ -971,9 +971,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
-        if (!BuildConfig.DEBUG) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
         try {
@@ -1117,7 +1115,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         setToNews()
         ivQrCode.setOnClickListener {
-//            val morePopWindow = ActiveTogglePopWindow(this)
+            //            val morePopWindow = ActiveTogglePopWindow(this)
 //            morePopWindow.setOnItemClickListener(this@MainActivity)
 //            morePopWindow.showPopupWindow(ivQrCode)
             mPresenter.getScanPermission()
@@ -1356,6 +1354,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }
+
     fun resetUnCompleteFileRecode() {
         var localFilesList = LocalFileUtils.localFilesList
         for (myFie in localFilesList) {
@@ -1447,7 +1451,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (hasUnReadMsgCount == 0) {
                 unread_count.visibility = View.INVISIBLE
                 unread_count.text = ""
-            } else if (hasUnReadMsgCount > 99){
+            } else if (hasUnReadMsgCount > 99) {
                 unread_count.visibility = View.VISIBLE
                 unread_count.text = "99+"
             } else {

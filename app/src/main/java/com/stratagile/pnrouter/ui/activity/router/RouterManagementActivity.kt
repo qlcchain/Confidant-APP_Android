@@ -101,7 +101,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             } else if (ConnectStatus.currentStatus  == 2){
                 avi.hide()
                 ivConnectStatus.visibility = View.GONE
-                llReConnect.visibility = View.VISIBLE
+                llReConnect.visibility = View.GONE
                 tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
             }
         }
@@ -171,12 +171,12 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
             ivConnectStatus.visibility = View.GONE
             avi.hide()
             tvConnectStatus.text = resources.getString(R.string.failed_to_connect)
-            llReConnect.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
         }else if (statusChange.status   == 3){
             ivConnectStatus.visibility = View.GONE
             avi.hide()
             tvConnectStatus.text = resources.getString(R.string.Network_error)
-            llReConnect.visibility = View.VISIBLE
+            llReConnect.visibility = View.GONE
         }
     }
 

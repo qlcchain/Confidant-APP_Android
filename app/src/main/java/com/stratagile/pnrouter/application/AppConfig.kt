@@ -263,12 +263,14 @@ class AppConfig : MultiDexApplication() {
         ForegroundCallbacks.getInstance().addListener(object : ForegroundCallbacks.Listener {
             override fun onBecameForeground() {
                 KLog.i("当前程序切换到前台")
+                LogUtil.addLog("当前程序切换到前台")
                 isBackGroud = false
                 var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0)
                 KLog.i(unlockTime)
                 KLog.i(ConstantValue.logining)
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
+                // && !BuildConfig.DEBUG
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000 && ConstantValue.logining)
                 {
                     EventBus.getDefault().post(StartVerify())
                 }
@@ -280,6 +282,7 @@ class AppConfig : MultiDexApplication() {
 
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
+                LogUtil.addLog("当前程序切换到后台")
                 isBackGroud = true
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))
