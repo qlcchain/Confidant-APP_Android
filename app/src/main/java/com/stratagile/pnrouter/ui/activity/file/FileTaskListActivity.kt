@@ -705,7 +705,12 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     localMedia.segSeqTotal = 1
                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
 
-                    val uploadFile = UpLoadFile(localMedia!!.fileKey, localMedia!!.path,0, true, false, localMedia.isStop, 0, 1, 0, true, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,localMedia!!.isCheck)
+                    var isDown = true
+                    if(!localMedia.isDownLoad && !localMedia.isComplete)
+                    {
+                        isDown = false
+                    }
+                    val uploadFile = UpLoadFile(localMedia!!.fileKey, localMedia!!.path,0, isDown, false, localMedia.isStop, 0, 1, 0, true, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,localMedia!!.isCheck)
                     val myRouter = MyFile()
                     myRouter.type = 0
                     myRouter.userSn = ConstantValue.currentRouterSN
