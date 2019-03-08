@@ -704,6 +704,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     localMedia.segSeqResult = 0
                     localMedia.segSeqTotal = 1
                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
+
+                    val uploadFile = UpLoadFile(localMedia!!.fileKey, localMedia!!.path,0, true, false, localMedia.isStop, 0, 1, 0, true, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,localMedia!!.isCheck)
+                    val myRouter = MyFile()
+                    myRouter.type = 0
+                    myRouter.userSn = ConstantValue.currentRouterSN
+                    myRouter.upLoadFile = uploadFile
+                    LocalFileUtils.updateLocalAssets(myRouter)
                     if (ConstantValue.isWebsocketConnected) {
                         if(!localMedia.isDownLoad && !localMedia.isComplete)
                         {
