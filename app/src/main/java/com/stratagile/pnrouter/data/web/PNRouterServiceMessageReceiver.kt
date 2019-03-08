@@ -397,7 +397,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     {
                         uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
                     }else{
-                        mainInfoBack?.uploadAvatarReq(JUploadAvatarRsp)
+
+                        uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
                     }
 
                 }
@@ -658,6 +659,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
         fun queryFriend(FriendId :String)
         fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
+        fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
 
     interface CoversationCallBack {

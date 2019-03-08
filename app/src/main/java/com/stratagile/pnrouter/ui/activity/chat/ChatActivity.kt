@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
@@ -12,6 +13,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
@@ -24,6 +26,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
@@ -44,6 +47,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import scalaz.Alpha
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 
@@ -55,6 +59,32 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
+        if(jUpdateAvatarRsp.params.retCode == 0)
+        {
+
+            var filePath = jUpdateAvatarRsp.params.fileName
+            var fileBase58Name = filePath.substring(8,filePath.length)
+            var fileName = String(Base58.decode(fileBase58Name));
+            val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+            fileName = fileName.replace("__Avatar","")
+            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+            var msgId = Calendar.getInstance().timeInMillis /1000
+            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
+        }
+    }
+    internal var handlerDown: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            when (msg.what) {
+                0x404 -> {
+
+                }
+                0x55 -> {
+                }
+            }//goMain();
+            //goMain();
+        }
+    }
     override fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp) {
         chatFragment?.setFriendStatus(jQueryFriendRsp.params.retCode)
     }
@@ -589,6 +619,27 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }
         EventBus.getDefault().register(this)
+
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData!!.signPublicKey))
+        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var fileMD5 = FileUtil.getFileMD5(File(filePath))
+        if(fileMD5 == null)
+        {
+            fileMD5 = ""
+        }
+        val updateAvatarReq = UpdateAvatarReq(userId!!, UserDataManger.curreantfriendUserData!!.userId, fileMD5)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, updateAvatarReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
