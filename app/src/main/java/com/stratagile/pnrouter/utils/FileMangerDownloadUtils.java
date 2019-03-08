@@ -74,6 +74,7 @@ public class FileMangerDownloadUtils {
         {
             task.cancelWork();
             taskListMap.remove(msgId+"");
+            downFilePathMap.remove(msgId+"");
         }
     }
 
