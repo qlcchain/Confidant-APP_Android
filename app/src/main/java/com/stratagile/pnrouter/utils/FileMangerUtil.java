@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.utils;
 import android.content.ClipboardManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -542,6 +543,9 @@ public class FileMangerUtil {
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
+
+
+
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
         long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
@@ -553,11 +557,19 @@ public class FileMangerUtil {
         if(fileMiName != null)
         {
             String fileOrginName = new String(Base58.decode(fileMiName));
+
             String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileOrginName;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
             String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
             String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
-            int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
+            String filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + fileOrginName ;
+            int code = 0;
+            if(fileOrginName.contains("__Avatar.jpg"))
+            {
+                code = FileUtil.copyAppFileToSdcard(base58files_dir, filePath);
+            }else{
+                code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
+            }
             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
             String fileMiUrl = fileMiName;
             String userKey = "";
@@ -570,13 +582,35 @@ public class FileMangerUtil {
                 fileFrom = localUpLoadFile.getFileFrom();
                 msgId = localUpLoadFile.getMsgId();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0,msgId,false);
-            MyFile myRouter = new MyFile();
-            myRouter.setType(0);
-            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-            myRouter.setUpLoadFile(uploadFile);
-            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,fileSize, true, true, false,1,1,0,false,0));
+            if(fileOrginName.contains("__Avatar.jpg"))
+            {
+                if(code == 1)
+                {
+                    String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                    String fileBase58Name = Base58.encode(fileOrginName.getBytes());
+                    String fileMD5 = FileUtil.getFileMD5(new File(filePath));
+                    UploadAvatarReq uploadAvatarReq = new UploadAvatarReq( userId, fileBase58Name,fileMD5,"UploadAvatar");
+                    BaseData baseData = new BaseData(4,uploadAvatarReq);
+                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                    if (ConstantValue.INSTANCE.isAntox()) {
+                        FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    }
+                }
+
+
+            }else{
+                UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0,msgId,false);
+                MyFile myRouter = new MyFile();
+                myRouter.setType(0);
+                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                myRouter.setUpLoadFile(uploadFile);
+                LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,fileSize, true, true, false,1,1,0,false,0));
+            }
+
         }
     }
     public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
