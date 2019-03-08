@@ -270,7 +270,7 @@ class AppConfig : MultiDexApplication() {
                 KLog.i(ConstantValue.logining)
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
                 // && !BuildConfig.DEBUG
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000 && ConstantValue.logining)
+                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
                 {
                     EventBus.getDefault().post(StartVerify())
                 }

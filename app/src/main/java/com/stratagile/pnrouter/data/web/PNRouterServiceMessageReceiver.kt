@@ -405,7 +405,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //80.更新好友用户头像
                 "UpdateAvatar" -> {
                     val JUpdateAvatarRsp = gson.fromJson(text, JUpdateAvatarRsp::class.java)
-                    updateAvatarBackBack?.updateAvatarReq(JUpdateAvatarRsp)
+                    //updateAvatarBackBack?.updateAvatarReq(JUpdateAvatarRsp)
+                    userControlleCallBack?.updateAvatarReq(JUpdateAvatarRsp)
+                    //chatCallBack?.updateAvatarReq(JUpdateAvatarRsp)
                 }
             }
         }
@@ -608,7 +610,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun addFriendDealRsp(jAddFriendDealRsp: JAddFriendDealRsp)
         fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
         fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp)
-
+        fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
 
     interface AddFriendDealCallBack {
