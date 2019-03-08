@@ -12,7 +12,6 @@ import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
-import com.pawegio.kandroid.inflateLayout
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -34,13 +33,11 @@ import com.stratagile.pnrouter.ui.activity.file.module.FileTaskListModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileTaskListPresenter
 import com.stratagile.pnrouter.ui.adapter.file.FileTaskLisytAdapter
 import com.stratagile.pnrouter.utils.*
-import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_file_task_list.*
-import kotlinx.android.synthetic.main.toolbar_layout.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -176,7 +173,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                          if (ConstantValue.isWebsocketConnected) {
                              if(!localMedia.isDownLoad && !localMedia.isComplete)
                              {
-                                 FileMangerUtil.cancelSend(localMedia.msgId)
+                                 FileMangerUtil.cancelWebSocketWork(localMedia.msgId)
                              }
                              else if(localMedia.isDownLoad && !localMedia.isComplete)
                              {
@@ -691,7 +688,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     if (ConstantValue.isWebsocketConnected) {
                         if(!localMedia.isDownLoad && !localMedia.isComplete)
                         {
-                            FileMangerUtil.cancelSend(localMedia.msgId)
+                            FileMangerUtil.cancelWebSocketWork(localMedia.msgId)
                         }
                         else if(localMedia.isDownLoad && !localMedia.isComplete)
                         {

@@ -648,7 +648,18 @@ public class FileUtil {
             return null;
         }
         BigInteger bigInt = new BigInteger(1, digest.digest());
-        return bigInt.toString(16);
+        String result =  bigInt.toString(16);
+        if(result.length() != 16)
+        {
+            int count = result.length();
+            String addPre = "";
+            for(int i = 0; i < count ;i++)
+            {
+                addPre +="0";
+            }
+            result  = addPre+ result;
+        }
+        return result;
     }
 
     /**

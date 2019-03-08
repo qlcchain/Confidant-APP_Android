@@ -12,7 +12,6 @@ import android.widget.ListView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.utils.EaseImageUtils;
@@ -25,12 +24,8 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
-import com.stratagile.pnrouter.constant.UserDataManger;
-import com.stratagile.pnrouter.db.RecentFile;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
-import com.stratagile.pnrouter.entity.DelMsgReq;
-import com.stratagile.pnrouter.entity.JPullFileListRsp;
 import com.stratagile.pnrouter.entity.MyFile;
 import com.stratagile.pnrouter.entity.SendFileData;
 import com.stratagile.pnrouter.entity.SendToxUploadFileNotice;
@@ -47,7 +42,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -142,6 +136,7 @@ public class FileMangerUtil {
     private static HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private static HashMap<String, String> sendFilePathMap = new HashMap<>();
     private static HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
+    private static HashMap<String, ToxFileData> sendMsgIdToxFileDataMap = new HashMap<>();
     private static HashMap<String, Boolean> deleteFileMap = new HashMap<>();
     private static HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
     private static HashMap<String, Long> receiveToxFileSizeMap = new HashMap<>();
@@ -163,6 +158,7 @@ public class FileMangerUtil {
         sendMsgLocalMap = new HashMap<>();
         sendFilePathMap = new HashMap<>();
         sendToxFileDataMap = new HashMap<>();
+        sendMsgIdToxFileDataMap = new HashMap<>();
         deleteFileMap = new HashMap<>();
         receiveToxFileNameMap = new HashMap<>();
         receiveToxFileSizeMap = new HashMap<>();
@@ -501,26 +497,47 @@ public class FileMangerUtil {
         {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"",0,0,toxFileData.getFileId() +"",false);
-            MyFile myRouter = new MyFile();
-            myRouter.setType(0);
-            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-            myRouter.setUpLoadFile(uploadFile);
-            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
 
-            if(!deleteFileMap.get(toxFileData.getFileId() + ""))
+            if(fileMiName.contains("__Avatar.jpg"))
             {
-                SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
-                BaseData baseData = new BaseData(2,sendToxFileNotice);
+                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                String fileBase58Name = Base58.encode(fileMiName.getBytes());
+                String fileMD5 = FileUtil.getFileMD5(new File(filePath));
+                UploadAvatarReq uploadAvatarReq = new UploadAvatarReq( userId, fileBase58Name,fileMD5,"UploadAvatar");
+                BaseData baseData = new BaseData(4,uploadAvatarReq);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                if(ConstantValue.INSTANCE.isAntox())
-                {
+                if (ConstantValue.INSTANCE.isAntox()) {
                     FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                     MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
                 }else{
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
+            }else{
+                UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"",0,0,toxFileData.getFileId() +"",false);
+                MyFile myRouter = new MyFile();
+                myRouter.setType(0);
+                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                myRouter.setUpLoadFile(uploadFile);
+                LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
+
+            }
+            if(!deleteFileMap.get(toxFileData.getFileId() + ""))
+            {
+                if(!fileMiName.contains("__Avatar.jpg"))
+                {
+                    SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
+                    BaseData baseData = new BaseData(2,sendToxFileNotice);
+                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                    if(ConstantValue.INSTANCE.isAntox())
+                    {
+                        FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                    }else{
+                        ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    }
+                }
+
             }else{
 
             }
@@ -584,22 +601,6 @@ public class FileMangerUtil {
             }
             if(fileOrginName.contains("__Avatar.jpg"))
             {
-                if(code == 1)
-                {
-                    String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                    String fileBase58Name = Base58.encode(fileOrginName.getBytes());
-                    String fileMD5 = FileUtil.getFileMD5(new File(filePath));
-                    UploadAvatarReq uploadAvatarReq = new UploadAvatarReq( userId, fileBase58Name,fileMD5,"UploadAvatar");
-                    BaseData baseData = new BaseData(4,uploadAvatarReq);
-                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                    if (ConstantValue.INSTANCE.isAntox()) {
-                        FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                    }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    }
-                }
-
 
             }else{
                 UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0,msgId,false);
@@ -770,7 +771,9 @@ public class FileMangerUtil {
                         }else{
                             fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                         }
+                        toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                         sendToxFileDataMap.put(fileNumber,toxFileData);
+                        sendMsgIdToxFileDataMap.put(uuidTox+"",toxFileData);
                     }
                 }
             }else{
@@ -789,11 +792,19 @@ public class FileMangerUtil {
 
     }
 
-    public static void cancelSend(String msgId)
+    public static void cancelWebSocketWork(String msgId)
     {
         sendFilePathMap.remove(msgId);
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+    }
+    public static void cancelToxWork(String msgId)
+    {
+        sendFilePathMap.remove(msgId);
+        ToxFileData toxFileData = sendMsgIdToxFileDataMap.get(msgId);
+        if(toxFileData != null) {
+            ToxCoreJni.getInstance().cancelFileSend(toxFileData.getFileNumber());
+        }
     }
     public static int sendImageFile(String imagePath,String msgId,boolean isCompress) {
         if(sendFilePathMap.containsValue(imagePath))
@@ -928,8 +939,9 @@ public class FileMangerUtil {
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
-
+                                toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendMsgIdToxFileDataMap.put(uuidTox+"",toxFileData);
                             }else{
                                 //Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
@@ -984,9 +996,10 @@ public class FileMangerUtil {
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
-                        if(file.length() == 0)
+                        String fileMD566 = FileUtil.getFileMD5(new File(imagePath));
+                        if(file.length()> 500  * 1024)
                         {
-                            EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,3));
+                            //EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,3));
                             return;
                         }
                         String files_dir = imagePath;
@@ -1080,8 +1093,9 @@ public class FileMangerUtil {
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxAvatarFile(imagePath,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
-
+                                toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendMsgIdToxFileDataMap.put(uuidTox+"",toxFileData);
                             }else{
                                 //Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
@@ -1258,8 +1272,9 @@ public class FileMangerUtil {
                                 }else{
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
-
+                                toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendMsgIdToxFileDataMap.put(uuidTox+"",toxFileData);
                             }
                         }
 
@@ -1429,8 +1444,9 @@ public class FileMangerUtil {
                                 }else {
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInManger(base58files_dir,  ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuidTox+"") +"";
                                 }
-
+                                toxFileData.setFileNumber(Integer.valueOf(fileNumber));
                                 sendToxFileDataMap.put(fileNumber,toxFileData);
+                                sendMsgIdToxFileDataMap.put(uuidTox+"",toxFileData);
                             }
 
                         }

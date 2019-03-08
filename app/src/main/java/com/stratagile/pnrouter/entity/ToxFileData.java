@@ -15,6 +15,7 @@ public class  ToxFileData {
     private int FileId;
     private String SrcKey;
     private String DstKey;
+    private int fileNumber;
 
     public String getFromId() {
         return FromId;
@@ -95,6 +96,15 @@ public class  ToxFileData {
     public void setDstKey(String dstKey) {
         DstKey = dstKey;
     }
+
+    public int getFileNumber() {
+        return fileNumber;
+    }
+
+    public void setFileNumber(int fileNumber) {
+        this.fileNumber = fileNumber;
+    }
+
     public enum FileType {
         PNR_IM_MSGTYPE_TEXT(0), PNR_IM_MSGTYPE_IMAGE(1), PNR_IM_MSGTYPE_AUDIO(2), PNR_IM_MSGTYPE_SYSTEM(2), PNR_IM_MSGTYPE_MEDIA(4), PNR_IM_MSGTYPE_FILE(5), PNR_IM_MSGTYPE_AVATAR(6);
         private int value = 0;
