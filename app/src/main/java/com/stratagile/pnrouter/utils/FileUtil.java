@@ -649,9 +649,9 @@ public class FileUtil {
         }
         BigInteger bigInt = new BigInteger(1, digest.digest());
         String result =  bigInt.toString(16);
-        if(result.length() != 16)
+        if(result.length() != 32)
         {
-            int count = result.length() - 16;
+            int count = result.length() - 32;
             String addPre = "";
             for(int i = 0; i < count ;i++)
             {
