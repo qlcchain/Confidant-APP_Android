@@ -1,5 +1,6 @@
 package com.hyphenate.easeui.adapter;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -40,7 +41,6 @@ import java.util.List;
 
 /**
  * conversation list adapter
- *
  */
 public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
     private static final String TAG = "EaseConversationNewAdapter";
@@ -109,53 +109,49 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         // get username or group id
         String conversationId = conversation.getEmMessage().conversationId();
         UnReadEMMessage lastMessage = conversation;
-        if(lastMessage == null)
-        {
+        if (lastMessage == null) {
             return convertView;
         }
         UserEntity friendUser = null;
         List<UserEntity> localFriendList = null;
-        if(UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
-        {
+        if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
             localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-            if(localFriendList.size() > 0)
+            if (localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
-        }else{
+        } else {
             localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
-            if(localFriendList.size() > 0)
+            if (localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }
-        if(friendUser == null)
-        {
+        if (friendUser == null) {
             return convertView;
         }
         String username = friendUser.getNickName();
-        if(friendUser.getRemarks() != null && !friendUser.getRemarks().equals(""))
-        {
+        if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
             username = friendUser.getRemarks();
         }
-        String usernameSouce = new  String(RxEncodeTool.base64Decode(username));
+        String usernameSouce = new String(RxEncodeTool.base64Decode(username));
         if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.GroupChat) {
             String groupId = conversation.getEmMessage().conversationId();
-            if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
+            if (EaseAtMessageHelper.get().hasAtMeMsg(groupId)) {
                 holder.motioned.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.motioned.setVisibility(View.GONE);
             }
             // group message, show group avatar
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
             holder.name.setText(group != null ? group.getGroupName() : usernameSouce);
-        } else if(conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom){
+        } else if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom) {
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(conversationId);
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : usernameSouce);
             holder.motioned.setVisibility(View.GONE);
-        }else {
+        } else {
 //            EaseUserUtils.setUserAvatar(getContext(), conversationId, holder.avatar);
             //EaseUserUtils.setUserNick(username, holder.name);
             holder.avatar.setText(usernameSouce);
-            String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(friendUser.getSignPublicKey()))+".jpg";
+            String fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(friendUser.getSignPublicKey())) + ".jpg";
             holder.avatar.setImageFile(fileBase58Name);
             holder.name.setText(usernameSouce);
             holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
@@ -176,17 +172,16 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
 //        }
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if (lastMessage.getUnReadCount() != 0) {
-            holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0? "" : lastMessage.getUnReadCount() +"");
+            holder.unreadLabel.setText(lastMessage.getUnReadCount() == 0 ? "" : lastMessage.getUnReadCount() + "");
             holder.unreadLabel.setVisibility(View.VISIBLE);
         } else {
             holder.unreadLabel.setVisibility(View.INVISIBLE);
         }
-        String time = lastMessage.getEmMessage().getMsgTime() +"";
-        if(time.length() == 10)
-        {
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() *1000)));
-        }else{
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime())));
+        String time = lastMessage.getEmMessage().getMsgTime() + "";
+        if (time.length() == 10) {
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime() * 1000), getContext()));
+        } else {
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
         }
         if (lastMessage.getEmMessage().isUnread()) {
             // show the content of latest message
@@ -198,11 +193,11 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         }
         holder.message.setTextColor(secondaryColor);
         String content = null;
-        if(cvsListHelper != null){
+        if (cvsListHelper != null) {
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
         }
         holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))), TextView.BufferType.SPANNABLE);
-        if(content != null){
+        if (content != null) {
             holder.message.setText(content);
         }
         if (holder.message.getText().toString().contains("//[draft]//")) {
@@ -215,11 +210,11 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         //set property
         holder.name.setTextColor(primaryColor);
         holder.time.setTextColor(timeColor);
-        if(primarySize != 0)
+        if (primarySize != 0)
             holder.name.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);
-        if(secondarySize != 0)
+        if (secondarySize != 0)
             holder.message.setTextSize(TypedValue.COMPLEX_UNIT_PX, secondarySize);
-        if(timeSize != 0)
+        if (timeSize != 0)
             holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
 
         return convertView;
@@ -228,7 +223,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        if(!notiyfyByFilter){
+        if (!notiyfyByFilter) {
             copyConversationEmmessageList.clear();
             copyConversationEmmessageList.addAll(conversationEmmessageList);
             notiyfyByFilter = false;
@@ -239,7 +234,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
     public Filter getFilter() {
         if (conversationFilter == null) {
             conversationFilter = new ConversationFilter(conversationEmmessageList);
-        }else{
+        } else {
             conversationFilter.updata(conversationEmmessageList);
         }
         return conversationFilter;
@@ -278,9 +273,10 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             mOriginalValues = mList;
         }
 
-        public void  updata(List<UnReadEMMessage> mList) {
+        public void updata(List<UnReadEMMessage> mList) {
             mOriginalValues = mList;
         }
+
         @Override
         protected FilterResults performFiltering(CharSequence prefix) {
             FilterResults results = new FilterResults();
@@ -305,25 +301,23 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                     UnReadEMMessage lastMessage = value;
                     UserEntity friendUser = null;
                     List<UserEntity> localFriendList = null;
-                    if(!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId()))
-                    {
+                    if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-                        if(localFriendList.size() > 0)
+                        if (localFriendList.size() > 0)
                             friendUser = localFriendList.get(0);
-                    }else{
+                    } else {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
-                        if(localFriendList.size() > 0)
+                        if (localFriendList.size() > 0)
                             friendUser = localFriendList.get(0);
                     }
-                    String username = new  String(RxEncodeTool.base64Decode(friendUser.getNickName()));
-                    if(friendUser.getRemarks() != null && !friendUser.getRemarks().equals(""))
-                    {
-                        username = new  String(RxEncodeTool.base64Decode(friendUser.getRemarks()));
+                    String username = new String(RxEncodeTool.base64Decode(friendUser.getNickName()));
+                    if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
+                        username = new String(RxEncodeTool.base64Decode(friendUser.getRemarks()));
                     }
                     // First match against the whole ,non-splitted value
                     if (username.toLowerCase().contains(prefixString.toLowerCase())) {
                         newValues.add(value);
-                    } else{
+                    } else {
                         final String[] words = username.split(" ");
                         final int wordCount = words.length;
 
@@ -360,29 +354,52 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
 
     private EaseConversationListHelper cvsListHelper;
 
-    public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
+    public void setCvsListHelper(EaseConversationListHelper cvsListHelper) {
         this.cvsListHelper = cvsListHelper;
     }
 
     private static class ViewHolder {
-        /** who you chat with */
+        /**
+         * who you chat with
+         */
         TextView name;
-        /** unread message count */
+        /**
+         * unread message count
+         */
         TextView unreadLabel;
-        /** content of last message */
+        /**
+         * content of last message
+         */
         TextView message;
-        /** time of last message */
+        /**
+         * time of last message
+         */
         TextView time;
-        /** avatar */
+        /**
+         * avatar
+         */
         ImageButtonWithText avatar;
-        /** status of last message */
+        /**
+         * status of last message
+         */
         View msgState;
-        /** layout */
+        /**
+         * layout
+         */
         RelativeLayout list_itease_layout;
         TextView motioned;
         TextView userRouter;
 
         TextView draft;
+    }
+
+    private boolean is24Time(Context context) {
+        ContentResolver cv = context.getContentResolver();
+        String strTimeFormat = android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24);
+        if (strTimeFormat.equals("24")) {
+            return true;
+        }
+        return false;
     }
 }
 

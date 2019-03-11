@@ -33,6 +33,7 @@ import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
 import com.stratagile.pnrouter.entity.JPushMsgRsp
+import com.stratagile.pnrouter.entity.events.BackgroudEvent
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
 import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
@@ -269,8 +270,9 @@ class AppConfig : MultiDexApplication() {
                 KLog.i(unlockTime)
                 KLog.i(ConstantValue.logining)
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
+                var isUnlock = SpUtil.getBoolean(this@AppConfig, ConstantValue.isUnLock, false)
                 // && !BuildConfig.DEBUG
-                if(unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && ConstantValue.logining && !BuildConfig.DEBUG)
+                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG) || (!isUnlock && !BuildConfig.DEBUG))
                 {
                     EventBus.getDefault().post(StartVerify())
                 }
@@ -283,6 +285,7 @@ class AppConfig : MultiDexApplication() {
             override fun onBecameBackground() {
                 KLog.i("当前程序切换到后台")
                 LogUtil.addLog("当前程序切换到后台")
+//                EventBus.getDefault().post(BackgroudEvent())
                 isBackGroud = true
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))

@@ -293,6 +293,16 @@ public class ToxCoreJni {
         KLog.i("引导 完成");
     }
 
+    /**
+     * 主动取消文件的接受
+     * @param fileNumber
+     */
+    public native void cancelFileReceive(int fileNumber);
+
+    /**
+     * 主动取消文件的发送
+     * @param fileNumber
+     */
     public native void cancelFileSend(int fileNumber);
 
     public String setFileSavePath(String oldName) {

@@ -31,7 +31,7 @@ class ConversationListAdapter(arrayList: ArrayList<Conversation>) : BaseQuickAda
         avatar.setImageFile(fileBase58Name)
         helper.setText(R.id.tvNickName, item.userEntity?.nickName)
         helper.setText(R.id.tvLastMessage, item.lastMessage!!.msg)
-        helper.setText(R.id.tvLastMessageTime, DateUtil.getTimestampString(Date(item.lastMessageTime)))
+//        helper.setText(R.id.tvLastMessageTime, DateUtil.getTimestampString(Date(item.lastMessageTime)))
     }
 
 }

@@ -40,6 +40,8 @@ static uint64_t received_file_size;
 
 static uint32_t cacenlFileNumber = 0;
 
+static uint32_t cacenlFileSendNumber = -1;
+
 Tox *mTox = NULL;
 JNIEnv *Env;
 JavaVM *g_jvm = NULL;
@@ -866,6 +868,20 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
                 break;
             }
 
+            if (cacenlFileSendNumber == file_number) {
+                cacenlFileSendNumber = -1;
+                fclose(file_senders[i].file);
+                file_senders[i].file = 0;
+                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[i].filesize, i);
+                LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum,
+                     file_senders[i].filenumber);
+                file_senders[i].file = NULL;
+                file_senders[i].filenumber = NULL;
+                file_senders[i].filesize = NULL;
+                file_senders[i].filenumber = NULL;
+                return;
+            }
+
             fseek(file_senders[i].file, position, SEEK_SET);
             VLA(uint8_t, data, length);
             int len = fread(data, 1, length, file_senders[i].file);
@@ -990,6 +1006,11 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize, i
 
 void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileSend(JNIEnv *env, jobject thiz, int fileNumber) {
     cacenlFileNumber = (uint32_t) fileNumber;
+}
+
+
+void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileReceive(JNIEnv *env, jobject thiz, int fileNumber) {
+    cacenlFileSendNumber = (uint32_t) fileNumber;
 }
 
 

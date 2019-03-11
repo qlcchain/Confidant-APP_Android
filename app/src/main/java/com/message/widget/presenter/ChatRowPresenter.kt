@@ -47,7 +47,7 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
         avatar.setOnClickListener {
             onAvatarClick(message)
         }
-        tvTimestamp.text = DateUtil.getTimestampString(Date(message.timeStatmp))
+        tvTimestamp.text = DateUtil.getTimestampString(Date(message.timeStatmp), context)
         if (position == 0) {
             tvTimestamp.visibility = View.VISIBLE
         } else {
@@ -72,6 +72,14 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
         avatar.setText(usernameSouce)
         var avatarPath = Base58.encode( RxEncodeTool.base64Decode(userEntity!!.signPublicKey))+".jpg"
         avatar.setImageFile(avatarPath)
+    }
+
+    private fun is24Time(context: Context): Boolean {
+        val cv = context.contentResolver
+        val strTimeFormat = android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24)
+        return if (strTimeFormat == "24") {
+            true
+        } else false
     }
 
     /**

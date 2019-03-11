@@ -187,7 +187,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         }
         if (lastMessage.getEmMessage().isUnread()) {
             // show the content of latest message
-            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime())));
+            holder.time.setText(DateUtil.getTimestampString(new Date(lastMessage.getEmMessage().getMsgTime()), getContext()));
             if (lastMessage.getEmMessage().direct() == EMMessage.Direct.SEND && lastMessage.getEmMessage().status() == EMMessage.Status.FAIL) {
                 holder.msgState.setVisibility(View.VISIBLE);
             } else {

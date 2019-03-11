@@ -120,6 +120,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1255,8 +1256,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData2_" + conversation.getAllMessages().size());
             }
             if (isMessageListInited) {
-                easeChatMessageList.refresh();
+//                easeChatMessageList.refresh();
             }
+        }
+        if (messageList.size() == 0) {
+            return;
         }
         int size = messageList.size();
         handler.postDelayed(new Runnable() {
@@ -1283,6 +1287,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
+        ArrayList<EMMessage> messages = new ArrayList<>();
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
@@ -1517,21 +1522,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (Message.getMsgType() != 0) {
                 receiveFileDataMap.put(Message.getMsgId() + "", Message);
             }
-            sendMessageTo(message);
+            messages.add(message);
+//            sendMessageTo(message);
             if (i == size - 1) {
                 Gson gson = new Gson();
                 Message.setUnRead(false);
                 Message.setStatus(2);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
-                if (Message.getSender() == 0) {
-                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
-                } else {
-                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                if (currentPage == 0) {
+                    if (Message.getSender() == 0) {
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                    } else {
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                    }
                 }
             }
         }
-        List<MessageEntity> messageEntityList11 = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().loadAll();
+        sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId),MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
         KLog.i("开始插入没有发送成功的文本消息查询：userId："+userId +" friendId:"+toChatUserId +" messageEntityList:"+messageEntityList);
         if(messageEntityList != null)
@@ -3466,6 +3474,57 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         /*if(isMessageListInited) {
             easeChatMessageList.refreshSelectLast();
         }*/
+    }
+
+    protected void sendMessageTo(ArrayList<EMMessage> message) {
+        KLog.i("批量添加数据");
+        if (conversation == null)
+            conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+        for (int i = 0; i < message.size(); i++) {
+            if (chatFragmentHelper != null) {
+                //set extension
+                chatFragmentHelper.onSetMessageAttributes(message.get(i));
+            }
+            if (chatType == EaseConstant.CHATTYPE_GROUP) {
+                message.get(i).setChatType(ChatType.GroupChat);
+            } else if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
+                message.get(i).setChatType(ChatType.ChatRoom);
+            }
+            message.get(i).setMessageStatusCallback(messageStatusCallback);
+            message.get(i).setStatus(EMMessage.Status.SUCCESS);
+            if (conversation == null)
+                conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+            if (conversation != null) {
+                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData4_" + conversation.getAllMessages().size());
+                conversation.insertMessage(message.get(i));
+                //refresh ui
+            } else {
+                new Thread(new Runnable() {
+
+                    public void run() {
+
+                        try {
+                            Thread.sleep(1000);
+                            if (conversation == null)
+                                conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
+                            if (conversation != null) {
+                                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData5_" + conversation.getAllMessages().size());
+                                conversation.insertMessage(message.get(0));
+                                //SpUtil.INSTANCE.putString(conversation.conversationId());
+                                //refresh ui
+                                if (isMessageListInited) {
+                                    easeChatMessageList.refreshSelectLast();
+                                }
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
+
+                }).start();
+            }
+        }
+        easeChatMessageList.refreshTo(message.size());
     }
 
 

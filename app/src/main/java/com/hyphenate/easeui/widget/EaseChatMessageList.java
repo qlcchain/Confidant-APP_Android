@@ -93,10 +93,17 @@ public class EaseChatMessageList extends RelativeLayout{
     public void refresh(){
         KLog.i("刷新");
         if (messageAdapter != null) {
-            messageAdapter.refresh();
+            messageAdapter.refreshSelectLast();
         }
     }
-    
+
+    public void refreshTo(int index){
+        KLog.i("刷新" + index);
+        if (messageAdapter != null) {
+            messageAdapter.refreshTo(index);
+        }
+    }
+
     /**
      * refresh and jump to the last
      */
