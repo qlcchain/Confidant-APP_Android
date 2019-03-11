@@ -568,11 +568,13 @@ public class FileMangerUtil {
 
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
+        String msgLocalId = "";
         long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
             fileMiName = fileNameArray[1];
+            msgLocalId = fileNameArray[2];
         }
         if(fileMiName != null)
         {
@@ -590,7 +592,7 @@ public class FileMangerUtil {
             }else{
                 code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
             }
-            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
+            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
             String fileMiUrl = fileMiName;
             String userKey = "";
             int fileFrom = 0;
@@ -621,17 +623,17 @@ public class FileMangerUtil {
     {
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
-        String aa = "";
+        String msgLocalId = "";
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
             fileMiName = fileNameArray[1];
-            aa = fileNameArray[0];
+            msgLocalId = fileNameArray[2];
         }
         if(fileMiName != null) {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
             String fileSouceName = new String(Base58.decode(fileMiName));
-            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
+            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
             String fileMiUrl = fileMiName;
             String userKey = "";
             int fileFrom = 0;
@@ -805,7 +807,15 @@ public class FileMangerUtil {
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
     }
-    public static void cancelToxWork(String msgId)
+    public static void cancelFileReceive(String msgId)
+    {
+        sendFilePathMap.remove(msgId);
+        deleteFileMap.put(msgId,true);
+        int fileNumber = ToxCoreJni.getInstance().reveiveFileNumberAndMsgIDMap.get(msgId);
+        KLog.i("cancelFileReceive_fileNumber:"+fileNumber);
+        ToxCoreJni.getInstance().cancelFileReceive(fileNumber);
+    }
+    public static void cancelFileSend(String msgId)
     {
         sendFilePathMap.remove(msgId);
         deleteFileMap.put(msgId,true);

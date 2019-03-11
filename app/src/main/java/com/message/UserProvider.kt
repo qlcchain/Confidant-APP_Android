@@ -41,7 +41,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
             }else{
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, "", 0, 4, 3)
+                var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 3)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {

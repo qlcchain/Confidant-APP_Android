@@ -41,6 +41,7 @@ public class ToxCoreJni {
         this.toxCallbackListener = toxCallbackListener;
     }
     private HashMap<String,String> sendFileRouterMap = new HashMap<>();
+    public HashMap<String,Integer> reveiveFileNumberAndMsgIDMap = new HashMap<>();
     private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
     private HashMap<String,Boolean> progressSendMap = new HashMap<>();
     private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
@@ -212,6 +213,10 @@ public class ToxCoreJni {
         KLog.i("开始接收的文件名：" + fileName);
         KLog.i("路由器的Id是：" + routerId);
         reveiveFileNumberMap.put(routerId,fileNumber+"");
+        String [] fileNameArray = fileName.split(":");
+        String fileMiName = fileNameArray[1];
+        String msgLocalId = fileNameArray[2];
+        reveiveFileNumberAndMsgIDMap.put(msgLocalId,fileNumber);
         EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
     }
 
@@ -267,7 +272,10 @@ public class ToxCoreJni {
         if(position == filesize)
         {
             int num = (int)(position / average) + 1;
-            progressReceiveMap.put(fileNum+"_"+num,null);
+            for(int i = 0 ; i < num ; i++)
+            {
+                progressReceiveMap.put(fileNum+"_"+i,null);
+            }
             KLog.i("抛出EventBus:receivedFileFinish"+fileNum+"_"+num);
             EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
         }else{
