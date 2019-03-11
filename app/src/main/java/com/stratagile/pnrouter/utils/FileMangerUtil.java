@@ -50,6 +50,7 @@ import java.util.concurrent.ExecutorService;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
+import scalaz.Alpha;
 
 
 public class FileMangerUtil {
@@ -225,7 +226,7 @@ public class FileMangerUtil {
                                         if(!fileName.contains("__Avatar.jpg"))//头像不用加密
                                         {
                                             int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
+                                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
                                             MyFile myRouter = new MyFile();
                                             myRouter.setType(0);
                                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -330,7 +331,7 @@ public class FileMangerUtil {
                                     if(sended < 0 )
                                         sended = 0;
                                     KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
-                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, false,sended, fileTotalSegment,10,false,"",0,0,msgId,false);
+                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
                                     MyFile myRouter = new MyFile();
                                     myRouter.setType(0);
                                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -354,7 +355,7 @@ public class FileMangerUtil {
 
                     int segSeqTotal = sendFileTotalSegment.get(filePath);
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, false,segSeqTotal,segSeqTotal,0,false,"",0,0,msgId,false);
+                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, true, "0",segSeqTotal,segSeqTotal,0,false,"",0,0,msgId,false);
                     MyFile myRouter = new MyFile();
                     myRouter.setType(0);
                     myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -499,8 +500,7 @@ public class FileMangerUtil {
         if(toxFileData != null)
         {
             String filePath = toxFileData.getFilePath();
-            String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            String fileSouceName = new String(Base58.decode(fileMiName));
+            String fileSouceName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
             if(fileSouceName.contains("__Avatar.jpg"))
             {
                 String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
@@ -516,18 +516,18 @@ public class FileMangerUtil {
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                 }
             }else{
-                UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, true, false,1,1,0,false,"",0,0,toxFileData.getFileId() +"",false);
+                UpLoadFile uploadFile = new UpLoadFile(fileSouceName,filePath,toxFileData.getFileSize(), false, true, "0",1,1,0,false,"",0,0,toxFileData.getFileId() +"",false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);
                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
                 myRouter.setUpLoadFile(uploadFile);
                 LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
+                EventBus.getDefault().post(new FileStatus(fileSouceName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, true, false,1,1,0,false,0));
 
             }
             if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
-                if(!fileMiName.contains("__Avatar.jpg"))
+                if(!fileSouceName.contains("__Avatar.jpg"))
                 {
                     SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
                     BaseData baseData = new BaseData(2,sendToxFileNotice);
@@ -552,7 +552,7 @@ public class FileMangerUtil {
         if(toxFileData != null) {
             String filePath = toxFileData.getFilePath();
             String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, false,position,filesize,0,false,"",0,0,toxFileData.getFileId()+"",false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, "0",position,filesize,0,false,"",0,0,toxFileData.getFileId()+"",false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -606,7 +606,7 @@ public class FileMangerUtil {
             {
 
             }else{
-                UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, false,1,1,0,false,userKey,0,0,msgId,false);
+                UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, "0",1,1,0,false,userKey,0,0,msgId,false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);
                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -621,13 +621,16 @@ public class FileMangerUtil {
     {
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
+        String aa = "";
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
             fileMiName = fileNameArray[1];
+            aa = fileNameArray[0];
         }
         if(fileMiName != null) {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
+            String fileSouceName = new String(Base58.decode(fileMiName));
             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileMiName);
             String fileMiUrl = fileMiName;
             String userKey = "";
@@ -640,7 +643,7 @@ public class FileMangerUtil {
                 fileFrom = localUpLoadFile.getFileFrom();
                 msgId = localUpLoadFile.getMsgId();
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, false,position,filesize,0,false,userKey,fileFrom,0,msgId,false);
+            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, "0",position,filesize,0,false,userKey,fileFrom,0,msgId,false);
             MyFile myRouter = new MyFile();
             myRouter.setType(0);
             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -798,12 +801,14 @@ public class FileMangerUtil {
     public static void cancelWebSocketWork(String msgId)
     {
         sendFilePathMap.remove(msgId);
+        deleteFileMap.put(msgId,true);
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
     }
     public static void cancelToxWork(String msgId)
     {
         sendFilePathMap.remove(msgId);
+        deleteFileMap.put(msgId,true);
         ToxFileData toxFileData = sendMsgIdToxFileDataMap.get(msgId);
         if(toxFileData != null) {
             ToxCoreJni.getInstance().cancelFileSend(toxFileData.getFileNumber());
@@ -829,6 +834,10 @@ public class FileMangerUtil {
                         uuid = msgId;
                     }
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
+                    if(!msgId.equals(""))
+                    {
+                        uuidTox = Integer.valueOf(msgId);
+                    }
                     if(isHas)
                     {
                         if(file.length() == 0)
@@ -842,7 +851,7 @@ public class FileMangerUtil {
                         {
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid,false);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -888,7 +897,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName+"__"+uuidTox,imagePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1057,7 +1066,7 @@ public class FileMangerUtil {
 
                                 ToxFileData toxFileData = new ToxFileData();
                                 toxFileData.setFromId(fromUserId);
-                                toxFileData.setFilePath(base58files_dir);
+                                toxFileData.setFilePath(imagePath);
                                 toxFileData.setToId(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
                                 File fileMi = new File(base58files_dir);
                                 long fileSize = fileMi.length();
@@ -1140,11 +1149,13 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(!msgId.equals(""))
                     {
                         uuid = msgId;
+                        uuidTox = Integer.valueOf(msgId);
                     }
-                    int uuidTox = (int)(System.currentTimeMillis()/1000);
+
                     if(isHas)
                     {
 
@@ -1169,7 +1180,7 @@ public class FileMangerUtil {
 
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid,false);
+                            UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1219,7 +1230,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
+                                UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1317,11 +1328,12 @@ public class FileMangerUtil {
                     boolean isHas = file.exists();
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(!msgId.equals(""))
                     {
                         uuid = msgId;
+                        uuidTox = Integer.valueOf(msgId);
                     }
-                    int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if(isHas)
                     {
                         if(file.length() > 1024 * 1024 * 100)
@@ -1341,7 +1353,7 @@ public class FileMangerUtil {
 
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuid,false);
+                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
                             myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
@@ -1392,7 +1404,7 @@ public class FileMangerUtil {
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
                                 int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
-                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, false,0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
+                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
                                 myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());

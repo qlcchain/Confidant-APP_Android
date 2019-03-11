@@ -61,7 +61,7 @@ class FileDownloadUploadService : Service() {
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun sendMessage(fileMangertransfromMessage: FileMangerTransformMessage) {
         ConstantValue.webSockeFileMangertList.forEach {
-            if (it.toId.equals(fileMangertransfromMessage.toId)) {
+            if (it.toId.equals(fileMangertransfromMessage.toId) && fileMangertransfromMessage!= null && fileMangertransfromMessage.message!= null) {
                 it.sendByteString(fileMangertransfromMessage.message)
                 return
             }

@@ -536,7 +536,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             if(myFie.upLoadFile.isComplete == false)
             {
                 myFie.upLoadFile.SendGgain = true
-                myFie.upLoadFile.isStop = true
+                myFie.upLoadFile.isStop = "1"
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
                 myRouter.type = 0

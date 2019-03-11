@@ -75,12 +75,15 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             }
         } else {
 
-            if (item.t.isStop) {
+            if (item.t.isStop.equals("1")) {
                 helper.setVisible(R.id.status, true)
                 helper.setVisible(R.id.stopBtn, false)
-            } else {
+            } else  if (item.t.isStop.equals("0")){
                 helper.setVisible(R.id.status, false)
                 helper.setVisible(R.id.stopBtn, true)
+            }else{
+                helper.setVisible(R.id.status, false)
+                helper.setVisible(R.id.stopBtn, false)
             }
             helper.setGone(R.id.progressBar, true)
             helper.setText(R.id.filesize,NetUtils.parseSize(item.t.fileSize))
@@ -108,15 +111,19 @@ class FileTaskLisytAdapter(data: MutableList<TaskFile>?) : BaseSectionQuickAdapt
             {
                 helper.setGone(R.id.status, false)
             }else{
-                if(item.t.isStop)
+                if(item.t.isStop.equals("1"))
                 {
                     KLog.i("暂停。。")
                     helper.setVisible(R.id.status, true)
                     helper.setVisible(R.id.stopBtn, false)
-                }else{
+                }else  if(item.t.isStop.equals("0")){
                     KLog.i("正在进行。。")
                     helper.setVisible(R.id.status, false)
                     helper.setVisible(R.id.stopBtn, true)
+                }else{
+                    KLog.i("过渡。。")
+                    helper.setVisible(R.id.status, false)
+                    helper.setVisible(R.id.stopBtn, false)
                 }
             }
         }

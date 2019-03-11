@@ -136,6 +136,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     lateinit var fileGoingTaskLisytAdapter: FileTaskLisytAdapter
 
     lateinit var fileCompleteTaskLisytAdapter: FileTaskLisytAdapter
+    var clickTimeMap = HashMap<String, Long>()
 
     var receiveFileDataMap = HashMap<String, UpLoadFile>()
 
@@ -175,40 +176,40 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         {
             var index = 0;
 
-             fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
-                 it.takeUnless { it.isHeader }?.let {
-                     var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
-                     if(checkBox.isChecked)
-                     {
-                         deleteStr += index.toString() +","
-                         //fileGoingTaskLisytAdapter.remove(index)
-                         var localMedia = it!!.t
-                         if (ConstantValue.isWebsocketConnected) {
-                             if(!localMedia.isDownLoad && !localMedia.isComplete)
-                             {
-                                 FileMangerUtil.cancelWebSocketWork(localMedia.msgId)
-                             }
-                             else if(localMedia.isDownLoad && !localMedia.isComplete)
-                             {
-                                 FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
-                             }
-                         }else if (ConstantValue.isToxConnected) {
-                             if(!localMedia.isDownLoad && !localMedia.isComplete)
-                             {
-                                 FileMangerUtil.cancelToxWork(localMedia.msgId)
-                             }
-                             else if(localMedia.isDownLoad && !localMedia.isComplete)
-                             {
-                                 FileMangerUtil.cancelToxWork(localMedia.msgId)
-                             }
-                         }
+            fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
+                it.takeUnless { it.isHeader }?.let {
+                    var checkBox =  fileGoingTaskLisytAdapter!!.getViewByPosition(recyclerView,index,R.id.checkBox) as CheckBox
+                    if(checkBox.isChecked)
+                    {
+                        deleteStr += index.toString() +","
+                        //fileGoingTaskLisytAdapter.remove(index)
+                        var localMedia = it!!.t
+                        if (ConstantValue.isWebsocketConnected) {
+                            if(!localMedia.isDownLoad && !localMedia.isComplete)
+                            {
+                                FileMangerUtil.cancelWebSocketWork(localMedia.msgId)
+                            }
+                            else if(localMedia.isDownLoad && !localMedia.isComplete)
+                            {
+                                FileMangerDownloadUtils.cancelWork(localMedia.msgId.toInt())
+                            }
+                        }else if (ConstantValue.isToxConnected) {
+                            if(!localMedia.isDownLoad && !localMedia.isComplete)
+                            {
+                                FileMangerUtil.cancelToxWork(localMedia.msgId)
+                            }
+                            else if(localMedia.isDownLoad && !localMedia.isComplete)
+                            {
+                                FileMangerUtil.cancelToxWork(localMedia.msgId)
+                            }
+                        }
 
-                         LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
-                     }
+                        LocalFileUtils.deleteLocalAssetsByMsgId(localMedia.msgId)
+                    }
 
 
-                 }
-             }
+                }
+            }
             var deleteArray = deleteStr.split(",")
             var len = deleteArray.size
             for (i in len -1 downTo 0){
@@ -417,10 +418,10 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         var count = 0;
         fileGoingTaskLisytAdapter.data.forEachIndexed { index, it ->
             it.takeUnless { it.isHeader }?.let {
-               if(it.t.isCheck)
-               {
-                   count ++;
-               }
+                if(it.t.isCheck)
+                {
+                    count ++;
+                }
             }
         }
         fileCompleteTaskLisytAdapter.data.forEachIndexed { index, it ->
@@ -490,6 +491,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
                                         it.t.fileSize = myFie.upLoadFile.fileSize
+                                        it.t.isStop = myFie.upLoadFile.isStop
                                         if(tvDelete.visibility == View.VISIBLE)
                                         {
                                             it.t.status = 1
@@ -505,7 +507,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         {
                                             status = 1
                                         }
-                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId,it.t.isCheck)))
+                                        listComplete.add(1,TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, "0", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,status,myFie.upLoadFile.msgId,it.t.isCheck)))
                                         reSetHeadTitle()
                                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                                         KLog.i("下载完1")
@@ -519,7 +521,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 }
                 for (myFie in localFilesList) {
                     if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
-                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                        listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, "0", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
                         KLog.i("新下载")
@@ -539,16 +541,16 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
         for (myFie in localFilesList) {
 
             if (myFie.upLoadFile.isComplete == false) {
-                if(myFie.upLoadFile.isStop)
+                if(myFie.upLoadFile.isStop.equals("1"))
                 {
-                    listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, true, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                    listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, "1", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                 }
-               else{
-                    listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                else{
+                    listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey, myFie.upLoadFile.path,myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, "0", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                 }
             } else {
 
-                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, false, myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
+                listComplete.add(1, TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, true, "0", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, 0, false,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
             }
         }
         fileGoingTaskLisytAdapter = FileTaskLisytAdapter(listGoing)
@@ -577,53 +579,102 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 {
                     var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
                     var localMedia = taskFile!!.t
+                    var lastClickTime = clickTimeMap.get(taskFile.t.msgId)
+                    if(lastClickTime == null)
+                    {
+                        lastClickTime = 0;
+                    }
+                    if(System.currentTimeMillis() - lastClickTime < 1000)
+                    {
+                        clickTimeMap.put(taskFile.t.msgId,System.currentTimeMillis())
+                        return@setOnItemChildClickListener
+                    }
                     var file = File(localMedia!!.path)
                     if(!localMedia!!.isDownLoad)
                     {
                         if (file.exists())
                         {
                             if (localMedia!!.path.indexOf("jpg") > -1 || localMedia!!.path.indexOf("jpeg") > -1 || localMedia!!.path.indexOf("png") > -1) {
-                                var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
-                                if(result  == 1)
-                                {
-                                    runOnUiThread {
-                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
-                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
-                                        toast(getString(R.string.Start_uploading))
-                                    }
-                                }else{
-                                    runOnUiThread {
-                                        toast(getString(R.string.Already_on_the_list))
-                                    }
+
+                                runOnUiThread {
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                    fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                 }
+                                Thread(Runnable() {
+                                    run() {
+
+                                        var result =    FileMangerUtil.sendImageFile(localMedia!!.path,taskFile.t.msgId, false)
+                                        if(result  == 1)
+                                        {
+                                            runOnUiThread {
+                                                toast(getString(R.string.Start_uploading))
+                                            }
+                                        }else{
+                                            runOnUiThread {
+                                                toast(getString(R.string.Already_on_the_list))
+                                            }
+                                        }
+                                        runOnUiThread {
+                                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                            fileGoingTaskLisytAdapter.notifyItemChanged(position)
+                                        }
+                                    }
+                                }).start()
+
                             } else if (localMedia!!.path.indexOf("mp4") > -1) {
-                                var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
-                                if(result  == 1)
-                                {
-                                    runOnUiThread {
-                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
-                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
-                                        toast(getString(R.string.Start_uploading))
-                                    }
-                                }else{
-                                    runOnUiThread {
-                                        toast(getString(R.string.Already_on_the_list))
-                                    }
+                                runOnUiThread {
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                    fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                 }
+
+                                Thread(Runnable() {
+                                    run() {
+
+                                        var result =   FileMangerUtil.sendVideoFile(localMedia!!.path,taskFile.t.msgId)
+                                        if(result  == 1)
+                                        {
+                                            runOnUiThread {
+                                                toast(getString(R.string.Start_uploading))
+                                            }
+                                        }else{
+                                            runOnUiThread {
+                                                toast(getString(R.string.Already_on_the_list))
+                                            }
+                                        }
+                                        runOnUiThread {
+                                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                            fileGoingTaskLisytAdapter.notifyItemChanged(position)
+                                        }
+                                    }
+                                }).start()
+
                             } else {
-                                var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
-                                if(result  == 1)
-                                {
-                                    runOnUiThread {
-                                        fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
-                                        fileGoingTaskLisytAdapter.notifyItemChanged(position)
-                                        toast(getString(R.string.Start_uploading))
-                                    }
-                                }else{
-                                    runOnUiThread {
-                                        toast(getString(R.string.Already_on_the_list))
-                                    }
+                                runOnUiThread {
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                    fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                 }
+                                Thread(Runnable() {
+                                    run() {
+
+                                        var result =  FileMangerUtil.sendOtherFile(localMedia!!.path,taskFile.t.msgId)
+                                        if(result  == 1)
+                                        {
+                                            runOnUiThread {
+                                                toast(getString(R.string.Start_uploading))
+                                            }
+                                        }else{
+                                            runOnUiThread {
+                                                toast(getString(R.string.Already_on_the_list))
+                                            }
+                                        }
+                                        runOnUiThread {
+                                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
+                                            fileGoingTaskLisytAdapter.notifyItemChanged(position)
+                                        }
+                                    }
+                                }).start()
+
+
                             }
                         }else{
                             LocalFileUtils.deleteLocalAssets(taskFile.t.msgId)
@@ -660,13 +711,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             receiveFileDataMap.put(localMedia!!.msgId,localMedia)
                             Thread(Runnable() {
                                 run() {
-                                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
+                                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "0", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                                     val myRouter = MyFile()
                                     myRouter.type = 0
                                     myRouter.userSn = ConstantValue.currentRouterSN
                                     myRouter.upLoadFile = uploadFile
                                     LocalFileUtils.updateLocalAssets(myRouter)
-                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "0"
                                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                     FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
                                 }
@@ -674,7 +725,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                         } else {
                             ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
-                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, false, 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
+                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "0", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -685,7 +736,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
                             var baseData = BaseData(msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = false
+                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "0"
                             fileGoingTaskLisytAdapter.notifyItemChanged(position)
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -700,7 +751,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 {
                     var taskFile = fileGoingTaskLisytAdapter!!.getItem(position)
                     var localMedia = taskFile!!.t
-                    localMedia.isStop = true
+                    localMedia.isStop = "1"
                     localMedia.segSeqResult = 0
                     localMedia.segSeqTotal = 1
                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
@@ -852,7 +903,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
             if(myFie.upLoadFile.isComplete == false)
             {
                 myFie.upLoadFile.SendGgain = true
-                myFie.upLoadFile.isStop = true
+                myFie.upLoadFile.isStop = "1"
                 myFie.upLoadFile.segSeqResult = 0
                 val myRouter = MyFile()
                 myRouter.type = 0

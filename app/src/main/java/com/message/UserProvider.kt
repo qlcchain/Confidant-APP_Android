@@ -36,8 +36,22 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
             fileName = fileName.replace("__Avatar","")
             var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
-            var msgId = Calendar.getInstance().timeInMillis /1000
-            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+            if (ConstantValue.isWebsocketConnected) {
+                var msgId = Calendar.getInstance().timeInMillis /1000
+                FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+            }else{
+                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, "", 0, 4, 3)
+                var baseData = BaseData(msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+
         }
     }
     internal var handlerDown: Handler = object : Handler() {

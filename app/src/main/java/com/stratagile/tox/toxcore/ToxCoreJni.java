@@ -228,9 +228,9 @@ public class ToxCoreJni {
      * @param filesize
      */
     public void sendFileRate(int fileNumber, int position, int filesize, int index) {
-//        KLog.i("fileNumber：" + fileNumber);
-//        KLog.i("发送了：" + position);
-//        KLog.i("总共：" + filesize);
+        KLog.i("fileNumber：" + fileNumber);
+        KLog.i("发送了：" + position);
+        KLog.i("总共：" + filesize);
         String key = sendFileRouterMap.get(fileNumber +"");
         int average = filesize / progressBarMaxSeg;
         if(average <= 0)
