@@ -86,15 +86,15 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 left = left.substring(usersn.length+1,left.length)
                 var username = left.substring(0,left.length)
                 username = String(RxEncodeTool.base64Decode(username))
-                var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+                /*var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
                 var isHas = false
                 routerList.forEach {
                     if (it.userSn.equals(usersn)) {
                         isHas = true
                         return@forEach
                     }
-                }
-                if(isHas)
+                }*/
+                if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
                 {
                     toast("Same account, no need to import")
                     return;
