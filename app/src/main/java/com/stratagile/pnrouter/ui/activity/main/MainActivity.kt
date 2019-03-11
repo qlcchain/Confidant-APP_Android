@@ -1624,10 +1624,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {
+        KLog.i("要进入验证页面")
         if ((AppConfig.instance.mAppActivityManager.currentActivity() as Activity) is VerifyingFingerprintActivity) {
             return
         }
         runDelayed(50, {
+            SpUtil.putBoolean(this, ConstantValue.isUnLock, false)
             val intent = Intent(AppConfig.instance, VerifyingFingerprintActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out_1)
