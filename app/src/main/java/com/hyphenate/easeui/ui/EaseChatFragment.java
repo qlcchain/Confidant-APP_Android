@@ -202,7 +202,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     static final int ITEM_VIDEOCALL = 7;
     static final int ITEM_PRIVATEFILE = 8;
 
-    protected static final int sendFileSizeMax = 1024 * 1024 * 2;
     protected int[] itemStrings = {R.string.attach_picture, R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file};
     protected int[] itemdrawables = {R.drawable.ease_chat_image_selector, R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector};
@@ -477,7 +476,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         public void run() {
                             try {
                                 byte[] fileLeftBuffer = new byte[leftSize];
-                                System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
+                                System.arraycopy(fileBuffer, ConstantValue.INSTANCE.getSendFileSizeMax(), fileLeftBuffer, 0, leftSize);
                                 String fileName = sendFileNameMap.get(FileIdResult + "");
                                 String fileKey = sendFileKeyByteMap.get(FileIdResult + "");
                                 byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult + "");
@@ -605,18 +604,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     break;
             }
             SendFileData sendFileData = new SendFileData();
-            int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int) fileLeftBuffer.length;
+            int segSize = fileLeftBuffer.length > ConstantValue.INSTANCE.getSendFileSizeMax() ? ConstantValue.INSTANCE.getSendFileSizeMax() : (int) fileLeftBuffer.length;
             sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
             sendFileData.setAction(FormatTransfer.reverseInt(action));
             sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
             int aa = FormatTransfer.reverseInt(9437440);
             sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
             int fileOffset = 0;
-            fileOffset = (segSeq - 1) * sendFileSizeMax;
+            fileOffset = (segSeq - 1) * ConstantValue.INSTANCE.getSendFileSizeMax();
             sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
             sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
             sendFileData.setCRC(FormatTransfer.reverseShort((short) 0));
-            int segMore = fileLeftBuffer.length > sendFileSizeMax ? 1 : 0;
+            int segMore = fileLeftBuffer.length > ConstantValue.INSTANCE.getSendFileSizeMax() ? 1 : 0;
             sendFileData.setSegMore((byte) segMore);
             sendFileData.setCotinue((byte) 0);
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
@@ -626,7 +625,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendFileData.setToId(To.getBytes());
             sendFileData.setSrcKey(SrcKey);
             sendFileData.setDstKey(DstKey);
-            byte[] content = new byte[sendFileSizeMax];
+            byte[] content = new byte[ConstantValue.INSTANCE.getSendFileSizeMax()];
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
             sendFileData.setContent(content);
             byte[] sendData = sendFileData.toByteArray();

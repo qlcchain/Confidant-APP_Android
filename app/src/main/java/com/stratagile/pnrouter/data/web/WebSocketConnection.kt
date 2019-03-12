@@ -703,6 +703,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                             if (!ConstantValue.currentRouterIp.equals("")) {
                                 ConstantValue.port = ":18006"
                                 ConstantValue.filePort = ":18007"
+                                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
                                 KLog.i("远程切换到走本地：" + ConstantValue.currentRouterIp + ConstantValue.port)
                                 filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                 val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
@@ -730,6 +731,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                                     ConstantValue.currentRouterIp = httpData.serverHost
                                                     ConstantValue.port = ":" + httpData.serverPort.toString()
                                                     ConstantValue.filePort = ":" + (httpData.serverPort + 1).toString()
+                                                    ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                                     KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp + ConstantValue.port)
                                                     filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                                     val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()
@@ -791,6 +793,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                                         ConstantValue.currentRouterIp = httpData.serverHost
                                         ConstantValue.port = ":" + httpData.serverPort.toString()
                                         ConstantValue.filePort = ":" + (httpData.serverPort + 1).toString()
+                                        ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                         KLog.i("本地切换到走远程：" + ConstantValue.currentRouterIp + ConstantValue.port)
                                         filledUri = "wss://" + ConstantValue.currentRouterIp + ConstantValue.port  //局域登录不了立即跳转外网
                                         val delay = (reconnectCount * RECONNECT_INTERVAL).toLong()

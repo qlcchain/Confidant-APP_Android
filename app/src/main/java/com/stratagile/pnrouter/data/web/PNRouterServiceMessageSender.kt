@@ -28,7 +28,6 @@ import kotlin.concurrent.thread
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
-    val sendFileSizeMax = 1024 * 1024 * 2
     lateinit var msgHashMap: HashMap<String,Queue<BaseData>>
     lateinit var fileHashMap: HashMap<String,Queue<SendFileInfo>>
     lateinit var toSendChatMessage: Queue<BaseData>
@@ -565,7 +564,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Thread(Runnable {
                         try {
                             val fileLeftBuffer = ByteArray(leftSize)
-                            System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize)
+                            System.arraycopy(fileBuffer, ConstantValue.sendFileSizeMax, fileLeftBuffer, 0, leftSize)
                             val fileName = sendFileNameMap.get(FileIdResult.toString() + "")
                             val fileKey = sendFileKeyByteMap[FileIdResult.toString() + ""]
                             val SrcKey = sendFileMyKeyByteMap[FileIdResult.toString() + ""]
@@ -723,18 +722,18 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 else -> action = 5
             }
             val sendFileData = SendFileData()
-            val segSize = if (fileLeftBuffer.size > sendFileSizeMax) sendFileSizeMax else fileLeftBuffer.size
+            val segSize = if (fileLeftBuffer.size > ConstantValue.sendFileSizeMax) ConstantValue.sendFileSizeMax else fileLeftBuffer.size
             sendFileData.magic = FormatTransfer.reverseInt(0x0dadc0de)
             sendFileData.action = FormatTransfer.reverseInt(action)
             sendFileData.segSize = FormatTransfer.reverseInt(segSize)
             val aa = FormatTransfer.reverseInt(9437440)
             sendFileData.segSeq = FormatTransfer.reverseInt(segSeq)
             var fileOffset = 0
-            fileOffset = (segSeq - 1) * sendFileSizeMax
+            fileOffset = (segSeq - 1) * ConstantValue.sendFileSizeMax
             sendFileData.fileOffset = FormatTransfer.reverseInt(fileOffset)
             sendFileData.fileId = FormatTransfer.reverseInt(fileId)
             sendFileData.crc = FormatTransfer.reverseShort(0.toShort())
-            val segMore = if (fileLeftBuffer.size > sendFileSizeMax) 1 else 0
+            val segMore = if (fileLeftBuffer.size > ConstantValue.sendFileSizeMax) 1 else 0
             sendFileData.segMore = segMore.toByte()
             sendFileData.cotinue = 0.toByte()
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
@@ -744,7 +743,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendFileData.toId = To.toByteArray()
             sendFileData.srcKey = SrcKey
             sendFileData.dstKey = DstKey
-            val content = ByteArray(sendFileSizeMax)
+            val content = ByteArray(ConstantValue.sendFileSizeMax)
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize)
             sendFileData.content = content
             var sendData = sendFileData.toByteArray()

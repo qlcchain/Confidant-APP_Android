@@ -112,7 +112,6 @@ public class FileMangerUtil {
 
 
 
-    protected static final int sendFileSizeMax = 1024 * 1024 * 2;
     protected int[] itemStrings = {  R.string.attach_picture,R.string.attach_take_pic, R.string.attach_Short_video, R.string.attach_file };
     protected int[] itemdrawables = {  R.drawable.ease_chat_image_selector,R.drawable.ease_chat_takepic_selector,
             R.drawable.ease_chat_shortvideo_selector, R.drawable.ease_chat_localdocument_selector};
@@ -215,7 +214,7 @@ public class FileMangerUtil {
                                     {
                                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     }
-                                    int totlSegment = (int)Math.ceil(fileBufferMi.length / sendFileSizeMax);
+                                    int totlSegment = (int)Math.ceil(fileBufferMi.length / ConstantValue.INSTANCE.getSendFileSizeMax());
                                     sendFileTotalSegment.put(filePath,totlSegment);
                                     long miend  = System.currentTimeMillis();
                                     KLog.i("jiamiTime:"+ (miend - miBegin)/1000);
@@ -347,7 +346,7 @@ public class FileMangerUtil {
                             try
                             {
                                 byte[] fileLeftBuffer = new byte[leftSize];
-                                System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
+                                System.arraycopy(fileBuffer, ConstantValue.INSTANCE.getSendFileSizeMax(), fileLeftBuffer, 0, leftSize);
                                 String fileName = sendFileNameMap.get(msgId+"");
                                 String fileKey = sendFileKeyByteMap.get(msgId+"");
                                 byte[] SrcKey = sendFileMyKeyByteMap.get(msgId);
@@ -514,18 +513,18 @@ public class FileMangerUtil {
                 action = 6;
             }
             SendFileData sendFileData = new SendFileData();
-            int segSize = fileLeftBuffer.length > sendFileSizeMax ? sendFileSizeMax : (int)fileLeftBuffer.length;
+            int segSize = fileLeftBuffer.length > ConstantValue.INSTANCE.getSendFileSizeMax() ? ConstantValue.INSTANCE.getSendFileSizeMax() : (int)fileLeftBuffer.length;
             sendFileData.setMagic(FormatTransfer.reverseInt(0x0dadc0de));
             sendFileData.setAction(FormatTransfer.reverseInt(action));
             sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
             int aa = FormatTransfer.reverseInt(9437440);
             sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
             int fileOffset = 0;
-            fileOffset = (segSeq -1) * sendFileSizeMax;
+            fileOffset = (segSeq -1) * ConstantValue.INSTANCE.getSendFileSizeMax();
             sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
             sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
             sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-            int segMore = fileLeftBuffer.length>sendFileSizeMax ? 1: 0;
+            int segMore = fileLeftBuffer.length>ConstantValue.INSTANCE.getSendFileSizeMax() ? 1: 0;
             sendFileData.setSegMore((byte) segMore);
             sendFileData.setCotinue((byte) 0);
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
@@ -537,7 +536,8 @@ public class FileMangerUtil {
             sendFileData.setToId(toRouter);
             sendFileData.setSrcKey(SrcKey);
             sendFileData.setDstKey(DstKey);
-            byte[] content = new byte[sendFileSizeMax];
+            int contentSize = fileLeftBuffer.length > ConstantValue.INSTANCE.getSendFileSizeMax() ? ConstantValue.INSTANCE.getSendFileSizeMax() : (int)fileLeftBuffer.length;
+            byte[] content = new byte[contentSize];
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
             sendFileData.setContent(content);
             byte[] sendData = sendFileData.toByteArray();
@@ -553,7 +553,7 @@ public class FileMangerUtil {
             sendFileMyKeyByteMap.put(msgId+"",SrcKey);
             sendFileFriendKeyByteMap.put(msgId+"",DstKey);*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            KLog.i("发送中>>>"+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
+            KLog.i("发送中>>>"+"contentSize:"+contentSize+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
             EventBus.getDefault().post(new FileMangerTransformMessage(msgId,sendData));
 
         }catch (Exception e)
@@ -958,7 +958,7 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
-                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
@@ -1004,7 +1004,7 @@ public class FileMangerUtil {
 
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
-                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                                 UpLoadFile uploadFile = new UpLoadFile(fileName+"__"+uuidTox,imagePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
@@ -1125,7 +1125,7 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
                             long fileSouceSize = file.length();
-                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
@@ -1165,7 +1165,7 @@ public class FileMangerUtil {
 
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
-                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
 
                                 sendMsgLocalMap.put(uuidTox+"",false);
                                 sendFilePathMap.put(uuidTox+"",base58files_dir);
@@ -1294,7 +1294,7 @@ public class FileMangerUtil {
 
 
                             long fileSouceSize = file.length();
-                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
@@ -1344,7 +1344,7 @@ public class FileMangerUtil {
 
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
-                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                                 UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);
@@ -1474,7 +1474,7 @@ public class FileMangerUtil {
                         {
 
                             long fileSouceSize = file.length();
-                            int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                            int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
                             MyFile myRouter = new MyFile();
                             myRouter.setType(0);
@@ -1525,7 +1525,7 @@ public class FileMangerUtil {
 
                                 File miFile = new File(base58files_dir);
                                 long fileSouceSize = miFile.length();
-                                int segSeqTotal = (int)Math.ceil(fileSouceSize / sendFileSizeMax);
+                                int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                                 UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuidTox+"",false);
                                 MyFile myRouter = new MyFile();
                                 myRouter.setType(0);

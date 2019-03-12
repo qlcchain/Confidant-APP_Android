@@ -1458,6 +1458,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
+                                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                 if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1502,6 +1503,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
+                                                    ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                                     if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1593,6 +1595,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
                                         ConstantValue.currentRouterId = routerId
                                         ConstantValue.currentRouterSN =  userSn
+                                        ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
                                         KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
                                         /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                          AppConfig.instance.messageReceiver!!.loginBackListener = this*/
