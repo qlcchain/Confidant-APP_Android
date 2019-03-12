@@ -163,6 +163,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         } else {
             runOnUiThread {
                 closeProgressDialog()
+                KLog.i("1111")
             }
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
@@ -213,6 +214,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         closeProgressDialog()
+        KLog.i("222")
         ConstantValue.unSendMessage.remove("recovery")
         ConstantValue.unSendMessageFriendId.remove("recovery")
         ConstantValue.unSendMessageSendCount.remove("recovery")
@@ -512,6 +514,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             LocalRouterUtils.insertLocalAssets(myRouter)
             runOnUiThread {
                 closeProgressDialog()
+                KLog.i("333")
             }
             LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
             loginOk = true
@@ -769,6 +772,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 KLog.i("P2P连接成功")
                 LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
                 runOnUiThread {
+                    KLog.i("444")
                     closeProgressDialog()
                     //toast("login time out")
                 }
@@ -1352,8 +1356,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 if (intent.hasExtra("flag")) {
                     if(ConstantValue.isHasWebsocketInit)
                     {
+                        KLog.i("已经初始化了，走重连逻辑")
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                     }else{
+                        KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
@@ -1369,24 +1375,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }
                     }
-                    runOnUiThread {
-//                        closeProgressDialog()
-//                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-//                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-//                                if(standaloneCoroutine != null)
-//                                    standaloneCoroutine.cancel()
-//                                if(AppConfig.instance.messageReceiver != null)
-//                                    AppConfig.instance.messageReceiver!!.close()
-//                                false
-//                            } else false
-//                        })
-                    }
-//                onWebSocketConnected(ConnectStatus(0))
                 } else {
+                    KLog.i("走不带flag")
                     if(ConstantValue.isHasWebsocketInit)
                     {
+                        KLog.i("已经初始化了，走重连逻辑")
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                     }else{
+                        KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
@@ -1402,19 +1398,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                         }
                     }
-                    runOnUiThread {
-//                        closeProgressDialog()
-//                        showProgressDialog("connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-//                            if (keyCode == KeyEvent.KEYCODE_BACK) {
-//                                if(standaloneCoroutine != null)
-//                                    standaloneCoroutine.cancel()
-//                                if(AppConfig.instance.messageReceiver != null)
-//                                    AppConfig.instance.messageReceiver!!.close()
-//                                false
-//                            } else false
-//                        })
-                    }
-
                 }
             }else{
                 var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
@@ -1456,6 +1439,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         ConstantValue.currentRouterIp = ""
         islogining = false
         runOnUiThread {
+            KLog.i("777")
             closeProgressDialog()
             showProgressNoCanelDialog("Connecting...")
         }
@@ -1474,9 +1458,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
                             if(!ConstantValue.currentRouterIp.equals(""))
                             {
-//                                runOnUiThread {
-//                                    closeProgressDialog()
-//                                }
                                 KLog.i("走本地：" + ConstantValue.currentRouterIp)
                                 var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                 if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1522,11 +1503,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                     ConstantValue.currentRouterId = routerId
                                                     ConstantValue.currentRouterSN =  userSn
                                                     KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                                    /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                                                     AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-//                                                    runOnUiThread {
-//                                                        closeProgressDialog()
-//                                                    }
                                                     var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                                     if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
                                                     {
@@ -1621,7 +1597,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                          AppConfig.instance.messageReceiver!!.loginBackListener = this*/
                                         runOnUiThread {
-                                            closeProgressDialog()
+                                            KLog.i("555")
+//                                            standaloneCoroutine.cancel()
+//                                            closeProgressDialog()
                                         }
                                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
                                         if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
@@ -1688,6 +1666,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             startService(intent)
         }else{
             runOnUiThread {
+                KLog.i("666")
                 closeProgressDialog()
             }
         }

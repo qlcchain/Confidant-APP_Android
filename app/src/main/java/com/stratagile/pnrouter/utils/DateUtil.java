@@ -68,7 +68,7 @@ public class DateUtil {
     private static boolean is24Time(Context context) {
         ContentResolver cv = context.getContentResolver();
         String strTimeFormat = android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24);
-        if (strTimeFormat.equals("24")) {
+        if ("24".equals(strTimeFormat)) {
             return true;
         }
         return false;

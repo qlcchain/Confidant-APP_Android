@@ -78,13 +78,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
                 if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
-                  /*  progressBar.setVisibility(View.INVISIBLE);
-                    percentageView.setVisibility(View.INVISIBLE);*/
                     imageView.setImageResource(R.drawable.ease_default_image);
                 } else {
-                   /* progressBar.setVisibility(View.GONE);
-                    percentageView.setVisibility(View.GONE);*/
-                    imageView.setImageResource(R.drawable.ease_default_image);
                     String thumbPath = imgBody.thumbnailLocalPath();
                     if (!new File(thumbPath).exists()) {
                         // to make it compatible with thumbnail received in previous version
@@ -127,36 +122,6 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
     }
 
-//    private void showImage(){
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Bitmap bitmap_bg = BitmapFactory.decodeResource(getResources(), R.drawable.rounded_rectangle);
-//                Bitmap bitmap_in = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_image);
-//                int width;
-//                int height;
-//                if (bitmap_in.getWidth() <= bitmap_in.getHeight()) {
-//                    //以宽为标准
-//                    width = activity.getWindowManager().getDefaultDisplay().getWidth() / 4;
-//                    height = bitmap_in.getHeight() / (bitmap_in.getWidth() / width);
-//                } else {
-//                    //以高为标准
-//                    height = activity.getWindowManager().getDefaultDisplay().getWidth() / 4;
-//                    width = bitmap_in.getWidth() / (bitmap_in.getHeight() / height);
-//                }
-//                final Bitmap bp = getRoundCornerImage(bitmap_bg, bitmap_in, width, height);
-////                final Bitmap bp2 = getShardImage(bitmap_bg, bp, width, height);
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        imageView.setImageBitmap(bp);
-//                    }
-//                });
-//            }
-//        }).start();
-//    }
-
-
     public Bitmap getRoundCornerImage(Bitmap bitmap_in, int widht, int height)
     {
         Bitmap bitmap_bg;
@@ -185,14 +150,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
     private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
         // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
-        Bitmap bitmap1 = EaseImageCache.getInstance().get(localFullSizePath);
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
             Bitmap bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getHeight());
             imageView.setImageBitmap(bitmap2);
         } else {
-            imageView.setImageResource(R.drawable.ease_default_image);
-
             try {
                 new AsyncTask<Object, Void, Bitmap>() {
 
@@ -303,6 +265,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                                     return null;
                                 }
                             } else {
+                                imageView.setImageResource(R.drawable.ease_default_image);
                                 return null;
                             }
                         }

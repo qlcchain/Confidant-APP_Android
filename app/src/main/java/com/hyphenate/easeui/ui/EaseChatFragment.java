@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -323,7 +324,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             if (file.exists()) {
                                 long fileSize = file.length();
                                 byte[] fileBuffer = FileUtil.file2Byte(filePath);
-                                int fileId = (int) (System.currentTimeMillis() / 1000 / 1000);
+                                int fileId = (int) (System.currentTimeMillis() / 1000);
                                 byte[] fileBufferMi = new byte[0];
                                 try {
                                     long miBegin = System.currentTimeMillis() / 1000;
@@ -1530,7 +1531,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Message.setStatus(2);
                 Message.setUnReadCount(0);
                 String baseDataJson = gson.toJson(Message);
-                if (currentPage == 0) {
+                if (currentPage == 1) {
                     if (Message.getSender() == 0) {
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                     } else {
@@ -2568,7 +2569,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String fileKey = RxEncryptTool.generateAESKey();
                     int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
                     if (code == 1) {
-                        int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
+                        int uuid = (int) (System.currentTimeMillis() / 1000);
                         message.setMsgId(uuid + "");
                         currentSendMsg = message;
                         ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -2640,6 +2641,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     }
 
+    /**
+     * 发送图片消息
+     * @param imagePath
+     * @param isCompress
+     */
     protected void sendImageMessage(String imagePath, boolean isCompress) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
@@ -2653,7 +2659,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     boolean isHas = file.exists();
                     if (isHas)
                     {
-                        String fileName = ((int) (System.currentTimeMillis() / 1000 / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                        int width = bitmap.getWidth();
+                        int height = bitmap.getHeight();
+                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -2673,40 +2682,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             deleteFileMap.put(uuid, false);
                             sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());
 
-                            //数据库记录
-                           /* MessageEntity messageEntity  = new MessageEntity();
-                            messageEntity.setUserId(userId);
-                            messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
-                            messageEntity.setSendTime(System.currentTimeMillis() / 1000 +"");
-                            messageEntity.setType("1");//这里要改
-                            messageEntity.setMsgId(uuid);
-                            messageEntity.setComplete(false);
-                            messageEntity.setFilePath(files_dir);
-                            messageEntity.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
-                            messageEntity.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
-                            KLog.i("消息数据增加图片文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
-                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);*/
-
-                           /* String fileKey = RxEncryptTool.generateAESKey();
-                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
-                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
-                            byte[] SrcKey = new byte[256];
-                            byte[] DstKey = new byte[256];
-                            try {
-                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
-                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
-                                } else {
-                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
-                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
-                                }
-                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
-                                sendFileMyKeyByteMap.put(uuid, SrcKey);
-                                sendFileFriendKeyByteMap.put(uuid, DstKey);
-                            } catch (Exception e) {
-                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
-                                return;
-                            }*/
                             if (codeSave == 1) {
                                 SendFileInfo SendFileInfo = new SendFileInfo();
                                 SendFileInfo.setUserId(userId);
@@ -2733,7 +2708,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey, isCompress);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -2877,7 +2852,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(imagePath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -3040,7 +3015,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
@@ -3134,7 +3109,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     if (isHas) {
-                        String fileName = ((int) (System.currentTimeMillis() / 1000 / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
+                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
 
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
@@ -3214,7 +3189,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileKey = RxEncryptTool.generateAESKey();
                             int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey);
                             if (code == 1) {
-                                int uuid = (int) (System.currentTimeMillis() / 1000 / 1000);
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
                                 currentSendMsg = message;
                                 ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);

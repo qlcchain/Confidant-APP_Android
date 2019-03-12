@@ -133,6 +133,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = "wss://" + ipAddress + port
         ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
+        webSocketClient = null
         if (webSocketClient == null) {
             if (isWifiConnect()) {
                 isLocalLogin = true;
@@ -143,13 +144,13 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                 //filledUri = wsUri
                 filledUri = "wss://" + ipAddress + port
             }
-            KLog.i("连接的地址为：${filledUri}")
+            KLog.i("连接的地址为：${filledUri}, port= ${port}")
             if (filledUri == null || filledUri.equals("")) {
                 return
             }
             val socketFactory = createTlsSocketFactory(trustStore)
 
-            if (mOkHttpClient == null) {
+//            if (mOkHttpClient == null) {
                 mOkHttpClient = OkHttpClient.Builder()
                         .sslSocketFactory(socketFactory.first)
                         .hostnameVerifier(object : HostnameVerifier {
@@ -161,7 +162,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
                         .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                         .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                         .build()
-            }
+//            }
             requestBuilder = Request.Builder().url(filledUri)
             if (userAgent != null) {
 //                requestBuilder.addHeader("X-Signal-Agent", userAgent)
