@@ -582,32 +582,28 @@ public class FileMangerUtil {
 
             String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileOrginName;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
-            String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
-            String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
             String filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + fileOrginName ;
             int code = 0;
             if(fileOrginName.contains("__Avatar.jpg"))
             {
-                code = FileUtil.copyAppFileToSdcard(base58files_dir, filePath);
+                String avatarPath = filePath.replace("__Avatar","");
+                code = FileUtil.copyAppFileToSdcard(base58files_dir, avatarPath);
             }else{
+                String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
+                String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
                 code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dirTemp,fileKey);
-            }
-            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
-            String fileMiUrl = fileMiName;
-            String userKey = "";
-            int fileFrom = 0;
-            String msgId = "";
-            if(localUpLoadFile != null)
-            {
-                fileMiUrl = localUpLoadFile.getPath();
-                userKey = localUpLoadFile.getUserKey();
-                fileFrom = localUpLoadFile.getFileFrom();
-                msgId = localUpLoadFile.getMsgId();
-            }
-            if(fileOrginName.contains("__Avatar.jpg"))
-            {
-
-            }else{
+                UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
+                String fileMiUrl = fileMiName;
+                String userKey = "";
+                int fileFrom = 0;
+                String msgId = "";
+                if(localUpLoadFile != null)
+                {
+                    fileMiUrl = localUpLoadFile.getPath();
+                    userKey = localUpLoadFile.getUserKey();
+                    fileFrom = localUpLoadFile.getFileFrom();
+                    msgId = localUpLoadFile.getMsgId();
+                }
                 UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, "0",1,1,0,false,userKey,0,0,msgId,false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);

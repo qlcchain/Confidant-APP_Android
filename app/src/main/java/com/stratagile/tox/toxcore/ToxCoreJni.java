@@ -314,14 +314,13 @@ public class ToxCoreJni {
     public native void cancelFileSend(int fileNumber);
 
     public String setFileSavePath(String oldName) {
-        //todo
         String origainName = "";
-//        if(oldName.contains(":"))
-//        {
-//            oldName = oldName.substring(oldName.indexOf(":")+1,oldName.length());
-//            oldName = oldName.substring(0,oldName.indexOf(":"));
-//            origainName = new String(Base58.decode(oldName));
-//        }
-        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + oldName;
+        if(oldName.contains(":"))
+        {
+            oldName = oldName.substring(oldName.indexOf(":")+1,oldName.length());
+            oldName = oldName.substring(0,oldName.indexOf(":"));
+            origainName = new String(Base58.decode(oldName));
+        }
+        return AppConfig.instance.getFilesDir().getAbsolutePath() + "/temp/" + origainName;
     }
 }
