@@ -95,6 +95,7 @@ import com.stratagile.pnrouter.entity.SendFileInfo;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
+import com.stratagile.pnrouter.entity.events.FileStatus;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
 import com.stratagile.pnrouter.entity.events.TransformFileMessage;
@@ -2491,6 +2492,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             File file = new File(filePath);
             boolean isHas = file.exists();
             if (isHas) {
+                if(file.length() > 1024 * 1024 * 100)
+                {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
                 String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
                 String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -2662,6 +2673,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 //                        int width = bitmap.getWidth();
 //                        int height = bitmap.getHeight();
+                        if(file.length() > 1024 * 1024 * 100)
+                        {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return;
+                        }
                         String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
@@ -2932,6 +2953,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
                     if (isHas) {
+                        if(file.length() > 1024 * 1024 * 100)
+                        {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return;
+                        }
                         String videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
                         String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1);
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
@@ -3109,6 +3140,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     if (isHas) {
+                        if(file.length() > 1024 * 1024 * 100)
+                        {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return;
+                        }
                         String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
 
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;

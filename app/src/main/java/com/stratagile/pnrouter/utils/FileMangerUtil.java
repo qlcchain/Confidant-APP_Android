@@ -331,14 +331,17 @@ public class FileMangerUtil {
                                     if(sended < 0 )
                                         sended = 0;
                                     KLog.i("websocket文件上传进度："+sended +"_"+fileTotalSegment);
-                                    UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
-                                    MyFile myRouter = new MyFile();
-                                    myRouter.setType(0);
-                                    myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                                    myRouter.setUpLoadFile(uploadFile);
-                                    LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-
-                                    EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
+                                    UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgId);
+                                    if(!localUpLoadFile.isStop().equals("1"))
+                                    {
+                                        UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",sended, fileTotalSegment,10,false,"",0,0,msgId,false);
+                                        MyFile myRouter = new MyFile();
+                                        myRouter.setType(0);
+                                        myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                                        myRouter.setUpLoadFile(uploadFile);
+                                        LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                                        EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
+                                    }
                                 }else{
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -856,9 +859,15 @@ public class FileMangerUtil {
                     }
                     if(isHas)
                     {
+
                         if(file.length() == 0)
                         {
                             EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,3));
+                            return;
+                        }
+                        if(file.length() > 1024 * 1024 * 100)
+                        {
+                            EventBus.getDefault().post(new FileStatus(imagePath+"__"+uuid,2));
                             return;
                         }
                         String files_dir = imagePath;
