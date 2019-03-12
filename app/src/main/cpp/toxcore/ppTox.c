@@ -813,7 +813,7 @@ void friend_connection_status_cb(Tox *tox, uint32_t friend_number, TOX_CONNECTIO
  */
 void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number,
                           TOX_FILE_CONTROL control, void *user_data) {
-    LOGD("file_recv_control_cb");
+    LOGD("发送方文件发送之前");
     char msg[512] = {0};
     //  sprintf(msg, "[t] control %u received", control);
     // printf("[t] control %u received", control);
@@ -822,6 +822,7 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
     unsigned int j;
     for (j = 0; j < NUM_FILE_SENDERS; ++j) {
         /* This is slow */
+        LOGD("开始发送文件");
         if (file_senders[j].file && file_senders[j].friendnum == friend_number && file_senders[j].filenumber == file_number) {
             call_java_start_send_file(friend_number, file_number, j);
         }
@@ -848,13 +849,14 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
 void
 file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
                       size_t length, void *user_data) {
-//    LOGD("file_chunk_request_cb");
+    LOGD("发送方文件发送");
     unsigned int i;
     for (i = 0; i < NUM_FILE_SENDERS; ++i) {
         /* This is slow */
         if (file_senders[i].file && file_senders[i].friendnum == friend_number &&
             file_senders[i].filenumber == file_number) {
-            LOGD("index为：%d  fileNumber= %d,   总大小为：%d,  发送了的大小为: %d", i, file_number, (int) file_senders[i].filesize, position);
+//            LOGD("index为：%d  fileNumber= %d,   总大小为：%d,  发送了的大小为: %d", i, file_number, (int) file_senders[i].filesize, position);
+//            LOGD("要取消上传的文件为：%d", cacenlFileSendNumber);
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
@@ -869,12 +871,11 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             }
 
             if (cacenlFileSendNumber == file_number) {
+                LOGD("取消文件的发送");
                 cacenlFileSendNumber = -1;
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
-                call_java_sendfile_rate(file_number, (int) position, (int) file_senders[i].filesize, i);
-                LOGD("[t] %u file transfer: %u completed", file_senders[i].friendnum,
-                     file_senders[i].filenumber);
+                tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
                 file_senders[i].file = NULL;
                 file_senders[i].filenumber = NULL;
                 file_senders[i].filesize = NULL;
@@ -891,6 +892,91 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
         }
     }
 }
+
+/**
+ * 接收方的片段
+ */
+void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
+                        const uint8_t *data, size_t length, void *user_data) {
+    LOGD("下载方文件下载");
+    if (cacenlFileNumber == file_number) {
+        LOGD("取消文件的下载");
+        tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+        cacenlFileNumber = 0;
+        return;
+    }
+    if (length == 0) {
+        char msg[512];
+        //sprintf(msg, "[t] %u file transfer: %u completed", friendnumber, filenumber);
+        //new_lines(msg);
+        printf("file %s transfer from friendnumber %u completed\n", recv_filename, friend_number);
+        LOGD("文件传输完毕");
+        call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size, file_number);
+//        Call_File_Process_Func_From_Java(recv_filename, recv_filesize,friend_number);
+        return;
+    }
+
+//    char filename[256];
+//    sprintf(filename, "%u.%u.bin", friendnumber, filenumber);
+    /*20180129,wenchao,use default filename,begin*/
+    FILE *pFile = fopen(recv_filename, "r+b");
+    /*20180129,wenchao,use default filename,end*/
+
+    if (pFile == NULL) {
+        pFile = fopen(recv_filename, "wb");
+    }
+
+    fseek(pFile, position, SEEK_SET);
+
+    if (fwrite(data, length, 1, pFile) != 1) {
+        //new_lines("Error writing to file");
+        printf("Error writing to file\n");
+    }
+    call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size, file_number);
+    fclose(pFile);
+}
+
+/**
+ * 接收方接收之前
+ */
+void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32_t kind,
+                  uint64_t file_size, const uint8_t *filename, size_t filename_length,
+                  void *user_data) {
+    LOGD("下载文件之前。tox回调");
+    LOGD("fileName: %s", filename);
+    received_file_size = file_size;
+    if (filename != NULL) {
+        memset(recv_filename, 0x00, 200);
+        Call_GetFilePathFromJava(filename,recv_filename);
+//        strcat(recv_filename, filename);
+        if (recv_filename == NULL)
+            return;
+    }
+    recv_filesize = (int) file_size;
+    if (kind != TOX_FILE_KIND_DATA) {
+        //new_lines("Refused invalid file type.");
+        printf("Refused invalid file type.\n");
+        tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+        return;
+    }
+
+    char msg[512];
+    // sprintf(msg, "[t] %u is sending us: %s of size %llu", friend_number, filename, (long long unsigned int)file_size);
+    printf("friend_number: %u is sending us: %s of size %llu\n", friend_number, filename,
+           (long long unsigned int) file_size);
+    //new_lines(msg);
+
+    if (tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_RESUME, 0)) {
+        //  sprintf(msg, "Accepted file transfer. (saving file as: %u.%u.bin)", friend_number, file_number);
+        // printf("Accepted file transfer. (saving file as: %s)\n", recv_filename);
+        //new_lines(msg);
+        call_java_start_receive_file(friend_number, file_number, filename);
+    } else {
+        //new_lines("Could not accept file transfer.");
+        printf("Could not accept file transfer.");
+    }
+}
+
 
 /**
  * 开始发送文件，回调给java
@@ -1005,99 +1091,17 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize, i
 }
 
 void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileSend(JNIEnv *env, jobject thiz, int fileNumber) {
-    cacenlFileNumber = (uint32_t) fileNumber;
-}
-
-
-void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileReceive(JNIEnv *env, jobject thiz, int fileNumber) {
+    LOGD("取消文件的发送000, %d", fileNumber);
     cacenlFileSendNumber = (uint32_t) fileNumber;
 }
 
 
-
-/**
- * 接收方的片段
- */
-void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint64_t position,
-                        const uint8_t *data, size_t length, void *user_data) {
-    LOGD("file_recv_chunk_cb");
-    if (cacenlFileNumber == file_number) {
-        LOGD("取消文件的传输");
-        tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
-        cacenlFileNumber = 0;
-        return;
-    }
-    if (length == 0) {
-        char msg[512];
-        //sprintf(msg, "[t] %u file transfer: %u completed", friendnumber, filenumber);
-        //new_lines(msg);
-        printf("file %s transfer from friendnumber %u completed\n", recv_filename, friend_number);
-        LOGD("文件传输完毕");
-        call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size, file_number);
-//        Call_File_Process_Func_From_Java(recv_filename, recv_filesize,friend_number);
-        return;
-    }
-
-//    char filename[256];
-//    sprintf(filename, "%u.%u.bin", friendnumber, filenumber);
-    /*20180129,wenchao,use default filename,begin*/
-    FILE *pFile = fopen(recv_filename, "r+b");
-    /*20180129,wenchao,use default filename,end*/
-
-    if (pFile == NULL) {
-        pFile = fopen(recv_filename, "wb");
-    }
-
-    fseek(pFile, position, SEEK_SET);
-
-    if (fwrite(data, length, 1, pFile) != 1) {
-        //new_lines("Error writing to file");
-        printf("Error writing to file\n");
-    }
-    call_java_receivedfile_rate(friend_number, (int) position, (int) received_file_size, file_number);
-    fclose(pFile);
+void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileReceive(JNIEnv *env, jobject thiz, int fileNumber) {
+    LOGD("取消文件的下载000, %d", fileNumber);
+    cacenlFileNumber = (uint32_t) fileNumber;
 }
 
-/**
- * 接收方接收之前
- */
-void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32_t kind,
-                  uint64_t file_size, const uint8_t *filename, size_t filename_length,
-                  void *user_data) {
-    LOGD("file_recv_cb");
-    LOGD("fileName: %s", filename);
-    received_file_size = file_size;
-    if (filename != NULL) {
-        memset(recv_filename, 0x00, 200);
-        Call_GetFilePathFromJava(filename,recv_filename);
-//        strcat(recv_filename, filename);
-        if (recv_filename == NULL)
-            return;
-    }
-    recv_filesize = (int) file_size;
-    if (kind != TOX_FILE_KIND_DATA) {
-        //new_lines("Refused invalid file type.");
-        printf("Refused invalid file type.\n");
-        tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
-        return;
-    }
 
-    char msg[512];
-    // sprintf(msg, "[t] %u is sending us: %s of size %llu", friend_number, filename, (long long unsigned int)file_size);
-    printf("friend_number: %u is sending us: %s of size %llu\n", friend_number, filename,
-           (long long unsigned int) file_size);
-    //new_lines(msg);
-
-    if (tox_file_control(tox, friend_number, file_number, TOX_FILE_CONTROL_RESUME, 0)) {
-        //  sprintf(msg, "Accepted file transfer. (saving file as: %u.%u.bin)", friend_number, file_number);
-        // printf("Accepted file transfer. (saving file as: %s)\n", recv_filename);
-        //new_lines(msg);
-        call_java_start_receive_file(friend_number, file_number, filename);
-    } else {
-        //new_lines("Could not accept file transfer.");
-        printf("Could not accept file transfer.");
-    }
-}
 
 /* Call_GetFilePathFromJava
 ** 0 success call java func

@@ -17,6 +17,7 @@ import android.widget.EditText
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
+import com.pawegio.kandroid.inflateLayout
 import com.pawegio.kandroid.inputManager
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
@@ -493,6 +494,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 }
             }
         })
+        var view = activity!!.inflateLayout(R.layout.layout_filelist_empty, null, false)
+        fileListChooseAdapter?.emptyView = view
     }
 
     var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()

@@ -2659,9 +2659,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     boolean isHas = file.exists();
                     if (isHas)
                     {
-                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-                        int width = bitmap.getWidth();
-                        int height = bitmap.getHeight();
+//                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+//                        int width = bitmap.getWidth();
+//                        int height = bitmap.getHeight();
                         String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
