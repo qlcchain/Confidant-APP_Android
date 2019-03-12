@@ -12,6 +12,7 @@ import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
+import com.pawegio.kandroid.e
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -484,9 +485,11 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                 var localFilesList = LocalFileUtils.localFilesList
                 listGoing.forEachIndexed { index, it ->
                     it.takeUnless { it.isHeader }?.let {
-                        if (fileStatus.fileKey.contains(it.t.msgId)) {
+                        var msgIdLeft = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("__")+2,fileStatus.fileKey.length)
+                        if (msgIdLeft.equals(it.t.msgId)) {
                             for (myFie in localFilesList) {
-                                if (fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
+
+                                if (msgIdLeft.equals(myFie.upLoadFile.msgId)) {
                                     if (myFie.upLoadFile.isComplete == false) {
                                         it.t.segSeqResult = myFie.upLoadFile.segSeqResult
                                         it.t.segSeqTotal = myFie.upLoadFile.segSeqTotal
@@ -520,7 +523,8 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                     }
                 }
                 for (myFie in localFilesList) {
-                    if (myFie.upLoadFile.isComplete == false && fileStatus.fileKey.contains(myFie.upLoadFile.msgId)) {
+                    var msgIdLeft = fileStatus.fileKey.substring(fileStatus.fileKey.indexOf("__")+2,fileStatus.fileKey.length)
+                    if (myFie.upLoadFile.isComplete == false && msgIdLeft.equals(myFie.upLoadFile.msgId)) {
                         listGoing.add(TaskFile(UpLoadFile(myFie.upLoadFile.fileKey,myFie.upLoadFile.path, myFie.upLoadFile.fileSize, myFie.upLoadFile.isDownLoad, myFie.upLoadFile.isComplete, "0", myFie.upLoadFile.segSeqResult, myFie.upLoadFile.segSeqTotal, myFie.upLoadFile.speed, myFie.upLoadFile.SendGgain,myFie.upLoadFile.userKey,myFie.upLoadFile.fileFrom,0,myFie.upLoadFile.msgId,false)))
                         reSetHeadTitle()
                         fileGoingTaskLisytAdapter.notifyDataSetChanged()
