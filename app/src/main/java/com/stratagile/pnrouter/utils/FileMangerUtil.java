@@ -193,7 +193,7 @@ public class FileMangerUtil {
             case 1:
                 new Thread(new Runnable(){
                     public void run(){
-
+                        int fileId = (int)(System.currentTimeMillis()/1000);
                         try
                         {
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
@@ -207,7 +207,7 @@ public class FileMangerUtil {
                                 long fileSize = file.length();
                                 //String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
-                                int fileId = (int)(System.currentTimeMillis()/1000);
+
                                 byte[] fileBufferMi = fileBuffer;
                                 try{
                                     long  miBegin = System.currentTimeMillis();
@@ -239,7 +239,7 @@ public class FileMangerUtil {
                                             }
                                         }
                                     }else{
-                                        sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                                        sendFileLeftByteMap.remove(fileId);
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
@@ -247,14 +247,14 @@ public class FileMangerUtil {
 
                                 }catch (Exception e)
                                 {
-                                    sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                                    sendFileLeftByteMap.remove(fileId);
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                 }
                             }
                         }catch (Exception e)
                         {
-                            sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                            sendFileLeftByteMap.remove(fileId);
                         }
                     }
                 }).start();
