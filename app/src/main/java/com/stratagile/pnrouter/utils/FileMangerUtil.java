@@ -239,7 +239,7 @@ public class FileMangerUtil {
                                             }
                                         }
                                     }else{
-                                        sendFileLeftByteMap.remove(fileId);
+                                        sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
@@ -247,14 +247,14 @@ public class FileMangerUtil {
 
                                 }catch (Exception e)
                                 {
-                                    sendFileLeftByteMap.remove(fileId);
+                                    sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                 }
                             }
                         }catch (Exception e)
                         {
-                            sendFileLeftByteMap.remove(fileId);
+                            sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                         }
                     }
                 }).start();
@@ -306,8 +306,8 @@ public class FileMangerUtil {
         switch (CodeResult)
         {
             case 0:
-                int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
-                byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
+                int lastSendSize = sendFileLastByteSizeMap.get(msgId+"");
+                byte[] fileBuffer = sendFileLeftByteMap.get(msgId+"");
                 int leftSize =fileBuffer.length - lastSendSize;
 
                 String filePath = sendFilePathMap.get(msgId+"");
@@ -326,10 +326,10 @@ public class FileMangerUtil {
                             {
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
-                                String fileName = sendFileNameMap.get(FileIdResult+"");
-                                String fileKey = sendFileKeyByteMap.get(FileIdResult+"");
-                                byte[] SrcKey = sendFileMyKeyByteMap.get(FileIdResult+"");
-                                byte[] DstKey = sendFileFriendKeyByteMap.get(FileIdResult+"");
+                                String fileName = sendFileNameMap.get(msgId+"");
+                                String fileKey = sendFileKeyByteMap.get(msgId+"");
+                                byte[] SrcKey = sendFileMyKeyByteMap.get(msgId);
+                                byte[] DstKey = sendFileFriendKeyByteMap.get(msgId);
                                 if(!deleteFileMap.get(msgId))
                                 {
                                     sendFileByteData(fileLeftBuffer,fileName,FromIdResult+"","",msgId,FileIdResult,SegSeqResult +1,fileKey,SrcKey,DstKey);
@@ -481,13 +481,13 @@ public class FileMangerUtil {
             int newCRC = 1;
             sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
             sendData = sendFileData.toByteArray();
-            sendFileNameMap.put(fileId+"",fileName);
-            sendFileLastByteSizeMap.put(fileId+"",segSize);
-            sendFileLeftByteMap.put(fileId+"",fileLeftBuffer);
+            sendFileNameMap.put(msgId+"",fileName);
+            sendFileLastByteSizeMap.put(msgId+"",segSize);
+            sendFileLeftByteMap.put(msgId+"",fileLeftBuffer);
             sendMsgIdMap.put(fileId+"",msgId);
-            sendFileKeyByteMap.put(fileId+"",fileKey);
-            sendFileMyKeyByteMap.put(fileId+"",SrcKey);
-            sendFileFriendKeyByteMap.put(fileId+"",DstKey);
+            /*sendFileKeyByteMap.put(msgId+"",fileKey);
+            sendFileMyKeyByteMap.put(msgId+"",SrcKey);
+            sendFileFriendKeyByteMap.put(msgId+"",DstKey);*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
             KLog.i("发送中>>>"+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
             EventBus.getDefault().post(new FileMangerTransformMessage(msgId,sendData));
@@ -737,6 +737,7 @@ public class FileMangerUtil {
                         sendFileKeyByteMap.put(uuid,fileKey.substring(0,16));
                         sendFileMyKeyByteMap.put(uuid,SrcKey);
                         sendFileFriendKeyByteMap.put(uuid,DstKey);
+
                     }catch (Exception e){
                         //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                         return;

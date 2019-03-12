@@ -342,14 +342,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     if (!deleteFileMap.get(fileTransformEntity.getToId())) {
                                         sendFileByteData(fileBufferMi, fileName, EMMessage.getFrom(), EMMessage.getTo(), fileTransformEntity.getToId(), fileId, 1, fileKey, SrcKey, DstKey);
                                     } else {
-                                        sendFileLeftByteMap.remove(fileId);
+                                        sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                         KLog.i("websocket文件发送前取消！");
                                         String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     }
 
                                 } catch (Exception e) {
-                                    sendFileLeftByteMap.remove(fileId);
+                                    sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                     String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     getActivity().runOnUiThread(new Runnable() {
@@ -361,7 +361,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 }
                             }
                         } catch (Exception e) {
-                            sendFileLeftByteMap.remove(fileId);
+                            sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                         }
                     }
                 }).start();
@@ -469,7 +469,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         switch (CodeResult) {
             case 0:
                 int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult + "");
-                byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult + "");
+                byte[] fileBuffer = sendFileLeftByteMap.get(msgId + "");
                 int leftSize = fileBuffer.length - lastSendSize;
 
                 if (leftSize > 0) {
@@ -636,7 +636,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             sendData = sendFileData.toByteArray();
             sendFileNameMap.put(fileId + "", fileName);
             sendFileLastByteSizeMap.put(fileId + "", segSize);
-            sendFileLeftByteMap.put(fileId + "", fileLeftBuffer);
+            sendFileLeftByteMap.put(msgId + "", fileLeftBuffer);
             sendMsgIdMap.put(fileId + "", msgId);
             sendFileKeyByteMap.put(fileId + "", fileKey);
             sendFileMyKeyByteMap.put(fileId + "", SrcKey);
