@@ -240,6 +240,12 @@ public class FileMangerUtil {
                                         }
                                     }else{
                                         sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                                        sendFileNameMap.remove(fileTransformEntity.getToId());
+                                        sendFileLastByteSizeMap.remove(fileTransformEntity.getToId());
+                                        sendFileKeyByteMap.remove(fileTransformEntity.getToId());
+                                        sendFileMyKeyByteMap.remove(fileTransformEntity.getToId());
+                                        sendFileFriendKeyByteMap.remove(fileTransformEntity.getToId());
+                                        System.gc();
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
@@ -248,6 +254,12 @@ public class FileMangerUtil {
                                 }catch (Exception e)
                                 {
                                     sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                                    sendFileNameMap.remove(fileTransformEntity.getToId());
+                                    sendFileLastByteSizeMap.remove(fileTransformEntity.getToId());
+                                    sendFileKeyByteMap.remove(fileTransformEntity.getToId());
+                                    sendFileMyKeyByteMap.remove(fileTransformEntity.getToId());
+                                    sendFileFriendKeyByteMap.remove(fileTransformEntity.getToId());
+                                    System.gc();
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                 }
@@ -255,6 +267,12 @@ public class FileMangerUtil {
                         }catch (Exception e)
                         {
                             sendFileLeftByteMap.remove(fileTransformEntity.getToId());
+                            sendFileNameMap.remove(fileTransformEntity.getToId());
+                            sendFileLastByteSizeMap.remove(fileTransformEntity.getToId());
+                            sendFileKeyByteMap.remove(fileTransformEntity.getToId());
+                            sendFileMyKeyByteMap.remove(fileTransformEntity.getToId());
+                            sendFileFriendKeyByteMap.remove(fileTransformEntity.getToId());
+                            System.gc();
                         }
                     }
                 }).start();
@@ -351,6 +369,12 @@ public class FileMangerUtil {
                                     }
                                 }else{
                                     sendFileLeftByteMap.remove(msgId);
+                                    sendFileNameMap.remove(msgId);
+                                    sendFileLastByteSizeMap.remove(msgId);
+                                    sendFileKeyByteMap.remove(msgId);
+                                    sendFileMyKeyByteMap.remove(msgId);
+                                    sendFileFriendKeyByteMap.remove(msgId);
+                                    System.gc();
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
@@ -377,7 +401,13 @@ public class FileMangerUtil {
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
                     sendFileLeftByteMap.remove(msgId);
+                    sendFileNameMap.remove(msgId);
+                    sendFileLastByteSizeMap.remove(msgId);
+                    sendFileKeyByteMap.remove(msgId);
+                    sendFileMyKeyByteMap.remove(msgId);
+                    sendFileFriendKeyByteMap.remove(msgId);
                     sendFilePathMap.remove(msgId);
+                    System.gc();
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -408,18 +438,48 @@ public class FileMangerUtil {
                 break;
             case 1:
                 sendFileLeftByteMap.remove(msgId);
+                sendFileNameMap.remove(msgId);
+                sendFileLastByteSizeMap.remove(msgId);
+                sendFileKeyByteMap.remove(msgId);
+                sendFileMyKeyByteMap.remove(msgId);
+                sendFileFriendKeyByteMap.remove(msgId);
+                System.gc();
                 break;
             case 2:
                 sendFileLeftByteMap.remove(msgId);
+                sendFileNameMap.remove(msgId);
+                sendFileLastByteSizeMap.remove(msgId);
+                sendFileKeyByteMap.remove(msgId);
+                sendFileMyKeyByteMap.remove(msgId);
+                sendFileFriendKeyByteMap.remove(msgId);
+                System.gc();
                 break;
             case 3:
                 sendFileLeftByteMap.remove(msgId);
+                sendFileNameMap.remove(msgId);
+                sendFileLastByteSizeMap.remove(msgId);
+                sendFileKeyByteMap.remove(msgId);
+                sendFileMyKeyByteMap.remove(msgId);
+                sendFileFriendKeyByteMap.remove(msgId);
+                System.gc();
                 break;
             case 4:
                 sendFileLeftByteMap.remove(msgId);
+                sendFileNameMap.remove(msgId);
+                sendFileLastByteSizeMap.remove(msgId);
+                sendFileKeyByteMap.remove(msgId);
+                sendFileMyKeyByteMap.remove(msgId);
+                sendFileFriendKeyByteMap.remove(msgId);
+                System.gc();
                 break;
             case 5:
                 sendFileLeftByteMap.remove(msgId);
+                sendFileNameMap.remove(msgId);
+                sendFileLastByteSizeMap.remove(msgId);
+                sendFileKeyByteMap.remove(msgId);
+                sendFileMyKeyByteMap.remove(msgId);
+                sendFileFriendKeyByteMap.remove(msgId);
+                System.gc();
                 break;
         }
     }
