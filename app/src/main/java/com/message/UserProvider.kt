@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendAvatarChange
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -52,6 +53,32 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 }
             }
 
+        }else  if(jUpdateAvatarRsp.params.retCode == 3)
+        {
+
+            var fileOrginName = ConstantValue.libsodiumpublicSignKey +".jpg"
+            val filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileOrginName
+            var file = File(filePath)
+            if(file.exists())
+            {
+                val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                val fileBase58Name = Base58.encode(fileOrginName.toByteArray())
+                val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                val uploadAvatarReq = UploadAvatarReq(userId!!, fileBase58Name, fileMD5!!, "UploadAvatar")
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, uploadAvatarReq))
+                } else if (ConstantValue.isToxConnected) {
+                    val baseData = BaseData(4, uploadAvatarReq)
+                    val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    }
+                }
+            }
+
         }
     }
     internal var handlerDown: Handler = object : Handler() {
@@ -61,7 +88,9 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                 }
                 0x55 -> {
-                    //有头像更新
+                    //自己头像有更新
+                    EventBus.getDefault().post(ResetAvatar())
+                    //朋友有头像更新
                     EventBus.getDefault().post(FriendAvatarChange())
                 }
             }//goMain();

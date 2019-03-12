@@ -105,7 +105,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         when (jUploadAvatarRsp.params.retCode) {
             0 -> {
                 runOnUiThread {
-                    toast(getString(R.string.Avatar_Update_Successful))
+                    //toast(getString(R.string.Avatar_Update_Successful))
                 }
                 var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
                 var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
@@ -114,12 +114,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             1 -> {
                 runOnUiThread {
-                    toast(getString(R.string.User_ID_error))
+                    //toast(getString(R.string.User_ID_error))
                 }
             }
             2 -> {
                 runOnUiThread {
-                    toast(getString(R.string.file_error))
+                    //toast(getString(R.string.file_error))
                 }
             }
             3 -> {
@@ -129,7 +129,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             else -> {
                 runOnUiThread {
-                    toast(getString(R.string.Other_mistakes))
+                    //toast(getString(R.string.Other_mistakes))
                 }
             }
         }

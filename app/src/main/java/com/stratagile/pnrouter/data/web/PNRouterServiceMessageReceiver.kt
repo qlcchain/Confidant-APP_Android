@@ -398,7 +398,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
                     }else{
 
-                        uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
+                        mainInfoBack?.uploadAvatarReq(JUploadAvatarRsp)
                     }
 
                 }
