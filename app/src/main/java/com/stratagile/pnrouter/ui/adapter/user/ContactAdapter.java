@@ -84,7 +84,7 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 if (nickNameSouce != null) {
 //                    imagebutton.setText(nickNameSouce);
                     String avatarPath = Base58.encode( RxEncodeTool.base64Decode(lv0.getUserEntity().getSignPublicKey()))+".jpg";
-                    imagebutton.setImageFile(avatarPath, nickNameSouce);
+                    imagebutton.setImageFileInChat(avatarPath, nickNameSouce);
                 }
                 helper.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

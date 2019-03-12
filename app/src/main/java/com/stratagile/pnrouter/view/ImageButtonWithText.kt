@@ -237,4 +237,23 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                 }
             }
     }
+    fun setImageFileInChat(url: String, name : String) {
+        if ("" == url) {
+            textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
+            setText(name)
+        } else {
+            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+            if (lastFile.exists()) {
+                textView.visibility = View.GONE
+                imageView.visibility = View.VISIBLE
+                Glide.with(this)
+                        .load(lastFile)
+                        .apply(optionsChat)
+                        .into(imageView)
+            } else {
+                setText(name)
+            }
+        }
+    }
 }

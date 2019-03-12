@@ -26,6 +26,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
@@ -48,6 +49,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.service.FileTransformService
@@ -89,6 +91,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -1005,7 +1008,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
-    override fun initData() {
+    override fun initData()
+    {
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
@@ -1390,6 +1394,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        tv_hello.typeface.style
         viewPager.offscreenPageLimit = 4
 
+
+        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var fileMD5 = FileUtil.getFileMD5(File(filePath))
+        if(fileMD5 == null)
+        {
+            fileMD5 = ""
+        }
+        val updateAvatarReq = UpdateAvatarReq(userId!!, userId!!, fileMD5)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, updateAvatarReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
     }
 
 
