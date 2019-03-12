@@ -499,7 +499,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                             it.t.status = 0
                                         }
                                         fileGoingTaskLisytAdapter.notifyItemChanged(index)
-                                        KLog.i("没有下载完")
+                                        KLog.i("没有下载完"+myFie.upLoadFile.isStop)
                                     } else {
                                         listGoing.removeAt(index)
                                         var status  = 0

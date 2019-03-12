@@ -147,7 +147,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
         } else {
             runOnUiThread {
-                toast(R.string.success)
+                //toast(R.string.success)
             }
 
         }

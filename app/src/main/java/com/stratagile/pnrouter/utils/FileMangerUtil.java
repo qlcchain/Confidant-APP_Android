@@ -205,7 +205,7 @@ public class FileMangerUtil {
                             if(file.exists())
                             {
                                 long fileSize = file.length();
-                                String fileMD5 = FileUtil.getFileMD5(file);
+                                //String fileMD5 = FileUtil.getFileMD5(file);
                                 byte[] fileBuffer= FileUtil.file2Byte(filePath);
                                 int fileId = (int)(System.currentTimeMillis()/1000);
                                 byte[] fileBufferMi = fileBuffer;
@@ -629,25 +629,31 @@ public class FileMangerUtil {
         if(fileMiName != null) {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
             String fileSouceName = new String(Base58.decode(fileMiName));
-            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
-            String fileMiUrl = fileMiName;
-            String userKey = "";
-            int fileFrom = 0;
-            String msgId = "";
-            if(localUpLoadFile != null)
+            if(fileSouceName.contains("__Avatar.jpg"))
             {
-                fileMiUrl = localUpLoadFile.getPath();
-                userKey = localUpLoadFile.getUserKey();
-                fileFrom = localUpLoadFile.getFileFrom();
-                msgId = localUpLoadFile.getMsgId();
+
+            }else{
+                UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(msgLocalId);
+                String fileMiUrl = fileMiName;
+                String userKey = "";
+                int fileFrom = 0;
+                String msgId = "";
+                if(localUpLoadFile != null)
+                {
+                    fileMiUrl = localUpLoadFile.getPath();
+                    userKey = localUpLoadFile.getUserKey();
+                    fileFrom = localUpLoadFile.getFileFrom();
+                    msgId = localUpLoadFile.getMsgId();
+                }
+                UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, "0",position,filesize,0,false,userKey,fileFrom,0,msgId,false);
+                MyFile myRouter = new MyFile();
+                myRouter.setType(0);
+                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                myRouter.setUpLoadFile(uploadFile);
+                LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,filesize, true, false, false,position,filesize,0,false,0));
             }
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,filesize, true, false, "0",position,filesize,0,false,userKey,fileFrom,0,msgId,false);
-            MyFile myRouter = new MyFile();
-            myRouter.setType(0);
-            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-            myRouter.setUpLoadFile(uploadFile);
-            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+msgId,filesize, true, false, false,position,filesize,0,false,0));
+
         }
     }
     public static void  onAgreeReceivwFileStart(int fileNumber,String key,String fileName)
@@ -835,14 +841,18 @@ public class FileMangerUtil {
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
 
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-                    if(!msgId.equals(""))
-                    {
-                        uuid = msgId;
-                    }
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
-                    if(!msgId.equals(""))
+                    if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                     {
-                        uuidTox = Integer.valueOf(msgId);
+                        if(!msgId.equals(""))
+                        {
+                            uuid = msgId;
+                        }
+                    }else{
+                        if(!msgId.equals(""))
+                        {
+                            uuidTox = Integer.valueOf(msgId);
+                        }
                     }
                     if(isHas)
                     {
@@ -1156,10 +1166,17 @@ public class FileMangerUtil {
                     String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
-                    if(!msgId.equals(""))
+                    if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                     {
-                        uuid = msgId;
-                        uuidTox = Integer.valueOf(msgId);
+                        if(!msgId.equals(""))
+                        {
+                            uuid = msgId;
+                        }
+                    }else{
+                        if(!msgId.equals(""))
+                        {
+                            uuidTox = Integer.valueOf(msgId);
+                        }
                     }
 
                     if(isHas)
@@ -1335,10 +1352,17 @@ public class FileMangerUtil {
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
-                    if(!msgId.equals(""))
+                    if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                     {
-                        uuid = msgId;
-                        uuidTox = Integer.valueOf(msgId);
+                        if(!msgId.equals(""))
+                        {
+                            uuid = msgId;
+                        }
+                    }else{
+                        if(!msgId.equals(""))
+                        {
+                            uuidTox = Integer.valueOf(msgId);
+                        }
                     }
                     if(isHas)
                     {

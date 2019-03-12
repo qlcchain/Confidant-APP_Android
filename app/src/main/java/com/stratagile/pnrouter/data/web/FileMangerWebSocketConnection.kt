@@ -176,19 +176,25 @@ class FileMangerWebSocketConnection(httpUri: String, private val trustStore: Tru
     }
 
     fun sendByteString(bytes : ByteArray) : Boolean {
-        if(ConstantValue.loginOut == true)
+        try {
+            if(ConstantValue.loginOut == true)
+            {
+                KLog.i("文件管理监测到登出。。")
+                disconnect(true)
+                return false
+            }
+            KLog.i("文件管理开始传输文件。。"+ FileUtil.toByteString(bytes))
+            if (client!= null && !client!!.send(FileUtil.toByteString(bytes))) {
+                return false
+            } else {
+                KLog.i("文件管理发送成功")
+                EventBus.getDefault().post(FileMangerTransformEntity(toId, 2))
+                return true
+            }
+        }catch (e:Exception)
         {
-            KLog.i("文件管理监测到登出。。")
-            disconnect(true)
+            e.printStackTrace()
             return false
-        }
-        KLog.i("文件管理开始传输文件。。"+ FileUtil.toByteString(bytes))
-        if (!client!!.send(FileUtil.toByteString(bytes))) {
-            return false
-        } else {
-            KLog.i("文件管理发送成功")
-            EventBus.getDefault().post(FileMangerTransformEntity(toId, 2))
-            return true
         }
     }
 
