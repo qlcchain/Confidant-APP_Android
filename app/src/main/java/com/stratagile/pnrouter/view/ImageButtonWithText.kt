@@ -119,8 +119,8 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         textView.setTextColor(color)
     }
 
-    fun setImage(url: String) {
-        if ("" == url) {
+    fun setImage(url: Int) {
+        if (0 == url) {
             textView.visibility = View.VISIBLE
         } else {
             textView.visibility = View.GONE

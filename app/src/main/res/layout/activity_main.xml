@@ -84,7 +84,15 @@
                 android:layout_width="@dimen/x60"
                 android:padding="@dimen/x10"
                 android:layout_height="@dimen/x60"
-                android:src="@mipmap/icon_scan"
+                android:src="@mipmap/icon_add_friend"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/ivNewGroup"
+                android:layout_width="@dimen/x60"
+                android:padding="@dimen/x10"
+                android:layout_height="@dimen/x60"
+                android:src="@mipmap/icon_new_group"
                 android:visibility="visible" />
         </RelativeLayout>
 
