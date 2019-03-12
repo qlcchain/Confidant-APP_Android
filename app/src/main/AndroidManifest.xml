@@ -242,6 +242,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".ui.activity.main.SettingsActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.group.GroupChatsActivity" />
+        <activity android:name=".ui.activity.group.CreateGroupActivity" />
+        <activity android:name=".ui.activity.selectfriend.SelectFriendCreateGroupActivity" />
 
         <provider
             android:name=".utils.MyShareFileProvider"

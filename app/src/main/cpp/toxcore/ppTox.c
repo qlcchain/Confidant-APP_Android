@@ -900,7 +900,7 @@ void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, 
                         const uint8_t *data, size_t length, void *user_data) {
     LOGD("下载方文件下载");
     if (cacenlFileNumber == file_number) {
-        LOGD("取消文件的下载");
+        LOGD("取消文件的下载, %d", cacenlFileNumber);
         tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
         cacenlFileNumber = 0;
         return;

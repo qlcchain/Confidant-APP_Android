@@ -148,7 +148,7 @@
     <string name="now_refresh_list">Refreshing contact list</string>
     <string name="Application_and_notify">Invitation and notification</string>
     <string name="save_new_nickname">Save new nickname</string>
-    <string name="group_chat">Group chat</string>
+    <string name="group_chat">Group Chats</string>
     <string name="add_friend">Add friends</string>
     <string name="black_item">Black list</string>
     <string name="diagnose">Diagnose</string>
@@ -192,7 +192,7 @@
     <string name="unable_to_connect">Unable to connect to the server</string>
     <string name="newchat">Create new group</string>
     <string name="agree">Agree</string>
-    <string name="Group_chat">Group chat</string>
+    <string name="Group_chat">Group Chats</string>
     <string name="chat_room">Chat room</string>
     <string name="voice_and_video_conference">Voice and video conference</string>
     <string name="not_download">Did not download:</string>
@@ -588,4 +588,5 @@
     <string name="new_requests">New Requests</string>
     <string name="create_a_group">Create a Group</string>
     <string name="person">person</string>
+    <string name="create_">create</string>
 </resources>

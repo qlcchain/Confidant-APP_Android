@@ -65,6 +65,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
+import com.stratagile.pnrouter.ui.activity.group.CreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerMainComponent
@@ -1159,6 +1160,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //            morePopWindow.showPopupWindow(ivQrCode)
             mPresenter.getScanPermission()
         }
+        ivNewGroup.setOnClickListener {
+            startActivity(Intent(this@MainActivity, CreateGroupActivity::class.java))
+        }
         llSort.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
@@ -1605,7 +1609,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.app_name)
         mainIv1.visibility = View.GONE
         llSort.visibility = View.GONE
-        ivQrCode.visibility = View.VISIBLE
+        ivQrCode.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
     }
 
     fun setToFile() {
@@ -1613,6 +1618,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         llSort.visibility = View.VISIBLE
+        ivNewGroup.visibility = View.GONE
     }
 
     fun setToContact() {
@@ -1620,6 +1626,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
         llSort.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
         //contactFragment?.updata()
     }
 
@@ -1628,6 +1635,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
         llSort.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
     }
 
     override fun initView() {

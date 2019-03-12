@@ -17,6 +17,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
@@ -41,6 +42,7 @@ import com.stratagile.pnrouter.entity.events.FriendAvatarChange
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.UnReadContactCount
+import com.stratagile.pnrouter.ui.activity.group.GroupChatsActivity
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
@@ -270,6 +272,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         refreshLayout.setOnRefreshListener {
             pullFriendList()
             KLog.i("拉取好友列表")
+        }
+        if (!BuildConfig.DEBUG) {
+            groupChat.visibility = View.GONE
+        }
+        groupChat.setOnClickListener {
+            startActivity(Intent(activity!!, GroupChatsActivity::class.java))
         }
         refreshLayout.isEnabled = refreshEnable1
         pullFriendList()

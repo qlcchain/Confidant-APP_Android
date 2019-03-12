@@ -70,8 +70,7 @@
                 android:src="@mipmap/icon_back" />
         </LinearLayout>
         <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/createGroup"
+            android:id="@+id/groupChat"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x90"
             android:background="@color/white"
@@ -89,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/color_2c2c2c"
                 android:layout_marginLeft="@dimen/x31"
-                android:text="@string/create_a_group" />
+                android:text="@string/group_chat" />
 
             <View
                 android:layout_width="0px"

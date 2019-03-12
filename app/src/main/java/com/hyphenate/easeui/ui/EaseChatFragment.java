@@ -291,6 +291,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * 开始发送文件
+     *
      * @param fileTransformEntity
      */
     //@Subscribe(threadMode = ThreadMode.MAIN)
@@ -312,8 +313,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         try {
                             EMMessage EMMessage = ConstantValue.INSTANCE.getSendFileMsgMap().get(fileTransformEntity.getToId());
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
-                            if(filePath == null)
-                            {
+                            if (filePath == null) {
                                 return;
                             }
                             String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
@@ -386,20 +386,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         String msgId = fileTransformStatus.getMsgid();
         String friend = fileTransformStatus.getFriendId();
-        if(!friend.equals(toChatUserId))
-        {
+        if (!friend.equals(toChatUserId)) {
             return;
         }
-        String LogIdIdResult= fileTransformStatus.getLogIdIdResult();
+        String LogIdIdResult = fileTransformStatus.getLogIdIdResult();
         int status = fileTransformStatus.getStatus();
-        if(status == 1)
-        {
+        if (status == 1) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
-                    if(EMMessage != null)
-                    {
+                    if (EMMessage != null) {
 
                     }
                     conversation.removeMessage(msgId);
@@ -413,7 +410,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
             });
 
-        }else{
+        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -427,8 +424,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             });
         }
     }
+
     /**
      * 片段发送中
+     *
      * @param transformReceiverFileMessage
      */
     //@Subscribe(threadMode = ThreadMode.MAIN)
@@ -682,7 +681,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void initView() {
         // hold to record voice
         //noinspection ConstantConditions
-        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData5_initView"+currentPage );
+        KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData5_initView" + currentPage);
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         // message list layout
         easeChatMessageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
@@ -1270,9 +1269,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //                easeChatMessageList.refresh();
             }
         }
-        if (messageList.size() == 0) {
-            return;
-        }
         int size = messageList.size();
         handler.postDelayed(new Runnable() {
             @Override
@@ -1280,9 +1276,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 swipeRefreshLayout.setRefreshing(false);
             }
         }, 50);
-        if (size > 0)
+        if (size > 0) {
             currentPage++;
-        else {
+        } else {
             if (currentPage != 0) {
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -1291,7 +1287,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     }
                 }, 50);
             }
-
+            return;
         }
         if (messageListTemp == null) {
             messageListTemp = messageList;
@@ -1299,8 +1295,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         ArrayList<EMMessage> messages = new ArrayList<>();
-        for (int i = 0; i < size; i++)
-        {
+        for (int i = 0; i < size; i++) {
             Message Message = messageList.get(i);
             EMMessage message = null;
             String msgSouce = "";
@@ -1551,11 +1546,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         }
         sendMessageTo(messages);
-        List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId),MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
-        KLog.i("开始插入没有发送成功的文本消息查询：userId："+userId +" friendId:"+toChatUserId +" messageEntityList:"+messageEntityList);
-        if(messageEntityList != null)
-        {
-            Collections.sort(messageEntityList,new Comparator<MessageEntity>() {
+        List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+        KLog.i("开始插入没有发送成功的文本消息查询：userId：" + userId + " friendId:" + toChatUserId + " messageEntityList:" + messageEntityList);
+        if (messageEntityList != null) {
+            Collections.sort(messageEntityList, new Comparator<MessageEntity>() {
                 @Override
                 public int compare(MessageEntity lhs, MessageEntity rhs) {
                     long lsize = Long.valueOf(lhs.getSendTime());
@@ -1564,9 +1558,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
             });
             int len = messageEntityList.size();
-            for (int i = 0; i < len; i++)
-            {
-                KLog.i("开始插入没有发送成功的文本消息：" +len);
+            for (int i = 0; i < len; i++) {
+                KLog.i("开始插入没有发送成功的文本消息：" + len);
                 MessageEntity messageEntity = messageEntityList.get(i);
                 String filePath = messageEntity.getFilePath();
                 String msgId = messageEntity.getMsgId();
@@ -1574,14 +1567,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 String friendId = messageEntity.getFriendId();
                 String type = messageEntity.getType();
                 int length = messageEntity.getVoiceTimeLen();
-                if(messageEntity.getType().equals("0"))
-                {
-                    BaseData baseData =  new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
-                    LinkedTreeMap tm = (LinkedTreeMap)baseData.getParams();
+                if (messageEntity.getType().equals("0")) {
+                    BaseData baseData = new Gson().fromJson(messageEntity.getBaseData(), BaseData.class);
+                    LinkedTreeMap tm = (LinkedTreeMap) baseData.getParams();
                     Iterator it = tm.keySet().iterator();
                     String Msg = "";
                     String Nonce = "";
-                    String PriKey= "";
+                    String PriKey = "";
                     while (it.hasNext()) {
                         String key = (String) it.next();
                         Msg = (String) tm.get("Msg");
@@ -1589,8 +1581,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         PriKey = (String) tm.get("PriKey");
                         break;
                     }
-                    if(!PriKey.equals("") && !Nonce.equals("") && !PriKey.equals(""))
-                    {
+                    if (!PriKey.equals("") && !Nonce.equals("") && !PriKey.equals("")) {
                         String msgSouce = LibsodiumUtil.INSTANCE.DecryptMyMsg(Msg, Nonce, PriKey);
                         EMMessage message = EMMessage.createTxtSendMessage(msgSouce, toChatUserId);
                         message.setFrom(userIdL);
@@ -1602,11 +1593,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         sendMessageTo(message);
                     }
 
-                }else{
-                    if(!filePath.equals(""))
-                    {
-                        switch (type)
-                        {
+                } else {
+                    if (!filePath.equals("")) {
+                        switch (type) {
                             case "1":
                                 EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
                                 message.setFrom(userIdL);
@@ -1660,17 +1649,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         }
     }
-    public void removeLastMessage()
-    {
-        if(conversation != null)
-        {
+
+    public void removeLastMessage() {
+        if (conversation != null) {
             EMMessage eMMessage = conversation.getLastMessage();
-            if(eMMessage != null)
-            {
+            if (eMMessage != null) {
                 conversation.removeMessage(eMMessage.getMsgId());
             }
         }
     }
+
     public void delFreindMsg(JDelMsgPushRsp jDelMsgRsp) {
         try {
             EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId() + "");
@@ -2313,7 +2301,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EMMessage message = EMMessage.createTxtSendMessage(content, toChatUserId);
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
-            String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();;
+            String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+            ;
             if (AppConfig.instance.getMessageReceiver() != null && UserDataManger.curreantfriendUserData.getSignPublicKey() != null) {
                 if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
                     msgId = AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsgV3(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getMiPublicKey(), content);
@@ -2328,7 +2317,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setUnread(true);
                 message.setMsgId(msgId);
                 currentSendMsg = message;
-                ConstantValue.INSTANCE.getSendFileMsgMap().put(msgId,message);
+                ConstantValue.INSTANCE.getSendFileMsgMap().put(msgId, message);
                 Gson gson = new Gson();
                 Message Message = new Message();
                 Message.setMsg(content);
@@ -2407,15 +2396,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }
 
-        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getMsgid()+"");
-        KLog.i("upateMessage:"+"forward_msg"+(forward_msg != null));
-        LogUtil.addLog("upateMessage:","forward_msg"+(forward_msg != null));
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getMsgid() + "");
+        KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
+        LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
         switch (jSendMsgRsp.getParams().getRetCode()) {
             case 0:
                 if (conversation != null) {
-                    if(forward_msg != null)
-                    {
-                        conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
+                    if (forward_msg != null) {
+                        conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                         forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
                         forward_msg.setAcked(true);
                         conversation.insertMessage(forward_msg);
@@ -2429,7 +2417,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case 1:
                 if (conversation != null) {
-                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
+                    conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
@@ -2443,7 +2431,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 break;
             case 2:
                 if (conversation != null) {
-                    conversation.removeMessage(jSendMsgRsp.getMsgid()+"");
+                    conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
                     if (isMessageListInited) {
                         easeChatMessageList.refresh();
                     }
@@ -2578,7 +2566,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
-                    SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
+                    SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
                     /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2663,6 +2651,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * 发送图片消息
+     *
      * @param imagePath
      * @param isCompress
      */
@@ -2677,8 +2666,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 try {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
-                    if (isHas)
-                    {
+                    if (isHas) {
 //                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 //                        int width = bitmap.getWidth();
 //                        int height = bitmap.getHeight();
@@ -2722,7 +2710,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
-                                SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
+                                SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
                                /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
@@ -3042,7 +3030,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
@@ -3227,7 +3215,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 +"");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
