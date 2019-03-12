@@ -324,6 +324,10 @@ public class FileMangerUtil {
         switch (CodeResult)
         {
             case 0:
+                if(sendFileLastByteSizeMap.get(msgId+"") == null)
+                {
+                    return;
+                }
                 int lastSendSize = sendFileLastByteSizeMap.get(msgId+"");
                 byte[] fileBuffer = sendFileLeftByteMap.get(msgId+"");
                 int leftSize =fileBuffer.length - lastSendSize;
