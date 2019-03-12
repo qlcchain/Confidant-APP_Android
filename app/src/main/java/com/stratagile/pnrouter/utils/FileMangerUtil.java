@@ -881,8 +881,15 @@ public class FileMangerUtil {
     {
         sendFilePathMap.remove(msgId);
         deleteFileMap.put(msgId,true);
+        sendFileLeftByteMap.remove(msgId);
+        sendFileNameMap.remove(msgId);
+        sendFileLastByteSizeMap.remove(msgId);
+        sendFileKeyByteMap.remove(msgId);
+        sendFileMyKeyByteMap.remove(msgId);
+        sendFileFriendKeyByteMap.remove(msgId);
         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
+        System.gc();
     }
     public static void cancelFileReceive(String msgId)
     {
