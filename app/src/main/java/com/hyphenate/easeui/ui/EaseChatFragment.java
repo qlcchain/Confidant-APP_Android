@@ -342,12 +342,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     if (!deleteFileMap.get(fileTransformEntity.getToId())) {
                                         sendFileByteData(fileBufferMi, fileName, EMMessage.getFrom(), EMMessage.getTo(), fileTransformEntity.getToId(), fileId, 1, fileKey, SrcKey, DstKey);
                                     } else {
+                                        sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                         KLog.i("websocket文件发送前取消！");
                                         String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     }
 
                                 } catch (Exception e) {
+                                    sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                     String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileTransformEntity(fileTransformEntity.getToId(), 4, "", wssUrl, "lws-pnr-bin"));
                                     getActivity().runOnUiThread(new Runnable() {
@@ -359,7 +361,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 }
                             }
                         } catch (Exception e) {
-
+                            sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                         }
                     }
                 }).start();
@@ -463,16 +465,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String ToIdResult = new String(ToId);
         String aa = "";
         KLog.i("CodeResult:" + CodeResult);
+        String msgId = sendMsgIdMap.get(FileIdResult + "");
         switch (CodeResult) {
             case 0:
                 int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult + "");
                 byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult + "");
                 int leftSize = fileBuffer.length - lastSendSize;
-                String msgId = sendMsgIdMap.get(FileIdResult + "");
+
                 if (leftSize > 0) {
                     new Thread(new Runnable() {
                         public void run() {
-
                             try {
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, sendFileSizeMax, fileLeftBuffer, 0, leftSize);
@@ -483,6 +485,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 if (!deleteFileMap.get(msgId)) {
                                     sendFileByteData(fileLeftBuffer, fileName, FromIdResult + "", ToIdResult + "", msgId, FileIdResult, SegSeqResult + 1, fileKey, SrcKey, DstKey);
                                 } else {
+                                    sendFileLeftByteMap.remove(msgId);
                                     KLog.i("websocket文件发送中取消！");
                                     String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"));
@@ -501,8 +504,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         EMMessage.setAcked(true);
                         sendMessageTo(EMMessage);
                         conversation.updateMessage(EMMessage);
+                        sendFileLeftByteMap.remove(msgId);
                         KLog.i("websocket文件发送成功！");
                     } else {
+                        sendFileLeftByteMap.remove(msgId);
                         DelMsgReq msgData = new DelMsgReq(FromIdResult, ToIdResult, LogIdIdResult, "DelMsg");
                         AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
                         KLog.i("websocket文件发送成功后取消！");
@@ -516,6 +521,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
                 break;
             case 1:
+                sendFileLeftByteMap.remove(msgId);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -524,6 +530,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 2:
+                sendFileLeftByteMap.remove(msgId);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -532,6 +539,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 3:
+                sendFileLeftByteMap.remove(msgId);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -540,6 +548,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 4:
+                sendFileLeftByteMap.remove(msgId);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -548,6 +557,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 });
                 break;
             case 5:
+                sendFileLeftByteMap.remove(msgId);
                 String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                 SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + ToIdResult, "");
                 getActivity().runOnUiThread(new Runnable() {

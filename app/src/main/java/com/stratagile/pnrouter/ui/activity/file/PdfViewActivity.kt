@@ -100,7 +100,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         } else {
             ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.other_large))
         }
-        if (file.exists()) {
+        if (false) {
             progressBar.visibility = View.GONE
             if (fileName.contains(".pdf")) {
                 pdfView.visibility = View.VISIBLE
@@ -153,9 +153,13 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         }else {
             runOnUiThread {
                 var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
+                KLog.i("PdfViewActivity_onFileStatusChange:"+fileStatus.segSeqResult+"_"+fileStatus.segSeqTotal+"_"+fileStatus.fileKey+"_"+payLoad!!.msgId.toString())
                 if(fileStatus.fileKey.contains(payLoad!!.msgId.toString()))
                 {
-                    progressBar.progress = fileStatus.segSeqResult * 100 / fileStatus.segSeqTotal
+                    var segSeqResult = fileStatus.segSeqResult
+                    var floatResult = (segSeqResult.toFloat()) / fileStatus.segSeqTotal
+                    progressBar.progress = (floatResult * 100).toInt()
+                    KLog.i("PdfViewActivity_onFileStatusChange2:"+(floatResult * 100))
                     if(fileStatus.segSeqResult >= fileStatus.segSeqTotal)
                     {
                         tvFileOpreate.text = "Open with other applications"
@@ -165,7 +169,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                             openFile(filePath)
                         }
                     }
-                    if (progressBar.progress == 100) {
+                    if (progressBar.progress >= 100) {
                         progressBar.visibility = View.INVISIBLE
                     }
                 }

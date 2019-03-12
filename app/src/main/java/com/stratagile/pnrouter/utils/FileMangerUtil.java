@@ -226,15 +226,20 @@ public class FileMangerUtil {
                                         if(!fileName.contains("__Avatar.jpg"))//头像不用加密
                                         {
                                             int segSeqTotal = sendFileTotalSegment.get(filePath);
-                                            UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
-                                            MyFile myRouter = new MyFile();
-                                            myRouter.setType(0);
-                                            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-                                            myRouter.setUpLoadFile(uploadFile);
-                                            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-                                            EventBus.getDefault().post(new FileStatus(fileName+"__"+fileTransformEntity.getToId(),fileSize, false, false, false,0,segSeqTotal,10,false,0));
+                                            UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileTransformEntity.getToId());
+                                            if(!localUpLoadFile.isStop().equals("1"))
+                                            {
+                                                UpLoadFile uploadFile = new UpLoadFile(fileName,filePath,fileSize, false, false, "0",0,segSeqTotal,10,false,"",0,0,fileTransformEntity.getToId(),false);
+                                                MyFile myRouter = new MyFile();
+                                                myRouter.setType(0);
+                                                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                                                myRouter.setUpLoadFile(uploadFile);
+                                                LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                                                EventBus.getDefault().post(new FileStatus(fileName+"__"+fileTransformEntity.getToId(),fileSize, false, false, false,0,segSeqTotal,10,false,0));
+                                            }
                                         }
                                     }else{
+                                        sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                         KLog.i("websocket文件上传前取消！");
                                         String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
@@ -242,13 +247,14 @@ public class FileMangerUtil {
 
                                 }catch (Exception e)
                                 {
+                                    sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                 }
                             }
                         }catch (Exception e)
                         {
-
+                            sendFileLeftByteMap.remove(fileTransformEntity.getToId());
                         }
                     }
                 }).start();
@@ -296,13 +302,14 @@ public class FileMangerUtil {
         String ToIdResult  = new String(ToId);
         String aa = "";
         KLog.i("CodeResult:"+ CodeResult);
+        String msgId = sendMsgIdMap.get(FileIdResult+"");
         switch (CodeResult)
         {
             case 0:
                 int lastSendSize = sendFileLastByteSizeMap.get(FileIdResult+"");
                 byte[] fileBuffer = sendFileLeftByteMap.get(FileIdResult+"");
                 int leftSize =fileBuffer.length - lastSendSize;
-                String msgId = sendMsgIdMap.get(FileIdResult+"");
+
                 String filePath = sendFilePathMap.get(msgId+"");
                 long fileSize  = sendFileSize.get(msgId);
                 if(sendFileTotalSegment.get(filePath) == null)
@@ -343,6 +350,7 @@ public class FileMangerUtil {
                                         EventBus.getDefault().post(new FileStatus(fileName+"__"+msgId,fileSize, false, false, false,sended, fileTotalSegment,10,false,0));
                                     }
                                 }else{
+                                    sendFileLeftByteMap.remove(msgId);
                                     KLog.i("websocket文件上传中取消！");
                                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
@@ -368,6 +376,7 @@ public class FileMangerUtil {
 
                     //EventBus.getDefault().post(new FileStatus(filePath,fileSize,fileSize,0));
                     KLog.i("websocket文件上传成功！");
+                    sendFileLeftByteMap.remove(msgId);
                     sendFilePathMap.remove(msgId);
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
@@ -398,17 +407,19 @@ public class FileMangerUtil {
                 }
                 break;
             case 1:
-
+                sendFileLeftByteMap.remove(msgId);
                 break;
             case 2:
-
+                sendFileLeftByteMap.remove(msgId);
                 break;
             case 3:
-
+                sendFileLeftByteMap.remove(msgId);
                 break;
             case 4:
+                sendFileLeftByteMap.remove(msgId);
                 break;
             case 5:
+                sendFileLeftByteMap.remove(msgId);
                 break;
         }
     }
