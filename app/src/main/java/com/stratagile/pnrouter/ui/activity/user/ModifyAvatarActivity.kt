@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Looper
 import android.provider.MediaStore
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
@@ -26,6 +27,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerModifyAvatarComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.ModifyAvatarContract
 import com.stratagile.pnrouter.ui.activity.user.module.ModifyAvatarModule
@@ -60,13 +62,16 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
         {
             0 ->
             {
-                runOnUiThread {
-                    toast(getString(R.string.Avatar_Update_Successful))
-                }
+
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
                 var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
                 var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
+                runOnUiThread {
+                    toast(getString(R.string.Avatar_Update_Successful))
+                    EventBus.getDefault().post(ResetAvatar())
+                    finish()
+                }
             }
             1 ->
             {

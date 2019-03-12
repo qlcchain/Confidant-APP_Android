@@ -30,9 +30,14 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             .centerCrop()
             .transform(GlideCircleTransformMainColor(context))
             .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .priority(Priority.HIGH)
+    var optionsChat = RequestOptions()
+            .centerCrop()
+            .transform(GlideCircleTransformMainColor(context))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(false)
             .priority(Priority.HIGH)
-
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.ImageButtonWithText)
         val view = LayoutInflater.from(context).inflate(R.layout.image_button_with_text, this, true)
@@ -183,6 +188,23 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
 
                 }
             }
+    }
+    fun setImageFileInChat(url: String) {
+        if ("" == url) {
+            textView.visibility = View.VISIBLE
+        } else {
+            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+            if (lastFile.exists()) {
+                textView.visibility = View.GONE
+                imageView.visibility = View.VISIBLE
+                Glide.with(this)
+                        .load(lastFile)
+                        .apply(optionsChat)
+                        .into(imageView)
+            } else {
+
+            }
+        }
     }
     fun setImageFile(url: String, name : String) {
         if ("" == url) {

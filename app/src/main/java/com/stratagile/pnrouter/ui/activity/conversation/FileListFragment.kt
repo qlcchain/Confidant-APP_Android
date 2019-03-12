@@ -29,6 +29,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AllFileStatus
 import com.stratagile.pnrouter.entity.events.PullFileList
+import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.entity.file.UpLoadFile
 import com.stratagile.pnrouter.ui.activity.conversation.component.DaggerFileListComponent
 import com.stratagile.pnrouter.ui.activity.conversation.contract.FileListContract
@@ -226,7 +227,10 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             }
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun reSetAvatar(resetAvatar: ResetAvatar) {
+        pullFileList()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
