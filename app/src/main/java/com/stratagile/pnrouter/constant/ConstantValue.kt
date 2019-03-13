@@ -54,7 +54,7 @@ object ConstantValue {
         var localUserName:String? = ""
 
         var sendFileSizeMaxoInner = 1024 * 1024 * 2  //内网缓存区2M
-        var sendFileSizeMaxoOuterNet = 1024 * 1024 * 2  //外网缓存区500k
+        var sendFileSizeMaxoOuterNet = 1024 * 500 //外网缓存区500k
         var sendFileSizeMax = 1024 * 1024 * 2   //实际使用的缓冲区
         var libsodiumprivateMiKeySp ="libsodiumprivateMiKeySp"
         var libsodiumpublicMiKeySp ="libsodiumpublicMiKeySp"

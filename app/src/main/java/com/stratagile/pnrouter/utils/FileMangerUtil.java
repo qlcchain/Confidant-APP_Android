@@ -384,7 +384,13 @@ public class FileMangerUtil {
                                 }
                             }catch (Exception e)
                             {
-
+                                sendFileLeftByteMap.remove(msgId);
+                                sendFileNameMap.remove(msgId);
+                                sendFileLastByteSizeMap.remove(msgId);
+                                sendFileKeyByteMap.remove(msgId);
+                                sendFileMyKeyByteMap.remove(msgId);
+                                sendFileFriendKeyByteMap.remove(msgId);
+                                System.gc();
                             }
                         }
                     }).start();
@@ -519,12 +525,13 @@ public class FileMangerUtil {
             sendFileData.setSegSize(FormatTransfer.reverseInt(segSize));
             int aa = FormatTransfer.reverseInt(9437440);
             sendFileData.setSegSeq(FormatTransfer.reverseInt(segSeq));
+            int segMore = fileLeftBuffer.length>ConstantValue.INSTANCE.getSendFileSizeMax() ? 1: 0;
             int fileOffset = 0;
             fileOffset = (segSeq -1) * ConstantValue.INSTANCE.getSendFileSizeMax();
             sendFileData.setFileOffset(FormatTransfer.reverseInt(fileOffset));
             sendFileData.setFileId(FormatTransfer.reverseInt(fileId));
             sendFileData.setCRC(FormatTransfer.reverseShort((short)0));
-            int segMore = fileLeftBuffer.length>ConstantValue.INSTANCE.getSendFileSizeMax() ? 1: 0;
+
             sendFileData.setSegMore((byte) segMore);
             sendFileData.setCotinue((byte) 0);
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
@@ -536,8 +543,7 @@ public class FileMangerUtil {
             sendFileData.setToId(toRouter);
             sendFileData.setSrcKey(SrcKey);
             sendFileData.setDstKey(DstKey);
-            int contentSize = fileLeftBuffer.length > ConstantValue.INSTANCE.getSendFileSizeMax() ? ConstantValue.INSTANCE.getSendFileSizeMax() : (int)fileLeftBuffer.length;
-            byte[] content = new byte[contentSize];
+            byte[] content = new byte[segSize];
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
             sendFileData.setContent(content);
             byte[] sendData = sendFileData.toByteArray();
@@ -553,7 +559,7 @@ public class FileMangerUtil {
             sendFileMyKeyByteMap.put(msgId+"",SrcKey);
             sendFileFriendKeyByteMap.put(msgId+"",DstKey);*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            KLog.i("发送中>>>"+"contentSize:"+contentSize+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
+            KLog.i("发送中>>>"+"content:"+content.length+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
             EventBus.getDefault().post(new FileMangerTransformMessage(msgId,sendData));
 
         }catch (Exception e)

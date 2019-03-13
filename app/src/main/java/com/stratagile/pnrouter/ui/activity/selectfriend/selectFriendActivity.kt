@@ -760,8 +760,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             sendFileMyKeyByteMap.put(fileId.toString() + "", SrcKey)
             sendFileFriendKeyByteMap.put(fileId.toString() + "", DstKey)
             EventBus.getDefault().post(TransformFileMessage(msgId, sendData))
-            val s = String(content)
-            val aabb = FileUtil.bytesToHex(content)
+           /* val s = String(content)
+            val aabb = FileUtil.bytesToHex(content)*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
             KLog.i("发送中>>>" + "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + sendFileData.segSize + " CRC:" + newCRC)
 

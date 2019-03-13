@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 
 public class SendFileData implements Serializable {
-    //  int 4, short 2, byte 1, char 2, long 8, float 4
+    //  int 4, short 2, byte 1, char 2, long 8, float 4   952
     private int Magic = 0x0dadc0de;
     private int Action = 1;
     private int SegSize;
@@ -29,10 +29,9 @@ public class SendFileData implements Serializable {
     private byte[] ToId = new byte[77];
     private byte[] SrcKey = new byte[256];
     private byte[] DstKey = new byte[256];
+    private byte[] Pad = new byte[2];
 
-
-
-    private byte[] Content = new byte[1024 * 1024 *2];
+    private byte[] Content = new byte[0];
 
     public int getMagic() {
         return Magic;
@@ -129,12 +128,21 @@ public class SendFileData implements Serializable {
         System.arraycopy(toId, 0, ToId, 0, toId.length > ToId.length ? ToId.length : toId.length);
     }
 
+    public byte[] getPad() {
+        return Pad;
+    }
+
+    public void setPad(byte[] pad) {
+        System.arraycopy(pad, 0, Pad, 0, pad.length > Pad.length ? Pad.length : pad.length);
+    }
+
     public byte[] getContent() {
         return Content;
     }
 
     public void setContent(byte[] content) {
-        System.arraycopy(content, 0, Content, 0, content.length > Content.length ? Content.length : content.length);
+        Content = content;
+        //System.arraycopy(content, 0, Content, 0, content.length);
     }
     public byte[] getSrcKey() {
         return SrcKey;
@@ -164,9 +172,9 @@ public class SendFileData implements Serializable {
         byte[] SegMoreByte = new byte[]{this.SegMore};
         byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
-                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+ this.Content.length;
+                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+this.Pad.length+ this.Content.length;
         System.out.println("发送文件长度："+length);
-        byte[] result = new byte[length + 2];
+        byte[] result = new byte[length];
         int copyLength = 0;
         System.arraycopy(magicByte, 0, result, copyLength, magicByte.length);
         copyLength += magicByte.length;
@@ -198,10 +206,13 @@ public class SendFileData implements Serializable {
         System.arraycopy(this.DstKey, 0, result, copyLength,this.DstKey.length);
         copyLength += this.DstKey.length;
 
+        System.arraycopy(this.Pad, 0, result, copyLength,this.Pad.length);
+        copyLength += this.Pad.length;
+
         System.arraycopy(this.Content, 0, result, copyLength,this.Content.length);
-        byte[] add = new byte[]{0, 0};
-        copyLength += this.Content.length;
-        System.arraycopy(add, 0, result, copyLength,add.length);
+        //copyLength += this.Content.length;
+        /*byte[] add = new byte[]{0, 0};
+        System.arraycopy(add, 0, result, copyLength,add.length);*/
         return result;
     }
 }
