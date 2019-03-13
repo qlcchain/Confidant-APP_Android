@@ -40,7 +40,7 @@ static uint64_t received_file_size;
 
 static uint32_t cacenlFileNumber = 0;
 
-static uint32_t cacenlFileSendNumber = -1;
+static uint32_t cacenlFileSendNumber = 6000;
 
 Tox *mTox = NULL;
 JNIEnv *Env;
@@ -214,12 +214,12 @@ Java_com_stratagile_tox_toxcore_ToxCoreJni_sendFile(JNIEnv *env, jobject thiz, j
         fseek(tempfile, 0, SEEK_END);
         uint64_t filesize = ftell(tempfile);
         fseek(tempfile, 0, SEEK_SET);
-        LOGD("开始发送文件");
+        LOGD("1开始发送文件");
         uint32_t filenum = tox_file_send(mTox, friendnum, TOX_FILE_KIND_DATA, filesize, 0,
                                          (uint8_t *) fileNameC,
                                          strlen(fileNameC), 0);
 
-        LOGD("开始发送文件的fileNumber为：%d", filenum);
+        LOGD("2开始发送文件的fileNumber为：%d", filenum);
         if (filenum == -1) {
             free(friendId_P);
             free(filePathC);
@@ -822,7 +822,7 @@ void file_recv_control_cb(Tox *tox, uint32_t friend_number, uint32_t file_number
     unsigned int j;
     for (j = 0; j < NUM_FILE_SENDERS; ++j) {
         /* This is slow */
-        LOGD("开始发送文件");
+        LOGD("3开始发送文件");
         if (file_senders[j].file && file_senders[j].friendnum == friend_number && file_senders[j].filenumber == file_number) {
             call_java_start_send_file(friend_number, file_number, j);
         }
@@ -857,6 +857,19 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
             file_senders[i].filenumber == file_number) {
 //            LOGD("index为：%d  fileNumber= %d,   总大小为：%d,  发送了的大小为: %d", i, file_number, (int) file_senders[i].filesize, position);
 //            LOGD("要取消上传的文件为：%d", cacenlFileSendNumber);
+            if (cacenlFileSendNumber == file_number) {
+                LOGD("取消文件的发送 %d ", cacenlFileSendNumber);
+                cacenlFileSendNumber = 6000;
+                fclose(file_senders[i].file);
+                file_senders[i].file = 0;
+                tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+                file_senders[i].file = NULL;
+                file_senders[i].filenumber = NULL;
+                file_senders[i].filesize = NULL;
+                file_senders[i].filenumber = NULL;
+                return;
+            }
+
             if (length == 0) {
                 fclose(file_senders[i].file);
                 file_senders[i].file = 0;
@@ -868,19 +881,6 @@ file_chunk_request_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, ui
                 file_senders[i].filesize = NULL;
                 file_senders[i].filenumber = NULL;
                 break;
-            }
-
-            if (cacenlFileSendNumber == file_number) {
-                LOGD("取消文件的发送");
-                cacenlFileSendNumber = -1;
-                fclose(file_senders[i].file);
-                file_senders[i].file = 0;
-                tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
-                file_senders[i].file = NULL;
-                file_senders[i].filenumber = NULL;
-                file_senders[i].filesize = NULL;
-                file_senders[i].filenumber = NULL;
-                return;
             }
 
             fseek(file_senders[i].file, position, SEEK_SET);
@@ -902,6 +902,7 @@ void file_recv_chunk_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, 
     if (cacenlFileNumber == file_number) {
         LOGD("取消文件的下载, %d", cacenlFileNumber);
         tox_file_control(mTox, friend_number, file_number, TOX_FILE_CONTROL_CANCEL, 0);
+        call_java_cancel_file_receive(file_number);
         cacenlFileNumber = 0;
         return;
     }
@@ -945,6 +946,7 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
     LOGD("下载文件之前。tox回调");
     LOGD("fileName: %s", filename);
     received_file_size = file_size;
+    cacenlFileNumber = 0;
     if (filename != NULL) {
         memset(recv_filename, 0x00, 200);
         Call_GetFilePathFromJava(filename,recv_filename);
@@ -970,7 +972,7 @@ void file_recv_cb(Tox *tox, uint32_t friend_number, uint32_t file_number, uint32
         //  sprintf(msg, "Accepted file transfer. (saving file as: %u.%u.bin)", friend_number, file_number);
         // printf("Accepted file transfer. (saving file as: %s)\n", recv_filename);
         //new_lines(msg);
-        call_java_start_receive_file(friend_number, file_number, filename);
+        call_java_start_receive_file(friend_number, file_number, filename, file_size);
     } else {
         //new_lines("Could not accept file transfer.");
         printf("Could not accept file transfer.");
@@ -1011,7 +1013,7 @@ void call_java_start_send_file(int friendNumber, int fileNumber, int index) {
 /**
  * 回调给java开始接收文件
  */
-void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName) {
+void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName, int fileSize) {
     if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
         return;
     }
@@ -1023,7 +1025,7 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
     }
     //找到需要调用的方法ID
     jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "startReceiveFile",
-                                                 "(ILjava/lang/String;Ljava/lang/String;)V");
+                                                 "(ILjava/lang/String;Ljava/lang/String;I)V");
 //    LOGD("开始调用java方法");
     //进行回调，ret是java层的返回值（这个有些场景很好用）
     jstring jFileName = (*Env)->NewStringUTF(Env, fileName);
@@ -1034,7 +1036,7 @@ void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileNa
         frpuk_to_str(fraddr_bin, fraddr_str);
     }
     jstring jFriendId = (*Env)->NewStringUTF(Env, fraddr_str);
-    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFileName, jFriendId);
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber, jFileName, jFriendId, fileSize);
     (*Env)->DeleteLocalRef(Env, clazz);
     (*Env)->DeleteLocalRef(Env, jFileName);
 }
@@ -1088,6 +1090,27 @@ void call_java_receivedfile_rate(int friendNumber, int position, int filesize, i
     (*Env)->CallVoidMethod(Env, g_obj, javaCallback, position, filesize, jFriendId, fileNumber);
     (*Env)->DeleteLocalRef(Env, clazz);
     (*Env)->DeleteLocalRef(Env, jFriendId);
+}
+/**
+ * 回调给java接收了文件的多少字节
+ */
+void call_java_cancel_file_receive(int fileNumber) {
+    if ((*g_jvm)->AttachCurrentThread(g_jvm, &Env, NULL) != JNI_OK) {
+        return;
+    }
+    //直接用GetObjectClass找到Class, 也就是Sdk.class.
+    jclass clazz = (*Env)->FindClass(Env, "com/stratagile/tox/toxcore/ToxCoreJni");
+    if (clazz == NULL) {
+        LOGD("找不到'com/stratagile/tox/toxcore/ToxCoreJni'这个类");
+        return;
+    }
+
+    //找到需要调用的方法ID
+    jmethodID javaCallback = (*Env)->GetMethodID(Env, clazz, "toxCallCancelFileReceiveSuccess", "(I)V");
+//    LOGD("开始调用java方法");
+    //进行回调，ret是java层的返回值（这个有些场景很好用）
+    (*Env)->CallVoidMethod(Env, g_obj, javaCallback, fileNumber);
+    (*Env)->DeleteLocalRef(Env, clazz);
 }
 
 void Java_com_stratagile_tox_toxcore_ToxCoreJni_cancelFileSend(JNIEnv *env, jobject thiz, int fileNumber) {

@@ -44,8 +44,9 @@ public class ToxCoreJni {
     public HashMap<String,Integer> reveiveFileNumberAndMsgIDMap = new HashMap<>();
     private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
     private HashMap<String,Boolean> progressSendMap = new HashMap<>();
-    private HashMap<String,Boolean> progressReceiveMap = new HashMap<>();
-    private int progressBarMaxSeg = 25;
+    private HashMap<Integer,Integer> progressReceiveMap = new HashMap<>();
+    private HashMap<Integer, Integer> fileNumberToFileSizeMap = new HashMap<>();
+    public static int progressBarMaxSeg = 50;
     /**
      * 获取单例
      * @return toxCoreJni实例
@@ -208,11 +209,13 @@ public class ToxCoreJni {
         }
     }
 
-    public void startReceiveFile(int fileNumber, String fileName, String routerId) {
+    public void startReceiveFile(int fileNumber, String fileName, String routerId, int fileSize) {
         KLog.i("开始接收的文件序号：" + fileNumber);
         KLog.i("开始接收的文件名：" + fileName);
         KLog.i("路由器的Id是：" + routerId);
+        fileNumberToFileSizeMap.put(fileNumber, fileSize);
         reveiveFileNumberMap.put(routerId,fileNumber+"");
+        progressReceiveMap.put(fileNumber, 0);
         String [] fileNameArray = fileName.split(":");
         String fileMiName = fileNameArray[1];
         String msgLocalId = fileNameArray[2];
@@ -233,9 +236,9 @@ public class ToxCoreJni {
      * @param filesize
      */
     public void sendFileRate(int fileNumber, int position, int filesize, int index) {
-//        KLog.i("fileNumber：" + fileNumber);
-//        KLog.i("发送了：" + position);
-//        KLog.i("总共：" + filesize);
+        KLog.i("fileNumber：" + fileNumber);
+        KLog.i("发送了：" + position);
+        KLog.i("总共：" + filesize);
         String key = sendFileRouterMap.get(fileNumber +"");
         int average = filesize / progressBarMaxSeg;
         if(average <= 0)
@@ -264,30 +267,37 @@ public class ToxCoreJni {
      */
     public void receivedFileRate(int position, int filesize, String routerId, int fileNum) {
         KLog.i("接收了：" + position);
-        KLog.i("总共：" + filesize);
-        KLog.i("路由Id为：" + routerId);
+        int fileSize = fileNumberToFileSizeMap.get(fileNum);
+        KLog.i("总共为：" + fileSize);
         KLog.i("fileNum为：" + fileNum);
-        int fileNumber = Integer.valueOf(reveiveFileNumberMap.get(routerId));
-        int average = filesize / progressBarMaxSeg;
-        if(position == filesize)
+        int average = fileSize / progressBarMaxSeg;
+        if(position == fileSize)
         {
             int num = (int)(position / average) + 1;
             for(int i = 0 ; i < num ; i++)
             {
-                progressReceiveMap.put(fileNum+"_"+i,null);
+                progressReceiveMap.put(fileNum, 0);
             }
             KLog.i("抛出EventBus:receivedFileFinish"+fileNum+"_"+num);
-            EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNumber));
+            EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNum));
         }else{
             int num = (int)(position / average) + 1;
-            if(progressReceiveMap.get(fileNum+"_"+num) == null)
+            if(progressReceiveMap.get(fileNum) == num - 2)
             {
                 KLog.i("抛出EventBus:receivedFileRate"+fileNum+"_"+num);
-                EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber,position,filesize));
-                progressReceiveMap.put(fileNum+"_"+num,true);
+                EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNum,position,fileSize));
+                progressReceiveMap.put(fileNum, num);
             }
 
         }
+    }
+
+    /**
+     * tox回调给java告诉对应的fileNumber在tox中取消下载成功了。
+     * @param fileNumber
+     */
+    public void toxCallCancelFileReceiveSuccess(int fileNumber) {
+        KLog.i("tox中取消下载的文件为：" + fileNumber);
     }
 
     public void bootStrapJava() {
@@ -306,6 +316,11 @@ public class ToxCoreJni {
      * @param fileNumber
      */
     public native void cancelFileReceive(int fileNumber);
+
+    public void cacelFileReceive1(int fileNumber) {
+        progressReceiveMap.put(fileNumber, 0);
+        cancelFileReceive(fileNumber);
+    }
 
     /**
      * 主动取消文件的发送

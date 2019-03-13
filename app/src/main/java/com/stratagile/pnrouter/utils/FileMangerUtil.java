@@ -901,7 +901,7 @@ public class FileMangerUtil {
         deleteFileMap.put(msgId,true);
         int fileNumber = ToxCoreJni.getInstance().reveiveFileNumberAndMsgIDMap.get(msgId);
         KLog.i("cancelFileReceive_fileNumber:"+fileNumber);
-        ToxCoreJni.getInstance().cancelFileReceive(fileNumber);
+        ToxCoreJni.getInstance().cacelFileReceive1(fileNumber);
     }
     public static void cancelFileSend(String msgId)
     {

@@ -26,10 +26,11 @@ void deleteFriendAll();
 void friend_status_callback(JNIEnv *env, int status, char *friendNumber);
 void call_java_sendfile_rate(int fileNumber, int position, int filesize, int index);
 void call_java_receivedfile_rate(int friendNumber, int position, int filesize, int fileNumber);
-void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName);
+void call_java_start_receive_file(int freindNumber, int fileNumber, char *fileName, int fileSize);
 void call_java_start_send_file(int friendNumber, int fileNumber, int index);
 void java_bootstrap(void);
 int Call_GetFilePathFromJava(const char*oldfilepathname, char*newfilepathname);
+void call_java_cancel_file_receive(int fileNumber);
 
 
 

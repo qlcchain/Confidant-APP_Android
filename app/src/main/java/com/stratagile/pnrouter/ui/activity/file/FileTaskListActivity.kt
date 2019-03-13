@@ -501,7 +501,17 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         }else{
                                             it.t.status = 0
                                         }
-                                        fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                                        if (it.t.segSeqResult != 0) {
+                                            var count  = it.t.segSeqTotal / it.t.segSeqResult
+                                            KLog.i("count= " + count)
+                                            if (count > ToxCoreJni.progressBarMaxSeg / 2) {
+                                                fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                                            } else {
+                                                fileGoingTaskLisytAdapter.notifyItemChanged(index, "")
+                                            }
+                                        } else {
+                                            fileGoingTaskLisytAdapter.notifyItemChanged(index)
+                                        }
                                         KLog.i("没有下载完:"+myFie.upLoadFile.fileKey+"###"+myFie.upLoadFile.isStop)
                                     } else {
                                         listGoing.removeAt(index)
