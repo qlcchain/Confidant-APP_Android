@@ -407,7 +407,8 @@ object LocalFileUtils {
                     }.type)
                     for (myRouter in localRouterArrayList) {
 
-                        if (myRouter.getType() == 0 && myRouter.getUserSn().equals(ConstantValue.currentRouterSN))
+                        // && myRouter.getUserSn().equals(ConstantValue.currentRouterSN)
+                        if (myRouter.getType() == 0)
                         {
                             if (router!!.getUpLoadFile() != null && myRouter.getUpLoadFile().msgId.equals(router!!.getUpLoadFile().msgId)) {
                                 newRouterArrayList.add(router)

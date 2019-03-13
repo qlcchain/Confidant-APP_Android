@@ -249,7 +249,7 @@ data class DelMsgRsp(var Retcode : Int, var Msg : String,var ToId:String,var Act
 
 data class PullFriendReq_V4(var UserId: String, var Action: String = "PullFriend")
 
-data class PullUserReq(var UserType: Int, var UserNum :Int ,var UserStartSN:String ,var Action: String = "PullUserList")
+data class PullUserReq(var UserType: Int, var UserNum :Int ,var UserStartSN:String , var UserKey : String, var Action: String = "PullUserList")
 
 data class HeartBeatReq(var UserId: String,var Active:Int, var Action: String = "HeartBeat")
 

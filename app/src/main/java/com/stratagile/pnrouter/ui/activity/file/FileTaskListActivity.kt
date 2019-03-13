@@ -504,7 +504,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                         if (it.t.segSeqResult != 0) {
                                             var count  = it.t.segSeqTotal / it.t.segSeqResult
                                             KLog.i("count= " + count)
-                                            if (count > ToxCoreJni.progressBarMaxSeg / 2) {
+                                            if (count >= ToxCoreJni.progressBarMaxSeg - 1) {
                                                 fileGoingTaskLisytAdapter.notifyItemChanged(index)
                                             } else {
                                                 fileGoingTaskLisytAdapter.notifyItemChanged(index, "")
@@ -725,13 +725,13 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             receiveFileDataMap.put(localMedia!!.msgId,localMedia)
                             Thread(Runnable() {
                                 run() {
-                                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "0", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
+                                    val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "2", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                                     val myRouter = MyFile()
                                     myRouter.type = 0
                                     myRouter.userSn = ConstantValue.currentRouterSN
                                     myRouter.upLoadFile = uploadFile
                                     LocalFileUtils.updateLocalAssets(myRouter)
-                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "0"
+                                    fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
                                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
                                     FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
                                 }
@@ -739,7 +739,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
 
                         } else {
                             ConstantValue.receiveToxFileGlobalDataMap.put(localMedia!!.fileKey,localMedia!!.userKey)
-                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "0", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
+                            val uploadFile = UpLoadFile(localMedia!!.fileKey, filledUri,0, true, false, "2", 0, 1, 0, false, localMedia!!.userKey, localMedia!!.fileFrom,0,localMedia!!.msgId,false)
                             val myRouter = MyFile()
                             myRouter.type = 0
                             myRouter.userSn = ConstantValue.currentRouterSN
@@ -750,7 +750,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                             var msgData = PullFileReq(selfUserId!!, selfUserId!!, localMedia!!.fileKey, localMedia!!.msgId.toInt(), localMedia!!.fileFrom, 2)
                             var baseData = BaseData(msgData)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "0"
+                            fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
                             fileGoingTaskLisytAdapter.notifyItemChanged(position)
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))

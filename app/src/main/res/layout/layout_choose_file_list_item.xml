@@ -4,60 +4,77 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/x24"
+    android:paddingLeft="@dimen/x31"
     android:layout_marginTop="@dimen/x19"
-    android:paddingRight="@dimen/x24"
+    android:paddingRight="@dimen/x31"
     android:layout_height="wrap_content"
     android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center_vertical"
-        android:paddingLeft="@dimen/x8"
         android:paddingRight="@dimen/x8"
         android:orientation="horizontal"
-        android:layout_height="@dimen/x98">
+        android:layout_height="@dimen/x108">
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/userAvatar"
-            android:layout_width="@dimen/x48"
+            android:layout_width="@dimen/x77"
             app:imageButtonTextSize="11"
-            android:layout_height="@dimen/x48">
+            android:layout_height="@dimen/x77">
 
         </com.stratagile.pnrouter.view.ImageButtonWithText>
 
-        <TextView
-            android:id="@+id/friendName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:maxEms="8"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="tom"
-            android:textSize="13sp"
-            android:textColor="@color/color_2B2B2B"
-            android:layout_marginLeft="@dimen/x10" />
-
-        <ImageView
-            android:id="@+id/fileForm"
-            android:layout_width="@dimen/x23"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
             android:layout_marginLeft="@dimen/x10"
-            android:layout_height="@dimen/x23" />
-        <TextView
-            android:id="@+id/tvOpreateType"
-            android:layout_width="0px"
-            android:layout_marginLeft="@dimen/x10"
-            android:textSize="11sp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:layout_marginBottom="@dimen/x2"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/friendName"
+                    android:layout_width="0px"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:maxEms="8"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="tom"
+                    android:textSize="15sp"
+                    android:textColor="@color/color_2B2B2B" />
+                <TextView
+                    android:id="@+id/tvFileTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2018/11/07 13:00"
+                    android:textSize="11sp"
+                    android:layout_marginLeft="@dimen/x10" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/fileForm"
+                    android:layout_width="@dimen/x23"
+                    android:layout_height="@dimen/x23" />
+                <TextView
+                    android:id="@+id/tvOpreateType"
+                    android:layout_width="0px"
+                    android:textColor="@color/color_979797"
+                    android:layout_marginLeft="@dimen/x10"
+                    android:textSize="12sp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvFileTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2018/11/07 13:00"
-            android:textSize="11sp"
-            android:layout_marginLeft="@dimen/x10" />
 
     </LinearLayout>
 
@@ -66,20 +83,22 @@
         android:orientation="horizontal"
         android:background="@drawable/file_list_bg"
         android:gravity="center_vertical"
-        android:layout_height="@dimen/x112">
+        android:layout_height="@dimen/x108">
+
         <ImageView
             android:id="@+id/ivAvatar"
-            android:layout_width="@dimen/x42"
-            android:layout_height="@dimen/x46"
-            android:layout_marginLeft="@dimen/x31"
-            app:layout_constraintLeft_toRightOf="@+id/checkBox"
+            android:layout_width="@dimen/x61"
+            android:layout_height="@dimen/x61"
+            android:layout_marginLeft="@dimen/x15"
             android:src="@mipmap/icon_ppt"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/checkBox"
             app:layout_constraintTop_toBottomOf="@+id/tvFileTime" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:orientation="vertical"
             android:layout_marginLeft="@dimen/x20"
+            android:layout_marginBottom="@dimen/x2"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/tvFileName"
@@ -90,18 +109,15 @@
                 android:singleLine="true"
                 android:text="Google project development.zip"
                 android:textColor="@color/color_2B2B2B"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tvFileSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/x31"
                 android:textSize="12sp"
                 android:textColor="@color/color_808080"
-                android:text="244k"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="244k" />
         </LinearLayout>
     </LinearLayout>
 
@@ -109,7 +125,7 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_height="@dimen/x98">
+        android:layout_height="@dimen/x94">
         <ImageView
             android:id="@+id/ivDownload"
             android:layout_width="0px"

@@ -1,15 +1,18 @@
 package com.stratagile.pnrouter.ui.activity.group
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.pawegio.kandroid.e
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerCreateGroupComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.CreateGroupContract
 import com.stratagile.pnrouter.ui.activity.group.module.CreateGroupModule
@@ -18,6 +21,11 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupA
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberAdapter
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import kotlinx.android.synthetic.main.activity_create_group.*
+import kotlinx.android.synthetic.main.activity_select_friend.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.util.ArrayList
 
 import javax.inject.Inject;
 
@@ -46,14 +54,9 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
     override fun initView() {
         setContentView(R.layout.activity_create_group)
         addUser = UserEntity()
+        reduceUser = UserEntity()
+        reduceUser.userId = "0"
         addUser.userId = "1"
-        userList.add(addUser)
-        userList.add(addUser)
-        userList.add(addUser)
-        userList.add(addUser)
-        userList.add(addUser)
-        userList.add(addUser)
-        userList.add(addUser)
         userList.add(addUser)
         groupMemberAdapter = GroupMemberAdapter(userList)
         recyclerView.adapter = groupMemberAdapter
@@ -66,10 +69,32 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
         groupMemberAdapter?.setOnItemClickListener { adapter, view, position ->
             if ("1".equals(groupMemberAdapter!!.data[position].userId)) {
                 //添加好友
-                startActivity(Intent(this@CreateGroupActivity, SelectFriendCreateGroupActivity::class.java))
+                var list = arrayListOf<UserEntity>()
+                list.addAll(groupMemberAdapter!!.data)
+                startActivityForResult(Intent(this@CreateGroupActivity, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), 0)
             }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                var contactSelectedList: ArrayList<UserEntity> = data.getParcelableArrayListExtra("person")
+                if (contactSelectedList.size > 0) {
+                    contactSelectedList.add(addUser)
+                    contactSelectedList.add(reduceUser)
+                    groupMemberAdapter?.setNewData(contactSelectedList)
+                    recyclerView.smoothScrollToPosition(groupMemberAdapter!!.data.size)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     override fun initData() {
         title.text = "Create a Group"
     }

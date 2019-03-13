@@ -79,7 +79,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         //关系表，我和其他用户的关系
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size ==0) {
+        if (jPullFriendRsp.params.payload == null || jPullFriendRsp.params.payload.size == 0) {
             /*for (i in localFriendList) {
                 //是否为本地多余的好友
                 if (i.friendStatus == 3 || i.friendStatus == 1) {
@@ -94,7 +94,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 if (i.userId.equals(userId)) {
                     if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
                         continue
-                    }else{
+                    } else {
                         i.friendLocalStatus = 7
                         AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
                     }
@@ -121,9 +121,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     j.routeId = i.routeId
                     j.routeName = i.routeName
                     var dst_public_MiKey_Friend = ByteArray(32)
-                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
-                    if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
-                    {
+                    var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
+                    if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
                         j.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
                     }
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(j)
@@ -139,12 +138,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 userEntity.routeId = i.routeId
                 userEntity.routeName = i.routeName
                 var dst_public_MiKey_Friend = ByteArray(32)
-                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend,RxEncodeTool.base64Decode(i.userKey))
-                if(crypto_sign_ed25519_pk_to_curve25519_result == 0)
-                {
+                var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
+                if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
                     userEntity.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
                 }
-                userEntity.remarks =i.remarks
+                userEntity.remarks = i.remarks
                 //userEntity.friendStatus = 0
                 userEntity.timestamp = Calendar.getInstance().timeInMillis
                 var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -191,10 +189,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
           }*/
         //把本地的多余好友清除
         localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
-        LogUtil.addLog("localFriendStatusList:"+localFriendStatusList.size,"ContactFragment")
+        LogUtil.addLog("localFriendStatusList:" + localFriendStatusList.size, "ContactFragment")
         for (i in localFriendStatusList) {
             if (i.userId.equals(userId)) {
-                LogUtil.addLog("freindStatus:"+i.userId+"_"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
+                LogUtil.addLog("freindStatus:" + i.userId + "_" + i.friendId + "_" + i.friendLocalStatus, "ContactFragment")
                 //是否为本地多余的好友
                 if (i.friendLocalStatus == 3 || i.friendLocalStatus == 1) {
                     //等待验证的S好友，不能处理
@@ -204,17 +202,17 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 var isLocalDeletedFriend = true
                 for (j in jPullFriendRsp.params.payload) {
                     if (i.friendId.equals(j.id)) {
-                        LogUtil.addLog("freindName:"+ j.name,"ContactFragment")
+                        LogUtil.addLog("freindName:" + j.name, "ContactFragment")
                         isLocalDeletedFriend = false
                     }
                 }
                 if (isLocalDeletedFriend) {
-                    LogUtil.addLog("deletefreindName:"+ i.friendId,"ContactFragment")
+                    LogUtil.addLog("deletefreindName:" + i.friendId, "ContactFragment")
                     i.friendLocalStatus = 7
                     AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(i)
                 }
-            }else{
-                LogUtil.addLog("freindStatusOther:"+i.userId+"_"+ i.friendId+"_"+i.friendLocalStatus,"ContactFragment")
+            } else {
+                LogUtil.addLog("freindStatusOther:" + i.userId + "_" + i.friendId + "_" + i.friendLocalStatus, "ContactFragment")
             }
 
         }
@@ -228,19 +226,20 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
 //    var contactAdapter : ContactListAdapter? = null
 
-    var contactAdapter1 : ContactAdapter? = null
+    var contactAdapter1: ContactAdapter? = null
 
-    lateinit var viewModel : MainViewModel
+    lateinit var viewModel: MainViewModel
 
-    var  fromId:String? = null
+    var toAddList: ArrayList<UserEntity>? = null
+
+    var fromId: String? = null
     var message: EMMessage? = null
     var refreshEnable1 = true
     var onViewCreated = false;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fromId = null
-        if(arguments != null && arguments!!.get("fromId") != null)
-        {
+        if (arguments != null && arguments!!.get("fromId") != null) {
             fromId = arguments!!.get("fromId") as String
             //message = arguments!!.get("message") as EMMessage
         }
@@ -258,8 +257,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         try {
             AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
-        }catch (e :Exception )
-        {
+        } catch (e: Exception) {
             var aa = ""
         }
         viewModel.freindChange.observe(this, Observer<Long> { friendChange ->
@@ -283,8 +281,16 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         pullFriendList()
     }
 
-    fun setRefreshEnable(enable : Boolean) {
+    fun setRefreshEnable(enable: Boolean) {
         refreshEnable1 = enable
+    }
+
+    fun setSelectedPerson(list: ArrayList<UserEntity>) {
+        if (list == null || list.size == 0) {
+            return
+        }
+        toAddList = list
+        KLog.i("将要添加的数量为：" + toAddList?.size)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -292,47 +298,48 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         initData()
         pullFriendList()
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun FriendAvatarChange(FriendAvatarChange: FriendAvatarChange) {
         initData()
         pullFriendList()
     }
+
     fun pullFriendList() {
         Log.i("pullFriendList", "webosocket" + ConstantValue.isWebsocketConnected)
-        if(refreshLayout != null)
+        if (refreshLayout != null)
             refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
-        var pullFriend = PullFriendReq_V4( selfUserId!!)
+        var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(4,pullFriend)
+        if (ConstantValue.encryptionType.equals("1")) {
+            sendData = BaseData(4, pullFriend)
         }
         Log.i("pullFriendList", "tox " + ConstantValue.isToxConnected)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-        }else if (ConstantValue.isToxConnected) {
+        } else if (ConstantValue.isToxConnected) {
             Log.i("pullFriendList", "tox")
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
+            } else {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
 
     }
-    fun updata()
-    {
+
+    fun updata() {
         pullFriendList()
     }
-    fun updataUI()
-    {
+
+    fun updataUI() {
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var  contactList = arrayListOf<UserEntity>()
+        var contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
@@ -355,7 +362,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         for (i in contactList) {
             if (i?.remarks != null && i?.remarks != "") {
                 i.nickSouceName = String(RxEncodeTool.base64Decode(i.remarks)).toLowerCase()
-            }else{
+            } else {
                 i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
             }
         }
@@ -365,11 +372,12 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         updateAdapterData(contactList)
 //        contactAdapter!!.setNewData(contactList);
     }
+
     fun initData() {
         var bundle = getArguments();
         var hasNewFriendRequest = false
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var  contactList = arrayListOf<UserEntity>()
+        var contactList = arrayListOf<UserEntity>()
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var newFriendCount = 0
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
@@ -400,7 +408,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         for (i in contactList) {
             if (i?.remarks != null && i?.remarks != "") {
                 i.nickSouceName = String(RxEncodeTool.base64Decode(i.remarks)).toLowerCase()
-            }else{
+            } else {
                 i.nickSouceName = String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase()
             }
         }
@@ -408,11 +416,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             it.nickSouceName
         }
         //一对多数据处理begin
-        var contactMapList = HashMap<String,MyFriend>()
+        var contactMapList = HashMap<String, MyFriend>()
         for (i in contactList) {
 
-            if(contactMapList.get(i.signPublicKey) == null)
-            {
+            if (contactMapList.get(i.signPublicKey) == null) {
                 var myFriend = MyFriend()
                 myFriend.userKey = i.signPublicKey
                 myFriend.userName = i.nickName
@@ -420,8 +427,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 var temp = ArrayList<UserEntity>()
                 temp.add(i)
                 myFriend.routerItemList = temp;
-                contactMapList.put(i.signPublicKey,myFriend)
-            }else{
+                contactMapList.put(i.signPublicKey, myFriend)
+            } else {
                 var temp = contactMapList.get(i.signPublicKey)
                 var contactNewList = temp!!.routerItemList
                 contactNewList.add(i)
@@ -429,10 +436,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         }
 
-        var  contactNewList = arrayListOf<MyFriend>()
+        var contactNewList = arrayListOf<MyFriend>()
         var contactNewListValues = contactMapList.values
-        for(i in contactNewListValues)
-        {
+        for (i in contactNewListValues) {
             contactNewList.add(i)
         }
         contactNewList.sortBy {
@@ -450,13 +456,37 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 //                userHead.addSubItem(UserItem(it.userEntity))
 //                userHead.addSubItem(UserItem(it.userEntity))
 //            }
-            if(it.routerItemList.size > 1)
-            {
+            if (it.routerItemList.size > 1) {
                 it.routerItemList?.forEach {
                     userHead.addSubItem(UserItem(it))
                 }
             }
             list1.add(userHead)
+        }
+
+        if (contactAdapter1 != null && toAddList != null) {
+            //把从外面带过来的数据先设置为已经选中
+            KLog.i("添加已经选中的")
+            list1.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        toAddList?.forEach {
+                            if (it.equals(userItem.userEntity)) {
+                                KLog.i("添加选中")
+                                userItem.isChecked = true
+                            }
+                        }
+                    }
+                } else {
+                    toAddList?.forEach {
+                        if (it.equals(userHead.userEntity)) {
+                            KLog.i("添加选中")
+                            userHead.isChecked = true
+                        }
+                    }
+                }
+            }
         }
         contactAdapter1 = ContactAdapter(list1)
         recyclerView.adapter = contactAdapter1
@@ -464,18 +494,19 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             contactAdapter1!!.isCheckMode = true
         }
         //一对多数据处理end
-        if(bundle == null)
-        {
+        if (bundle == null) {
             newFriend.visibility = View.VISIBLE
+            groupChat.visibility = View.VISIBLE
 //            contactAdapter = ContactListAdapter(contactList,false)
-        }else{
+        } else {
             newFriend.visibility = View.GONE
+            groupChat.visibility = View.GONE
 //            contactAdapter = ContactListAdapter(contactList,true)
         }
 
         query.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                fiter(s.toString(),contactList)
+                fiter(s.toString(), contactList)
                 if (s.length > 0) {
                     search_clear.setVisibility(View.VISIBLE)
                 } else {
@@ -495,12 +526,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         })
     }
 
-    fun updateAdapterData(list : ArrayList<UserEntity>) {
-        var contactMapList = HashMap<String,MyFriend>()
+    fun updateAdapterData(list: ArrayList<UserEntity>) {
+        var contactMapList = HashMap<String, MyFriend>()
         for (i in list) {
 
-            if(contactMapList.get(i.signPublicKey) == null)
-            {
+            if (contactMapList.get(i.signPublicKey) == null) {
                 var myFriend = MyFriend()
                 myFriend.userKey = i.signPublicKey
                 myFriend.userName = i.nickName
@@ -508,8 +538,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 var temp = ArrayList<UserEntity>()
                 temp.add(i)
                 myFriend.routerItemList = temp;
-                contactMapList.put(i.signPublicKey,myFriend)
-            }else{
+                contactMapList.put(i.signPublicKey, myFriend)
+            } else {
                 var temp = contactMapList.get(i.signPublicKey)
                 var contactNewList = temp!!.routerItemList
                 contactNewList.add(i)
@@ -517,10 +547,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
         }
 
-        var  contactNewList = arrayListOf<MyFriend>()
+        var contactNewList = arrayListOf<MyFriend>()
         var contactNewListValues = contactMapList.values
-        for(i in contactNewListValues)
-        {
+        for (i in contactNewListValues) {
             contactNewList.add(i)
         }
         contactNewList.sortBy {
@@ -532,14 +561,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             var userHead = UserHead()
             userHead.userName = it.userName
             userHead.userEntity = it.userEntity
-//            if (!isIn) {
-//                isIn = true
-//                userHead.addSubItem(UserItem(it.userEntity))
-//                userHead.addSubItem(UserItem(it.userEntity))
-//                userHead.addSubItem(UserItem(it.userEntity))
-//            }
-            if(it.routerItemList.size > 1)
-            {
+            if (it.routerItemList.size > 1) {
                 it.routerItemList?.forEach {
                     userHead.addSubItem(UserItem(it))
                 }
@@ -550,12 +572,10 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     }
 
 
-    fun fiter(key:String,contactList:ArrayList<UserEntity>)
-    {
-        var contactListTemp:ArrayList<UserEntity> = arrayListOf<UserEntity>()
+    fun fiter(key: String, contactList: ArrayList<UserEntity>) {
+        var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
         for (i in contactList) {
-            if(i.nickSouceName.toLowerCase().contains(key))
-            {
+            if (i.nickSouceName.toLowerCase().contains(key)) {
                 contactListTemp.add(i)
             }
         }
@@ -563,8 +583,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 //        contactAdapter!!.setNewData(contactListTemp)
     }
 
-    fun selectOrCancelAll()
-    {
+    fun selectOrCancelAll() {
 //        var itemCount =  contactAdapter!!.itemCount -1
 //
 //        for (i in 0..itemCount) {
@@ -581,13 +600,13 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 //        }
 //        EventBus.getDefault().post(SelectFriendChange(count,0))
     }
-    fun getAllSelectedFriend() : ArrayList<UserEntity>
-    {
+
+    fun getAllSelectedFriend(): ArrayList<UserEntity> {
         var contactList = arrayListOf<UserEntity>()
 //        var itemCount =  contactAdapter1!!.itemCount -1
         for (i in 0 until contactAdapter1!!.data.size) {
             if (contactAdapter1!!.data.get(i).getItemType() == 0) {
-                val userHead =contactAdapter1!!.data.get(i) as UserHead
+                val userHead = contactAdapter1!!.data.get(i) as UserHead
                 if (userHead.subItems == null || userHead.subItems.size == 0) {
                     if (userHead.isChecked) {
                         contactList.add(userHead.userEntity)
@@ -611,6 +630,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 //        }
         return contactList!!
     }
+
     override fun setupFragmentComponent() {
         DaggerContactComponent
                 .builder()
@@ -639,7 +659,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        if(AppConfig.instance.messageReceiver != null)
+        if (AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
     }
 }

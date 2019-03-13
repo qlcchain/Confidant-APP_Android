@@ -46,7 +46,7 @@ public class ToxCoreJni {
     private HashMap<String,Boolean> progressSendMap = new HashMap<>();
     private HashMap<Integer,Integer> progressReceiveMap = new HashMap<>();
     private HashMap<Integer, Integer> fileNumberToFileSizeMap = new HashMap<>();
-    public static int progressBarMaxSeg = 50;
+    public static int progressBarMaxSeg = 100;
     /**
      * 获取单例
      * @return toxCoreJni实例
@@ -220,6 +220,7 @@ public class ToxCoreJni {
         String fileMiName = fileNameArray[1];
         String msgLocalId = fileNameArray[2];
         reveiveFileNumberAndMsgIDMap.put(msgLocalId,fileNumber);
+//        EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber, 0,fileSize));
         EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
     }
 

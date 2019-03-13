@@ -165,7 +165,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     fun pullFriendList() {
         showProgressDialog()
         refreshLayoutUser.isRefreshing = false
-        var pullFriend = PullUserReq(0,0,"")
+        var pullFriend = PullUserReq(0,0,"", ConstantValue.libsodiumpublicSignKey!!)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,pullFriend))
         }else if (ConstantValue.isToxConnected) {

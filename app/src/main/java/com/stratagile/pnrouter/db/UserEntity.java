@@ -7,6 +7,8 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
 
+import java.util.Objects;
+
 @Entity
 public class UserEntity implements Parcelable{
     @Id(autoincrement = true)
@@ -120,6 +122,28 @@ public class UserEntity implements Parcelable{
         addFromMe = in.readByte() != 0;
         timestamp = in.readLong();
         validationInfo = in.readString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity)) return false;
+        UserEntity that = (UserEntity) o;
+        return getFriendStatus() == that.getFriendStatus() &&
+                isAddFromMe() == that.isAddFromMe() &&
+                getTimestamp() == that.getTimestamp() &&
+                Objects.equals(getUserId(), that.getUserId()) &&
+                Objects.equals(getRouterUserId(), that.getRouterUserId()) &&
+                Objects.equals(getRouteId(), that.getRouteId()) &&
+                Objects.equals(getRouteName(), that.getRouteName()) &&
+                Objects.equals(getNickName(), that.getNickName()) &&
+                Objects.equals(getNoteName(), that.getNoteName()) &&
+                Objects.equals(getValidationInfo(), that.getValidationInfo());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRouterUserId(), getRouteId(), getRouteName(), getNickName());
     }
 
     @Override

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x30"
         android:background="@color/white"
-        android:text="Switch Router"
+        android:text="Switch Circle"
         android:gravity="center_vertical"
         android:layout_marginBottom="@dimen/x30"
         android:paddingLeft="@dimen/x30"
