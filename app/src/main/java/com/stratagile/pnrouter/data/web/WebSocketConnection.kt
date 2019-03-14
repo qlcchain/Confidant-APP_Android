@@ -60,6 +60,8 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     private var mLock: Lock? = null
     private var mCurrentStatus = WsStatus.DISCONNECTED     //websocket连接状态
     private val wsMainHandler = Handler(Looper.getMainLooper())
+    //最后一次心跳返回的时间戳 心跳是30秒发送一次，如果连续3次发出去的心跳没有返回，也就是最新的时间戳-上次的时间戳大于90秒，判定为和服务器断开连接了，需要重连
+    private var lastHeartBeatTimeStamp = 0L
     var isReconnectting: Boolean = false
     var sendFailCount = 0
     //private var countDownTimerUtilsOnVpnServer:CountDownTimerUtils? = null;
@@ -223,7 +225,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     @Synchronized
     fun closeWithReConnnect(isShutDown: Boolean) {
         Log.w(TAG, "WSC disconnect()...")
-        this.isShutDown = isShutDown
+        this.isShutDown = false
         isNeedReConnect = true
         if (webSocketClient != null) {
             webSocketClient!!.close(1000, "OK")
@@ -302,15 +304,24 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             } else {
                 LogUtil.addLog("APP在前台")
             }
-            val heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!, active)
-            LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
-            val reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
-            LogUtil.addLog("发送结果：${reslut}")
+            if (lastHeartBeatTimeStamp == 0L || System.currentTimeMillis() - lastHeartBeatTimeStamp < 90*1000) {
+//                KLog.i("上次的时间戳为：" + lastHeartBeatTimeStamp)
+                val heartBeatReq = HeartBeatReq(SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!, active)
+                LogUtil.addLog("发送信息：${heartBeatReq.baseDataToJson().replace("\\", "")}")
+                val reslut = send(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
+                LogUtil.addLog("发送结果：${reslut}")
+                KLog.i("发送心跳消息" + isBack)
+            } else {
+                KLog.i("上次的时间戳为：" + lastHeartBeatTimeStamp)
+                lastHeartBeatTimeStamp = System.currentTimeMillis()
+                LogUtil.addLog("连续三次发送的心跳消息没有收到服务器的返回，开始重新连接")
+                KLog.i("连续三次发送的心跳消息没有收到服务器的返回，开始重新连接")
+                closeWithReConnnect(false)
+            }
             //KLog.i("发送心跳消息"+isBack)
 //            if (!reslut) {
 //                close(false)
 //            }
-            KLog.i("发送心跳消息" + isBack)
 //            KLog.i(BaseData(heartBeatReq).baseDataToJson().replace("\\", ""))
         }
     }
@@ -318,6 +329,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     //    @Synchronized
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         if (webSocketClient != null && keepAliveSender == null) {
+            lastHeartBeatTimeStamp = System.currentTimeMillis()
             setCurrentStatus(WsStatus.CONNECTED)
             this.webSocketClient = webSocket
             KLog.i("onConnected()")
@@ -372,7 +384,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             if (JSONObject.parseObject((JSONObject.parseObject(text)).get("params").toString()).getString("Action").equals("HeartBeat")) {
                 val heartBeatRsp = gson.fromJson(text, JHeartBeatRsp::class.java)
                 if (heartBeatRsp.params.retCode == 0) {
+                    lastHeartBeatTimeStamp = System.currentTimeMillis()
                     LogUtil.addLog("心跳监测和服务器的连接正常~~~")
+                    KLog.i("心跳监测和服务器的连接正常~~~")
+                } else {
+                    LogUtil.addLog("心跳监测和服务器的连接出现异常!!!")
+                    KLog.i("心跳监测和服务器的连接出现异常!!!")
                 }
             } else {
                 onMessageReceiveListener!!.onMessage(baseData, text)

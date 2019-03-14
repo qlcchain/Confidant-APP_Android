@@ -43,7 +43,7 @@
         <TextView
             android:id="@+id/select_people_number"
             android:layout_width="wrap_content"
-            android:text="6 people"
+            android:text=""
             android:layout_height="wrap_content" />
     </LinearLayout>
     <android.support.v7.widget.RecyclerView
@@ -97,7 +97,7 @@
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="13sp"
-        android:background="@drawable/main_bg"
+        android:background="@drawable/btn_maincolor"
         android:layout_marginRight="@dimen/x54"
         android:layout_height="@dimen/x84" />
 </LinearLayout>

@@ -72,8 +72,31 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
                 var list = arrayListOf<UserEntity>()
                 list.addAll(groupMemberAdapter!!.data)
                 startActivityForResult(Intent(this@CreateGroupActivity, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), 0)
+            } else if("0".equals(groupMemberAdapter!!.data[position].userId)) {
+                var list = arrayListOf<UserEntity>()
+                list.addAll(groupMemberAdapter!!.data)
+                startActivityForResult(Intent(this@CreateGroupActivity, RemoveGroupMemberActivity::class.java).putParcelableArrayListExtra("person", list), 0)
+            } else {
+
             }
         }
+        if (getGroupPeople() == 0) {
+            select_people_number.text = ""
+        } else {
+            select_people_number.text = "" + getGroupPeople() + " people"
+        }
+    }
+
+    fun getGroupPeople() : Int{
+        var count = 0
+        groupMemberAdapter!!.data.forEach {
+            if ("0".equals(it.userId) || "1".equals(it.userId)) {
+
+            } else {
+                count++
+            }
+        }
+        return count
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,6 +110,11 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
                     recyclerView.smoothScrollToPosition(groupMemberAdapter!!.data.size)
                 }
             }
+        }
+        if (getGroupPeople() == 0) {
+            select_people_number.text = ""
+        } else {
+            select_people_number.text = "" + getGroupPeople() + " people"
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

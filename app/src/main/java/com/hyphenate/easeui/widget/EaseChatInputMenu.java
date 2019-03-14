@@ -315,7 +315,7 @@ public class EaseChatInputMenu extends LinearLayout {
             public void onExpressionClicked(EaseEmojicon emojicon) {
                 if(emojicon.getType() != EaseEmojicon.Type.BIG_EXPRESSION){
                     if(emojicon.getEmojiText() != null){
-                        chatPrimaryMenu.onEmojiconInputEvent(EaseSmileUtils.getSmiledText(context,emojicon.getEmojiText()));
+                        chatPrimaryMenu.onEmojiconInputEvent(EaseSmileUtils.getSmiledTextInput(context,emojicon.getEmojiText()));
                     }
                 }else{
                     if(listener != null){

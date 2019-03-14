@@ -40,6 +40,8 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
     @Inject
     internal lateinit var mPresenter: SelectFriendCreateGroupPresenter
 
+
+
     var fragment: ContactFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

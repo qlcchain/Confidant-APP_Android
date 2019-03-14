@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import com.socks.library.KLog;
+
 /**
  * Created by Anroid on 2017/3/1.
  */
@@ -51,6 +53,9 @@ public class VersionUtil {
                 type = 2;
                 break;
             case "huawei":
+                type = 3;
+                break;
+            case "honor":
                 type = 3;
                 break;
             case "zhongxing":

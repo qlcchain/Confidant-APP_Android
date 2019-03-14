@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/statusBar"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/white"
+        android:gravity="center"
+        android:textColor="@color/color_333"
+        android:textSize="9sp" />
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/statusBar"
+        android:background="@color/white"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/llCancel"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/cancel"
+                android:textSize="15sp"
+                android:textColor="#2c2c2c"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="title"
+            android:textColor="@color/mainColor"
+            android:textSize="18sp" />
+
+        <RelativeLayout
+            android:id="@+id/multiSelectBtn"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/x22"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/x36"
+                android:text="@string/multiple"/>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <include layout="@layout/ease_search_bar"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:gravity="center_vertical"
+        android:text="Group Members"
+        android:textColor="@color/color_999999"
+        android:textSize="13sp"
+        android:layout_height="@dimen/x77" />
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/rl1"
+        android:id="@+id/recyclerView"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0px">
+
+    </android.support.v7.widget.RecyclerView>
+    <RelativeLayout
+        android:id="@+id/tipsParent"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/viewPager"
+        android:background="@color/white"
+        android:layout_height="@dimen/x96">
+        <LinearLayout
+            android:id="@+id/tips"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/selectTxt"
+                android:layout_width="wrap_content"
+                android:text="selected"
+                android:textSize="12sp"
+                android:textColor="#2B2B2B"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/x28"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/x15"
+                android:paddingBottom="@dimen/x15"
+                android:paddingLeft="@dimen/x20"
+                android:paddingRight="@dimen/x20"
+                android:textColor="@color/white"
+                android:includeFontPadding="false"
+                android:textSize="15sp"
+                android:gravity="center"
+                android:background="@drawable/btn_maincolor"
+
+                android:text="Confirm"/>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+</LinearLayout>

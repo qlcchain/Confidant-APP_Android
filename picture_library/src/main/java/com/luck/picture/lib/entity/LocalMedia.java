@@ -48,6 +48,25 @@ public class LocalMedia implements Parcelable {
         this.height = height;
     }
 
+    @Override
+    public String toString() {
+        return "LocalMedia{" +
+                "path='" + path + '\'' +
+                ", compressPath='" + compressPath + '\'' +
+                ", cutPath='" + cutPath + '\'' +
+                ", duration=" + duration +
+                ", isChecked=" + isChecked +
+                ", isCut=" + isCut +
+                ", position=" + position +
+                ", num=" + num +
+                ", mimeType=" + mimeType +
+                ", pictureType='" + pictureType + '\'' +
+                ", compressed=" + compressed +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
+
     public LocalMedia(String path, long duration,
                       boolean isChecked, int position, int num, int mimeType) {
         this.path = path;

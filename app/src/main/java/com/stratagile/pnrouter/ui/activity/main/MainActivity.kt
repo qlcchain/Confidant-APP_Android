@@ -28,6 +28,9 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
+import com.huawei.android.hms.agent.HMSAgent
+import com.huawei.android.hms.agent.common.handler.ConnectHandler
+import com.huawei.android.hms.agent.push.handler.GetTokenHandler
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
@@ -1009,8 +1012,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
-    override fun initData()
-    {
+    private fun getToken() {
+        HMSAgent.Push.getToken {
+            KLog.i("华为推送 get token: end" + it)
+            LogUtil.addLog("华为推送 get token: end" + it)
+        }
+    }
+
+    override fun initData() {
+        HMSAgent.connect(this, ConnectHandler {
+            KLog.i("华为推送 HMS connect end: " + it)
+            LogUtil.addLog("华为推送 HMS connect end: " + it)
+        })
+        getToken()
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
@@ -1172,10 +1186,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     KLog.i("" + position)
                     when (position) {
                         0 -> {
-//                            startActivityForResult(Intent(this@MainActivity, FileChooseActivity::class.java).putExtra("fileType", 1), 0)
                             PictureSelector.create(this@MainActivity)
                                     .openGallery(PictureMimeType.ofImage())
-//                                    .theme()
                                     .maxSelectNum(100)
                                     .minSelectNum(1)
                                     .imageSpanCount(3)
@@ -1400,11 +1412,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
+        var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
-        if(fileMD5 == null)
-        {
+        if (fileMD5 == null) {
             fileMD5 = ""
         }
         val updateAvatarReq = UpdateAvatarReq(userId!!, userId!!, fileMD5)

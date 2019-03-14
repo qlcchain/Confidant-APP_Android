@@ -80,11 +80,12 @@ public class EaseVoiceRecorderView extends RelativeLayout {
                 getResources().getDrawable(R.drawable.ease_record_animate_07),
                 getResources().getDrawable(R.drawable.ease_record_animate_08),
                 getResources().getDrawable(R.drawable.ease_record_animate_09),
-                getResources().getDrawable(R.drawable.ease_record_animate_10),
-                getResources().getDrawable(R.drawable.ease_record_animate_11),
-                getResources().getDrawable(R.drawable.ease_record_animate_12),
-                getResources().getDrawable(R.drawable.ease_record_animate_13),
-                getResources().getDrawable(R.drawable.ease_record_animate_14), };
+//                getResources().getDrawable(R.drawable.ease_record_animate_10),
+//                getResources().getDrawable(R.drawable.ease_record_animate_11),
+//                getResources().getDrawable(R.drawable.ease_record_animate_12),
+//                getResources().getDrawable(R.drawable.ease_record_animate_13),
+//                getResources().getDrawable(R.drawable.ease_record_animate_14),
+        };
 
         wakeLock = ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).newWakeLock(
                 PowerManager.SCREEN_DIM_WAKE_LOCK, "demo");

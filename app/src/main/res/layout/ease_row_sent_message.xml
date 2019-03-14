@@ -51,7 +51,7 @@
                 android:paddingRight="@dimen/x10"
               	android:textColor="@color/color_2c2c2c"
                 android:maxWidth="225.0dip"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/msg_sendstatus"

@@ -15,6 +15,7 @@ import chat.tox.antox.tox.ToxService
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.huawei.android.hms.agent.HMSAgent
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
@@ -96,6 +97,10 @@ class AppConfig : MultiDexApplication() {
         BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
+        if (VersionUtil.getDeviceBrand() == 3) {
+            KLog.i("华为推送初始化")
+            HMSAgent.init(this)
+        }
         initMiPush()
         loadLibrary()
         messageToxReceiver = ToxMessageReceiver()

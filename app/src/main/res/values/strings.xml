@@ -589,4 +589,5 @@
     <string name="create_a_group">Create a Group</string>
     <string name="person">person</string>
     <string name="create_">create</string>
+    <string name="select_resource_error">select resource error</string>
 </resources>

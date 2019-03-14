@@ -31,7 +31,9 @@ import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.EaseUI.EaseEmojiconInfoProvider;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.model.EaseDefaultEmojiconDatas;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
+import com.stratagile.pnrouter.view.MyImageSpan;
 
 public class EaseSmileUtils {
     public static final String DELETE_KEY = "em_delete_delete_expression";
@@ -151,13 +153,65 @@ public class EaseSmileUtils {
 	    
 	    return hasChanges;
 	}
+	/**
+	 * replace existing spannable with smiles
+	 * @param context
+	 * @param spannable
+	 * @return
+	 */
+	public static boolean addSmilesInput(Context context, Spannable spannable) {
+		KLog.i("添加文字，。");
+	    boolean hasChanges = false;
+	    for (Entry<Pattern, Object> entry : emoticons.entrySet()) {
+	        Matcher matcher = entry.getKey().matcher(spannable);
+	        while (matcher.find()) {
+	            boolean set = true;
+	            for (ImageSpan span : spannable.getSpans(matcher.start(),
+	                    matcher.end(), ImageSpan.class))
+	                if (spannable.getSpanStart(span) >= matcher.start()
+	                        && spannable.getSpanEnd(span) <= matcher.end())
+	                    spannable.removeSpan(span);
+	                else {
+	                    set = false;
+	                    break;
+	                }
+	            if (set) {
+	                hasChanges = true;
+	                Object value = entry.getValue();
+	                if(value instanceof String && !((String) value).startsWith("http")){
+	                    File file = new File((String) value);
+	                    if(!file.exists() || file.isDirectory()){
+	                        return false;
+	                    }
+	                    spannable.setSpan(new ImageSpan(context, Uri.fromFile(file)),
+	                            matcher.start(), matcher.end(),
+	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	                }else{
+						Drawable drawable = context.getResources().getDrawable((Integer)value);
+						drawable.setBounds(0, 0, (int) context.getResources().getDimension(R.dimen.x38), (int) context.getResources().getDimension(R.dimen.x38));//这里设置图片的大小
+	                    spannable.setSpan(new MyImageSpan(drawable, 0),
+	                            matcher.start(), matcher.end(),
+	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	                }
+	            }
+	        }
+	    }
+
+	    return hasChanges;
+	}
 
 	public static Spannable getSmiledText(Context context, CharSequence text) {
 	    Spannable spannable = spannableFactory.newSpannable(text);
-	    addSmiles(context, spannable);
+		addSmiles(context, spannable);
 	    return spannable;
 	}
-	
+
+	public static Spannable getSmiledTextInput(Context context, CharSequence text) {
+	    Spannable spannable = spannableFactory.newSpannable(text);
+		addSmilesInput(context, spannable);
+	    return spannable;
+	}
+
 	public static boolean containsKey(String key){
 		boolean b = false;
 		for (Entry<Pattern, Object> entry : emoticons.entrySet()) {

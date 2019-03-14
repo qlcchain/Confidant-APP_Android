@@ -11,6 +11,9 @@ import android.support.v4.content.ContextCompat.getSystemService
 
 object NetUtils {
     fun parseSize(size : Long) : String{
+        if (size < 1024) {
+            return "" + size + " B"
+        }
         if (size < 1024 * 1024) {
             return "" + size / 1024 + " KB"
         }

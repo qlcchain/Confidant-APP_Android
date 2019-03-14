@@ -54,7 +54,7 @@
                 android:minHeight="32dp"
                 android:maxWidth="225.0dip"
                 android:textColor="@color/color_2c2c2c"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
         </RelativeLayout>
 
         <TextView

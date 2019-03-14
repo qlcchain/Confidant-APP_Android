@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
@@ -70,6 +71,10 @@ import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallba
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
+import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.config.PictureMimeType;
+import com.luck.picture.lib.entity.LocalMedia;
 import com.message.Message;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -331,7 +336,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
                 }
             });
-        } else{
+        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1577,17 +1582,43 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     sendVideoMessage(videoFile.getAbsolutePath(), false);
                 }
             } else if (requestCode == REQUEST_CODE_LOCAL) { // send local image
-                if (data != null) {
-                    Uri selectedImage = data.getData();
-                    sendPicByUri(selectedImage);
-                   /* if (selectedImage != null) {
-                        String path = selectedImage.getPath();
-                        if(path.contains(".jpeg")  || path.contains(".jpg") || path.contains(".png"))
-                        {
+                KLog.i("选照片或者视频返回。。。");
+                List<LocalMedia> list = data.getParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION);
+                KLog.i(list);
+                if (list != null && list.size() > 0) {
+                    if (list.get(0).getPictureType().contains("image")) {
+                        //发图片  LocalMedia{path='/storage/emulated/0/Huawei/MagazineUnlock/magazine-unlock-06-2.3.1281-_0B5D103F7C7FB13BA5C449EB159FD6C1.jpg', compressPath='null', cutPath='null', duration=0, isChecked=false, isCut=false, position=5, num=1, mimeType=0, pictureType='image/jpeg', compressed=false, width=1440, height=2560
+//                    File file = new File(list.get(0).getPath());
+//                    Uri uri = parUri(file);
+                        chooseOriginalImage(list.get(0).getPath());
+                        inputMenu.hideExtendMenuContainer();
+//                    sendPicByUri(uri);
+                    } else {
+                        //发视频
+                        inputMenu.hideExtendMenuContainer();
+//                    videoFile = new File(list.get(0).getPath());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() / 1000 + ".mp4");
+                                FileUtil.copyFile(list.get(0).getPath(), videoFile.getPath());
+                                inputMenu.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sendVideoMessage(videoFile.getAbsolutePath(), false);
+                                    }
+                                });
+                            }
+                        }).start();
+                    }
 
-                        }
-                    }*/
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show();
                 }
+//                if (data != null) {
+//                    Uri selectedImage = data.getData();
+//                    sendPicByUri(selectedImage);
+//                }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
                 double latitude = data.getDoubleExtra("latitude", 0);
                 double longitude = data.getDoubleExtra("longitude", 0);
@@ -1617,6 +1648,24 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 sendImageMessage(filePath, !isCheck);
             }
         }
+    }
+
+    /**
+     * 生成uri
+     *
+     * @param cameraFile
+     * @return
+     */
+    private Uri parUri(File cameraFile) {
+        Uri imageUri;
+        String authority = getActivity().getPackageName() + ".provider";
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            //通过FileProvider创建一个content类型的Uri
+            imageUri = FileProvider.getUriForFile(getActivity(), authority, cameraFile);
+        } else {
+            imageUri = Uri.fromFile(cameraFile);
+        }
+        return imageUri;
     }
 
 
@@ -2185,8 +2234,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             File file = new File(filePath);
             boolean isHas = file.exists();
             if (isHas) {
-                if(file.length() > 1024 * 1024 * 100)
-                {
+                if (file.length() > 1024 * 1024 * 100) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -2366,8 +2414,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 //                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 //                        int width = bitmap.getWidth();
 //                        int height = bitmap.getHeight();
-                        if(file.length() > 1024 * 1024 * 100)
-                        {
+                        if (file.length() > 1024 * 1024 * 100) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -2646,8 +2693,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
                     if (isHas) {
-                        if(file.length() > 1024 * 1024 * 100)
-                        {
+                        if (file.length() > 1024 * 1024 * 100) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -2657,7 +2703,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             return;
                         }
                         String videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
-                        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1);
+                        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
@@ -2833,8 +2879,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     if (isHas) {
-                        if(file.length() > 1024 * 1024 * 100)
-                        {
+                        if (file.length() > 1024 * 1024 * 100) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -3398,17 +3443,46 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     /**
      * select local image
+     * //todo
      */
     protected void selectPicFromLocal() {
-        Intent intent;
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-            //intent.setType("image/*");
-            intent.setType("*/*");
-        } else {
-            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        }
-        startActivityForResult(intent, REQUEST_CODE_LOCAL);
+//        Intent intent;
+//        if (Build.VERSION.SDK_INT < 19) {
+//            intent = new Intent(Intent.ACTION_GET_CONTENT);
+//            //intent.setType("image/*");
+//            intent.setType("*/*");
+//        } else {
+//            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        }
+//        startActivityForResult(intent, REQUEST_CODE_LOCAL);
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(100)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.SINGLE)
+                .previewImage(false)
+                .previewVideo(false)
+                .enablePreviewAudio(false)
+                .isCamera(true)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+                .forResult(REQUEST_CODE_LOCAL);
     }
 
     private void toPersonDetails() {
