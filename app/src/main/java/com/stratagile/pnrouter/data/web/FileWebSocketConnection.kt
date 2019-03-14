@@ -69,7 +69,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
                 filledUri = wsUri
             }
             KLog.i("连接的地址为：${filledUri}")
-            if(filledUri == null || filledUri.equals(""))
+            if(filledUri == null || filledUri.equals("") || filledUri.indexOf("wss://:") >-1)
             {
                 return
             }
@@ -86,10 +86,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
                     .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .build()
-            if(filledUri == null || filledUri.equals(""))
-            {
-                return
-            }
+            KLog.i("filledUri:"+filledUri)
             val requestBuilder = Request.Builder().url(filledUri)
 
             if (userAgent != null) {
@@ -187,7 +184,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
             return false
         }
         KLog.i("开始传输文件。。"+ FileUtil.toByteString(bytes))
-        if (!client!!.send(FileUtil.toByteString(bytes))) {
+        if (client != null && !client!!.send(FileUtil.toByteString(bytes))) {
             return false
         } else {
             KLog.i("文件片段发送成功")

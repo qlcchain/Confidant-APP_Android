@@ -297,8 +297,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {
-
         String msgId = fileTransformStatus.getMsgid();
+        KLog.i("错误：onFileTransformStatus:" +msgId);
+
         String friend = fileTransformStatus.getFriendId();
         if (!friend.equals(toChatUserId)) {
             return;
@@ -310,17 +311,17 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 @Override
                 public void run() {
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
-                    if (EMMessage != null) {
+                    if (EMMessage != null && LogIdIdResult!= null) {
+                        conversation.removeMessage(msgId);
+                        EMMessage.setMsgId(LogIdIdResult + "");
+                        EMMessage.setAcked(true);
+                        sendMessageTo(EMMessage);
+                        conversation.updateMessage(EMMessage);
+                        if (isMessageListInited) {
+                            easeChatMessageList.refresh();
+                        }
+                    }
 
-                    }
-                    conversation.removeMessage(msgId);
-                    EMMessage.setMsgId(LogIdIdResult + "");
-                    EMMessage.setAcked(true);
-                    sendMessageTo(EMMessage);
-                    conversation.updateMessage(EMMessage);
-                    if (isMessageListInited) {
-                        easeChatMessageList.refresh();
-                    }
                 }
             });
 

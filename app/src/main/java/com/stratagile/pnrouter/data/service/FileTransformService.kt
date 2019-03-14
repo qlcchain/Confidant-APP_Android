@@ -43,7 +43,7 @@ class FileTransformService : Service() {
             ConstantValue.webSocketFileList.add(fileWebSocketConnection)
         } else if (fileTransformEntity.message == 4) {
             ConstantValue.webSocketFileList.forEach {
-                if (it.toId.equals(fileTransformEntity.toId)) {
+                if (it!= null && it.toId.equals(fileTransformEntity.toId)) {
                     it.disconnect(true)
                     ConstantValue.webSocketFileList.remove(it)
                     return

@@ -21,24 +21,24 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        RouterUserEntityDao.createTable(db, ifNotExists);
-        UserEntityDao.createTable(db, ifNotExists);
-        RouterEntityDao.createTable(db, ifNotExists);
-        RecentFileDao.createTable(db, ifNotExists);
         DraftEntityDao.createTable(db, ifNotExists);
         FriendEntityDao.createTable(db, ifNotExists);
         MessageEntityDao.createTable(db, ifNotExists);
+        RecentFileDao.createTable(db, ifNotExists);
+        RouterEntityDao.createTable(db, ifNotExists);
+        RouterUserEntityDao.createTable(db, ifNotExists);
+        UserEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        RouterUserEntityDao.dropTable(db, ifExists);
-        UserEntityDao.dropTable(db, ifExists);
-        RouterEntityDao.dropTable(db, ifExists);
-        RecentFileDao.dropTable(db, ifExists);
         DraftEntityDao.dropTable(db, ifExists);
         FriendEntityDao.dropTable(db, ifExists);
         MessageEntityDao.dropTable(db, ifExists);
+        RecentFileDao.dropTable(db, ifExists);
+        RouterEntityDao.dropTable(db, ifExists);
+        RouterUserEntityDao.dropTable(db, ifExists);
+        UserEntityDao.dropTable(db, ifExists);
     }
 
     /**
@@ -57,13 +57,13 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(RouterUserEntityDao.class);
-        registerDaoClass(UserEntityDao.class);
-        registerDaoClass(RouterEntityDao.class);
-        registerDaoClass(RecentFileDao.class);
         registerDaoClass(DraftEntityDao.class);
         registerDaoClass(FriendEntityDao.class);
         registerDaoClass(MessageEntityDao.class);
+        registerDaoClass(RecentFileDao.class);
+        registerDaoClass(RouterEntityDao.class);
+        registerDaoClass(RouterUserEntityDao.class);
+        registerDaoClass(UserEntityDao.class);
     }
 
     public DaoSession newSession() {

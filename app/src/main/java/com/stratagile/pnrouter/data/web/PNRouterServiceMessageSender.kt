@@ -447,15 +447,16 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             return
         }
         when (fileTransformEntity.message) {
-            1 -> Thread(Runnable {
+            1 -> /*Thread(Runnable {*/
                 try {
+                    KLog.i("错误：onBeginSendFile:" +fileTransformEntity.toId)
                     sendFileMsgTimeMap[fileTransformEntity.toId] = System.currentTimeMillis().toString()
                     val EMMessage = ConstantValue.sendFileMsgMap[fileTransformEntity.toId]
                     if(EMMessage!!.from == null)
                     {
-                        return@Runnable
+                        return
                     }
-                    val filePath = sendFilePathMap[fileTransformEntity.toId] ?: return@Runnable
+                    val filePath = sendFilePathMap[fileTransformEntity.toId] ?: return
                     val fileName = filePath.substring(filePath.lastIndexOf("/") + 1)
                     val fileKey = sendFileKeyByteMap[fileTransformEntity.toId]
                     val SrcKey = sendFileMyKeyByteMap[fileTransformEntity.toId]
@@ -503,12 +504,12 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         }
                                     }
                                 }
-                                sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                               /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
                                 sendFileNameMap.remove(fileTransformEntity.toId)
                                 sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
                                 sendFileKeyByteMap.remove(fileTransformEntity.toId)
                                 sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
-                                sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                                sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
                                 KLog.i("websocket文件发送前取消！")
                                 val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
                                 EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
@@ -516,27 +517,27 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             }
 
                         } catch (e: Exception) {
-                            sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                           /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
                             sendFileNameMap.remove(fileTransformEntity.toId)
                             sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
                             sendFileKeyByteMap.remove(fileTransformEntity.toId)
                             sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
-                            sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                            sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
                             val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
                         }
 
                     }
                 } catch (e: Exception) {
-                    sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                   /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
                     sendFileNameMap.remove(fileTransformEntity.toId)
                     sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
                     sendFileKeyByteMap.remove(fileTransformEntity.toId)
                     sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                     sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
-                    System.gc()
+                    System.gc()*/
                 }
-            }).start()
+            /*}).start()*/
             2 -> {
             }
             3 -> {
@@ -552,11 +553,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSendFileing(transformReceiverFileMessage: TransformReceiverFileMessage) {
+        KLog.i("错误：onSendFileing:" +transformReceiverFileMessage.toId)
         val EMMessageData = ConstantValue.sendFileMsgMap[transformReceiverFileMessage.toId] ?: return
         if(EMMessageData.from == null)
         {
             return
         }
+        KLog.i("错误：onSendFileing2:" +transformReceiverFileMessage.toId)
         sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  System.currentTimeMillis().toString()
         val retMsg = transformReceiverFileMessage.message
         val Action = ByteArray(4)
@@ -586,10 +589,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         KLog.i("CodeResult:$CodeResult")
 
         val msgId = sendMsgIdMap.get(FileIdResult.toString() + "")
-
-
         val lastSendSize = sendFileLastByteSizeMap.get(msgId)
         val fileBuffer = sendFileLeftByteMap.get(msgId)
+        KLog.i("错误：sendFileLeftByteMap size:"+sendFileLeftByteMap.size + "  msgId:"+msgId)
         val leftSize = fileBuffer!!.size - lastSendSize!!
 
         when (CodeResult) {
@@ -597,7 +599,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
                 if (leftSize > 0)
                 {
-                    Thread(Runnable {
+                    /*Thread(Runnable {*/
                         try {
                             val fileLeftBuffer = ByteArray(leftSize)
                             System.arraycopy(fileBuffer, ConstantValue.sendFileSizeMax, fileLeftBuffer, 0, leftSize)
@@ -605,17 +607,18 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             val fileKey = sendFileKeyByteMap[msgId]
                             val SrcKey = sendFileMyKeyByteMap[msgId]
                             val DstKey = sendFileFriendKeyByteMap[msgId]
+                            KLog.i("错误：onSendFileing6:" +transformReceiverFileMessage.toId)
                             if (deleteFileMap[msgId] != null) {
                                 sendFileByteData(fileLeftBuffer, fileName!!, FromIdResult + "", ToIdResult + "", msgId!!, FileIdResult, SegSeqResult + 1, fileKey!!, SrcKey!!, DstKey!!)
                             } else {
                                 KLog.i("websocket文件发送中取消！")
-                                sendFileLeftByteMap.remove(msgId)
+                               /* sendFileLeftByteMap.remove(msgId)
                                 sendFileNameMap.remove(msgId)
                                 sendFileLastByteSizeMap.remove(msgId)
                                 sendFileKeyByteMap.remove(msgId)
                                 sendFileMyKeyByteMap.remove(msgId)
                                 sendFileFriendKeyByteMap.remove(msgId)
-                                System.gc()
+                                System.gc()*/
                                 val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
                                 EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
                                 EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
@@ -643,17 +646,18 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 }
                             }
                         } catch (e: Exception) {
-                            sendFileLeftByteMap.remove(msgId)
+                           /* sendFileLeftByteMap.remove(msgId)
                             sendFileNameMap.remove(msgId)
                             sendFileLastByteSizeMap.remove(msgId)
                             sendFileKeyByteMap.remove(msgId)
                             sendFileMyKeyByteMap.remove(msgId)
                             sendFileFriendKeyByteMap.remove(msgId)
-                            System.gc()
+                            System.gc()*/
                         }
-                    }).start()
+                    /*}).start()*/
 
                 } else {
+                    KLog.i("错误：onSendFileing3:" +transformReceiverFileMessage.toId)
                     if (deleteFileMap[msgId] != null) {
                         /*val EMMessage = EMClient.getInstance().chatManager().getMessage(msgId)
                         conversation.removeMessage(msgId)
@@ -667,7 +671,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             messageEntityList.forEach {
                                 if (it.msgId.equals(msgId)) {
                                     AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                                    KLog.i("消息数据删除")
+                                    KLog.i("消息数据删除："+msgId)
                                 }
                             }
                         }
@@ -683,23 +687,25 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 }
                             }
                         }
-                        sendFileLeftByteMap.remove(msgId)
+                        KLog.i("错误：onSendFileing4:" +transformReceiverFileMessage.toId)
+                       /* sendFileLeftByteMap.remove(msgId)
                         sendFileNameMap.remove(msgId)
                         sendFileLastByteSizeMap.remove(msgId)
                         sendFileKeyByteMap.remove(msgId)
                         sendFileMyKeyByteMap.remove(msgId)
                         sendFileFriendKeyByteMap.remove(msgId)
-                        System.gc()
-                        EventBus.getDefault().post(FileTransformStatus(msgId!!, LogIdIdResult.toString(),ToIdResult,1))
+                        System.gc()*/
+                        KLog.i("错误ToIdResult："+ToIdResult +"  "+ "LogIdIdResult:"+LogIdIdResult +"  msgId:"+msgId)
+                        EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1))
                         KLog.i("websocket文件发送成功！")
                     } else {
-                        sendFileLeftByteMap.remove(msgId)
+                      /*  sendFileLeftByteMap.remove(msgId)
                         sendFileNameMap.remove(msgId)
                         sendFileLastByteSizeMap.remove(msgId)
                         sendFileKeyByteMap.remove(msgId)
                         sendFileMyKeyByteMap.remove(msgId)
                         sendFileFriendKeyByteMap.remove(msgId)
-                        System.gc()
+                        System.gc()*/
                         val msgData = DelMsgReq(FromIdResult, ToIdResult, LogIdIdResult, "DelMsg")
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
                         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
@@ -734,13 +740,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }
             }
             else -> {
-                sendFileLeftByteMap.remove(msgId)
+               /* sendFileLeftByteMap.remove(msgId)
                 sendFileNameMap.remove(msgId)
                 sendFileLastByteSizeMap.remove(msgId)
                 sendFileKeyByteMap.remove(msgId)
                 sendFileMyKeyByteMap.remove(msgId)
                 sendFileFriendKeyByteMap.remove(msgId)
-                System.gc()
+                System.gc()*/
                 var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                 if(messageEntityList != null)
                 {
@@ -824,12 +830,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendFileNameMap[msgId] = fileName
             sendFileLastByteSizeMap[msgId] = segSize
             sendFileLeftByteMap[msgId] = fileLeftBuffer
+            KLog.i("错误：sendFileLeftByteMap size put " + sendFileLeftByteMap.size)
             sendMsgIdMap[fileId.toString() + ""] = msgId
             /*sendFileKeyByteMap[fileId.toString() + ""] = fileKey
             sendFileMyKeyByteMap[fileId.toString() + ""] = SrcKey
             sendFileFriendKeyByteMap[fileId.toString() + ""] = DstKey*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            KLog.i("发送中>>>"+"fileLeftBuffer:"+fileLeftBuffer.size + "  "+ "content:" + content.size + "  "+ "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + segSize + " CRC:" + newCRC)
+            KLog.i("发送中>>>"+"msgId:"+msgId +" "+"fileLeftBuffer:"+fileLeftBuffer.size + "  "+ "content:" + content.size + "  "+ "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + segSize + " CRC:" + newCRC)
             EventBus.getDefault().post(TransformFileMessage(msgId, sendData))
 
         } catch (e: Exception) {
