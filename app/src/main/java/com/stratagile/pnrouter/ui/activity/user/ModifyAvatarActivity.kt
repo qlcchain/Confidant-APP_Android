@@ -253,7 +253,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 val maxSize = 50
                 val fos = FileOutputStream(filePic)
                 val baos = ByteArrayOutputStream()
-                var options = 100
+                var options = 50
                 // 获取尺寸压缩倍数
                 val ratio = getRatioSize(mBitmap.width, mBitmap.height)
                 KLog.i("获取尺寸压缩倍数$ratio")
