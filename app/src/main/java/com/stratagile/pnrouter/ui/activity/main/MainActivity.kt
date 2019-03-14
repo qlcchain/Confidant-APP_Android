@@ -1020,10 +1020,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun initData() {
-        HMSAgent.connect(this, ConnectHandler {
-            KLog.i("华为推送 HMS connect end: " + it)
-            LogUtil.addLog("华为推送 HMS connect end: " + it)
-        })
+        if (VersionUtil.getDeviceBrand() == 3) {
+            HMSAgent.connect(this, ConnectHandler {
+                KLog.i("华为推送 HMS connect end: " + it)
+                LogUtil.addLog("华为推送 HMS connect end: " + it)
+            })
+        }
+        SpUtil.putBoolean(this, ConstantValue.isUnLock, true)
         getToken()
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyphenate.EMError;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.model.EaseVoiceRecorder;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -34,15 +35,19 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     protected ImageView micImage;
     protected TextView recordingHint;
 
+    private boolean isRecording = true;
+
     protected Handler micImageHandler = new Handler() {
         @Override
         public void handleMessage(android.os.Message msg) {
             // change image
-            int index = msg.what;
-            if (index < 0 || index > micImages.length - 1) {
-                return;
+            if (isRecording) {
+                int index = msg.what;
+                if (index < 0 || index > micImages.length - 1) {
+                    return;
+                }
+                micImage.setImageDrawable(micImages[index]);
             }
-            micImage.setImageDrawable(micImages[index]);
         }
     };
 
@@ -100,6 +105,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     public boolean onPressToSpeakBtnTouch(View v, MotionEvent event, EaseVoiceRecorderCallback recorderCallback) {
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
+            KLog.i("MotionEvent.ACTION_DOWN");
             try {
                 EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(context);
                 if (voicePlayer.isPlaying())
@@ -111,6 +117,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
             }
             return true;
         case MotionEvent.ACTION_MOVE:
+            KLog.i("MotionEvent.ACTION_MOVE");
             if (event.getY() < 0) {
                 showReleaseToCancelHint();
             } else {
@@ -118,6 +125,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
             }
             return true;
         case MotionEvent.ACTION_UP:
+            KLog.i("MotionEvent.ACTION_UP");
             v.setPressed(false);
             if (event.getY() < 0) {
                 // discard the recorded audio.
@@ -143,7 +151,8 @@ public class EaseVoiceRecorderView extends RelativeLayout {
             }
             return true;
         default:
-            discardRecording();
+            KLog.i("MotionEvent.default");
+//            discardRecording();
             return false;
         }
     }
@@ -186,11 +195,15 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     public void showReleaseToCancelHint() {
         recordingHint.setText(context.getString(R.string.release_to_cancel));
         recordingHint.setBackgroundResource(R.drawable.ease_recording_text_hint_bg);
+        isRecording = false;
+        micImage.setImageDrawable(context.getResources().getDrawable(R.drawable.cancel_send));
     }
 
     public void showMoveUpToCancelHint() {
         recordingHint.setText(context.getString(R.string.move_up_to_cancel));
         recordingHint.setBackgroundColor(Color.TRANSPARENT);
+        isRecording = true;
+        micImage.setImageDrawable(micImages[0]);
     }
 
     public void discardRecording() {

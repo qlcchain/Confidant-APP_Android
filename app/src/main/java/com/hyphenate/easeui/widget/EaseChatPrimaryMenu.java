@@ -46,6 +46,10 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private Button buttonMore;
     private boolean ctrlPress = false;
     private View contentView;
+    private TextView holdTextView;
+
+    //是否正在录音，正在录音，其他点击不能生效
+    private boolean isRecording = false;
 
     public EaseChatPrimaryMenu(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -92,8 +96,9 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         faceChecked = (ImageView) findViewById(R.id.iv_face_checked);
         RelativeLayout faceLayout = (RelativeLayout) findViewById(R.id.rl_face);
         buttonMore = (Button) findViewById(R.id.btn_more);
+        buttonMore.setVisibility(View.VISIBLE);
 //        edittext_layout.setBackgroundResource(R.drawable.ease_input_bar_bg_normal);
-        
+        holdTextView = findViewById(R.id.holdTextView);
         buttonSend.setOnClickListener(this);
         buttonSetModeKeyboard.setOnClickListener(this);
         buttonSetModeVoice.setOnClickListener(this);
@@ -189,6 +194,15 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             
             @Override 
             public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    isRecording = true;
+                    holdTextView.setText(context.getString(R.string.release_to_send));
+                    buttonPressToSpeak.setBackground(context.getResources().getDrawable(R.drawable.input_background_press));
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    isRecording = false;
+                    holdTextView.setText(context.getString(R.string.button_pushtotalk));
+                    buttonPressToSpeak.setBackground(context.getResources().getDrawable(R.drawable.input_background));
+                }
                 if(listener != null){
                     return listener.onPressToSpeakBtnTouch(v, event);
                 }
@@ -235,12 +249,19 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     public void onClick(View view){
         int id = view.getId();
         if (id == R.id.btn_send) {
+            if (isRecording) {
+                KLog.i("拦截点击");
+                return;
+            }
             if(listener != null){
                 String s = editText.getText().toString();
                 editText.setText("");
                 listener.onSendBtnClicked(s);
             }
         } else if (id == R.id.btn_set_mode_voice) {
+            if (isRecording) {
+                return;
+            }
             AndPermission.with(AppConfig.instance)
                     .requestCode(101)
                     .permission(
@@ -250,11 +271,20 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                     .start();
 
         } else if (id == R.id.btn_set_mode_keyboard) {
+            if (isRecording) {
+                KLog.i("拦截点击");
+                return;
+            }
             setModeKeyboard();
             showNormalFaceImage();
             if(listener != null)
                 listener.onToggleVoiceBtnClicked();
         } else if (id == R.id.btn_more) {
+            if (isRecording) {
+                KLog.i("拦截点击");
+                return;
+            }
+            KLog.i("更多按钮点击");
             buttonSetModeVoice.setVisibility(View.VISIBLE);
             buttonSetModeKeyboard.setVisibility(View.GONE);
             edittext_layout.setVisibility(View.VISIBLE);
@@ -263,12 +293,20 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             if(listener != null)
                 listener.onToggleExtendClicked();
         } else if (id == R.id.et_sendmessage) {
+            if (isRecording) {
+                KLog.i("拦截点击");
+                return;
+            }
 //            edittext_layout.setBackgroundResource(R.drawable.ease_input_bar_bg_active);
             faceNormal.setVisibility(View.VISIBLE);
             faceChecked.setVisibility(View.INVISIBLE);
             if(listener != null)
                 listener.onEditTextClicked();
         } else if (id == R.id.rl_face) {
+            if (isRecording) {
+                KLog.i("拦截点击");
+                return;
+            }
             toggleFaceImage();
             if(listener != null){
                 listener.onToggleEmojiconClicked();
