@@ -1491,7 +1491,57 @@ public class FileUtil {
         }
         return 0;
     }
-
+    /**
+     * 将头像图片存到本地
+     */
+    public static int saveAvatarBitmap(Bitmap bm,String dir,int size) {
+        try {
+            File f = new File(dir);
+            Uri uri;
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream out = new FileOutputStream(f);
+            if(dir.endsWith(".jpg"))
+            {
+                bm = compressImage(bm,size,Bitmap.CompressFormat.JPEG);
+            }else if(dir.endsWith(".png")){
+                bm = compressImage(bm,size,Bitmap.CompressFormat.PNG);
+            }
+            if(dir.endsWith(".jpg"))
+            {
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            }else if(dir.endsWith(".png")){
+                bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            }
+            out.flush();
+            out.close();
+            return 1;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    /**
+     * 质量压缩方法
+     * @param image
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap image ,int size,Bitmap.CompressFormat compressFormat) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(compressFormat, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > size) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+            baos.reset(); // 重置baos即清空baos
+            image.compress(compressFormat, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
+        return bitmap;
+    }
     /**
      * 拷贝本地文件
      * @param fromFile

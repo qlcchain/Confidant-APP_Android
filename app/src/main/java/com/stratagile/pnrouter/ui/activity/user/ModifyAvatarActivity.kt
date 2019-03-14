@@ -249,7 +249,10 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     filePic.parentFile.mkdirs()
                     filePic.createNewFile()
                 }
-                // 最大图片大小 100KB
+               /*var result = FileUtil.saveAvatarBitmap(mBitmap,filePath,100)
+                MediaStore.Images.Media.insertImage(getContentResolver(), mBitmap, "", "");*/
+                //sendBroadcast(Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())))
+                  // 最大图片大小 100KB
                 val maxSize = 50
                 val fos = FileOutputStream(filePic)
                 val baos = ByteArrayOutputStream()
@@ -258,15 +261,15 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 val ratio = getRatioSize(mBitmap.width, mBitmap.height)
                 KLog.i("获取尺寸压缩倍数$ratio")
                 // 压缩Bitmap到对应尺寸
-                val result = Bitmap.createBitmap(mBitmap.width / ratio, mBitmap.height / ratio, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(result)
+                val result = mBitmap
+                /*val canvas = Canvas(result)
                 val rect = Rect(0, 0, mBitmap.width / ratio, mBitmap.height / ratio)
-                canvas.drawBitmap(mBitmap, null, rect, null)
+                canvas.drawBitmap(mBitmap, null, rect, null)*/
                 result.compress(Bitmap.CompressFormat.JPEG, options, baos)
                 // 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
                 //            result.compress(Bitmap.CompressFormat.JPEG, options, baos);
                 // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-                /*while (baos.toByteArray().size / 1024 > maxSize) {
+                while (baos.toByteArray().size / 1024 > maxSize) {
                     if (options < 20) {
                         break
                     }
@@ -276,7 +279,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     options -= 10
                     // 这里压缩options%，把压缩后的数据存放到baos中
                     result.compress(Bitmap.CompressFormat.JPEG, options, baos)
-                }*/
+                }
                 baos.writeTo(fos)
                 fos.flush()
                 fos.close()
