@@ -345,11 +345,14 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         KLog.i("bb")
                                         if(sendFileMsgTimeMap[item.msgId] != null)
                                         {
-                                            if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
+                                            Log.i("sendFile_size_Auto1", "重置前:"+sendFileMsgTimeMap[item.msgId] +"   " +(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong()))
+                                            if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 40 * 1000)
                                             {
                                                 Log.i("sendFile_size_Auto2", "重置")
                                                 val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
                                                 ConstantValue.sendFileMsgMap[item.msgId] = message
+                                                val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                                EventBus.getDefault().post(FileTransformEntity(item.msgId, 4, "", wssUrl, "lws-pnr-bin"))
                                             }
                                         }
                                         item.sendTime = Calendar.getInstance().timeInMillis.toString();
