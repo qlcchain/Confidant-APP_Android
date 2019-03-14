@@ -51,7 +51,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var receiveFileDataMap:java.util.HashMap<String, Message>
     lateinit var receiveToxFileDataMap:java.util.HashMap<String, Message>
     lateinit var receiveToxFileIdMap:java.util.HashMap<String, String>
-
+    lateinit var sendFileMsgTimeMap:java.util.HashMap<String, String>;
     init {
 
 
@@ -71,7 +71,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         receiveFileDataMap = java.util.HashMap<String, Message>()
         receiveToxFileDataMap = java.util.HashMap<String, Message>()
         receiveToxFileIdMap = java.util.HashMap<String, String>()
-
+        sendFileMsgTimeMap = java.util.HashMap<String, String>()
         EventBus.getDefault().register(this)
         msgHashMap = HashMap<String,Queue<BaseData>>()
         fileHashMap = HashMap<String,Queue<SendFileInfo>>()
@@ -325,9 +325,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         Log.i("sendFile_size_Auto", toSendChatFileQueue.size.toString())
                         for (item in toSendChatFileQueue)
                         {
-                            if(ConstantValue.sendFileMsgTimeMap[item.msgId] != null)
+                            if(sendFileMsgTimeMap[item.msgId] != null)
                             {
-                                if(Calendar.getInstance().timeInMillis - ConstantValue.sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
+                                if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 1 * 60 * 1000)
                                 {
                                     Log.i("sendFile_size_Auto2", "重置")
                                     val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
@@ -396,6 +396,17 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         private val TAG = PNRouterServiceMessageSender::class.java.simpleName
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        KLog.i("websocket状态MainActivity:" + connectStatus.status)
+        if (connectStatus.status != 0) {
+            ConstantValue.sendFileMsgMap = java.util.HashMap<String, EMMessage>()
+            for (item in sendFileMsgTimeMap)
+            {
+                item.setValue((System.currentTimeMillis()- 300 *60 * 1000).toString())
+            }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
         deleteFileMap[deleteMsgEvent.msgId] = true
         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
@@ -438,7 +449,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         when (fileTransformEntity.message) {
             1 -> Thread(Runnable {
                 try {
-                    ConstantValue.sendFileMsgTimeMap[fileTransformEntity.toId] = System.currentTimeMillis().toString()
+                    sendFileMsgTimeMap[fileTransformEntity.toId] = System.currentTimeMillis().toString()
                     val EMMessage = ConstantValue.sendFileMsgMap[fileTransformEntity.toId]
                     if(EMMessage!!.from == null)
                     {
@@ -546,7 +557,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         {
             return
         }
-        ConstantValue.sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  System.currentTimeMillis().toString()
+        sendFileMsgTimeMap[transformReceiverFileMessage.toId] =  System.currentTimeMillis().toString()
         val retMsg = transformReceiverFileMessage.message
         val Action = ByteArray(4)
         val FileId = ByteArray(4)
@@ -818,10 +829,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendFileMyKeyByteMap[fileId.toString() + ""] = SrcKey
             sendFileFriendKeyByteMap[fileId.toString() + ""] = DstKey*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
-            val header = ByteArray(segSize)
-            System.arraycopy(content, 0, header, 0, segSize)
-            val headerStr = FileUtil.bytesToHex(header)
-            KLog.i("发送中>>>"+"headerStr:"+headerStr + "  " +"fileLeftBuffer:"+fileLeftBuffer.size + "  "+ "content:" + content.size + "  "+ "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + segSize + " CRC:" + newCRC)
+            KLog.i("发送中>>>"+"fileLeftBuffer:"+fileLeftBuffer.size + "  "+ "content:" + content.size + "  "+ "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + segSize + " CRC:" + newCRC)
             EventBus.getDefault().post(TransformFileMessage(msgId, sendData))
 
         } catch (e: Exception) {
@@ -857,7 +865,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if (ConstantValue.curreantNetworkType == "WIFI") {
                         message.msgId = msgId
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis() .toString()
+                        sendFileMsgTimeMap[msgId] =  System.currentTimeMillis() .toString()
                         sendMsgLocalMap.put(msgId, false)
                         sendFilePathMap.put(msgId, files_dir)
                         deleteFileMap.put(msgId, false)
@@ -951,7 +959,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 if (ConstantValue.curreantNetworkType == "WIFI") {
                     message.msgId = msgId
                     ConstantValue.sendFileMsgMap[msgId] = message
-                    ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                    sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                     sendMsgLocalMap[msgId] = false
                     sendFilePathMap[msgId] = files_dir
                     deleteFileMap[msgId] = false
@@ -1057,7 +1065,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         message.msgId = msgId
 
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis() .toString()
+                        sendFileMsgTimeMap[msgId] =  System.currentTimeMillis() .toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
@@ -1164,7 +1172,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
                         message.msgId = msgId
                         ConstantValue.sendFileMsgMap[msgId] = message
-                        ConstantValue.sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
+                        sendFileMsgTimeMap[msgId] =  System.currentTimeMillis().toString()
                         sendMsgLocalMap[msgId] = false
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false

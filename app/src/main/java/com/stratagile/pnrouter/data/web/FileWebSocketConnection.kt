@@ -86,6 +86,10 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
                     .readTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .connectTimeout((KEEPALIVE_TIMEOUT_SECONDS + 10).toLong(), TimeUnit.SECONDS)
                     .build()
+            if(filledUri == null || filledUri.equals(""))
+            {
+                return
+            }
             val requestBuilder = Request.Builder().url(filledUri)
 
             if (userAgent != null) {
