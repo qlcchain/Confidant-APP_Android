@@ -266,7 +266,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 // 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
                 //            result.compress(Bitmap.CompressFormat.JPEG, options, baos);
                 // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-                while (baos.toByteArray().size / 1024 > maxSize) {
+                /*while (baos.toByteArray().size / 1024 > maxSize) {
                     if (options < 20) {
                         break
                     }
@@ -276,7 +276,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     options -= 10
                     // 这里压缩options%，把压缩后的数据存放到baos中
                     result.compress(Bitmap.CompressFormat.JPEG, options, baos)
-                }
+                }*/
                 baos.writeTo(fos)
                 fos.flush()
                 fos.close()

@@ -31,53 +31,98 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         if(jUpdateAvatarRsp.params.retCode == 0)
         {
 
-            var filePath = jUpdateAvatarRsp.params.fileName
-            var fileBase58Name = filePath.substring(8,filePath.length)
-            var fileName = String(Base58.decode(fileBase58Name));
-            val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
-            fileName = fileName.replace("__Avatar","")
-            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
-            if (ConstantValue.isWebsocketConnected) {
-                var msgId = Calendar.getInstance().timeInMillis /1000
-                FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
-            }else{
-                var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 3)
-                var baseData = BaseData(msgData)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                } else {
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
-            }
-
-        }else  if(jUpdateAvatarRsp.params.retCode == 3)
-        {
-
-            var fileOrginName = ConstantValue.libsodiumpublicSignKey +".jpg"
-            val filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileOrginName
-            var file = File(filePath)
-            if(file.exists())
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(userId.equals(jUpdateAvatarRsp.params.targetId))
             {
-                val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                val fileBase58Name = Base58.encode(fileOrginName.toByteArray())
-                val fileMD5 = FileUtil.getFileMD5(File(filePath))
-                val uploadAvatarReq = UploadAvatarReq(userId!!, fileBase58Name, fileMD5!!, "UploadAvatar")
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
+                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name
+                var file = File(filePath)
+                if(file.exists())
+                {
+                    val fileMD5 = FileUtil.getFileMD5(File(filePath))
+                    if(fileMD5 != jUpdateAvatarRsp.params.fileMD5)
+                    {
+                        FileMangerUtil.sendAvatarFile(filePath,"", false)
+                    }else{
+                        var filePath = jUpdateAvatarRsp.params.fileName
+                        var fileBase58Name = filePath.substring(8,filePath.length)
+                        var fileName = String(Base58.decode(fileBase58Name));
+                        val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+                        fileName = fileName.replace("__Avatar","")
+                        var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+                        if (ConstantValue.isWebsocketConnected) {
+                            var msgId = Calendar.getInstance().timeInMillis /1000
+                            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                        }else{
+                            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                            var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 2)
+                            var baseData = BaseData(msgData)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            } else {
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+                        }
+                    }
+                }else{
+                    var filePath = jUpdateAvatarRsp.params.fileName
+                    var fileBase58Name = filePath.substring(8,filePath.length)
+                    var fileName = String(Base58.decode(fileBase58Name));
+                    val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+                    fileName = fileName.replace("__Avatar","")
+                    var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+                    if (ConstantValue.isWebsocketConnected) {
+                        var msgId = Calendar.getInstance().timeInMillis /1000
+                        FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                    }else{
+                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 2)
+                        var baseData = BaseData(msgData)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                            var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        } else {
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                        }
+                    }
+                }
+            }else{
+                var filePath = jUpdateAvatarRsp.params.fileName
+                var fileBase58Name = filePath.substring(8,filePath.length)
+                var fileName = String(Base58.decode(fileBase58Name));
+                val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+                fileName = fileName.replace("__Avatar","")
+                var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
                 if (ConstantValue.isWebsocketConnected) {
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, uploadAvatarReq))
-                } else if (ConstantValue.isToxConnected) {
-                    val baseData = BaseData(4, uploadAvatarReq)
-                    val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                    var msgId = Calendar.getInstance().timeInMillis /1000
+                    FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                }else{
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 3)
+                    var baseData = BaseData(msgData)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
-                        val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                     } else {
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                     }
                 }
             }
+
+        }else  if(jUpdateAvatarRsp.params.retCode == 3)
+        {
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(userId.equals(jUpdateAvatarRsp.params.targetId))
+            {
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+ ".jpg"
+                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name
+                FileMangerUtil.sendAvatarFile(filePath,"", false)
+            }
+
 
         }
     }

@@ -6,8 +6,8 @@ public class JUpdateAvatarRsp extends BaseEntity{
 
 
     /**
-     * timestamp : 1552025064
-     * params : {"Action":"UpdateAvatar","RetCode":0,"ToId":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","FileSize":40977,"FileName":"/avatar/2rECyJDDVzzn1QQRGAnrqE6aiihUMRPaemKMsYnkoKSFYYssEuXycCVr5cEEkdRpeCgLoC2Hn9fw4","FileMD5":"c9411461cd3ea280da81c0fb0616ef74"}
+     * timestamp : 1552553791
+     * params : {"Action":"UpdateAvatar","RetCode":2,"ToId":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","FileSize":40977,"FileName":"/avatar/2rECyJDDVzzn1QQRGAnrqE6aiihUMRPaemKMsYnkoKSFYYssEuXycCVr5cEEkdRpeCgLoC2Hn9fw4","FileMD5":"c9411461cd3ea280da81c0fb0616ef74","TargetKey":"tWl8pN/7gCJ3LXO/7+D1s10qAYjeJKJdcItZH16RAy4=","TargetId":"FF16BC404B8AD7787CA27C93F176A73CFA03C829E12974138BD22AE1E6F3494A6FE7C38C8C2E"}
      */
 
     private int timestampX;
@@ -32,11 +32,13 @@ public class JUpdateAvatarRsp extends BaseEntity{
     public static class ParamsBean {
         /**
          * Action : UpdateAvatar
-         * RetCode : 0
+         * RetCode : 2
          * ToId : BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305
          * FileSize : 40977
          * FileName : /avatar/2rECyJDDVzzn1QQRGAnrqE6aiihUMRPaemKMsYnkoKSFYYssEuXycCVr5cEEkdRpeCgLoC2Hn9fw4
          * FileMD5 : c9411461cd3ea280da81c0fb0616ef74
+         * TargetKey : tWl8pN/7gCJ3LXO/7+D1s10qAYjeJKJdcItZH16RAy4=
+         * TargetId : FF16BC404B8AD7787CA27C93F176A73CFA03C829E12974138BD22AE1E6F3494A6FE7C38C8C2E
          */
 
         private String Action;
@@ -45,6 +47,8 @@ public class JUpdateAvatarRsp extends BaseEntity{
         private int FileSize;
         private String FileName;
         private String FileMD5;
+        private String TargetKey;
+        private String TargetId;
 
         public String getAction() {
             return Action;
@@ -92,6 +96,22 @@ public class JUpdateAvatarRsp extends BaseEntity{
 
         public void setFileMD5(String FileMD5) {
             this.FileMD5 = FileMD5;
+        }
+
+        public String getTargetKey() {
+            return TargetKey;
+        }
+
+        public void setTargetKey(String TargetKey) {
+            this.TargetKey = TargetKey;
+        }
+
+        public String getTargetId() {
+            return TargetId;
+        }
+
+        public void setTargetId(String TargetId) {
+            this.TargetId = TargetId;
         }
     }
 }

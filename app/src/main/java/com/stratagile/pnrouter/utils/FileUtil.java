@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 
+import com.hyphenate.easeui.utils.EaseImageUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -1071,8 +1072,13 @@ public class FileUtil {
             }
         }else{
             BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            int degree = EaseImageUtils.readPictureDegree(fromFile);
             Bitmap bitmap = BitmapFactory.decodeFile(fromFile, bitmapOptions);
-            int code = saveBitmap(bitmap,toFile);
+            if(degree != 0)
+            {
+                bitmap = EaseImageUtils.rotateToDegrees(bitmap, degree);
+            }
+            int code = saveBitmap(bitmap,toFile,true);
             return code;
         }
         return 0;
@@ -1112,7 +1118,12 @@ public class FileUtil {
             Bitmap bitmap = BitmapFactory.decodeFile(fromFile, bitmapOptions);
             String tempName = fromFile.substring(fromFile.lastIndexOf("/")+1);
             String tempPath = PathUtils.getInstance().getTempPath().toString()+"/" + tempName;
-            int code = saveBitmap(bitmap,tempPath);
+            int degree = EaseImageUtils.readPictureDegree(fromFile);
+            if(degree != 0)
+            {
+                bitmap = EaseImageUtils.rotateToDegrees(bitmap, degree);
+            }
+            int code = saveBitmap(bitmap,tempPath,true);
             if(code == 1)
             {
                 try
@@ -1451,19 +1462,24 @@ public class FileUtil {
     /**
      * 将图片存到本地
      */
-    public static int saveBitmap(Bitmap bm,String dir) {
+    public static int saveBitmap(Bitmap bm,String dir,Boolean isCompress) {
         try {
             File f = new File(dir);
             Uri uri;
             if (!f.exists()) {
                 f.createNewFile();
             }
+            int quality = 100;
+            if(isCompress)
+            {
+                quality = 70;
+            }
             FileOutputStream out = new FileOutputStream(f);
             if(dir.endsWith(".jpg"))
             {
-                bm.compress(Bitmap.CompressFormat.JPEG, 70, out);
+                bm.compress(Bitmap.CompressFormat.JPEG, quality, out);
             }else if(dir.endsWith(".png")){
-                bm.compress(Bitmap.CompressFormat.PNG, 70, out);
+                bm.compress(Bitmap.CompressFormat.PNG, quality, out);
             }
             out.flush();
             out.close();

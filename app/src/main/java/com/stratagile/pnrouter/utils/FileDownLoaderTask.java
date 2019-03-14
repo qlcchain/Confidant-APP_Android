@@ -78,7 +78,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			String fileName = new File(mUrl.getFile()).getName();
 			FileNameOld = new String(Base58.decode(fileName));
 			String saveName  = FileNameOld;
-			if(FileNameOld.contains("__Avatar"))
+			if(keyStr.equals(""))
 			{
 				saveName = FileNameOld.replace("__Avatar","");
 			}
@@ -206,7 +206,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private int copy(InputStream input, OutputStream output,int length){
 		InputStream newInput = input;
 		try {
-			if(!FileNameOld.contains("__Avatar.jpg"))
+			if(!keyStr.equals(""))
 			{
 				String aesKey = "";
 				if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))

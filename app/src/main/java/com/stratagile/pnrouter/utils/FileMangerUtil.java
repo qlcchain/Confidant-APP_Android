@@ -210,7 +210,7 @@ public class FileMangerUtil {
                                 byte[] fileBufferMi = fileBuffer;
                                 try{
                                     long  miBegin = System.currentTimeMillis();
-                                    if(!fileName.contains("__Avatar.jpg"))//头像不用加密
+                                    if(!fileKey.equals(""))//头像不用加密
                                     {
                                         fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                                     }
@@ -222,7 +222,7 @@ public class FileMangerUtil {
                                     if(!deleteFileMap.get(fileTransformEntity.getToId()))
                                     {
                                         sendFileByteData(fileBufferMi,fileName,fromUserId,"",fileTransformEntity.getToId(),fileId,1,fileKey,SrcKey,DstKey);
-                                        if(!fileName.contains("__Avatar.jpg"))//头像不用加密
+                                        if(!fileKey.equals(""))//头像不用加密
                                         {
                                             int segSeqTotal = sendFileTotalSegment.get(filePath);
                                             UpLoadFile localUpLoadFile =  LocalFileUtils.INSTANCE.getLocalAssets(fileTransformEntity.getToId());
@@ -320,6 +320,7 @@ public class FileMangerUtil {
         String aa = "";
         KLog.i("CodeResult:"+ CodeResult);
         String msgId = sendMsgIdMap.get(FileIdResult+"");
+        String fileKey = sendFileKeyByteMap.get(msgId+"");
         switch (CodeResult)
         {
             case 0:
@@ -348,7 +349,7 @@ public class FileMangerUtil {
                                 byte[] fileLeftBuffer = new byte[leftSize];
                                 System.arraycopy(fileBuffer, ConstantValue.INSTANCE.getSendFileSizeMax(), fileLeftBuffer, 0, leftSize);
                                 String fileName = sendFileNameMap.get(msgId+"");
-                                String fileKey = sendFileKeyByteMap.get(msgId+"");
+
                                 byte[] SrcKey = sendFileMyKeyByteMap.get(msgId);
                                 byte[] DstKey = sendFileFriendKeyByteMap.get(msgId);
                                 if(!deleteFileMap.get(msgId))
@@ -421,7 +422,7 @@ public class FileMangerUtil {
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
                     String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
-                    if(fileName.contains("__Avatar.jpg"))
+                    if(fileKey.equals(""))
                     {
                         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                         String fileBase58Name = Base58.encode(fileName.getBytes());
@@ -514,7 +515,7 @@ public class FileMangerUtil {
                     action = 5;
                     break;
             }
-            if(fileName.contains("__Avatar.jpg"))
+            if(fileKey.equals(""))
             {
                 action = 6;
             }
@@ -559,6 +560,9 @@ public class FileMangerUtil {
             sendFileMyKeyByteMap.put(msgId+"",SrcKey);
             sendFileFriendKeyByteMap.put(msgId+"",DstKey);*/
             //KLog.i("发送中>>>内容"+"content:"+aabb);
+            /*byte[] header = new byte[segSize];
+            System.arraycopy(content, 0, header, 0, segSize);
+            String headerStr = FileUtil.bytesToHex(header);*/
             KLog.i("发送中>>>"+"content:"+content.length+"strBase58:"+strBase58+"segMore:"+segMore+"  " +"segSize:"+ segSize  +"   " + "left:"+ (fileLeftBuffer.length -segSize) +"  segSeq:"+segSeq  +"  fileOffset:"+fileOffset +"  setSegSize:"+sendFileData.getSegSize()+" CRC:"+newCRC);
             EventBus.getDefault().post(new FileMangerTransformMessage(msgId,sendData));
 
@@ -585,7 +589,8 @@ public class FileMangerUtil {
         {
             String filePath = toxFileData.getFilePath();
             String fileSouceName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            if(fileSouceName.contains("__Avatar.jpg"))
+            int fieType = toxFileData.getFileType().value();
+            if(fieType == 6)
             {
                 String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
                 String fileBase58Name = Base58.encode(fileSouceName.getBytes());
@@ -611,7 +616,7 @@ public class FileMangerUtil {
             }
             if(!deleteFileMap.get(toxFileData.getFileId() + ""))
             {
-                if(!fileSouceName.contains("__Avatar.jpg"))
+                if(fieType != 6)
                 {
                     SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
                     BaseData baseData = new BaseData(2,sendToxFileNotice);
@@ -634,31 +639,36 @@ public class FileMangerUtil {
     {
         ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber+"");
         if(toxFileData != null) {
-            String filePath = toxFileData.getFilePath();
-            String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, "0",position,filesize,0,false,"",0,0,toxFileData.getFileId()+"",false);
-            MyFile myRouter = new MyFile();
-            myRouter.setType(0);
-            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-            myRouter.setUpLoadFile(uploadFile);
-            LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, false, false,position,filesize,0,false,0));
+            int fieType = toxFileData.getFileType().value();
+            if(fieType != 6)
+            {
+                String filePath = toxFileData.getFilePath();
+                String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
+                UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, "0",position,filesize,0,false,"",0,0,toxFileData.getFileId()+"",false);
+                MyFile myRouter = new MyFile();
+                myRouter.setType(0);
+                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                myRouter.setUpLoadFile(uploadFile);
+                LocalFileUtils.INSTANCE.updateLocalAssets(myRouter);
+                EventBus.getDefault().post(new FileStatus(fileMiName+"__"+toxFileData.getFileId(),toxFileData.getFileSize(), false, false, false,position,filesize,0,false,0));
+            }
+
         }
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
 
-
-
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
         String msgLocalId = "";
+        String fileType = "";
         long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
             fileMiName = fileNameArray[1];
             msgLocalId = fileNameArray[2];
+            fileType = fileNameArray[3];
         }
         if(fileMiName != null)
         {
@@ -668,7 +678,7 @@ public class FileMangerUtil {
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
             String filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + fileOrginName ;
             int code = 0;
-            if(fileOrginName.contains("__Avatar.jpg"))
+            if(fileType.equals("3"))
             {
                 String avatarPath = filePath.replace("__Avatar","");
                 code = FileUtil.copyAppFileToSdcard(base58files_dir, avatarPath);
@@ -704,16 +714,18 @@ public class FileMangerUtil {
         String fileNameAndUserId = receiveToxFileNameMap.get(fileNumber+"");
         String fileMiName = fileNameAndUserId;
         String msgLocalId = "";
+        String fileType = "";
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
             fileMiName = fileNameArray[1];
             msgLocalId = fileNameArray[2];
+            fileType = fileNameArray[3];
         }
         if(fileMiName != null) {
             receiveToxFileSizeMap.put(fileNumber+"",(long)filesize);
             String fileSouceName = new String(Base58.decode(fileMiName));
-            if(fileSouceName.contains("__Avatar.jpg"))
+            if(fileType.equals("3"))
             {
 
             }else{
@@ -1188,8 +1200,9 @@ public class FileMangerUtil {
                                 toxFileData.setFileName(strBase58);
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int)fileSize);
-                                toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
+                                toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AVATAR);
                                 toxFileData.setFileId(uuidTox);
+
 
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];

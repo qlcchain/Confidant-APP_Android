@@ -67,7 +67,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var fileBase58Name = filePath.substring(8,filePath.length)
             var fileName = String(Base58.decode(fileBase58Name));
             val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
-            fileName = fileName.replace("__Avatar","")
             var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
             var msgId = Calendar.getInstance().timeInMillis /1000
             FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
