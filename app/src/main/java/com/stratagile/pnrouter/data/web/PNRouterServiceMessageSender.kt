@@ -23,6 +23,8 @@ import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import kotlin.collections.HashMap
@@ -31,53 +33,53 @@ import kotlin.concurrent.thread
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
     private val pipe: AtomicReference<Optional<SignalServiceMessagePipe>>
     var javaObject = Object()
-    lateinit var msgHashMap: HashMap<String,Queue<BaseData>>
-    lateinit var fileHashMap: HashMap<String,Queue<SendFileInfo>>
-    lateinit var toSendChatMessage: Queue<BaseData>
-    lateinit var toSendChatFileMessage: Queue<SendFileInfo>
-    lateinit var toSendMessage: Queue<BaseData>
+    lateinit var msgHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<BaseData>>
+    lateinit var fileHashMap: ConcurrentHashMap<String, ConcurrentLinkedQueue<SendFileInfo>>
+    lateinit var toSendChatMessage: ConcurrentLinkedQueue<BaseData>
+    lateinit var toSendChatFileMessage: ConcurrentLinkedQueue<SendFileInfo>
+    lateinit var toSendMessage: ConcurrentLinkedQueue<BaseData>
     lateinit var thread: Thread
-    lateinit var sendMsgLocalMap: HashMap<String, Boolean>
-    lateinit var sendFilePathMap : HashMap<String, String>
-    lateinit var deleteFileMap : HashMap<String, Boolean>
-    lateinit var sendFileFriendKeyMap : HashMap<String, String>
-    lateinit var sendFileKeyByteMap : HashMap<String, String>
-    lateinit var sendFileFriendKeyByteMap : HashMap<String, ByteArray>
-    lateinit var sendFileMyKeyByteMap : HashMap<String, ByteArray>
-    lateinit var sendFileResultMap:java.util.HashMap<String, Boolean>
-    lateinit var sendFileNameMap:java.util.HashMap<String, String>
-    lateinit var sendFileLastByteSizeMap:java.util.HashMap<String, Int>
-    lateinit var sendFileLeftByteMap:java.util.HashMap<String, ByteArray>
-    lateinit var sendMsgIdMap:java.util.HashMap<String, String>
-    lateinit var receiveFileDataMap:java.util.HashMap<String, Message>
-    lateinit var receiveToxFileDataMap:java.util.HashMap<String, Message>
-    lateinit var receiveToxFileIdMap:java.util.HashMap<String, String>
-    lateinit var sendFileMsgTimeMap:java.util.HashMap<String, String>;
+    lateinit var sendMsgLocalMap: ConcurrentHashMap<String, Boolean>
+    lateinit var sendFilePathMap : ConcurrentHashMap<String, String>
+    lateinit var deleteFileMap : ConcurrentHashMap<String, Boolean>
+    lateinit var sendFileFriendKeyMap : ConcurrentHashMap<String, String>
+    lateinit var sendFileKeyByteMap : ConcurrentHashMap<String, String>
+    lateinit var sendFileFriendKeyByteMap : ConcurrentHashMap<String, ByteArray>
+    lateinit var sendFileMyKeyByteMap : ConcurrentHashMap<String, ByteArray>
+    lateinit var sendFileResultMap:ConcurrentHashMap<String, Boolean>
+    lateinit var sendFileNameMap:ConcurrentHashMap<String, String>
+    lateinit var sendFileLastByteSizeMap:ConcurrentHashMap<String, Int>
+    lateinit var sendFileLeftByteMap:ConcurrentHashMap<String, ByteArray>
+    lateinit var sendMsgIdMap:ConcurrentHashMap<String, String>
+    lateinit var receiveFileDataMap:ConcurrentHashMap<String, Message>
+    lateinit var receiveToxFileDataMap:ConcurrentHashMap<String, Message>
+    lateinit var receiveToxFileIdMap:ConcurrentHashMap<String, String>
+    lateinit var sendFileMsgTimeMap:ConcurrentHashMap<String, String>;
     var fileLock = Object()
     init {
 
 
-        sendMsgLocalMap = HashMap<String, Boolean>()
-        sendFilePathMap = HashMap<String, String>()
-        deleteFileMap = HashMap<String, Boolean>()
-        sendFileFriendKeyMap = HashMap<String, String>()
-        sendFileKeyByteMap = HashMap<String, String>()
-        sendFileFriendKeyByteMap = HashMap<String, ByteArray>()
-        sendFileMyKeyByteMap = HashMap<String, ByteArray>()
+        sendMsgLocalMap = ConcurrentHashMap<String, Boolean>()
+        sendFilePathMap = ConcurrentHashMap<String, String>()
+        deleteFileMap = ConcurrentHashMap<String, Boolean>()
+        sendFileFriendKeyMap = ConcurrentHashMap<String, String>()
+        sendFileKeyByteMap = ConcurrentHashMap<String, String>()
+        sendFileFriendKeyByteMap = ConcurrentHashMap<String, ByteArray>()
+        sendFileMyKeyByteMap = ConcurrentHashMap<String, ByteArray>()
 
-        sendFileResultMap = java.util.HashMap<String, Boolean>()
-        sendFileNameMap = java.util.HashMap<String, String>()
-        sendFileLastByteSizeMap = java.util.HashMap<String, Int>()
-        sendFileLeftByteMap = java.util.HashMap<String, ByteArray>()
-        sendMsgIdMap = java.util.HashMap<String, String>()
-        receiveFileDataMap = java.util.HashMap<String, Message>()
-        receiveToxFileDataMap = java.util.HashMap<String, Message>()
-        receiveToxFileIdMap = java.util.HashMap<String, String>()
-        sendFileMsgTimeMap = java.util.HashMap<String, String>()
+        sendFileResultMap = ConcurrentHashMap<String, Boolean>()
+        sendFileNameMap = ConcurrentHashMap<String, String>()
+        sendFileLastByteSizeMap = ConcurrentHashMap<String, Int>()
+        sendFileLeftByteMap = ConcurrentHashMap<String, ByteArray>()
+        sendMsgIdMap = ConcurrentHashMap<String, String>()
+        receiveFileDataMap = ConcurrentHashMap<String, Message>()
+        receiveToxFileDataMap = ConcurrentHashMap<String, Message>()
+        receiveToxFileIdMap = ConcurrentHashMap<String, String>()
+        sendFileMsgTimeMap = ConcurrentHashMap<String, String>()
         EventBus.getDefault().register(this)
-        msgHashMap = HashMap<String,Queue<BaseData>>()
-        fileHashMap = HashMap<String,Queue<SendFileInfo>>()
-        toSendMessage = LinkedList()
+        msgHashMap = ConcurrentHashMap<String,ConcurrentLinkedQueue<BaseData>>()
+        fileHashMap = ConcurrentHashMap<String,ConcurrentLinkedQueue<SendFileInfo>>()
+        toSendMessage = ConcurrentLinkedQueue()
         //toSendChatMessage = LinkedList()
         this.pipe = AtomicReference(pipe)
         initThread()
@@ -89,10 +91,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val message = gson.fromJson(BaseDataStr, BaseData::class.java)
         if(msgHashMap.get(userId) == null)
         {
-            msgHashMap.put(userId!!,LinkedList())
-            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+            msgHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
         }else{
-            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
         }
         toSendChatMessage.offer(message)
     }
@@ -100,10 +102,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     {
         if(fileHashMap.get(userId) == null)
         {
-            fileHashMap.put(userId!!,LinkedList())
-            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            fileHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
         }else{
-            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
         }
         toSendChatFileMessage.offer(sendFileInfo)
     }
@@ -123,10 +125,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         if(msgHashMap.get(userId) == null)
         {
-            msgHashMap.put(userId!!,LinkedList())
-            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+            msgHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
         }else{
-            toSendChatMessage = msgHashMap.get(userId!!) as Queue<BaseData>
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
         }
         toSendChatMessage.offer(message)
         var gson = GsonUtil.getIntGson()
@@ -158,10 +160,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         if(fileHashMap.get(userId) == null)
         {
-            fileHashMap.put(userId!!,LinkedList())
-            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            fileHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
         }else{
-            toSendChatFileMessage = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            toSendChatFileMessage = fileHashMap.get(userId!!) as ConcurrentLinkedQueue<SendFileInfo>
         }
         toSendChatFileMessage.offer(message)
 
@@ -336,7 +338,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             run() {
 
                                 try {
-                                    synchronized(fileLock){
+                                    //synchronized(fileLock){
                                         var iterator = toSendChatFileQueue.iterator()
                                         while (iterator.hasNext()) {
                                             var  item = iterator.next()
@@ -375,7 +377,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                                 }
                                             }
                                         }
-                                    }
+                                    //}
                                 }catch (e:Exception)
                                 {
 
