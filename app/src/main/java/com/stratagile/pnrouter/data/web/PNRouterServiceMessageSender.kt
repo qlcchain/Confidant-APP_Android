@@ -335,81 +335,87 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         Thread(Runnable() {
                             run() {
 
-
-                                synchronized(fileLock){
-                                    var iterator = toSendChatFileQueue.iterator()
-                                    while (iterator.hasNext()) {
-                                        var  item = iterator.next()
-                                        KLog.i("aa")
-                                        Thread.sleep(200)
-                                        KLog.i("bb")
-                                        if(sendFileMsgTimeMap[item.msgId] != null)
-                                        {
-                                            Log.i("sendFile_size_Auto1", "重置前:"+sendFileMsgTimeMap[item.msgId] +"   " +(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong()))
-                                            if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 40 * 1000)
+                                try {
+                                    synchronized(fileLock){
+                                        var iterator = toSendChatFileQueue.iterator()
+                                        while (iterator.hasNext()) {
+                                            var  item = iterator.next()
+                                            KLog.i("aa")
+                                            Thread.sleep(200)
+                                            KLog.i("bb")
+                                            if(sendFileMsgTimeMap[item.msgId] != null)
                                             {
-                                                Log.i("sendFile_size_Auto2", "重置")
-                                                val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
-                                                ConstantValue.sendFileMsgMap[item.msgId] = message
-                                                val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                                EventBus.getDefault().post(FileTransformEntity(item.msgId, 4, "", wssUrl, "lws-pnr-bin"))
+                                                Log.i("sendFile_size_Auto1", "重置前:"+sendFileMsgTimeMap[item.msgId] +"   相差：" +(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong()))
+                                                if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 40 * 1000)
+                                                {
+                                                    Log.i("sendFile_size_Auto2", "重置")
+                                                    val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                                                    ConstantValue.sendFileMsgMap[item.msgId] = message
+                                                    val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                                    EventBus.getDefault().post(FileTransformEntity(item.msgId, 4, "", wssUrl, "lws-pnr-bin"))
+                                                }
                                             }
-                                        }
-                                        item.sendTime = Calendar.getInstance().timeInMillis.toString();
-                                        when(item.type){
-                                            "1" ->
-                                            {
-                                                sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                            }
-                                            "2" ->
-                                            {
-                                                sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
-                                            }
-                                            "3" ->
-                                            {
-                                                sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                            }
-                                            "4" ->
-                                            {
-                                                sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                            item.sendTime = Calendar.getInstance().timeInMillis.toString();
+                                            when(item.type){
+                                                "1" ->
+                                                {
+                                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                }
+                                                "2" ->
+                                                {
+                                                    sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                                }
+                                                "3" ->
+                                                {
+                                                    sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                }
+                                                "4" ->
+                                                {
+                                                    sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                }
                                             }
                                         }
                                     }
-                                }
-                               /* for (item in toSendChatFileQueue)
+                                }catch (e:Exception)
                                 {
-                                    KLog.i("aa")
-                                    Thread.sleep(1000)
-                                    KLog.i("bb")
-                                    if(sendFileMsgTimeMap[item.msgId] != null)
-                                    {
-                                        if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
-                                        {
-                                            Log.i("sendFile_size_Auto2", "重置")
-                                            val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
-                                            ConstantValue.sendFileMsgMap[item.msgId] = message
-                                        }
-                                    }
-                                    item.sendTime = Calendar.getInstance().timeInMillis.toString();
-                                    when(item.type){
-                                        "1" ->
-                                        {
-                                            sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                        }
-                                        "2" ->
-                                        {
-                                            sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
-                                        }
-                                        "3" ->
-                                        {
-                                            sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                        }
-                                        "4" ->
-                                        {
-                                            sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                        }
-                                    }
-                                }*/
+
+                                    e.printStackTrace()
+                                }
+
+                                /* for (item in toSendChatFileQueue)
+                                 {
+                                     KLog.i("aa")
+                                     Thread.sleep(1000)
+                                     KLog.i("bb")
+                                     if(sendFileMsgTimeMap[item.msgId] != null)
+                                     {
+                                         if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
+                                         {
+                                             Log.i("sendFile_size_Auto2", "重置")
+                                             val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                                             ConstantValue.sendFileMsgMap[item.msgId] = message
+                                         }
+                                     }
+                                     item.sendTime = Calendar.getInstance().timeInMillis.toString();
+                                     when(item.type){
+                                         "1" ->
+                                         {
+                                             sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                         }
+                                         "2" ->
+                                         {
+                                             sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                         }
+                                         "3" ->
+                                         {
+                                             sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                         }
+                                         "4" ->
+                                         {
+                                             sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                         }
+                                     }
+                                 }*/
                             }
                         }).start()
 
