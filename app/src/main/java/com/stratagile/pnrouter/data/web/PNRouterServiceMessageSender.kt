@@ -228,7 +228,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 if(WiFiUtil.isNetworkConnected() && ConstantValue.logining && ConstantValue.curreantNetworkType.equals("WIFI"))
                 {
                     sendChatMessage(false,false)
-                    if(!ConstantValue.currentRouterId.equals(""))
+                    if(!ConstantValue.currentRouterIp.equals(""))
                     {
                         sendChatFileMessage(false,false)
                     }
@@ -445,6 +445,31 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     companion object {
 
         private val TAG = PNRouterServiceMessageSender::class.java.simpleName
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(TransformStrMessageUrlFail: TransformStrMessageUrlFail) {
+        KLog.i("websocket状态MainActivity:" + TransformStrMessageUrlFail.toId)
+        if (TransformStrMessageUrlFail.toId != null) {
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var toSendChatFileQueue = fileHashMap.get(userId!!) as Queue<SendFileInfo>
+            for (item in toSendChatFileQueue)
+            {
+                if(item.msgId.equals(TransformStrMessageUrlFail.toId))
+                {
+                    val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                    ConstantValue.sendFileMsgMap[item.msgId] = message
+                }
+                for (msg in sendFileMsgTimeMap)
+                {
+                    if(msg.key.equals(TransformStrMessageUrlFail.toId))
+                    {
+                        msg.setValue((System.currentTimeMillis()- 300 *60 * 1000).toString())
+                    }
+
+                }
+            }
+
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {

@@ -15,6 +15,8 @@ class FileTransformEntity(var toId : String, var message : Int = 0, var retMsg :
 class TransformStrMessage(var toId : String, var message : String)
 
 class TransformFileMessage(var toId : String, var message : ByteArray)
+
+class TransformStrMessageUrlFail(var toId : String)
 //发送文件接收的反馈
 class TransformReceiverFileMessage(var toId : String, var message : ByteArray)
 

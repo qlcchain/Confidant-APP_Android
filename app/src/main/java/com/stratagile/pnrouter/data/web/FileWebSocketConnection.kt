@@ -9,6 +9,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.events.FileTransformEntity
 import com.stratagile.pnrouter.entity.events.TransformReceiverFileMessage
+import com.stratagile.pnrouter.entity.events.TransformStrMessageUrlFail
 import com.stratagile.pnrouter.utils.FileUtil
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.WiFiUtil
@@ -64,7 +65,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
-        filledUri = "wss://" + ipAddress + ConstantValue.filePort
+        filledUri = "wss://"  +ipAddress+ ConstantValue.filePort
         if (client == null) {
             if (isWifiConnect()) {
             } else {
@@ -73,6 +74,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
             KLog.i("连接的地址为：${filledUri}")
             if(filledUri == null || filledUri.equals("") || filledUri.indexOf("wss://:") >-1)
             {
+                EventBus.getDefault().post(TransformStrMessageUrlFail(toId))
                 return
             }
             val socketFactory = createTlsSocketFactory(trustStore)
