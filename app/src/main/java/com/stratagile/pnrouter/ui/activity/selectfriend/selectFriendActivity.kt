@@ -264,7 +264,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
 
                                             if (codeSave == 1) {
-                                                val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                                                val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                                 EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
                                             } else {
 
@@ -392,7 +392,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 return@Runnable
                                             }
 
-                                            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
 
                                         } else {
@@ -511,7 +511,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 return@Runnable
                                             }
 
-                                            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
                                         } else {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
@@ -619,7 +619,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                             KLog.i("jiamiTime:" + (miend - miBegin) / 1000)
                             sendFileByteData(fileBufferMi, fileName, EMMessage!!.getFrom(), EMMessage!!.getTo(), fileTransformEntity.toId, fileId, 1, aesKey!!, SrcKey!!, DstKey!!)
                         } catch (e: Exception) {
-                            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
                         }
 
@@ -696,7 +696,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                     }).start()
 
                 } else {
-                    val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                    val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                     EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
                     KLog.i("文件发送成功！")
 
@@ -766,7 +766,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             KLog.i("发送中>>>" + "segMore:" + segMore + "  " + "segSize:" + segSize + "   " + "left:" + (fileLeftBuffer.size - segSize) + "  segSeq:" + segSeq + "  fileOffset:" + fileOffset + "  setSegSize:" + sendFileData.segSize + " CRC:" + newCRC)
 
         } catch (e: Exception) {
-            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
             EventBus.getDefault().post(FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"))
         }
 

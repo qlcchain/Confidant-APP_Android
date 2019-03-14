@@ -93,7 +93,7 @@ public class sendUnCompleteFile {
                                 //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"));
 
                         }

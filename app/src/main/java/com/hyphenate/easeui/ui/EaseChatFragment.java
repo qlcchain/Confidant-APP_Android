@@ -1028,7 +1028,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
                             if (Message.getSender() == 0) {
                                 FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
@@ -1070,7 +1070,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     } else {
                         message = EMMessage.createVoiceSendMessage(ease_default_amr, 1, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
                             if (Message.getSender() == 0) {
                                 FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
@@ -1117,7 +1117,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String videoPath = PathUtils.getInstance().getVideoPath() + "/" + "ease_default_vedio.mp4";
                         message = EMMessage.createVideoSendMessage(videoPath, thumbPath, 1000, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
                             if (Message.getSender() == 0) {
                                 FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
@@ -1157,7 +1157,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     } else {
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
-                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
+                            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
                             if (Message.getSender() == 0) {
                                 FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
@@ -2314,7 +2314,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
-                    /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
@@ -2457,7 +2457,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
-                               /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                               /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                                 EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
                             } else {
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
@@ -2606,7 +2606,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 return;
                             }
 
-                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
@@ -2777,7 +2777,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
-                            /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
 
                         } else {
@@ -2961,7 +2961,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
 
-                           /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                           /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());

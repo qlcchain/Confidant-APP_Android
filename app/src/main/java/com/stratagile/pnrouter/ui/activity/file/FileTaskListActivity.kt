@@ -702,7 +702,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                         var filledUri = localMedia!!.path
                         if(localMedia!!.path.indexOf("https://") < 0 )
                         {
-                            filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + localMedia!!.path
+                            filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + localMedia!!.path
                         }
                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
 

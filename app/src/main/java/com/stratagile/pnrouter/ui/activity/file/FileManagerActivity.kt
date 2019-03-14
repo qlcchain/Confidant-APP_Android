@@ -265,7 +265,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             toast(R.string.no_download_is_required)
                                         }
                                     } else {
-                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
@@ -310,7 +310,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 //                                            toast(R.string.You_need_to_download)
 //                                        }
 //                                        wantOpen = true
-//                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+//                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
 //                                        var files_dir = PathUtils.getInstance().filePath.toString() + "/"
 //                                        if (ConstantValue.isWebsocketConnected) {
 //                                            receiveFileDataMap.put(data.msgId.toString(), data)

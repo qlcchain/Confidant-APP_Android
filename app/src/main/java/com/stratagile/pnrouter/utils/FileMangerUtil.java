@@ -246,7 +246,7 @@ public class FileMangerUtil {
                                         sendFileFriendKeyByteMap.remove(fileTransformEntity.getToId());
                                         System.gc();
                                         KLog.i("websocket文件上传前取消！");
-                                        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                                         EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                     }
 
@@ -259,7 +259,7 @@ public class FileMangerUtil {
                                     sendFileMyKeyByteMap.remove(fileTransformEntity.getToId());
                                     sendFileFriendKeyByteMap.remove(fileTransformEntity.getToId());
                                     System.gc();
-                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(fileTransformEntity.getToId(),4,"",wssUrl,"lws-pnr-bin"));
                                 }
                             }
@@ -380,7 +380,7 @@ public class FileMangerUtil {
                                     sendFileFriendKeyByteMap.remove(msgId);
                                     System.gc();
                                     KLog.i("websocket文件上传中取消！");
-                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                                 }
                             }catch (Exception e)
@@ -420,7 +420,7 @@ public class FileMangerUtil {
                     System.gc();
                     faEnd = System.currentTimeMillis();
                     KLog.i("faTime:"+ (faEnd - faBegin)/1000);
-                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
                     if(fileKey.equals(""))
                     {
@@ -568,7 +568,7 @@ public class FileMangerUtil {
 
         }catch (Exception e)
         {
-            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
             EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
         }
     }
@@ -826,7 +826,7 @@ public class FileMangerUtil {
                     }
 
 
-                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                    String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                     EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                 } else {
                     String strBase58 = Base58.encode(fileName.getBytes());
@@ -909,7 +909,7 @@ public class FileMangerUtil {
         sendFileKeyByteMap.remove(msgId);
         sendFileMyKeyByteMap.remove(msgId);
         sendFileFriendKeyByteMap.remove(msgId);
-        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+        String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
         EventBus.getDefault().post(new FileMangerTransformEntity(msgId,4,"",wssUrl,"lws-pnr-bin"));
         System.gc();
     }
@@ -1009,7 +1009,7 @@ public class FileMangerUtil {
                                 //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
 
                         }else{
@@ -1169,7 +1169,7 @@ public class FileMangerUtil {
                                 //Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
 
                         }else{
@@ -1350,7 +1350,7 @@ public class FileMangerUtil {
                                 return;
                             }
 
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
 
                         }else{
@@ -1532,7 +1532,7 @@ public class FileMangerUtil {
                                 return;
                             }
 
-                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentIp() + ConstantValue.INSTANCE.getFilePort();
+                            String wssUrl = "https://"+ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
                             EventBus.getDefault().post(new FileMangerTransformEntity(uuid,0,"",wssUrl,"lws-pnr-bin"));
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());

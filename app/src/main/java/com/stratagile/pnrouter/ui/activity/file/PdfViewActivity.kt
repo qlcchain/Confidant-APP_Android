@@ -194,7 +194,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                 .subscribe {
 
                 }*/
-        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + payLoad!!.fileName
+        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + payLoad!!.fileName
         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
         var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
         if (ConstantValue.isWebsocketConnected) {

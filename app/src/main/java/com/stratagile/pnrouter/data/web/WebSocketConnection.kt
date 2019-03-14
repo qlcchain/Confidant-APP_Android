@@ -134,7 +134,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
         WiFiUtil.getGateWay(AppConfig.instance)
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = "wss://" + ipAddress + port
-        ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
+        //ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
         webSocketClient = null
         if (webSocketClient == null) {
             if (isWifiConnect()) {
@@ -467,7 +467,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
     }
 
     fun reConnect() {
-        ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
+        //ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
         setCurrentStatus(WsStatus.RECONNECT)
         KLog.w("WSC reConnect()...")
         KLog.i("ReConnectThread_websocket_reConnect" + webSocketClient)

@@ -7,6 +7,7 @@ import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
+import com.pawegio.kandroid.e
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -52,6 +53,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var receiveToxFileDataMap:java.util.HashMap<String, Message>
     lateinit var receiveToxFileIdMap:java.util.HashMap<String, String>
     lateinit var sendFileMsgTimeMap:java.util.HashMap<String, String>;
+    var fileLock = Object()
     init {
 
 
@@ -183,7 +185,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         }
         if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
         {
-            sendChatFileMessage(true,false)
+            if(!ConstantValue.currentRouterId.equals(""))
+            {
+                sendChatFileMessage(true,false)
+            }
+
         }
 
     }
@@ -222,7 +228,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 if(WiFiUtil.isNetworkConnected() && ConstantValue.logining && ConstantValue.curreantNetworkType.equals("WIFI"))
                 {
                     sendChatMessage(false,false)
-                    sendChatFileMessage(false,false)
+                    if(!ConstantValue.currentRouterId.equals(""))
+                    {
+                        sendChatFileMessage(false,false)
+                    }
                 }else{
                     ConstantValue.sendFileMsgMap.clear()
                 }
@@ -323,42 +332,84 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if(ConstantValue.logining)
                     {
                         Log.i("sendFile_size_Auto", toSendChatFileQueue.size.toString())
-                        for (item in toSendChatFileQueue)
-                        {
-                            if(sendFileMsgTimeMap[item.msgId] != null)
-                            {
-                                if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
-                                {
-                                    Log.i("sendFile_size_Auto2", "重置")
-                                    val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
-                                    ConstantValue.sendFileMsgMap[item.msgId] = message
-                                }
-                            }
-                            /*if(Calendar.getInstance().timeInMillis - item.sendTime!!.toLong() > 30 * 1000)
-                            {
+                        Thread(Runnable() {
+                            run() {
 
 
-                            }*/
-                            item.sendTime = Calendar.getInstance().timeInMillis.toString();
-                            when(item.type){
-                                "1" ->
-                                {
-                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                synchronized(fileLock){
+                                    var iterator = toSendChatFileQueue.iterator()
+                                    while (iterator.hasNext()) {
+                                        var  item = iterator.next()
+                                        KLog.i("aa")
+                                        Thread.sleep(200)
+                                        KLog.i("bb")
+                                        if(sendFileMsgTimeMap[item.msgId] != null)
+                                        {
+                                            if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
+                                            {
+                                                Log.i("sendFile_size_Auto2", "重置")
+                                                val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                                                ConstantValue.sendFileMsgMap[item.msgId] = message
+                                            }
+                                        }
+                                        item.sendTime = Calendar.getInstance().timeInMillis.toString();
+                                        when(item.type){
+                                            "1" ->
+                                            {
+                                                sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                            }
+                                            "2" ->
+                                            {
+                                                sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                            }
+                                            "3" ->
+                                            {
+                                                sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                            }
+                                            "4" ->
+                                            {
+                                                sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                            }
+                                        }
+                                    }
                                 }
-                                "2" ->
+                               /* for (item in toSendChatFileQueue)
                                 {
-                                    sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
-                                }
-                                "3" ->
-                                {
-                                    sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                }
-                                "4" ->
-                                {
-                                    sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
-                                }
+                                    KLog.i("aa")
+                                    Thread.sleep(1000)
+                                    KLog.i("bb")
+                                    if(sendFileMsgTimeMap[item.msgId] != null)
+                                    {
+                                        if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 2 * 60 * 1000)
+                                        {
+                                            Log.i("sendFile_size_Auto2", "重置")
+                                            val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
+                                            ConstantValue.sendFileMsgMap[item.msgId] = message
+                                        }
+                                    }
+                                    item.sendTime = Calendar.getInstance().timeInMillis.toString();
+                                    when(item.type){
+                                        "1" ->
+                                        {
+                                            sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                        }
+                                        "2" ->
+                                        {
+                                            sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                        }
+                                        "3" ->
+                                        {
+                                            sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                        }
+                                        "4" ->
+                                        {
+                                            sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                        }
+                                    }
+                                }*/
                             }
-                        }
+                        }).start()
+
                     }
 
                 }
@@ -504,38 +555,38 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                         }
                                     }
                                 }
-                               /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
-                                sendFileNameMap.remove(fileTransformEntity.toId)
-                                sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
-                                sendFileKeyByteMap.remove(fileTransformEntity.toId)
-                                sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
-                                sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
+                                /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                                 sendFileNameMap.remove(fileTransformEntity.toId)
+                                 sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
+                                 sendFileKeyByteMap.remove(fileTransformEntity.toId)
+                                 sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
+                                 sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
                                 KLog.i("websocket文件发送前取消！")
-                                val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                                val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                 EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
                                 EventBus.getDefault().post(FileTransformStatus(fileTransformEntity.toId,"", EMMessage!!.getTo(),0))
                             }
 
                         } catch (e: Exception) {
-                           /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
-                            sendFileNameMap.remove(fileTransformEntity.toId)
-                            sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
-                            sendFileKeyByteMap.remove(fileTransformEntity.toId)
-                            sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
-                            sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
-                            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                            /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                             sendFileNameMap.remove(fileTransformEntity.toId)
+                             sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
+                             sendFileKeyByteMap.remove(fileTransformEntity.toId)
+                             sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
+                             sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)*/
+                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
                         }
 
                     }
                 } catch (e: Exception) {
-                   /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
-                    sendFileNameMap.remove(fileTransformEntity.toId)
-                    sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
-                    sendFileKeyByteMap.remove(fileTransformEntity.toId)
-                    sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
-                    sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
-                    System.gc()*/
+                    /* sendFileLeftByteMap.remove(fileTransformEntity.toId)
+                     sendFileNameMap.remove(fileTransformEntity.toId)
+                     sendFileLastByteSizeMap.remove(fileTransformEntity.toId)
+                     sendFileKeyByteMap.remove(fileTransformEntity.toId)
+                     sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
+                     sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                     System.gc()*/
                 }
             /*}).start()*/
             2 -> {
@@ -600,60 +651,60 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 if (leftSize > 0)
                 {
                     /*Thread(Runnable {*/
-                        try {
-                            val fileLeftBuffer = ByteArray(leftSize)
-                            System.arraycopy(fileBuffer, ConstantValue.sendFileSizeMax, fileLeftBuffer, 0, leftSize)
-                            val fileName = sendFileNameMap.get(msgId)
-                            val fileKey = sendFileKeyByteMap[msgId]
-                            val SrcKey = sendFileMyKeyByteMap[msgId]
-                            val DstKey = sendFileFriendKeyByteMap[msgId]
-                            KLog.i("错误：onSendFileing6:" +transformReceiverFileMessage.toId)
-                            if (deleteFileMap[msgId] != null) {
-                                sendFileByteData(fileLeftBuffer, fileName!!, FromIdResult + "", ToIdResult + "", msgId!!, FileIdResult, SegSeqResult + 1, fileKey!!, SrcKey!!, DstKey!!)
-                            } else {
-                                KLog.i("websocket文件发送中取消！")
-                               /* sendFileLeftByteMap.remove(msgId)
-                                sendFileNameMap.remove(msgId)
-                                sendFileLastByteSizeMap.remove(msgId)
-                                sendFileKeyByteMap.remove(msgId)
-                                sendFileMyKeyByteMap.remove(msgId)
-                                sendFileFriendKeyByteMap.remove(msgId)
-                                System.gc()*/
-                                val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
-                                EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
-                                EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
-                                var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-                                if(messageEntityList != null)
-                                {
-                                    messageEntityList.forEach {
-                                        if (it.msgId.equals(msgId)) {
-                                            AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                                            KLog.i("消息数据删除")
-                                        }
-                                    }
-                                }
-                                var  toSendMessage = toSendChatFileMessage
-                                if(toSendMessage != null)
-                                {
-                                    for (item in toSendMessage)
-                                    {
-                                        if(item.msgId.equals(msgId))
-                                        {
-                                            toSendMessage.remove(item)
-                                            break
-                                        }
+                    try {
+                        val fileLeftBuffer = ByteArray(leftSize)
+                        System.arraycopy(fileBuffer, ConstantValue.sendFileSizeMax, fileLeftBuffer, 0, leftSize)
+                        val fileName = sendFileNameMap.get(msgId)
+                        val fileKey = sendFileKeyByteMap[msgId]
+                        val SrcKey = sendFileMyKeyByteMap[msgId]
+                        val DstKey = sendFileFriendKeyByteMap[msgId]
+                        KLog.i("错误：onSendFileing6:" +transformReceiverFileMessage.toId)
+                        if (deleteFileMap[msgId] != null) {
+                            sendFileByteData(fileLeftBuffer, fileName!!, FromIdResult + "", ToIdResult + "", msgId!!, FileIdResult, SegSeqResult + 1, fileKey!!, SrcKey!!, DstKey!!)
+                        } else {
+                            KLog.i("websocket文件发送中取消！")
+                            /* sendFileLeftByteMap.remove(msgId)
+                             sendFileNameMap.remove(msgId)
+                             sendFileLastByteSizeMap.remove(msgId)
+                             sendFileKeyByteMap.remove(msgId)
+                             sendFileMyKeyByteMap.remove(msgId)
+                             sendFileFriendKeyByteMap.remove(msgId)
+                             System.gc()*/
+                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                            EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
+                            EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
+                            var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                            if(messageEntityList != null)
+                            {
+                                messageEntityList.forEach {
+                                    if (it.msgId.equals(msgId)) {
+                                        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                        KLog.i("消息数据删除")
                                     }
                                 }
                             }
-                        } catch (e: Exception) {
-                           /* sendFileLeftByteMap.remove(msgId)
-                            sendFileNameMap.remove(msgId)
-                            sendFileLastByteSizeMap.remove(msgId)
-                            sendFileKeyByteMap.remove(msgId)
-                            sendFileMyKeyByteMap.remove(msgId)
-                            sendFileFriendKeyByteMap.remove(msgId)
-                            System.gc()*/
+                            var  toSendMessage = toSendChatFileMessage
+                            if(toSendMessage != null)
+                            {
+                                for (item in toSendMessage)
+                                {
+                                    if(item.msgId.equals(msgId))
+                                    {
+                                        toSendMessage.remove(item)
+                                        break
+                                    }
+                                }
+                            }
                         }
+                    } catch (e: Exception) {
+                        /* sendFileLeftByteMap.remove(msgId)
+                         sendFileNameMap.remove(msgId)
+                         sendFileLastByteSizeMap.remove(msgId)
+                         sendFileKeyByteMap.remove(msgId)
+                         sendFileMyKeyByteMap.remove(msgId)
+                         sendFileFriendKeyByteMap.remove(msgId)
+                         System.gc()*/
+                    }
                     /*}).start()*/
 
                 } else {
@@ -669,9 +720,9 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         if(messageEntityList != null)
                         {
                             messageEntityList.forEach {
-                                if (it.msgId.equals(msgId)) {
+                                if (it.msgId.equals(transformReceiverFileMessage.toId)) {
                                     AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                                    KLog.i("消息数据删除："+msgId)
+                                    KLog.i("消息数据删除："+transformReceiverFileMessage.toId)
                                 }
                             }
                         }
@@ -680,7 +731,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         {
                             for (item in toSendMessage)
                             {
-                                if(item.msgId.equals(msgId))
+                                if(item.msgId.equals(transformReceiverFileMessage.toId))
                                 {
                                     toSendMessage.remove(item)
                                     break
@@ -688,24 +739,24 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             }
                         }
                         KLog.i("错误：onSendFileing4:" +transformReceiverFileMessage.toId)
-                       /* sendFileLeftByteMap.remove(msgId)
-                        sendFileNameMap.remove(msgId)
-                        sendFileLastByteSizeMap.remove(msgId)
-                        sendFileKeyByteMap.remove(msgId)
-                        sendFileMyKeyByteMap.remove(msgId)
-                        sendFileFriendKeyByteMap.remove(msgId)
-                        System.gc()*/
+                        /* sendFileLeftByteMap.remove(msgId)
+                         sendFileNameMap.remove(msgId)
+                         sendFileLastByteSizeMap.remove(msgId)
+                         sendFileKeyByteMap.remove(msgId)
+                         sendFileMyKeyByteMap.remove(msgId)
+                         sendFileFriendKeyByteMap.remove(msgId)
+                         System.gc()*/
                         KLog.i("错误ToIdResult："+ToIdResult +"  "+ "LogIdIdResult:"+LogIdIdResult +"  msgId:"+msgId)
                         EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1))
                         KLog.i("websocket文件发送成功！")
                     } else {
-                      /*  sendFileLeftByteMap.remove(msgId)
-                        sendFileNameMap.remove(msgId)
-                        sendFileLastByteSizeMap.remove(msgId)
-                        sendFileKeyByteMap.remove(msgId)
-                        sendFileMyKeyByteMap.remove(msgId)
-                        sendFileFriendKeyByteMap.remove(msgId)
-                        System.gc()*/
+                        /*  sendFileLeftByteMap.remove(msgId)
+                          sendFileNameMap.remove(msgId)
+                          sendFileLastByteSizeMap.remove(msgId)
+                          sendFileKeyByteMap.remove(msgId)
+                          sendFileMyKeyByteMap.remove(msgId)
+                          sendFileFriendKeyByteMap.remove(msgId)
+                          System.gc()*/
                         val msgData = DelMsgReq(FromIdResult, ToIdResult, LogIdIdResult, "DelMsg")
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
                         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
@@ -733,20 +784,20 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
                         KLog.i("websocket文件发送成功后取消！")
                     }
-                    val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                    val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                     EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
 
 
                 }
             }
             else -> {
-               /* sendFileLeftByteMap.remove(msgId)
-                sendFileNameMap.remove(msgId)
-                sendFileLastByteSizeMap.remove(msgId)
-                sendFileKeyByteMap.remove(msgId)
-                sendFileMyKeyByteMap.remove(msgId)
-                sendFileFriendKeyByteMap.remove(msgId)
-                System.gc()*/
+                /* sendFileLeftByteMap.remove(msgId)
+                 sendFileNameMap.remove(msgId)
+                 sendFileLastByteSizeMap.remove(msgId)
+                 sendFileKeyByteMap.remove(msgId)
+                 sendFileMyKeyByteMap.remove(msgId)
+                 sendFileFriendKeyByteMap.remove(msgId)
+                 System.gc()*/
                 var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                 if(messageEntityList != null)
                 {
@@ -840,7 +891,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             EventBus.getDefault().post(TransformFileMessage(msgId, sendData))
 
         } catch (e: Exception) {
-            val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
             EventBus.getDefault().post(FileTransformEntity(msgId, 4, "", wssUrl, "lws-pnr-bin"))
         }
 
@@ -921,7 +972,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             return@Runnable
                         }
 
-                        val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                        val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                         EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
 
                     }
@@ -1017,7 +1068,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     }
 
 
-                    val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                    val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                     EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
                 }
                 val gson = Gson()
@@ -1122,7 +1173,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             return@Runnable
                         }
 
-                        val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                        val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                         EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
 
                     }
@@ -1229,7 +1280,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             return@Runnable
                         }
 
-                        val wssUrl = "https://" + ConstantValue.currentIp + ConstantValue.filePort
+                        val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                         EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
                     }
                     FileUtil.copySdcardFile(filePath, files_dir)

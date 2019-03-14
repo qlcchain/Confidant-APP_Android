@@ -66,7 +66,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var filePath = jUpdateAvatarRsp.params.fileName
             var fileBase58Name = filePath.substring(8,filePath.length)
             var fileName = String(Base58.decode(fileBase58Name));
-            val filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + filePath
+            val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
             var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
             var msgId = Calendar.getInstance().timeInMillis /1000
             FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
@@ -351,7 +351,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         }
         if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            var filledUri = "https://" + ConstantValue.currentIp + port+jPushFileMsgRsp.params.filePath
+            var filledUri = "https://" + ConstantValue.currentRouterIp + port+jPushFileMsgRsp.params.filePath
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)

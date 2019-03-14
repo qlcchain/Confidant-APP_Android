@@ -303,7 +303,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                             toast(R.string.no_download_is_required)
                                         }
                                     } else {
-                                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
@@ -401,7 +401,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             toast(R.string.no_download_is_required)
                         }
                     } else {
-                        var filledUri = "https://" + ConstantValue.currentIp + ConstantValue.port + data.fileName
+                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                         if (ConstantValue.isWebsocketConnected) {
                             receiveFileDataMap.put(data.msgId.toString(), data)

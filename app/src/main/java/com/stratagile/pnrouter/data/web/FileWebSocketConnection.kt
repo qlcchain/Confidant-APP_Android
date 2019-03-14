@@ -38,6 +38,7 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
     private var retryTime = 0
     private var retryInterval = arrayListOf<Int>(5000, 15000, 30000, 60000, 120000)
     private var filledUri = ""
+    private var ipAddress = ""
     var toId = ""
 
     init {
@@ -62,7 +63,8 @@ class FileWebSocketConnection(httpUri: String, private val trustStore: TrustStor
         Log.w(TAG, "FileWebSocketConnection_WSC connect()...")
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
-        filledUri = wsUri
+        ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
+        filledUri = "wss://" + ipAddress + ConstantValue.filePort
         if (client == null) {
             if (isWifiConnect()) {
             } else {
