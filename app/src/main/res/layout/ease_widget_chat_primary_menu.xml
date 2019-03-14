@@ -43,6 +43,7 @@
             android:visibility="gone" >
 
             <TextView
+                android:id="@+id/holdTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"

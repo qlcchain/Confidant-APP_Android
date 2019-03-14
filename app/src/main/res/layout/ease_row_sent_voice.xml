@@ -83,7 +83,7 @@
             android:layout_centerVertical="true"
             android:text="@string/text_ack_msg"
             android:textSize="12sp"
-            android:layout_toLeftOf="@id/tv_length"
+            android:layout_toLeftOf="@id/bubble"
             android:visibility="invisible"
             />
         <TextView
@@ -94,7 +94,7 @@
             android:layout_centerVertical="true"
             android:text="@string/text_delivered_msg"
             android:textSize="12sp"
-            android:layout_toLeftOf="@id/tv_length"
+            android:layout_toLeftOf="@id/bubble"
             android:visibility="invisible"
             />
           <ProgressBar
@@ -103,7 +103,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
               android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/tv_length"
+            android:layout_toLeftOf="@id/bubble"
             />
     </RelativeLayout>
 

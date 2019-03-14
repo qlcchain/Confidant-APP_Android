@@ -70,6 +70,9 @@ public class EaseChatInputMenu extends LinearLayout {
     private View contentView;
     private InputMethodManager mInputManager;//软键盘管理类
 
+    //是否正在录音，正在录音，其他点击不能生效
+//    private boolean isRecording = false;
+
     public EaseChatInputMenu(Context context, AttributeSet attrs, int defStyle) {
         this(context, attrs);
     }
@@ -301,6 +304,11 @@ public class EaseChatInputMenu extends LinearLayout {
 
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    isRecording = true;
+//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    isRecording = false;
+//                }
                 if(listener != null){
                     return listener.onPressToSpeakBtnTouch(v, event);
                 }
@@ -347,7 +355,6 @@ public class EaseChatInputMenu extends LinearLayout {
      */
     protected void toggleMore() {
         //更多点击。
-//        KLog.i("更多按钮点击");
         chatPrimaryMenu.setModeKeyboard();
         if (chatExtendMenuContainer.getVisibility() == View.GONE) {
             //如果包括表情，更多是不可见的，关闭键盘，然后显示菜单

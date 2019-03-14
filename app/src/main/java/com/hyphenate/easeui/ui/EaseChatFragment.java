@@ -247,6 +247,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
     private long faBegin;
     private long faEnd;
+    //是否正在录音，正在录音，其他点击不能生效
+//    private boolean isRecording = false;
 
     private CountDownTimerUtils countDownTimerUtilsOnVpnServer;
 
@@ -398,6 +400,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 onChatRoomViewCreation();
             }
         });
+        voiceRecorderView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
@@ -420,6 +428,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    isRecording = true;
+//                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    isRecording = false;
+//                }
                 return voiceRecorderView.onPressToSpeakBtnTouch(v, event, new EaseVoiceRecorderCallback() {
 
                     @Override
