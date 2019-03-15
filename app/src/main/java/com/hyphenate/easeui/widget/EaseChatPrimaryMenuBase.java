@@ -100,7 +100,7 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
         /**
          * toggle on/off voice button
          */
-        void onToggleVoiceBtnClicked();
+        void onToggleVoiceBtnClicked(boolean isShowKeyBroad);
         
         /**
          * toggle on/off extend menu

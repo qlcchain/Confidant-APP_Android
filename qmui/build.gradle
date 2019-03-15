@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+
+group = 'com.qmuiteam'
+version = "1.2.0" // QMUI 发布到 bintray 的版本号
+
+//noinspection GroovyMissingReturnStatement
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion minSdkVersion
+        targetSdkVersion sdkVersion
+//        vectorDrawables.useSupportLibrary = true // 与 com.android.support:support-vector-drawable 搭配使用,禁掉 Android Studio 自动生成 png 的功能
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+//    libraryVariants.all{ variant ->
+//        variant.mergeResources.doLast {
+//            replaceTheme variant
+//        }
+//    }
+//    testVariants.all { variant ->
+//        variant.mergeResources.doLast {
+//            replaceTheme variant
+//        }
+//    }
+}
+
+//def replaceTheme(variant){
+//    println "dirName::${variant.dirName}"
+//    def output = "AppConfigTheme"
+//
+//    File valuesFile = file("${buildDir}/intermediates/res/merged/${variant.dirName}/values/values.xml")
+//    String content = valuesFile.getText('UTF-8')
+//    content = content.replaceAll(/\$\{QMUI_PARENT_THEME\}/, output)
+//    valuesFile.write(content, 'UTF-8')
+//}
+
+dependencies {
+    implementation "com.android.support:appcompat-v7:28.0.0-rc02"
+    implementation "com.android.support:design:28.0.0-rc02"
+//    implementation "com.google.android.material:material:$materialVersion"
+}
+
+// deploy
+File deployConfig = project.file('deploy.properties')
+if (deployConfig.exists()) {
+    apply from: "deployMaven.gradle"
+    apply from: "deployBintray.gradle"
+}

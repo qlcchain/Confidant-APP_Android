@@ -273,8 +273,12 @@ public class EaseChatInputMenu extends LinearLayout {
             }
 
             @Override
-            public void onToggleVoiceBtnClicked() {
-                hideExtendMenuContainer();
+            public void onToggleVoiceBtnClicked(boolean isShowKeybroad) {
+                if (isShowKeybroad) {
+                showSoftInput();
+                } else {
+                    hideExtendMenuContainer();
+                }
             }
 
             @Override

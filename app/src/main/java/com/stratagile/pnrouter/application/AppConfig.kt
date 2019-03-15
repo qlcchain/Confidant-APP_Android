@@ -37,6 +37,7 @@ import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.events.BackgroudEvent
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
 import com.stratagile.pnrouter.entity.events.StartVerify
+import com.stratagile.pnrouter.qmui.QMUISwipeBackActivityManager
 import com.stratagile.pnrouter.ui.activity.login.VerifyingFingerprintActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
@@ -103,6 +104,7 @@ class AppConfig : MultiDexApplication() {
         }
         initMiPush()
         loadLibrary()
+        QMUISwipeBackActivityManager.init(this)
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {

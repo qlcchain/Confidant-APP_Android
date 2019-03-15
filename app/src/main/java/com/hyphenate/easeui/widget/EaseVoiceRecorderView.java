@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,7 +24,6 @@ import com.hyphenate.easeui.widget.chatrow.EaseChatRowVoicePlayer;
 
 /**
  * Voice recorder view
- *
  */
 public class EaseVoiceRecorderView extends RelativeLayout {
     protected Context context;
@@ -34,6 +34,7 @@ public class EaseVoiceRecorderView extends RelativeLayout {
     protected PowerManager.WakeLock wakeLock;
     protected ImageView micImage;
     protected TextView recordingHint;
+    private RelativeLayout rlContent;
 
     private boolean isRecording = true;
 
@@ -71,12 +72,13 @@ public class EaseVoiceRecorderView extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.ease_widget_voice_recorder, this);
 
         micImage = (ImageView) findViewById(R.id.mic_image);
+        rlContent = findViewById(R.id.rlContent);
         recordingHint = (TextView) findViewById(R.id.recording_hint);
 
         voiceRecorder = new EaseVoiceRecorder(micImageHandler);
 
         // animation resources, used for recording
-        micImages = new Drawable[] { getResources().getDrawable(R.drawable.ease_record_animate_01),
+        micImages = new Drawable[]{getResources().getDrawable(R.drawable.ease_record_animate_01),
                 getResources().getDrawable(R.drawable.ease_record_animate_02),
                 getResources().getDrawable(R.drawable.ease_record_animate_03),
                 getResources().getDrawable(R.drawable.ease_record_animate_04),
@@ -98,73 +100,75 @@ public class EaseVoiceRecorderView extends RelativeLayout {
 
     /**
      * on speak button touched
-     * 
+     *
      * @param v
      * @param event
      */
     public boolean onPressToSpeakBtnTouch(View v, MotionEvent event, EaseVoiceRecorderCallback recorderCallback) {
         switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-            KLog.i("MotionEvent.ACTION_DOWN");
-            try {
-                EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(context);
-                if (voicePlayer.isPlaying())
-                    voicePlayer.stop();
-                v.setPressed(true);
-                startRecording();
-            } catch (Exception e) {
-                v.setPressed(false);
-            }
-            return true;
-        case MotionEvent.ACTION_MOVE:
-            KLog.i("MotionEvent.ACTION_MOVE");
-            if (event.getY() < 0) {
-                showReleaseToCancelHint();
-            } else {
-                showMoveUpToCancelHint();
-            }
-            return true;
-        case MotionEvent.ACTION_UP:
-            KLog.i("MotionEvent.ACTION_UP");
-            v.setPressed(false);
-            if (event.getY() < 0) {
-                // discard the recorded audio.
-                discardRecording();
-            } else {
-                // stop recording and send voice file
+            case MotionEvent.ACTION_DOWN:
+                KLog.i("MotionEvent.ACTION_DOWN");
                 try {
-                    int length = stopRecoding();
-                    if (length > 0) {
-                        if (recorderCallback != null) {
-                            recorderCallback.onVoiceRecordComplete(getVoiceFilePath(), length);
+                    EaseChatRowVoicePlayer voicePlayer = EaseChatRowVoicePlayer.getInstance(context);
+                    if (voicePlayer.isPlaying()) {
+                        voicePlayer.stop();
+                    }
+                    v.setPressed(true);
+                    startRecording();
+                } catch (Exception e) {
+                    v.setPressed(false);
+                }
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                KLog.i("MotionEvent.ACTION_MOVE");
+                if (event.getY() < 0) {
+                    showReleaseToCancelHint();
+                } else {
+                    showMoveUpToCancelHint();
+                }
+                return true;
+            case MotionEvent.ACTION_UP:
+                KLog.i("MotionEvent.ACTION_UP");
+                v.setPressed(false);
+                if (event.getY() < 0) {
+                    // discard the recorded audio.
+                    discardRecording();
+                } else {
+                    // stop recording and send voice file
+                    try {
+                        int length = stopRecoding();
+                        if (length > 0) {
+                            if (recorderCallback != null) {
+                                recorderCallback.onVoiceRecordComplete(getVoiceFilePath(), length);
+                            }
+                        } else if (length == EMError.FILE_INVALID) {
+                            Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
                         }
-                    } else if (length == EMError.FILE_INVALID) {
-                        Toast.makeText(context, R.string.Recording_without_permission, Toast.LENGTH_SHORT).show();
-                    } else {
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //Toast.makeText(context, R.string.send_failure_please, Toast.LENGTH_SHORT).show();
                         Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    //Toast.makeText(context, R.string.send_failure_please, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(context, R.string.The_recording_time_is_too_short, Toast.LENGTH_SHORT).show();
                 }
-            }
-            return true;
-        default:
-            KLog.i("MotionEvent.default");
-//            discardRecording();
-            return false;
+                return true;
+            case MotionEvent.ACTION_CANCEL:
+                discardRecording();
+                return true;
+            default:
+                KLog.i("MotionEvent.default");
+                KLog.i(event.getAction());
+                return false;
         }
     }
 
     public interface EaseVoiceRecorderCallback {
         /**
          * on voice record complete
-         * 
-         * @param voiceFilePath
-         *            录音完毕后的文件路径
-         * @param voiceTimeLength
-         *            录音时长
+         *
+         * @param voiceFilePath   录音完毕后的文件路径
+         * @param voiceTimeLength 录音时长
          */
         void onVoiceRecordComplete(String voiceFilePath, int voiceTimeLength);
     }
@@ -177,6 +181,8 @@ public class EaseVoiceRecorderView extends RelativeLayout {
         try {
             wakeLock.acquire();
             this.setVisibility(View.VISIBLE);
+            KLog.i("开始对讲");
+            rlContent.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.voice_button_in));
             recordingHint.setText(context.getString(R.string.move_up_to_cancel));
             recordingHint.setBackgroundColor(Color.TRANSPARENT);
             voiceRecorder.startRecording(context);
@@ -186,7 +192,9 @@ public class EaseVoiceRecorderView extends RelativeLayout {
                 wakeLock.release();
             if (voiceRecorder != null)
                 voiceRecorder.discardRecording();
-            this.setVisibility(View.INVISIBLE);
+//            rlContent.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.send_bbutton_out));
+            this.setVisibility(View.GONE);
+            KLog.i("关闭对讲");
             Toast.makeText(context, R.string.recoding_fail, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -213,14 +221,21 @@ public class EaseVoiceRecorderView extends RelativeLayout {
             // stop recording
             if (voiceRecorder.isRecording()) {
                 voiceRecorder.discardRecording();
-                this.setVisibility(View.INVISIBLE);
+//                rlContent.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.send_bbutton_out));
+                setVisibility(View.GONE);
+                KLog.i("关闭对讲");
+//                rlContent.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.send_bbutton_out));
+                this.setVisibility(View.GONE);
+                KLog.i("关闭对讲");
             }
         } catch (Exception e) {
         }
     }
 
     public int stopRecoding() {
-        this.setVisibility(View.INVISIBLE);
+//                rlContent.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.send_bbutton_out));
+        setVisibility(View.GONE);
+        KLog.i("关闭对讲");
         if (wakeLock.isHeld())
             wakeLock.release();
         return voiceRecorder.stopRecoding();

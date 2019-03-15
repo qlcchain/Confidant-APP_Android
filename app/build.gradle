@@ -207,6 +207,7 @@ dependencies {
     implementation project(':zxing')
     implementation project(':picture_library')
     implementation project(':zbar')
+    implementation project(':qmui')
     implementation 'org.greenrobot:greendao:3.2.2'
 
     //图片加载框架

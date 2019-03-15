@@ -227,6 +227,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
      * append emoji icon to editText
      * @param emojiContent
      */
+    @Override
     public void onEmojiconInputEvent(CharSequence emojiContent){
         editText.append(emojiContent);
     }
@@ -234,6 +235,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     /**
      * delete emojicon
      */
+    @Override
     public void onEmojiconDeleteEvent(){
         if (!TextUtils.isEmpty(editText.getText())) {
             KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
@@ -278,7 +280,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             setModeKeyboard();
             showNormalFaceImage();
             if(listener != null)
-                listener.onToggleVoiceBtnClicked();
+                listener.onToggleVoiceBtnClicked(true);
         } else if (id == R.id.btn_more) {
             if (isRecording) {
                 KLog.i("拦截点击");
@@ -400,7 +402,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 setModeVoice();
                 showNormalFaceImage();
                 if(listener != null)
-                    listener.onToggleVoiceBtnClicked();
+                    listener.onToggleVoiceBtnClicked(false);
             }
         }
 
