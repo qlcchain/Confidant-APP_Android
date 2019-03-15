@@ -236,6 +236,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     private HashMap<String, String> sendFileKeyByteMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileFriendKeyByteMap = new HashMap<>();
     private HashMap<String, byte[]> sendFileMyKeyByteMap = new HashMap<>();
+    private HashMap<String, Boolean> sendFileResultMap = new HashMap<>();
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
     private HashMap<String, Message> receiveToxFileDataMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
