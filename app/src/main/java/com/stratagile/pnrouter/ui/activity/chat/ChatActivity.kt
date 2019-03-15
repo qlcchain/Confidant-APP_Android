@@ -37,8 +37,8 @@ import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
 import com.stratagile.pnrouter.utils.*
-import events.ToxReceiveFileFinishedEvent
-import events.ToxReceiveFileNoticeEvent
+import events.ToxChatReceiveFileFinishedEvent
+import events.ToxChatReceiveFileNoticeEvent
 import events.ToxSendFileFinishedEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -164,7 +164,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         chatFragment?.onToxFileSendFinished(fileNumber,key)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun OnToxReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxReceiveFileNoticeEvent) {
+    fun OnToxChatReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxChatReceiveFileNoticeEvent) {
         var fileNumber=  toxReceiveFileNoticeEvent.fileNumber
         var key = toxReceiveFileNoticeEvent.key
         var fileName = toxReceiveFileNoticeEvent.filename
@@ -172,11 +172,12 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onToxReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxReceiveFileFinishedEvent) {
+    fun onToxChatReceiveFileFinishedEvent(toxReceiveFileFinishedEvent: ToxChatReceiveFileFinishedEvent) {
         var fileNumber=  toxReceiveFileFinishedEvent.fileNumber
         var key = toxReceiveFileFinishedEvent.key
         var fileNameSouce =  chatFragment?.getToxReceiveFileName(fileNumber,key)
-        var fileMiName = fileNameSouce!!.substring(fileNameSouce.indexOf(":")+1)
+        var fileNameList = fileNameSouce!!.split(":")
+        var fileMiName = fileNameList[1]
         var jPushFileMsgRsp = receiveToxFileDataMap.get(fileMiName)
         if(jPushFileMsgRsp != null)
         {

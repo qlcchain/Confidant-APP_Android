@@ -657,6 +657,7 @@ public class FileMangerUtil {
             }
 
         }
+        sendToxFileDataMap.remove(fileNumber+"");
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {
@@ -665,7 +666,7 @@ public class FileMangerUtil {
         String fileMiName = fileNameAndUserId;
         String msgLocalId = "";
         String fileType = "";
-        long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
+
         if(fileNameAndUserId.contains(":"))
         {
             String [] fileNameArray = fileNameAndUserId.split(":");
@@ -701,6 +702,7 @@ public class FileMangerUtil {
                     fileFrom = localUpLoadFile.getFileFrom();
                     msgId = localUpLoadFile.getMsgId();
                 }
+                long fileSize = receiveToxFileSizeMap.get(fileNumber+"");
                 UpLoadFile uploadFile = new UpLoadFile(fileMiName,fileMiUrl,fileSize, true, true, "0",1,1,0,false,userKey,0,0,msgId,false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);
@@ -711,6 +713,7 @@ public class FileMangerUtil {
             }
 
         }
+        receiveToxFileNameMap.remove(fileNumber+"");
     }
     public static void  onToxReceiveFileProgressEvent(int fileNumber,String key,int position,int filesize)
     {

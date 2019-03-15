@@ -9,6 +9,9 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LogUtil;
+
+import events.ToxChatReceiveFileFinishedEvent;
+import events.ToxChatReceiveFileNoticeEvent;
 import events.ToxReceiveFileFinishedEvent;
 import events.ToxReceiveFileNoticeEvent;
 import events.ToxReceiveFileProgressEvent;
@@ -42,6 +45,7 @@ public class ToxCoreJni {
     }
     private HashMap<String,String> sendFileRouterMap = new HashMap<>();
     public HashMap<String,Integer> reveiveFileNumberAndMsgIDMap = new HashMap<>();
+    public HashMap<String,String> reveiveFileFromAndMsgIDMap = new HashMap<>();
     private HashMap<String,String> reveiveFileNumberMap = new HashMap<>();
     private HashMap<String,Boolean> progressSendMap = new HashMap<>();
     private HashMap<Integer,Integer> progressReceiveMap = new HashMap<>();
@@ -219,9 +223,16 @@ public class ToxCoreJni {
         String [] fileNameArray = fileName.split(":");
         String fileMiName = fileNameArray[1];
         String msgLocalId = fileNameArray[2];
+        String FileFrom =  fileNameArray[3];
         reveiveFileNumberAndMsgIDMap.put(msgLocalId,fileNumber);
-//        EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNumber, 0,fileSize));
-        EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
+        reveiveFileFromAndMsgIDMap.put(fileNumber+"",FileFrom);
+        if(FileFrom.equals("1"))
+        {
+            EventBus.getDefault().post(new ToxChatReceiveFileNoticeEvent(routerId,fileNumber,fileName));
+        }else{
+            EventBus.getDefault().post(new ToxReceiveFileNoticeEvent(routerId,fileNumber,fileName));
+        }
+
     }
 
     public void starSendFile(int fileNumber, String routerId, int index) {
@@ -251,6 +262,7 @@ public class ToxCoreJni {
             int num = (int)(position / average) + 1;
             progressSendMap.put(index+"_"+num,null);
             EventBus.getDefault().post(new ToxSendFileFinishedEvent(key,fileNumber));
+
         }else{
             int num = (int)(position / average) + 1;
             if(progressSendMap.get(index+"_"+num) == null)
@@ -259,6 +271,7 @@ public class ToxCoreJni {
                 EventBus.getDefault().post(new ToxSendFileProgressEvent(key,fileNumber,position,filesize));
                 progressSendMap.put(index+"_"+num,true);
             }
+
         }
     }
     /**
@@ -272,6 +285,7 @@ public class ToxCoreJni {
         KLog.i("总共为：" + fileSize);
         KLog.i("fileNum为：" + fileNum);
         int average = fileSize / progressBarMaxSeg;
+        String FileFrom = reveiveFileFromAndMsgIDMap.get(fileNum +"");
         if(position == fileSize)
         {
             int num = (int)(position / average) + 1;
@@ -280,15 +294,25 @@ public class ToxCoreJni {
                 progressReceiveMap.put(fileNum, 0);
             }
             KLog.i("抛出EventBus:receivedFileFinish"+fileNum+"_"+num);
-            EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNum));
-        }else{
-            int num = (int)(position / average) + 1;
-            if(progressReceiveMap.get(fileNum) == num - 2)
+            if(FileFrom.equals("1"))
             {
-                KLog.i("抛出EventBus:receivedFileRate"+fileNum+"_"+num);
-                EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNum,position,fileSize));
-                progressReceiveMap.put(fileNum, num);
+                EventBus.getDefault().post(new ToxChatReceiveFileFinishedEvent(routerId,fileNum));
+            }else{
+                EventBus.getDefault().post(new ToxReceiveFileFinishedEvent(routerId,fileNum));
             }
+
+        }else{
+            if(FileFrom.equals("2"))
+            {
+                int num = (int)(position / average) + 1;
+                if(progressReceiveMap.get(fileNum) == num - 2)
+                {
+                    KLog.i("抛出EventBus:receivedFileRate"+fileNum+"_"+num);
+                    EventBus.getDefault().post(new ToxReceiveFileProgressEvent(routerId,fileNum,position,fileSize));
+                    progressReceiveMap.put(fileNum, num);
+                }
+            }
+
 
         }
     }

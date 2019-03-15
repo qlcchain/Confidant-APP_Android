@@ -60,24 +60,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     var fromId:String? = null
     var message: EMMessage? = null
 
-    val sendFileSizeMax = 1024 * 1024 * 2
-    var sendMsgMap = ConcurrentHashMap<String, EMMessage>()
-    var sendMsgLocalMap = ConcurrentHashMap<String, Boolean>()
-    var sendFilePathMap = ConcurrentHashMap<String, String>()
     val sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>()
-    val receiveToxFileNameMap = ConcurrentHashMap<String, String>()
-    val sendFileFriendKeyMap = ConcurrentHashMap<String, String>()
-    val sendFileAESKeyByteMap = ConcurrentHashMap<String, String>()
-    val sendFileFriendKeyByteMap = ConcurrentHashMap<String, ByteArray>()
-    val sendFileMyKeyByteMap = ConcurrentHashMap<String, ByteArray>()
-    var sendFileResultMap = ConcurrentHashMap<String, Boolean>()
-    val sendFileNameMap = ConcurrentHashMap<String, String>()
-    val sendFileLastByteSizeMap = ConcurrentHashMap<String, Int>()
-    val sendFileLeftByteMap = ConcurrentHashMap<String, ByteArray>()
-    val sendMsgIdMap = ConcurrentHashMap<String, String>()
-    val receiveFileDataMap = ConcurrentHashMap<String, Message>()
-    val receiveToxFileDataMap = ConcurrentHashMap<String, Message>()
-    val receiveToxFileIdMap = ConcurrentHashMap<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -237,7 +220,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isUnread = true
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                           /* sendMsgMap.put(uuid, message)
+                                           /*
                                             sendMsgLocalMap.put(uuid, false)
                                             sendFilePathMap.put(uuid, files_dir)
                                             sendFileFriendKeyMap.put(uuid, i.signPublicKey)*/
@@ -287,14 +270,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
                                             val aesKey = RxEncryptTool.generateAESKey()
-                                            val code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, aesKey, false)
+                                            val code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, aesKey.substring(0,16), false)
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
                                                 message.msgId = uuid.toString() + ""
-                                                sendMsgMap.put(uuid.toString() + "", message)
-                                                sendMsgLocalMap.put(uuid.toString() + "", false)
+
+                                                /*sendMsgLocalMap.put(uuid.toString() + "", false)
                                                 sendFilePathMap.put(uuid.toString() + "", base58files_dir)
-                                                sendFileFriendKeyMap.put(uuid.toString() + "", i.signPublicKey)
+                                                sendFileFriendKeyMap.put(uuid.toString() + "", i.signPublicKey)*/
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -378,7 +361,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
                                             /*message.msgId = uuid
-                                            sendMsgMap[uuid] = message
                                             sendMsgLocalMap[uuid] = false
                                             sendFilePathMap[uuid] = videoPath
                                             sendFileFriendKeyMap[uuid] = i.signPublicKey
@@ -421,14 +403,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             val strBase58 = Base58.encode(videoFileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
                                             val aesKey = RxEncryptTool.generateAESKey()
-                                            val code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, aesKey)
+                                            val code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, aesKey.substring(0,16))
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
                                                 message.msgId = uuid.toString() + ""
-                                                       sendMsgMap[uuid.toString() + ""] = message
+                                                /*sendMsgMap[uuid.toString() + ""] = message
                                                 sendMsgLocalMap[uuid.toString() + ""] = false
                                                 sendFilePathMap[uuid.toString() + ""] = base58files_dir
-                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey
+                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey*/
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -549,14 +531,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
                                             val aesKey = RxEncryptTool.generateAESKey()
-                                            val code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, aesKey)
+                                            val code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, aesKey.substring(0,16))
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
                                                 message.msgId = uuid.toString() + ""
-                                                sendMsgMap[uuid.toString() + ""] = message
+                                                /*sendMsgMap[uuid.toString() + ""] = message
                                                 sendMsgLocalMap[uuid.toString() + ""] = false
                                                 sendFilePathMap[uuid.toString() + ""] = base58files_dir
-                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey
+                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey*/
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId

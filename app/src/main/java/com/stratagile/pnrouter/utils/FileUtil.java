@@ -1196,6 +1196,7 @@ public class FileUtil {
             {
                 InputStream fosfrom = new FileInputStream(fromFile);
                 byte[] fileBufferMi =  FileUtil.InputStreamTOByte(fosfrom);
+                KLog.i("copySdcardToxFileAndDecrypt:"+aesKey);
                 byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
                 fosfrom = FileUtil.byteTOInputStream(miFile);
                 OutputStream fosto = new FileOutputStream(toFile);
