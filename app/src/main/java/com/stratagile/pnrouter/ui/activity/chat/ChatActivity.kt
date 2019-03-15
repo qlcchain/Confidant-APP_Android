@@ -49,6 +49,7 @@ import org.greenrobot.eventbus.ThreadMode
 import scalaz.Alpha
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 /**
@@ -125,8 +126,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     var statusBarHeight: Int = 0
-    var receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
-    var receiveToxFileDataMap = HashMap<String, JPushFileMsgRsp>()
+    var receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+    var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     override fun onGlobalLayout() {
         var myLayout = getWindow().getDecorView();
         val r = Rect()
@@ -572,8 +573,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         needFront = true
         KLog.i("insertMessage:ChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
-        receiveFileDataMap = HashMap<String, JPushFileMsgRsp>()
-        receiveToxFileDataMap = HashMap<String, JPushFileMsgRsp>()
+        receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+        receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         super.onCreate(savedInstanceState)
 
     }
@@ -728,15 +729,21 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
                 }
                 0x55 -> {
-                    var data:Bundle = msg.data;
-                    var msgId = data.getInt("msgID")
-                    var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
-                    var fileName:String = jPushFileMsgRsp.params.fileName;
-                    var fromId = jPushFileMsgRsp.params.fromId;
-                    var toId = jPushFileMsgRsp.params.toId
-                    var FileType = jPushFileMsgRsp.params.fileType
-                    chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType)
-                    receiveFileDataMap.remove(msgId.toString())
+                    try {
+                        var data:Bundle = msg.data;
+                        var msgId = data.getInt("msgID")
+                        var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
+                        var fileName:String = jPushFileMsgRsp.params.fileName;
+                        var fromId = jPushFileMsgRsp.params.fromId;
+                        var toId = jPushFileMsgRsp.params.toId
+                        var FileType = jPushFileMsgRsp.params.fileType
+                        chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType)
+                        receiveFileDataMap.remove(msgId.toString())
+                    }catch (e:Exception)
+                    {
+                        e.printStackTrace()
+                    }
+
                 }
             }//goMain();
             //goMain();

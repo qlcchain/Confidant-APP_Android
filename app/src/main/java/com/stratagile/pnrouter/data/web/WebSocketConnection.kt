@@ -39,7 +39,6 @@ import javax.net.ssl.*
 class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, private val credentialsProvider: CredentialsProvider, private val userAgent: String?, private val listener: ConnectivityListener?) : WebSocketListener() {
 
     private val incomingRequests = LinkedList<BaseData>()
-    private val outgoingRequests = HashMap<Long, SettableFuture<Pair<Integer, String>>>()
     private val RECONNECT_INTERVAL = 1 * 1000    //重连自增步长
     private val wsUri: String
     private var isLocalLogin = false //是否本地路由器登录

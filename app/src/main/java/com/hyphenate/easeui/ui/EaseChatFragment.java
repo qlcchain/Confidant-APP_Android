@@ -3267,7 +3267,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (conversation == null)
                 conversation = EMClient.getInstance().chatManager().getConversation(toChatUserId, EaseCommonUtils.getConversationType(chatType), true);
             if (conversation != null) {
-                KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData4_" + conversation.getAllMessages().size());
+                //KLog.i("insertMessage:" + "EaseChatFragment" + "_refreshData4_" + conversation.getAllMessages().size());
                 conversation.insertMessage(message.get(i));
                 //refresh ui
             } else {

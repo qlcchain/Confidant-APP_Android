@@ -51,6 +51,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 /**
@@ -95,8 +96,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     var reNameTempName = ""
     var reNamePos = -1
     var waitRenameData:JPullFileListRsp.ParamsBean.PayloadBean? = null
-    var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
-    var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveToxFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
 
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {

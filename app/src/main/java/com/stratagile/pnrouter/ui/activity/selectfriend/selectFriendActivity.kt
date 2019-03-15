@@ -40,6 +40,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
@@ -60,23 +61,23 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     var message: EMMessage? = null
 
     val sendFileSizeMax = 1024 * 1024 * 2
-    var sendMsgMap = HashMap<String, EMMessage>()
-    var sendMsgLocalMap = HashMap<String, Boolean>()
-    var sendFilePathMap = HashMap<String, String>()
-    val sendToxFileDataMap = HashMap<String, ToxFileData>()
-    val receiveToxFileNameMap = HashMap<String, String>()
-    val sendFileFriendKeyMap = HashMap<String, String>()
-    val sendFileAESKeyByteMap = HashMap<String, String>()
-    val sendFileFriendKeyByteMap = HashMap<String, ByteArray>()
-    val sendFileMyKeyByteMap = HashMap<String, ByteArray>()
-    var sendFileResultMap = HashMap<String, Boolean>()
-    val sendFileNameMap = HashMap<String, String>()
-    val sendFileLastByteSizeMap = HashMap<String, Int>()
-    val sendFileLeftByteMap = HashMap<String, ByteArray>()
-    val sendMsgIdMap = HashMap<String, String>()
-    val receiveFileDataMap = HashMap<String, Message>()
-    val receiveToxFileDataMap = HashMap<String, Message>()
-    val receiveToxFileIdMap = HashMap<String, String>()
+    var sendMsgMap = ConcurrentHashMap<String, EMMessage>()
+    var sendMsgLocalMap = ConcurrentHashMap<String, Boolean>()
+    var sendFilePathMap = ConcurrentHashMap<String, String>()
+    val sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>()
+    val receiveToxFileNameMap = ConcurrentHashMap<String, String>()
+    val sendFileFriendKeyMap = ConcurrentHashMap<String, String>()
+    val sendFileAESKeyByteMap = ConcurrentHashMap<String, String>()
+    val sendFileFriendKeyByteMap = ConcurrentHashMap<String, ByteArray>()
+    val sendFileMyKeyByteMap = ConcurrentHashMap<String, ByteArray>()
+    var sendFileResultMap = ConcurrentHashMap<String, Boolean>()
+    val sendFileNameMap = ConcurrentHashMap<String, String>()
+    val sendFileLastByteSizeMap = ConcurrentHashMap<String, Int>()
+    val sendFileLeftByteMap = ConcurrentHashMap<String, ByteArray>()
+    val sendMsgIdMap = ConcurrentHashMap<String, String>()
+    val receiveFileDataMap = ConcurrentHashMap<String, Message>()
+    val receiveToxFileDataMap = ConcurrentHashMap<String, Message>()
+    val receiveToxFileIdMap = ConcurrentHashMap<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true

@@ -5,7 +5,7 @@ import com.hyphenate.chat.EMMessage
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
 import com.stratagile.pnrouter.entity.LoginReq_V4
-import java.util.HashMap
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 
 object ConstantValue {
@@ -43,7 +43,7 @@ object ConstantValue {
         var publicRASSp ="publicRAS"
         var privateRAS:String? = ""
         var publicRAS:String? = ""
-        var sendFileMsgMap = HashMap<String, EMMessage>();
+        var sendFileMsgMap = ConcurrentHashMap<String, EMMessage>();
         var mainActivity:Activity? = null
         var libsodiumprivateSignKeySp ="libsodiumprivateSignKeySp"
         var libsodiumpublicSignKeySp ="libsodiumpublicSignKeySp"
@@ -66,11 +66,10 @@ object ConstantValue {
         var libsodiumpublicTemKey:String? = ""
         var webSocketFileList : ArrayList<FileWebSocketConnection> = ArrayList()
         var webSockeFileMangertList : ArrayList<FileMangerWebSocketConnection> = ArrayList()
-        var receiveToxFileGlobalDataMap = HashMap<String, String>()
-        var updRouterData: HashMap<String,String> = HashMap()
-        var unSendMessage: HashMap<String,String> = HashMap() //待发送消息
-        var unSendMessageFriendId: HashMap<String,String> = HashMap() //待发送消息的路由器id
-        var unSendMessageSendCount: HashMap<String,Int> = HashMap() //待发送消息重发次数
+        var receiveToxFileGlobalDataMap = ConcurrentHashMap<String, String>()
+        var unSendMessage: ConcurrentHashMap<String,String> = ConcurrentHashMap() //待发送消息
+        var unSendMessageFriendId: ConcurrentHashMap<String,String> = ConcurrentHashMap() //待发送消息的路由器id
+        var unSendMessageSendCount: ConcurrentHashMap<String,Int> = ConcurrentHashMap() //待发送消息重发次数
         var scanRouterId:String =""//二维码扫出来的路由id
         var scanRouterSN:String =""//二维码扫出来的usersn
         var currentRouterIp:String = ""//记录组播寻找到的路由器ip

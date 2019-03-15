@@ -51,7 +51,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import java.io.File
-import java.util.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 import javax.inject.Inject;
 
@@ -131,8 +131,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
     var waitDeleteData: JPullFileListRsp.ParamsBean.PayloadBean? = null
 
-    var receiveFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
-    var receiveToxFileDataMap = HashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var receiveToxFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var wantOpen = false
 
     var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()

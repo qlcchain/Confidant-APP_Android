@@ -12,11 +12,9 @@ import chat.tox.antox.wrapper.FriendKey
 import com.hyphenate.easeui.utils.PathUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
-import com.pawegio.kandroid.e
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -43,9 +41,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.HashMap
-
-import javax.inject.Inject;
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -137,9 +134,9 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
     lateinit var fileGoingTaskLisytAdapter: FileTaskLisytAdapter
 
     lateinit var fileCompleteTaskLisytAdapter: FileTaskLisytAdapter
-    var clickTimeMap = HashMap<String, Long>()
+    var clickTimeMap = ConcurrentHashMap<String, Long>()
 
-    var receiveFileDataMap = HashMap<String, UpLoadFile>()
+    var receiveFileDataMap = ConcurrentHashMap<String, UpLoadFile>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
