@@ -546,6 +546,9 @@ public class FileMangerUtil {
             sendFileData.setDstKey(DstKey);
             byte[] content = new byte[segSize];
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
+            byte[] pad = new byte[2];
+            Arrays.fill(pad,(byte) 0);
+            sendFileData.setPad(pad);
             sendFileData.setContent(content);
             byte[] sendData = sendFileData.toByteArray();
             //int newCRC = CRC16Util.getCRC(sendData,sendData.length);

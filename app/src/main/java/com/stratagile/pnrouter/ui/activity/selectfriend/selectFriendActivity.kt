@@ -237,12 +237,12 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isUnread = true
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            sendMsgMap.put(uuid, message)
+                                           /* sendMsgMap.put(uuid, message)
                                             sendMsgLocalMap.put(uuid, false)
                                             sendFilePathMap.put(uuid, files_dir)
-                                            sendFileFriendKeyMap.put(uuid, i.signPublicKey)
+                                            sendFileFriendKeyMap.put(uuid, i.signPublicKey)*/
 
-                                            val aesKey = RxEncryptTool.generateAESKey()
+                                          /*  val aesKey = RxEncryptTool.generateAESKey()
                                             val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                             val friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                             var SrcKey = ByteArray(256)
@@ -251,7 +251,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 if (ConstantValue.encryptionType == "1") {
                                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                 }else{
                                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -262,11 +262,22 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             } catch (e: Exception) {
 
                                                 return@Runnable
-                                            }
+                                            }*/
 
                                             if (codeSave == 1) {
-                                                val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                                EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.userId
+                                                SendFileInfo.files_dir = files_dir
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.friendSignPublicKey = i.signPublicKey
+                                                SendFileInfo.friendMiPublicKey = i.miPublicKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "1"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                                /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                                EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
                                             } else {
 
                                                 return@Runnable
@@ -303,7 +314,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 try {
                                                     if (ConstantValue.encryptionType == "1") {
                                                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                     }else{
                                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -366,7 +377,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            message.msgId = uuid
+                                            /*message.msgId = uuid
                                             sendMsgMap[uuid] = message
                                             sendMsgLocalMap[uuid] = false
                                             sendFilePathMap[uuid] = videoPath
@@ -381,7 +392,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 if (ConstantValue.encryptionType == "1") {
                                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                 }else{
                                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -391,10 +402,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 sendFileFriendKeyByteMap[uuid] = DstKey
                                             } catch (e: Exception) {
                                                 return@Runnable
-                                            }
-
-                                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
+                                            }*/
+                                            val SendFileInfo = SendFileInfo()
+                                            SendFileInfo.userId = userId
+                                            SendFileInfo.friendId = i.userId
+                                            SendFileInfo.files_dir = videoPath
+                                            SendFileInfo.msgId = uuid
+                                            SendFileInfo.friendSignPublicKey = i.signPublicKey
+                                            SendFileInfo.friendMiPublicKey = i.miPublicKey
+                                            SendFileInfo.voiceTimeLen = 0
+                                            SendFileInfo.type = "3"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
 
                                         } else {
                                             val strBase58 = Base58.encode(videoFileName.toByteArray())
@@ -428,7 +449,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                     if (ConstantValue.encryptionType == "1") {
                                                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                     }else{
                                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -485,12 +506,12 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
                                             message.msgId = uuid
-                                            sendMsgMap[uuid] = message
+                                            /*sendMsgMap[uuid] = message
                                             sendMsgLocalMap[uuid] = false
                                             sendFilePathMap[uuid] = files_dir
-                                            sendFileFriendKeyMap[uuid] = i.signPublicKey
+                                            sendFileFriendKeyMap[uuid] = i.signPublicKey*/
 
-                                            val aesKey = RxEncryptTool.generateAESKey()
+                                            /*val aesKey = RxEncryptTool.generateAESKey()
                                             val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                             val friend = RxEncodeTool.base64Decode(i.signPublicKey)
                                             var SrcKey = ByteArray(256)
@@ -499,7 +520,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                 if (ConstantValue.encryptionType == "1") {
                                                     SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                 }else{
                                                     SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                     DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -510,10 +531,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             } catch (e: Exception) {
 
                                                 return@Runnable
-                                            }
-
-                                            val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))
+                                            }*/
+                                            val SendFileInfo = SendFileInfo()
+                                            SendFileInfo.userId = userId
+                                            SendFileInfo.friendId = i.userId
+                                            SendFileInfo.files_dir = files_dir
+                                            SendFileInfo.msgId = uuid
+                                            SendFileInfo.friendSignPublicKey = i.signPublicKey
+                                            SendFileInfo.friendMiPublicKey = i.miPublicKey
+                                            SendFileInfo.voiceTimeLen = 0
+                                            SendFileInfo.type = "4"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
                                         } else {
                                             val strBase58 = Base58.encode(fileName.toByteArray())
                                             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
@@ -546,7 +577,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                                     if (ConstantValue.encryptionType == "1") {
                                                         SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, UserDataManger.curreantfriendUserData.miPublicKey))
+                                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
                                                     }else{
                                                         SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
                                                         DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
@@ -584,12 +615,12 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                     }
                 }
             }
-            toast(R.string.hasbeensent)
-            super.onBackPressed()
+            //toast(R.string.hasbeensent)
+            finish()
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    //@Subscribe(threadMode = ThreadMode.MAIN)
     fun onConnectWebSocket(fileTransformEntity: FileTransformEntity) {
 
         val EMMessage = sendMsgMap[fileTransformEntity.toId] ?: return
@@ -644,7 +675,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    //@Subscribe(threadMode = ThreadMode.MAIN)
     fun onConnectWebSocket(transformReceiverFileMessage: TransformReceiverFileMessage) {
         val EMMessageData = sendMsgMap[transformReceiverFileMessage.toId] ?: return
         val retMsg = transformReceiverFileMessage.message
