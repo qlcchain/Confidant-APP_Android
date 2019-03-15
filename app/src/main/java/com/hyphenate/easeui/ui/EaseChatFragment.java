@@ -230,7 +230,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     private HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
-    private HashMap<String, ToxFileData> sendToxFileDataMap = new HashMap<>();
     private HashMap<String, Boolean> deleteFileMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileNameMap = new HashMap<>();
     private HashMap<String, String> sendFileFriendKeyMap = new HashMap<>();
@@ -800,7 +799,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     public void onToxFileSendFinished(int fileNumber, String key) {
 
-        ToxFileData toxFileData = sendToxFileDataMap.get(fileNumber + "");
+        ToxFileData toxFileData = ConstantValue.INSTANCE.getSendToxFileDataMap().get(fileNumber + "");
         if (toxFileData != null) {
             if (!deleteFileMap.get(toxFileData.getFileId() + "")) {
                 SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
@@ -819,7 +818,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 KLog.i("tox文件发送成功后取消！");
             }
         }
-        sendToxFileDataMap.remove(fileNumber + "");
+        ConstantValue.INSTANCE.getSendToxFileDataMap().remove(fileNumber + "");
     }
 
     public void onAgreeReceivwFileStart(int fileNumber, String key, String fileName) {
@@ -2381,7 +2380,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         } else {
                             fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                         }
-                        sendToxFileDataMap.put(fileNumber, toxFileData);
+                        ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
                     }
                 }
                 Gson gson = new Gson();
@@ -2531,7 +2530,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
                             } else {
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
@@ -2674,7 +2673,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 } else {
                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
-                                sendToxFileDataMap.put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
                             }
                         }
 
@@ -2847,7 +2846,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
                             }
                         }
                         Gson gson = new Gson();
@@ -3030,7 +3029,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
                                 }
 
-                                sendToxFileDataMap.put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
                             }
 
                         }

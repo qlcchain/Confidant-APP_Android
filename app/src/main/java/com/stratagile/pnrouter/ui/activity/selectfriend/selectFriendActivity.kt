@@ -60,8 +60,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     var fromId:String? = null
     var message: EMMessage? = null
 
-    val sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -316,7 +314,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 }else{
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
-                                                sendToxFileDataMap.put(fileNumber, toxFileData)
+                                                ConstantValue.sendToxFileDataMap.put(fileNumber, toxFileData)
                                             } else {
 
                                                 return@Runnable
@@ -450,7 +448,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
 
-                                                sendToxFileDataMap[fileNumber] = toxFileData
+                                                ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
                                             }
                                         }
                                     } else {
@@ -578,7 +576,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                     fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
                                                 }
 
-                                                sendToxFileDataMap[fileNumber] = toxFileData
+                                                ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
                                             }
 
                                         }
@@ -601,14 +599,14 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             finish()
         }
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
+  /*  @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
         var fileNumber=  toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key
         onToxFileSendFinished(fileNumber,key)
-    }
-    fun onToxFileSendFinished(fileNumber: Int, key: String) {
-        val toxFileData = sendToxFileDataMap[fileNumber.toString() + ""]
+    }*/
+    /*fun onToxFileSendFinished(fileNumber: Int, key: String) {
+        val toxFileData = ConstantValue.sendToxFileDataMap[fileNumber.toString() + ""]
         if (toxFileData != null) {
             val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
             val baseData = BaseData(sendToxFileNotice)
@@ -620,7 +618,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
-    }
+    }*/
     override fun onDestroy() {
         super.onDestroy()
         //EventBus.getDefault().unregister(this)

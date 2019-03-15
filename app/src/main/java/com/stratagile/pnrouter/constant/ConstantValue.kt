@@ -5,6 +5,7 @@ import com.hyphenate.chat.EMMessage
 import com.stratagile.pnrouter.data.web.FileMangerWebSocketConnection
 import com.stratagile.pnrouter.data.web.FileWebSocketConnection
 import com.stratagile.pnrouter.entity.LoginReq_V4
+import com.stratagile.pnrouter.entity.ToxFileData
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 
@@ -29,6 +30,7 @@ object ConstantValue {
         var selfImageName = "selfImageName"
         var uploadAvatarMsgid = "abc12345678"
         var deleteMsgId = ""
+        var sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>() //tox发送文件列表
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
         var unlockTime = "unlocktime"
