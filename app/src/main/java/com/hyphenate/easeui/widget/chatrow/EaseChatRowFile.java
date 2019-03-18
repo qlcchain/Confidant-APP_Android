@@ -12,6 +12,7 @@ import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.TextFormater;
+import com.stratagile.pnrouter.utils.NetUtils;
 
 import java.io.File;
 
@@ -61,9 +62,9 @@ public class EaseChatRowFile extends EaseChatRow{
         }
         File file = new File(filePath);
         if (file.exists() && !file.getName().contains("file_downloading")) {
-            fileSizeView.setText(TextFormater.getDataSize(fileMessageBody.getFileSize()));
+            fileSizeView.setText(NetUtils.INSTANCE.parseSize(fileMessageBody.getFileSize()));
         }else{
-            fileSizeView.setText(TextFormater.getDataSize(0));
+            fileSizeView.setText(NetUtils.INSTANCE.parseSize(0));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (file.exists() && !file.getName().contains("file_downloading")) {

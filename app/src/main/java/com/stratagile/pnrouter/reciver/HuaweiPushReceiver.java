@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.huawei.hms.support.api.push.PushReceiver;
 import com.socks.library.KLog;
+import com.stratagile.pnrouter.constant.ConstantValue;
 
 public class HuaweiPushReceiver extends PushReceiver {
     @Override
@@ -12,6 +13,7 @@ public class HuaweiPushReceiver extends PushReceiver {
 
         //开发者自行实现Token保存逻辑。
         KLog.i("华为推送的token为：" + token);
+        ConstantValue.INSTANCE.setMHuaWeiRegId(token);
 
     }
     @Override

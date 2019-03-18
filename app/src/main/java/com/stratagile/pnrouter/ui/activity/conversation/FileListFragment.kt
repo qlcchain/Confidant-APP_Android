@@ -184,7 +184,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         runOnUiThread {
-            when (SpUtil.getInt(activity!!, ConstantValue.currentArrangeType, 1)) {
+            when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
                 0 -> {
                     fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
                 }
@@ -211,7 +211,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     }
 
     fun pullFileList() {
-        var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var pullFileListReq = PullFileListReq(selfUserId!!, 0, 30, 0, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
@@ -387,7 +387,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                         val fileMD5 = FileUtil.getFileMD5(file)
                         if(fileMD5.equals(data.fileMD5))
                         {
-                            startActivity(Intent(activity!!, PdfViewActivity::class.java).putExtra("fileMiPath", data!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
+                            startActivity(Intent(AppConfig.instance, PdfViewActivity::class.java).putExtra("fileMiPath", data!!.fileName).putExtra("file", fileListChooseAdapter!!.data[position]))
                             return@setOnItemChildClickListener
                         }
 
@@ -455,7 +455,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         sort.setOnClickListener {
             PopWindowUtil.showFileSortWindow(activity!!, sort, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
-                    SpUtil.putInt(activity!!, ConstantValue.currentArrangeType, position)
+                    SpUtil.putInt(AppConfig.instance, ConstantValue.currentArrangeType, position)
                     when (position) {
                         0 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }.toMutableList())
@@ -538,19 +538,19 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         etContent.setSelection(etContent.text.length)
         etContent.requestFocus()
         etContent.postDelayed({
-            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            var imm = AppConfig.instance.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(etContent, InputMethodManager.SHOW_FORCED);
         }, 100)
         btnLeft.setOnClickListener {
-            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            var imm = AppConfig.instance.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             formatDialog.dismissWithAnimation()
         }
         btnRight.setOnClickListener {
-            var imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            var imm = AppConfig.instance.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             formatDialog.dismissWithAnimation()
-            var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
+            var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
             var rename = Base58.encode((etContent.text.toString()+type).toByteArray())
             var fileRenameReq = FileRenameReq(selfUserId!!, data.msgId, fileMiName, rename )
@@ -584,7 +584,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     override fun setupFragmentComponent() {
         DaggerFileListComponent
                 .builder()
-                .appComponent((activity!!.application as AppConfig).applicationComponent)
+                .appComponent((AppConfig.instance).applicationComponent)
                 .fileListModule(FileListModule(this))
                 .build()
                 .inject(this)

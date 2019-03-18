@@ -95,7 +95,6 @@ class AppConfig : MultiDexApplication() {
         setDatabase()
         MessageProvider.getInstance()
         KLog.init(BuildConfig.LOG_DEBUG)
-        BGASwipeBackHelper.init(this, null)
         mAppActivityManager = AppActivityManager(this)
         UserProvider.init()
         if (VersionUtil.getDeviceBrand() == 3) {
@@ -104,7 +103,7 @@ class AppConfig : MultiDexApplication() {
         }
         initMiPush()
         loadLibrary()
-        QMUISwipeBackActivityManager.init(this)
+//        QMUISwipeBackActivityManager.init(this)
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {

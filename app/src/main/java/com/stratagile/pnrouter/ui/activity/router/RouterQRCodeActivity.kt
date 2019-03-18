@@ -1,7 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.router
 
 import android.content.Intent
-import android.graphics.Bitmap
+import android.graphics.*
 import android.os.Bundle
 import android.os.Environment
 import android.view.Menu
@@ -16,20 +16,16 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.RouterCodeData
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterQRCodeComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterQRCodeContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterQRCodePresenter
-import com.stratagile.pnrouter.utils.AESCipher
-import com.stratagile.pnrouter.utils.PopWindowUtil
-import com.stratagile.pnrouter.utils.ShareUtil
-import com.stratagile.pnrouter.utils.ThreadUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
-import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_router_qrcode.*
-import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -63,10 +59,13 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         EventBus.getDefault().register(this)
         title.text = resources.getString(R.string.qr_code_business_card)
         routerEntity = intent.getParcelableExtra("router")
-        tvRouterName.text = routerEntity.routerName
+        tvRouterName.text = "【" + routerEntity.routerName + "】"
+        tvRouterInvitationInfo.text = "\n" + "an invitation to join this circle"
+        ivAvatarUser.withShape = true
+        ivAvatarUser.setImageFile("", routerEntity.routerName)
         tvShare2.setOnClickListener {
 
-            cardView2.setDrawingCacheEnabled(true);
+            cardView2.setDrawingCacheEnabled(true)
             cardView2.buildDrawingCache();
             val bitmapPic = Bitmap.createBitmap(cardView2.getDrawingCache())
             if(bitmapPic != null)
@@ -94,8 +93,8 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         var base64Str = AESCipher.aesEncryptBytesToBase64(routerCodeDataByte,"welcometoqlc0101".toByteArray())
         Thread(Runnable() {
             run() {
-
-                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode("type_1,"+base64Str, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                var bitMapAvatar = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode("type_1,"+base64Str, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), transform(bitMapAvatar))
                 runOnUiThread {
                     ivQrCode2.setImageBitmap(bitmap)
                 }
@@ -106,6 +105,33 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
             saveQrCodeToPhone()
         }
     }
+
+    fun transform(source: Bitmap): Bitmap {
+        val size = Math.min(source.width, source.height)
+
+        val x = (source.width - size) / 2
+        val y = (source.height - size) / 2
+
+        val squaredBitmap = Bitmap.createBitmap(source, x, y, size, size)
+        if (squaredBitmap !== source) {
+            source.recycle()
+        }
+
+        val bitmap = Bitmap.createBitmap(size, size, source.config)
+
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+        val shader = BitmapShader(squaredBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        paint.shader = shader
+        paint.isAntiAlias = true
+
+        val r = size / 2f
+        canvas.drawCircle(r, r, r, paint)
+
+        squaredBitmap.recycle()
+        return bitmap
+    }
+
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {

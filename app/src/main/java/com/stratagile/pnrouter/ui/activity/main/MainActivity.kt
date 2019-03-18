@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.*
 import android.app.Notification.BADGE_ICON_SMALL
@@ -17,8 +18,10 @@ import android.os.Environment
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
 import android.support.v4.view.ViewPager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -1016,6 +1019,241 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
+            ConstantValue.mHuaWeiRegId = "" + it
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun openSceen(screen: Sceen) {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    }
+
+    fun resetUnCompleteFileRecode() {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList) {
+            if (myFie.upLoadFile.isComplete == false) {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = "1"
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
+
+    override fun onResume() {
+//        AppShortCutUtil.clearBadge(this)
+        WinqMessageReceiver.count = 0
+        ShortcutBadger.removeCount(this)
+        exitTime = System.currentTimeMillis() - 2001
+
+        super.onResume()
+        notificationManager?.cancelAll()
+        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
+        controlleMessageUnReadCount(UnReadMessageCount)
+
+    }
+
+    override fun onPause() {
+        ShortcutBadger.removeCount(this)
+        super.onPause()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
+        if (unReadContactCount.messageCount == 0) {
+            new_contact.visibility = View.INVISIBLE
+            new_contact.text = ""
+        } else {
+            new_contact.visibility = View.VISIBLE
+            //new_contact.text = "" + unReadContactCount.messageCount
+            new_contact.text = ""
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
+
+        var hasUnReadMsgCount = 0
+        var hasUnReadMsg: Boolean = false;
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val keyMap = SpUtil.getAll(AppConfig.instance)
+        for (key in keyMap.keys) {
+
+            if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
+                val toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length)
+                if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
+                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
+                    if (localFriendList.size == 0)
+                    //如果找不到用户
+                    {
+                        SpUtil.putString(AppConfig.instance, key, "")
+                        continue
+                    }
+                    var freindStatusData = FriendEntity()
+                    freindStatusData.friendLocalStatus = 7
+                    val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
+                    if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
+                    if (freindStatusData.friendLocalStatus != 0) {
+                        SpUtil.putString(AppConfig.instance, key, "")
+                        continue
+                    }
+                    val cachStr = SpUtil.getString(AppConfig.instance, key, "")
+
+                    if ("" != cachStr) {
+                        val gson = GsonUtil.getIntGson()
+                        val Message = gson.fromJson(cachStr, Message::class.java)
+                        hasUnReadMsgCount += Message.unReadCount
+                        if (hasUnReadMsgCount > 0) {
+                            hasUnReadMsg = true
+                        }
+                    }
+                }
+
+            }
+        }
+        if (unread_count != null) {
+            if (hasUnReadMsgCount == 0) {
+                unread_count.visibility = View.INVISIBLE
+                unread_count.text = ""
+            } else if (hasUnReadMsgCount > 99) {
+                unread_count.visibility = View.VISIBLE
+                unread_count.text = "99+"
+            } else {
+                unread_count.visibility = View.VISIBLE
+                unread_count.text = hasUnReadMsgCount.toString()
+            }
+        }
+    }
+
+
+    override fun onItemClick(id: Int) {
+        when (id) {
+//            R.id.rl_detail -> startActivity(Intent(this, FreeConnectActivity::class.java))
+//            R.id.rl_rank -> startActivity(Intent(this, RankActivity::class.java))
+            else -> {
+            }
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.GONE
+            }
+            1 -> {
+
+            }
+            2 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.VISIBLE
+            }
+            3 -> {
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                reConnect.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private var isCanShotNetCoonect = true
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
+        when (statusChange.status) {
+            0 -> {
+                closeProgressDialog()
+                isCanShotNetCoonect = true
+            }
+            1 -> {
+
+            }
+            2 -> {
+                if (isCanShotNetCoonect) {
+                    if (!ConstantValue.loginOut) {
+                        closeProgressDialog()
+                        //showProgressDialog(getString(R.string.network_reconnecting))
+                    }
+                    isCanShotNetCoonect = false
+                }
+            }
+            3 -> {
+                if (isCanShotNetCoonect) {
+                    closeProgressDialog()
+                    //showProgressDialog(getString(R.string.network_reconnecting))
+                    isCanShotNetCoonect = false
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+//        reRegesterMiPush()
+        KLog.i("onDestroy")
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    fun clear(content: String) {
+        var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
+        var editor = preferences.edit()
+        editor.clear()
+        editor.apply()
+    }
+
+
+    fun setToNews() {
+        tvTitle.text = getString(R.string.app_name)
+        mainIv1.visibility = View.GONE
+        llSort.visibility = View.GONE
+        ivQrCode.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
+    }
+
+    fun setToFile() {
+        tvTitle.text = getString(R.string.file_)
+        mainIv1.visibility = View.VISIBLE
+        ivQrCode.visibility = View.GONE
+        llSort.visibility = View.VISIBLE
+        ivNewGroup.visibility = View.GONE
+    }
+
+    fun setToContact() {
+        tvTitle.text = getString(R.string.contacts)
+        mainIv1.visibility = View.GONE
+        ivQrCode.visibility = View.VISIBLE
+        llSort.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
+        //contactFragment?.updata()
+    }
+
+    fun setToMy() {
+        tvTitle.text = getString(R.string.my)
+        mainIv1.visibility = View.GONE
+        ivQrCode.visibility = View.GONE
+        llSort.visibility = View.GONE
+        ivNewGroup.visibility = View.GONE
+    }
+
+    override fun initView() {
+        setContentView(R.layout.activity_main)
+        tvTitle.text = getString(R.string.news)
+        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        statusBar.setLayoutParams(llp)
+        val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+        reConnect.setLayoutParams(llp1)
+        conversationListFragment = EaseConversationListFragment()
+        conversationListFragment?.hideTitleBar()
+        contactListFragment = EaseContactListFragment()
+        contactListFragment?.hideTitleBar()
+        contactFragment = ContactFragment()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
     }
 
@@ -1025,9 +1263,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 KLog.i("华为推送 HMS connect end: " + it)
                 LogUtil.addLog("华为推送 HMS connect end: " + it)
             })
+            getToken()
         }
         SpUtil.putBoolean(this, ConstantValue.isUnLock, true)
-        getToken()
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
@@ -1046,11 +1284,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         Thread(Runnable() {
             run() {
                 while (isSendRegId) {
+                    Thread.sleep(10 * 1000)
                     var map: HashMap<String, String> = HashMap()
                     var os = VersionUtil.getDeviceBrand()
                     map.put("os", os.toString())
                     map.put("appversion", "1.0.1")
-                    map.put("regid", ConstantValue.mRegId)
+                    if (os == 3) {
+                        map.put("regid", ConstantValue.mRegId)
+                        map.put("token", ConstantValue.mHuaWeiRegId)
+                    } else {
+                        map.put("regid", ConstantValue.mRegId)
+                    }
                     map.put("topicid", "")
                     var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
                     map.put("routerid", ConstantValue.currentRouterId)
@@ -1059,6 +1303,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     map.put("usersn", lastLoginUserSn)
                     KLog.i("小米推送注册RegId= " + ConstantValue.mRegId)
                     LogUtil.addLog("小米推送注册RegId= " + ConstantValue.mRegId, "MainActivity")
+                    KLog.i(map)
                     OkHttpUtils.getInstance().doPost(ConstantValue.pushURL, map, object : OkHttpUtils.OkCallback {
                         override fun onFailure(e: Exception) {
                             isSendRegId = true
@@ -1359,7 +1604,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
         }
-        viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when (position) {
                     0 -> return conversationListFragment!!
@@ -1436,240 +1681,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
     }
 
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun openSceen(screen: Sceen) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    }
-
-    fun resetUnCompleteFileRecode() {
-        var localFilesList = LocalFileUtils.localFilesList
-        for (myFie in localFilesList) {
-            if (myFie.upLoadFile.isComplete == false) {
-                myFie.upLoadFile.SendGgain = true
-                myFie.upLoadFile.isStop = "1"
-                myFie.upLoadFile.segSeqResult = 0
-                val myRouter = MyFile()
-                myRouter.type = 0
-                myRouter.userSn = ConstantValue.currentRouterSN
-                myRouter.upLoadFile = myFie.upLoadFile
-                LocalFileUtils.updateLocalAssets(myRouter)
-            }
-        }
-    }
-
-    override fun onResume() {
-//        AppShortCutUtil.clearBadge(this)
-        WinqMessageReceiver.count = 0
-        ShortcutBadger.removeCount(this)
-        exitTime = System.currentTimeMillis() - 2001
-
-        super.onResume()
-        notificationManager?.cancelAll()
-        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
-        controlleMessageUnReadCount(UnReadMessageCount)
-
-    }
-
-    override fun onPause() {
-        ShortcutBadger.removeCount(this)
-        super.onPause()
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun controlleContactUnReadCount(unReadContactCount: UnReadContactCount) {
-        if (unReadContactCount.messageCount == 0) {
-            new_contact.visibility = View.INVISIBLE
-            new_contact.text = ""
-        } else {
-            new_contact.visibility = View.VISIBLE
-            //new_contact.text = "" + unReadContactCount.messageCount
-            new_contact.text = ""
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun controlleMessageUnReadCount(unReadMessageCount: UnReadMessageCount) {
-
-        var hasUnReadMsgCount = 0
-        var hasUnReadMsg: Boolean = false;
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        val keyMap = SpUtil.getAll(AppConfig.instance)
-        for (key in keyMap.keys) {
-
-            if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
-                val toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length)
-                if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
-                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
-                    if (localFriendList.size == 0)
-                    //如果找不到用户
-                    {
-                        SpUtil.putString(AppConfig.instance, key, "")
-                        continue
-                    }
-                    var freindStatusData = FriendEntity()
-                    freindStatusData.friendLocalStatus = 7
-                    val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
-                    if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
-                    if (freindStatusData.friendLocalStatus != 0) {
-                        SpUtil.putString(AppConfig.instance, key, "")
-                        continue
-                    }
-                    val cachStr = SpUtil.getString(AppConfig.instance, key, "")
-
-                    if ("" != cachStr) {
-                        val gson = GsonUtil.getIntGson()
-                        val Message = gson.fromJson(cachStr, Message::class.java)
-                        hasUnReadMsgCount += Message.unReadCount
-                        if (hasUnReadMsgCount > 0) {
-                            hasUnReadMsg = true
-                        }
-                    }
-                }
-
-            }
-        }
-        if (unread_count != null) {
-            if (hasUnReadMsgCount == 0) {
-                unread_count.visibility = View.INVISIBLE
-                unread_count.text = ""
-            } else if (hasUnReadMsgCount > 99) {
-                unread_count.visibility = View.VISIBLE
-                unread_count.text = "99+"
-            } else {
-                unread_count.visibility = View.VISIBLE
-                unread_count.text = hasUnReadMsgCount.toString()
-            }
-        }
-    }
-
-
-    override fun onItemClick(id: Int) {
-        when (id) {
-//            R.id.rl_detail -> startActivity(Intent(this, FreeConnectActivity::class.java))
-//            R.id.rl_rank -> startActivity(Intent(this, RankActivity::class.java))
-            else -> {
-            }
-        }
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun connectStatusChange(statusChange: ConnectStatus) {
-        when (statusChange.status) {
-            0 -> {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.GONE
-            }
-            1 -> {
-
-            }
-            2 -> {
-                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.VISIBLE
-            }
-            3 -> {
-                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                reConnect.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private var isCanShotNetCoonect = true
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
-        when (statusChange.status) {
-            0 -> {
-                closeProgressDialog()
-                isCanShotNetCoonect = true
-            }
-            1 -> {
-
-            }
-            2 -> {
-                if (isCanShotNetCoonect) {
-                    if (!ConstantValue.loginOut) {
-                        closeProgressDialog()
-                        //showProgressDialog(getString(R.string.network_reconnecting))
-                    }
-                    isCanShotNetCoonect = false
-                }
-            }
-            3 -> {
-                if (isCanShotNetCoonect) {
-                    closeProgressDialog()
-                    //showProgressDialog(getString(R.string.network_reconnecting))
-                    isCanShotNetCoonect = false
-                }
-            }
-        }
-    }
-
-    override fun onDestroy() {
-//        reRegesterMiPush()
-        EventBus.getDefault().unregister(this)
-        super.onDestroy()
-    }
-
-    fun clear(content: String) {
-        var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
-        var editor = preferences.edit()
-        editor.clear()
-        editor.apply()
-    }
-
-
-    fun setToNews() {
-        tvTitle.text = getString(R.string.app_name)
-        mainIv1.visibility = View.GONE
-        llSort.visibility = View.GONE
-        ivQrCode.visibility = View.GONE
-        ivNewGroup.visibility = View.GONE
-    }
-
-    fun setToFile() {
-        tvTitle.text = getString(R.string.file_)
-        mainIv1.visibility = View.VISIBLE
-        ivQrCode.visibility = View.GONE
-        llSort.visibility = View.VISIBLE
-        ivNewGroup.visibility = View.GONE
-    }
-
-    fun setToContact() {
-        tvTitle.text = getString(R.string.contacts)
-        mainIv1.visibility = View.GONE
-        ivQrCode.visibility = View.VISIBLE
-        llSort.visibility = View.GONE
-        ivNewGroup.visibility = View.GONE
-        //contactFragment?.updata()
-    }
-
-    fun setToMy() {
-        tvTitle.text = getString(R.string.my)
-        mainIv1.visibility = View.GONE
-        ivQrCode.visibility = View.GONE
-        llSort.visibility = View.GONE
-        ivNewGroup.visibility = View.GONE
-    }
-
-    override fun initView() {
-        setContentView(R.layout.activity_main)
-        tvTitle.text = getString(R.string.news)
-        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        statusBar.setLayoutParams(llp)
-        val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        reConnect.setLayoutParams(llp1)
-
-        conversationListFragment = EaseConversationListFragment()
-        conversationListFragment?.hideTitleBar()
-        contactListFragment = EaseContactListFragment()
-        contactListFragment?.hideTitleBar()
-        contactFragment = ContactFragment()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {
         KLog.i("要进入验证页面")
@@ -1694,9 +1705,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
+            LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("save"))
+
+        }
         needFront = true
         super.onCreate(savedInstanceState)
         AppConfig.instance!!.applicationComponent!!.httpApiWrapper
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putString("save", "保存的东西")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        KLog.i("HELLO:如果应用进程被系统咔嚓，则再次打开应用的时候会进入")
+        super.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun onBackPressed() {

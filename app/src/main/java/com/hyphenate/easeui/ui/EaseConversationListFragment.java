@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -84,14 +85,34 @@ public class EaseConversationListFragment extends EaseBaseFragment {
     };
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        KLog.i("onCreate");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        KLog.i("onAttach");
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach() {
+        KLog.i("onDetach");
+        super.onDetach();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ease_fragment_conversation_list, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
+        if (savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false)) {
+            KLog.i("savedInstanceState 不为空");
             return;
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -107,6 +128,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
     @Override
     protected void setUpView() {
+        KLog.i("setUpView");
         conversationList.clear();
         conversationList.addAll(loadLocalConversationList());
         conversationListView.init(conversationList);
@@ -117,28 +139,28 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     KLog.i("点击会话层:");
-                    LogUtil.addLog("点击会话层:","EaseConversationListFragment");
+                    LogUtil.addLog("点击会话层:", "EaseConversationListFragment");
                     UnReadEMMessage conversation = conversationListView.getItem(position);
                     UnReadEMMessage lastMessage = conversation;
                     UserEntity friendInfo = null;
                     List<UserEntity> localFriendList = null;
-                    KLog.i("点击会话层lastMessage:"+lastMessage.getEmMessage() +"_from:"+lastMessage.getEmMessage().getFrom()+"_to:"+lastMessage.getEmMessage().getTo());
-                    LogUtil.addLog("点击会话层lastMessage:"+lastMessage.getEmMessage() +"_from:"+lastMessage.getEmMessage().getFrom()+"_to:"+lastMessage.getEmMessage().getTo(),"EaseConversationListFragment");
+                    KLog.i("点击会话层lastMessage:" + lastMessage.getEmMessage() + "_from:" + lastMessage.getEmMessage().getFrom() + "_to:" + lastMessage.getEmMessage().getTo());
+                    LogUtil.addLog("点击会话层lastMessage:" + lastMessage.getEmMessage() + "_from:" + lastMessage.getEmMessage().getFrom() + "_to:" + lastMessage.getEmMessage().getTo(), "EaseConversationListFragment");
                     if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-                        KLog.i("点击会话层1_localFriendList:"+localFriendList.size());
-                        LogUtil.addLog("点击会话层1_localFriendList:"+localFriendList.size(),"EaseConversationListFragment");
+                        KLog.i("点击会话层1_localFriendList:" + localFriendList.size());
+                        LogUtil.addLog("点击会话层1_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
                         if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
                     } else {
                         localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
-                        KLog.i("点击会话层2_localFriendList:"+localFriendList.size());
-                        LogUtil.addLog("点击会话层2_localFriendList:"+localFriendList.size(),"EaseConversationListFragment");
+                        KLog.i("点击会话层2_localFriendList:" + localFriendList.size());
+                        LogUtil.addLog("点击会话层2_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
                         if (localFriendList.size() > 0)
                             friendInfo = localFriendList.get(0);
                     }
-                    KLog.i("点击会话层:"+friendInfo);
-                    LogUtil.addLog("点击会话层:"+friendInfo,"EaseConversationListFragment");
+                    KLog.i("点击会话层:" + friendInfo);
+                    LogUtil.addLog("点击会话层:" + friendInfo, "EaseConversationListFragment");
                     lastMessage.getEmMessage().setUnread(false);
                     UserDataManger.curreantfriendUserData = friendInfo;
                     if (friendInfo != null)
@@ -204,6 +226,8 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                     return true;
                 }
             });
+        } else {
+            KLog.i("listItemClickListener为空。。。");
         }
 
         EMClient.getInstance().addConnectionListener(connectionListener);
@@ -433,7 +457,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                 }
                                 message.setMsgTime(Message.getTimeStatmp());
                                 message.setMsgId(Message.getMsgId() + "");
-                                conversations.put(toChatUserId, new UnReadEMMessage(message,Message.getUnReadCount()));
+                                conversations.put(toChatUserId, new UnReadEMMessage(message, Message.getUnReadCount()));
                             }
 
                         }
@@ -443,7 +467,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             }
             synchronized (conversations) {
                 for (UnReadEMMessage conversation : conversations.values()) {
-                    if (conversation.getEmMessage().getMsgTime() /1000000000 > 2) {
+                    if (conversation.getEmMessage().getMsgTime() / 1000000000 > 2) {
                         LogUtil.addLog("用户最后一条的时间为：" + conversation.getEmMessage().getMsgTime());
                         sortList.add(new Pair<Long, UnReadEMMessage>(conversation.getEmMessage().getMsgTime() / 1000, conversation));
                     } else {

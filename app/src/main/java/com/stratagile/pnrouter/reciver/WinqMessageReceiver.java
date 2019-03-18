@@ -84,6 +84,7 @@ public class WinqMessageReceiver extends PushMessageReceiver {
         count++;
         mMessage = message.getContent();
         LogUtil.addLog("小米推送新消息：" + mMessage);
+        KLog.i("小米推送新消息" + mMessage);
         ShortcutBadger.applyCount(context, count);
 //        AppShortCutUtil.addNumShortCut(context, MainActivity.class, true, count, false);
         if(!TextUtils.isEmpty(message.getTopic())) {

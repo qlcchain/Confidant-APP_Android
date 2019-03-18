@@ -35,7 +35,7 @@
     <string name="collection">Save</string>
     <string name="routerManagement">Management Circles</string>
     <string name="addRecentStatus">Add to my status</string>
-    <string name="qr_code_business_card">QR code business Card</string>
+    <string name="qr_code_business_card">Invitation QR Code</string>
     <string name="search">Search</string>
 
     <string name="Permission_Requeset">Permission Requeset</string>
@@ -392,7 +392,7 @@
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
     <string name="setting_">Settings</string>
-    <string name="scan_qr_code_to_add_me">Scan QR code to add me</string>
+    <string name="scan_qr_code_to_add_me">Sweep on private messages and add me</string>
     <string name="scan_qr_code_to_export_account">Scan QR code to export account</string>
     <string name="erase">Please confirm you would like to erase the data and format the hard disk?</string>
     <string name="erasechoose">Please choose to agree.</string>
