@@ -708,5 +708,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface UpdateAvatarBack {
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
+    interface GroupBack {
+        fun createGroup(jUpdateAvatarRsp: JUpdateAvatarRsp)
+    }
 }
 

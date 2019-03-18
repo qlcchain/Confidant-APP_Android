@@ -85,6 +85,18 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
         } else {
             select_people_number.text = "" + getGroupPeople() + " people"
         }
+        createGroup.setOnClickListener{
+            if(groupName.text.toString().equals(""))
+            {
+                toast(R.string.Name_cannot_be_empty)
+                return@setOnClickListener
+            }
+            if(groupMemberAdapter!!.data.size <= 1)
+            {
+                toast(R.string.At_least_one_good_friend)
+                return@setOnClickListener
+            }
+        }
     }
 
     fun getGroupPeople() : Int{

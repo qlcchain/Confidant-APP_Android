@@ -17,6 +17,7 @@
             android:layout_height="@dimen/x140" />
 
         <EditText
+            android:id="@+id/groupName"
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x106"
             android:gravity="center"

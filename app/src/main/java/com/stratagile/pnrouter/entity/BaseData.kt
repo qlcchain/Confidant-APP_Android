@@ -450,3 +450,108 @@ data class UploadAvatarReq(var Uid : String, var FileName : String, var FileMd5 
  * (2)	响应（APP->Router）
  */
 data class UpdateAvatarReq(var Uid : String, var Fid : String, var Md5 : String,var Action : String = "UpdateAvatar")
+
+/**
+ * 61.	用户创建群组会话
+ * (2)	响应（APP->Router）
+ */
+data class CreateGroupReq(var UserId : String, var GroupName : String, var UserKey : String, var VerifyMode : Int, var FriendId : String, var FriendKey : String,var Action : String = "CreateGroup")
+
+/**
+ * 62.	邀请用户加群
+ * (2)	响应（APP->Router）
+ */
+data class InviteGroupReq(var UserId : String, var GId : String, var FriendId : String, var FriendKey : String,var Action : String = "InviteGroup")
+
+
+
+/**
+ * 63.	邀请用户入群推送
+ * (2)	响应（APP->Router）
+ */
+data class GroupInvitePushReq(var From : String, var To : String, var GId : String, var FromName : String, var GroupName : String,var Action : String = "GroupInvitePush")
+
+
+/**
+ * 64.	邀请用户入群应答（暂不实现）
+ * (2)	响应（APP->Router）
+ */
+data class GroupInviteDealReq(var Userid : String, var SelfId : String, var GId : String, var GroupName : String, var Result : Int,var Action : String = "GroupInviteDeal")
+
+
+/**
+ * 65.	邀请用户入群审核
+ * (2)	响应（APP->Router）
+ */
+data class GroupVerifyReq(var From : String, var To : String, var Aduit : String, var GId : String, var GName : String, var Result : Int, var UserKey : String,var Action : String = "GroupVerify")
+
+/**
+ * 66.	用户退群
+ * (2)	响应（APP->Router）
+ */
+data class GroupQuitReq(var UserId : String, var GId : String, var GroupName : String,var Action : String = "GroupQuit")
+
+
+/**
+ * 67.	拉取群列表
+ * (2)	响应（APP->Router）
+ */
+data class GroupListPullReq(var UserId : String, var RouterId : String,var Action : String = "GroupListPull")
+
+
+/**
+ * 68.	拉取群好友信息
+ * (2)	响应（APP->Router）
+ */
+data class GroupUserPullReq(var UserId : String, var RouterId : String, var GId : String,var Action : String = "GroupUserPull")
+
+/**
+ * 69.	拉取群消息列表
+ * (2)	响应（APP->Router）
+ */
+data class GroupMsgPullReq(var UserId : String, var RouterId : String, var GId : String, var MsgType : Int, var MsgStartId : Int, var MsgNum : Int,var Action : String = "GroupMsgPull")
+
+
+
+/**
+ * 70.	群组会话中发文本消息
+ * (2)	响应（APP->Router）
+ */
+data class GroupSendMsgReq(var UserId : String, var GId : String, var Point : String, var Msg : String,var Action : String = "GroupSendMsg")
+
+
+/**
+ * 71.	群组会话中发送语音，图片，视频，文件等_预处理
+ * (2)	响应（APP->Router）
+ */
+data class GroupSendFilePreReq(var UserId : String, var RouterId : String, var GId : String, var FileName : String, var FileSize : Int, var FileType : Int,var Action : String = "GroupSendFilePre")
+
+/**
+ * 72.	群组会话中发送语音，图片，视频，文件等_完成通知
+ * (2)	响应（APP->Router）
+ */
+data class GroupSendFileDoneReq(var UserId : String, var RouterId : String, var GId : String, var FileName : String, var Path : Int, var FileType : Int, var FileId : Int,var Action : String = "GroupSendFileDone")
+
+/**
+ * 73.	群消息删除
+ * (2)	响应（APP->Router）
+ */
+data class GroupDelMsgReq(var Type : Int, var From : String, var GId : String, var MsgId : Int,var Action : String = "GroupDelMsg")
+
+/**
+ * 74.	群消息推送
+ * (2)	响应（APP->Router）
+ */
+data class GroupMsgPushReq(var From : String, var To : String, var Point : Int, var GId : String, var GroupName : String, var MsgId : Int, var Msg : String,var Action : String = "GroupMsgPush")
+
+/**
+ * 75.	群属性设置
+ * (2)	响应（APP->Router）
+ */
+data class GroupConfigReq(var UserId : String, var GId : String, var Type : Int, var ToId : String, var Name : String, var NeedVerify : Int,var Action : String = "GroupConfig")
+
+/**
+ * 76.	群系统消息推送
+ * (2)	响应（APP->Router）
+ */
+data class GroupSysPushReq(var UserId : String, var GId : String, var Type : Int, var From : String, var To : String, var MsgId : Int, var Name : String, var NeedVerify : Int,var Action : String = "GroupSysPush")
