@@ -1,16 +1,12 @@
 package com.stratagile.pnrouter.data.web
 
 import android.util.Log
-import android.widget.Toast
 import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
-import com.pawegio.kandroid.e
-import com.pawegio.kandroid.toast
 import com.socks.library.KLog
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.MessageEntity
@@ -27,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
-import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServiceMessagePipe>, private val eventListener: Optional<EventListener>) {
@@ -120,6 +115,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 //        javaObject.notifyAll()
 //        return sendMessageTo()
     }
+
+    /**
+     * 私聊发送文字消息
+     */
     fun sendChatMsg(message: BaseData){
         Log.i("sender", "添加")
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -151,8 +150,42 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         {
             sendChatMessage(true,false)
         }
-//        javaObject.notifyAll()
-//        return sendMessageTo()
+    }
+
+    /**
+     * 群聊发送文字消息
+     */
+    fun sendGroupChatMsg(message: BaseData){
+        Log.i("sender", "添加")
+        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        if(msgHashMap.get(userId) == null)
+        {
+            msgHashMap.put(userId!!,ConcurrentLinkedQueue())
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
+        }else{
+            toSendChatMessage = msgHashMap.get(userId!!) as ConcurrentLinkedQueue<BaseData>
+        }
+        toSendChatMessage.offer(message)  //开发期间不要重复
+        var gson = GsonUtil.getIntGson()
+        val GroupSendMsgReq =  message.params as GroupSendMsgReq
+        var messageEntity  = MessageEntity()
+        messageEntity.userId = userId;
+        messageEntity.friendId = GroupSendMsgReq.GId
+        messageEntity.sendTime = message.timestamp
+        messageEntity.type = "0"
+        messageEntity.msgId = message.msgid.toString()
+        messageEntity.baseData = message.baseDataToJson().replace("\\", "")
+        messageEntity.complete = false
+        KLog.i("群聊消息数据增加文本：userId："+userId +" friendId:"+GroupSendMsgReq.GId)
+        AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.insert(messageEntity)//开发期间不要重复
+        Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
+        if (thread.state == Thread.State.NEW) {
+            thread.start()
+        }
+        if(WiFiUtil.isNetworkConnected() && ConstantValue.logining)
+        {
+            sendChatMessage(true,false)
+        }
     }
     fun sendFileMsg(message: SendFileInfo){
 
@@ -270,7 +303,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }else{
                     if(ConstantValue.logining)
                     {
-                        Log.i("sendChat_size_Auto", toSendChatMessageQueue.size.toString())
+                        /*Log.i("sendChat_size_Auto", toSendChatMessageQueue.size.toString())
                         for (item in toSendChatMessageQueue)
                         {
                             if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
@@ -281,7 +314,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
                                 LogUtil.addLog("发送结果：${reslut}")
                             }
-                        }
+                        }*/
                     }
 
                 }

@@ -61,6 +61,7 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
         fragment = ContactFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
+        bundle.putString("routerId",ConstantValue.currentRouterId)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {

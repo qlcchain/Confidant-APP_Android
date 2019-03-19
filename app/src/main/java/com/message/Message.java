@@ -18,25 +18,44 @@ public class Message {
      * Msg : 。。。
      */
 
-    private int MsgId;
-    private int MsgType;
-    private int DbId;
-    private long TimeStatmp;
-    private String From;
-    private String To;
-    private String Msg;
-    private Type type;
-    private int Status;
-    private int Sender;
-    private String FileName;
-    private String  FilePath;
-    private Long FileSize;
-    private String UserKey;
+    private int MsgId;//消息id
+    private int MsgType;//消息类型
+    private int DbId;//服务器上消息数据库id
+    private long TimeStatmp;//时间戳
+    private String From;//谁发的
+    private String To;//发给谁
+    private String Msg;//文字内容
+    private int Point;//群聊中@
+    private Type type;//消息类型
+    private int Status;//消息状态
+    private int Sender;//发送还是接收
+    private String FileName;//文件名
+    private String  FilePath;//文件消息路径
+    private String FileInfo;//文件附加信息
+    private Long FileSize;//文件大小
+    private String UserKey;//文件加密秘钥
     private String Nonce;
     private String Sign;
     private String PriKey;
     private int unReadCount;
-
+    @Override
+    public String toString() {
+        return "Message{" +
+                "MsgId=" + MsgId +
+                "DbId=" + DbId +
+                ", MsgType=" + MsgType +
+                ", TimeStatmp=" + TimeStatmp +
+                ", From='" + From + '\'' +
+                ", To='" + To + '\'' +
+                ", Msg='" + Msg + '\'' +
+                ", type=" + type +
+                ", Status=" + Status +
+                ", Nonce=" + Nonce +
+                ", Sign=" + Sign +
+                ", PriKey=" + PriKey +
+                ", unReadCount=" + unReadCount +
+                '}';
+    }
     public String getFileName() {
         //bas58解码
         //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
@@ -62,24 +81,7 @@ public class Message {
     public void setFileSize(Long fileSize) {
         FileSize = fileSize;
     }
-    @Override
-    public String toString() {
-        return "Message{" +
-                "MsgId=" + MsgId +
-                "DbId=" + DbId +
-                ", MsgType=" + MsgType +
-                ", TimeStatmp=" + TimeStatmp +
-                ", From='" + From + '\'' +
-                ", To='" + To + '\'' +
-                ", Msg='" + Msg + '\'' +
-                ", type=" + type +
-                ", Status=" + Status +
-                ", Nonce=" + Nonce +
-                ", Sign=" + Sign +
-                ", PriKey=" + PriKey +
-                ", unReadCount=" + unReadCount +
-                '}';
-    }
+
 
     public boolean isUnRead() {
         return unRead;
@@ -87,6 +89,22 @@ public class Message {
 
     public void setUnRead(boolean unRead) {
         this.unRead = unRead;
+    }
+
+    public int getPoint() {
+        return Point;
+    }
+
+    public void setPoint(int point) {
+        Point = point;
+    }
+
+    public String getFileInfo() {
+        return FileInfo;
+    }
+
+    public void setFileInfo(String fileInfo) {
+        FileInfo = fileInfo;
     }
 
     private boolean unRead;

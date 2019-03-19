@@ -24,6 +24,7 @@ import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
+import com.stratagile.pnrouter.entity.GroupDelMsgReq;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
@@ -142,25 +143,45 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             if(message.isAcked())
                             {
-                                DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
-                                if(ConstantValue.INSTANCE.isWebsocketConnected())
+                                if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                                 {
-                                    AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
-                                }else if(ConstantValue.INSTANCE.isToxConnected())
-                                {
-                                    BaseData baseData = new BaseData(msgData);
-                                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-
-                                    if(ConstantValue.INSTANCE.isAntox())
+                                    GroupDelMsgReq msgData = new GroupDelMsgReq(0, message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
+                                    BaseData baseData = new BaseData(4,msgData);
+                                    if(ConstantValue.INSTANCE.isWebsocketConnected())
                                     {
-                                        FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                                    }else{
-                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(baseData);
+                                    }else if(ConstantValue.INSTANCE.isToxConnected())
+                                    {
+                                        String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                                        if (ConstantValue.INSTANCE.isAntox()) {
+                                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                        }
                                     }
+                                }else{
+                                    DelMsgReq msgData = new DelMsgReq( message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"DelMsg");
+                                    if(ConstantValue.INSTANCE.isWebsocketConnected())
+                                    {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(msgData));
+                                    }else if(ConstantValue.INSTANCE.isToxConnected())
+                                    {
+                                        BaseData baseData = new BaseData(msgData);
+                                        String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+
+                                        if(ConstantValue.INSTANCE.isAntox())
+                                        {
+                                            FriendKey friendKey  = new FriendKey( ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                        }
 
 
+                                    }
                                 }
+
                             }else{
                                 EventBus.getDefault().post(new DeleteMsgEvent(msgId));
                             }

@@ -208,6 +208,10 @@ object LibsodiumUtil {
         }
 
     }
+
+    /**
+     * 用aeskey进行加密，方便网络传输不被破解，对方收到后需要解密才能拿到秘钥
+     */
     fun EncryptShareKey(shareKey:String,pulicMiKey:String):ByteArray
     {
         var dst_shared_key= shareKey.toByteArray()
@@ -215,6 +219,10 @@ object LibsodiumUtil {
         var crypto_box_seal= Sodium.crypto_box_seal(dst_shared_key_Mi_My,dst_shared_key,dst_shared_key.size,RxEncodeTool.base64Decode(pulicMiKey))
         return dst_shared_key_Mi_My
     }
+
+    /**
+     * 解密获取加密秘钥aeskey
+     */
     fun DecryptShareKey(shareMiKey:String):String
     {
         var dst_shared_key_Mi_My = RxEncodeTool.base64Decode(shareMiKey)

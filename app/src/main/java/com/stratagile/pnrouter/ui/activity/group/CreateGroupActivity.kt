@@ -5,13 +5,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.e
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.CreateGroupReq
+import com.stratagile.pnrouter.entity.JCreateGroupRsp
+import com.stratagile.pnrouter.entity.UpdateAvatarReq
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerCreateGroupComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.CreateGroupContract
@@ -20,6 +29,12 @@ import com.stratagile.pnrouter.ui.activity.group.presenter.CreateGroupPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberAdapter
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
+import com.stratagile.pnrouter.utils.LibsodiumUtil
+import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.RxEncryptTool
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_create_group.*
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
@@ -36,7 +51,46 @@ import javax.inject.Inject;
  * @date 2019/03/12 15:29:49
  */
 
-class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
+class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterServiceMessageReceiver.GroupBack {
+    override fun createGroup(jCreateGroupRsp: JCreateGroupRsp) {
+
+        when(jCreateGroupRsp.params.retCode)
+        {
+            0->
+            {
+                 runOnUiThread {
+                     toast(R.string.success)
+                     finish();
+                 }
+            }
+            1->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.User_ID_error))
+                }
+            }
+            2->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Input_parameter_error))
+                }
+            }
+            3->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.upper_limit))
+                }
+            }
+            else ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Other_mistakes))
+                }
+
+            }
+        }
+
+    }
 
     @Inject
     internal lateinit var mPresenter: CreateGroupPresenter
@@ -96,6 +150,32 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
                 toast(R.string.At_least_one_good_friend)
                 return@setOnClickListener
             }
+            var friendList = groupMemberAdapter!!.data
+            var friendStr = "";
+            var friendKey = "";
+            for (userEntity in friendList)
+            {
+                if(userEntity.userId != null && userEntity.userId.length > 10)
+                {
+                    friendStr += userEntity.userId +",";
+                    friendKey += userEntity.signPublicKey +","
+                }
+
+            }
+            friendStr  = friendStr.substring(0,friendStr.lastIndexOf(","))
+            friendKey  = friendKey.substring(0,friendKey.lastIndexOf(","))
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
+            var aesKey =  RxEncryptTool.generateAESKey()
+            var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
+            val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey,0,friendStr,friendKey)
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, CreateGroupReq))
+            } else if (ConstantValue.isToxConnected) {
+                val baseData = BaseData(4, CreateGroupReq)
+                val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
         }
     }
 
@@ -132,11 +212,17 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
     }
 
     override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.groupBack = null
         super.onDestroy()
     }
 
     override fun initData() {
+        var contactSelectedList: ArrayList<UserEntity> = intent.getParcelableArrayListExtra("personList")
+        contactSelectedList.add(addUser)
+        contactSelectedList.add(reduceUser)
+        groupMemberAdapter?.setNewData(contactSelectedList)
         title.text = "Create a Group"
+        AppConfig.instance.messageReceiver?.groupBack = this
     }
 
     override fun setupActivityComponent() {
@@ -158,5 +244,4 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
 }

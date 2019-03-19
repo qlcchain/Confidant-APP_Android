@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
+import com.hyphenate.chat.adapter.message.EMAMessage;
 import com.hyphenate.easeui.EaseUI;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
@@ -204,6 +205,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             }
             if (sendStatusView != null) {
+
                 if(message.isDelivered())
                 {
                     Animation rotateAnimation  = new RotateAnimation(-3590, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -228,7 +230,10 @@ public abstract class EaseChatRow extends LinearLayout {
                     sendStatusView.setVisibility(View.VISIBLE);
                     sendStatusView.setAnimation(null);
                 }
-
+                if(message.getChatType().equals(EMMessage.ChatType.GroupChat))
+                {
+                    sendStatusView.setVisibility(View.INVISIBLE);
+                }
             }
         }
         if (itemStyle != null) {

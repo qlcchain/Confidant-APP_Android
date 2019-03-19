@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
@@ -13,66 +12,59 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.hyphenate.easeui.EaseConstant
-import com.hyphenate.easeui.ui.EaseChatFragment
+import com.hyphenate.easeui.ui.EaseGroupChatFragment
 import com.hyphenate.easeui.utils.PathUtils
 import com.message.Message
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.constant.UserDataManger
-import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
-import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
-import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
-import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
-import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
+import com.stratagile.pnrouter.ui.activity.chat.component.DaggerGroupChatComponent
+import com.stratagile.pnrouter.ui.activity.chat.contract.GroupChatContract
+import com.stratagile.pnrouter.ui.activity.chat.module.GroupChatModule
+import com.stratagile.pnrouter.ui.activity.chat.presenter.GroupChatPresenter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxChatReceiveFileFinishedEvent
 import events.ToxChatReceiveFileNoticeEvent
 import events.ToxSendFileFinishedEvent
-import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import scalaz.Alpha
-import java.io.File
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
+
+import javax.inject.Inject;
 
 /**
  * @author zl
  * @Package com.stratagile.pnrouter.ui.activity.chat
  * @Description: $description
- * @date 2018/09/13 13:18:46
+ * @date 2019/03/18 15:06:56
  */
 
-class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
-    override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
-        if(jUpdateAvatarRsp.params.retCode == 0)
-        {
+class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServiceMessageReceiver.GroupChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
 
-            var filePath = jUpdateAvatarRsp.params.fileName
-            var fileBase58Name = filePath.substring(8,filePath.length)
-            var fileName = String(Base58.decode(fileBase58Name));
-            val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
-            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
-            var msgId = Calendar.getInstance().timeInMillis /1000
-            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
-        }
-    }
+    @Inject
+    internal lateinit var mPresenter: GroupChatPresenter
+
+    var activityInstance: GroupChatActivity? = null
+    private var chatFragment: EaseGroupChatFragment? = null
+    internal var toChatUserID: String? = null
+    var statusBarHeight: Int = 0
+    var receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+    var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -85,22 +77,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             //goMain();
         }
     }
-    override fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp) {
-        chatFragment?.setFriendStatus(jQueryFriendRsp.params.retCode)
-    }
 
-    override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
+    override fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         chatFragment?.updatFriendName(jUserInfoPushRsp)
     }
 
-    override fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
+    override fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp) {
         if(jJToxPullFileRsp.params.retCode != 0)
         {
             toast(R.string.acceptanceerror)
         }
     }
 
-    override fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
+    override fun sendGroupToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
         chatFragment?.onToxFileSendRsp(jSendToxFileRsp)
 
     }
@@ -124,15 +113,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         chatFragment?.refreshReadData(jReadMsgPushRsp.params.readMsgs)
     }
-
-    @Inject
-    internal lateinit var mPresenter: ChatPresenter
-    var activityInstance: ChatActivity? = null
-    private var chatFragment: EaseChatFragment? = null
-    internal var toChatUserID: String? = null
-    var statusBarHeight: Int = 0
-    var receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
-    var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     override fun onGlobalLayout() {
         var myLayout = getWindow().getDecorView();
         val r = Rect()
@@ -195,23 +175,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
 
     }
-    override fun queryFriend(FriendId :String) {
-
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = QueryFriendReq(userId!!, FriendId)
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
-        }else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(2,msgData)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
-    }
     /**
      * 获取软件盘的高度
      * @return
@@ -243,7 +206,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         //存一份到本地
         if (softInputHeight > 0) {
-            SpUtil.putInt(this@ChatActivity, ConstantValue.realKeyboardHeight, softInputHeight)
+            SpUtil.putInt(this@GroupChatActivity, ConstantValue.realKeyboardHeight, softInputHeight)
         }
         return softInputHeight
     }
@@ -269,7 +232,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
     }
 
-    override fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
+    override fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp) {
 
         var msgData = DelMsgRsp(0,"", delMsgPushRsp.params.friendId)
         if (ConstantValue.isWebsocketConnected) {
@@ -288,7 +251,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             chatFragment?.delFreindMsg(delMsgPushRsp)
         }
     }
-    override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
+    override fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         val gson = Gson()
@@ -342,7 +305,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
         }
         if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            var filledUri = "https://" + ConstantValue.currentRouterIp + port+jPushFileMsgRsp.params.filePath
+            var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port +jPushFileMsgRsp.params.filePath
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
@@ -364,21 +327,20 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
     }
 
-    override fun delMsgRsp(delMsgRsp: JDelMsgRsp) {
-        if (delMsgRsp.params.retCode == 0) {
+    override fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp) {
+       /* if (delMsgRsp.params.retCode == 0) {
             chatFragment?.delMyMsgOnSuccess(delMsgRsp.params.msgId.toString())
-        }
+        }*/
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
         chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
     }
-    override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
-
+    override fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp) {
 
         var messageList: List<Message> = pushMsgRsp.params.payload
-        KLog.i("insertMessage:ChatActivity"+chatFragment)
-        val size = messageList.size
+        KLog.i("insertMessage:GroupChatActivity"+chatFragment)
+        /*val size = messageList.size
         var msgIdStr:String = "";
         for (mesage in messageList)
         {
@@ -390,8 +352,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
 
-        }
-        if(!msgIdStr.equals(""))
+        }*/
+       /* if(!msgIdStr.equals(""))
         {
             val userId = SpUtil.getString(this, ConstantValue.userId, "")
             var readMsgReq  =  ReadMsgReq(userId!!,pushMsgRsp.params.friendId,msgIdStr)
@@ -407,13 +369,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
-        }
-        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.friendId)
+        }*/
+        chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
     }
 
-    override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
+    override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
 
-        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+      /*  var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
         var msgId:String = pushMsgRsp?.params.msgId.toString()
         var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
@@ -464,52 +426,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 chatFragment?.receiveTxtMessage(pushMsgRsp)
             }
 
-        }
+        }*/
     }
 
-    override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
-        try {
-            if(Msg.length >264)
-            {
-                toast(R.string.nomorecharacters)
-                return
-            }
-            var aesKey =  RxEncryptTool.generateAESKey()
-            LogUtil.addLog("sendMsg aesKey:",aesKey)
-            var my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-            LogUtil.addLog("sendMsg myKey:",ConstantValue.publicRAS)
-            var friend = RxEncodeTool.base64Decode(FriendPublicKey)
-            LogUtil.addLog("sendMsg friendKey:",FriendPublicKey)
-            var SrcKey = RxEncodeTool.base64Encode( RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),my))
-            LogUtil.addLog("sendMsg SrcKey:",SrcKey.toString())
-            var DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(),friend))
-            LogUtil.addLog("sendMsg DstKey:",SrcKey.toString())
-            var miMsg = AESCipher.aesEncryptString(Msg,aesKey)
-            LogUtil.addLog("sendMsg miMsg:",miMsg)
-            var msgData = SendMsgReq(FromId!!, ToId!!, miMsg,String(SrcKey),String(DstKey))
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgData))
-            }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgData)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
-            }
-        }catch (e:Exception)
-        {
-            chatFragment?.deleteMessage()
-            LogUtil.addLog("sendMsg 错误:",e.toString())
-            toast(R.string.Encryptionerror)
-        }
-    }
-    override fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String):String {
+    override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String):String {
         var msgId = 0
         try {
-            if(FromIndex.equals("") || ToIndex.equals("") || FriendMiPublicKey.equals(""))
+            if(userId.equals("") || gId.equals(""))
             {
                 toast(R.string.Empty_with_parameters)
                 return msgId.toString()
@@ -520,15 +443,16 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 return msgId.toString()
             }
 
-            var friendMiPublic = RxEncodeTool.base64Decode(FriendMiPublicKey)
-            LogUtil.addLog("sendMsg2 friendKey:",FriendMiPublicKey)
-            var msgMap = LibsodiumUtil.EncryptSendMsg(Msg,friendMiPublic)
-            var msgData = SendMsgReqV3(FromIndex!!, ToIndex!!, msgMap.get("encryptedBase64")!!,msgMap.get("signBase64")!!,msgMap.get("NonceBase64")!!,msgMap.get("dst_shared_key_Mi_My64")!!)
-
-            var baseData = BaseData(3,msgData)
+            var friendMiPublic = RxEncodeTool.base64Decode(point)
+            LogUtil.addLog("groupSendMsgV3 UserKey:",UserKey)
+            var aesKey = LibsodiumUtil.DecryptShareKey(UserKey)
+            var fileBufferMi = AESCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+            var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
+            var groupSendMsgReq = GroupSendMsgReq(userId!!, gId!!, point,msgMi)
+            var baseData = BaseData(4,groupSendMsgReq)
             msgId = baseData.msgid!!
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {
-                AppConfig.instance.getPNRouterServiceMessageSender().sendChatMsg(baseData)
+                AppConfig.instance.getPNRouterServiceMessageSender().sendGroupChatMsg(baseData)
 
             }else if (ConstantValue.isToxConnected) {
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -548,14 +472,14 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         return msgId.toString()
     }
-    override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
-        chatFragment?.upateMessage(sendMsgRsp)
+    override fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp) {
+        chatFragment?.upateMessage(jGroupSendMsgRsp)
         //todo
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
-        KLog.i("insertMessage:ChatActivity_onCreate"+chatFragment)
+        KLog.i("insertMessage:GroupChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
@@ -569,26 +493,27 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         activityInstance = this
         //user or group id
         AppConfig.instance.isChatWithFirend = toChatUserID
-        chatFragment = EaseChatFragment()
+        chatFragment = EaseGroupChatFragment()
         //set arguments
         chatFragment?.setArguments(intent.extras)
         chatFragment?.setChatUserId(toChatUserID)
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment!!).commit()
         val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         view1.setLayoutParams(llp)
-        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(this@ChatActivity)
-        queryFriend(toChatUserID!!)
+        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(this@GroupChatActivity)
     }
 
     override fun initData() {
         if(AppConfig.instance.messageReceiver != null)
-            AppConfig.instance.messageReceiver!!.chatCallBack = this
+            AppConfig.instance.messageReceiver!!.groupchatCallBack = this
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
-        var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10)
+        //var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 1, 0, 10)
+
+        val pullMsgList = GroupMsgPullReq(userId!!, ConstantValue.currentRouterId, UserDataManger.currentGroupData.gId.toString() + "", 0, 0, 10, "GroupMsgPull")
         var sendData = BaseData(pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,pullMsgList)
+            sendData = BaseData(4,pullMsgList)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
@@ -604,26 +529,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         EventBus.getDefault().register(this)
 
-        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData!!.signPublicKey))
-        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
-        var fileMD5 = FileUtil.getFileMD5(File(filePath))
-        if(fileMD5 == null)
-        {
-            fileMD5 = ""
-        }
-        val updateAvatarReq = UpdateAvatarReq(userId!!, UserDataManger.curreantfriendUserData!!.userId, fileMD5)
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
-        } else if (ConstantValue.isToxConnected) {
-            val baseData = BaseData(4, updateAvatarReq)
-            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            } else {
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
+
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -655,7 +561,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun onDestroy() {
         try {
             super.onDestroy()
-            AppConfig.instance.messageReceiver!!.chatCallBack = null
+            AppConfig.instance.messageReceiver!!.groupchatCallBack = null
             AppConfig.instance.isChatWithFirend = null
             activityInstance = null
             EventBus.getDefault().unregister(this)
@@ -685,18 +591,19 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         return toChatUserID!!
     }
 
+
     override fun setupActivityComponent() {
-        DaggerChatComponent
+        DaggerGroupChatComponent
                 .builder()
                 .appComponent((application as AppConfig).applicationComponent)
-                .chatModule(ChatModule(this))
+                .groupChatModule(GroupChatModule(this))
                 .build()
                 .inject(this)
     }
-
-    override fun setPresenter(presenter: ChatContract.ChatContractPresenter) {
-        mPresenter = presenter as ChatPresenter
+    override fun setPresenter(presenter: GroupChatContract.GroupChatContractPresenter) {
+        mPresenter = presenter as GroupChatPresenter
     }
+
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -716,7 +623,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     try {
                         var data:Bundle = msg.data;
                         var msgId = data.getInt("msgID")
-                        var jPushFileMsgRsp:JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
+                        var jPushFileMsgRsp: JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
                         var fileName:String = jPushFileMsgRsp.params.fileName;
                         var fromId = jPushFileMsgRsp.params.fromId;
                         var toId = jPushFileMsgRsp.params.toId
@@ -733,4 +640,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             //goMain();
         }
     }
+
+
+
+
 }

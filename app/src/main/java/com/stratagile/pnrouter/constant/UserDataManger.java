@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.constant;
 
+import com.stratagile.pnrouter.db.GroupEntity;
 import com.stratagile.pnrouter.db.UserEntity;
 
 import java.util.HashMap;
@@ -11,4 +12,5 @@ import java.util.HashMap;
 public class UserDataManger {
     public static UserEntity myUserData;
     public static UserEntity curreantfriendUserData;
+    public static GroupEntity currentGroupData;
 }

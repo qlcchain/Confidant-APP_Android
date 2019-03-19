@@ -593,5 +593,8 @@
     <string name="select_resource_error">select resource error</string>
     <string name="Name_cannot_be_empty">Name cannot be empty</string>
     <string name="At_least_one_good_friend">At least one good friend</string>
+    <string name="Input_parameter_error">Input parameter error</string>
+    <string name="upper_limit">The group has reached the upper limit</string>
+
 
 </resources>

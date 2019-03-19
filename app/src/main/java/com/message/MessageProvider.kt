@@ -16,10 +16,15 @@ import org.libsodium.jni.Sodium
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
+
+
     var unReadCount = 0
     var messageListenter : MessageListener? =null
     var receivedMessageListener : ReceivedMessageListener? = null
     var conversationChangeListener : ConversationChangeListener? = null
+    override fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp) {
+
+    }
     override fun sendMsgRsp(sendMsgRsp: JSendMsgRsp) {
         KLog.i(sendMsgRsp)
 //        var message = Message.createSendMessage(sendMsgRsp.params.msg, sendMsgRsp.params.fromId, sendMsgRsp.params.deleteMsgId, sendMsgRsp.params.toId)
@@ -39,7 +44,12 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 //        messages.add(message)
 
     }
+    override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
 
+    }
+    override fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp) {
+
+    }
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         //服务器推送了别人的消息过来了。
         KLog.i("服务器推送了别人的消息过来了。")

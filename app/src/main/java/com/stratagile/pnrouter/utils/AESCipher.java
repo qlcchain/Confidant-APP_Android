@@ -62,12 +62,40 @@ public class AESCipher {
         byte[] decryptedBytes = aesDecryptBytes(encryptedBytes, keyBytes);
         return decryptedBytes;
     }
+
+    /**
+     * aes加密
+     * @param contentBytes
+     * @param keyBytes
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws UnsupportedEncodingException
+     */
     public static byte[] aesEncryptBytes(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return cipherOperation(contentBytes, keyBytes, Cipher.ENCRYPT_MODE);
     }
     public static String aesEncryptBytesToBase64(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return RxEncodeTool.base64Encode2String(cipherOperation(contentBytes, keyBytes, Cipher.ENCRYPT_MODE));
     }
+
+    /**
+     * aes解密
+     * @param contentBytes
+     * @param keyBytes
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     * @throws UnsupportedEncodingException
+     */
     public static byte[] aesDecryptBytes(byte[] contentBytes, byte[] keyBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         return cipherOperation(contentBytes, keyBytes, Cipher.DECRYPT_MODE);
     }

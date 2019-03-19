@@ -220,7 +220,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                                         messageEntityList.forEach {
                                             if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
                                                 AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
-                                                KLog.i("消息数据删除")
+                                                KLog.i("私聊消息数据删除")
                                             }
                                         }
                                     }
@@ -409,6 +409,63 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     userControlleCallBack?.updateAvatarReq(JUpdateAvatarRsp)
                     //chatCallBack?.updateAvatarReq(JUpdateAvatarRsp)
                 }
+                //61.	用户创建群组会话
+                "CreateGroup" -> {
+                    val JCreateGroupRsp = gson.fromJson(text, JCreateGroupRsp::class.java)
+                    groupBack?.createGroup(JCreateGroupRsp)
+                }
+                //67.	拉取群列表
+                "GroupListPull" -> {
+                    val JGroupListPullRsp = gson.fromJson(text, JGroupListPullRsp::class.java)
+                    groupListPullBack?.groupListPull(JGroupListPullRsp)
+                }
+                //71.	群组会话中发文本消息
+                "GroupSendMsg" -> {
+                    val JGroupSendMsgRsp = gson.fromJson(text, JGroupSendMsgRsp::class.java)
+                    if (ConstantValue.isWebsocketConnected) {
+                        try {
+                            var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
+                            for (item in toSendMessage)
+                            {
+                                if(item.msgid == JGroupSendMsgRsp.msgid)
+                                {
+                                    toSendMessage.remove(item)
+                                    var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
+                                    if(messageEntityList != null)
+                                    {
+                                        messageEntityList.forEach {
+                                            if (it.msgId.equals(JGroupSendMsgRsp.msgid.toString())) {
+                                                AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
+                                                KLog.i("群聊消息数据删除")
+                                            }
+                                        }
+                                    }
+                                    break
+                                }
+                            }
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
+                    }
+                    groupchatCallBack?.sendGroupMsgRsp(JGroupSendMsgRsp)
+                    convsationCallBack?.sendGroupMsgRsp(JGroupSendMsgRsp)
+                }
+                //服务器推送过来的别人的群消息
+                "GroupMsgPush" -> {
+                    val JGroupMsgPushRsp = gson.fromJson(text, JGroupMsgPushRsp::class.java)
+                    groupchatCallBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
+                    convsationCallBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
+                    if (mainInfoBack == null) {
+                        AppConfig.instance.tempPushGroupMsgList.add(JGroupMsgPushRsp)
+                    }
+                    mainInfoBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
+                }
+                //拉取群聊消息
+                "GroupMsgPull" -> {
+                    val JGroupMsgPullRsp = gson.fromJson(text, JGroupMsgPullRsp::class.java)
+                    groupchatCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
+                    convsationCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
+                }
             }
         }
 
@@ -429,6 +486,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var mainInfoBack: MainInfoBack? = null
     var addFriendDealCallBack: AddFriendDealCallBack? = null
     var chatCallBack: ChatCallBack? = null
+    var groupchatCallBack: GroupChatCallBack? = null
+
     var convsationCallBack: CoversationCallBack? = null
 
     var pullFriendCallBack: PullFriendCallBack? = null
@@ -463,6 +522,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var fileForwardBack: FileForwardBack? = null
     var uploadAvatarBack: UploadAvatarBack? = null
     var updateAvatarBackBack: UpdateAvatarBack? = null
+    var groupBack: GroupBack? = null
+    var groupListPullBack: GroupListPullBack? = null
+
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -590,6 +652,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp)
         fun firendList(jPullFriendRsp: JPullFriendRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
+        fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
@@ -663,11 +726,26 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
-
+    interface GroupChatCallBack {
+        fun sendGroupMsg(userId: String, gId: String, point:String, Msg: String,userKey:String):String;
+        fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
+        fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
+        fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)
+        fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp)
+        fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
+        fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
+        fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
+        fun sendGroupToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
+        fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
+        fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
+    }
     interface CoversationCallBack {
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
+        fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
+        fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
+        fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)
         fun delMsgRsp(delMsgRsp: JDelMsgRsp)
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
     }
@@ -709,7 +787,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
     interface GroupBack {
-        fun createGroup(jUpdateAvatarRsp: JUpdateAvatarRsp)
+        fun createGroup(jCreateGroupRsp: JCreateGroupRsp)
+    }
+    interface GroupListPullBack {
+        fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
     }
 }
 

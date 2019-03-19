@@ -639,7 +639,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         ivQrCode.postDelayed({ mNotificationManager.cancel(0) }, 50)
     }
+    override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
 
+    }
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")

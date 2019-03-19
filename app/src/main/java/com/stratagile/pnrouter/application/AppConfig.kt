@@ -33,6 +33,7 @@ import com.stratagile.pnrouter.db.DaoMaster
 import com.stratagile.pnrouter.db.MySQLiteOpenHelper
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.HeartBeatReq
+import com.stratagile.pnrouter.entity.JGroupMsgPushRsp
 import com.stratagile.pnrouter.entity.JPushMsgRsp
 import com.stratagile.pnrouter.entity.events.BackgroudEvent
 import com.stratagile.pnrouter.entity.events.ForegroundCallBack
@@ -78,6 +79,7 @@ class AppConfig : MultiDexApplication() {
 
     var isChatWithFirend:String? = null
     var tempPushMsgList:ArrayList<JPushMsgRsp> = ArrayList<JPushMsgRsp>()
+    var tempPushGroupMsgList:ArrayList<JGroupMsgPushRsp> = ArrayList<JGroupMsgPushRsp>()
     var options = RequestOptions()
             .centerCrop()
             .transform(GlideCircleTransformMainColor(this))

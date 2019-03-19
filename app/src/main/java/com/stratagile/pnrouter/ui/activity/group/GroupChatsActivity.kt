@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.group
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
@@ -9,18 +10,33 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import com.alibaba.fastjson.JSONObject
+import com.hyphenate.easeui.EaseConstant
+import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.GroupEntity
+import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.GroupListPullReq
+import com.stratagile.pnrouter.entity.JGroupListPullRsp
+import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupChatsComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupChatsContract
 import com.stratagile.pnrouter.ui.activity.group.module.GroupChatsModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.GroupChatsPresenter
-import com.stratagile.pnrouter.utils.LogUtil
-import kotlinx.android.synthetic.main.fragment_contact.*
-
-import javax.inject.Inject;
+import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
+import com.stratagile.pnrouter.ui.adapter.group.GroupAdapter
+import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.tox.toxcore.ToxCoreJni
+import kotlinx.android.synthetic.main.activity_group_chats.*
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author hzp
@@ -29,10 +45,39 @@ import javax.inject.Inject;
  * @date 2019/03/12 15:05:01
  */
 
-class GroupChatsActivity : BaseActivity(), GroupChatsContract.View {
+class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServiceMessageReceiver.GroupListPullBack {
+    override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        when(jGroupListPullRsp.params.retCode)
+        {
+            0->
+            {
+                runOnUiThread {
+                    groupEntityList = arrayListOf<GroupEntity>()
+                    for (item in jGroupListPullRsp.params.payload)
+                    {
+                        groupEntityList.add(item)
+                    }
+                    GroupAdapter!!.setNewData(groupEntityList)
+                }
+            }
+            else ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Other_mistakes))
+                }
+
+            }
+        }
+    }
 
     @Inject
     internal lateinit var mPresenter: GroupChatsPresenter
+    var groupEntityList = arrayListOf<GroupEntity>()
+    var handleGroup: GroupEntity? = null
+    var GroupAdapter : GroupAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
@@ -59,22 +104,50 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_group_chats)
+        GroupAdapter = GroupAdapter(groupEntityList)
+        recyclerView.adapter = GroupAdapter
     }
     override fun initData() {
         title.text = getString(R.string.group_chat)
+        AppConfig.instance.messageReceiver?.groupListPullBack = this
+        refreshLayout.setOnRefreshListener {
+            pullGourpList()
+            KLog.i("拉取群组列表")
+        }
+        pullGourpList()
+      /*  GroupAdapter!!.setOnItemChildClickListener { adapter, view, position ->
+            handleGroup = GroupAdapter!!.getItem(position)
+            val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+            intent.putExtra(EaseConstant.EXTRA_USER_ID, handleGroup!!.gId.toString())
+            UserDataManger.currentGroupData = handleGroup
+            startActivity(intent)
+        }*/
     }
-
+    fun pullGourpList()
+    {
+        if (refreshLayout != null)
+            refreshLayout.isRefreshing = false
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val GroupListPullReq = GroupListPullReq(userId!!, ConstantValue.currentRouterId)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, GroupListPullReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, GroupListPullReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        }
+    }
     override fun setupActivityComponent() {
-       DaggerGroupChatsComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .groupChatsModule(GroupChatsModule(this))
-               .build()
-               .inject(this)
+        DaggerGroupChatsComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .groupChatsModule(GroupChatsModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: GroupChatsContract.GroupChatsContractPresenter) {
-            mPresenter = presenter as GroupChatsPresenter
-        }
+        mPresenter = presenter as GroupChatsPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()
@@ -92,7 +165,8 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.create_chat -> {
-                startActivity(Intent(this@GroupChatsActivity, CreateGroupActivity::class.java))
+                var list = arrayListOf<GroupEntity>()
+                startActivityForResult(Intent(this@GroupChatsActivity, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), 0)
             }
             else -> {
 
@@ -100,5 +174,21 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View {
         }
         return super.onOptionsItemSelected(item)
     }
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                var contactSelectedList: ArrayList<GroupEntity> = data.getParcelableArrayListExtra("person")
+                if (contactSelectedList.size > 0) {
+                    var intent = Intent(this@GroupChatsActivity, CreateGroupActivity::class.java)
+                    intent.putExtra("personList", contactSelectedList)
+                    startActivity(intent)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+    override fun onDestroy() {
+        AppConfig.instance.messageReceiver?.groupListPullBack = null
+        super.onDestroy()
+    }
 }

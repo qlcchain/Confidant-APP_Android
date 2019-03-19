@@ -235,6 +235,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     var fromId: String? = null
     var message: EMMessage? = null
     var refreshEnable1 = true
+    var routerId: String? = null
     var onViewCreated = false;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -243,7 +244,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             fromId = arguments!!.get("fromId") as String
             //message = arguments!!.get("message") as EMMessage
         }
-
+        if (arguments != null && arguments!!.get("routerId") != null) {
+            routerId = arguments!!.get("routerId") as String
+        }
         var view = inflater.inflate(R.layout.fragment_contact, null);
         return view
     }
@@ -389,7 +392,17 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(i.friendId)).list()
                     if (localFriendList.size > 0)
                         it = localFriendList.get(0)
-                    contactList.add(it)
+
+                    if(routerId != null)//群聊只能添加本路由器好友
+                    {
+                        if(it.routeId.equals(routerId))
+                        {
+                            contactList.add(it)
+                        }
+                    }else{
+                        contactList.add(it)
+                    }
+
                 }
                 if (i.friendLocalStatus == 3) {
                     hasNewFriendRequest = true
@@ -418,7 +431,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         //一对多数据处理begin
         var contactMapList = HashMap<String, MyFriend>()
         for (i in contactList) {
-
             if (contactMapList.get(i.signPublicKey) == null) {
                 var myFriend = MyFriend()
                 myFriend.userKey = i.signPublicKey
