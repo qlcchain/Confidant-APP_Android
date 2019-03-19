@@ -6,9 +6,10 @@ public class JCreateGroupRsp extends BaseEntity{
 
 
     /**
-     * timestamp : 1552896778
-     * params : {"Action":"CreateGroup","RetCode":0,"ToId":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","GAdmin":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","GId":1,"GName":"b25l"}
+     * timestamp : 1552990078
+     * params : {"Action":"CreateGroup","RetCode":0,"ToId":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","GAdmin":"BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305","GId":6,"GName":"dGhyZWU=","UserKey":"pTn2mphphsK/ujiaE1W+cVdw3W8de7/GJ6fL4JmB2FQEWpS5LDSCqAT32ORoE9rWHP/hYb1FGMZzgVmpbOJVjdgc8kOUfZzceQ/+fioOHsI="}
      */
+
     private int timestampX;
     private ParamsBean params;
 
@@ -34,8 +35,9 @@ public class JCreateGroupRsp extends BaseEntity{
          * RetCode : 0
          * ToId : BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305
          * GAdmin : BEDAC3BF12F9F7AD55BE741F98232D64267821CB1E028F62D9C8930216B8557D6C82EC8C1305
-         * GId : 1
-         * GName : b25l
+         * GId : 6
+         * GName : dGhyZWU=
+         * UserKey : pTn2mphphsK/ujiaE1W+cVdw3W8de7/GJ6fL4JmB2FQEWpS5LDSCqAT32ORoE9rWHP/hYb1FGMZzgVmpbOJVjdgc8kOUfZzceQ/+fioOHsI=
          */
 
         private String Action;
@@ -44,6 +46,7 @@ public class JCreateGroupRsp extends BaseEntity{
         private String GAdmin;
         private int GId;
         private String GName;
+        private String UserKey;
 
         public String getAction() {
             return Action;
@@ -91,6 +94,14 @@ public class JCreateGroupRsp extends BaseEntity{
 
         public void setGName(String GName) {
             this.GName = GName;
+        }
+
+        public String getUserKey() {
+            return UserKey;
+        }
+
+        public void setUserKey(String UserKey) {
+            this.UserKey = UserKey;
         }
     }
 }
