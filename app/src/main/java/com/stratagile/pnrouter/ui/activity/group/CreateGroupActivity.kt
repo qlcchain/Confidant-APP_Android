@@ -153,12 +153,14 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             var friendList = groupMemberAdapter!!.data
             var friendStr = "";
             var friendKey = "";
+            var aesKey =  RxEncryptTool.generateAESKey()
             for (userEntity in friendList)
             {
                 if(userEntity.userId != null && userEntity.userId.length > 10)
                 {
                     friendStr += userEntity.userId +",";
-                    friendKey += userEntity.signPublicKey +","
+                   var friendAesMi =  RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, userEntity.miPublicKey ))
+                    friendKey += friendAesMi +","
                 }
 
             }
@@ -166,7 +168,6 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             friendKey  = friendKey.substring(0,friendKey.lastIndexOf(","))
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
-            var aesKey =  RxEncryptTool.generateAESKey()
             var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
             val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey,0,friendStr,friendKey)
             if (ConstantValue.isWebsocketConnected) {

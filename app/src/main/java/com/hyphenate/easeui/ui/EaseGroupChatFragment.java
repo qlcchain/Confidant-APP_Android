@@ -1194,7 +1194,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
             message.setUnread(false);
             if (Message.getFrom().equals(userId)) {
-                message.setFrom(userId);
+                message.setFrom(Message.getFrom());
                 message.setTo(toChatUserId);
                 message.setDelivered(true);
                 message.setAcked(true);
@@ -1220,8 +1220,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }*/
                 message.setDirection(EMMessage.Direct.SEND);
             } else {
-                message.setFrom(toChatUserId);
-                message.setTo(userId);
+                message.setFrom(Message.getFrom());
+                message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
             message.setMsgTime(Message.getTimeStatmp());
