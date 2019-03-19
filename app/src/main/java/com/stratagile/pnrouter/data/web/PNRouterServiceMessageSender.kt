@@ -303,7 +303,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }else{
                     if(ConstantValue.logining)
                     {
-                        /*Log.i("sendChat_size_Auto", toSendChatMessageQueue.size.toString())
+                        Log.i("sendChat_size_Auto", toSendChatMessageQueue.size.toString())
                         for (item in toSendChatMessageQueue)
                         {
                             if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
@@ -314,7 +314,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
                                 LogUtil.addLog("发送结果：${reslut}")
                             }
-                        }*/
+                        }
                     }
 
                 }
