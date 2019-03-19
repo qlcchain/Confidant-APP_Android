@@ -25,6 +25,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.GroupListPullReq
 import com.stratagile.pnrouter.entity.JGroupListPullRsp
+import com.stratagile.pnrouter.entity.events.AddGroupChange
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupChatsComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupChatsContract
@@ -35,6 +36,9 @@ import com.stratagile.pnrouter.ui.adapter.group.GroupAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_group_chats.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
 
@@ -108,6 +112,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
         recyclerView.adapter = GroupAdapter
     }
     override fun initData() {
+        EventBus.getDefault().register(this)
         title.text = getString(R.string.group_chat)
         AppConfig.instance.messageReceiver?.groupListPullBack = this
         refreshLayout.setOnRefreshListener {
@@ -122,6 +127,10 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
             UserDataManger.currentGroupData = handleGroup
             startActivity(intent)
         }*/
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun FriendAvatarChange(AddGroupChange: AddGroupChange) {
+        pullGourpList()
     }
     fun pullGourpList()
     {
@@ -188,6 +197,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
         super.onActivityResult(requestCode, resultCode, data)
     }
     override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver?.groupListPullBack = null
         super.onDestroy()
     }
