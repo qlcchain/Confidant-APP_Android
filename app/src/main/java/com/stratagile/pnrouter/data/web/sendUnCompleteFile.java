@@ -94,7 +94,7 @@ public class sendUnCompleteFile {
                                 return;
                             }
                             String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"));
+                            EventBus.getDefault().post(new FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin", ""));
 
                         }
                         Gson gson = new Gson();

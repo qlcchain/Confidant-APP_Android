@@ -23,20 +23,21 @@
 
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
-            android:layout_width="@dimen/size_avatar"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginLeft="@dimen/x15"
             app:imageButtonTextSize="16"
-            android:layout_height="@dimen/size_avatar"
             android:layout_alignParentLeft="true"
-            android:layout_marginTop="@dimen/x5"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="@dimen/margin_chat_activity" />
+             />
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="@dimen/x512"
             android:layout_below="@+id/tv_userid"
-            android:layout_marginLeft="@dimen/margin_chat_activity"
+            android:layout_marginLeft="@dimen/x12"
             android:layout_toRightOf="@id/iv_userhead"
             android:background="@drawable/ease_chatfrom_bg"
              >
@@ -48,14 +49,14 @@
                 android:paddingLeft="@dimen/x10"
                 android:paddingRight="@dimen/x10"
                 android:autoLink="web"
+                android:text="sdfssfsfsfsfddsfsfsfsfsfsfsfsdsdfsfsdfsdffsfsfsfsfsfssfdasfasfdsadfdfsdfsf"
                 android:layout_centerInParent="true"
                 android:gravity="center|left"
                 android:lineSpacingExtra="2dp"
                 android:minHeight="32dp"
-                android:maxWidth="225.0dip"
                 android:textColor="@color/color_2c2c2c"
-                android:textSize="14sp" />
-        </RelativeLayout>
+                android:textSize="16sp" />
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/tv_userid"

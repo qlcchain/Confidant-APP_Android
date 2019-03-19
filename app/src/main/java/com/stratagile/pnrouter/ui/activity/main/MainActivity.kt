@@ -930,7 +930,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     lateinit var viewModel: MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
     private var contactFragment: ContactFragment? = null
-    private var contactListFragment: EaseContactListFragment? = null
 
     override fun showToast() {
         showProgressDialog()
@@ -1251,8 +1250,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         reConnect.setLayoutParams(llp1)
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
-        contactListFragment = EaseContactListFragment()
-        contactListFragment?.hideTitleBar()
         contactFragment = ContactFragment()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
@@ -1526,14 +1523,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             ConstantValue.isInit = true
         }
-        contactListFragment?.setContactsMap(getContacts())
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
                 { userid ->
                     startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
                     KLog.i("进入聊天页面，好友id为：" + userid)
                 })
-        contactListFragment?.setContactListItemClickListener(EaseContactListFragment.EaseContactListItemClickListener { user -> startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, user.username)) })
         if (AppConfig.instance.tempPushMsgList.size != 0) {
             Thread(Runnable() {
                 run() {

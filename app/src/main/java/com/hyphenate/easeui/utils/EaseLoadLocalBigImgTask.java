@@ -73,7 +73,7 @@ public class EaseLoadLocalBigImgTask extends AsyncTask<Void, Void, Bitmap> {
 			EaseImageCache.getInstance().put(path, result);
 		else
 			result = BitmapFactory.decodeResource(context.getResources(),
-					R.drawable.ease_default_image);
+					R.drawable.image_defalut_bg);
 		photoView.setImageBitmap(result);
 	}
 }

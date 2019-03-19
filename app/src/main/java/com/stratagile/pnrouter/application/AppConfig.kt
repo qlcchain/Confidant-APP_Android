@@ -105,7 +105,7 @@ class AppConfig : MultiDexApplication() {
         }
         initMiPush()
         loadLibrary()
-//        QMUISwipeBackActivityManager.init(this)
+        QMUISwipeBackActivityManager.init(this)
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {
@@ -280,10 +280,15 @@ class AppConfig : MultiDexApplication() {
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
                 var isUnlock = SpUtil.getBoolean(this@AppConfig, ConstantValue.isUnLock, false)
                 // && !BuildConfig.DEBUG
-                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG) || (!isUnlock && !BuildConfig.DEBUG))
+                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG  && !ConstantValue.isShowVerify) || (!isUnlock && !BuildConfig.DEBUG))
                 {
                     EventBus.getDefault().post(StartVerify())
                 }
+//                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000) && !ConstantValue.isShowVerify)
+//                {
+//                    KLog.i("发送消息，显示验证密码页面")
+//                    EventBus.getDefault().post(StartVerify())
+//                }
                 if (ConstantValue.logining) {
                     var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))

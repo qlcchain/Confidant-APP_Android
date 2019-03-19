@@ -22,19 +22,19 @@
 
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
-            android:layout_width="@dimen/size_avatar"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginRight="@dimen/x15"
             app:imageButtonTextSize="16"
-            android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/x5"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/margin_chat_activity" />
+            android:layout_alignParentTop="true" />
 
         <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="130dp"
             android:layout_height="145dp"
-            android:layout_marginRight="@dimen/margin_chat_activity"
+            android:layout_marginRight="@dimen/x12"
             android:layout_toLeftOf="@id/iv_userhead"
              >
 

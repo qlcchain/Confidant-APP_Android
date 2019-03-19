@@ -38,6 +38,26 @@ public class Message {
     private String Sign;
     private String PriKey;
     private int unReadCount;
+
+    public String getFileInfo() {
+        return FileInfo;
+    }
+
+    public void setFileInfo(String fileInfo) {
+        this.FileInfo = fileInfo;
+    }
+
+    public String getFileName() {
+        //bas58解码
+        //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
+        String FileNameOld = new String(Base58.decode(FileName.replace("null", "")));
+        return FileNameOld;
+    }
+
+    public void setFileName(String fileName) {
+        FileName = fileName;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -55,16 +75,6 @@ public class Message {
                 ", PriKey=" + PriKey +
                 ", unReadCount=" + unReadCount +
                 '}';
-    }
-    public String getFileName() {
-        //bas58解码
-        //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
-        String FileNameOld = new String(Base58.decode(FileName));
-        return FileNameOld;
-    }
-
-    public void setFileName(String fileName) {
-        FileName = fileName;
     }
 
     public String getFilePath() {
@@ -97,14 +107,6 @@ public class Message {
 
     public void setPoint(int point) {
         Point = point;
-    }
-
-    public String getFileInfo() {
-        return FileInfo;
-    }
-
-    public void setFileInfo(String fileInfo) {
-        FileInfo = fileInfo;
     }
 
     private boolean unRead;

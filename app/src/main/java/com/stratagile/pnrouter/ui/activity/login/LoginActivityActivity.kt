@@ -1,11 +1,13 @@
 package com.stratagile.pnrouter.ui.activity.login
 
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
 import android.os.*
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.KeyEvent
 import android.view.View
@@ -109,6 +111,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     val REQUEST_SELECT_ROUTER = 2
     val REQUEST_SCAN_QRCODE = 1
+    val AuthenticationScreen = 3
     var loginBack = false
     var isFromScan = false
     var isFromScanAdmim = false
@@ -126,6 +129,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var isloginOutTime = false
     var scanType = 0 // 0 admin   1 其他
     var adminUserSn:String?  = null
+    var hasFinger = false
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -386,6 +390,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     private var exitTime: Long = 0
     private var loginGoMain:Boolean = false
+    var isUnlock = false
     override fun loginBack(loginRsp: JLoginRsp) {
 //        if (!loginRsp.params.userId.equals(userId)) {
 //            KLog.i("过滤掉userid错误的请求")
@@ -550,6 +555,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (BuildConfig.DEBUG) {
+            isUnlock = true
+        }
         maxLogin = 0
         loginGoMain = false
         needFront = true
@@ -915,6 +923,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         lastLoginUserSn = FileUtil.getLocalUserData("usersn")
         EventBus.getDefault().register(this)
         loginBtn.setOnClickListener {
+            if (!isUnlock) {
+                showUnlock()
+                return@setOnClickListener
+            }
             if (NetUtils.isNetworkAvalible(this)) {
                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
                 if (routerList.size == 0) {
@@ -975,12 +987,24 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         scanIconLogin.setOnClickListener {
+            if (!isUnlock) {
+                showUnlock()
+                return@setOnClickListener
+            }
             mPresenter.getScanPermission()
         }
         miniScanIconLogin.setOnClickListener {
+            if (!isUnlock) {
+                showUnlock()
+                return@setOnClickListener
+            }
             mPresenter.getScanPermission()
         }
         ivNoCircle.setOnClickListener {
+            if (!isUnlock) {
+                showUnlock()
+                return@setOnClickListener
+            }
             mPresenter.getScanPermission()
         }
         viewLogLogin.setOnClickListener {
@@ -993,6 +1017,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 super.handleMessage(msg)
                 when (msg.what) {
                     MSG_AUTH_SUCCESS -> {
+                        isUnlock = true
                         setResultInfo(R.string.fingerprint_success)
                         cancellationSignal = null
                         var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
@@ -1097,6 +1122,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
         initRouterUI()
+        showUnlock()
+    }
+
+    fun showUnlock() {
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         //!BuildConfig.DEBUG &&
         if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1107,6 +1136,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 {*/
                 if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
                     try {
+                        hasFinger = true
                         myAuthCallback = MyAuthCallback(handler)
                         val cryptoObjectHelper = CryptoObjectHelper()
                         if (cancellationSignal == null) {
@@ -1190,42 +1220,41 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     }
 
                 } else {
-                    SpUtil.putString(this, ConstantValue.fingerPassWord, "")
-                    val dialog = AlertDialog.Builder(this)
-                    dialog.setMessage(R.string.No_fingerprints_do_you_want_to_set_them_up)
-                    dialog.setCancelable(false)
+                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                    if (!mKeyguardManager.isKeyguardSecure()) {
+                        KLog.i("没有设置密码。。。。")
+                        SpUtil.putString(this, ConstantValue.fingerPassWord, "")
+                        val dialog = AlertDialog.Builder(this)
+                        dialog.setMessage(R.string.No_fingerprints_do_you_want_to_set_them_up)
+                        dialog.setCancelable(false)
+                        dialog.setPositiveButton(android.R.string.ok
+                        ) { dialog, which ->
+                            var intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+                            startActivity(intent)
+                        }
+                        dialog.setNegativeButton(android.R.string.cancel
+                        ) { dialog, which ->
+                            finish();
+                            //android进程完美退出方法。
+                            var intent = Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    dialog.setPositiveButton(android.R.string.ok
-                    ) { dialog, which ->
-                        finish();
-                        //android进程完美退出方法。
-                        var intent = Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+                            this.startActivity(intent);
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                            //System.runFinalizersOnExit(true);
+                            System.exit(0);
+                        }
+                        dialog.create().show()
 
-                        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-                        this.startActivity(intent);
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        //System.runFinalizersOnExit(true);
-                        System.exit(0);
+                    } else {
+                        var intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
+                        if (intent != null) {
+                            startActivityForResult(intent, AuthenticationScreen)
+                        }
                     }
-                    dialog.setNegativeButton(android.R.string.cancel
-                    ) { dialog, which ->
-                        finish();
-                        //android进程完美退出方法。
-                        var intent = Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-                        this.startActivity(intent);
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        //System.runFinalizersOnExit(true);
-                        System.exit(0);
-                    }
-                    dialog.create().show()
                 }
 
             } catch (e: Exception) {
@@ -1432,6 +1461,29 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
         }
 
+    }
+
+    override fun onPause() {
+        if (!isUnlock && hasFinger) {
+            KLog.i("退出app...")
+            super.onPause()
+            cancellationSignal?.cancel()
+            cancellationSignal = null
+            AppConfig.instance.stopAllService()
+            //android进程完美退出方法。
+            var intent = Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+            this.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            //System.runFinalizersOnExit(true);
+            System.exit(0);
+        } else {
+            super.onPause()
+        }
     }
 
     private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean,autoLogin:Boolean)
@@ -2099,7 +2151,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 }
             }
 
-        }else{
+        }else if (requestCode == AuthenticationScreen){
+            if (resultCode == Activity.RESULT_OK) {
+                handler!!.obtainMessage(MSG_AUTH_SUCCESS).sendToTarget()
+            } else {
+                KLog.i("密码错误。。。。")
+            }
         }
     }
     private fun startToxAndRecovery() {

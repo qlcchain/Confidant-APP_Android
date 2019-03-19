@@ -40,6 +40,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var sendFileFriendKeyMap : ConcurrentHashMap<String, String>
     lateinit var sendFileKeyByteMap : ConcurrentHashMap<String, String>
     lateinit var sendFileFriendKeyByteMap : ConcurrentHashMap<String, ByteArray>
+    lateinit var sendFileWidthAndHeightMap : ConcurrentHashMap<String, String>
     lateinit var sendFileMyKeyByteMap : ConcurrentHashMap<String, ByteArray>
     lateinit var sendFileResultMap:ConcurrentHashMap<String, Boolean>
     lateinit var sendFileNameMap:ConcurrentHashMap<String, String>
@@ -64,6 +65,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
         sendFileResultMap = ConcurrentHashMap<String, Boolean>()
         sendFileNameMap = ConcurrentHashMap<String, String>()
+        sendFileWidthAndHeightMap = ConcurrentHashMap<String, String>()
         sendFileLastByteSizeMap = ConcurrentHashMap<String, Int>()
         sendFileLeftByteMap = ConcurrentHashMap<String, ByteArray>()
         sendMsgIdMap = ConcurrentHashMap<String, String>()
@@ -348,7 +350,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     when(message.type){
                         "1" ->
                         {
-                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight)
                         }
                         "2" ->
                         {
@@ -394,7 +396,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                             when(item.type){
                                                 "1" ->
                                                 {
-                                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey, item.widthAndHeight)
                                                 }
                                                 "2" ->
                                                 {
@@ -566,6 +568,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         if (fileTransformEntity.message == 0) {
             return
         }
+//        sendFileWidthAndHeightMap[fileTransformEntity.toId] = fileTransformEntity.widthAndHeight
+//        KLog.i("设置图片的宽高：" + fileTransformEntity.toId + "  " + fileTransformEntity.widthAndHeight)
         when (fileTransformEntity.message) {
             1 -> /*Thread(Runnable {*/
                 try {
@@ -630,10 +634,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                  sendFileKeyByteMap.remove(fileTransformEntity.toId)
                                  sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                                  sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                                sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
                                 System.gc()
                                 KLog.i("websocket文件发送前取消！")
                                 val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
+                                EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin", fileTransformEntity.widthAndHeight))
                                 EventBus.getDefault().post(FileTransformStatus(fileTransformEntity.toId,"", EMMessage!!.getTo(),0))
                             }
 
@@ -644,6 +649,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                              sendFileKeyByteMap.remove(fileTransformEntity.toId)
                              sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                              sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                            sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
                              System.gc()
                             val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
@@ -657,6 +663,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                      sendFileKeyByteMap.remove(fileTransformEntity.toId)
                      sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                      sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
+                    sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
                      System.gc()
                 }
             /*}).start()*/
@@ -754,6 +761,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                              sendFileKeyByteMap.remove(msgId)
                              sendFileMyKeyByteMap.remove(msgId)
                              sendFileFriendKeyByteMap.remove(msgId)
+                            sendFileWidthAndHeightMap.remove(msgId)
                              System.gc()
                             val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
@@ -787,6 +795,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                          sendFileLastByteSizeMap.remove(msgId)
                          sendFileKeyByteMap.remove(msgId)
                          sendFileMyKeyByteMap.remove(msgId)
+                        sendFileWidthAndHeightMap.remove(msgId)
                          sendFileFriendKeyByteMap.remove(msgId)
                          System.gc()
                     }
@@ -827,6 +836,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                          sendFileLeftByteMap.remove(msgId)
                          sendFileNameMap.remove(msgId)
                          sendFileLastByteSizeMap.remove(msgId)
+                        sendFileWidthAndHeightMap.remove(msgId)
                          sendFileKeyByteMap.remove(msgId)
                          sendFileMyKeyByteMap.remove(msgId)
                          sendFileFriendKeyByteMap.remove(msgId)
@@ -839,6 +849,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                           sendFileNameMap.remove(msgId)
                           sendFileLastByteSizeMap.remove(msgId)
                           sendFileKeyByteMap.remove(msgId)
+                        sendFileWidthAndHeightMap.remove(msgId)
                           sendFileMyKeyByteMap.remove(msgId)
                           sendFileFriendKeyByteMap.remove(msgId)
                           System.gc()
@@ -881,6 +892,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                  sendFileLastByteSizeMap.remove(msgId)
                  sendFileKeyByteMap.remove(msgId)
                  sendFileMyKeyByteMap.remove(msgId)
+                sendFileWidthAndHeightMap.remove(msgId)
                  sendFileFriendKeyByteMap.remove(msgId)
                  System.gc()
                 var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
@@ -948,7 +960,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendFileData.cotinue = 0.toByte()
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
             val strBase58 = Base58.encode(fileName.toByteArray())
-            sendFileData.fileName = strBase58.toByteArray()
+            if (action == 1) {
+                sendFileData.fileName = (strBase58 + sendFileWidthAndHeightMap[msgId]).toByteArray()
+                KLog.i("发送文件的宽高为："  + msgId + "  " + sendFileWidthAndHeightMap[msgId])
+                KLog.i("发送的文件的名字为：" + String(sendFileData.fileName))
+            } else {
+                sendFileData.fileName = strBase58.toByteArray()
+            }
             sendFileData.fromId = From.toByteArray()
             sendFileData.toId = To.toByteArray()
             sendFileData.srcKey = SrcKey
@@ -981,7 +999,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         }
 
     }
-    fun sendImageMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
+    fun sendImageMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, widthAndHeigh : String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
@@ -1030,6 +1048,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileKeyByteMap.put(msgId, fileKey.substring(0, 16))
                             sendFileMyKeyByteMap.put(msgId, SrcKey)
                             sendFileFriendKeyByteMap.put(msgId, DstKey)
+                            KLog.i("设置图片的宽高：" + msgId + "  " + widthAndHeigh)
+                            sendFileWidthAndHeightMap.put(msgId, widthAndHeigh)
                         } catch (e: Exception) {
                             var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                             if(messageEntityList != null)
@@ -1058,7 +1078,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         }
 
                         val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                        EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
+                        EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin", widthAndHeigh))
 
                     }
                     val gson = Gson()

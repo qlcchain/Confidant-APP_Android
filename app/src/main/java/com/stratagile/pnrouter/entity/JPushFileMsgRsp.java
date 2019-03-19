@@ -38,9 +38,19 @@ public class JPushFileMsgRsp extends BaseEntity {
         private String FilePath;
         private String FileName;
         private String FileMD5;
+
+        public String getFileInfo() {
+            return FileInfo;
+        }
+
+        public void setFileInfo(String fileInfo) {
+            FileInfo = fileInfo;
+        }
+
         private int MsgId;
         private String SrcKey;
         private String DstKey;
+        private String FileInfo;
 
 
 

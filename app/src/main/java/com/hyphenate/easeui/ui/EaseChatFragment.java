@@ -1034,8 +1034,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File filesFile = new File(files_dir);
                     if (filesFile.exists()) {
                         message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                        if (Message.getFileInfo() != null) {
+                            message.setAttribute("wh", Message.getFileInfo());
+                        }
                     } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
+                        if (Message.getFileInfo() != null) {
+                            message.setAttribute("wh", Message.getFileInfo());
+                        }
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
@@ -1309,6 +1315,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         switch (type) {
                             case "1":
                                 EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
+                                Bitmap bitmap1 = BitmapFactory.decodeFile(filePath);
+                                String widthAndHeight = "," + bitmap1.getWidth() + "*" + bitmap1.getHeight();
+                                if (bitmap1 != null) {
+                                    message.setAttribute("wh", widthAndHeight.replace(",", ""));
+                                }
                                 message.setFrom(userIdL);
                                 message.setTo(friendId);
                                 message.setDelivered(true);
@@ -2421,9 +2432,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     if (isHas) {
-//                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-//                        int width = bitmap.getWidth();
-//                        int height = bitmap.getHeight();
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                        String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
+                        KLog.i("图片的宽高为：" + widthAndHeight);
+                        bitmap.recycle();
                         if (file.length() > 1024 * 1024 * 100) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -2439,6 +2451,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
+                        message.setAttribute("wh", widthAndHeight.replace(",", ""));
                         message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                         message.setDelivered(true);
                         message.setAcked(false);
@@ -2459,6 +2472,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 SendFileInfo.setFriendId(toChatUserId);
                                 SendFileInfo.setFiles_dir(files_dir);
                                 SendFileInfo.setMsgId(uuid);
+                                SendFileInfo.setWidthAndHeight(widthAndHeight);
                                 SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                                 SendFileInfo.setVoiceTimeLen(0);
@@ -2576,6 +2590,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     if (isHas) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                        String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
+                        bitmap.recycle();
                         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
@@ -2616,7 +2633,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             }
 
                             String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin", widthAndHeight));
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
@@ -3135,13 +3152,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * @param fromId
      * @param toId
      */
-    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType) {
+    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType, String fileInfo) {
         String files_dir = "";
         EMMessage message = null;
+        KLog.i("收到了文件消息，。。。");
         switch (FileType) {
             case 1:
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                message.setAttribute("wh", fileInfo);
                 break;
             case 2:
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;

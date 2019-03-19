@@ -8,9 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.hyphenate.easeui.EaseUI
@@ -18,7 +20,11 @@ import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.qmui.InnerBaseActivity
+import com.stratagile.pnrouter.qmui.QMUISwipeBackActivityManager
+import com.stratagile.pnrouter.qmui.SwipeBackLayout
+import com.stratagile.pnrouter.qmui.SwipeBackLayout.EDGE_LEFT
+import com.stratagile.pnrouter.qmui.SwipeBackgroundView
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.pnrouter.view.RxDialogLoading
@@ -29,32 +35,44 @@ import com.stratagile.pnrouter.view.RxDialogLoading
  * 描述：
  */
 
-abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
+abstract class BaseActivity : InnerBaseActivity(), ActivityDelegate {
 
     var toolbar: Toolbar? = null
     var needFront = false   //toolBar 是否需要显示在最上面的返还标题栏 true 不显示
     var rootLayout: RelativeLayout? = null
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
-    lateinit var progressDialog : RxDialogLoading
+    lateinit var progressDialog: RxDialogLoading
     lateinit var title: TextView
     val point = Point()
 
     var inputMethodManager: InputMethodManager? = null
 
+    private var mListenerRemover: SwipeBackLayout.ListenerRemover? = null
+    private var mSwipeBackgroundView: SwipeBackgroundView? = null
+    private var mIsInSwipeBack = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
-//        initSwipeBackFinish()
         super.onCreate(savedInstanceState)
         // 这句很关键，注意是调用父类的方法
-        super.setContentView(R.layout.activity_base)
-        if (android.os.Build.MANUFACTURER.toUpperCase() == "MEIZU") {
-            val localLayoutParams = window.attributes
-            localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
+        val swipeBackLayout = SwipeBackLayout.wrap(this,
+                R.layout.activity_base, dragBackEdge(), mSwipeCallback)
+        if (translucentFull()) {
+            swipeBackLayout.contentView.fitsSystemWindows = false
         } else {
-            StatusBarUtil.setTransparent(this)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
-            }
+            swipeBackLayout.contentView.fitsSystemWindows = true
+        }
+        mListenerRemover = swipeBackLayout.addSwipeListener(mSwipeListener)
+        super.setContentView(newSwipeBackLayout(View.inflate(this, R.layout.activity_base, null)))
+//        super.setContentView(R.layout.activity_base)
+//        if (android.os.Build.MANUFACTURER.toUpperCase() == "MEIZU") {
+//            val localLayoutParams = window.attributes
+//            localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
+//        } else {
+//        }
+        StatusBarUtil.setTransparent(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
         }
         AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {
@@ -68,16 +86,25 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 //        initToolbar()
         setupActivityComponent()
-        if (savedInstanceState != null) {
-            KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
-            LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("save"))
-        }
         initView()
         initData()
     }
 
+    override fun onBackPressed() {
+        if (!mIsInSwipeBack) {
+            doOnBackPressed()
+        }
+    }
+
     override fun onDestroy() {
         AppConfig.instance.mAppActivityManager.removeActivity(this)
+        if (mListenerRemover != null) {
+            mListenerRemover?.remove()
+        }
+        if (mSwipeBackgroundView != null) {
+            mSwipeBackgroundView?.unBind()
+            mSwipeBackgroundView = null
+        }
         super.onDestroy()
     }
 
@@ -92,12 +119,24 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             inputMethodManager?.hideSoftInputFromWindow(currentFocus!!.windowToken,
                     InputMethodManager.HIDE_NOT_ALWAYS)
     }
+
     override fun setContentView(layoutId: Int) {
         setContentView(View.inflate(this, layoutId, null))
     }
 
     override fun setTitle(title: CharSequence?) {
         this.title.text = title.toString()
+    }
+
+    private fun newSwipeBackLayout(view: View): View {
+        if (translucentFull()) {
+            view.fitsSystemWindows = false
+        } else {
+            view.fitsSystemWindows = true
+        }
+        val swipeBackLayout = SwipeBackLayout.wrap(view, dragBackEdge(), mSwipeCallback)
+        mListenerRemover = swipeBackLayout.addSwipeListener(mSwipeListener)
+        return swipeBackLayout
     }
 
     override fun setContentView(view: View) {
@@ -123,6 +162,10 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             initToolbar()
         }
     }
+
+//    override fun setContentView(view: View, params: ViewGroup.LayoutParams) {
+//        super.setContentView(newSwipeBackLayout(view), params)
+//    }
 
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
@@ -214,14 +257,117 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         }
     }
 
-    /*override fun onBackPressed() {
-        // 正在滑动返回的时候取消返回按钮事件
-        if (mSwipeBackHelper.isSliding) {
-            return
-        }
-        mSwipeBackHelper.backward()
-    }*/
+    val mSwipeListener = object : SwipeBackLayout.SwipeListener {
 
+        override fun onScrollStateChange(state: Int, scrollPercent: Float) {
+            Log.i("", "SwipeListener:onScrollStateChange: state = $state ;scrollPercent = $scrollPercent")
+            mIsInSwipeBack = state != SwipeBackLayout.STATE_IDLE
+            if (state == SwipeBackLayout.STATE_IDLE) {
+                if (mSwipeBackgroundView != null) {
+                    if (scrollPercent <= 0.0f) {
+                        mSwipeBackgroundView?.unBind()
+                        mSwipeBackgroundView = null
+                    } else if (scrollPercent >= 1.0f) {
+                        // unBind mSwipeBackgroundView until onDestroy
+                        finish()
+                        val exitAnim = if (mSwipeBackgroundView!!.hasChildWindow()) {
+                            R.anim.swipe_back_exit_still
+                        } else {
+                            R.anim.swipe_back_exit
+                        }
+                        overridePendingTransition(R.anim.swipe_back_enter, exitAnim)
+                    }
+                }
+            }
+        }
+
+        override fun onScroll(edgeFlag: Int, scrollPercent: Float) {
+            KLog.i("滑动中...")
+            var scrollPercent = scrollPercent
+            if (mSwipeBackgroundView != null) {
+                KLog.i("滑动中111")
+                scrollPercent = Math.max(0f, Math.min(1f, scrollPercent))
+                val targetOffset = (Math.abs(backViewInitOffset()) * (1 - scrollPercent)).toInt()
+                SwipeBackLayout.offsetInScroll(mSwipeBackgroundView, edgeFlag, targetOffset)
+            }
+        }
+
+        override fun onEdgeTouch(edgeFlag: Int) {
+            Log.i("", "SwipeListener:onEdgeTouch: edgeFlag = $edgeFlag")
+            val decorView = window.decorView as ViewGroup
+            if (decorView != null) {
+                val prevActivity = QMUISwipeBackActivityManager.getInstance()
+                        .getPenultimateActivity(this@BaseActivity)
+                if (decorView.getChildAt(0) is SwipeBackgroundView) {
+                    mSwipeBackgroundView = decorView.getChildAt(0) as SwipeBackgroundView
+                } else {
+                    mSwipeBackgroundView = SwipeBackgroundView(this@BaseActivity)
+                    decorView.addView(mSwipeBackgroundView, 0, FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                }
+                mSwipeBackgroundView!!.bind(prevActivity, this@BaseActivity, restoreSubWindowWhenDragBack())
+                SwipeBackLayout.offsetInEdgeTouch(mSwipeBackgroundView, edgeFlag,
+                        Math.abs(backViewInitOffset()))
+            }
+        }
+
+        override fun onScrollOverThreshold() {
+            Log.i("", "SwipeListener:onEdgeTouch:onScrollOverThreshold")
+        }
+    }
+    val mSwipeCallback = object : SwipeBackLayout.Callback {
+        override fun canSwipeBack(): Boolean {
+            return QMUISwipeBackActivityManager.getInstance().canSwipeBack() && canDragBack()
+        }
+    }
+
+    protected fun doOnBackPressed() {
+        super.onBackPressed()
+    }
+
+    fun isInSwipeBack(): Boolean {
+        return mIsInSwipeBack
+    }
+
+    /**
+     * disable or enable drag back
+     *
+     * @return
+     */
+    protected fun canDragBack(): Boolean {
+        return true
+    }
+
+    /**
+     * if enable drag back,
+     *
+     * @return
+     */
+    protected fun backViewInitOffset(): Int {
+        return 0
+    }
+
+
+    protected fun dragBackEdge(): Int {
+        return EDGE_LEFT
+    }
+
+    /**
+     * Immersive processing
+     *
+     * @return if true, the area under status bar belongs to content; otherwise it belongs to padding
+     */
+    protected fun translucentFull(): Boolean {
+        return false
+    }
+
+    /**
+     * restore sub window(e.g dialog) when drag back to previous activity
+     * @return
+     */
+    protected fun restoreSubWindowWhenDragBack(): Boolean {
+        return true
+    }
 
 //    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
 //        if (ev.action == MotionEvent.ACTION_DOWN) {
@@ -247,28 +393,31 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
 
     }
 
-    fun  showProgressDialog(text: String) {
+    fun showProgressDialog(text: String) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setOnTouchOutside(false)
     }
-    fun  showProgressDialog(text: String, canCancel : Boolean) {
+
+    fun showProgressDialog(text: String, canCancel: Boolean) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.setNoCanceledOnTouchOutside(false)
         progressDialog.show()
     }
+
     fun showProgressNoCanelDialog(text: String) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setNoCanceledOnTouchOutside(false)
     }
-    fun showProgressDialog(text: String,onKeyListener: DialogInterface.OnKeyListener ) {
+
+    fun showProgressDialog(text: String, onKeyListener: DialogInterface.OnKeyListener) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
-        progressDialog.setCanceledOnBack(false,onKeyListener)
+        progressDialog.setCanceledOnBack(false, onKeyListener)
     }
 }

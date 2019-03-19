@@ -15,22 +15,31 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.exceptions.HyphenateException;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.model.EaseImageCache;
 import com.hyphenate.easeui.utils.EaseImageUtils;
+
 import java.io.File;
 
-public class EaseChatRowImage extends EaseChatRowFile{
+public class EaseChatRowImage extends EaseChatRowFile {
 
     protected ImageView imageView;
     private EMImageMessageBody imgBody;
     private ProgressBar progressBarShelf;
+    private float width = 0;
+    private float height = 0;
+
+    int showWidth = 0;
+    int showHeight = 0;
 
     public EaseChatRowImage(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context, message, position, adapter);
@@ -52,33 +61,75 @@ public class EaseChatRowImage extends EaseChatRowFile{
     @Override
     protected void onSetUpView() {
         imgBody = (EMImageMessageBody) message.getBody();
+        try {
+            String wh = message.getStringAttribute("wh");
+            if (wh != null && !"".equals(wh)) {
+                width = Float.valueOf(wh.substring(0, wh.lastIndexOf("*")));
+                if (wh.substring(wh.lastIndexOf("*") + 1).length() >= 5) {
+                    height = Float.valueOf(wh.substring(wh.lastIndexOf("*") + 1).substring(0, 4));
+                } else {
+                    height = Float.valueOf(wh.substring(wh.lastIndexOf("*") + 1));
+                }
+                setImageViewSize();
+                KLog.i("原始宽高为：" + wh);
+                KLog.i("图片的宽为：" + wh.substring(0, wh.lastIndexOf("*")));
+                KLog.i("图片的高为：" + wh.substring(wh.lastIndexOf("*") + 1));
+                KLog.i("图片的宽为1：" + width);
+                KLog.i("图片的高为1：" + height);
+            }
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
         String localUrl = imgBody.getLocalUrl();
-        if(localUrl.contains("ease_default_amr"))
-        {
+        if (localUrl.contains("ease_default_amr")) {
             progressBarShelf.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             progressBarShelf.setVisibility(View.INVISIBLE);
         }
         // received messages
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             return;
         }
-
         String filePath = imgBody.getLocalUrl();
         String thumbPath = EaseImageUtils.getThumbnailImagePath(imgBody.getLocalUrl());
         showImageView(thumbPath, filePath, message);
     }
 
+    private void setImageViewSize() {
+        int windowWidth = activity.getWindowManager().getDefaultDisplay().getWidth();
+        if (width >= height) {
+            //以高为标准
+            if (width / height >= 1.5) {
+                showHeight = windowWidth / 3;
+            } else {
+                showHeight = windowWidth / 2;
+            }
+            showWidth = (int) (width / height) * showHeight;
+        } else {
+            //以宽为标准
+            if (height / width >= 1.5) {
+                showWidth = windowWidth / 3;
+            } else {
+                showWidth = windowWidth / 2;
+            }
+            showHeight = (int) ((height / width) * showWidth);
+        }
+        KLog.i("设置图片的宽为：" + showWidth);
+        KLog.i("设置图片的高为：" + showHeight);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(showWidth, showHeight);
+        imageView.setLayoutParams(lp);
+    }
+
     @Override
     protected void onViewUpdate(EMMessage msg) {
         if (msg.direct() == EMMessage.Direct.SEND) {
-            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+            if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
                 super.onViewUpdate(msg);
-            }else{
+            } else {
                 if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING ||
                         imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
-                    imageView.setImageResource(R.drawable.ease_default_image);
+                    imageView.setImageResource(R.drawable.image_defalut_bg);
                 } else {
                     String thumbPath = imgBody.thumbnailLocalPath();
                     if (!new File(thumbPath).exists()) {
@@ -94,25 +145,25 @@ public class EaseChatRowImage extends EaseChatRowFile{
         // received messages
         if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                 imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
-                imageView.setImageResource(R.drawable.ease_default_image);
-            }else {
+            if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
+                imageView.setImageResource(R.drawable.image_defalut_bg);
+            } else {
                /* progressBar.setVisibility(View.INVISIBLE);
                 percentageView.setVisibility(View.INVISIBLE);*/
-                imageView.setImageResource(R.drawable.ease_default_image);
+                imageView.setImageResource(R.drawable.image_defalut_bg);
             }
-        } else if(imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED){
-            if(EMClient.getInstance().getOptions().getAutodownloadThumbnail()){
+        } else if (imgBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
+            if (EMClient.getInstance().getOptions().getAutodownloadThumbnail()) {
                /* progressBar.setVisibility(View.VISIBLE);
                 percentageView.setVisibility(View.VISIBLE);*/
-            }else {
+            } else {
                 /*progressBar.setVisibility(View.INVISIBLE);
                 percentageView.setVisibility(View.INVISIBLE);*/
             }
         } else {
            /* progressBar.setVisibility(View.GONE);
             percentageView.setVisibility(View.GONE);*/
-            imageView.setImageResource(R.drawable.ease_default_image);
+            imageView.setImageResource(R.drawable.image_defalut_bg);
             String thumbPath = imgBody.thumbnailLocalPath();
             if (!new File(thumbPath).exists()) {
                 // to make it compatible with thumbnail received in previous version
@@ -122,18 +173,17 @@ public class EaseChatRowImage extends EaseChatRowFile{
         }
     }
 
-    public Bitmap getRoundCornerImage(Bitmap bitmap_in, int widht, int height)
-    {
+    public Bitmap getRoundCornerImage(Bitmap bitmap_in, int widht, int height) {
         Bitmap bitmap_bg;
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             bitmap_bg = BitmapFactory.decodeResource(getResources(), R.mipmap.chat_box_left);
         } else {
             bitmap_bg = BitmapFactory.decodeResource(getResources(), R.mipmap.chat_box_right);
         }
-        Bitmap roundConcerImage = Bitmap.createBitmap(widht,height, Bitmap.Config.ARGB_8888);
+        Bitmap roundConcerImage = Bitmap.createBitmap(widht, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(roundConcerImage);
         Paint paint = new Paint();
-        Rect rect = new Rect(0,0,widht,height);
+        Rect rect = new Rect(0, 0, widht, height);
         Rect rectF = new Rect(0, 0, bitmap_in.getWidth(), bitmap_in.getHeight());
         paint.setAntiAlias(true);
         NinePatch patch = new NinePatch(bitmap_bg, bitmap_bg.getNinePatchChunk(), null);
@@ -145,9 +195,8 @@ public class EaseChatRowImage extends EaseChatRowFile{
 
     /**
      * load image into image view
-     *
      */
-    private void showImageView(final String thumbernailPath, final String localFullSizePath,final EMMessage message) {
+    private void showImageView(final String thumbernailPath, final String localFullSizePath, final EMMessage message) {
         // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
@@ -190,7 +239,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
                                 width = activity.getWindowManager().getDefaultDisplay().getWidth() / 3;
                                 height = activity.getWindowManager().getDefaultDisplay().getHeight() / 3;
                             }
-                            return EaseImageUtils.decodeScaleImage(thumbernailPath, width, height);
+                            if (showHeight != 0) {
+                                return EaseImageUtils.decodeScaleImage(thumbernailPath, showWidth, showHeight);
+                            } else {
+                                return EaseImageUtils.decodeScaleImage(thumbernailPath, width, height);
+                            }
                         } else if (new File(imgBody.thumbnailLocalPath()).exists()) {
                             Bitmap orgBit = BitmapFactory.decodeFile(localFullSizePath);
                             int width;
@@ -221,7 +274,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
                                 height = activity.getWindowManager().getDefaultDisplay().getHeight() / 3;
                             }
                             if (orgBit != null) {
-                                return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), width, height);
+                                if (showHeight != 0) {
+                                    return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), showWidth, showHeight);
+                                } else {
+                                    return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), width, height);
+                                }
                             } else {
                                 return null;
                             }
@@ -257,7 +314,11 @@ public class EaseChatRowImage extends EaseChatRowFile{
                                         height = activity.getWindowManager().getDefaultDisplay().getHeight() / 3;
                                     }
                                     if (orgBit != null) {
-                                        return EaseImageUtils.decodeScaleImage(localFullSizePath, width, height);
+                                        if (showHeight != 0) {
+                                            return EaseImageUtils.decodeScaleImage(localFullSizePath, showWidth, showHeight);
+                                        } else {
+                                            return EaseImageUtils.decodeScaleImage(localFullSizePath, width, height);
+                                        }
                                     } else {
                                         return null;
                                     }
@@ -265,7 +326,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                                     return null;
                                 }
                             } else {
-                                imageView.setImageResource(R.drawable.ease_default_image);
+                                imageView.setImageResource(R.drawable.image_defalut_bg);
                                 return null;
                             }
                         }
@@ -280,8 +341,7 @@ public class EaseChatRowImage extends EaseChatRowFile{
                         }
                     }
                 }.execute();
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
 

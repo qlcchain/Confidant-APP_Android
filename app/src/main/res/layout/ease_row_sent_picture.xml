@@ -22,19 +22,19 @@
 
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
-            android:layout_width="@dimen/size_avatar"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginRight="@dimen/x15"
             app:imageButtonTextSize="16"
-            android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/x5"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/margin_chat_activity" />
+            android:layout_alignParentTop="true" />
 
-        <android.support.constraint.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/margin_chat_activity"
+            android:layout_marginRight="@dimen/x12"
             android:layout_toLeftOf="@id/iv_userhead" >
 
             <ImageView
@@ -48,13 +48,14 @@
                 android:id="@+id/msg_sendstatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/image"
+                android:layout_alignRight="@+id/image"
+                android:layout_marginBottom="@dimen/x5"
                 android:clickable="true"
                 android:src="@drawable/send"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/image"
-                android:layout_marginRight="@dimen/x10"
-                app:layout_constraintEnd_toEndOf="@+id/image" />
-        </android.support.constraint.ConstraintLayout>
+                android:layout_marginRight="@dimen/x5" />
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/ll_loading"
             android:layout_width="wrap_content"

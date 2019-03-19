@@ -21,13 +21,12 @@
 
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
-            android:layout_width="@dimen/size_avatar"
+            android:layout_width="@dimen/x77"
+            android:layout_height="@dimen/x77"
+            android:layout_marginRight="@dimen/x15"
             app:imageButtonTextSize="16"
-            android:layout_height="@dimen/size_avatar"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="@dimen/x5"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/margin_chat_activity" />
+            android:layout_alignParentTop="true" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/bubble"
@@ -35,7 +34,7 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/x70"
             android:layout_toLeftOf="@id/iv_userhead"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/x12"
              android:background="@drawable/ease_chatto_bg"
             >
 	        <ImageView

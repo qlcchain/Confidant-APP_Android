@@ -16,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.inflateLayout
 import com.pawegio.kandroid.inputManager
@@ -98,6 +99,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     var waitRenameData:JPullFileListRsp.ParamsBean.PayloadBean? = null
     var receiveFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
+    var currentPage = 0
 
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
@@ -183,19 +185,46 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
-        runOnUiThread {
-            when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
-                0 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
+        if (currentPage == 0) {
+            runOnUiThread {
+                when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
+                    0 -> {
+                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
+                    }
+                    1 -> {
+                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.timestamp }?.toMutableList())
+                    }
+                    2 -> {
+                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileSize }?.toMutableList())
+                    }
+                    3 -> {
+                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedBy { String(RxEncodeTool.base64Decode(it.sender)) }?.toMutableList())
+                    }
                 }
-                1 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.timestamp }?.toMutableList())
-                }
-                2 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.fileSize }?.toMutableList())
-                }
-                3 -> {
-                    fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedBy { String(RxEncodeTool.base64Decode(it.sender)) }?.toMutableList())
+            }
+        } else {
+            runOnUiThread {
+                fileListChooseAdapter?.loadMoreComplete()
+                if (pullFileListRsp.params.fileNum == 0) {
+                    KLog.i("全部数据加载完成。。")
+                    fileListChooseAdapter?.loadMoreEnd(true)
+                } else {
+                    KLog.i("还有数据需要加载。。")
+                    fileListChooseAdapter!!.addData(pullFileListRsp.params!!.payload)
+                    when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
+                        0 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
+                        }
+                        1 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }?.toMutableList())
+                        }
+                        2 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.fileSize }?.toMutableList())
+                        }
+                        3 -> {
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedBy { String(RxEncodeTool.base64Decode(it.sender)) }?.toMutableList())
+                        }
+                    }
                 }
             }
         }
@@ -210,9 +239,10 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         return view
     }
 
-    fun pullFileList() {
+    fun pullFileList(startId : Int) {
+        currentPage = startId
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var pullFileListReq = PullFileListReq(selfUserId!!, 0, 30, 0, 0)
+        var pullFileListReq = PullFileListReq(selfUserId!!, startId, 5, 0, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
@@ -229,15 +259,16 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun reSetAvatar(resetAvatar: ResetAvatar) {
-        pullFileList()
+        pullFileList(0)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
         AppConfig.instance.messageReceiver?.fileMainManageBack = this
-        pullFileList()
+        pullFileList(0)
         fileListChooseAdapter = FileListChooseAdapter(arrayListOf())
         recyclerView.adapter = fileListChooseAdapter
         fileListChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
@@ -246,7 +277,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         }
 
         refreshLayout.setOnRefreshListener {
-            pullFileList()
+            pullFileList(0)
             refreshLayout.isRefreshing = false
         }
 
@@ -497,6 +528,16 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         })
         var view = activity!!.inflateLayout(R.layout.layout_filelist_empty, null, false)
         fileListChooseAdapter?.emptyView = view
+        fileListChooseAdapter?.setEnableLoadMore(true)
+        fileListChooseAdapter?.setOnLoadMoreListener(object : BaseQuickAdapter.RequestLoadMoreListener{
+            override fun onLoadMoreRequested() {
+                recyclerView.postDelayed({
+                    currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
+                    pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
+                }, 500)
+            }
+
+        })
     }
 
     var beforeList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
@@ -519,7 +560,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun refreshList(pullFileList: PullFileList) {
-        pullFileList()
+        pullFileList(0)
     }
 
     fun showRenameDialog(data : JPullFileListRsp.ParamsBean.PayloadBean, postion : Int) {

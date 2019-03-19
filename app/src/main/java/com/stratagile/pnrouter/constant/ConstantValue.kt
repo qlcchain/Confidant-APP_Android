@@ -107,5 +107,6 @@ object ConstantValue {
         var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn
         var isFormat = false
         var isReRegesterMiPush = "isReRegesterMiPush"
+        var isShowVerify = false
 
 }

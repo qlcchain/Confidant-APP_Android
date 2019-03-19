@@ -17,6 +17,15 @@ public class SendFileInfo implements Serializable {
     private String friendMiPublicKey;
     private int  voiceTimeLen;
     private String sendTime;//发送时间
+    private String widthAndHeight;  //图片的宽和高   ",30*40"
+
+    public String getWidthAndHeight() {
+        return widthAndHeight;
+    }
+
+    public void setWidthAndHeight(String widthAndHeight) {
+        this.widthAndHeight = widthAndHeight;
+    }
 
     public String getUserId() {
         return userId;

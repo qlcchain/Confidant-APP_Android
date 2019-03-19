@@ -1,10 +1,13 @@
 package com.stratagile.pnrouter.ui.activity.login
 
 import android.animation.ObjectAnimator
+import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.hardware.fingerprint.FingerprintManager
 import android.os.*
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Button
@@ -22,20 +25,25 @@ import com.stratagile.pnrouter.ui.activity.login.component.DaggerVerifyingFinger
 import com.stratagile.pnrouter.ui.activity.login.contract.VerifyingFingerprintContract
 import com.stratagile.pnrouter.ui.activity.login.module.VerifyingFingerprintModule
 import com.stratagile.pnrouter.ui.activity.login.presenter.VerifyingFingerprintPresenter
-import com.stratagile.pnrouter.utils.SpUtil
 import com.tencent.bugly.crashreport.CrashReport
 import kotlinx.android.synthetic.main.activity_fingerprint.*
 import javax.inject.Inject
 import android.support.v4.view.ViewCompat.getTranslationY
+import com.google.gson.Gson
 import com.socks.library.KLog
+import com.stratagile.pnrouter.entity.CryptoBoxKeypair
+import com.stratagile.pnrouter.entity.HttpData
 import com.stratagile.pnrouter.entity.events.BackgroudEvent
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
-import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.SweetAlertDialog
+import kotlinx.android.synthetic.main.activity_login.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
+import java.util.ArrayList
 
 
 /**
@@ -56,12 +64,18 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
     internal var finger: ImageView? = null
     var formatDialog: CommonDialog? = null
 
+    val AuthenticationScreen = 3
+    val SettingPassWord = 4
+
     var isLock = true
 
     var fingerprintManager: FingerprintManager? = null
 
+    var hasFinger = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        ConstantValue.isShowVerify = true
         super.onCreate(savedInstanceState)
     }
 
@@ -113,7 +127,9 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
             }
         }
         llNext.setOnClickListener {
-            showDialog()
+            if (isLock) {
+                showDialog()
+            }
         }
         KLog.i("进入验证页面")
         showDialog()
@@ -126,11 +142,12 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
         val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY - resources.getDimension(R.dimen.x300))
         animator.setDuration(600)
         animator.start()
-
-        val curNexY = llNext.translationY
-        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY + resources.getDimension(R.dimen.x300))
-        nextAnimator.setDuration(600)
-        nextAnimator.start()
+        if (hasFinger) {
+            val curNexY = llNext.translationY
+            var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY + resources.getDimension(R.dimen.x300))
+            nextAnimator.setDuration(600)
+            nextAnimator.start()
+        }
     }
 
     fun hideFingerAnimationWithUnLock() {
@@ -145,15 +162,18 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
         val animator = ObjectAnimator.ofFloat(llLogo, "translationY", curTranslationY, curTranslationY + resources.getDimension(R.dimen.x300))
         animator.setDuration(600)
         animator.start()
-
-        val curNexY = llNext.translationY
-        var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY - resources.getDimension(R.dimen.x300))
-        nextAnimator.setDuration(600)
-        nextAnimator.start()
+        if (hasFinger) {
+            val curNexY = llNext.translationY
+            var nextAnimator = ObjectAnimator.ofFloat(llNext, "translationY", curNexY, curNexY - resources.getDimension(R.dimen.x300))
+            nextAnimator.setDuration(600)
+            nextAnimator.start()
+        }
     }
 
     override fun onPause() {
-        finish()
+        if (hasFinger) {
+            finish()
+        }
         super.onPause()
     }
 
@@ -168,7 +188,6 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
     }
 
     private fun showDialog() {
-        showFingerAnimation()
         if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
@@ -179,6 +198,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                 {*/
                 if (fingerprintManager != null && fingerprintManager!!.isHardwareDetected && fingerprintManager!!.hasEnrolledFingerprints()) {
                     try {
+                        hasFinger = true
                         LogUtil.addLog("开始调用系统的指纹..")
                         KLog.i("开始调用系统的指纹..")
                         val view = View.inflate(this, R.layout.finger_dialog_layout, null)
@@ -247,48 +267,44 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
                     }
 
                 } else {
-                    SpUtil.putString(this, ConstantValue.fingerPassWord, "")
-                    val dialog = AlertDialog.Builder(this)
-                    dialog.setMessage(R.string.No_fingerprints_do_you_want_to_set_them_up)
-                    dialog.setCancelable(false)
+                    hasFinger = false
+                    var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                    if (!mKeyguardManager.isKeyguardSecure()) {
+                        KLog.i("没有设置密码。。。。")
+                        SpUtil.putString(this, ConstantValue.fingerPassWord, "")
+                        val dialog = AlertDialog.Builder(this)
+                        dialog.setMessage(R.string.No_fingerprints_do_you_want_to_set_them_up)
+                        dialog.setCancelable(false)
+                        dialog.setPositiveButton(android.R.string.ok
+                        ) { dialog, which ->
+                            var intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+                            startActivityForResult(intent, SettingPassWord)
+                        }
+                        dialog.setNegativeButton(android.R.string.cancel
+                        ) { dialog, which ->
+                            hideFingerAnimation()
+//                            finish();
+//                            //android进程完美退出方法。
+//                            var intent = Intent(Intent.ACTION_MAIN);
+//                            intent.addCategory(Intent.CATEGORY_HOME);
+//                            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//                            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+//                            this.startActivity(intent);
+//                            android.os.Process.killProcess(android.os.Process.myPid());
+//                            //System.runFinalizersOnExit(true);
+//                            System.exit(0);
+                        }
+                        dialog.create().show()
 
-                    dialog.setPositiveButton(android.R.string.ok
-                    ) { dialog, which ->
-                        CrashReport.closeBugly()
-                        CrashReport.closeCrashReport()
-                        //MiPushClient.unregisterPush(this)
-                        AppConfig.instance.stopAllService()
-                        AppConfig.instance?.mAppActivityManager.finishAllActivity()
-                        //android进程完美退出方法。
-//            AppConfig.instance.mAppActivityManager.AppExit()
-                        var intent = Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-                        this.startActivity(intent);
-//            android.os.Process.killProcess(android.os.Process.myPid());
-                        //System.runFinalizersOnExit(true);、
-                        System.exit(0)
+                    } else {
+                        var intent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null);
+                        if (intent != null) {
+                            KLog.i("开始验证密码")
+                            startActivityForResult(intent, AuthenticationScreen)
+                        }
                     }
-                    dialog.setNegativeButton(android.R.string.cancel
-                    ) { dialog, which ->
-                        dialog.dismiss()
-                        /* finish();
-                         //android进程完美退出方法。
-                         var intent = Intent(Intent.ACTION_MAIN);
-                         intent.addCategory(Intent.CATEGORY_HOME);
-                         //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                         //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-                         this.startActivity(intent);
-                         android.os.Process.killProcess(android.os.Process.myPid());
-                         //System.runFinalizersOnExit(true);
-                         System.exit(0);*/
-                    }
-                    dialog.create().show()
                 }
 
             } catch (e: Exception) {
@@ -297,6 +313,23 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
 
         } else {
             SpUtil.putString(this, ConstantValue.fingerPassWord, "")
+        }
+        showFingerAnimation()
+    }
+
+    override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        //super.onActivityResult(requestCode, resultCode, data)
+        KLog.i("验证密码反悔了。")
+        if (requestCode == AuthenticationScreen){
+            if (resultCode == Activity.RESULT_OK) {
+                handler!!.obtainMessage(MyAuthCallback.MSG_AUTH_SUCCESS).sendToTarget()
+            } else {
+                hideFingerAnimation()
+                KLog.i("密码错误。。。。")
+            }
+        }
+        if (requestCode == SettingPassWord){
+            hideFingerAnimation()
         }
     }
 
@@ -310,6 +343,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
     }
 
     override fun onDestroy() {
+        ConstantValue.isShowVerify = false
         if (formatDialog != null && formatDialog!!.isShowing) {
             KLog.i("onDestroy")
             formatDialog?.dismiss()

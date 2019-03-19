@@ -2586,7 +2586,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             }
 
                             String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
-                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin", ""));
                         } else {
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
