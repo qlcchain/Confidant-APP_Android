@@ -100,17 +100,17 @@ public class EaseChatRowImage extends EaseChatRowFile {
         if (width >= height) {
             //以高为标准
             if (width / height >= 1.5) {
-                showHeight = windowWidth / 3;
+                showHeight = windowWidth / 4;
             } else {
-                showHeight = windowWidth / 2;
+                showHeight = windowWidth / 3;
             }
             showWidth = (int) (width / height) * showHeight;
         } else {
             //以宽为标准
             if (height / width >= 1.5) {
-                showWidth = windowWidth / 3;
+                showWidth = windowWidth / 4;
             } else {
-                showWidth = windowWidth / 2;
+                showWidth = windowWidth / 3;
             }
             showHeight = (int) ((height / width) * showWidth);
         }
@@ -200,9 +200,13 @@ public class EaseChatRowImage extends EaseChatRowFile {
         // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
+            KLog.i("图片来源缓存");
             // thumbnail image is already loaded, reuse the drawable
             Bitmap bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getHeight());
             imageView.setImageBitmap(bitmap2);
+            width = bitmap.getWidth();
+            height = bitmap.getHeight();
+            setImageViewSize();
         } else {
             try {
                 new AsyncTask<Object, Void, Bitmap>() {

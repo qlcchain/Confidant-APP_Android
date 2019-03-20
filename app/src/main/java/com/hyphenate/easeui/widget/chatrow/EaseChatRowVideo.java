@@ -98,10 +98,10 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         if (message.direct() == EMMessage.Direct.RECEIVE) {
             if (videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.DOWNLOADING ||
                     videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.PENDING) {
-                imageView.setImageResource(R.drawable.ease_default_image);
+                imageView.setImageResource(R.drawable.image_defalut_bg);
             } else {
                 // System.err.println("!!!! not back receive, show image directly");
-                imageView.setImageResource(R.drawable.ease_default_image);
+                imageView.setImageResource(R.drawable.image_defalut_bg);
                 if (localThumb != null) {
                     showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
                 }
@@ -113,11 +113,11 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                         videoBody.thumbnailDownloadStatus() == EMFileMessageBody.EMDownloadStatus.FAILED) {
                /* progressBar.setVisibility(View.INVISIBLE);
                 percentageView.setVisibility(View.INVISIBLE);*/
-                imageView.setImageResource(R.drawable.ease_default_image);
+                imageView.setImageResource(R.drawable.image_defalut_bg);
             } else {
                /* progressBar.setVisibility(View.GONE);
                 percentageView.setVisibility(View.GONE);*/
-                imageView.setImageResource(R.drawable.ease_default_image);
+                imageView.setImageResource(R.drawable.image_defalut_bg);
                 showVideoThumbView(localThumb, imageView, videoBody.getThumbnailUrl(), message);
             }
         }
@@ -142,7 +142,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             // thumbnail image is already loaded, reuse the drawable
             iv.setImageBitmap(bitmap);
         } else {
-            imageView.setImageResource(R.drawable.ease_default_image);
+            imageView.setImageResource(R.drawable.image_defalut_bg);
 
             try {
                 new AsyncTask<Void, Void, Bitmap>() {

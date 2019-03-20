@@ -1071,6 +1071,7 @@ public class FileUtil {
 
             }
         }else{
+            //压缩图片..
             BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
             int degree = EaseImageUtils.readPictureDegree(fromFile);
             Bitmap bitmap = BitmapFactory.decodeFile(fromFile, bitmapOptions);
@@ -1461,7 +1462,7 @@ public class FileUtil {
         return false;
     }
     /**
-     * 将图片存到本地
+     * 将图片压缩并且保存到本地
      */
     public static int saveBitmap(Bitmap bm,String dir,Boolean isCompress) {
         try {

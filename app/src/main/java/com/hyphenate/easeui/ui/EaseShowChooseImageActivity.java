@@ -54,7 +54,7 @@ public class EaseShowChooseImageActivity extends BaseActivity {
 	private static final String TAG = "ShowBigImage"; 
 	private ProgressDialog pd;
 	private EasePhotoView image;
-	private int default_res = R.drawable.ease_default_image;
+	private int default_res = R.drawable.image_defalut_bg;
 	private String localFilePath;
 	private Bitmap bitmap;
 	private boolean isDownloaded;

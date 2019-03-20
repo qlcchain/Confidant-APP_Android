@@ -156,10 +156,10 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             {
                 DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData3.json")
             }
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_image.png",1)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_amr.amr",2)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"ease_default_vedio.mp4",3)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.ease_default_image,"file_downloading.*",5)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"image_defalut_bg.xml",1)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_amr.amr",2)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_vedio.mp4",3)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_downloading.*",5)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var abvc = ""
             routerList.forEach {
