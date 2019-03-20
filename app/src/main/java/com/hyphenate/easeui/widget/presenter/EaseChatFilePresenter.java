@@ -104,7 +104,13 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             {
                 floatMenu.inflate(R.menu.popup_menu_file);
             }else{
-                floatMenu.inflate(R.menu.friendpopup_menu_file);
+                if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
+                {
+                    floatMenu.inflate(R.menu.popup_menu_file);
+                }else{
+                    floatMenu.inflate(R.menu.friendpopup_menu_file);
+                }
+
             }
             int[] loc1=new int[2];
             view.getLocationOnScreen(loc1);

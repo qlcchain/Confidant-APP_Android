@@ -78,7 +78,13 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         {
             floatMenu.inflate(R.menu.popup_menu);
         }else{
-            floatMenu.inflate(R.menu.friendpopup_menu);
+            if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
+            {
+                floatMenu.inflate(R.menu.popup_menu);
+            }else {
+                floatMenu.inflate(R.menu.friendpopup_menu);
+            }
+
         }
         //floatMenu.items(AppConfig.instance.getResources().getString(R.string.withDraw), AppConfig.instance.getResources().getString(R.string.cancel));
         int[] loc1=new int[2];
@@ -109,7 +115,12 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                     case 2:
                         if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                         {
-                            GroupDelMsgReq  msgData = new GroupDelMsgReq(0, message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
+                            int type = 0;
+                            if(!fromID.equals(userId))
+                            {
+                                type = 1;
+                            }
+                            GroupDelMsgReq  msgData = new GroupDelMsgReq(type, message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
                             BaseData baseData = new BaseData(4,msgData);
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {
