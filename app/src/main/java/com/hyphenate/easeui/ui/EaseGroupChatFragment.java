@@ -2127,8 +2127,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     }
 
-    public void upateMessage(JGroupSendMsgRsp jGroupSendMsgRsp) {
-       /* if (jGroupSendMsgRsp.getParams().getRetCode() == 0) {
+    public void upateMessage(JGroupSendMsgRsp jSendMsgRsp) {
+        if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
         }
 
@@ -2174,7 +2174,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
                 friendStatus = 1;
                 String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jSendMsgRsp.getParams().getToId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jSendMsgRsp.getParams().getGId(), "");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -2183,7 +2183,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 });
 
                 break;
-        }*/
+        }
 
     }
 

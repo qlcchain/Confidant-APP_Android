@@ -330,9 +330,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
 
     override fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp) {
-       /* if (delMsgRsp.params.retCode == 0) {
+        if (delMsgRsp.params.retCode == 0) {
             chatFragment?.delMyMsgOnSuccess(delMsgRsp.params.msgId.toString())
-        }*/
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {

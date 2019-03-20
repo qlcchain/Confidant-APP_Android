@@ -466,6 +466,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     groupchatCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
                     convsationCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
                 }
+                "GroupDelMsg" -> {
+                    val JGroupDelMsgRsp = gson.fromJson(text, JGroupDelMsgRsp::class.java)
+                    groupchatCallBack?.delGroupMsgRsp(JGroupDelMsgRsp)
+                }
             }
         }
 
