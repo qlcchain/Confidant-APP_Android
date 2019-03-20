@@ -1624,8 +1624,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     {
                         startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
                     }else{
-                        startActivity(Intent(this@MainActivity, GroupChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
-                    }
+
+                        val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                        intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
+                        intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, UserDataManger.currentGroupData)
+                        startActivity(intent)
+                        }
                     KLog.i("进入聊天页面，好友id为：" + userid)
                 })
         if (AppConfig.instance.tempPushMsgList.size != 0) {
