@@ -44,7 +44,7 @@ public class JCreateGroupRsp extends BaseEntity{
         private int RetCode;
         private String ToId;
         private String GAdmin;
-        private int GId;
+        private String GId;
         private String GName;
         private String UserKey;
 
@@ -80,11 +80,11 @@ public class JCreateGroupRsp extends BaseEntity{
             this.GAdmin = GAdmin;
         }
 
-        public int getGId() {
+        public String getGId() {
             return GId;
         }
 
-        public void setGId(int GId) {
+        public void setGId(String GId) {
             this.GId = GId;
         }
 

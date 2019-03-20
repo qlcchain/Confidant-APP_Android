@@ -5,25 +5,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import chat.tox.antox.tox.MessageHelper
-import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
-import com.pawegio.kandroid.e
+import com.hyphenate.easeui.EaseConstant
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.CreateGroupReq
 import com.stratagile.pnrouter.entity.JCreateGroupRsp
-import com.stratagile.pnrouter.entity.UpdateAvatarReq
 import com.stratagile.pnrouter.entity.events.AddGroupChange
-import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.entity.events.SelectFriendChange
+import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerCreateGroupComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.CreateGroupContract
 import com.stratagile.pnrouter.ui.activity.group.module.CreateGroupModule
@@ -36,12 +34,8 @@ import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.tox.toxcore.ToxCoreJni
-import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_create_group.*
-import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import java.util.ArrayList
 
 import javax.inject.Inject;
@@ -63,6 +57,16 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
                 EventBus.getDefault().post(AddGroupChange())
                  runOnUiThread {
                      toast(R.string.success)
+                     var newGroupEntity = GroupEntity()
+                     newGroupEntity.gName = jCreateGroupRsp.params.gName
+                     newGroupEntity.gAdmin = jCreateGroupRsp.params.gAdmin
+                     newGroupEntity.gId  = jCreateGroupRsp.params.gId
+                     newGroupEntity.userKey  = jCreateGroupRsp.params.userKey
+                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(newGroupEntity)
+                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                     intent.putExtra(EaseConstant.EXTRA_USER_ID, newGroupEntity.gId.toString())
+                     UserDataManger.currentGroupData = newGroupEntity
+                     startActivity(intent)
                      finish();
                  }
             }
