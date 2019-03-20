@@ -15,6 +15,7 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
+import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.hyphenate.easeui.utils.PathUtils
@@ -299,6 +300,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         Message.from = userId
         Message.to = jPushFileMsgRsp.params.fromId
         Message.timeStatmp = System.currentTimeMillis() / 1000
+        Message.chatType = EMMessage.ChatType.Chat
         Message.unReadCount = 0
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {

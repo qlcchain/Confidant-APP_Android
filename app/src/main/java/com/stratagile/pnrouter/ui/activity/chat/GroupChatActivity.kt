@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.google.gson.Gson
+import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseGroupChatFragment
 import com.hyphenate.easeui.utils.PathUtils
@@ -263,6 +264,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         Message.to = jPushFileMsgRsp.params.fromId
         Message.timeStatmp = System.currentTimeMillis() / 1000
         Message.unReadCount = 0
+        Message.chatType = EMMessage.ChatType.GroupChat
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)

@@ -239,7 +239,8 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             }
             if(friendUser.getUserId().equals(userId))
             {
-                usernameSouce = new String(username);
+                String name =  SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                usernameSouce = name;
             }else{
                 usernameSouce = new String(RxEncodeTool.base64Decode(username));
             }
