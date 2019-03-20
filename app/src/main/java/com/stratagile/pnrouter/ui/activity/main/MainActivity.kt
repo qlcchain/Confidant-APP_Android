@@ -660,7 +660,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
-            val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.userKey)
+            val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey)
             val base64Scoure = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg())
             var msgSouce: String? = ""
             try {
