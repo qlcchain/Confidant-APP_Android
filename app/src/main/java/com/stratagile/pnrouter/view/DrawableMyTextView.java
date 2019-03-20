@@ -47,8 +47,8 @@ public class DrawableMyTextView extends LinearLayout {
         titleText = view.findViewById(R.id.title);
         titleRightText = view.findViewById(R.id.righttitle);
         ivNext = view.findViewById(R.id.ivNext);
-        icon.getLayoutParams().width = 60;
-        icon.getLayoutParams().height = 60;
+//        icon.getLayoutParams().width = (int) (context.getResources().getDimension(R.dimen.x30));
+//        icon.getLayoutParams().height = (int) (context.getResources().getDimension(R.dimen.x30));
     }
 
     private void initTypeArray(AttributeSet attrs) {

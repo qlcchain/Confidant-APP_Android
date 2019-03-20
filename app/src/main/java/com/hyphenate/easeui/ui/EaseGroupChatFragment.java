@@ -82,6 +82,7 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.DraftEntity;
 import com.stratagile.pnrouter.db.DraftEntityDao;
+import com.stratagile.pnrouter.db.GroupEntity;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
@@ -102,6 +103,8 @@ import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
+import com.stratagile.pnrouter.ui.activity.group.CreateGroupActivity;
+import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.AESCipher;
 import com.stratagile.pnrouter.utils.Base58;
@@ -152,6 +155,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected static final int REQUEST_CODE_DING_MSG = 4;
     protected static final int REQUEST_CODE_FILE = 5;
     protected static final int REQUEST_CODE_VIDEO = 6;
+    protected static final int REQUEST_CODE_ENTER_GROUP = 7;
 
     protected static final int MSG_TYPING_BEGIN = 0;
     protected static final int MSG_TYPING_END = 1;
@@ -169,6 +173,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected Bundle fragmentArgs;
     protected int chatType;
     protected String toChatUserId;
+    protected GroupEntity groupEntity;
     protected int friendStatus = 0;
     protected EaseChatMessageList easeChatMessageList;
     protected EaseChatInputMenu inputMenu;
@@ -274,7 +279,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
         // userId you are chat with or group id
         toChatUserId = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
-
+        groupEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_CHAT_GROUP);
         this.turnOnTyping = turnOnTyping();
         super.onActivityCreated(savedInstanceState);
     }
@@ -522,7 +527,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
             titleBar.setRightImageResource(R.mipmap.data);
         } else {
-            titleBar.setRightImageResource(R.drawable.ease_to_group_details_normal);
+            titleBar.setRightImageResource(R.mipmap.icon_more_3);
             if (chatType == EaseConstant.CHATTYPE_GROUP) {
                 //group chat
                 EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUserId);
@@ -1654,6 +1659,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 String filePath = data.getStringExtra("path");
                 Boolean isCheck = data.getBooleanExtra("isCheck", false);
                 sendImageMessage(filePath, !isCheck);
+            } else if (requestCode == REQUEST_CODE_ENTER_GROUP) {
+
             }
         }
     }
@@ -3533,13 +3540,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected void toGroupDetails() {
         if (chatType == EaseConstant.CHATTYPE_GROUP) {
             EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUserId);
-            if (group == null) {
+            if (groupEntity == null) {
                 Toast.makeText(getActivity(), R.string.gorup_not_found, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (chatFragmentHelper != null) {
                 chatFragmentHelper.onEnterToChatDetails();
             }
+            Intent intent = new Intent(getActivity(), GroupInfoActivity.class);
+            intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+            startActivityForResult(intent, REQUEST_CODE_ENTER_GROUP);
         } else if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             if (chatFragmentHelper != null) {
                 chatFragmentHelper.onEnterToChatDetails();

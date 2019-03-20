@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
@@ -64,6 +65,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     private var chatFragment: EaseGroupChatFragment? = null
     internal var toChatUserID: String? = null
     var statusBarHeight: Int = 0
+    var groupEntity : GroupEntity? = null
     var receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     internal var handlerDown: Handler = object : Handler() {
@@ -451,6 +453,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         needFront = true
         KLog.i("insertMessage:GroupChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
+        groupEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_CHAT_GROUP)
         receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         super.onCreate(savedInstanceState)

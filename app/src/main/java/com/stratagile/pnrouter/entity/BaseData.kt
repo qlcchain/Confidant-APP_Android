@@ -503,7 +503,7 @@ data class GroupListPullReq(var UserId : String, var RouterId : String,var Actio
  * 68.	拉取群好友信息
  * (2)	响应（APP->Router）
  */
-data class GroupUserPullReq(var UserId : String, var RouterId : String, var GId : String,var Action : String = "GroupUserPull")
+data class GroupUserPullReq(var UserId : String, var RouterId : String, var GId : String, var TargetNum : Int, var StartId : String, var Action : String = "GroupUserPull")
 
 /**
  * 69.	拉取群消息列表
