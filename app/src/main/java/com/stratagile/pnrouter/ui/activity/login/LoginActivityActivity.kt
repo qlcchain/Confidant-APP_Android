@@ -555,7 +555,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG || intent.hasExtra("flag")) {
             isUnlock = true
         }
         maxLogin = 0

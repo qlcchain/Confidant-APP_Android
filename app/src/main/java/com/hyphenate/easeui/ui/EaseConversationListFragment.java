@@ -402,7 +402,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                         }
                                         break;
                                     case 1:
-                                        String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                                        String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
                                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                                         break;
                                     case 2:

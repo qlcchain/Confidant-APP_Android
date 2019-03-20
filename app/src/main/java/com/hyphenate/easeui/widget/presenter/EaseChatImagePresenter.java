@@ -73,7 +73,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
     public void onBubbleClick(EMMessage message) {
         EMImageMessageBody imgBody = (EMImageMessageBody) message.getBody();
         String localUrl = imgBody.getLocalUrl();
-        if(localUrl.contains("ease_default_image"))
+        if(localUrl.contains("image_defalut_bg"))
         {
             return;
         }

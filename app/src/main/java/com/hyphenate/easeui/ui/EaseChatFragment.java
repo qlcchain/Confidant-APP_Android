@@ -1029,7 +1029,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                     break;
                 case 1:
-                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
                     String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + Message.getFileName();
                     File filesFile = new File(files_dir);
                     if (filesFile.exists()) {
