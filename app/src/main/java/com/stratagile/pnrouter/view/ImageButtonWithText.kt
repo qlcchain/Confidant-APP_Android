@@ -256,4 +256,10 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             }
         }
     }
+    fun setGroupHeadImage() {
+        textView.visibility = View.GONE
+        imageView.visibility = View.VISIBLE
+        Glide.with(context).load(R.mipmap.group_head).into(imageView)
+    }
+
 }

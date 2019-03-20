@@ -25,6 +25,8 @@ import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.GroupEntity;
+import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
@@ -112,25 +114,44 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         if (lastMessage == null) {
             return convertView;
         }
+        EMMessage eMMessage = conversation.getEmMessage();
+        String chatType =  eMMessage.getChatType().toString();
+        String usernameSouce = "";
         UserEntity friendUser = null;
-        List<UserEntity> localFriendList = null;
-        if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
-            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-            if (localFriendList.size() > 0)
-                friendUser = localFriendList.get(0);
-        } else {
+        GroupEntity groupEntity = null;
+        if(chatType.equals("Chat"))
+        {
+
+            List<UserEntity> localFriendList = null;
+            if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
+                localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                if (localFriendList.size() > 0)
+                    friendUser = localFriendList.get(0);
+            } else {
+                localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
+                if (localFriendList.size() > 0)
+                    friendUser = localFriendList.get(0);
+            }
+            if (friendUser == null) {
+                return convertView;
+            }
+            String username = friendUser.getNickName();
+            if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
+                username = friendUser.getRemarks();
+            }
+            usernameSouce = new String(RxEncodeTool.base64Decode(username));
+        }else{
+            List<GroupEntity> localGroupList = null;
+            localGroupList =  AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().loadAll();
+            localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(lastMessage.getEmMessage().getTo())).list();
+            if (localGroupList.size() > 0)
+                groupEntity = localGroupList.get(0);
+            List<UserEntity> localFriendList = null;
             localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
             if (localFriendList.size() > 0)
                 friendUser = localFriendList.get(0);
         }
-        if (friendUser == null) {
-            return convertView;
-        }
-        String username = friendUser.getNickName();
-        if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
-            username = friendUser.getRemarks();
-        }
-        String usernameSouce = new String(RxEncodeTool.base64Decode(username));
+
         if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.GroupChat) {
             String groupId = conversation.getEmMessage().conversationId();
             if (EaseAtMessageHelper.get().hasAtMeMsg(groupId)) {
@@ -141,7 +162,12 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             // group message, show group avatar
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
-            holder.name.setText(group != null ? group.getGroupName() : usernameSouce);
+            if(groupEntity != null)
+            {
+                String groupnameSouce = new String(RxEncodeTool.base64Decode(groupEntity.getGName()));
+                holder.name.setText(groupnameSouce);
+            }
+            holder.avatar.setGroupHeadImage();
         } else if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom) {
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMChatRoom room = EMClient.getInstance().chatroomManager().getChatRoom(conversationId);
@@ -205,7 +231,27 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         } else {
             holder.draft.setVisibility(View.GONE);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("//[draft]//", "")));
+        if(friendUser != null)
+        {
+            String username = friendUser.getNickName();
+            if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
+                username = friendUser.getRemarks();
+            }
+            if(friendUser.getUserId().equals(userId))
+            {
+                usernameSouce = new String(username);
+            }else{
+                usernameSouce = new String(RxEncodeTool.base64Decode(username));
+            }
+
+        }
+        if(chatType.equals("Chat"))
+        {
+            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("//[draft]//", "")));
+        }else{
+            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce+":"+holder.message.getText().toString().replace("//[draft]//", "")));
+        }
+
         holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
         //set property
         holder.name.setTextColor(primaryColor);

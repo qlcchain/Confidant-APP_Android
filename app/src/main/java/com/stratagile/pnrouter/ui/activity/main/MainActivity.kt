@@ -60,14 +60,12 @@ import com.stratagile.pnrouter.data.service.BackGroundService
 import com.stratagile.pnrouter.data.service.FileDownloadUploadService
 import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.FriendEntityDao
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.db.UserEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -328,6 +326,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.msgType = jPushFileMsgRsp.params.fileType
             Message.sender = 1
             Message.status = 1
+            Message.chatType = EMMessage.ChatType.Chat
             Message.fileName = jPushFileMsgRsp.params.fileName
             Message.timeStatmp = jPushFileMsgRsp.timestamp
 
@@ -407,7 +406,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.status = 2
                                 Message.timeStatmp = delMsgPushRsp?.timestamp
                                 Message.msgId = delMsgPushRsp?.params.msgId
-
+                                Message.chatType = EMMessage.ChatType.Chat
                                 var unReadCount = MessageLocal.unReadCount
                                 if (MessageLocal != null && MessageLocal.unReadCount != null) {
                                     unReadCount = MessageLocal.unReadCount
@@ -640,7 +639,86 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ivQrCode.postDelayed({ mNotificationManager.cancel(0) }, 50)
     }
     override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
+        if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.gId)) {
+            KLog.i("已经在群聊天窗口了，不处理该条数据！")
+        } else {
+            if (!AppConfig.instance.isBackGroud) {
+                defaultMediaPlayer()
+            }
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var msgData = GroupMsgPushRsp(0, userId!!, pushMsgRsp.params.gId, "")
 
+            var sendData = BaseData(msgData, pushMsgRsp?.msgid)
+            if (ConstantValue.encryptionType.equals("1")) {
+                sendData = BaseData(4, msgData, pushMsgRsp?.msgid)
+            }
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = sendData
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+            val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.userKey)
+            val base64Scoure = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg())
+            var msgSouce: String? = ""
+            try {
+                msgSouce = String(AESCipher.aesDecryptBytes(base64Scoure, aesKey.toByteArray()))
+                var message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.from)
+                if (msgSouce != null && msgSouce != "") {
+                    message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.from)
+                }
+                message.setDirection(EMMessage.Direct.RECEIVE)
+
+                message.msgId = "" + pushMsgRsp?.params.msgId
+                message.from = pushMsgRsp.params.from
+                message.to = pushMsgRsp.params.to
+                message.isUnread = true
+                message.isAcked = true
+                message.setStatus(EMMessage.Status.SUCCESS)
+                //if (conversation != null){
+                var gson = Gson()
+                var Message = Message()
+                Message.setMsg(msgSouce)
+                Message.setMsgId(pushMsgRsp.getParams().getMsgId())
+                Message.setFrom(pushMsgRsp.getParams().from)
+                Message.setTo(pushMsgRsp.getParams().to)
+                Message.msgType = 0
+                Message.sender = 1
+                Message.status = 1
+                Message.timeStatmp = pushMsgRsp?.timestamp
+                Message.chatType = EMMessage.ChatType.GroupChat
+                Message.msgId = pushMsgRsp?.params.msgId
+
+
+                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+                var unReadCount = 0
+                if (MessageLocal != null && MessageLocal.unReadCount != null) {
+                    unReadCount = MessageLocal.unReadCount
+                }
+                Message.unReadCount = unReadCount + 1;
+
+
+                var baseDataJson = gson.toJson(Message)
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
+                //conversation.insertMessage(message)
+                //}
+                if (ConstantValue.isInit) {
+                    runOnUiThread {
+                        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
+                        controlleMessageUnReadCount(UnReadMessageCount)
+                    }
+                    conversationListFragment?.refresh()
+                    ConstantValue.isRefeshed = true
+                }
+            }catch (e: Exception)
+            {
+               e.printStackTrace()
+            }
+        }
     }
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
@@ -700,6 +778,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.msgType = 0
             Message.sender = 1
             Message.status = 1
+            Message.chatType = EMMessage.ChatType.Chat
             Message.timeStatmp = pushMsgRsp?.timestamp
             Message.msgId = pushMsgRsp?.params.msgId
 
@@ -1086,23 +1165,38 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         for (key in keyMap.keys) {
 
             if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
-                val toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length)
+                val tempkey = key.replace(ConstantValue.message, "")
+                val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
+
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
-                    val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
-                    if (localFriendList.size == 0)
-                    //如果找不到用户
-                    {
-                        SpUtil.putString(AppConfig.instance, key, "")
-                        continue
+                    if (toChatUserId.indexOf("group") == 0)//这里处理群聊
+                    { val localGroupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list()
+                        if (localGroupList.size == 0)
+                        //如果找不到用户
+                        {
+                            SpUtil.putString(AppConfig.instance, key, "")
+                            continue
+                        }
+
+                    } else {//这里是普通聊天
+
+                        val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
+                        if (localFriendList.size == 0)
+                        //如果找不到用户
+                        {
+                            SpUtil.putString(AppConfig.instance, key, "")
+                            continue
+                        }
+                        var freindStatusData = FriendEntity()
+                        freindStatusData.friendLocalStatus = 7
+                        val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
+                        if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
+                        if (freindStatusData.friendLocalStatus != 0) {
+                            SpUtil.putString(AppConfig.instance, key, "")
+                            continue
+                        }
                     }
-                    var freindStatusData = FriendEntity()
-                    freindStatusData.friendLocalStatus = 7
-                    val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list()
-                    if (localFriendStatusList.size > 0) freindStatusData = localFriendStatusList[0]
-                    if (freindStatusData.friendLocalStatus != 0) {
-                        SpUtil.putString(AppConfig.instance, key, "")
-                        continue
-                    }
+
                     val cachStr = SpUtil.getString(AppConfig.instance, key, "")
 
                     if ("" != cachStr) {
@@ -1525,8 +1619,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
-                { userid ->
-                    startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                { userid ,chatType ->
+                    if(chatType.equals("Chat"))
+                    {
+                        startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                    }else{
+                        startActivity(Intent(this@MainActivity, GroupChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                    }
                     KLog.i("进入聊天页面，好友id为：" + userid)
                 })
         if (AppConfig.instance.tempPushMsgList.size != 0) {
@@ -1574,6 +1673,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             Message.setMsgId(pushMsgRsp.getParams().getMsgId())
                             Message.setFrom(pushMsgRsp.getParams().getFromId())
                             Message.setTo(pushMsgRsp.getParams().getToId())
+                            Message.chatType = EMMessage.ChatType.Chat
 
                             var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
                             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)

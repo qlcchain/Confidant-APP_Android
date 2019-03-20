@@ -543,6 +543,11 @@ data class GroupDelMsgReq(var Type : Int, var From : String, var GId : String, v
  * (2)	响应（APP->Router）
  */
 data class GroupMsgPushReq(var From : String, var To : String, var Point : Int, var GId : String, var GroupName : String, var MsgId : Int, var Msg : String,var Action : String = "GroupMsgPush")
+/**
+ * 74.	群消息推送  反馈
+ * (2)	响应（APP->Router）
+ */
+data class GroupMsgPushRsp(var RetCode : Int, var ToId : String, var GId : String, var Msg : String,var Action : String = "GroupMsgPush")
 
 /**
  * 75.	群属性设置
@@ -555,3 +560,8 @@ data class GroupConfigReq(var UserId : String, var GId : String, var Type : Int,
  * (2)	响应（APP->Router）
  */
 data class GroupSysPushReq(var UserId : String, var GId : String, var Type : Int, var From : String, var To : String, var MsgId : Int, var Name : String, var NeedVerify : Int,var Action : String = "GroupSysPush")
+/**
+ * 76.	群系统消息推送 反馈
+ * (2)	响应（APP->Router）
+ */
+data class GroupSysPushRsp(var RetCode : Int, var ToId : String,var Action : String = "GroupSysPush")

@@ -454,7 +454,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "GroupMsgPush" -> {
                     val JGroupMsgPushRsp = gson.fromJson(text, JGroupMsgPushRsp::class.java)
                     groupchatCallBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
-                    convsationCallBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
+                    //convsationCallBack?.pushGroupMsgRsp(JGroupMsgPushRsp)
                     if (mainInfoBack == null) {
                         AppConfig.instance.tempPushGroupMsgList.add(JGroupMsgPushRsp)
                     }

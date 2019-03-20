@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
+import com.stratagile.pnrouter.db.GroupEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.GroupListPullReq
@@ -58,12 +59,24 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
         {
             0->
             {
-                runOnUiThread {
-                    groupEntityList = arrayListOf<GroupEntity>()
-                    for (item in jGroupListPullRsp.params.payload)
+                groupEntityList = arrayListOf<GroupEntity>()
+                for (item in jGroupListPullRsp.params.payload)
+                {
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
+                    if(groupList.size > 0)
                     {
-                        groupEntityList.add(item)
+                        var GroupLocal = groupList.get(0)
+                        GroupLocal.userKey = item.userKey
+                        GroupLocal.remark = item.remark
+                        GroupLocal.gId = item.gId
+                        GroupLocal.gAdmin = item.gAdmin
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+                    }else{
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
                     }
+                    groupEntityList.add(item)
+                }
+                runOnUiThread {
                     GroupAdapter!!.setNewData(groupEntityList)
                 }
             }

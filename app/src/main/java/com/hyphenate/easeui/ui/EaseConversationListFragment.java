@@ -46,6 +46,8 @@ import com.stratagile.pnrouter.db.DraftEntity;
 import com.stratagile.pnrouter.db.DraftEntityDao;
 import com.stratagile.pnrouter.db.FriendEntity;
 import com.stratagile.pnrouter.db.FriendEntityDao;
+import com.stratagile.pnrouter.db.GroupEntity;
+import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.UnReadEMMessage;
@@ -142,29 +144,45 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                     LogUtil.addLog("点击会话层:", "EaseConversationListFragment");
                     UnReadEMMessage conversation = conversationListView.getItem(position);
                     UnReadEMMessage lastMessage = conversation;
-                    UserEntity friendInfo = null;
-                    List<UserEntity> localFriendList = null;
+                    EMMessage eMMessage = conversation.getEmMessage();
+                    String chatType =  eMMessage.getChatType().toString();
+
+
                     KLog.i("点击会话层lastMessage:" + lastMessage.getEmMessage() + "_from:" + lastMessage.getEmMessage().getFrom() + "_to:" + lastMessage.getEmMessage().getTo());
                     LogUtil.addLog("点击会话层lastMessage:" + lastMessage.getEmMessage() + "_from:" + lastMessage.getEmMessage().getFrom() + "_to:" + lastMessage.getEmMessage().getTo(), "EaseConversationListFragment");
-                    if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-                        KLog.i("点击会话层1_localFriendList:" + localFriendList.size());
-                        LogUtil.addLog("点击会话层1_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
-                        if (localFriendList.size() > 0)
-                            friendInfo = localFriendList.get(0);
-                    } else {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
-                        KLog.i("点击会话层2_localFriendList:" + localFriendList.size());
-                        LogUtil.addLog("点击会话层2_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
-                        if (localFriendList.size() > 0)
-                            friendInfo = localFriendList.get(0);
+                    if(chatType.equals("Chat"))
+                    {
+                        UserEntity friendInfo = null;
+                        List<UserEntity> localFriendList = null;
+                        if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
+                            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                            KLog.i("点击会话层1_localFriendList:" + localFriendList.size());
+                            LogUtil.addLog("点击会话层1_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
+                            if (localFriendList.size() > 0)
+                                friendInfo = localFriendList.get(0);
+                        } else {
+                            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
+                            KLog.i("点击会话层2_localFriendList:" + localFriendList.size());
+                            LogUtil.addLog("点击会话层2_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");
+                            if (localFriendList.size() > 0)
+                                friendInfo = localFriendList.get(0);
+                        }
+                        KLog.i("点击会话层:" + friendInfo);
+                        LogUtil.addLog("点击会话层:" + friendInfo, "EaseConversationListFragment");
+                        lastMessage.getEmMessage().setUnread(false);
+                        UserDataManger.curreantfriendUserData = friendInfo;
+                        if (friendInfo != null)
+                            listItemClickListener.onListItemClicked(friendInfo.getUserId(),chatType);
+                    }else{
+                        GroupEntity groupEntity = null;
+                        List<GroupEntity> localGroupList = null;
+                        localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(lastMessage.getEmMessage().getTo())).list();
+                        if (localGroupList.size() > 0)
+                            groupEntity = localGroupList.get(0);
+                        UserDataManger.currentGroupData = groupEntity;
+                        if (groupEntity != null)
+                            listItemClickListener.onListItemClicked(groupEntity.getGId(),chatType);
                     }
-                    KLog.i("点击会话层:" + friendInfo);
-                    LogUtil.addLog("点击会话层:" + friendInfo, "EaseConversationListFragment");
-                    lastMessage.getEmMessage().setUnread(false);
-                    UserDataManger.curreantfriendUserData = friendInfo;
-                    if (friendInfo != null)
-                        listItemClickListener.onListItemClicked(friendInfo.getUserId());
                 }
             });
 
@@ -365,23 +383,35 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             for (String key : keyMap.keySet()) {
 
                 if (key.contains(ConstantValue.INSTANCE.getMessage()) && key.contains(userId + "_")) {
-                    String toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length());
+                    String tempkey = key.replace(ConstantValue.INSTANCE.getMessage(),"");
+                    String toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length());
                     if (toChatUserId != null && !toChatUserId.equals("") && !toChatUserId.equals("null")) {
-                        List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
-                        if (localFriendList.size() == 0)//如果找不到用户
+                        if(toChatUserId.indexOf("group") == 0)//这里处理群聊
                         {
-                            SpUtil.INSTANCE.putString(getActivity(), key, "");
-                            continue;
+                            List<GroupEntity> localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list();
+                            if (localGroupList.size() == 0)//如果找不到群组
+                            {
+                                SpUtil.INSTANCE.putString(getActivity(), key, "");
+                                continue;
+                            }
+                        }else{//这里是普通聊天
+                            List<UserEntity> localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list();
+                            if (localFriendList.size() == 0)//如果找不到用户
+                            {
+                                SpUtil.INSTANCE.putString(getActivity(), key, "");
+                                continue;
+                            }
+                            FriendEntity freindStatusData = new FriendEntity();
+                            freindStatusData.setFriendLocalStatus(7);
+                            List<FriendEntity> localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
+                            if (localFriendStatusList.size() > 0)
+                                freindStatusData = localFriendStatusList.get(0);
+                            if (freindStatusData.getFriendLocalStatus() != 0) {
+                                SpUtil.INSTANCE.putString(getActivity(), key, "");
+                                continue;
+                            }
                         }
-                        FriendEntity freindStatusData = new FriendEntity();
-                        freindStatusData.setFriendLocalStatus(7);
-                        List<FriendEntity> localFriendStatusList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(toChatUserId)).list();
-                        if (localFriendStatusList.size() > 0)
-                            freindStatusData = localFriendStatusList.get(0);
-                        if (freindStatusData.getFriendLocalStatus() != 0) {
-                            SpUtil.INSTANCE.putString(getActivity(), key, "");
-                            continue;
-                        }
+
                         String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, key, "");
                         List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
                         DraftEntity draftEntity = null;
@@ -445,18 +475,35 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                     default:
                                         break;
                                 }
-                                if (Message.getSender() == 0) {
-                                    message.setFrom(userId);
-                                    message.setTo(toChatUserId);
-
-                                    message.setDirection(EMMessage.Direct.SEND);
-                                } else {
-                                    message.setFrom(toChatUserId);
-                                    message.setTo(userId);
-                                    message.setDirection(EMMessage.Direct.RECEIVE);
+                                if(Message.getChatType() == null || Message.getChatType().equals(EMMessage.ChatType.Chat))
+                                {
+                                    if (Message.getSender() == 0) {
+                                        message.setFrom(userId);
+                                        message.setTo(toChatUserId);
+                                        message.setDirection(EMMessage.Direct.SEND);
+                                    } else {
+                                        message.setFrom(toChatUserId);
+                                        message.setTo(userId);
+                                        message.setDirection(EMMessage.Direct.RECEIVE);
+                                    }
+                                }else{
+                                    if (Message.getFrom().equals(userId)) {
+                                        message.setFrom(userId);
+                                        message.setTo(toChatUserId);
+                                        message.setDirection(EMMessage.Direct.SEND);
+                                    } else {
+                                        message.setFrom(Message.getFrom());
+                                        message.setTo(toChatUserId);
+                                        message.setDirection(EMMessage.Direct.RECEIVE);
+                                    }
                                 }
+
                                 message.setMsgTime(Message.getTimeStatmp());
                                 message.setMsgId(Message.getMsgId() + "");
+                                if(Message.getChatType() != null)
+                                {
+                                    message.setChatType(Message.getChatType());
+                                }
                                 conversations.put(toChatUserId, new UnReadEMMessage(message, Message.getUnReadCount()));
                             }
 
@@ -560,7 +607,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
          *
          * @param usersid -- clicked item
          */
-        void onListItemClicked(String usersid);
+        void onListItemClicked(String usersid,String chatType);
     }
 
     /**

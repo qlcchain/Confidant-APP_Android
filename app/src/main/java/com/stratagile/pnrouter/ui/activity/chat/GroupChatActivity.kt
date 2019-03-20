@@ -375,24 +375,11 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
     override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
 
-      /*  var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-        var msgId:String = pushMsgRsp?.params.msgId.toString()
-        var readMsgReq  =  ReadMsgReq(userId,pushMsgRsp.params.fromId,msgId)
-        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
-        if(ConstantValue.encryptionType.equals("1"))
-        {
-            sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
-        }
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = GroupMsgPushRsp(0,userId!!, toChatUserID!!, "")
+        var sendData = BaseData(4,msgData,pushMsgRsp?.msgid)
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            if(!msgId.equals(""))
-            {
-                if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
-                }
-            }
-
         }else if (ConstantValue.isToxConnected) {
             var baseData = sendData
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -402,31 +389,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
-            if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                var baseData2 = BaseData(2,readMsgReq)
-                var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
-                //var friendKey2: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                if(!msgId.equals(""))
-                {
-                    if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                    }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                    }
-                }
-            }
 
         }
-        if (pushMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            if(ConstantValue.encryptionType.equals("1"))
-            {
-                chatFragment?.receiveTxtMessageV3(pushMsgRsp)
-            }else{
-                chatFragment?.receiveTxtMessage(pushMsgRsp)
-            }
+        if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
+            chatFragment?.receiveTxtMessageV3(pushMsgRsp)
 
-        }*/
+        }
     }
 
     override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String):String {

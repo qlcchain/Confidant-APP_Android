@@ -180,13 +180,7 @@ public abstract class EaseChatRow extends LinearLayout {
                     userAvatarView.setText(usernameSouce);
                     EaseUserUtils.setUserAvatar(usernameSouce, userAvatarView,user.get(0).getSignPublicKey());
                 } else {
-                    if(user != null && user.get(0) != null)
-                    {
-                        EaseUserUtils.setUserAvatar(message.getFrom(), userAvatarView,user.get(0).getSignPublicKey());
-                    }else{
-
-                        userAvatarView.setText("UNKNOW");
-                    }
+                    userAvatarView.setText("UNKNOW");
 
                 }
             }

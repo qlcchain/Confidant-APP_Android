@@ -92,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@id/mentioned"
-        android:text="[Draft]"
+        android:text=""
         android:paddingTop="7dp"
         android:paddingBottom="7dp"
         android:paddingLeft="7dp"
@@ -117,13 +117,14 @@
         android:textSize="15sp" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/unread_msg_number"
         android:layout_width="wrap_content"
         android:minWidth="@dimen/x30"
         android:paddingLeft="@dimen/x5"
         android:paddingRight="@dimen/x5"
         android:layout_height="@dimen/x30"
-        android:text="20"
+        android:text="0"
         android:layout_alignParentRight="true"
         android:includeFontPadding="false"
         android:layout_below="@+id/time"
