@@ -85,7 +85,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
             }
             4->{
-
+                chatFragment?.delFreindMsg(jGroupSysPushRsp)
             }
             241->{
 
