@@ -120,7 +120,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                             {
                                 type = 1;
                             }
-                            GroupDelMsgReq  msgData = new GroupDelMsgReq(type, message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
+                            GroupDelMsgReq  msgData = new GroupDelMsgReq(type, userId, message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
                             BaseData baseData = new BaseData(4,msgData);
                             if(ConstantValue.INSTANCE.isWebsocketConnected())
                             {

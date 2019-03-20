@@ -136,7 +136,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             {
                                 if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                                 {
-                                    GroupDelMsgReq msgData = new GroupDelMsgReq(0, message.getFrom(), message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
+                                    GroupDelMsgReq msgData = new GroupDelMsgReq(0, userId, message.getTo(),Integer.valueOf(message.getMsgId()) ,"GroupDelMsg");
                                     BaseData baseData = new BaseData(4,msgData);
                                     if(ConstantValue.INSTANCE.isWebsocketConnected())
                                     {
