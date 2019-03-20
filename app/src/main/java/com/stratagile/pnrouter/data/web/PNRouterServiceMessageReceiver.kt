@@ -466,6 +466,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     groupchatCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
                     convsationCallBack?.pullGroupMsgRsp(JGroupMsgPullRsp)
                 }
+                "GroupUserPull" -> {
+                    val jGroupUserPullRsp = gson.fromJson(text, JGroupUserPullRsp::class.java)
+                    groupDetailBack?.groupUserPull(jGroupUserPullRsp)
+                }
             }
         }
 
@@ -524,6 +528,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var updateAvatarBackBack: UpdateAvatarBack? = null
     var groupBack: GroupBack? = null
     var groupListPullBack: GroupListPullBack? = null
+    var groupDetailBack : GroupDetailBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -791,6 +796,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
     interface GroupListPullBack {
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
+    }
+
+    interface GroupDetailBack {
+        fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
     }
 }
 

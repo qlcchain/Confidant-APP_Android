@@ -50,46 +50,40 @@ import javax.inject.Inject;
 class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterServiceMessageReceiver.GroupBack {
     override fun createGroup(jCreateGroupRsp: JCreateGroupRsp) {
 
-        when(jCreateGroupRsp.params.retCode)
-        {
-            0->
-            {
+        when (jCreateGroupRsp.params.retCode) {
+            0 -> {
                 EventBus.getDefault().post(AddGroupChange())
-                 runOnUiThread {
-                     toast(R.string.success)
-                     var newGroupEntity = GroupEntity()
-                     newGroupEntity.gName = jCreateGroupRsp.params.gName
-                     newGroupEntity.gAdmin = jCreateGroupRsp.params.gAdmin
-                     newGroupEntity.gId  = jCreateGroupRsp.params.gId
-                     newGroupEntity.userKey  = jCreateGroupRsp.params.userKey
-                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(newGroupEntity)
-                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
-                     intent.putExtra(EaseConstant.EXTRA_USER_ID, newGroupEntity.gId.toString())
-                     UserDataManger.currentGroupData = newGroupEntity
-                     startActivity(intent)
-                     finish();
-                 }
+                runOnUiThread {
+                    toast(R.string.success)
+                    var newGroupEntity = GroupEntity()
+                    newGroupEntity.gName = jCreateGroupRsp.params.gName
+                    newGroupEntity.gAdmin = jCreateGroupRsp.params.gAdmin
+                    newGroupEntity.gId = jCreateGroupRsp.params.gId
+                    newGroupEntity.userKey = jCreateGroupRsp.params.userKey
+                    AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(newGroupEntity)
+                    val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                    intent.putExtra(EaseConstant.EXTRA_USER_ID, newGroupEntity.gId.toString())
+                    UserDataManger.currentGroupData = newGroupEntity
+                    startActivity(intent)
+                    finish();
+                }
             }
-            1->
-            {
+            1 -> {
                 runOnUiThread {
                     toast(getString(R.string.User_ID_error))
                 }
             }
-            2->
-            {
+            2 -> {
                 runOnUiThread {
                     toast(getString(R.string.Input_parameter_error))
                 }
             }
-            3->
-            {
+            3 -> {
                 runOnUiThread {
                     toast(getString(R.string.upper_limit))
                 }
             }
-            else ->
-            {
+            else -> {
                 runOnUiThread {
                     toast(getString(R.string.Other_mistakes))
                 }
@@ -102,10 +96,10 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
     @Inject
     internal lateinit var mPresenter: CreateGroupPresenter
 
-    var groupMemberAdapter : GroupMemberAdapter? = null
+    var groupMemberAdapter: GroupMemberAdapter? = null
 
-    lateinit var addUser : UserEntity
-    lateinit var reduceUser : UserEntity
+    lateinit var addUser: UserEntity
+    lateinit var reduceUser: UserEntity
     var userList = arrayListOf<UserEntity>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,7 +127,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
                 var list = arrayListOf<UserEntity>()
                 list.addAll(groupMemberAdapter!!.data)
                 startActivityForResult(Intent(this@CreateGroupActivity, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), 0)
-            } else if("0".equals(groupMemberAdapter!!.data[position].userId)) {
+            } else if ("0".equals(groupMemberAdapter!!.data[position].userId)) {
                 var list = arrayListOf<UserEntity>()
                 list.addAll(groupMemberAdapter!!.data)
                 startActivityForResult(Intent(this@CreateGroupActivity, RemoveGroupMemberActivity::class.java).putParcelableArrayListExtra("person", list), 0)
@@ -146,33 +140,29 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
         } else {
             select_people_number.text = "" + getGroupPeople() + " people"
         }
-        createGroup.setOnClickListener{
-            if(groupName.text.toString().equals(""))
-            {
+        createGroup.setOnClickListener {
+            if (groupName.text.toString().equals("")) {
                 toast(R.string.Name_cannot_be_empty)
                 return@setOnClickListener
             }
-            if(groupMemberAdapter!!.data.size <= 1)
-            {
+            if (groupMemberAdapter!!.data.size <= 1) {
                 toast(R.string.At_least_one_good_friend)
                 return@setOnClickListener
             }
             var friendList = groupMemberAdapter!!.data
             var friendStr = "";
             var friendKey = "";
-            var aesKey =  RxEncryptTool.generateAESKey()
-            for (userEntity in friendList)
-            {
-                if(userEntity.userId != null && userEntity.userId.length > 10)
-                {
-                    friendStr += userEntity.userId +",";
-                   var friendAesMi =  RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, userEntity.miPublicKey ))
-                    friendKey += friendAesMi +","
+            var aesKey = RxEncryptTool.generateAESKey()
+            for (userEntity in friendList) {
+                if (userEntity.userId != null && userEntity.userId.length > 10) {
+                    friendStr += userEntity.userId + ",";
+                    var friendAesMi = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, userEntity.miPublicKey))
+                    friendKey += friendAesMi + ","
                 }
 
             }
-            friendStr  = friendStr.substring(0,friendStr.lastIndexOf(","))
-            friendKey  = friendKey.substring(0,friendKey.lastIndexOf(","))
+            friendStr = friendStr.substring(0, friendStr.lastIndexOf(","))
+            friendKey = friendKey.substring(0, friendKey.lastIndexOf(","))
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
             var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
@@ -180,7 +170,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
             UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
             UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey,0,friendStr,friendKey)
+            val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, 0, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, CreateGroupReq))
             } else if (ConstantValue.isToxConnected) {
@@ -191,7 +181,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
         }
     }
 
-    fun getGroupPeople() : Int{
+    fun getGroupPeople(): Int {
         var count = 0
         groupMemberAdapter!!.data.forEach {
             if ("0".equals(it.userId) || "1".equals(it.userId)) {
@@ -238,16 +228,17 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
     }
 
     override fun setupActivityComponent() {
-       DaggerCreateGroupComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .createGroupModule(CreateGroupModule(this))
-               .build()
-               .inject(this)
+        DaggerCreateGroupComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .createGroupModule(CreateGroupModule(this))
+                .build()
+                .inject(this)
     }
+
     override fun setPresenter(presenter: CreateGroupContract.CreateGroupContractPresenter) {
-            mPresenter = presenter as CreateGroupPresenter
-        }
+        mPresenter = presenter as CreateGroupPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

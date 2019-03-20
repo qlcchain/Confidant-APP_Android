@@ -105,7 +105,6 @@ class AppConfig : MultiDexApplication() {
         }
         initMiPush()
         loadLibrary()
-        QMUISwipeBackActivityManager.init(this)
         messageToxReceiver = ToxMessageReceiver()
         initResumeListener()
         /*if (TextSecurePreferences.isFcmDisabled(this)) {

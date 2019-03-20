@@ -4,6 +4,7 @@ import android.content.Intent
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.hyphenate.easeui.EaseConstant
+import com.hyphenate.easeui.EaseConstant.EXTRA_CHAT_GROUP
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -27,6 +28,7 @@ class GroupAdapter (arrayList: ArrayList<GroupEntity>) : BaseQuickAdapter<GroupE
         helper.itemView.setOnClickListener {
             val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
             intent.putExtra(EaseConstant.EXTRA_USER_ID, item.gId.toString())
+            intent.putExtra(EXTRA_CHAT_GROUP, item)
             UserDataManger.currentGroupData = item
             mContext.startActivity(intent)
         }

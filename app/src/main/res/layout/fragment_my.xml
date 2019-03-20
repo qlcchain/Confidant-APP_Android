@@ -10,9 +10,9 @@
     <View
         android:id="@+id/toDetail"
         android:layout_width="match_parent"
-        android:background="@color/white"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/status" />
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        android:background="@color/white" />
     <TextView
         android:id="@+id/nickName"
         android:layout_width="wrap_content"
