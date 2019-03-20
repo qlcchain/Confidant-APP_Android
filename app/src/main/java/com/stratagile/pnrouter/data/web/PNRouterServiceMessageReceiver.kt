@@ -475,8 +475,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     groupDetailBack?.groupUserPull(jGroupUserPullRsp)
                 }
                 "GroupSysPush" -> {
-                    val jGroupUserPullRsp = gson.fromJson(text, JGroupUserPullRsp::class.java)
-                    groupchatCallBack?.delGroupMsgRsp(jGroupUserPullRsp)
+                    val JGroupSysPushRsp = gson.fromJson(text, JGroupSysPushRsp::class.java)
+                    groupchatCallBack?.droupSysPushRsp(JGroupSysPushRsp)
+                    mainInfoBack?.droupSysPushRsp(JGroupSysPushRsp)
                 }
 
             }
@@ -674,6 +675,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp)
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
+        fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
     }
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)
@@ -746,7 +748,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)
         fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp)
-        fun droupSysPushRsp(delMsgRsp: JGroupDelMsgRsp)
+        fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
         fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)

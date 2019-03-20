@@ -106,6 +106,107 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
+    override fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp) {
+        if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jGroupSysPushRsp.params.gId)) {
+            KLog.i("已经在群聊天窗口了，不处理该条数据！")
+        } else {
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            var msgData = GroupSysPushRsp(0, userId!!)
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jGroupSysPushRsp.msgid))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(4, msgData, jGroupSysPushRsp.msgid)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+
+            when(jGroupSysPushRsp.params.type){
+
+                1->{
+
+                }
+                2->{
+
+                }
+                3->{
+                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    val keyMap = SpUtil.getAll(AppConfig.instance)
+                    for (key in keyMap.keys) {
+
+                        if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
+                            val tempkey = key.replace(ConstantValue.message, "")
+                            val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
+                            if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null" && toChatUserId.equals(jGroupSysPushRsp.params.gId)) {
+                                val cachStr = SpUtil.getString(AppConfig.instance, key, "")
+                                if ("" != cachStr) {
+                                    val gson = GsonUtil.getIntGson()
+                                    val MessageLocal = gson.fromJson(cachStr, Message::class.java)
+                                    if (MessageLocal.from.equals(jGroupSysPushRsp.params.from)) {
+                                        var gson = Gson()
+                                        var Message = Message()
+                                        Message.setMsg(resources.getString(R.string.withdrawn))
+                                        Message.setMsgId(jGroupSysPushRsp.getParams().getMsgId())
+                                        Message.setFrom(jGroupSysPushRsp.getParams().from)
+                                        Message.setTo(jGroupSysPushRsp.getParams().gId)
+                                        Message.msgType = 0
+                                        Message.sender = 1
+                                        Message.status = 2
+                                        Message.timeStatmp = jGroupSysPushRsp?.timestamp
+                                        Message.msgId = jGroupSysPushRsp?.params.msgId
+                                        Message.chatType = EMMessage.ChatType.GroupChat
+                                        var unReadCount = MessageLocal.unReadCount
+                                        if (MessageLocal != null && MessageLocal.unReadCount != null) {
+                                            unReadCount = MessageLocal.unReadCount
+                                        }
+                                        if (unReadCount > 0) {
+                                            Message.unReadCount = unReadCount - 1;
+                                        } else {
+                                            Message.unReadCount = 0;
+                                        }
+
+                                        var baseDataJson = gson.toJson(Message)
+                                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                        SpUtil.putString(AppConfig.instance, key, baseDataJson)
+                                        if (ConstantValue.isInit) {
+                                            runOnUiThread {
+                                                var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
+                                                if (Message.unReadCount > 0) {
+                                                    UnReadMessageCount = UnReadMessageCount(1)
+                                                }
+                                                controlleMessageUnReadCount(UnReadMessageCount)
+                                            }
+                                            conversationListFragment?.refresh()
+                                            ConstantValue.isRefeshed = true
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                4->{
+
+                }
+                241->{
+
+                }
+                242->{
+
+                }
+                243->{
+
+                }
+
+            }
+        }
+    }
+
     override fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp) {
         when (jUploadAvatarRsp.params.retCode) {
             0 -> {
@@ -384,7 +485,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             for (key in keyMap.keys) {
 
                 if (key.contains(ConstantValue.message) && key.contains(userId!! + "_")) {
-                    val toChatUserId = key.substring(key.lastIndexOf("_") + 1, key.length)
+                    val tempkey = key.replace(ConstantValue.message, "")
+                    val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                     if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
                         val localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(toChatUserId)).list()
                         if (localFriendList.size == 0) {
@@ -438,42 +540,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
 
-            /* var conversation: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-             var conversation2: EMConversation = EMClient.getInstance().chatManager().getConversation(delMsgPushRsp.params.userId, EaseCommonUtils.getConversationType(EaseConstant.CHATTYPE_SINGLE), true)
-             if (conversation2 != null) {
-                 val lastMessage2 = conversation2.lastMessage
-                 var all2 = conversation2.allMessages
-                 var aa = "";
-             }
-             if (conversation != null) {
-                 val lastMessage = conversation.lastMessage
-                 if(lastMessage != null && lastMessage.msgId.equals(delMsgPushRsp.params.msgId.toString()))
-                 {
-                     var gson = Gson()
-                     var Message = Message()
-                     Message.setMsg(resources.getString(R.string.withdrawn))
-                     Message.setMsgId(delMsgPushRsp.getParams().getMsgId())
-                     Message.setFrom(delMsgPushRsp.getParams().userId)
-                     Message.setTo(delMsgPushRsp.getParams().friendId)
-                     Message.msgType = 0
-                     Message.sender = 1
-                     Message.status = 1
-                     Message.timeStatmp = delMsgPushRsp?.timestamp
-                     Message.msgId = delMsgPushRsp?.params.msgId
-                     var baseDataJson = gson.toJson(Message)
-                     var userId =   SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                     SpUtil.putString(AppConfig.instance,ConstantValue.message+userId+"_"+delMsgPushRsp.params.userId,baseDataJson)
-                     if (ConstantValue.isInit) {
-                         runOnUiThread {
-                             var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
-                             controlleMessageUnReadCount(UnReadMessageCount)
-                         }
-                         conversationListFragment?.refresh()
-                         ConstantValue.isRefeshed = true
-                     }
-                 }
-
-             }*/
 
         }
 
@@ -1167,7 +1233,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (key.contains(ConstantValue.message) && key.contains(userId + "_")) {
                 val tempkey = key.replace(ConstantValue.message, "")
                 val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
-
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
                     if (toChatUserId.indexOf("group") == 0)//这里处理群聊
                     { val localGroupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list()

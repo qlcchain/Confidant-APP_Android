@@ -90,6 +90,7 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupSendMsgRsp;
+import com.stratagile.pnrouter.entity.JGroupSysPushRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
@@ -1372,7 +1373,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
     }
 
-    public void delFreindMsg(JDelMsgPushRsp jDelMsgRsp) {
+    public void delFreindMsg(JGroupSysPushRsp jDelMsgRsp) {
         try {
             EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jDelMsgRsp.getParams().getMsgId() + "");
             /*EMTextMessageBody var3 = new EMTextMessageBody(getResources().getString(R.string.withdrawn));

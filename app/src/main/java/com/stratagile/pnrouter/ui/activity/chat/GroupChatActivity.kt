@@ -57,6 +57,48 @@ import javax.inject.Inject;
  */
 
 class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServiceMessageReceiver.GroupChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var msgData = GroupSysPushRsp(0, userId!!)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jGroupSysPushRsp.msgid))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(4, msgData, jGroupSysPushRsp.msgid)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+
+        when(jGroupSysPushRsp.params.type){
+
+            1->{
+
+            }
+            2->{
+
+            }
+            3->{
+                chatFragment?.delFreindMsg(jGroupSysPushRsp)
+            }
+            4->{
+
+            }
+            241->{
+
+            }
+            242->{
+
+            }
+            243->{
+
+            }
+
+        }
+    }
 
     @Inject
     internal lateinit var mPresenter: GroupChatPresenter
@@ -251,7 +293,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }
         }
         if (delMsgPushRsp.params.userId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            chatFragment?.delFreindMsg(delMsgPushRsp)
+            //chatFragment?.delFreindMsg(delMsgPushRsp)
         }
     }
     override fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
@@ -331,14 +373,14 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
+        chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
+    }
     override fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp) {
         if (delMsgRsp.params.retCode == 0) {
             chatFragment?.delMyMsgOnSuccess(delMsgRsp.params.msgId.toString())
         }
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
-        chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
     }
     override fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp) {
 
