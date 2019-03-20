@@ -1432,7 +1432,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
+                Message.setFrom(Message.getFrom());
                 Message.setTo(toChatUserId);
                 Message.setTimeStatmp(System.currentTimeMillis() / 1000);
 
