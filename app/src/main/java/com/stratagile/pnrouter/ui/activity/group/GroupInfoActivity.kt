@@ -108,7 +108,14 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
         recyclerView.setLayoutManager(gridLayoutManager)
         recyclerView.addItemDecoration(GroupMemberDecoration())
         recyclerView.adapter = groupUserAdapter
+        tvDismissGroup.setOnClickListener()
+        {
 
+        }
+        tvLeaveGroup.setOnClickListener()
+        {
+
+        }
     }
 
     fun pullGourpUsersList() {
