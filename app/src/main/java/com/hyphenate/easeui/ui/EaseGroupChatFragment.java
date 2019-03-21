@@ -89,6 +89,7 @@ import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
+import com.stratagile.pnrouter.entity.JGroupQuitRsp;
 import com.stratagile.pnrouter.entity.JGroupSendMsgRsp;
 import com.stratagile.pnrouter.entity.JGroupSysPushRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
@@ -289,6 +290,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         toChatUserId = id;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void groupInfoChange(GroupEntity groupEntity) {
+        this.groupEntity = groupEntity;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void groupQuit(JGroupQuitRsp groupEntity) {
+        getActivity().finish();
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {

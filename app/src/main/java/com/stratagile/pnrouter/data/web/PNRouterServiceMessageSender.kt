@@ -350,7 +350,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     when(message.type){
                         "1" ->
                         {
-                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight)
+                            if (message.widthAndHeight == null) {
+                                sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, "")
+                            } else {
+                                sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight)
+                            }
                         }
                         "2" ->
                         {

@@ -26,6 +26,7 @@ import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.GroupListPullReq
 import com.stratagile.pnrouter.entity.JGroupListPullRsp
+import com.stratagile.pnrouter.entity.JGroupQuitRsp
 import com.stratagile.pnrouter.entity.events.AddGroupChange
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupChatsComponent
@@ -145,6 +146,17 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
     fun FriendAvatarChange(AddGroupChange: AddGroupChange) {
         pullGourpList()
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun groupInfoChange(groupEntity: GroupEntity) {
+        pullGourpList()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun groupQuit(jGroupQuitRsp: JGroupQuitRsp) {
+        pullGourpList()
+    }
+
     fun pullGourpList()
     {
         if (refreshLayout != null)

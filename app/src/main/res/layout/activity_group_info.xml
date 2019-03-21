@@ -66,7 +66,6 @@
             android:id="@+id/tvGroupAlias"
             android:layout_width="wrap_content"
             android:textColor="@color/color_808080"
-            android:text="@string/Adam_Grason"
             android:layout_height="wrap_content" />
         <ImageView
             android:layout_width="@dimen/x35"

@@ -1,6 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.selectfriend
 
 import android.app.Activity
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
@@ -211,9 +212,13 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.userId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                                        val bitmap = BitmapFactory.decodeFile(imagePath)
+                                        val widthAndHeight = "," + bitmap.width + ".0000000" + "*" + bitmap.height + ".0000000"
+
                                         message.from = userId
                                         message.to = i.userId
                                         message.isDelivered = true
+                                        message.setAttribute("wh", widthAndHeight.replace(",", ""))
                                         message.isAcked = false
                                         message.isUnread = true
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
@@ -251,6 +256,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 SendFileInfo.friendId = i.userId
                                                 SendFileInfo.files_dir = files_dir
                                                 SendFileInfo.msgId = uuid
+                                                SendFileInfo.setWidthAndHeight(widthAndHeight)
                                                 SendFileInfo.friendSignPublicKey = i.signPublicKey
                                                 SendFileInfo.friendMiPublicKey = i.miPublicKey
                                                 SendFileInfo.voiceTimeLen = 0

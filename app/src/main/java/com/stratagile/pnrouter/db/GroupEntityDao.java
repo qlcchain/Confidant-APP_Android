@@ -28,6 +28,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         public final static Property GAdmin = new Property(3, String.class, "GAdmin", false, "GADMIN");
         public final static Property Remark = new Property(4, String.class, "Remark", false, "REMARK");
         public final static Property UserKey = new Property(5, String.class, "UserKey", false, "USER_KEY");
+        public final static Property Verify = new Property(6, int.class, "Verify", false, "VERIFY");
     }
 
 
@@ -48,7 +49,8 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
                 "\"GNAME\" TEXT," + // 2: GName
                 "\"GADMIN\" TEXT," + // 3: GAdmin
                 "\"REMARK\" TEXT," + // 4: Remark
-                "\"USER_KEY\" TEXT);"); // 5: UserKey
+                "\"USER_KEY\" TEXT," + // 5: UserKey
+                "\"VERIFY\" INTEGER NOT NULL );"); // 6: Verify
     }
 
     /** Drops the underlying database table. */
@@ -90,6 +92,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         if (UserKey != null) {
             stmt.bindString(6, UserKey);
         }
+        stmt.bindLong(7, entity.getVerify());
     }
 
     @Override
@@ -125,6 +128,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         if (UserKey != null) {
             stmt.bindString(6, UserKey);
         }
+        stmt.bindLong(7, entity.getVerify());
     }
 
     @Override
@@ -140,7 +144,8 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // GName
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // GAdmin
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // Remark
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // UserKey
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // UserKey
+            cursor.getInt(offset + 6) // Verify
         );
         return entity;
     }
@@ -153,6 +158,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         entity.setGAdmin(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setRemark(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setUserKey(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setVerify(cursor.getInt(offset + 6));
      }
     
     @Override

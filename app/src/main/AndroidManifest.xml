@@ -462,6 +462,8 @@
                 android:value="androidhwext:style/Theme.Emui.Translucent" />
         </activity>
         <activity android:name=".ui.activity.group.GroupInfoActivity" />
+        <activity android:name=".ui.activity.group.RemoveGroupDetailMemberActivity" />
+        <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" />
     </application>
 
 </manifest>

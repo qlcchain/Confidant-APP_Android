@@ -47,7 +47,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         super.onCreate(savedInstanceState)
         // 这句很关键，注意是调用父类的方法
         super.setContentView(R.layout.activity_base)
-        StatusBarUtil.setTransparent(this)
+        StatusBarUtil.setColor(this, resources.getColor(R.color.white), 0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
         }
@@ -125,17 +125,18 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         relativeLayout_root = findViewById<View>(R.id.root_rl) as RelativeLayout
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))
-//        if (!SpUtil.getBoolean(this, ConstantValue.isMainNet, false)) {
-//            view.setBackgroundColor(resources.getColor(R.color.color_f51818))
-//            view.setText(getString(R.string.testnet))
-//        }
         //        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.dip2px(getResources().getDimension(R.dimen.dp_69), this) - (UIUtils.getStatusBarHeight(this)));
         //        toolbar.setLayoutParams(rlp);
         toolbar?.setTitle("")
-        relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x110).toInt())))
         if (toolbar != null) {
             setSupportActionBar(toolbar)
         }
+    }
+
+    fun showView() {
+        StatusBarUtil.setTransparent(this)
+        view.visibility = View.VISIBLE
+        relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x84).toInt())))
     }
 
     fun isShouldHideInput(v: View?, event: MotionEvent): Boolean {

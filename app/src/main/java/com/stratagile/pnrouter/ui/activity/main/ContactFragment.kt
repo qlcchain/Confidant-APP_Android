@@ -231,6 +231,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     lateinit var viewModel: MainViewModel
 
     var toAddList: ArrayList<UserEntity>? = null
+    var toReduceList: ArrayList<UserEntity>? = null
 
     var fromId: String? = null
     var message: EMMessage? = null
@@ -294,6 +295,14 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
         toAddList = list
         KLog.i("将要添加的数量为：" + toAddList?.size)
+    }
+
+    fun setUnShowPerson(list: ArrayList<UserEntity>) {
+        if (list == null || list.size == 0) {
+            return
+        }
+        toReduceList = list
+        KLog.i("将要不显示的数量为：" + toReduceList?.size)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -478,7 +487,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 if (userHead.subItems != null && userHead.subItems.size > 0) {
                     userHead.subItems.forEach { userItem ->
                         toAddList?.forEach {
-                            if (it.equals(userItem.userEntity)) {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
                                 KLog.i("添加选中")
                                 userItem.isChecked = true
                             }
@@ -486,9 +495,35 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     }
                 } else {
                     toAddList?.forEach {
-                        if (it.equals(userHead.userEntity)) {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
                             KLog.i("添加选中")
                             userHead.isChecked = true
+                        }
+                    }
+                }
+            }
+        }
+        var list2 = arrayListOf<MultiItemEntity>()
+        list2.addAll(list1)
+        if (contactAdapter1 != null && toReduceList != null) {
+            list2.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        toReduceList?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("删除。。")
+//                                userItem.isChecked = true
+                                list1.remove(userItem)
+                            }
+                        }
+                    }
+                } else {
+                    toReduceList?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("删除。。")
+//                            userHead.isChecked = true
+                            list1.remove(userHead)
                         }
                     }
                 }

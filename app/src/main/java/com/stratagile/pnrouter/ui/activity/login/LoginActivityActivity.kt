@@ -23,6 +23,7 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
+import com.jaeger.library.StatusBarUtil
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -572,11 +573,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
 
     override fun initView() {
+        StatusBarUtil.setTransparent(this)
         setContentView(R.layout.activity_login)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-//        CrashReport.testNativeCrash()
     }
     override fun onResume() {
         if(AppConfig.instance.messageReceiver != null)

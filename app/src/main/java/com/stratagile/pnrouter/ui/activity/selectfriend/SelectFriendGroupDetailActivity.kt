@@ -13,12 +13,13 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.JGroupUserPullRsp
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.ui.activity.main.ContactFragment
-import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerSelectFriendCreateGroupComponent
-import com.stratagile.pnrouter.ui.activity.selectfriend.contract.SelectFriendCreateGroupContract
-import com.stratagile.pnrouter.ui.activity.selectfriend.module.SelectFriendCreateGroupModule
-import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.SelectFriendCreateGroupPresenter
+import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerSelectFriendGroupDetailComponent
+import com.stratagile.pnrouter.ui.activity.selectfriend.contract.SelectFriendGroupDetailContract
+import com.stratagile.pnrouter.ui.activity.selectfriend.module.SelectFriendGroupDetailModule
+import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.SelectFriendGroupDetailPresenter
 import com.stratagile.pnrouter.utils.UIUtils
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
@@ -32,15 +33,13 @@ import javax.inject.Inject;
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.selectfriend
  * @Description: $description
- * @date 2019/03/12 17:49:51
+ * @date 2019/03/21 10:15:49
  */
 
-class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupContract.View {
+class SelectFriendGroupDetailActivity : BaseActivity(), SelectFriendGroupDetailContract.View {
 
     @Inject
-    internal lateinit var mPresenter: SelectFriendCreateGroupPresenter
-
-
+    internal lateinit var mPresenter: SelectFriendGroupDetailPresenter
 
     var fragment: ContactFragment? = null
 
@@ -51,17 +50,16 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
 
     override fun initView() {
         setContentView(R.layout.activity_select_friend_create_group)
+    }
+
+    override fun initData() {
         EventBus.getDefault().register(this)
         setToorBar(false)
         tvTitle.text = "Add Group Members"
-//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-//        statusBar.setLayoutParams(llp)
-    }
-    override fun initData() {
         fragment = ContactFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
-        bundle.putString("routerId",ConstantValue.currentRouterId)
+        bundle.putString("routerId", ConstantValue.currentRouterId)
         fragment!!.setArguments(bundle)
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
@@ -92,16 +90,33 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
             fragment!!.selectOrCancelAll()
         }
         fragment!!.setRefreshEnable(false)
-        var list = intent.getParcelableArrayListExtra<UserEntity>("person")
+        var list = intent.getParcelableArrayListExtra<JGroupUserPullRsp.ParamsBean.PayloadBean>("person")
         var toAddList = arrayListOf<UserEntity>()
         list.forEach {
-            if ("1".equals(it.userId) || "0".equals(it.userId)) {
+            if ("1".equals(it.toxId) || "0".equals(it.toxId)) {
 
             } else {
-                toAddList.add(it)
+                var user = UserEntity()
+                user.userId = it.toxId
+                user.signPublicKey = it.userKey
+                user.nickName = it.nickname
+                toAddList.add(user)
             }
         }
-        fragment!!.setSelectedPerson(toAddList)
+        fragment!!.setUnShowPerson(toAddList)
+    }
+
+    override fun setupActivityComponent() {
+        DaggerSelectFriendGroupDetailComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .selectFriendGroupDetailModule(SelectFriendGroupDetailModule(this))
+                .build()
+                .inject(this)
+    }
+
+    override fun setPresenter(presenter: SelectFriendGroupDetailContract.SelectFriendGroupDetailContractPresenter) {
+        mPresenter = presenter as SelectFriendGroupDetailPresenter
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -122,19 +137,6 @@ class SelectFriendCreateGroupActivity : BaseActivity(), SelectFriendCreateGroupC
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
-
-    override fun setupActivityComponent() {
-       DaggerSelectFriendCreateGroupComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .selectFriendCreateGroupModule(SelectFriendCreateGroupModule(this))
-               .build()
-               .inject(this)
-    }
-    override fun setPresenter(presenter: SelectFriendCreateGroupContract.SelectFriendCreateGroupContractPresenter) {
-            mPresenter = presenter as SelectFriendCreateGroupPresenter
-        }
-
     override fun showProgressDialog() {
         progressDialog.show()
     }
