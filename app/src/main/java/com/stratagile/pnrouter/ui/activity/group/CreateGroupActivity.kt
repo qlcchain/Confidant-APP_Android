@@ -166,10 +166,6 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
             var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
             val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, 0, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, CreateGroupReq))

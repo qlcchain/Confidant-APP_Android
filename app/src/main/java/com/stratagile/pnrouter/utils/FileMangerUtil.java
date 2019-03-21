@@ -502,6 +502,8 @@ public class FileMangerUtil {
             {
                 case "png":
                 case "jpg":
+                case "jpeg":
+                case "webp":
                     action = 1;
                     break;
                 case "amr":

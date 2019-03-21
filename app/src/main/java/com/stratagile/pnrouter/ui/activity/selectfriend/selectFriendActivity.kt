@@ -262,6 +262,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 SendFileInfo.voiceTimeLen = 0
                                                 SendFileInfo.type = "1"
                                                 SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                                SendFileInfo.porperty = "0"
                                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                                 /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                                 EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
@@ -399,6 +400,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             SendFileInfo.voiceTimeLen = 0
                                             SendFileInfo.type = "3"
                                             SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                            SendFileInfo.porperty = "0"
                                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
@@ -528,6 +530,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             SendFileInfo.voiceTimeLen = 0
                                             SendFileInfo.type = "4"
                                             SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                            SendFileInfo.porperty = "0"
                                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/

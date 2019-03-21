@@ -1036,21 +1036,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                     break;
                 case 1:
-                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
                     String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + Message.getFileName();
                     File filesFile = new File(files_dir);
                     if (filesFile.exists()) {
                         message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                        if (Message.getFileInfo() != null) {
+                            message.setAttribute("wh", Message.getFileInfo());
+                        }
                     } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
+                        if (Message.getFileInfo() != null) {
+                            message.setAttribute("wh", Message.getFileInfo());
+                        }
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
-                            if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
-                            } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
-                            }
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
 
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1088,12 +1090,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
-                            if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
-                            } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
-                            }
-
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
@@ -1120,7 +1117,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 case 3:
                     break;
                 case 4:
-                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + "ease_default_image.png";
+                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
                     String files_dir_video = PathUtils.getInstance().getVideoPath() + "/" + Message.getFileName();
                     File filesFileAmrVideo = new File(files_dir_video);
                     if (filesFileAmrVideo.exists()) {
@@ -1135,11 +1132,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
-                            if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
-                            } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
-                            }
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
@@ -1175,11 +1168,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
-                            if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign());
-                            } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey());
-                            }
+                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
@@ -1316,6 +1305,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         switch (type) {
                             case "1":
                                 EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
+                                 Bitmap bitmap1 = BitmapFactory.decodeFile(filePath);
+                                String widthAndHeight = "," + bitmap1.getWidth() + "*" + bitmap1.getHeight();
+                                if (bitmap1 != null) {
+                                    message.setAttribute("wh", widthAndHeight.replace(",", ""));
+                                }
                                 message.setFrom(userIdL);
                                 message.setTo(friendId);
                                 message.setDelivered(true);
@@ -1954,7 +1948,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             .start();
                     break;
                 case ITEM_LOCATION:
-                     //startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                    //startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 case ITEM_FILE:
@@ -2435,6 +2429,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
+                        message.setAttribute("wh", widthAndHeight.replace(",", ""));
                         message.setTo(UserDataManger.currentGroupData.getGId()+"");
                         message.setDelivered(true);
                         message.setAcked(false);
@@ -3132,7 +3127,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             sendMessageTo(message);
         }catch(Exception e)
         {
-           e.printStackTrace();
+            e.printStackTrace();
         }
 
     }
@@ -3145,13 +3140,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param fromId
      * @param toId
      */
-    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType) {
+    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType, String fileInfo) {
         String files_dir = "";
         EMMessage message = null;
         switch (FileType) {
             case 1:
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                message.setAttribute("wh", fileInfo);
                 break;
             case 2:
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
@@ -3840,11 +3836,21 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 messageData.setTo(message.getTo());
                                 messageData.setUnread(false);
 
-                                if (message.getFrom() == null) {
-                                    if (message.getSender() == 0) {
+                                if (message.getFrom() != null) {
+
+                                    if(message.getFrom().equals(userId))
+                                    {
+                                        messageData.setFrom(message.getFrom());
+                                        messageData.setTo(toChatUserId);
+                                        messageData.setDelivered(true);
+                                        messageData.setAcked(true);
+                                        messageData.setUnread(true);
+                                   /* if (message.getSender() == 0)
+                                    {
                                         messageData.setFrom(userId);
                                         messageData.setTo(toChatUserId);
-                                        switch (message.getStatus()) {
+                                        switch (message.getStatus())
+                                        {
                                             case 0:
                                                 messageData.setDelivered(true);
                                                 messageData.setAcked(false);
@@ -3862,11 +3868,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                                 break;
                                             default:
                                                 break;
-                                        }
+                                        }*/
                                         messageData.setDirection(EMMessage.Direct.SEND);
                                     } else {
-                                        messageData.setFrom(toChatUserId);
-                                        messageData.setTo(userId);
+                                        messageData.setFrom(message.getFrom());
+                                        messageData.setTo(toChatUserId);
                                         messageData.setDirection(EMMessage.Direct.RECEIVE);
                                     }
                                 } else {

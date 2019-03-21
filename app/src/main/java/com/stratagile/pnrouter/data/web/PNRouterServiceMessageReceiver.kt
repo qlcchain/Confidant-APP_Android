@@ -758,7 +758,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
-        fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
+       /* fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)*/
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun sendGroupToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
         fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)

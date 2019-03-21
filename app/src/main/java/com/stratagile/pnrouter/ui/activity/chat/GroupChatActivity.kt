@@ -109,7 +109,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     internal var toChatUserID: String? = null
     var statusBarHeight: Int = 0
     var groupEntity : GroupEntity? = null
-    var receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+    var receiveFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
     var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
@@ -213,7 +213,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 var fromId = jPushFileMsgRsp!!.params.fromId;
                 var toId = jPushFileMsgRsp!!.params.toId
                 var FileType = jPushFileMsgRsp!!.params.fileType
-                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType)
+                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType,"")
                 receiveFileDataMap.remove(fileMiName)
             }
         }else{
@@ -297,71 +297,37 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             //chatFragment?.delFreindMsg(delMsgPushRsp)
         }
     }
-    override fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
+    fun pushGroupFileMsgRsp(jPushFileMsgRsp: JGroupMsgPushRsp) {
         KLog.i("abcdefshouTime:" + (System.currentTimeMillis() - ConstantValue.shouBegin) / 1000)
         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         val gson = Gson()
         val Message = Message()
-        Message.msgType = jPushFileMsgRsp.params.fileType
+        Message.msgType = jPushFileMsgRsp.params.msgType
         Message.fileName = jPushFileMsgRsp.params.fileName
         Message.msg = ""
-        Message.from = userId
-        Message.to = jPushFileMsgRsp.params.fromId
+        Message.from = jPushFileMsgRsp.params.from
+        Message.to = jPushFileMsgRsp.params.gId
         Message.timeStamp = System.currentTimeMillis() / 1000
         Message.unReadCount = 0
         Message.chatType = EMMessage.ChatType.GroupChat
         val baseDataJson = gson.toJson(Message)
         if (Message.sender == 0) {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
         } else {
-            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, baseDataJson)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.gId, baseDataJson)
         }
-        var msgDataPushFileRsp = PushFileRespone(0,jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,jPushFileMsgRsp.params.msgId)
-        var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
-        var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid))
-            if(!msgId.equals(""))
-            {
-                if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
-                }
-            }
-        } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-            if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
-                var baseData2 = BaseData(2,readMsgReq)
-                var baseDataJson2 = baseData2.baseDataToJson().replace("\\", "")
-                if(!msgId.equals(""))
-                {
-                    if (ConstantValue.isAntox) {
-                        var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson2, ToxMessageType.NORMAL)
-                    }else{
-                        ToxCoreJni.getInstance().senToxMessage(baseDataJson2, ConstantValue.currentRouterId.substring(0, 64))
-                    }
-                }
-            }
 
-        }
-        if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
+        if (jPushFileMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
             var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port +jPushFileMsgRsp.params.filePath
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-                FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey)
+                FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey)
             }else{
 
                 var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
-                receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
-                var msgData = PullFileReq(jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
+                //receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
+                var msgData = PullFileReq(jPushFileMsgRsp.params.from, jPushFileMsgRsp.params.gId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
@@ -457,10 +423,22 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             GroupLocal.gName = pushMsgRsp.params.groupName
             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
         }
-        if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
-            chatFragment?.receiveTxtMessageV3(pushMsgRsp)
+        when(pushMsgRsp.params.msgType)
+        {
+            0 ->
+            {
+                if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
+                    chatFragment?.receiveTxtMessageV3(pushMsgRsp)
+
+                }
+            }
+            else ->
+            {
+                pushGroupFileMsgRsp(pushMsgRsp)
+            }
 
         }
+
     }
 
     override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String):String {
@@ -516,7 +494,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         KLog.i("insertMessage:GroupChatActivity_onCreate"+chatFragment)
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         groupEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_CHAT_GROUP)
-        receiveFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+        receiveFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
         receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
         super.onCreate(savedInstanceState)
 
@@ -658,12 +636,17 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     try {
                         var data:Bundle = msg.data;
                         var msgId = data.getInt("msgID")
-                        var jPushFileMsgRsp: JPushFileMsgRsp = receiveFileDataMap.get(msgId.toString())!!
+                        var jPushFileMsgRsp: JGroupMsgPushRsp = receiveFileDataMap.get(msgId.toString())!!
                         var fileName:String = jPushFileMsgRsp.params.fileName;
-                        var fromId = jPushFileMsgRsp.params.fromId;
-                        var toId = jPushFileMsgRsp.params.toId
-                        var FileType = jPushFileMsgRsp.params.fileType
-                        chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType)
+                        var fileSouceName = String(Base58.decode(fileName))
+                        var fromId = jPushFileMsgRsp.params.from;
+                        var toId = jPushFileMsgRsp.params.gId
+                        var FileType = jPushFileMsgRsp.params.msgType
+                        if (jPushFileMsgRsp.params.fileInfo != null) {
+                            chatFragment?.receiveFileMessage(fileSouceName,msgId.toString(),fromId,toId,FileType, jPushFileMsgRsp.params.fileInfo)
+                        } else {
+                            chatFragment?.receiveFileMessage(fileSouceName,msgId.toString(),fromId,toId,FileType, "")
+                        }
                         receiveFileDataMap.remove(msgId.toString())
                     }catch (e:Exception)
                     {

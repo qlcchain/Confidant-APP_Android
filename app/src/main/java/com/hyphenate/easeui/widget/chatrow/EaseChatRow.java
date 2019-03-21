@@ -227,13 +227,15 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
                 if(message.isUnread() == false)
                 {
-                    sendStatusView.setImageResource(R.mipmap.already_read);
+                    if(message.getChatType().equals(EMMessage.ChatType.GroupChat))
+                    {
+                        sendStatusView.setImageResource(R.mipmap.ic_unread);
+                    }else{
+                        sendStatusView.setImageResource(R.mipmap.already_read);
+                    }
+
                     sendStatusView.setVisibility(View.VISIBLE);
                     sendStatusView.setAnimation(null);
-                }
-                if(message.getChatType().equals(EMMessage.ChatType.GroupChat))
-                {
-                    sendStatusView.setVisibility(View.INVISIBLE);
                 }
             }
         }

@@ -530,7 +530,7 @@ data class GroupSendFilePreReq(var UserId : String, var RouterId : String, var G
  * 72.	群组会话中发送语音，图片，视频，文件等_完成通知
  * (2)	响应（APP->Router）
  */
-data class GroupSendFileDoneReq(var UserId : String, var RouterId : String, var GId : String, var FileName : String, var Path : Int, var FileType : Int, var FileId : Int,var Action : String = "GroupSendFileDone")
+data class GroupSendFileDoneReq(var UserId : String, var GId : String, var FileName : String, var FileMD5 : String, var FileInfo : String, var FileSize : Int, var FileType : Int, var FileId : String,var Action : String = "GroupSendFileDone")
 
 /**
  * 73.	群消息删除
