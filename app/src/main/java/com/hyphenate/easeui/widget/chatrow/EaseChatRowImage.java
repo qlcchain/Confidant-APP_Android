@@ -64,16 +64,11 @@ public class EaseChatRowImage extends EaseChatRowFile {
         try {
             String wh = message.getStringAttribute("wh");
             if (wh != null && !"".equals(wh)) {
-                width = Float.valueOf(wh.substring(0, wh.lastIndexOf("*")));
-                if (wh.substring(wh.lastIndexOf("*") + 1).length() >= 5) {
-                    height = Float.valueOf(wh.substring(wh.lastIndexOf("*") + 1).substring(0, 4));
-                } else {
-                    height = Float.valueOf(wh.substring(wh.lastIndexOf("*") + 1));
-                }
+                String[] whs = wh.split("\\*");
+                width = Float.valueOf(whs[0]);
+                height = Float.valueOf(whs[1]);
                 setImageViewSize();
                 KLog.i("原始宽高为：" + wh);
-                KLog.i("图片的宽为：" + wh.substring(0, wh.lastIndexOf("*")));
-                KLog.i("图片的高为：" + wh.substring(wh.lastIndexOf("*") + 1));
                 KLog.i("图片的宽为1：" + width);
                 KLog.i("图片的高为1：" + height);
             }
@@ -112,7 +107,11 @@ public class EaseChatRowImage extends EaseChatRowFile {
             } else {
                 showWidth = windowWidth / 3;
             }
-            showHeight = (int) ((height / width) * showWidth);
+            if (height / width >= 3) {
+                showHeight = showWidth * 3;
+            } else {
+                showHeight = (int) ((height / width) * showWidth);
+            }
         }
         KLog.i("设置图片的宽为：" + showWidth);
         KLog.i("设置图片的高为：" + showHeight);
@@ -201,8 +200,13 @@ public class EaseChatRowImage extends EaseChatRowFile {
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
             KLog.i("图片来源缓存");
+            Bitmap bitmap2;
+            if (bitmap.getHeight() / bitmap.getWidth() >= 3) {
+                bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getWidth() * 3);
+            } else {
+                bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getHeight());
+            }
             // thumbnail image is already loaded, reuse the drawable
-            Bitmap bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getHeight());
             imageView.setImageBitmap(bitmap2);
             width = bitmap.getWidth();
             height = bitmap.getHeight();
@@ -339,7 +343,12 @@ public class EaseChatRowImage extends EaseChatRowFile {
                     @Override
                     protected void onPostExecute(Bitmap image) {
                         if (image != null) {
-                            Bitmap bitmap2 = getRoundCornerImage(image, image.getWidth(), image.getHeight());
+                            Bitmap bitmap2;
+                            if (image.getHeight() / image.getWidth() >= 3) {
+                                bitmap2 = getRoundCornerImage(image, image.getWidth(), image.getWidth() * 3);
+                            } else {
+                                bitmap2 = getRoundCornerImage(image, image.getWidth(), image.getHeight());
+                            }
                             imageView.setImageBitmap(bitmap2);
                             EaseImageCache.getInstance().put(thumbernailPath, bitmap2);
                         }

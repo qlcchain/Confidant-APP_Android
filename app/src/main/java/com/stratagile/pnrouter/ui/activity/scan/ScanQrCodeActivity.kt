@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import cn.bingoogolapple.qrcode.core.QRCodeView
+import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -49,6 +50,7 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
     override fun initView() {
         setContentView(R.layout.activity_scan_qr_code)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        showView()
         mZXingView.setDelegate(this)
         //请求Camera权限 与 文件读写 权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

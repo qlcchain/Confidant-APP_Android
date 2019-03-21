@@ -100,10 +100,9 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
             if (etNickName.text.toString().equals(intent.getStringExtra("alias"))) {
                 setResult(0)
             } else if (!etNickName.text.toString().equals("")){
-                var intent = Intent()
-                intent.putExtra("alias", etNickName.text.toString())
-                setResult(Activity.RESULT_OK, intent)
-
+                var intent1 = Intent()
+                intent1.putExtra("alias", etNickName.text.toString())
+                setResult(Activity.RESULT_OK, intent1)
             }
         }
         super.onBackPressed()

@@ -1,11 +1,10 @@
 package com.stratagile.pnrouter.entity;
 
-public class JGroupConfigRsp extends BaseEntity{
-
+public class JQuitGroup extends BaseEntity {
 
     /**
-     * timestamp : 1553142986
-     * params : {"Action":"GroupConfig","RetCode":0,"GId":"group1_admin36_time1553134930AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","ToId":"8EAFEFA958FF15A10C5DFF698948987EB1C33F7A6AD4161DC53A7FD20F5B997EF5EBADB348BF","Type":2}
+     * timestamp : 1553150451
+     * params : {"Action":"GroupQuit","RetCode":0,"ToId":"23BD2A28A22DC5A1145014A53B64374DC08A1BA04C0C9D24D4B3B2AF2197CE3A286DF0923989","GId":"group1_admin36_time1553134930AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
      */
 
     private ParamsBean params;
@@ -20,18 +19,16 @@ public class JGroupConfigRsp extends BaseEntity{
 
     public static class ParamsBean {
         /**
-         * Action : GroupConfig
+         * Action : GroupQuit
          * RetCode : 0
+         * ToId : 23BD2A28A22DC5A1145014A53B64374DC08A1BA04C0C9D24D4B3B2AF2197CE3A286DF0923989
          * GId : group1_admin36_time1553134930AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-         * ToId : 8EAFEFA958FF15A10C5DFF698948987EB1C33F7A6AD4161DC53A7FD20F5B997EF5EBADB348BF
-         * Type : 2
          */
 
         private String Action;
         private int RetCode;
-        private String GId;
         private String ToId;
-        private int Type;
+        private String GId;
 
         public String getAction() {
             return Action;
@@ -49,14 +46,6 @@ public class JGroupConfigRsp extends BaseEntity{
             this.RetCode = RetCode;
         }
 
-        public String getGId() {
-            return GId;
-        }
-
-        public void setGId(String GId) {
-            this.GId = GId;
-        }
-
         public String getToId() {
             return ToId;
         }
@@ -65,12 +54,12 @@ public class JGroupConfigRsp extends BaseEntity{
             this.ToId = ToId;
         }
 
-        public int getType() {
-            return Type;
+        public String getGId() {
+            return GId;
         }
 
-        public void setType(int Type) {
-            this.Type = Type;
+        public void setGId(String GId) {
+            this.GId = GId;
         }
     }
 }

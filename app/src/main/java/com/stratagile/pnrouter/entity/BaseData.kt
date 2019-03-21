@@ -556,12 +556,58 @@ data class GroupMsgPushRsp(var RetCode : Int, var ToId : String, var GId : Strin
 data class GroupConfigReq(var UserId : String, var GId : String, var Type : Int, var ToId : String, var Name : String, var NeedVerify : Int,var Action : String = "GroupConfig")
 
 /**
+ * 群属性设置的子接口
+ * 修改群名称，只有群管理员有权限
+ */
+data class ModifyGroupNameReq(var UserId : String, var GId : String, var Name : String, var Type : Int = 0x01, var Action : String = "GroupConfig")
+
+/**
+ * 群属性设置的子接口
+ * 设置是否需要群管理审核入群，只有管理员有权限
+ *
+ *  是否需要审核入群
+ *   0：不需要
+ *   1：必须
+ */
+data class SettingApproveInvitationReq(var UserId : String, var GId : String, var NeedVerify : Int, var Type : Int = 0x02, var Action : String = "GroupConfig")
+
+/**
+ * 群属性设置的子接口
+ * 踢出某个用户，只有管理员有权限
+ */
+data class RemoveGroupMemberReq(var UserId : String, var GId : String, var ToId : String, var Type : Int = 0x03, var Action : String = "GroupConfig")
+
+
+/**
+ * 群属性设置的子接口
+ * 修改群别名
+ */
+data class ModifyGroupAliasReq(var UserId : String, var GId : String, var Name : String, var Type : Int = 0xF1, var Action : String = "GroupConfig")
+
+/**
+ * 群属性设置的子接口
+ * 修改群友别名
+ */
+data class ModifyGroupMemberAliasReq(var UserId : String, var GId : String, var ToId : String, var Name : String, var Type : Int = 0xF2, var Action : String = "GroupConfig")
+
+
+/**
+ * 群属性设置的子接口
+ * 设置自己群中显示的别名
+ */
+data class ModifySelfAliasInGroupReq(var UserId : String, var GId : String, var Name : String, var Type : Int = 0xF3, var Action : String = "GroupConfig")
+
+
+
+
+
+/**
  * 76.	群系统消息推送
  * (2)	响应（APP->Router）
  */
 data class GroupSysPushReq(var UserId : String, var GId : String, var Type : Int, var From : String, var To : String, var MsgId : Int, var Name : String, var NeedVerify : Int,var Action : String = "GroupSysPush")
 /**
  * 76.	群系统消息推送 反馈
- * (2)	响应（APP->Router）
+ * (2)	响应（APP->Router
  */
 data class GroupSysPushRsp(var RetCode : Int, var ToId : String,var Action : String = "GroupSysPush")

@@ -33,7 +33,7 @@
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/x84"
         android:layout_below="@+id/statusBar"
         android:background="@color/mainColor"
         android:minHeight="?attr/actionBarSize">

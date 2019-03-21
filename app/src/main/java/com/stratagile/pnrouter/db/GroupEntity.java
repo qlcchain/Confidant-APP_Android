@@ -18,18 +18,20 @@ public class GroupEntity implements Parcelable{
     private String GAdmin;
     private String Remark;
     private String UserKey;
+    private int Verify;
 
 
 
-    @Generated(hash = 1775791811)
+    @Generated(hash = 983277825)
     public GroupEntity(Long id, String GId, String GName, String GAdmin,
-            String Remark, String UserKey) {
+            String Remark, String UserKey, int Verify) {
         this.id = id;
         this.GId = GId;
         this.GName = GName;
         this.GAdmin = GAdmin;
         this.Remark = Remark;
         this.UserKey = UserKey;
+        this.Verify = Verify;
     }
 
     @Generated(hash = 954040478)
@@ -48,26 +50,7 @@ public class GroupEntity implements Parcelable{
         GAdmin = in.readString();
         Remark = in.readString();
         UserKey = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        dest.writeString(GId);
-        dest.writeString(GName);
-        dest.writeString(GAdmin);
-        dest.writeString(Remark);
-        dest.writeString(UserKey);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        Verify = in.readInt();
     }
 
     public static final Creator<GroupEntity> CREATOR = new Creator<GroupEntity>() {
@@ -128,6 +111,35 @@ public class GroupEntity implements Parcelable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        if (id == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeLong(id);
+        }
+        parcel.writeString(GId);
+        parcel.writeString(GName);
+        parcel.writeString(GAdmin);
+        parcel.writeString(Remark);
+        parcel.writeString(UserKey);
+        parcel.writeInt(Verify);
+    }
+
+    public int getVerify() {
+        return this.Verify;
+    }
+
+    public void setVerify(int Verify) {
+        this.Verify = Verify;
     }
 }
 

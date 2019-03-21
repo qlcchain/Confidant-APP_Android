@@ -35,6 +35,7 @@ import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -1415,9 +1416,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     override fun initView() {
         setContentView(R.layout.activity_main)
+        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
         tvTitle.text = getString(R.string.news)
-        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        statusBar.setLayoutParams(llp)
+//        val llp = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+//        statusBar.setLayoutParams(llp)
         val llp1 = RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
         reConnect.setLayoutParams(llp1)
         conversationListFragment = EaseConversationListFragment()

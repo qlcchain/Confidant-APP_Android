@@ -1,5 +1,8 @@
 package com.stratagile.pnrouter.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -77,7 +80,10 @@ public class JGroupUserPullRsp extends BaseEntity{
             this.Payload = Payload;
         }
 
-        public static class PayloadBean {
+        public static class PayloadBean implements Parcelable {
+            public PayloadBean() {
+            }
+
             /**
              * Id : 22
              * Type : 2
@@ -95,6 +101,28 @@ public class JGroupUserPullRsp extends BaseEntity{
             private String Nickname;
             private String Remarks;
             private String UserKey;
+
+            protected PayloadBean(Parcel in) {
+                Id = in.readInt();
+                Type = in.readInt();
+                Local = in.readInt();
+                ToxId = in.readString();
+                Nickname = in.readString();
+                Remarks = in.readString();
+                UserKey = in.readString();
+            }
+
+            public static final Creator<PayloadBean> CREATOR = new Creator<PayloadBean>() {
+                @Override
+                public PayloadBean createFromParcel(Parcel in) {
+                    return new PayloadBean(in);
+                }
+
+                @Override
+                public PayloadBean[] newArray(int size) {
+                    return new PayloadBean[size];
+                }
+            };
 
             public int getId() {
                 return Id;
@@ -150,6 +178,22 @@ public class JGroupUserPullRsp extends BaseEntity{
 
             public void setUserKey(String UserKey) {
                 this.UserKey = UserKey;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
+                parcel.writeInt(Id);
+                parcel.writeInt(Type);
+                parcel.writeInt(Local);
+                parcel.writeString(ToxId);
+                parcel.writeString(Nickname);
+                parcel.writeString(Remarks);
+                parcel.writeString(UserKey);
             }
         }
     }

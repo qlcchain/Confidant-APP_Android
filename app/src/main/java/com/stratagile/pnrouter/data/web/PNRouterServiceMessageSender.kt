@@ -354,6 +354,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     when(message.type){
                         "1" ->
                         {
+     
                             sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight,message.porperty)
                         }
                         "2" ->
@@ -400,18 +401,22 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                             when(item.type){
                                                 "1" ->
                                                 {
+         
                                                     sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey, item.widthAndHeight,item.porperty)
                                                 }
                                                 "2" ->
                                                 {
+        
                                                     sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen,item.porperty)
                                                 }
                                                 "3" ->
                                                 {
+    
                                                     sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.porperty)
                                                 }
                                                 "4" ->
                                                 {
+       
                                                     sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.porperty)
                                                 }
                                             }
@@ -1107,6 +1112,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
+
                     Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
@@ -1214,6 +1220,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     }
 
+
     fun sendVideoMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
@@ -1308,6 +1315,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
+
                     Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
@@ -1323,6 +1331,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
 
     }
+
 
     fun sendFileMessage(userId: String, friendId: String, filePath: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
@@ -1415,6 +1424,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
+
                     Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)

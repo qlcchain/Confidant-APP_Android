@@ -2433,7 +2433,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     boolean isHas = file.exists();
                     if (isHas) {
                         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-                        String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
+                        String widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                         KLog.i("图片的宽高为：" + widthAndHeight);
                         bitmap.recycle();
                         if (file.length() > 1024 * 1024 * 100) {
@@ -2592,7 +2592,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     boolean isHas = file.exists();
                     if (isHas) {
                         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-                        String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
+                        String widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                         bitmap.recycle();
                         EMMessage message = EMMessage.createImageSendMessage(imagePath, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");

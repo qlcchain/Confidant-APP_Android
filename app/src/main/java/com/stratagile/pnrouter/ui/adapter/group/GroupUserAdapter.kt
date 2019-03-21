@@ -18,9 +18,9 @@ class GroupUserAdapter (arrayList: ArrayList<JGroupUserPullRsp.ParamsBean.Payloa
     override fun convert(helper: BaseViewHolder, item: JGroupUserPullRsp.ParamsBean.PayloadBean) {
         val imageButtonWithText = helper.getView<ImageButtonWithText>(R.id.memberView)
 
-        if ("1".equals(item.nickname)) {
+        if ("1".equals(item.toxId)) {
             imageButtonWithText.setImage(R.mipmap.add_contacts)
-        } else if ("0".equals(item.nickname)) {
+        } else if ("0".equals(item.toxId)) {
             imageButtonWithText.setImage(R.mipmap.delete_contacts)
         } else {
             val nickNameSouce = String(RxEncodeTool.base64Decode(item.nickname))

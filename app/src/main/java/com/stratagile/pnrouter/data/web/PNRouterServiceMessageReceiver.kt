@@ -474,6 +474,14 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jGroupUserPullRsp = gson.fromJson(text, JGroupUserPullRsp::class.java)
                     groupDetailBack?.groupUserPull(jGroupUserPullRsp)
                 }
+                "GroupConfig" -> {
+                    val jGroupConfigRsp = gson.fromJson(text, JGroupConfigRsp::class.java)
+                    groupDetailBack?.groupConfig(jGroupConfigRsp)
+                }
+                "GroupQuit" -> {
+                    val jGroupQuitRsp = gson.fromJson(text, JGroupQuitRsp::class.java)
+                    groupDetailBack?.quitGroup(jGroupQuitRsp)
+                }
                 "GroupSysPush" -> {
                     val JGroupSysPushRsp = gson.fromJson(text, JGroupSysPushRsp::class.java)
                     groupchatCallBack?.droupSysPushRsp(JGroupSysPushRsp)
@@ -812,6 +820,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     interface GroupDetailBack {
         fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
+        fun groupConfig(jGroupConfigRsp : JGroupConfigRsp)
+        fun quitGroup(jGroupQuitRsp : JGroupQuitRsp)
     }
 }
 

@@ -3,25 +3,26 @@ package com.stratagile.pnrouter.ui.activity.group
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.LinearLayout
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.entity.JGroupUserPullRsp
 import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
-import com.stratagile.pnrouter.ui.activity.group.component.DaggerRemoveGroupMemberComponent
-import com.stratagile.pnrouter.ui.activity.group.contract.RemoveGroupMemberContract
-import com.stratagile.pnrouter.ui.activity.group.module.RemoveGroupMemberModule
-import com.stratagile.pnrouter.ui.activity.group.presenter.RemoveGroupMemberPresenter
+import com.stratagile.pnrouter.ui.activity.group.component.DaggerRemoveGroupDetailMemberComponent
+import com.stratagile.pnrouter.ui.activity.group.contract.RemoveGroupDetailMemberContract
+import com.stratagile.pnrouter.ui.activity.group.module.RemoveGroupDetailMemberModule
+import com.stratagile.pnrouter.ui.activity.group.presenter.RemoveGroupDetailMemberPresenter
 import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.UIUtils
+import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_remove_group_member.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -34,13 +35,13 @@ import javax.inject.Inject;
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.group
  * @Description: $description
- * @date 2019/03/14 10:20:11
+ * @date 2019/03/21 10:15:05
  */
 
-class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View {
+class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberContract.View {
 
     @Inject
-    internal lateinit var mPresenter: RemoveGroupMemberPresenter
+    internal lateinit var mPresenter: RemoveGroupDetailMemberPresenter
     var contactAdapter1: ContactAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -48,12 +49,10 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
     }
 
     override fun initView() {
-        EventBus.getDefault().register(this)
         setContentView(R.layout.activity_remove_group_member)
+        EventBus.getDefault().register(this)
         setToorBar(false)
         tvTitle.text = "Remove Group Members"
-//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-//        statusBar.setLayoutParams(llp)
     }
 
     fun getAllSelectedFriend(): ArrayList<UserEntity> {
@@ -62,13 +61,13 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
             if (contactAdapter1!!.data.get(i).getItemType() == 0) {
                 val userHead = contactAdapter1!!.data.get(i) as UserHead
                 if (userHead.subItems == null || userHead.subItems.size == 0) {
-                    if (!userHead.isChecked) {
+                    if (userHead.isChecked) {
                         contactList.add(userHead.userEntity)
                     }
                 } else {
                     for (j in 0 until userHead.subItems.size) {
                         val userItem = userHead.subItems[j]
-                        if (!userItem.isChecked) {
+                        if (userItem.isChecked) {
                             contactList.add(userItem.userEntity)
                         }
                     }
@@ -77,6 +76,7 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
         }
         return contactList!!
     }
+
     override fun initData() {
         llCancel.setOnClickListener {
             onBackPressed()
@@ -92,13 +92,17 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
                 finish()
             }
         }
-        var list = intent.getParcelableArrayListExtra<UserEntity>("person")
+        var list = intent.getParcelableArrayListExtra<JGroupUserPullRsp.ParamsBean.PayloadBean>("person")
         var toAddList = arrayListOf<UserEntity>()
         list.forEach {
-            if ("1".equals(it.userId) || "0".equals(it.userId)) {
+            if ("1".equals(it.toxId) || "0".equals(it.toxId) || SpUtil.getString(this, ConstantValue.userId, "").equals(it.toxId)) {
 
             } else {
-                toAddList.add(it)
+                var user = UserEntity()
+                user.userId = it.toxId
+                user.signPublicKey = it.userKey
+                user.nickName = it.nickname
+                toAddList.add(user)
             }
         }
 
@@ -148,7 +152,6 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
         contactAdapter1?.isCheckMode = true
         recyclerView.adapter = contactAdapter1!!
     }
-
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
         super.onDestroy()
@@ -169,15 +172,15 @@ class RemoveGroupMemberActivity : BaseActivity(), RemoveGroupMemberContract.View
     }
 
     override fun setupActivityComponent() {
-       DaggerRemoveGroupMemberComponent
+       DaggerRemoveGroupDetailMemberComponent
                .builder()
                .appComponent((application as AppConfig).applicationComponent)
-               .removeGroupMemberModule(RemoveGroupMemberModule(this))
+               .removeGroupDetailMemberModule(RemoveGroupDetailMemberModule(this))
                .build()
                .inject(this)
     }
-    override fun setPresenter(presenter: RemoveGroupMemberContract.RemoveGroupMemberContractPresenter) {
-            mPresenter = presenter as RemoveGroupMemberPresenter
+    override fun setPresenter(presenter: RemoveGroupDetailMemberContract.RemoveGroupDetailMemberContractPresenter) {
+            mPresenter = presenter as RemoveGroupDetailMemberPresenter
         }
 
     override fun showProgressDialog() {
