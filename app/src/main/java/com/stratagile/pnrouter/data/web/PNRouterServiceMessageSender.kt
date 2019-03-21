@@ -986,7 +986,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }
                 EventBus.getDefault().post(FileTransformStatus(msgId!!,LogIdIdResult.toString(),ToIdResult, 0))
                 val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + ToIdResult, "")
+                //SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + ToIdResult, "")
             }
         }
     }
@@ -1207,7 +1207,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     deleteFileMap[msgId] = false
                     sendFileFriendKeyMap[msgId] = friendSignPublicKey
 
-                    val fileKey = RxEncryptTool.generateAESKey()
+                    var fileKey = RxEncryptTool.generateAESKey()
+                    if(porperty != null && porperty.equals("1"))
+                    {
+                        fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                    }
                     val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                     val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
                     var SrcKey = ByteArray(256)
@@ -1224,6 +1228,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         sendFileKeyByteMap[msgId] = fileKey.substring(0, 16)
                         sendFileMyKeyByteMap[msgId] = SrcKey
                         sendFileFriendKeyByteMap[msgId] = DstKey
+                        sendFilePorpertyMap.put(msgId, porperty)
                     } catch (e: Exception) {
                         var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                         if(messageEntityList != null)
@@ -1313,8 +1318,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         sendFilePathMap[msgId] = files_dir
                         deleteFileMap[msgId] = false
                         sendFileFriendKeyMap[msgId] = friendSignPublicKey
-
-                        val fileKey = RxEncryptTool.generateAESKey()
+                        var fileKey = RxEncryptTool.generateAESKey()
+                        if(porperty != null && porperty.equals("1"))
+                        {
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                        }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
                         var SrcKey = ByteArray(256)
@@ -1331,6 +1339,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileKeyByteMap[msgId] = fileKey.substring(0, 16)
                             sendFileMyKeyByteMap[msgId] = SrcKey
                             sendFileFriendKeyByteMap[msgId] = DstKey
+                            sendFilePorpertyMap.put(msgId, porperty)
                         } catch (e: Exception) {
                             var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                             if(messageEntityList != null)
@@ -1423,7 +1432,11 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         deleteFileMap[msgId] = false
                         sendFileFriendKeyMap[msgId] = friendSignPublicKey
 
-                        val fileKey = RxEncryptTool.generateAESKey()
+                        var fileKey = RxEncryptTool.generateAESKey()
+                        if(porperty != null && porperty.equals("1"))
+                        {
+                            fileKey = LibsodiumUtil.DecryptShareKey(friendSignPublicKey)
+                        }
                         val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                         val friend = RxEncodeTool.base64Decode(friendSignPublicKey)
                         var SrcKey = ByteArray(256)
@@ -1440,6 +1453,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileKeyByteMap[msgId] = fileKey.substring(0, 16)
                             sendFileMyKeyByteMap[msgId] = SrcKey
                             sendFileFriendKeyByteMap[msgId] = DstKey
+                            sendFilePorpertyMap.put(msgId, porperty)
                         } catch (e: Exception) {
                             var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                             if(messageEntityList != null)
