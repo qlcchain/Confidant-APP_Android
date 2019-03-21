@@ -20,7 +20,6 @@ import com.stratagile.pnrouter.utils.DateUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
-import kotlinx.android.synthetic.main.activity_user_info.*
 import java.util.*
 
 abstract class ChatRowPresenter(var itemView : View, var message: Message, var position : Int, var adapter : MessageListAdapter) : MessageListViewHolder.ChatRowActionCallback {
@@ -47,11 +46,11 @@ abstract class ChatRowPresenter(var itemView : View, var message: Message, var p
         avatar.setOnClickListener {
             onAvatarClick(message)
         }
-        tvTimestamp.text = DateUtil.getTimestampString(Date(message.timeStatmp), context)
+        tvTimestamp.text = DateUtil.getTimestampString(Date(message.timeStamp), context)
         if (position == 0) {
             tvTimestamp.visibility = View.VISIBLE
         } else {
-            if (message.timeStatmp - adapter.getData().get(position - 1).timeStatmp > 1000 * 10 * 60 * 5) {
+            if (message.timeStamp - adapter.getData().get(position - 1).timeStamp > 1000 * 10 * 60 * 5) {
                 tvTimestamp.visibility = View.VISIBLE
             } else {
                 tvTimestamp.visibility = View.GONE

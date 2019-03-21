@@ -29,7 +29,8 @@ public class SendFileData implements Serializable {
     private byte[] ToId = new byte[77];
     private byte[] SrcKey = new byte[256];
     private byte[] DstKey = new byte[256];
-    private byte[] Pad = new byte[2];
+    private byte[] Porperty = new byte[1];
+    private byte[] Pad = new byte[1];
 
     private byte[] Content = new byte[0];
 
@@ -128,6 +129,14 @@ public class SendFileData implements Serializable {
         System.arraycopy(toId, 0, ToId, 0, toId.length > ToId.length ? ToId.length : toId.length);
     }
 
+    public byte[] getPorperty() {
+        return Porperty;
+    }
+
+    public void setPorperty(byte[] porperty) {
+        System.arraycopy(porperty, 0, Porperty, 0, porperty.length > Porperty.length ? Porperty.length : porperty.length);
+    }
+
     public byte[] getPad() {
         return Pad;
     }
@@ -172,7 +181,7 @@ public class SendFileData implements Serializable {
         byte[] SegMoreByte = new byte[]{this.SegMore};
         byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
-                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+this.Pad.length+ this.Content.length;
+                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+this.Porperty.length+this.Pad.length+ this.Content.length;
         System.out.println("发送文件长度："+length);
         byte[] result = new byte[length];
         int copyLength = 0;
@@ -205,6 +214,9 @@ public class SendFileData implements Serializable {
         copyLength += this.SrcKey.length;
         System.arraycopy(this.DstKey, 0, result, copyLength,this.DstKey.length);
         copyLength += this.DstKey.length;
+
+        System.arraycopy(this.Porperty, 0, result, copyLength,this.Porperty.length);
+        copyLength += this.Porperty.length;
 
         System.arraycopy(this.Pad, 0, result, copyLength,this.Pad.length);
         copyLength += this.Pad.length;

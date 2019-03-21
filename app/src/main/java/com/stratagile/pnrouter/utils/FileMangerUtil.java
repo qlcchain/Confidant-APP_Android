@@ -50,7 +50,6 @@ import java.util.concurrent.ExecutorService;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
-import scalaz.Alpha;
 
 
 public class FileMangerUtil {
@@ -546,7 +545,10 @@ public class FileMangerUtil {
             sendFileData.setDstKey(DstKey);
             byte[] content = new byte[segSize];
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize);
-            byte[] pad = new byte[2];
+            byte[] porperty = new byte[1];
+            Arrays.fill(porperty,(byte) 0);
+            sendFileData.setPorperty(porperty);
+            byte[] pad = new byte[1];
             Arrays.fill(pad,(byte) 0);
             sendFileData.setPad(pad);
             sendFileData.setContent(content);
@@ -1733,7 +1735,7 @@ public class FileMangerUtil {
                                     }
                                 }
 
-                                messageData.setMsgTime(message.getTimeStatmp()* 1000);
+                                messageData.setMsgTime(message.getTimeStamp()* 1000);
                                 messageData.setMsgId( message.getMsgId()+"");
                             }
                         }

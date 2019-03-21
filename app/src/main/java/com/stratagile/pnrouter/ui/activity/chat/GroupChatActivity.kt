@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
+import com.stratagile.pnrouter.db.GroupEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
@@ -306,7 +307,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         Message.msg = ""
         Message.from = userId
         Message.to = jPushFileMsgRsp.params.fromId
-        Message.timeStatmp = System.currentTimeMillis() / 1000
+        Message.timeStamp = System.currentTimeMillis() / 1000
         Message.unReadCount = 0
         Message.chatType = EMMessage.ChatType.GroupChat
         val baseDataJson = gson.toJson(Message)
@@ -436,6 +437,25 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
 
+        }
+        var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(pushMsgRsp.params.gId)).list()
+        if(groupList.size > 0)
+        {
+            var GroupLocal = groupList.get(0)
+            GroupLocal.userKey = pushMsgRsp.params.selfKey
+            GroupLocal.remark = ""
+            GroupLocal.gId = pushMsgRsp.params.gId
+            GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
+            GroupLocal.gName = pushMsgRsp.params.groupName
+            AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+        }else{
+            var GroupLocal = GroupEntity()
+            GroupLocal.userKey = pushMsgRsp.params.selfKey
+            GroupLocal.remark = ""
+            GroupLocal.gId = pushMsgRsp.params.gId
+            GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
+            GroupLocal.gName = pushMsgRsp.params.groupName
+            AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
         }
         if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
             chatFragment?.receiveTxtMessageV3(pushMsgRsp)

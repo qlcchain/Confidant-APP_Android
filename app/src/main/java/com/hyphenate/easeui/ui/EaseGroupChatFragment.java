@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,7 +32,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
@@ -87,12 +87,10 @@ import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
-import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupSendMsgRsp;
 import com.stratagile.pnrouter.entity.JGroupSysPushRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
-import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
 import com.stratagile.pnrouter.entity.JUserInfoPushRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
@@ -104,7 +102,6 @@ import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
-import com.stratagile.pnrouter.ui.activity.group.CreateGroupActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.AESCipher;
@@ -128,10 +125,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -700,7 +694,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
@@ -755,7 +749,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
@@ -922,7 +916,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 }
                             }
 
-                            messageData.setMsgTime(message.getTimeStatmp() * 1000);
+                            messageData.setMsgTime(message.getTimeStamp() * 1000);
                             messageData.setMsgId(message.getMsgId() + "");
                             sendMessageTo(messageData);
                         }
@@ -1237,7 +1231,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStatmp());
+            message.setMsgTime(Message.getTimeStamp());
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -1434,7 +1428,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(Message.getFrom());
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                 /*String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -1783,7 +1777,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 //        message.setMsg("/[draft]/" +draft);
 //        message.setFrom(userId);
 //        message.setTo(toChatUserId);
-//        message.setTimeStatmp(System.currentTimeMillis() / 1000);
+//        message.setTimeStamp(System.currentTimeMillis() / 1000);
 //        message.setUnReadCount(0);
 //        String baseDataJson = new Gson().toJson(message);
 //        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
@@ -2066,7 +2060,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
                 Message.setStatus(0);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
@@ -2115,7 +2109,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setFileName("abc");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                /* String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
                 Message MessageLocal = gson.fromJson(cachStr, Message.class);
@@ -2310,6 +2304,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
                     SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                    SendFileInfo.setPorperty("1");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
                     /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2375,7 +2370,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 Message.setMsg("");
                 Message.setFrom(userId);
                 Message.setTo(toChatUserId);
-                Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.GroupChat);
                 String baseDataJson = gson.toJson(Message);
@@ -2411,9 +2406,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     if (isHas) {
-//                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-//                        int width = bitmap.getWidth();
-//                        int height = bitmap.getHeight();
                         if (file.length() > 1024 * 1024 * 100) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -2423,6 +2415,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             });
                             return;
                         }
+                        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                        String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
+                        KLog.i("图片的宽高为：" + widthAndHeight);
+                        bitmap.recycle();
                         String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
@@ -2449,11 +2445,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 SendFileInfo.setFriendId(toChatUserId);
                                 SendFileInfo.setFiles_dir(files_dir);
                                 SendFileInfo.setMsgId(uuid);
+                                SendFileInfo.setWidthAndHeight(widthAndHeight);
                                 SendFileInfo.setFriendSignPublicKey(UserDataManger.currentGroupData.getUserKey());
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
                                 SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                                SendFileInfo.setPorperty("1");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
                                /* String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
@@ -2530,7 +2528,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                        Message.setTimeStamp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
@@ -2774,6 +2772,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
                             SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                            SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
 
@@ -2843,7 +2842,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                        Message.setTimeStamp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
@@ -2959,6 +2958,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
                             SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                            SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
 
@@ -3029,7 +3029,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(toChatUserId);
-                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                        Message.setTimeStamp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         Message.setChatType(ChatType.GroupChat);
                         String baseDataJson = gson.toJson(Message);
@@ -3074,7 +3074,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
         Message.setFrom(jPushMsgRsp.getParams().getFromId());
         Message.setTo(jPushMsgRsp.getParams().getToId());
-        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+        Message.setTimeStamp(System.currentTimeMillis() / 1000);
         Message.setUnReadCount(0);
         Message.setChatType(ChatType.GroupChat);
         String baseDataJson = gson.toJson(Message);
@@ -3113,7 +3113,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
             Message.setFrom(jPushMsgRsp.getParams().getFrom());
             Message.setTo(jPushMsgRsp.getParams().getTo());
-            Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+            Message.setTimeStamp(System.currentTimeMillis() / 1000);
             Message.setUnReadCount(0);
             Message.setChatType(ChatType.GroupChat);
             String baseDataJson = gson.toJson(Message);
@@ -3867,7 +3867,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 }
 
-                                messageData.setMsgTime(message.getTimeStatmp() * 1000);
+                                messageData.setMsgTime(message.getTimeStamp() * 1000);
                                 messageData.setMsgId(message.getMsgId() + "");
                                 sendMessageTo(messageData);
                             }

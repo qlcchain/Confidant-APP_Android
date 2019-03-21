@@ -1,7 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.*
 import android.app.Notification.BADGE_ICON_SMALL
 import android.arch.lifecycle.ViewModelProviders
@@ -17,11 +16,9 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
 import android.support.v4.view.ViewPager
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -33,11 +30,9 @@ import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.huawei.android.hms.agent.HMSAgent
 import com.huawei.android.hms.agent.common.handler.ConnectHandler
-import com.huawei.android.hms.agent.push.handler.GetTokenHandler
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
-import com.hyphenate.easeui.ui.EaseContactListFragment
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
 import com.luck.picture.lib.PictureSelector
@@ -50,7 +45,6 @@ import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
-import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -156,7 +150,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         Message.msgType = 0
                                         Message.sender = 1
                                         Message.status = 2
-                                        Message.timeStatmp = jGroupSysPushRsp?.timestamp
+                                        Message.timeStamp = jGroupSysPushRsp?.timestamp
                                         Message.msgId = jGroupSysPushRsp?.params.msgId
                                         Message.chatType = EMMessage.ChatType.GroupChat
                                         var unReadCount = MessageLocal.unReadCount
@@ -429,7 +423,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.status = 1
             Message.chatType = EMMessage.ChatType.Chat
             Message.fileName = jPushFileMsgRsp.params.fileName
-            Message.timeStatmp = jPushFileMsgRsp.timestamp
+            Message.timeStamp = jPushFileMsgRsp.timestamp
 
             var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + jPushFileMsgRsp.params.fromId, "")
             val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
@@ -506,7 +500,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 Message.msgType = 0
                                 Message.sender = 1
                                 Message.status = 2
-                                Message.timeStatmp = delMsgPushRsp?.timestamp
+                                Message.timeStamp = delMsgPushRsp?.timestamp
                                 Message.msgId = delMsgPushRsp?.params.msgId
                                 Message.chatType = EMMessage.ChatType.Chat
                                 var unReadCount = MessageLocal.unReadCount
@@ -708,6 +702,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.gId)) {
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
+            var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(pushMsgRsp.params.gId)).list()
+            if(groupList.size > 0)
+            {
+                var GroupLocal = groupList.get(0)
+                GroupLocal.userKey = pushMsgRsp.params.selfKey
+                GroupLocal.remark = ""
+                GroupLocal.gId = pushMsgRsp.params.gId
+                GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
+                GroupLocal.gName = pushMsgRsp.params.groupName
+                AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+            }else{
+                var GroupLocal = GroupEntity()
+                GroupLocal.userKey = pushMsgRsp.params.selfKey
+                GroupLocal.remark = ""
+                GroupLocal.gId = pushMsgRsp.params.gId
+                GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
+                GroupLocal.gName = pushMsgRsp.params.groupName
+                AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
+            }
             if (!AppConfig.instance.isBackGroud) {
                 defaultMediaPlayer()
             }
@@ -753,7 +766,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 Message.msgType = 0
                 Message.sender = 1
                 Message.status = 1
-                Message.timeStatmp = pushMsgRsp?.timestamp
+                Message.timeStamp = pushMsgRsp?.timestamp
                 Message.chatType = EMMessage.ChatType.GroupChat
                 Message.msgId = pushMsgRsp?.params.msgId
 
@@ -845,7 +858,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             Message.sender = 1
             Message.status = 1
             Message.chatType = EMMessage.ChatType.Chat
-            Message.timeStatmp = pushMsgRsp?.timestamp
+            Message.timeStamp = pushMsgRsp?.timestamp
             Message.msgId = pushMsgRsp?.params.msgId
 
 
@@ -1565,6 +1578,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     SendFileInfo.voiceTimeLen = i.voiceTimeLen
                     SendFileInfo.type = i.type
                     SendFileInfo.sendTime = i.sendTime
+                    SendFileInfo.widthAndHeight = i.widthAndHeight
+                    SendFileInfo.porperty = i.porperty
                     KLog.i("开始添加本地数据到重发列表 文件" + messageEntityList.size)
                     LogUtil.addLog("开始添加本地数据到重发列表 文件" + messageEntityList.size)
                     AppConfig.instance.getPNRouterServiceMessageSender().addFileDataFromSql(i.userId, SendFileInfo)

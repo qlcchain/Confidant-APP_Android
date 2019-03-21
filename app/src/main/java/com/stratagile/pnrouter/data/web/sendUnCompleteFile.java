@@ -1,24 +1,14 @@
 package com.stratagile.pnrouter.data.web;
 
-import android.widget.Toast;
-
 import com.google.gson.Gson;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.utils.PathUtils;
 import com.message.Message;
-import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
-import com.stratagile.pnrouter.constant.UserDataManger;
-import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
-import com.stratagile.pnrouter.utils.Base58;
-import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LibsodiumUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
-import com.stratagile.tox.toxcore.ToxCoreJni;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -26,10 +16,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.UUID;
-
-import chat.tox.antox.tox.MessageHelper;
-import chat.tox.antox.wrapper.FriendKey;
 
 public class sendUnCompleteFile {
 
@@ -104,7 +90,7 @@ public class sendUnCompleteFile {
                         Message.setMsg("");
                         Message.setFrom(userId);
                         Message.setTo(friendId);
-                        Message.setTimeStatmp(System.currentTimeMillis() / 1000);
+                        Message.setTimeStamp(System.currentTimeMillis() / 1000);
                         Message.setUnReadCount(0);
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + friendId, baseDataJson);

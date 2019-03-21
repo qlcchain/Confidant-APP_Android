@@ -1,7 +1,6 @@
 package com.hyphenate.easeui.ui;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -29,14 +28,9 @@ import com.hyphenate.EMConversationListener;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
-import com.hyphenate.chat.EMMessage;
-import com.hyphenate.easeui.EaseConstant;
-import com.hyphenate.easeui.utils.EaseCommonUtils;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.EaseConversationList;
-import com.message.CacheMessage;
 import com.message.Message;
-import com.noober.menu.FloatMenu;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
@@ -498,7 +492,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                     }
                                 }
 
-                                message.setMsgTime(Message.getTimeStatmp());
+                                message.setMsgTime(Message.getTimeStamp());
                                 message.setMsgId(Message.getMsgId() + "");
                                 if(Message.getChatType() != null)
                                 {

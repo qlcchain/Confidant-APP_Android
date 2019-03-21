@@ -28,7 +28,6 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.constant.UserDataManger
-import com.stratagile.pnrouter.data.service.FileTransformService
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -47,7 +46,6 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import scalaz.Alpha
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -299,7 +297,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         Message.msg = ""
         Message.from = userId
         Message.to = jPushFileMsgRsp.params.fromId
-        Message.timeStatmp = System.currentTimeMillis() / 1000
+        Message.timeStamp = System.currentTimeMillis() / 1000
         Message.chatType = EMMessage.ChatType.Chat
         Message.unReadCount = 0
         val baseDataJson = gson.toJson(Message)

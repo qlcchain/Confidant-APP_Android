@@ -6,13 +6,10 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
-import org.libsodium.jni.Sodium
 
 class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
@@ -158,7 +155,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
     fun addConversation(userId: String, message: Message) {
         conversationList.forEach {
             if (it.userId.equals(userId)) {
-                it.lastMessageTime = message.timeStatmp
+                it.lastMessageTime = message.timeStamp
                 it.lastMessage = message
                 sortConversationList()
                 conversationChangeListener?.conversationChange(conversationList)
@@ -172,7 +169,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         conversation.userId = userId
         conversation.userEntity = UserProvider.getInstance().getUserById(userId)
         conversation.lastMessage = message
-        conversation.lastMessageTime = message.timeStatmp
+        conversation.lastMessageTime = message.timeStamp
         conversationList.add(conversation)
         sortConversationList()
         conversationChangeListener?.conversationChange(conversationList)

@@ -34,11 +34,15 @@ public class MessageEntity implements Parcelable{
 
     private int voiceTimeLen;//语音长度
 
-    @Generated(hash = 1429837954)
+    private String widthAndHeight;  //图片的宽和高   ",30*40"
+    private String porperty;//0点对点 ，1 群聊
+
+
+    @Generated(hash = 1514710577)
     public MessageEntity(Long id, String userId, String friendId, String msgId,
             String sendTime, String type, Boolean complete, String baseData,
             String filePath, String friendSignPublicKey, String friendMiPublicKey,
-            int voiceTimeLen) {
+            int voiceTimeLen, String widthAndHeight, String porperty) {
         this.id = id;
         this.userId = userId;
         this.friendId = friendId;
@@ -51,11 +55,14 @@ public class MessageEntity implements Parcelable{
         this.friendSignPublicKey = friendSignPublicKey;
         this.friendMiPublicKey = friendMiPublicKey;
         this.voiceTimeLen = voiceTimeLen;
+        this.widthAndHeight = widthAndHeight;
+        this.porperty = porperty;
     }
 
     @Generated(hash = 1797882234)
     public MessageEntity() {
     }
+
 
     protected MessageEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -75,6 +82,8 @@ public class MessageEntity implements Parcelable{
         friendSignPublicKey = in.readString();
         friendMiPublicKey = in.readString();
         voiceTimeLen = in.readInt();
+        widthAndHeight = in.readString();
+        porperty = in.readString();
     }
 
     @Override
@@ -96,6 +105,8 @@ public class MessageEntity implements Parcelable{
         dest.writeString(friendSignPublicKey);
         dest.writeString(friendMiPublicKey);
         dest.writeInt(voiceTimeLen);
+        dest.writeString(widthAndHeight);
+        dest.writeString(porperty);
     }
 
     @Override
@@ -209,5 +220,21 @@ public class MessageEntity implements Parcelable{
 
     public void setVoiceTimeLen(int voiceTimeLen) {
         this.voiceTimeLen = voiceTimeLen;
+    }
+
+    public String getWidthAndHeight() {
+        return widthAndHeight;
+    }
+
+    public void setWidthAndHeight(String widthAndHeight) {
+        this.widthAndHeight = widthAndHeight;
+    }
+
+    public String getPorperty() {
+        return porperty;
+    }
+
+    public void setPorperty(String porperty) {
+        this.porperty = porperty;
     }
 }

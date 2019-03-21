@@ -40,7 +40,6 @@ import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.PermissionListener
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.fragment_chat.*
-import org.libsodium.jni.Sodium
 import java.util.*
 
 class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
@@ -231,7 +230,7 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
         message.from = SpUtil.getString(activity!!, ConstantValue.userId, "")
         message.msg = content
         message.status = 4
-        message.timeStatmp = Calendar.getInstance().timeInMillis / 1000
+        message.timeStamp = Calendar.getInstance().timeInMillis / 1000
         messageListAdapter.addData(message)
         messageRecyclerView.scrollToPosition(messageListAdapter.getData().size - 1)
         KLog.i(messageList?.size)

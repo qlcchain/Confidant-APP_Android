@@ -34,6 +34,8 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
         public final static Property FriendSignPublicKey = new Property(9, String.class, "friendSignPublicKey", false, "FRIEND_SIGN_PUBLIC_KEY");
         public final static Property FriendMiPublicKey = new Property(10, String.class, "friendMiPublicKey", false, "FRIEND_MI_PUBLIC_KEY");
         public final static Property VoiceTimeLen = new Property(11, int.class, "voiceTimeLen", false, "VOICE_TIME_LEN");
+        public final static Property WidthAndHeight = new Property(12, String.class, "widthAndHeight", false, "WIDTH_AND_HEIGHT");
+        public final static Property Porperty = new Property(13, String.class, "porperty", false, "PORPERTY");
     }
 
 
@@ -60,7 +62,9 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
                 "\"FILE_PATH\" TEXT," + // 8: filePath
                 "\"FRIEND_SIGN_PUBLIC_KEY\" TEXT," + // 9: friendSignPublicKey
                 "\"FRIEND_MI_PUBLIC_KEY\" TEXT," + // 10: friendMiPublicKey
-                "\"VOICE_TIME_LEN\" INTEGER NOT NULL );"); // 11: voiceTimeLen
+                "\"VOICE_TIME_LEN\" INTEGER NOT NULL ," + // 11: voiceTimeLen
+                "\"WIDTH_AND_HEIGHT\" TEXT," + // 12: widthAndHeight
+                "\"PORPERTY\" TEXT);"); // 13: porperty
     }
 
     /** Drops the underlying database table. */
@@ -128,6 +132,16 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             stmt.bindString(11, friendMiPublicKey);
         }
         stmt.bindLong(12, entity.getVoiceTimeLen());
+ 
+        String widthAndHeight = entity.getWidthAndHeight();
+        if (widthAndHeight != null) {
+            stmt.bindString(13, widthAndHeight);
+        }
+ 
+        String porperty = entity.getPorperty();
+        if (porperty != null) {
+            stmt.bindString(14, porperty);
+        }
     }
 
     @Override
@@ -189,6 +203,16 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             stmt.bindString(11, friendMiPublicKey);
         }
         stmt.bindLong(12, entity.getVoiceTimeLen());
+ 
+        String widthAndHeight = entity.getWidthAndHeight();
+        if (widthAndHeight != null) {
+            stmt.bindString(13, widthAndHeight);
+        }
+ 
+        String porperty = entity.getPorperty();
+        if (porperty != null) {
+            stmt.bindString(14, porperty);
+        }
     }
 
     @Override
@@ -210,7 +234,9 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // filePath
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // friendSignPublicKey
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // friendMiPublicKey
-            cursor.getInt(offset + 11) // voiceTimeLen
+            cursor.getInt(offset + 11), // voiceTimeLen
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // widthAndHeight
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13) // porperty
         );
         return entity;
     }
@@ -229,6 +255,8 @@ public class MessageEntityDao extends AbstractDao<MessageEntity, Long> {
         entity.setFriendSignPublicKey(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setFriendMiPublicKey(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
         entity.setVoiceTimeLen(cursor.getInt(offset + 11));
+        entity.setWidthAndHeight(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
+        entity.setPorperty(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
      }
     
     @Override

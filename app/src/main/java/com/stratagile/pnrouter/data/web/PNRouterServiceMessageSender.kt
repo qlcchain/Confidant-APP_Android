@@ -41,6 +41,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
     lateinit var sendFileKeyByteMap : ConcurrentHashMap<String, String>
     lateinit var sendFileFriendKeyByteMap : ConcurrentHashMap<String, ByteArray>
     lateinit var sendFileWidthAndHeightMap : ConcurrentHashMap<String, String>
+    lateinit var sendFilePorpertyMap : ConcurrentHashMap<String, String>
     lateinit var sendFileMyKeyByteMap : ConcurrentHashMap<String, ByteArray>
     lateinit var sendFileResultMap:ConcurrentHashMap<String, Boolean>
     lateinit var sendFileNameMap:ConcurrentHashMap<String, String>
@@ -66,6 +67,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         sendFileResultMap = ConcurrentHashMap<String, Boolean>()
         sendFileNameMap = ConcurrentHashMap<String, String>()
         sendFileWidthAndHeightMap = ConcurrentHashMap<String, String>()
+        sendFilePorpertyMap = ConcurrentHashMap<String, String>()
         sendFileLastByteSizeMap = ConcurrentHashMap<String, Int>()
         sendFileLeftByteMap = ConcurrentHashMap<String, ByteArray>()
         sendMsgIdMap = ConcurrentHashMap<String, String>()
@@ -214,6 +216,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         messageEntity.friendSignPublicKey = message.friendSignPublicKey
         messageEntity.friendMiPublicKey = message.friendMiPublicKey
         messageEntity.voiceTimeLen = message.voiceTimeLen
+        messageEntity.widthAndHeight = message.widthAndHeight
+        messageEntity.porperty = message.porperty
         KLog.i("消息数据增加文件：userId："+userId +" friendId:"+message.friendId)
         AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.insert(messageEntity)
         Log.i("sender_thread.state", (thread.state == Thread.State.NEW).toString())
@@ -350,19 +354,19 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     when(message.type){
                         "1" ->
                         {
-                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight)
+                            sendImageMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey, message.widthAndHeight,message.porperty)
                         }
                         "2" ->
                         {
-                            sendVoiceMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.voiceTimeLen)
+                            sendVoiceMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.voiceTimeLen,message.porperty)
                         }
                         "3" ->
                         {
-                            sendVideoMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                            sendVideoMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.porperty)
                         }
                         "4" ->
                         {
-                            sendFileMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey)
+                            sendFileMessage(message.userId,message.friendId,message.files_dir,message.msgId,message.friendSignPublicKey,message.friendMiPublicKey,message.porperty)
                         }
                     }
                 }else{
@@ -396,19 +400,19 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                             when(item.type){
                                                 "1" ->
                                                 {
-                                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey, item.widthAndHeight)
+                                                    sendImageMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey, item.widthAndHeight,item.porperty)
                                                 }
                                                 "2" ->
                                                 {
-                                                    sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen)
+                                                    sendVoiceMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.voiceTimeLen,item.porperty)
                                                 }
                                                 "3" ->
                                                 {
-                                                    sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                    sendVideoMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.porperty)
                                                 }
                                                 "4" ->
                                                 {
-                                                    sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey)
+                                                    sendFileMessage(item.userId,item.friendId,item.files_dir,item.msgId,item.friendSignPublicKey,item.friendMiPublicKey,item.porperty)
                                                 }
                                             }
                                         }
@@ -635,6 +639,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                  sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                                  sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
                                 sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
+                                sendFilePorpertyMap.remove(fileTransformEntity.toId)
                                 System.gc()
                                 KLog.i("websocket文件发送前取消！")
                                 val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
@@ -650,6 +655,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                              sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                              sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
                             sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
+                            sendFilePorpertyMap.remove(fileTransformEntity.toId)
                              System.gc()
                             val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(fileTransformEntity.toId, 4, "", wssUrl, "lws-pnr-bin"))
@@ -664,6 +670,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                      sendFileMyKeyByteMap.remove(fileTransformEntity.toId)
                      sendFileFriendKeyByteMap.remove(fileTransformEntity.toId)
                     sendFileWidthAndHeightMap.remove(fileTransformEntity.toId)
+                    sendFilePorpertyMap.remove(fileTransformEntity.toId)
                      System.gc()
                 }
             /*}).start()*/
@@ -762,6 +769,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                              sendFileMyKeyByteMap.remove(msgId)
                              sendFileFriendKeyByteMap.remove(msgId)
                             sendFileWidthAndHeightMap.remove(msgId)
+                            sendFilePorpertyMap.remove(msgId)
                              System.gc()
                             val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                             EventBus.getDefault().post(FileTransformEntity(msgId!!, 4, "", wssUrl, "lws-pnr-bin"))
@@ -796,6 +804,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                          sendFileKeyByteMap.remove(msgId)
                          sendFileMyKeyByteMap.remove(msgId)
                         sendFileWidthAndHeightMap.remove(msgId)
+                        sendFilePorpertyMap.remove(msgId)
                          sendFileFriendKeyByteMap.remove(msgId)
                          System.gc()
                     }
@@ -837,6 +846,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                          sendFileNameMap.remove(msgId)
                          sendFileLastByteSizeMap.remove(msgId)
                         sendFileWidthAndHeightMap.remove(msgId)
+                        sendFilePorpertyMap.remove(msgId)
                          sendFileKeyByteMap.remove(msgId)
                          sendFileMyKeyByteMap.remove(msgId)
                          sendFileFriendKeyByteMap.remove(msgId)
@@ -850,6 +860,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                           sendFileLastByteSizeMap.remove(msgId)
                           sendFileKeyByteMap.remove(msgId)
                         sendFileWidthAndHeightMap.remove(msgId)
+                        sendFilePorpertyMap.remove(msgId)
                           sendFileMyKeyByteMap.remove(msgId)
                           sendFileFriendKeyByteMap.remove(msgId)
                           System.gc()
@@ -893,6 +904,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                  sendFileKeyByteMap.remove(msgId)
                  sendFileMyKeyByteMap.remove(msgId)
                 sendFileWidthAndHeightMap.remove(msgId)
+                sendFilePorpertyMap.remove(msgId)
                  sendFileFriendKeyByteMap.remove(msgId)
                  System.gc()
                 var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
@@ -973,7 +985,13 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             sendFileData.dstKey = DstKey
             val content = ByteArray(segSize)
             System.arraycopy(fileLeftBuffer, 0, content, 0, segSize)
-            val pad = byteArrayOf(0, 0)
+            var porperty = byteArrayOf(0)//点对点聊天
+            if( sendFilePorpertyMap[msgId] != null && sendFilePorpertyMap[msgId].equals("1"))
+            {
+                porperty = byteArrayOf(1)//群聊
+            }
+            sendFileData.porperty = porperty
+            val pad = byteArrayOf(0)
             sendFileData.pad = pad
             sendFileData.content = content
             var sendData =  byteArrayOf(0)
@@ -999,7 +1017,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         }
 
     }
-    fun sendImageMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, widthAndHeigh : String) {
+    fun sendImageMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, widthAndHeigh : String,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
@@ -1050,6 +1068,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             sendFileFriendKeyByteMap.put(msgId, DstKey)
                             KLog.i("设置图片的宽高：" + msgId + "  " + widthAndHeigh)
                             sendFileWidthAndHeightMap.put(msgId, widthAndHeigh)
+                            sendFilePorpertyMap.put(msgId, porperty)
                         } catch (e: Exception) {
                             var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
                             if(messageEntityList != null)
@@ -1088,7 +1107,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis() / 1000
+                    Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -1101,7 +1120,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     }
 
-    fun sendVoiceMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, length: Int) {
+    fun sendVoiceMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String, length: Int,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
@@ -1183,7 +1202,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 Message.msg = ""
                 Message.from = userId
                 Message.to = friendId
-                Message.timeStatmp = System.currentTimeMillis() / 1000
+                Message.timeStamp = System.currentTimeMillis() / 1000
                 Message.unReadCount = 0
                 val baseDataJson = gson.toJson(Message)
                 SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -1195,7 +1214,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     }
 
-    fun sendVideoMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
+    fun sendVideoMessage(userId: String, friendId: String, files_dir: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
@@ -1289,7 +1308,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis() / 1000
+                    Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)
@@ -1305,7 +1324,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
 
     }
 
-    fun sendFileMessage(userId: String, friendId: String, filePath: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String) {
+    fun sendFileMessage(userId: String, friendId: String, filePath: String, msgId: String, friendSignPublicKey: String, friendMiPublicKey: String,porperty:String) {
         val EMMessageData = ConstantValue.sendFileMsgMap[msgId]
         if(EMMessageData != null && !EMMessageData!!.from.equals(""))
         {
@@ -1396,7 +1415,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     Message.msg = ""
                     Message.from = userId
                     Message.to = friendId
-                    Message.timeStatmp = System.currentTimeMillis() / 1000
+                    Message.timeStamp = System.currentTimeMillis() / 1000
                     Message.unReadCount = 0
                     val baseDataJson = gson.toJson(Message)
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + friendId, baseDataJson)

@@ -18,6 +18,7 @@ public class SendFileInfo implements Serializable {
     private int  voiceTimeLen;
     private String sendTime;//发送时间
     private String widthAndHeight;  //图片的宽和高   ",30*40"
+    private String porperty;//0点对点 ，1 群聊
 
     public String getWidthAndHeight() {
         return widthAndHeight;
@@ -97,5 +98,13 @@ public class SendFileInfo implements Serializable {
 
     public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public String getPorperty() {
+        return porperty;
+    }
+
+    public void setPorperty(String porperty) {
+        this.porperty = porperty;
     }
 }

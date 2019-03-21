@@ -13,7 +13,7 @@ public class Message {
     /**
      * MsgId : 1537262116
      * MsgType : 1
-     * TimeStatmp : 1537262116
+     * TimeStamp : 1537262116
      * From : EEA02E58D797E4C2D34AA5727A5547FD415A21AFD255CE4825F05836FC1D0267ACF17C109788
      * To : 14EB061F2A983B966B79030AF773AE74BE703315A4E56EA9D801DAC5DC840522C62EA32ECBC5
      * Msg : 。。。
@@ -22,7 +22,7 @@ public class Message {
     private int MsgId;//消息id
     private int MsgType;//消息内容类型
     private int DbId;//服务器上消息数据库id
-    private long TimeStatmp;//时间戳
+    private long TimeStamp;//时间戳
     private String From;//谁发的
     private String To;//发给谁
     private String Msg;//文字内容
@@ -66,7 +66,7 @@ public class Message {
                 "MsgId=" + MsgId +
                 "DbId=" + DbId +
                 ", MsgType=" + MsgType +
-                ", TimeStatmp=" + TimeStatmp +
+                ", TimeStamp=" + TimeStamp +
                 ", From='" + From + '\'' +
                 ", To='" + To + '\'' +
                 ", Msg='" + Msg + '\'' +
@@ -158,12 +158,12 @@ public class Message {
         DbId = dbId;
     }
 
-    public long getTimeStatmp() {
-        return TimeStatmp;
+    public long getTimeStamp() {
+        return TimeStamp;
     }
 
-    public void setTimeStatmp(long TimeStatmp) {
-        this.TimeStatmp = TimeStatmp;
+    public void setTimeStamp(long TimeStatmp) {
+        this.TimeStamp = TimeStatmp;
     }
 
     public String getFrom() {
@@ -275,7 +275,7 @@ public class Message {
         message.MsgType = 0;
         message.From = fromId;
         message.Status = 1;
-        message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
+        message.TimeStamp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;
         message.unRead = true;
@@ -294,7 +294,7 @@ public class Message {
         message.MsgType = 0;
         message.From = fromId;
         message.Status = 0;
-        message.TimeStatmp = Calendar.getInstance().getTimeInMillis();
+        message.TimeStamp = Calendar.getInstance().getTimeInMillis();
         message.To = toId;
         message.MsgId = msgId;
         message.unRead = false;
