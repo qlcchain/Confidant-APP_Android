@@ -33,7 +33,8 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
         public final static Property FromName = new Property(8, String.class, "FromName", false, "FROM_NAME");
         public final static Property ToName = new Property(9, String.class, "ToName", false, "TO_NAME");
         public final static Property Gname = new Property(10, String.class, "Gname", false, "GNAME");
-        public final static Property VerifyType = new Property(11, int.class, "verifyType", false, "VERIFY_TYPE");
+        public final static Property FromUserName = new Property(11, String.class, "FromUserName", false, "FROM_USER_NAME");
+        public final static Property VerifyType = new Property(12, int.class, "verifyType", false, "VERIFY_TYPE");
     }
 
 
@@ -60,7 +61,8 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
                 "\"FROM_NAME\" TEXT," + // 8: FromName
                 "\"TO_NAME\" TEXT," + // 9: ToName
                 "\"GNAME\" TEXT," + // 10: Gname
-                "\"VERIFY_TYPE\" INTEGER NOT NULL );"); // 11: verifyType
+                "\"FROM_USER_NAME\" TEXT," + // 11: FromUserName
+                "\"VERIFY_TYPE\" INTEGER NOT NULL );"); // 12: verifyType
     }
 
     /** Drops the underlying database table. */
@@ -127,7 +129,12 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
         if (Gname != null) {
             stmt.bindString(11, Gname);
         }
-        stmt.bindLong(12, entity.getVerifyType());
+ 
+        String FromUserName = entity.getFromUserName();
+        if (FromUserName != null) {
+            stmt.bindString(12, FromUserName);
+        }
+        stmt.bindLong(13, entity.getVerifyType());
     }
 
     @Override
@@ -188,7 +195,12 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
         if (Gname != null) {
             stmt.bindString(11, Gname);
         }
-        stmt.bindLong(12, entity.getVerifyType());
+ 
+        String FromUserName = entity.getFromUserName();
+        if (FromUserName != null) {
+            stmt.bindString(12, FromUserName);
+        }
+        stmt.bindLong(13, entity.getVerifyType());
     }
 
     @Override
@@ -210,7 +222,8 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // FromName
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // ToName
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // Gname
-            cursor.getInt(offset + 11) // verifyType
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // FromUserName
+            cursor.getInt(offset + 12) // verifyType
         );
         return entity;
     }
@@ -228,7 +241,8 @@ public class GroupVerifyEntityDao extends AbstractDao<GroupVerifyEntity, Long> {
         entity.setFromName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setToName(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setGname(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setVerifyType(cursor.getInt(offset + 11));
+        entity.setFromUserName(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setVerifyType(cursor.getInt(offset + 12));
      }
     
     @Override

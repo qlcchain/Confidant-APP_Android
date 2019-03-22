@@ -37,7 +37,17 @@ public class JGroupUserPullRsp extends BaseEntity{
         private String Action;
         private int RetCode;
         private String ToId;
+
+        public int getVerify() {
+            return Verify;
+        }
+
+        public void setVerify(int verify) {
+            Verify = verify;
+        }
+
         private int UserNum;
+        private int Verify;
         private List<PayloadBean> Payload;
 
         public String getAction() {

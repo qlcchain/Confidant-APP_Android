@@ -22,6 +22,7 @@ class NewGroupMemberAdapter(arrayList: MutableList<GroupVerifyEntity>) : BaseQui
 
     override fun convert(helper: BaseViewHolder, item: GroupVerifyEntity) {
         var imagebutton = helper!!.getView<ImageButtonWithText>(R.id.avatar)
+        KLog.i(item)
         //状态， 0 通过， 1 等待我同意， 2 我拒绝 3, 被移除群聊， 4 群解散
         when(item.verifyType) {
             0 -> {
@@ -29,7 +30,7 @@ class NewGroupMemberAdapter(arrayList: MutableList<GroupVerifyEntity>) : BaseQui
                 helper.setBackgroundRes(R.id.tvOpreate, R.color.white)
                 helper.setTextColor(R.id.tvOpreate, mContext.resources.getColor(R.color.color_b2b2b2))
                 helper.setVisible(R.id.tvOpreate, true)
-
+                helper.setVisible(R.id.groupName, true)
                 helper.setText(R.id.desc, "Requested to join")
                 var nickName = String(RxEncodeTool.base64Decode(item.toName))
                 helper.setText(R.id.userName, nickName)
@@ -42,6 +43,7 @@ class NewGroupMemberAdapter(arrayList: MutableList<GroupVerifyEntity>) : BaseQui
             }
             1 -> {
                 helper.setText(R.id.tvOpreate, "Accept")
+                helper.setVisible(R.id.groupName, true)
                 helper.setBackgroundRes(R.id.tvOpreate, R.drawable.btn_verify_group)
                 helper.setTextColor(R.id.tvOpreate, mContext.resources.getColor(R.color.white))
                 helper.setVisible(R.id.tvOpreate, true)
@@ -74,9 +76,12 @@ class NewGroupMemberAdapter(arrayList: MutableList<GroupVerifyEntity>) : BaseQui
             }
             3 -> {
                 helper.setVisible(R.id.tvOpreate, false)
-
+                helper.setGone(R.id.groupName, false)
+                imagebutton.setImage(R.mipmap.group_head)
+                helper.setText(R.id.userName, String(RxEncodeTool.base64Decode(item.gname)))
                 helper.setText(R.id.desc, "You have been removed from the group")
-
+                helper.setText(R.id.desc2, "Group Owner")
+                helper.setText(R.id.userName2, String(RxEncodeTool.base64Decode(item.fromUserName)))
             }
             4 -> {
                 helper.setVisible(R.id.tvOpreate, false)

@@ -45,8 +45,18 @@ public class JGroupSysPushRsp extends BaseEntity{
         private String GId;
         private int Type;
         private int MsgId;
+
+        public String getTo() {
+            return To;
+        }
+
+        public void setTo(String to) {
+            To = to;
+        }
+
         private String From;
         private String FromUserName;
+        private String To;
 
         public String getAction() {
             return Action;

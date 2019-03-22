@@ -19,6 +19,8 @@ public class GroupVerifyEntity implements Parcelable {
     private String To;
     private String Aduit;
     private String GId;
+
+
     private String UserPubKey;
     //自己的userId
     private String userId;
@@ -27,33 +29,26 @@ public class GroupVerifyEntity implements Parcelable {
     private String FromName;
     private String ToName;
     private String Gname;
-    //审核状态
-    //状态， 0 通过， 1 等待我同意， 2 我拒绝 3, 被移除群聊， 4 群解散
-    private int verifyType;
+    private String FromUserName;
 
-
-    @Generated(hash = 957715906)
-    public GroupVerifyEntity(Long id, String From, String To, String Aduit, String GId,
-            String UserPubKey, String userId, String UserGroupKey, String FromName, String ToName,
-            String Gname, int verifyType) {
-        this.id = id;
-        this.From = From;
-        this.To = To;
-        this.Aduit = Aduit;
-        this.GId = GId;
-        this.UserPubKey = UserPubKey;
-        this.userId = userId;
-        this.UserGroupKey = UserGroupKey;
-        this.FromName = FromName;
-        this.ToName = ToName;
-        this.Gname = Gname;
-        this.verifyType = verifyType;
+    @Override
+    public String toString() {
+        return "GroupVerifyEntity{" +
+                "id=" + id +
+                ", From='" + From + '\'' +
+                ", To='" + To + '\'' +
+                ", Aduit='" + Aduit + '\'' +
+                ", GId='" + GId + '\'' +
+                ", UserPubKey='" + UserPubKey + '\'' +
+                ", userId='" + userId + '\'' +
+                ", UserGroupKey='" + UserGroupKey + '\'' +
+                ", FromName='" + FromName + '\'' +
+                ", ToName='" + ToName + '\'' +
+                ", Gname='" + Gname + '\'' +
+                ", FromUserName='" + FromUserName + '\'' +
+                ", verifyType=" + verifyType +
+                '}';
     }
-
-    @Generated(hash = 1232350434)
-    public GroupVerifyEntity() {
-    }
-
 
     protected GroupVerifyEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -71,6 +66,7 @@ public class GroupVerifyEntity implements Parcelable {
         FromName = in.readString();
         ToName = in.readString();
         Gname = in.readString();
+        FromUserName = in.readString();
         verifyType = in.readInt();
     }
 
@@ -85,6 +81,44 @@ public class GroupVerifyEntity implements Parcelable {
             return new GroupVerifyEntity[size];
         }
     };
+
+    public String getFromUserName() {
+        return FromUserName;
+    }
+
+    public void setFromUserName(String fromUserName) {
+        FromUserName = fromUserName;
+    }
+
+    //审核状态
+    //状态， 0 通过， 1 等待我同意， 2 我拒绝 3, 被移除群聊， 4 群解散
+    private int verifyType;
+
+
+    @Generated(hash = 1778234335)
+    public GroupVerifyEntity(Long id, String From, String To, String Aduit, String GId,
+            String UserPubKey, String userId, String UserGroupKey, String FromName, String ToName,
+            String Gname, String FromUserName, int verifyType) {
+        this.id = id;
+        this.From = From;
+        this.To = To;
+        this.Aduit = Aduit;
+        this.GId = GId;
+        this.UserPubKey = UserPubKey;
+        this.userId = userId;
+        this.UserGroupKey = UserGroupKey;
+        this.FromName = FromName;
+        this.ToName = ToName;
+        this.Gname = Gname;
+        this.FromUserName = FromUserName;
+        this.verifyType = verifyType;
+    }
+
+    @Generated(hash = 1232350434)
+    public GroupVerifyEntity() {
+    }
+
+
 
     public Long getId() {
         return this.id;
@@ -175,6 +209,15 @@ public class GroupVerifyEntity implements Parcelable {
         this.verifyType = verifyType;
     }
 
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -198,14 +241,7 @@ public class GroupVerifyEntity implements Parcelable {
         parcel.writeString(FromName);
         parcel.writeString(ToName);
         parcel.writeString(Gname);
+        parcel.writeString(FromUserName);
         parcel.writeInt(verifyType);
-    }
-
-    public String getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 }

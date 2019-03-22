@@ -22,6 +22,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupInfoComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupInfoContract
@@ -41,7 +42,8 @@ import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import kotlinx.android.synthetic.main.activity_group_info.*
 import kotlinx.android.synthetic.main.fragment_my.*
 import org.greenrobot.eventbus.EventBus
-import java.util.ArrayList
+import org.libsodium.jni.Sodium
+import java.util.*
 
 import javax.inject.Inject;
 
@@ -57,6 +59,11 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      * 邀请好友加群返回
      */
     override fun groupInvite(jGroupInviteDealRsp: JGroupInviteDealRsp) {
+        if (jGroupInviteDealRsp.params.retCode == 0) {
+            runOnUiThread {
+                toast(R.string.success)
+            }
+        }
         pullGourpUsersList()
     }
 
@@ -65,7 +72,9 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      */
     override fun quitGroup(jGroupQuitRsp: JGroupQuitRsp) {
         if (jGroupQuitRsp.params.retCode == 0) {
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupQuitRsp.params.gId, "")//移除临时会话UI
             EventBus.getDefault().post(jGroupQuitRsp)
+            EventBus.getDefault().post(groupEntity)
             runOnUiThread {
                 finish()
             }
@@ -80,7 +89,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             when(jGroupConfigRsp.params.type) {
                 //修改群名称
                 1 -> {
-                    groupEntity!!.gName = String(RxEncodeTool.base64Decode(groupName.text.toString()))
+                    groupEntity!!.gName = String(RxEncodeTool.base64Encode(groupName.text.toString()))
                     EventBus.getDefault().post(groupEntity)
                     var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.loadAll()
                     groupList.forEach {
@@ -105,7 +114,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 }
                 //修改群组别名
                 241 -> {
-                    groupEntity!!.remark = String(RxEncodeTool.base64Decode(tvGroupAlias.text.toString()))
+                    groupEntity!!.remark = String(RxEncodeTool.base64Encode(tvGroupAlias.text.toString()))
                     EventBus.getDefault().post(groupEntity)
                 }
             }
@@ -136,6 +145,33 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                     userList.add(reduceUser)
                 }
                 groupUserAdapter?.notifyDataSetChanged()
+            }
+        }
+        runOnUiThread {
+            approveInvitation.isChecked = jGroupUserPullRsp.params.verify == 1
+        }
+        groupEntity!!.verify = jGroupUserPullRsp.params.verify
+        jGroupUserPullRsp.params.payload.forEach {
+            if (it.toxId != userId) {
+                val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(it.toxId)).list()
+                if (userList.size == 0)   //群聊非好友成员数据
+                {
+                    val UserEntityLocal = UserEntity()
+                    UserEntityLocal.nickName = it.nickname
+                    UserEntityLocal.userId = it.toxId
+                    UserEntityLocal.index = ""
+                    UserEntityLocal.signPublicKey = it.userKey
+                    UserEntityLocal.routeId = ""
+                    UserEntityLocal.routeName = ""
+                    val dst_public_MiKey_Friend = ByteArray(32)
+                    val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(it.userKey))
+                    if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                        UserEntityLocal.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                    }
+                    UserEntityLocal.remarks = ""
+                    UserEntityLocal.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(UserEntityLocal)
+                }
             }
         }
     }

@@ -37,6 +37,7 @@ import com.hyphenate.easeui.widget.presenter.EaseChatImagePresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatLocationPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatRowPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatTextPresenter;
+import com.hyphenate.easeui.widget.presenter.EaseChatTipPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVideoPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVoicePresenter;
 import com.socks.library.KLog;
@@ -272,6 +273,17 @@ public class EaseMessageAdapter extends BaseAdapter {
                 } else {
                     presenter = new EaseChatTextPresenter();
                 }
+//                if ("-1".equals(message.getTo())) {
+//                    KLog.i("判断是提示消息！！！");
+//                    presenter = new EaseChatTipPresenter();
+//                } else {
+//                    KLog.i("判断为不是提示消息");
+//                    if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
+//                        presenter = new EaseChatBigExpressionPresenter();
+//                    } else {
+//                        presenter = new EaseChatTextPresenter();
+//                    }
+//                }
                 break;
             case LOCATION:
                 presenter = new EaseChatLocationPresenter();

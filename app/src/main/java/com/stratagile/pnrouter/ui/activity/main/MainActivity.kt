@@ -193,8 +193,34 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 }
                 243->{//有人被移除群
-                    if(jGroupSysPushRsp.params.userId.equals(userId))//如果是自己
+                    if(jGroupSysPushRsp.params.to.equals(userId))//如果是自己
                     {
+                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
+                        var hasVerify = false
+                        verifyList.forEach {
+                            if (it.gId.equals(jGroupSysPushRsp.params.gId) && it.userId.equals(selfUserId) && it.verifyType == 3) {
+                                //存在
+                                hasVerify = true
+                                it.userId = selfUserId
+                                it.verifyType = 3
+                                AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.update(it)
+                            }
+                        }
+                        if (!hasVerify) {
+                            var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                            var groupVerifyEntity = GroupVerifyEntity()
+                            groupVerifyEntity.verifyType = 3
+                            groupVerifyEntity.from = jGroupSysPushRsp.params.from
+                            groupVerifyEntity.gId = jGroupSysPushRsp.params.gId
+                            groupVerifyEntity.userId = selfUserId
+                            if (groupList != null && groupList.size > 0) {
+                                groupVerifyEntity.gname = groupList[0].gName
+                            }
+                            groupVerifyEntity.fromUserName = jGroupSysPushRsp.params.fromUserName
+                            AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.insert(groupVerifyEntity)
+                        }
+
                         //需要细化处理 ，弹窗告知详情等
                         SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                         if (ConstantValue.isInit) {
@@ -1326,7 +1352,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
             LogUtil.addLog("华为推送 get token: end" + it)
-            ConstantValue.mHuaWeiRegId = "" + it
+//            ConstantValue.mHuaWeiRegId = "" + it
         }
     }
 

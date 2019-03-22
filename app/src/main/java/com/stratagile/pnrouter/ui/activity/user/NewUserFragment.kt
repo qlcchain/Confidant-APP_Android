@@ -27,10 +27,12 @@ import com.stratagile.pnrouter.db.FriendEntity
 import com.stratagile.pnrouter.db.FriendEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
+import com.stratagile.pnrouter.entity.events.SetBadge
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.layout_fragment_recyclerview.*
+import org.greenrobot.eventbus.EventBus
 
 /**
  * @author hzp
@@ -87,6 +89,7 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
     }
 
     fun initData() {
+        EventBus.getDefault().post(SetBadge())
         //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var userIDStr:String = "";

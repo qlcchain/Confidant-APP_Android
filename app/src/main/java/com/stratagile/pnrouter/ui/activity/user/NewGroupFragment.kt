@@ -27,6 +27,7 @@ import com.stratagile.pnrouter.db.GroupVerifyEntity
 import com.stratagile.pnrouter.db.GroupVerifyEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
+import com.stratagile.pnrouter.entity.events.SetBadge
 import com.stratagile.pnrouter.ui.adapter.user.NewGroupMemberAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -60,6 +61,7 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
             initData()
         }
         EventBus.getDefault().post(FriendChange(""))
+        EventBus.getDefault().post(SetBadge())
         opreateGroupVerify = null
     }
 
@@ -100,7 +102,7 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
 
     fun initData() {
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
+        var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.UserId.eq(selfUserId)).list()
         if (newGroupMemberAdapter == null) {
             newGroupMemberAdapter = NewGroupMemberAdapter(verifyList)
             recyclerView.adapter = newGroupMemberAdapter
@@ -123,7 +125,8 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
     fun allowUserJoinGroup(groupVerifyEntity: GroupVerifyEntity) {
         groupVerifyEntity.verifyType = 0
         opreateGroupVerify = groupVerifyEntity
-        var groupVerifyReq = GroupVerifyReq(groupVerifyEntity.from, groupVerifyEntity.to, groupVerifyEntity.aduit, groupVerifyEntity.gId, groupVerifyEntity.gname, 0, groupVerifyEntity.userPubKey)
+        KLog.i(groupVerifyEntity.toString())
+        var groupVerifyReq = GroupVerifyReq(groupVerifyEntity.from, groupVerifyEntity.to, groupVerifyEntity.aduit, groupVerifyEntity.gId, groupVerifyEntity.gname, 0, groupVerifyEntity.userGroupKey)
         var sendgroupVerifyReq = BaseData(groupVerifyReq)
         if(ConstantValue.encryptionType.equals("1"))
         {

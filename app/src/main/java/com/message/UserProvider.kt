@@ -59,6 +59,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         //存在
                         hasVerify = true
                         it.userId = selfUserId
+                        it.userGroupKey = jGroupVerifyPushRsp.params.userGroupKey
                         it.verifyType = 1
                         AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.update(it)
                     }

@@ -164,8 +164,13 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
             if(groupEntity != null)
             {
-                String groupnameSouce = new String(RxEncodeTool.base64Decode(groupEntity.getGName()));
-                holder.name.setText(groupnameSouce);
+                if ("".equals(groupEntity.getRemark())) {
+                    String groupnameSouce = new String(RxEncodeTool.base64Decode(groupEntity.getGName()));
+                    holder.name.setText(groupnameSouce);
+                } else {
+                    String groupnameSouce = new String(RxEncodeTool.base64Decode(groupEntity.getRemark()));
+                    holder.name.setText(groupnameSouce);
+                }
             }
             holder.avatar.setGroupHeadImage();
         } else if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom) {

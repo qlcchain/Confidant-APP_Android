@@ -29,6 +29,10 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.GroupEntity
+import com.stratagile.pnrouter.db.GroupEntityDao
+import com.stratagile.pnrouter.db.GroupVerifyEntity
+import com.stratagile.pnrouter.db.GroupVerifyEntityDao
 import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -99,19 +103,44 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
             }
             243->{//有人被移除群
-                if(jGroupSysPushRsp.params.userId.equals(userId))//如果是自己
+                if(jGroupSysPushRsp.params.to.equals(userId))//如果是自己
                 {
+                    var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
+                    var hasVerify = false
+                    verifyList.forEach {
+                        if (it.gId.equals(jGroupSysPushRsp.params.gId) && it.userId.equals(selfUserId) && it.verifyType == 3) {
+                            //存在
+                            hasVerify = true
+                            it.userId = selfUserId
+                            it.verifyType = 3
+                            AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.update(it)
+                        }
+                    }
+                    if (!hasVerify) {
+                        var groupVerifyEntity = GroupVerifyEntity()
+                        groupVerifyEntity.verifyType = 3
+                        groupVerifyEntity.from = jGroupSysPushRsp.params.from
+                        groupVerifyEntity.gId = jGroupSysPushRsp.params.gId
+                        groupVerifyEntity.userId = selfUserId
+                        groupVerifyEntity.gname = groupEntity!!.gName
+                        groupVerifyEntity.fromUserName = jGroupSysPushRsp.params.fromUserName
+                        AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.insert(groupVerifyEntity)
+                    }
                     //需要细化处理 ，弹窗告知详情等
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
                 }else{//是别人
-
+                    var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
+                    chatFragment?.insertTipMessage(name + " Leave this group chat")
                 }
 
             }
 
         }
     }
+
+
 
     @Inject
     internal lateinit var mPresenter: GroupChatPresenter

@@ -50,6 +50,10 @@ import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.pnrouter.view.CommonDialog;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -83,6 +87,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         KLog.i("onCreate");
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -193,48 +198,25 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                         public void onClick(View view) {
                             UnReadEMMessage conversation = conversationListView.getItem(i);
                             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                            KLog.i("清除和 " + conversation.getEmMessage().getTo() + " 的对话");
-                            if (userId.equals(conversation.getEmMessage().getFrom())) {
-                                KLog.i("自己的id为：" + userId + " 的对话");
-                                LogUtil.addLog("清除和" + conversation.getEmMessage().getTo() + "的对话");
-                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");
+                            if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.Chat) {
+                                KLog.i("清除和 " + conversation.getEmMessage().getTo() + " 的对话");
+                                if (userId.equals(conversation.getEmMessage().getFrom())) {
+                                    KLog.i("自己的id为：" + userId + " 的对话");
+                                    LogUtil.addLog("清除和" + conversation.getEmMessage().getTo() + "的对话");
+                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");
+                                } else {
+                                    KLog.i("自己的id为：" + userId + " 的对话");
+                                    LogUtil.addLog("清除和" + conversation.getEmMessage().getFrom() + "的对话");
+                                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getFrom(), "");
+                                }
                             } else {
-                                KLog.i("自己的id为：" + userId + " 的对话");
-                                LogUtil.addLog("清除和" + conversation.getEmMessage().getFrom() + "的对话");
-                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getFrom(), "");
+                                //需要细化处理 ，弹窗告知详情等
+                                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + conversation.getEmMessage().getTo(), "");//移除临时会话UI
                             }
-                            setUpView();
+                            refresh();
                             commonDialog.cancel();
                         }
                     });
-//                    FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
-//                    floatMenu.inflate(R.menu.conversation_popup_menu);
-//                    int[] loc1=new int[2];
-//                    view.getLocationOnScreen(loc1);
-//                    floatMenu.show(new Point(loc1[0]+200,loc1[1]-100), 0, 0);
-//                    floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
-//                        @Override
-//                        public void onClick(View v, int position) {
-//                            switch (position)
-//                            {
-//                                case 0:
-////                                    String isTop = conversationList.get(position).getExtField();
-////                                    if ("toTop".equals(isTop)) {
-////                                        conversationList.get(position).setExtField("false");
-////                                    } else {
-////                                        conversationList.get(position).setExtField("toTop");
-////                                    }
-//                                    refresh();
-//                                    break;
-//                                case 1:
-//
-//                                    break;
-//
-//                                default:
-//                                    break;
-//                            }
-//                        }
-//                    });
                     return true;
                 }
             });
@@ -278,6 +260,13 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             }
         });
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void groupInfoChange(GroupEntity groupEntity) {
+        UserDataManger.currentGroupData = groupEntity;
+        setUpView();
+    }
+
 
 
     protected EMConnectionListener connectionListener = new EMConnectionListener() {
@@ -583,6 +572,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
 
     @Override
     public void onDestroy() {
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
         EMClient.getInstance().removeConnectionListener(connectionListener);
     }
