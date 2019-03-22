@@ -122,7 +122,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     var statusBarHeight: Int = 0
     var groupEntity : GroupEntity? = null
     var receiveFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
-    var receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+    var receiveToxFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -211,20 +211,14 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             var fileName:String = jPushFileMsgRsp!!.params.fileName;
             val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + fileName
             val files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileName
-            var aesKey = ""
-            if(ConstantValue.encryptionType.equals("1"))
-            {
-                aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.dstKey)
-            }else{
-                aesKey = RxEncodeTool.getAESKey(jPushFileMsgRsp!!.params.dstKey)
-            }
+            var aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.selfKey)
 
             var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dir,aesKey)
             if(code == 1)
             {
-                var fromId = jPushFileMsgRsp!!.params.fromId;
-                var toId = jPushFileMsgRsp!!.params.toId
-                var FileType = jPushFileMsgRsp!!.params.fileType
+                var fromId = jPushFileMsgRsp!!.params.from;
+                var toId = jPushFileMsgRsp!!.params.gId
+                var FileType = jPushFileMsgRsp!!.params.msgType
                 chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType,"")
                 receiveFileDataMap.remove(fileMiName)
             }
@@ -337,7 +331,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey)
             }else{
 
-                //receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
+                var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
+                receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
                 var msgData = PullFileReq(jPushFileMsgRsp.params.gId,userId!!, jPushFileMsgRsp.params.fileName,jPushFileMsgRsp.params.msgId,5,1)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
@@ -523,7 +518,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         toChatUserID = intent.extras!!.getString(EaseConstant.EXTRA_USER_ID)
         groupEntity = intent.extras!!.getParcelable(EaseConstant.EXTRA_CHAT_GROUP)
         receiveFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
-        receiveToxFileDataMap = ConcurrentHashMap<String, JPushFileMsgRsp>()
+        receiveToxFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
         super.onCreate(savedInstanceState)
 
     }
