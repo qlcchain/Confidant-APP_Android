@@ -2330,6 +2330,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
+                    SendFileInfo.setPorperty("0");
                     SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
 
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
