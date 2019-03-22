@@ -209,8 +209,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         if(jPushFileMsgRsp != null)
         {
             var fileName:String = jPushFileMsgRsp!!.params.fileName;
-            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + fileName
-            val files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileName
+            var baseSouceName =  String(Base58.decode(fileName))
+            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + baseSouceName
+            val files_dir = PathUtils.getInstance().filePath.toString() + "/" + baseSouceName
             var aesKey = LibsodiumUtil.DecryptShareKey(jPushFileMsgRsp!!.params.selfKey)
 
             var code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir,files_dir,aesKey)
@@ -219,7 +220,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 var fromId = jPushFileMsgRsp!!.params.from;
                 var toId = jPushFileMsgRsp!!.params.gId
                 var FileType = jPushFileMsgRsp!!.params.msgType
-                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType,"")
+                chatFragment?.receiveFileMessage(baseSouceName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType,"")
                 receiveFileDataMap.remove(fileMiName)
             }
         }else{
@@ -331,8 +332,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey)
             }else{
 
-                var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
-                receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
+                receiveToxFileDataMap.put(jPushFileMsgRsp.params.fileName,jPushFileMsgRsp)
                 var msgData = PullFileReq(jPushFileMsgRsp.params.gId,userId!!, jPushFileMsgRsp.params.fileName,jPushFileMsgRsp.params.msgId,5,1)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
