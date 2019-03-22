@@ -294,6 +294,10 @@ public class ToxCoreJni {
         KLog.i("总共为：" + fileSize);
         KLog.i("fileNum为：" + fileNum);
         int average = fileSize / progressBarMaxSeg;
+        if(average <= 0)
+        {
+            average = 1;
+        }
         String FileFrom = reveiveFileFromAndMsgIDMap.get(fileNum +"");
         if(position == fileSize)
         {
