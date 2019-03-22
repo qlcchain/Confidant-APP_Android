@@ -184,6 +184,7 @@ public abstract class EaseChatRow extends LinearLayout {
                     usernickView.setText("UNKNOW");
                     userAvatarView.setText("UNKNOW");
 
+
                 }
             }
         }

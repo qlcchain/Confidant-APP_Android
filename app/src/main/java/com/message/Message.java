@@ -35,10 +35,11 @@ public class Message {
     private String  FilePath;//文件消息路径
     private String FileInfo;//文件附加信息
     private Long FileSize;//文件大小
-    private String UserKey;//文件加密秘钥
+    private String UserKey;//发送消息者的签名公钥
     private String Nonce;
     private String Sign;
-    private String PriKey;
+    private String UserName;
+    private String PriKey;//文件加密秘钥
     private int unReadCount;
     private  EMMessage.ChatType chatType;
 
@@ -325,6 +326,14 @@ public class Message {
 
     public void setSign(String sign) {
         Sign = sign;
+    }
+
+    public String getUserName() {
+        return UserName;
+    }
+
+    public void setUserName(String userName) {
+        UserName = userName;
     }
 
     public String getPriKey() {

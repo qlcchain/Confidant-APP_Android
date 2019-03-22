@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -82,10 +83,14 @@ import com.stratagile.pnrouter.constant.ConstantValue;
 import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.db.DraftEntity;
 import com.stratagile.pnrouter.db.DraftEntityDao;
+import com.stratagile.pnrouter.db.FriendEntity;
+import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.GroupEntity;
+import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.GroupSendFileDoneReq;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
@@ -100,6 +105,7 @@ import com.stratagile.pnrouter.entity.GroupMsgPullReq;
 import com.stratagile.pnrouter.entity.SendFileInfo;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
+import com.stratagile.pnrouter.entity.UpdateAvatarReq;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
@@ -123,6 +129,7 @@ import com.yanzhenjie.permission.PermissionListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.libsodium.jni.Sodium;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1034,6 +1041,49 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if(Message.getFrom().equals(""))
             {
                 Message.setFrom(userId);
+            }else{
+                if(!Message.getFrom().equals(userId))
+                {
+                    List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(Message.getFrom())).list();
+                    if(userList.size() == 0)//群聊非好友成员数据
+                    {
+                        UserEntity UserEntityLocal = new UserEntity();
+                        UserEntityLocal.setNickName(Message.getUserName());
+                        UserEntityLocal.setUserId(Message.getFrom());
+                        UserEntityLocal.setIndex("");
+                        UserEntityLocal.setSignPublicKey(Message.getUserKey());
+                        UserEntityLocal.setRouteId("");
+                        UserEntityLocal.setRouteName("");
+                        byte[] dst_public_MiKey_Friend = new byte[32];
+                        int crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(Message.getUserKey()));
+                        if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                            UserEntityLocal.setMiPublicKey(RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend));
+                        }
+                        UserEntityLocal.setRemarks("");
+                        UserEntityLocal.setTimestamp(Calendar.getInstance().getTimeInMillis());
+                        AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().insert(UserEntityLocal);
+                    }
+                    List<FriendEntity> friendList = AppConfig.instance.getMDaoMaster().newSession().getFriendEntityDao().queryBuilder().where(FriendEntityDao.Properties.UserId.eq(Message.getFrom())).list();
+                    if(friendList.size() == 0)//群聊非好友成员数据
+                    {
+                        String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(Message.getUserKey()));
+                        String filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath() + "/Avatar/" + fileBase58Name + ".jpg";
+                        String fileMD5 = FileUtil.getFileMD5(new File(filePath));
+                        if(fileMD5 == null)
+                        {
+                            fileMD5 = "";
+                        }
+                        UpdateAvatarReq updateAvatarReq = new UpdateAvatarReq(userId, Message.getFrom(), fileMD5,"UpdateAvatar");
+                        if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(new  BaseData(4, updateAvatarReq));
+                        } else if (ConstantValue.INSTANCE.isToxConnected()) {
+                            BaseData baseData = new BaseData(4, updateAvatarReq);
+                            String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                        }
+                    }
+                }
+
             }
             EMMessage message = null;
             String msgSouce = "";

@@ -743,6 +743,53 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.gId)) {
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if (pushMsgRsp.params.from != userId) {
+                val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
+                if (userList.size == 0)   //群聊非好友成员数据
+                {
+                    val UserEntityLocal = UserEntity()
+                    UserEntityLocal.nickName = pushMsgRsp.params.userName
+                    UserEntityLocal.userId = pushMsgRsp.params.from
+                    UserEntityLocal.index = ""
+                    UserEntityLocal.signPublicKey = pushMsgRsp.params.userKey
+                    UserEntityLocal.routeId = ""
+                    UserEntityLocal.routeName = ""
+                    val dst_public_MiKey_Friend = ByteArray(32)
+                    val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
+                    if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                        UserEntityLocal.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                    }
+                    UserEntityLocal.remarks = ""
+                    UserEntityLocal.timestamp = Calendar.getInstance().timeInMillis
+                    AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(UserEntityLocal)
+                }
+                val friendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
+                if(friendList.size == 0)
+                {
+                    //判断非好友头像是否需要更新
+                    var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
+                    var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                    var fileMD5 = FileUtil.getFileMD5(File(filePath))
+                    if(fileMD5 == null)
+                    {
+                        fileMD5 = ""
+                    }
+                    val updateAvatarReq = UpdateAvatarReq(userId!!, pushMsgRsp.params.from, fileMD5)
+                    if (ConstantValue.isWebsocketConnected) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+                    } else if (ConstantValue.isToxConnected) {
+                        val baseData = BaseData(4, updateAvatarReq)
+                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                        if (ConstantValue.isAntox) {
+                            val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        } else {
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                        }
+                    }
+                }
+            }
             var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(pushMsgRsp.params.gId)).list()
             if(groupList.size > 0)
             {
@@ -765,7 +812,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (!AppConfig.instance.isBackGroud) {
                 defaultMediaPlayer()
             }
-            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
             var msgData = GroupMsgPushRsp(0, userId!!, pushMsgRsp.params.gId, "")
 
             var sendData = BaseData(msgData, pushMsgRsp?.msgid)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
@@ -12,6 +13,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
@@ -27,8 +29,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.GroupEntity
-import com.stratagile.pnrouter.db.GroupEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
@@ -46,6 +47,9 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
+import java.io.File
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 import javax.inject.Inject;
@@ -361,36 +365,6 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
         var messageList: List<Message> = pushMsgRsp.params.payload
         KLog.i("insertMessage:GroupChatActivity"+chatFragment)
-        /*val size = messageList.size
-        var msgIdStr:String = "";
-        for (mesage in messageList)
-        {
-            if(mesage.sender == 1)//对方发的消息
-            {
-                if(mesage.status == 0 || mesage.status == 1)//未读
-                {
-                    msgIdStr += (mesage.msgId.toString() + ",")
-                }
-            }
-
-        }*/
-       /* if(!msgIdStr.equals(""))
-        {
-            val userId = SpUtil.getString(this, ConstantValue.userId, "")
-            var readMsgReq  =  ReadMsgReq(userId!!,pushMsgRsp.params.friendId,msgIdStr)
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,readMsgReq))
-            }else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(2,readMsgReq)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
-            }
-        }*/
         chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
     }
 
@@ -409,6 +383,53 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
             }else{
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+
+        }
+        if (pushMsgRsp.params.from != userId) {
+            val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
+            if (userList.size == 0)   //群聊非好友成员数据
+            {
+                val UserEntityLocal = UserEntity()
+                UserEntityLocal.nickName = pushMsgRsp.params.userName
+                UserEntityLocal.userId = pushMsgRsp.params.from
+                UserEntityLocal.index = ""
+                UserEntityLocal.signPublicKey = pushMsgRsp.params.userKey
+                UserEntityLocal.routeId = ""
+                UserEntityLocal.routeName = ""
+                val dst_public_MiKey_Friend = ByteArray(32)
+                val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
+                if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                    UserEntityLocal.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                }
+                UserEntityLocal.remarks = ""
+                UserEntityLocal.timestamp = Calendar.getInstance().timeInMillis
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(UserEntityLocal)
+            }
+            val friendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
+            if(friendList.size == 0)//判断非好友头像是否需要更新
+            {
+
+                var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
+                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                var fileMD5 = FileUtil.getFileMD5(File(filePath))
+                if(fileMD5 == null)
+                {
+                    fileMD5 = ""
+                }
+                val updateAvatarReq = UpdateAvatarReq(userId!!, pushMsgRsp.params.from, fileMD5)
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+                } else if (ConstantValue.isToxConnected) {
+                    val baseData = BaseData(4, updateAvatarReq)
+                    val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    } else {
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                    }
+                }
             }
 
         }
