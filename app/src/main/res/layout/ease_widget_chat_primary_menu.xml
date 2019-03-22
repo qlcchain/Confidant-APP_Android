@@ -116,8 +116,7 @@
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/btn_send"
-            android:layout_width="0px"
-            android:layout_weight="1"
+            android:layout_width="@dimen/x80"
             android:layout_height="@dimen/x60"
             android:gravity="center"
             android:layout_marginRight="@dimen/x8"

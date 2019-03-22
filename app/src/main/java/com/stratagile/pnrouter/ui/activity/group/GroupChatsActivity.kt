@@ -5,12 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
-import android.view.InflateException
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.*
 import android.widget.TextView
 import com.alibaba.fastjson.JSONObject
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.easeui.EaseConstant
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -23,10 +23,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.GroupEntityDao
 import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.GroupListPullReq
-import com.stratagile.pnrouter.entity.JGroupListPullRsp
-import com.stratagile.pnrouter.entity.JGroupQuitRsp
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AddGroupChange
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupChatsComponent
@@ -35,9 +32,14 @@ import com.stratagile.pnrouter.ui.activity.group.module.GroupChatsModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.GroupChatsPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupAdapter
+import com.stratagile.pnrouter.ui.adapter.user.UserHead
+import com.stratagile.pnrouter.ui.adapter.user.UserItem
+import com.stratagile.pnrouter.utils.Base58
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_group_chats.*
+import kotlinx.android.synthetic.main.ease_search_bar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -97,6 +99,8 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
     var handleGroup: GroupEntity? = null
     var GroupAdapter : GroupAdapter? = null
 
+    var groupList = arrayListOf<GroupEntity>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         LayoutInflaterCompat.setFactory(LayoutInflater.from(this), LayoutInflaterFactory { parent, name, context, attrs ->
             if (name.equals("com.android.internal.view.menu.IconMenuItemView", ignoreCase = true) || name.equals("com.android.internal.view.menu.ActionMenuItemView", ignoreCase = true) || name.equals("android.support.v7.view.menu.ActionMenuItemView", ignoreCase = true)) {
@@ -124,7 +128,42 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
         setContentView(R.layout.activity_group_chats)
         GroupAdapter = GroupAdapter(groupEntityList)
         recyclerView.adapter = GroupAdapter
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.length > 0) {
+                    search_clear.setVisibility(View.VISIBLE)
+                } else {
+                    search_clear.setVisibility(View.INVISIBLE)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+                KLog.i("afterTextChanged " + s.toString())
+                if ("".equals(s.toString())) {
+                    GroupAdapter!!.setNewData(groupEntityList)
+                } else {
+                    GroupAdapter!!.setNewData(searchListByName(s.toString()))
+                }
+            }
+        })
+        search_clear.setOnClickListener(View.OnClickListener {
+            query.getText().clear()
+        })
     }
+
+    fun searchListByName(name: String): MutableList<GroupEntity> {
+        var retList = mutableListOf<GroupEntity>()
+        groupEntityList.forEach {
+            var fileName = String(RxEncodeTool.base64Decode(it.gName))
+            if (fileName.contains(name)) {
+                retList.add(it)
+            }
+        }
+        return retList
+    }
+
     override fun initData() {
         EventBus.getDefault().register(this)
         title.text = getString(R.string.group_chat)

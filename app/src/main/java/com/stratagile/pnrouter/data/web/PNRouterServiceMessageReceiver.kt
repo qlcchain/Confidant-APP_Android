@@ -482,6 +482,14 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val jGroupQuitRsp = gson.fromJson(text, JGroupQuitRsp::class.java)
                     groupDetailBack?.quitGroup(jGroupQuitRsp)
                 }
+                "InviteGroup" -> {
+                    val jGroupInviteDealRsp = gson.fromJson(text, JGroupInviteDealRsp::class.java)
+                    groupDetailBack?.groupInvite(jGroupInviteDealRsp)
+                }
+                "GroupVerifyPush" -> {
+                    val jGroupVerifyPushRsp = gson.fromJson(text, JGroupVerifyPushRsp::class.java)
+                    userControlleCallBack?.groupVerifyPush(jGroupVerifyPushRsp)
+                }
                 "GroupSysPush" -> {
                     val JGroupSysPushRsp = gson.fromJson(text, JGroupSysPushRsp::class.java)
                     groupchatCallBack?.droupSysPushRsp(JGroupSysPushRsp)
@@ -698,6 +706,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
         fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
+        fun groupVerifyPush(jGroupVerifyPushRsp : JGroupVerifyPushRsp)
     }
 
     interface AddFriendDealCallBack {
@@ -822,6 +831,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
         fun groupConfig(jGroupConfigRsp : JGroupConfigRsp)
         fun quitGroup(jGroupQuitRsp : JGroupQuitRsp)
+        fun groupInvite(jGroupInviteDealRsp : JGroupInviteDealRsp)
     }
 }
 

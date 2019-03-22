@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.CompoundButton
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
@@ -46,20 +47,33 @@ import javax.inject.Inject;
  */
 
 class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServiceMessageReceiver.GroupDetailBack {
+    /**
+     * 邀请好友加群返回
+     */
+    override fun groupInvite(jGroupInviteDealRsp: JGroupInviteDealRsp) {
+        pullGourpUsersList()
+    }
+
+    /**
+     * 退出群组返回
+     */
     override fun quitGroup(jGroupQuitRsp: JGroupQuitRsp) {
-        //退出该群的返回
         if (jGroupQuitRsp.params.retCode == 0) {
             EventBus.getDefault().post(jGroupQuitRsp)
             finish()
         }
     }
 
+    /**
+     * 群组配置返回，按type判断是什么操作
+     */
     override fun groupConfig(jGroupConfigRsp: JGroupConfigRsp) {
         if (jGroupConfigRsp.params.retCode == 0) {
             when(jGroupConfigRsp.params.type) {
                 //修改群名称
                 1 -> {
-
+                    groupEntity!!.gName = String(RxEncodeTool.base64Decode(groupName.text.toString()))
+                    EventBus.getDefault().post(groupEntity)
                 }
                 //是否要验证加群
                 2 -> {
@@ -72,8 +86,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 }
                 //踢出某个用户
                 3 -> {
-                    groupEntity!!.gName = String(RxEncodeTool.base64Decode(groupName.text.toString()))
-                    EventBus.getDefault().post(groupEntity)
+                    pullGourpUsersList()
                 }
                 //修改群组别名
                 241 -> {
@@ -87,14 +100,17 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     override fun groupUserPull(jGroupUserPullRsp: JGroupUserPullRsp) {
         KLog.i("拉群成员返回。。")
         runOnUiThread {
-            userList.clear()
-            userList.addAll(jGroupUserPullRsp.params.payload)
-            userList.add(addUser)
-            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            if (groupEntity!!.gAdmin.equals(userId)) {
-                userList.add(reduceUser)
+            if (jGroupUserPullRsp.params.retCode == 0) {
+                userList.clear()
+                userList.addAll(jGroupUserPullRsp.params.payload)
+                select_people_number.text = "" + jGroupUserPullRsp.params.payload.size + " " + getString(R.string.people)
+                userList.add(addUser)
+                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                if (groupEntity!!.gAdmin.equals(userId)) {
+                    userList.add(reduceUser)
+                }
+                groupUserAdapter?.notifyDataSetChanged()
             }
-            groupUserAdapter?.notifyDataSetChanged()
         }
     }
 

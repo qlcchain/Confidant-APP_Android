@@ -3,8 +3,12 @@ package com.stratagile.pnrouter.ui.activity.group
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.pawegio.kandroid.toast
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -24,6 +28,7 @@ import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.activity_remove_group_member.*
+import kotlinx.android.synthetic.main.ease_search_bar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -34,7 +39,7 @@ import javax.inject.Inject;
 /**
  * @author hzp
  * @Package com.stratagile.pnrouter.ui.activity.group
- * @Description: $description
+ * @Description: $description 删除群成员，在群已经建成之后的情况
  * @date 2019/03/21 10:15:05
  */
 
@@ -43,6 +48,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
     @Inject
     internal lateinit var mPresenter: RemoveGroupDetailMemberPresenter
     var contactAdapter1: ContactAdapter? = null
+    var allUserList = arrayListOf<MultiItemEntity>()
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)
@@ -75,6 +81,62 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
             }
         }
         return contactList!!
+    }
+
+    fun updateAdapterData(list: ArrayList<UserEntity>) {
+        var contactMapList = HashMap<String, MyFriend>()
+        for (i in list) {
+
+            if (contactMapList.get(i.signPublicKey) == null) {
+                var myFriend = MyFriend()
+                myFriend.userKey = i.signPublicKey
+                myFriend.userName = i.nickName
+                myFriend.userEntity = i
+                var temp = ArrayList<UserEntity>()
+                temp.add(i)
+                myFriend.routerItemList = temp;
+                contactMapList.put(i.signPublicKey, myFriend)
+            } else {
+                var temp = contactMapList.get(i.signPublicKey)
+                var contactNewList = temp!!.routerItemList
+                contactNewList.add(i)
+            }
+
+        }
+
+        var contactNewList = arrayListOf<MyFriend>()
+        var contactNewListValues = contactMapList.values
+        for (i in contactNewListValues) {
+            contactNewList.add(i)
+        }
+        contactNewList.sortBy {
+            it.userName
+        }
+        val list1 = arrayListOf<MultiItemEntity>()
+        var isIn = false
+        contactNewList.forEach {
+            var userHead = UserHead()
+            userHead.userName = it.userName
+            userHead.userEntity = it.userEntity
+            if (it.routerItemList.size > 1) {
+                it.routerItemList?.forEach {
+                    userHead.addSubItem(UserItem(it))
+                }
+            }
+            list1.add(userHead)
+        }
+        contactAdapter1!!.setNewData(list1)
+    }
+
+
+    fun fiter(key: String, contactList: ArrayList<UserEntity>) {
+        var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
+        for (i in contactList) {
+            if (String(RxEncodeTool.base64Decode(i.nickName)).toLowerCase().contains(key)) {
+                contactListTemp.add(i)
+            }
+        }
+        updateAdapterData(contactListTemp)
     }
 
     override fun initData() {
@@ -149,8 +211,33 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
         }
 
         contactAdapter1 = ContactAdapter(list1)
+        allUserList = list1
         contactAdapter1?.isCheckMode = true
         recyclerView.adapter = contactAdapter1!!
+
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.length > 0) {
+                    search_clear.setVisibility(View.VISIBLE)
+                } else {
+                    search_clear.setVisibility(View.INVISIBLE)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+                KLog.i("afterTextChanged " + s.toString())
+                if ("".equals(s.toString())) {
+                    contactAdapter1!!.setNewData(allUserList)
+                } else {
+                    fiter(s.toString(), toAddList)
+                }
+            }
+        })
+        search_clear.setOnClickListener(View.OnClickListener {
+            query.getText().clear()
+        })
     }
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)

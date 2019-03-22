@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -67,6 +68,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_splash)
+        StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
         var aayy:StringBuilder = StringBuilder()

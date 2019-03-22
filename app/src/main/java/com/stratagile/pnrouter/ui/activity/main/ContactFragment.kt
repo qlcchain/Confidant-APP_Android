@@ -479,7 +479,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             list1.add(userHead)
         }
 
-        if (contactAdapter1 != null && toAddList != null) {
+        if (toAddList != null) {
             //把从外面带过来的数据先设置为已经选中
             KLog.i("添加已经选中的")
             list1.forEach {
@@ -505,7 +505,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         }
         var list2 = arrayListOf<MultiItemEntity>()
         list2.addAll(list1)
-        if (contactAdapter1 != null && toReduceList != null) {
+        if (toReduceList != null) {
             list2.forEach {
                 var userHead = it as UserHead
                 if (userHead.subItems != null && userHead.subItems.size > 0) {

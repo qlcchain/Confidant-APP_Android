@@ -1,11 +1,14 @@
 package com.stratagile.pnrouter.ui.adapter.user;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationSet;
+import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -21,6 +24,7 @@ import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.view.ImageButtonWithText;
+import com.stratagile.pnrouter.view.OptAnimationLoader;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -54,10 +58,10 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
 
     @Override
     protected void convert(BaseViewHolder helper, MultiItemEntity item) {
+        int pos = helper.getAdapterPosition();
         switch (helper.getItemViewType()) {
             case 0:
                 helper.setGone(R.id.checkBox, isCheckMode);
-                int pos = helper.getAdapterPosition();
                 final UserHead lv0 = (UserHead) item;
                 if (isCheckMode) {
                     helper.setVisible(R.id.checkBox, true);
@@ -93,39 +97,27 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                             if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
                                 if (lv0.isExpanded()) {
                                     KLog.i("将要关闭");
-//                                    helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_down);
-                                    collapse(pos);
+                                    collapse(helper.getAdapterPosition());
                                 } else {
                                     KLog.i("将要展开");
-//                                    helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_upper);
-                                    expand(pos);
+                                    expand(helper.getAdapterPosition());
                                 }
                             } else {
                                 lv0.setChecked(!lv0.isChecked());
-//                                getSelectedCount();
-//                                notifyDataSetChanged();
+                                notifyItemChanged(helper.getAdapterPosition(), "checkChange");
                             }
-//                            lv0.setChecked(!lv0.isChecked());
-//                            if (lv0.getSubItems() != null && lv0.getSubItems().size() > 0) {
-//                                for (int j = 0; j < lv0.getSubItems().size(); j++) {
-//                                    lv0.getSubItems().get(j).setChecked(lv0.isChecked());
-//                                }
-//                            }
                             getSelectedCount();
-                            notifyDataSetChanged();
                         } else {
-                            KLog.i("点击头。。" + pos);
+                            KLog.i("点击头。。" + helper.getAdapterPosition());
                             if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
                                 if (lv0.isExpanded()) {
                                     KLog.i("将要关闭");
-//                                    helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_down);
-                                    collapse(pos);
+                                    collapse(helper.getAdapterPosition());
                                 } else {
                                     KLog.i("将要展开");
-//                                    helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_upper);
-                                    expand(pos);
+                                    expand(helper.getAdapterPosition());
                                 }
-                                notifyDataSetChanged();
+//                                notifyDataSetChanged();
                             } else {
                                 int pos = helper.getAdapterPosition();
                                 final UserHead data = (UserHead) getItem(pos);
@@ -152,10 +144,9 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                         if (isCheckMode) {
                             lv1.setChecked(!lv1.isChecked());
                             getSelectedCount();
-                            notifyDataSetChanged();
+                            notifyItemChanged(helper.getAdapterPosition(), "checkChange");
                         } else {
-                            int pos = helper.getAdapterPosition();
-                            final UserItem data = (UserItem) getItem(pos);
+                            final UserItem data = (UserItem) getItem(helper.getAdapterPosition());
                             Intent intent = new Intent(AppConfig.instance, UserInfoActivity.class);
                             intent.putExtra("user", data.getUserEntity());
                             mContext.startActivity(intent);
@@ -180,7 +171,49 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
 
     @Override
     protected void convert(BaseViewHolder helper, MultiItemEntity item, @NonNull List<Object> payloads) {
-        KLog.i("");
+        KLog.i("哈哈哈");
+        if (payloads.get(0) instanceof String) {
+            KLog.i(payloads.get(0));
+            ImageView imageView = helper.getView(R.id.ivArrow);
+            switch (payloads.get(0).toString()) {
+                case "checkChange":
+                    switch (helper.getItemViewType()) {
+                        case 0:
+                            helper.setGone(R.id.checkBox, isCheckMode);
+                            final UserHead lv0 = (UserHead) item;
+                            if (isCheckMode) {
+                                helper.setChecked(R.id.checkBox, lv0.isChecked());
+                            }
+                            break;
+                        case 1:
+                            final UserItem lv1 = (UserItem) item;
+                            helper.setGone(R.id.checkBox, isCheckMode);
+                            if (isCheckMode) {
+                                helper.setChecked(R.id.checkBox, lv1.isChecked());
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "expand":
+                    //展开
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageView,"rotation",0, 180f);
+                    objectAnimator.setDuration(300);
+                    objectAnimator.start();
+//                    imageView.startAnimation(OptAnimationLoader.loadAnimation(mContext, R.anim.anim_contact_list_open));
+                    break;
+                case "collapse":
+                    //关闭
+                    ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(imageView,"rotation",180f, 0);
+                    objectAnimator1.setDuration(300);
+                    objectAnimator1.start();
+//                    imageView.startAnimation(OptAnimationLoader.loadAnimation(mContext, R.anim.anim_contact_list_close));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private void getSelectedCount() {

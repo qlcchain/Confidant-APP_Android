@@ -63,6 +63,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(newGroupEntity)
                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
                     intent.putExtra(EaseConstant.EXTRA_USER_ID, newGroupEntity.gId.toString())
+                    intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, newGroupEntity)
                     UserDataManger.currentGroupData = newGroupEntity
                     startActivity(intent)
                     finish();
@@ -166,7 +167,11 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
             var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-            val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, 0, friendStr, friendKey)
+            var approve = 0
+            if (approveInvitation.isChecked) {
+                approve = 1
+            }
+            val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, approve, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, CreateGroupReq))
             } else if (ConstantValue.isToxConnected) {

@@ -486,6 +486,11 @@ data class GroupInviteDealReq(var Userid : String, var SelfId : String, var GId 
 data class GroupVerifyReq(var From : String, var To : String, var Aduit : String, var GId : String, var GName : String, var Result : Int, var UserKey : String,var Action : String = "GroupVerify")
 
 /**
+ * 服务器给app推送了用户入群的审核，告诉服务器收到了改消息
+ */
+data class GroupVerifyPush(var Retcode: Int, var ToId: String, var Msg: String = "", var Action: String = "GroupVerifyPush")
+
+/**
  * 66.	用户退群
  * (2)	响应（APP->Router）
  */

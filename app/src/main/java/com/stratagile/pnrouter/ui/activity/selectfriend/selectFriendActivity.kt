@@ -75,8 +75,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
         //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
         tvTitle.text = getString(R.string.Contacts)
-        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
-        statusBar.setLayoutParams(llp)
+//        val llp = LinearLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this))
+//        statusBar.setLayoutParams(llp)
     }
 
     override fun initData() {

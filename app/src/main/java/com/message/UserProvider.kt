@@ -27,6 +27,34 @@ import java.io.File
 import java.util.*
 
 class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
+    /**
+     * 加群验证的推送
+     */
+    override fun groupVerifyPush(jGroupVerifyPushRsp: JGroupVerifyPushRsp) {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+        var groupVerifyPush = GroupVerifyPush(0,userId!!)
+        var sendAddFriendPushReq = BaseData(groupVerifyPush,jGroupVerifyPushRsp.msgid)
+        if(ConstantValue.encryptionType.equals("1"))
+        {
+            sendAddFriendPushReq = BaseData(4,groupVerifyPush,jGroupVerifyPushRsp.msgid)
+        }
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendAddFriendPushReq)
+        }else if (ConstantValue.isToxConnected) {
+            var baseData = sendAddFriendPushReq
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            }else{
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+
+
+    }
+
     override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
         if(jUpdateAvatarRsp.params.retCode == 0)
         {

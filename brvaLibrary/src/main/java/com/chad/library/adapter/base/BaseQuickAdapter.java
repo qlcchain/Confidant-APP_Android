@@ -1722,7 +1722,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int parentPos = position + getHeaderLayoutCount();
         if (shouldNotify) {
             if (animate) {
-                notifyItemChanged(parentPos);
+                notifyItemChanged(parentPos, "expand");
                 notifyItemRangeInserted(parentPos + 1, subItemCount);
             } else {
                 notifyDataSetChanged();
@@ -1865,7 +1865,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int parentPos = position + getHeaderLayoutCount();
         if (notify) {
             if (animate) {
-                notifyItemChanged(parentPos);
+                notifyItemChanged(parentPos, "collapse");
                 notifyItemRangeRemoved(parentPos + 1, subItemCount);
             } else {
                 notifyDataSetChanged();
