@@ -16,6 +16,8 @@ public class  ToxFileData {
     private String SrcKey;
     private String DstKey;
     private int fileNumber;
+    private String widthAndHeight;  //图片的宽和高   ",30*40"
+    private String porperty;//0点对点 ，1 群聊
 
     public String getFromId() {
         return FromId;
@@ -103,6 +105,22 @@ public class  ToxFileData {
 
     public void setFileNumber(int fileNumber) {
         this.fileNumber = fileNumber;
+    }
+
+    public String getWidthAndHeight() {
+        return widthAndHeight;
+    }
+
+    public void setWidthAndHeight(String widthAndHeight) {
+        this.widthAndHeight = widthAndHeight;
+    }
+
+    public String getPorperty() {
+        return porperty;
+    }
+
+    public void setPorperty(String porperty) {
+        this.porperty = porperty;
     }
 
     public enum FileType {

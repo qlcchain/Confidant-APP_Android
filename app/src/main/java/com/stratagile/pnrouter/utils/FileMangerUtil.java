@@ -661,7 +661,6 @@ public class FileMangerUtil {
             }
 
         }
-        sendToxFileDataMap.remove(fileNumber+"");
     }
     public static void  onToxReceiveFileFinishedEvent(int fileNumber,String key)
     {

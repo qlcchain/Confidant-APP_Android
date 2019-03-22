@@ -81,6 +81,7 @@ import com.stratagile.tox.toxcore.ToxCoreJni
 import com.tencent.bugly.crashreport.CrashReport
 import com.xiaomi.mipush.sdk.MiPushClient
 import events.ToxFriendStatusEvent
+import events.ToxSendFileFinishedEvent
 import events.ToxSendInfoEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -403,7 +404,37 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
+        var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var key = toxSendFileFinishedEvent.key
+        val toxFileData = ConstantValue.sendToxFileDataMap[fileNumber.toString() + ""]
+        if (toxFileData != null) {//点对点聊天
+            if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileData.toId)) {
+                KLog.i("已经在聊天窗口了，不处理该条数据！")
+            } else {
+                val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
+                val baseData = BaseData(sendToxFileNotice)
+                val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }
+        val toxFileGroupChatData = ConstantValue.sendToxFileInGroupChapDataMap[fileNumber.toString() + ""]
+        if(toxFileGroupChatData != null)//群聊
+        {
+            if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileGroupChatData.toId)) {
+                KLog.i("已经在聊天窗口了，不处理该条数据！")
+            } else {
 
+            }
+        }
+
+    }
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
@@ -1759,7 +1790,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
                         intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, UserDataManger.currentGroupData)
                         startActivity(intent)
-                        }
+                    }
                     KLog.i("进入聊天页面，好友id为：" + userid)
                 })
         if (AppConfig.instance.tempPushMsgList.size != 0) {

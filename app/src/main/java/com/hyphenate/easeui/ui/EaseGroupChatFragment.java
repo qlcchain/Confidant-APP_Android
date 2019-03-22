@@ -87,6 +87,7 @@ import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
+import com.stratagile.pnrouter.entity.GroupSendFileDoneReq;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupQuitRsp;
 import com.stratagile.pnrouter.entity.JGroupSendMsgRsp;
@@ -799,26 +800,41 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     public void onToxFileSendFinished(int fileNumber, String key) {
 
-        ToxFileData toxFileData = ConstantValue.INSTANCE.getSendToxFileDataMap().get(fileNumber + "");
+        ToxFileData toxFileData = ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().get(fileNumber + "");
         if (toxFileData != null) {
             if (!deleteFileMap.get(toxFileData.getFileId() + "")) {
-                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
-                BaseData baseData = new BaseData(sendToxFileNotice);
-                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
-                if (ConstantValue.INSTANCE.isAntox()) {
-                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
-                } else {
-                    ToxCoreJni.getInstance().sendMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
-                }
+                String fileBase58Name = toxFileData.getFileName();
+                String fileMD5 = FileUtil.getFileMD5(new File(toxFileData.getFilePath()));
+                String fileInfo = "";
+                if(toxFileData.getFileType().value() == 1)
+                {
+                     if(toxFileData.getWidthAndHeight() != null)
+                    {
+                        fileInfo = toxFileData.getWidthAndHeight();
+                    }else{
+                        fileInfo = "200.0000000*200.0000000";
+                    }
 
+                }else if(toxFileData.getFileType().value() == 4)
+                {
+                    fileInfo = "200.0000000*200.0000000";
+                }
+                int size = toxFileData.getFileSize();
+                GroupSendFileDoneReq GroupSendFileDoneReq = new GroupSendFileDoneReq(toxFileData.getFromId(),toxFileData.getToId(), fileBase58Name, fileMD5,fileInfo,size,toxFileData.getFileType().value(),toxFileData.getFileId()+"", "GroupSendFileDone");
+                if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(4, GroupSendFileDoneReq));
+                } else if (ConstantValue.INSTANCE.isToxConnected()) {
+                    BaseData baseData = new BaseData(4, GroupSendFileDoneReq);
+                    String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                }
 
             } else {
                 EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(toxFileData.getFileId() + "");
                 KLog.i("tox文件发送成功后取消！");
             }
         }
-        ConstantValue.INSTANCE.getSendToxFileDataMap().remove(fileNumber + "");
+        ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().remove(fileNumber + "");
     }
 
     public void onAgreeReceivwFileStart(int fileNumber, String key, String fileName) {
@@ -2334,11 +2350,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         long fileSize = fileMi.length();
                         String fileMD5 = FileUtil.getFileMD5(fileMi);
                         toxFileData.setFileName(strBase58);
+                        toxFileData.setFilePath(base58files_dir);
                         toxFileData.setFileMD5(fileMD5);
                         toxFileData.setFileSize((int) fileSize);
                         toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_AUDIO);
                         toxFileData.setFileId(uuid);
-                        String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
+                        toxFileData.setPorperty("1");
+                       /* String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
                         byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                         byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                         byte[] SrcKey = new byte[256];
@@ -2354,9 +2372,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             }
                         } catch (Exception e) {
 
-                        }
-                        toxFileData.setSrcKey(new String(SrcKey));
-                        toxFileData.setDstKey(new String(DstKey));
+                        }*/
+                        toxFileData.setSrcKey(UserDataManger.currentGroupData.getUserKey());
+                        toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
                         String fileNumber = "";
                         if (ConstantValue.INSTANCE.isAntox()) {
                             FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
@@ -2366,7 +2384,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             groupIdPre = groupIdPre.substring(0,groupIdPre.indexOf("_"));
                             fileNumber = ToxCoreJni.getInstance().senToxFileInGoupChat(groupIdPre,base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuid+"") + "";
                         }
-                        ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                        ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().put(fileNumber, toxFileData);
                     }
                 }
                 Gson gson = new Gson();
@@ -2490,12 +2508,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
+                                toxFileData.setFilePath(base58files_dir);
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
-                               /* byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                                toxFileData.setWidthAndHeight(widthAndHeight);
+                                toxFileData.setPorperty("1");
+                                /*String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
+                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
@@ -2524,7 +2545,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInGoupChat(groupIdPre,base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuid+"") + "";
                                 }
 
-                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().put(fileNumber, toxFileData);
                             } else {
                                 Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                                 return;
@@ -2637,12 +2658,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
+                                toxFileData.setFilePath(base58files_dir);
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
+                                toxFileData.setPorperty("1");
                                 String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
-                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                                /*byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
@@ -2657,9 +2680,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 } catch (Exception e) {
 
-                                }
-                                toxFileData.setSrcKey(new String(SrcKey));
-                                toxFileData.setDstKey(new String(DstKey));
+                                }*/
+                                toxFileData.setSrcKey(UserDataManger.currentGroupData.getUserKey());
+                                toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
@@ -2670,7 +2693,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     groupIdPre = groupIdPre.substring(0,groupIdPre.indexOf("_"));
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInGoupChat(groupIdPre,base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuid+"") + "";
                                 }
-                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().put(fileNumber, toxFileData);
                             }
                         }
 
@@ -2812,12 +2835,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
+                                toxFileData.setFilePath(base58files_dir);
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
                                 toxFileData.setFileId(uuid);
+                                toxFileData.setPorperty("1");
                                 String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
-                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                                /*byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
@@ -2832,9 +2857,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 } catch (Exception e) {
 
-                                }
-                                toxFileData.setSrcKey(new String(SrcKey));
-                                toxFileData.setDstKey(new String(DstKey));
+                                }*/
+                                toxFileData.setSrcKey(UserDataManger.currentGroupData.getUserKey());
+                                toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
@@ -2846,7 +2871,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInGoupChat(groupIdPre,base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuid+"") + "";
                                 }
 
-                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().put(fileNumber, toxFileData);
                             }
                         }
                         Gson gson = new Gson();
@@ -2999,11 +3024,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 long fileSize = fileMi.length();
                                 String fileMD5 = FileUtil.getFileMD5(fileMi);
                                 toxFileData.setFileName(strBase58);
+                                toxFileData.setFilePath(base58files_dir);
                                 toxFileData.setFileMD5(fileMD5);
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_FILE);
                                 toxFileData.setFileId(uuid);
-                                String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
+                                toxFileData.setPorperty("1");
+                              /*  String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
                                 byte[] SrcKey = new byte[256];
@@ -3019,9 +3046,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     }
                                 } catch (Exception e) {
 
-                                }
-                                toxFileData.setSrcKey(new String(SrcKey));
-                                toxFileData.setDstKey(new String(DstKey));
+                                }*/
+                                toxFileData.setSrcKey(UserDataManger.currentGroupData.getUserKey());
+                                toxFileData.setDstKey(UserDataManger.currentGroupData.getUserKey());
 
                                 String fileNumber = "";
                                 if (ConstantValue.INSTANCE.isAntox()) {
@@ -3033,7 +3060,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     fileNumber = ToxCoreJni.getInstance().senToxFileInGoupChat(groupIdPre,base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64),uuid+"") + "";
                                 }
 
-                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                                ConstantValue.INSTANCE.getSendToxFileInGroupChapDataMap().put(fileNumber, toxFileData);
                             }
 
                         }

@@ -30,7 +30,8 @@ object ConstantValue {
         var selfImageName = "selfImageName"
         var uploadAvatarMsgid = "abc12345678"
         var deleteMsgId = ""
-        var sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>() //tox发送文件列表
+        var sendToxFileDataMap = ConcurrentHashMap<String, ToxFileData>() //点对点tox发送文件列表
+        var sendToxFileInGroupChapDataMap = ConcurrentHashMap<String, ToxFileData>() //群聊tox发送文件列表
         var LOCALVERSIONCODE = "localversioncode"
         var selectFriend = "selectFriend"
         var unlockTime = "unlocktime"

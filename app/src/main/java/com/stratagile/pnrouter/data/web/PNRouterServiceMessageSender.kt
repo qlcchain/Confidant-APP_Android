@@ -878,7 +878,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                     if(ActionResult == 1)
                                     {
                                         val bitmap = BitmapFactory.decodeFile(filePath)
-                                        if(fileInfo != null)
+                                        if(bitmap != null)
                                         {
                                             fileInfo = "" + bitmap.width + ".0000000" + "*" + bitmap.height + ".0000000"
                                         }else{
