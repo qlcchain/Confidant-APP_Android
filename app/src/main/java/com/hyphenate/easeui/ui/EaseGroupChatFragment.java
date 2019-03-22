@@ -287,7 +287,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void groupInfoChange(GroupEntity groupEntity) {
+        UserDataManger.currentGroupData = groupEntity;
         this.groupEntity = groupEntity;
+        setUpView();
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

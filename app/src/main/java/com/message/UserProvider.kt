@@ -9,10 +9,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.FriendEntityDao
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.db.UserEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendAvatarChange
 import com.stratagile.pnrouter.entity.events.FriendChange
@@ -51,8 +48,40 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
-
-
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
+        var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupVerifyPushRsp.params.gId)).list()
+        var hasVerify = false
+        groupList.forEach { group ->
+            if (group.gId.equals(jGroupVerifyPushRsp.params.gId)) {
+                verifyList.forEach {
+                    if (group.gAdmin.equals(selfUserId) && it.to.equals(jGroupVerifyPushRsp.params.to)) {
+                        //存在
+                        hasVerify = true
+                        it.userId = selfUserId
+                        it.verifyType = 1
+                        AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.update(it)
+                    }
+                }
+            }
+        }
+        if (!hasVerify) {
+            var groupVerifyEntity = GroupVerifyEntity()
+            groupVerifyEntity.verifyType = 1
+            groupVerifyEntity.aduit = jGroupVerifyPushRsp.params.aduit
+            groupVerifyEntity.from = jGroupVerifyPushRsp.params.from
+            groupVerifyEntity.to = jGroupVerifyPushRsp.params.to
+            groupVerifyEntity.gId = jGroupVerifyPushRsp.params.gId
+            groupVerifyEntity.fromName = jGroupVerifyPushRsp.params.fromName
+            groupVerifyEntity.userId = selfUserId
+            groupVerifyEntity.gname = jGroupVerifyPushRsp.params.gname
+            groupVerifyEntity.toName = jGroupVerifyPushRsp.params.toName
+            groupVerifyEntity.userGroupKey = jGroupVerifyPushRsp.params.userGroupKey
+            groupVerifyEntity.userPubKey = jGroupVerifyPushRsp.params.userPubKey
+            AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.insert(groupVerifyEntity)
+        }
+        EventBus.getDefault().post(jGroupVerifyPushRsp)
+        refreshFriend("")
     }
 
     override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
@@ -176,6 +205,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     var friendOperateListener : FriendOperateListener? = null
     var addFriendDelListener : AddFriendDelListener? = null
+    var addGroupMemberListener : AddGroupMemberListener? = null
 
     /**
      * APP添加新好友，发送好友请求，等待好友同意
@@ -516,6 +546,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     }
 
     fun refreshFriend(friendId:String) {
+        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll().MutableListToArrayList()
         var newFriendCount = 0
         /*for (i in userList) {
@@ -533,6 +564,12 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 if (j.friendLocalStatus == 3) {
                     newFriendCount++
                 }
+            }
+        }
+        var localGroupMemberList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.loadAll()
+        localGroupMemberList.forEach {
+            if (it.userId.equals(selfUserId) && it.verifyType == 1) {
+                newFriendCount++
             }
         }
         EventBus.getDefault().post(UnReadContactCount(newFriendCount))
@@ -889,6 +926,10 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
     interface AddFriendDelListener {
         fun addFriendDealRsp(retCode : Int)
+    }
+
+    interface AddGroupMemberListener {
+        fun addGroupMemberRsp()
     }
 
 }

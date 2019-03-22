@@ -473,6 +473,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "GroupUserPull" -> {
                     val jGroupUserPullRsp = gson.fromJson(text, JGroupUserPullRsp::class.java)
                     groupDetailBack?.groupUserPull(jGroupUserPullRsp)
+                    groupMemberback?.groupUserPull(jGroupUserPullRsp)
                 }
                 "GroupConfig" -> {
                     val jGroupConfigRsp = gson.fromJson(text, JGroupConfigRsp::class.java)
@@ -485,10 +486,15 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "InviteGroup" -> {
                     val jGroupInviteDealRsp = gson.fromJson(text, JGroupInviteDealRsp::class.java)
                     groupDetailBack?.groupInvite(jGroupInviteDealRsp)
+                    groupMemberback?.groupInvite(jGroupInviteDealRsp)
                 }
                 "GroupVerifyPush" -> {
                     val jGroupVerifyPushRsp = gson.fromJson(text, JGroupVerifyPushRsp::class.java)
                     userControlleCallBack?.groupVerifyPush(jGroupVerifyPushRsp)
+                }
+                "GroupVerify" -> {
+                    val jGroupVerifyRsp = gson.fromJson(text, JGroupVerifyRsp::class.java)
+                    groupMemberOpreateBack?.groupMemberOpreate(jGroupVerifyRsp)
                 }
                 "GroupSysPush" -> {
                     val JGroupSysPushRsp = gson.fromJson(text, JGroupSysPushRsp::class.java)
@@ -555,6 +561,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var groupBack: GroupBack? = null
     var groupListPullBack: GroupListPullBack? = null
     var groupDetailBack : GroupDetailBack? = null
+    var groupMemberback : GroupMemberback? = null
+    var groupMemberOpreateBack : GroupMemberOpreateBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -707,6 +715,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
         fun groupVerifyPush(jGroupVerifyPushRsp : JGroupVerifyPushRsp)
+//        fun groupVerify()
     }
 
     interface AddFriendDealCallBack {
@@ -832,6 +841,15 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun groupConfig(jGroupConfigRsp : JGroupConfigRsp)
         fun quitGroup(jGroupQuitRsp : JGroupQuitRsp)
         fun groupInvite(jGroupInviteDealRsp : JGroupInviteDealRsp)
+    }
+
+    interface GroupMemberback {
+        fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
+        fun groupInvite(jGroupInviteDealRsp : JGroupInviteDealRsp)
+    }
+
+    interface GroupMemberOpreateBack {
+        fun groupMemberOpreate(jGroupVerifyRsp: JGroupVerifyRsp)
     }
 }
 

@@ -22,7 +22,6 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
     override fun convert(helper: BaseViewHolder?, item: UserEntity?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.nickName))
         helper!!.setText(R.id.tvNickName, nickNameSouce)
-        KLog.i(item.toString())
         if(item!!.validationInfo != null)
         {
             var validationInfo = String(RxEncodeTool.base64Decode(item!!.validationInfo))
