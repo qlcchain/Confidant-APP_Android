@@ -86,24 +86,23 @@ import com.stratagile.pnrouter.db.DraftEntityDao;
 import com.stratagile.pnrouter.db.FriendEntity;
 import com.stratagile.pnrouter.db.FriendEntityDao;
 import com.stratagile.pnrouter.db.GroupEntity;
-import com.stratagile.pnrouter.db.GroupEntityDao;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
+import com.stratagile.pnrouter.entity.GroupMsgPullReq;
 import com.stratagile.pnrouter.entity.GroupSendFileDoneReq;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupQuitRsp;
+import com.stratagile.pnrouter.entity.JGroupSendFileDoneRsp;
 import com.stratagile.pnrouter.entity.JGroupSendMsgRsp;
 import com.stratagile.pnrouter.entity.JGroupSysPushRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
 import com.stratagile.pnrouter.entity.JUserInfoPushRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
-import com.stratagile.pnrouter.entity.GroupMsgPullReq;
 import com.stratagile.pnrouter.entity.SendFileInfo;
-import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.UpdateAvatarReq;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
@@ -879,11 +878,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileNameTemp;
                     String fileKey = "";
 
-                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getPriKey());
-                    } else {
-                        //fileKey =  RxEncodeTool.getAESKey(message.getUserKey());
-                    }
+                    fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                     int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dirTemp, fileKey);
                     if (code == 1) {
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -970,7 +965,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
     }
 
-    public void onToxFileSendRsp(JSendToxFileRsp jSendToxFileRsp) {
+    public void onToxFileSendRsp(JGroupSendFileDoneRsp jSendToxFileRsp) {
         if (jSendToxFileRsp.getParams().getRetCode() == 0) {
             String msgId = jSendToxFileRsp.getParams().getFileId() + "";
             String msgServerId = jSendToxFileRsp.getParams().getMsgId() + "";
@@ -1128,11 +1123,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
                             String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if (Message.getSender() == 0) {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
-                            } else {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
-                            }
+                            msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 5, 1, "PullFile");
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
@@ -1165,11 +1156,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
                             String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if (Message.getSender() == 0) {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
-                            } else {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
-                            }
+                            msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 5, 1, "PullFile");
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
@@ -1207,11 +1194,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
                             String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if (Message.getSender() == 0) {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
-                            } else {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
-                            }
+                            msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 5, 1, "PullFile");
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
 
@@ -1243,11 +1226,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
                             String base58Name = Base58.encode(Message.getFileName().getBytes());
                             PullFileReq msgData;
-                            if (Message.getSender() == 0) {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 1, 1, "PullFile");
-                            } else {
-                                msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 2, 1, "PullFile");
-                            }
+                            msgData = new PullFileReq(toChatUserId, userId, base58Name, Message.getMsgId(), 5, 1, "PullFile");
                             BaseData baseData = new BaseData(msgData);
                             String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                             if (ConstantValue.INSTANCE.isAntox()) {
@@ -2566,7 +2545,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight);
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
                                 toxFileData.setPorperty("1");
                                 /*String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());

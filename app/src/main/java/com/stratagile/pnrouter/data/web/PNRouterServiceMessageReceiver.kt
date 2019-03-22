@@ -288,6 +288,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "PullFile" -> {
                     val jToxPullFileRsp = gson.fromJson(text, JToxPullFileRsp::class.java)
                     chatCallBack?.pullFileMsgRsp(jToxPullFileRsp)
+                    groupchatCallBack?.pullGroupFileMsgRsp(jToxPullFileRsp);
                     fileManageBack?.pullFileMsgRsp(jToxPullFileRsp)
                     if (fileManageBack == null) {
                         fileMainManageBack?.pullFileMsgRsp(jToxPullFileRsp)
@@ -501,7 +502,11 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     groupchatCallBack?.droupSysPushRsp(JGroupSysPushRsp)
                     mainInfoBack?.droupSysPushRsp(JGroupSysPushRsp)
                 }
-
+                //发送文件_Tox群消息回馈
+                "GroupSendFileDone" -> {
+                    val JGroupSendFileDoneRsp = gson.fromJson(text, JGroupSendFileDoneRsp::class.java)
+                    groupchatCallBack?.sendGroupToxFileRsp(JGroupSendFileDoneRsp)
+                }
             }
         }
 
@@ -778,7 +783,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
        /* fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)*/
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
-        fun sendGroupToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
+        fun sendGroupToxFileRsp(jSendToxFileRsp: JGroupSendFileDoneRsp)
         fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }

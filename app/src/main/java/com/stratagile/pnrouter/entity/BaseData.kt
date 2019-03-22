@@ -308,7 +308,7 @@ data class LogOutReq(var RouterId :String, var UserId : String, var UserSN : Str
  * 24.	发送文件_Tox消息
  * (2)	响应（APP->Router）
  */
-data class SendToxFileNotice(var FromId :String, var ToId : String, var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int, var FileId : Int, var SrcKey : String, var DstKey : String,  var Action : String = "SendFile")
+data class SendToxFileNotice(var FromId :String, var ToId : String, var FileName : String, var FileMD5 : String, var FileInfo : String, var FileSize : Int, var FileType : Int, var FileId : Int, var SrcKey : String, var DstKey : String,  var Action : String = "SendFile")
 
 /**
  * 12.	向服务器要tox文件

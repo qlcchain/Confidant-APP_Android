@@ -239,9 +239,14 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
                 e.printStackTrace();
             }
         }
-        if (!message.isListened()) {
-            EMClient.getInstance().chatManager().setVoiceMessageListened(message);
+        try {
+            if (message != null && !message.isListened()) {
+                EMClient.getInstance().chatManager().setVoiceMessageListened(message);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     private void playVoice(EMMessage msg) {

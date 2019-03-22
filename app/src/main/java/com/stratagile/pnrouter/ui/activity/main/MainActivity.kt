@@ -413,7 +413,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileData.toId)) {
                 KLog.i("已经在聊天窗口了，不处理该条数据！")
             } else {
-                val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
+                val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5,toxFileData.widthAndHeight, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
                 val baseData = BaseData(sendToxFileNotice)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
@@ -430,7 +430,28 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileGroupChatData.toId)) {
                 KLog.i("已经在聊天窗口了，不处理该条数据！")
             } else {
+                val fileBase58Name = toxFileGroupChatData.getFileName()
+                val fileMD5 = FileUtil.getFileMD5(File(toxFileGroupChatData.getFilePath()))
+                var fileInfo = ""
+                if (toxFileGroupChatData.getFileType().value() == 1) {
+                    if (toxFileGroupChatData.getWidthAndHeight() != null) {
+                        fileInfo = toxFileGroupChatData.getWidthAndHeight()
+                    } else {
+                        fileInfo = "200.0000000*200.0000000"
+                    }
 
+                } else if (toxFileGroupChatData.getFileType().value() == 4) {
+                    fileInfo = "200.0000000*200.0000000"
+                }
+                val size = toxFileGroupChatData.getFileSize()
+                val groupSendFileDone = GroupSendFileDoneReq(toxFileGroupChatData.getFromId(), toxFileGroupChatData.getToId(), fileBase58Name, fileMD5!!, fileInfo, size, toxFileGroupChatData.getFileType().value(), toxFileGroupChatData.getFileId().toString() + "", "GroupSendFileDone")
+                if (ConstantValue.isWebsocketConnected) {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupSendFileDone))
+                } else if (ConstantValue.isToxConnected) {
+                    val baseData = BaseData(4, groupSendFileDone)
+                    val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
 

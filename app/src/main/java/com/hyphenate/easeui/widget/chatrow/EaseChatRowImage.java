@@ -64,6 +64,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
         try {
             String wh = message.getStringAttribute("wh");
             if (wh != null && !"".equals(wh)) {
+                wh = wh.replace(",","");
                 String[] whs = wh.split("\\*");
                 width = Float.valueOf(whs[0]);
                 height = Float.valueOf(whs[1]);
@@ -72,7 +73,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 KLog.i("图片的宽为1：" + width);
                 KLog.i("图片的高为1：" + height);
             }
-        } catch (HyphenateException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         String localUrl = imgBody.getLocalUrl();

@@ -50,6 +50,9 @@ import javax.inject.Inject;
 class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterServiceMessageReceiver.GroupBack {
     override fun createGroup(jCreateGroupRsp: JCreateGroupRsp) {
 
+        runOnUiThread {
+            closeProgressDialog()
+        }
         when (jCreateGroupRsp.params.retCode) {
             0 -> {
                 EventBus.getDefault().post(AddGroupChange())
@@ -189,6 +192,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             if (approveInvitation.isChecked) {
                 approve = 1
             }
+            showProgressDialog(getString(R.string.waiting))
             val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, approve, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {
                 isCreate = true

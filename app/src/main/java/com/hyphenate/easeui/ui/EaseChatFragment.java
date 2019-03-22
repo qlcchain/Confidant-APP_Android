@@ -793,7 +793,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         ToxFileData toxFileData = ConstantValue.INSTANCE.getSendToxFileDataMap().get(fileNumber + "");
         if (toxFileData != null) {
             if (!deleteFileMap.get(toxFileData.getFileId() + "")) {
-                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
+                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(),toxFileData.getWidthAndHeight(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
                 BaseData baseData = new BaseData(sendToxFileNotice);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
@@ -2517,7 +2517,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight);
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
                                 toxFileData.setPorperty("0");
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -2668,7 +2668,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight);
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
                                 toxFileData.setPorperty("0");
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());

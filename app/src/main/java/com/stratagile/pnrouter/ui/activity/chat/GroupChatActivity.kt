@@ -147,7 +147,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         }
     }
 
-    override fun sendGroupToxFileRsp(jSendToxFileRsp: JSendToxFileRsp) {
+    override fun sendGroupToxFileRsp(jSendToxFileRsp: JGroupSendFileDoneRsp) {
         chatFragment?.onToxFileSendRsp(jSendToxFileRsp)
 
     }
@@ -337,9 +337,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey)
             }else{
 
-                var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())
                 //receiveToxFileDataMap.put(base58Name,jPushFileMsgRsp)
-                var msgData = PullFileReq(jPushFileMsgRsp.params.from, jPushFileMsgRsp.params.gId,base58Name,jPushFileMsgRsp.params.msgId,2,1)
+                var msgData = PullFileReq(jPushFileMsgRsp.params.gId,userId!!, jPushFileMsgRsp.params.fileName,jPushFileMsgRsp.params.msgId,5,1)
                 var baseData = BaseData(msgData)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {

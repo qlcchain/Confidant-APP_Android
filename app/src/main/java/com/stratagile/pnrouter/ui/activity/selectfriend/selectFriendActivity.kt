@@ -608,26 +608,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
             finish()
         }
     }
-  /*  @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
-        var fileNumber=  toxSendFileFinishedEvent.fileNumber
-        var key = toxSendFileFinishedEvent.key
-        onToxFileSendFinished(fileNumber,key)
-    }*/
-    /*fun onToxFileSendFinished(fileNumber: Int, key: String) {
-        val toxFileData = ConstantValue.sendToxFileDataMap[fileNumber.toString() + ""]
-        if (toxFileData != null) {
-            val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
-            val baseData = BaseData(sendToxFileNotice)
-            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-            }
-        }
-    }*/
     override fun onDestroy() {
         super.onDestroy()
         //EventBus.getDefault().unregister(this)
