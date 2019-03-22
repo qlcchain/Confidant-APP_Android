@@ -464,6 +464,7 @@
         <activity android:name=".ui.activity.group.GroupInfoActivity" />
         <activity android:name=".ui.activity.group.RemoveGroupDetailMemberActivity" />
         <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" />
+        <activity android:name=".ui.activity.group.GroupMembersActivity" />
     </application>
 
 </manifest>

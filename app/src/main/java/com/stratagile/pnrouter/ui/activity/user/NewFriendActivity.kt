@@ -2,12 +2,17 @@ package com.stratagile.pnrouter.ui.activity.user
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import com.message.UserProvider
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -29,11 +34,21 @@ import com.stratagile.pnrouter.ui.activity.user.module.NewFriendModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.NewFriendPresenter
 import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
 import kotlinx.android.synthetic.main.activity_new_friend.*
+import net.lucode.hackware.magicindicator.ViewPagerHelper
+import net.lucode.hackware.magicindicator.buildins.UIUtil
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import javax.inject.Inject
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
+
+
 
 
 /**
@@ -55,6 +70,7 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View {
     var friendStatus = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        EventBus.getDefault().register(this)
         super.onCreate(savedInstanceState)
     }
 
@@ -94,7 +110,6 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View {
         }
     }
     override fun initData() {
-        EventBus.getDefault().register(this)
         title.text = getString(R.string.new_requests)
         var titles = ArrayList<String>()
         titles.add(getString(R.string.add_contact))
@@ -116,7 +131,42 @@ class NewFriendActivity : BaseActivity(), NewFriendContract.View {
                 return titles.get(position)
             }
         }
-        tabLayout.setupWithViewPager(viewPager)
+        val commonNavigator = CommonNavigator(this)
+        commonNavigator.adapter = object : CommonNavigatorAdapter() {
+
+            override fun getCount(): Int {
+                return if (titles == null) 0 else titles.size
+            }
+
+            override fun getTitleView(context: Context, index: Int): IPagerTitleView {
+                val colorTransitionPagerTitleView = ColorTransitionPagerTitleView(context)
+                colorTransitionPagerTitleView.normalColor = Color.GRAY
+                colorTransitionPagerTitleView.selectedColor = Color.BLACK
+                colorTransitionPagerTitleView.setText(titles.get(index))
+                colorTransitionPagerTitleView.setOnClickListener(object : View.OnClickListener {
+                    override fun onClick(view: View) {
+                        viewPager.setCurrentItem(index)
+                    }
+                })
+                return colorTransitionPagerTitleView
+            }
+
+            override fun getIndicator(context: Context): IPagerIndicator {
+                val indicator = LinePagerIndicator(context)
+                indicator.mode = LinePagerIndicator.MODE_WRAP_CONTENT
+                return indicator
+            }
+        }
+        indicator.setNavigator(commonNavigator)
+        val titleContainer = commonNavigator.titleContainer // must after setNavigator
+        titleContainer.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
+        titleContainer.dividerDrawable = object : ColorDrawable() {
+            override fun getIntrinsicWidth(): Int {
+                return resources.getDimension(R.dimen.x160).toInt()
+            }
+        }
+        ViewPagerHelper.bind(indicator, viewPager);
+//        tabLayout.setupWithViewPager(viewPager)
 //        //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()
 //        var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
 //        var userIDStr:String = "";

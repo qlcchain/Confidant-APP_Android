@@ -76,6 +76,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llGroupMembers"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x25"
         android:background="@color/white"

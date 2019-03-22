@@ -27,7 +27,7 @@ import com.stratagile.pnrouter.ui.activity.group.contract.CreateGroupContract
 import com.stratagile.pnrouter.ui.activity.group.module.CreateGroupModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.CreateGroupPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
-import com.stratagile.pnrouter.ui.adapter.group.GroupMemberAdapter
+import com.stratagile.pnrouter.ui.adapter.group.CreateGroupMemberAdapter
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
@@ -101,7 +101,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
     @Inject
     internal lateinit var mPresenter: CreateGroupPresenter
 
-    var groupMemberAdapter: GroupMemberAdapter? = null
+    var groupMemberAdapter: CreateGroupMemberAdapter? = null
 
     lateinit var addUser: UserEntity
     lateinit var reduceUser: UserEntity
@@ -120,7 +120,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
         reduceUser.userId = "0"
         addUser.userId = "1"
         userList.add(addUser)
-        groupMemberAdapter = GroupMemberAdapter(userList)
+        groupMemberAdapter = CreateGroupMemberAdapter(userList)
         recyclerView.adapter = groupMemberAdapter
         val gridLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         recyclerView.setNestedScrollingEnabled(false)

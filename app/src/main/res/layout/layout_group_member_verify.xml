@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.stratagile.pnrouter.view.ImageButtonWithText
+        android:id="@+id/avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/x25"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="@dimen/x30"
+        android:layout_width="@dimen/x75"
+        android:layout_height="@dimen/x75">
+
+    </com.stratagile.pnrouter.view.ImageButtonWithText>
+
+    <TextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/avatar"
+        android:textSize="15sp"
+        android:textColor="@color/color_2B2B2B"
+        app:layout_constraintTop_toTopOf="@+id/avatar"
+        android:layout_marginLeft="@dimen/x20"
+        android:text="name"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/userName"
+        app:layout_constraintTop_toBottomOf="@+id/userName"
+        android:textSize="11sp"
+        android:textColor="@color/color_7f807f"
+        android:layout_marginTop="@dimen/x10"
+        android:id="@+id/desc"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/userName"
+        app:layout_constraintTop_toBottomOf="@+id/desc"
+        android:layout_marginTop="@dimen/x10"
+        android:textSize="15sp"
+        android:textColor="@color/color_2B2B2B"
+        android:id="@+id/groupName"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/desc2"
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/userName"
+        android:textSize="11sp"
+        android:textColor="@color/color_7f807f"
+        app:layout_constraintTop_toBottomOf="@+id/groupName"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/userName2"
+        android:layout_width="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/userName"
+        android:textSize="14sp"
+        android:textColor="@color/color_2c2c2c"
+        app:layout_constraintTop_toBottomOf="@+id/desc2"
+        android:layout_marginTop="@dimen/x10"
+        android:layout_height="wrap_content" />
+
+
+    <View
+        android:id="@+id/vie1"
+        android:layout_width="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/color_f2f2f2"
+        android:layout_marginTop="@dimen/x10"
+        app:layout_constraintTop_toBottomOf="@+id/userName2"
+        app:layout_constraintLeft_toLeftOf="@+id/userName"
+        android:layout_height="@dimen/x1"/>
+    
+    <TextView
+        android:id="@+id/tvOpreate"
+        android:layout_width="@dimen/x108"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="11sp"
+        android:background="@drawable/main_bg"
+        android:layout_marginTop="@dimen/x46"
+        android:layout_marginRight="@dimen/x17"
+        android:layout_height="@dimen/x42" />
+
+</android.support.constraint.ConstraintLayout>

@@ -15,6 +15,7 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
+import com.message.UserProvider
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -420,11 +421,21 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
 
         }
+        var localGroupMemberList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.loadAll()
+        localGroupMemberList.forEach {
+            if (it.userId.equals(selfUserId) && it.verifyType == 1) {
+                newFriendCount++
+                hasNewFriendRequest = true
+            }
+        }
+
         if (hasNewFriendRequest) {
             new_contact_dot.visibility = View.VISIBLE
+//            UserProvider.getInstance().refreshFriend("")
             EventBus.getDefault().post(UnReadContactCount(newFriendCount))
         } else {
             new_contact_dot.visibility = View.GONE
+//            UserProvider.getInstance().refreshFriend("")
             EventBus.getDefault().post(UnReadContactCount(0))
         }
         for (i in contactList) {

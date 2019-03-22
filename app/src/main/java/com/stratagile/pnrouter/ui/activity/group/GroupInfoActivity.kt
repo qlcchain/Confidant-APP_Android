@@ -7,6 +7,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.CompoundButton
+import android.widget.TextView
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
 import com.pawegio.kandroid.toast
@@ -24,14 +27,16 @@ import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupInfoCompon
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupInfoContract
 import com.stratagile.pnrouter.ui.activity.group.module.GroupInfoModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.GroupInfoPresenter
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import com.stratagile.pnrouter.ui.adapter.group.GroupUserAdapter
-import com.stratagile.pnrouter.utils.LibsodiumUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
+import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import kotlinx.android.synthetic.main.activity_group_info.*
 import kotlinx.android.synthetic.main.fragment_my.*
@@ -61,7 +66,9 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     override fun quitGroup(jGroupQuitRsp: JGroupQuitRsp) {
         if (jGroupQuitRsp.params.retCode == 0) {
             EventBus.getDefault().post(jGroupQuitRsp)
-            finish()
+            runOnUiThread {
+                finish()
+            }
         }
     }
 
@@ -75,6 +82,13 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 1 -> {
                     groupEntity!!.gName = String(RxEncodeTool.base64Decode(groupName.text.toString()))
                     EventBus.getDefault().post(groupEntity)
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.loadAll()
+                    groupList.forEach {
+                        if (it.gId.equals(jGroupConfigRsp.params.gId)) {
+                            it.gName = groupEntity!!.gName
+                            AppConfig.instance.mDaoMaster!!.newSession().update(it)
+                        }
+                    }
                 }
                 //是否要验证加群
                 2 -> {
@@ -98,12 +112,23 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
         }
     }
 
+    var allGroupUser : MutableList<JGroupUserPullRsp.ParamsBean.PayloadBean>? = null
+
     override fun groupUserPull(jGroupUserPullRsp: JGroupUserPullRsp) {
         KLog.i("拉群成员返回。。")
         runOnUiThread {
             if (jGroupUserPullRsp.params.retCode == 0) {
                 userList.clear()
-                userList.addAll(jGroupUserPullRsp.params.payload)
+                if (jGroupUserPullRsp.params.payload.size <= 5) {
+                    userList.addAll(jGroupUserPullRsp.params.payload)
+                } else {
+                    jGroupUserPullRsp.params.payload.forEachIndexed { index, payloadBean ->
+                        if (index <= 4) {
+                            userList.add(payloadBean)
+                        }
+                    }
+                }
+                allGroupUser = jGroupUserPullRsp.params.payload
                 select_people_number.text = "" + jGroupUserPullRsp.params.payload.size + " " + getString(R.string.people)
                 userList.add(addUser)
                 var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -124,6 +149,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     val removeGroupMember = 1
     val editGroupName = 2
     val editGroupAlias = 3
+    val enterGroupMembers = 4
 
     var groupUserAdapter : GroupUserAdapter? = null
 
@@ -160,6 +186,11 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             }
 
         })
+        llGroupMembers.setOnClickListener {
+            var intent1  = Intent(this, GroupMembersActivity::class.java)
+            intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity)
+            startActivityForResult(intent1, enterGroupMembers)
+        }
         title.text = "Group Details"
         if (groupEntity != null) {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -201,11 +232,11 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
         recyclerView.adapter = groupUserAdapter
         tvDismissGroup.setOnClickListener()
         {
-            dismissGroup()
+            showDismissGroupDialog()
         }
         tvLeaveGroup.setOnClickListener()
         {
-            quitGroup()
+            showLeaveGroupDialog()
         }
         llGroupAlias.setOnClickListener {
             val intent = Intent(this, EditNickNameActivity::class.java)
@@ -222,14 +253,14 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             when (groupUserAdapter!!.data[position].toxId) {
                 "0" -> {
                     var list = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
-                    list.addAll(groupUserAdapter!!.data)
-                    startActivityForResult(Intent(this@GroupInfoActivity, RemoveGroupDetailMemberActivity::class.java).putParcelableArrayListExtra("person", list), removeGroupMember)
+                    list.addAll(allGroupUser!!.MutableListToArrayList())
+                    startActivityForResult(Intent(this@GroupInfoActivity, RemoveGroupDetailMemberActivity::class.java).putParcelableArrayListExtra("person", allGroupUser!!.MutableListToArrayList()), removeGroupMember)
                 }
                 "1" -> {
                     //添加好友
                     var list = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
                     list.addAll(groupUserAdapter!!.data)
-                    startActivityForResult(Intent(this@GroupInfoActivity, SelectFriendGroupDetailActivity::class.java).putParcelableArrayListExtra("person", list), addGroupMember)
+                    startActivityForResult(Intent(this@GroupInfoActivity, SelectFriendGroupDetailActivity::class.java).putParcelableArrayListExtra("person", allGroupUser!!.MutableListToArrayList()), addGroupMember)
                 }
             }
         }
@@ -237,7 +268,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
 
     fun pullGourpUsersList() {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        val GroupListPullReq = GroupUserPullReq(userId!!, ConstantValue.currentRouterId, groupEntity!!.gId.toString(), 6, "")
+        val GroupListPullReq = GroupUserPullReq(userId!!, ConstantValue.currentRouterId, groupEntity!!.gId.toString(), 100, "")
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, GroupListPullReq))
         } else if (ConstantValue.isToxConnected) {
@@ -339,6 +370,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      */
     fun modifyGroupName(name : String) {
         val groupQuitReq = ModifyGroupNameReq(userId, groupEntity!!.gId.toString(), String(RxEncodeTool.base64Encode(name)))
+        groupEntity!!.gName = String(RxEncodeTool.base64Encode(name))
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupQuitReq))
         } else if (ConstantValue.isToxConnected) {
@@ -411,7 +443,60 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      * 解散群聊，只有群主才有权限
      */
     fun dismissGroup() {
+        val groupQuitReq = GroupQuitReq(userId, groupEntity!!.gId.toString(), groupEntity!!.gName)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupQuitReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, groupQuitReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        }
+    }
+    var hasBeenFormatDialog : CommonDialog? = null
+    fun showLeaveGroupDialog() {
+        val view = View.inflate(this, R.layout.layout_two_check_notitle_with_content, null)
+        //取消或确定按钮监听事件处l
+        hasBeenFormatDialog = CommonDialog(this)
+        hasBeenFormatDialog?.setCancelable(true)
+        val window = hasBeenFormatDialog?.window
+        val tvContent = view.findViewById<TextView>(R.id.tvContent)
+        val tvRight = view.findViewById<TextView>(R.id.tvRight)
+        tvRight.text = "Leave"
+        val tvLeft = view.findViewById<TextView>(R.id.tvLeft)
+        tvLeft.setOnClickListener {
+            hasBeenFormatDialog?.dismissWithAnimation()
+        }
+        tvRight.setOnClickListener {
+            quitGroup()
+        }
+        tvContent.text = "You are leaving the group, the notice is only visible to the group owner."
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        hasBeenFormatDialog?.setView(view)
+        hasBeenFormatDialog?.show()
+    }
 
+
+    var dismissDialog : CommonDialog? = null
+    fun showDismissGroupDialog() {
+        val view = View.inflate(this, R.layout.layout_two_check_notitle_with_content, null)
+        //取消或确定按钮监听事件处l
+        dismissDialog = CommonDialog(this)
+        dismissDialog?.setCancelable(true)
+        val window = dismissDialog?.window
+        val tvContent = view.findViewById<TextView>(R.id.tvContent)
+        val tvRight = view.findViewById<TextView>(R.id.tvRight)
+        tvRight.text = "Dismiss"
+        val tvLeft = view.findViewById<TextView>(R.id.tvLeft)
+        tvLeft.setOnClickListener {
+            dismissDialog?.dismissWithAnimation()
+        }
+        tvRight.setOnClickListener {
+            dismissGroup()
+        }
+        tvContent.text = "Are you sure you want to dismiss the group?"
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dismissDialog?.setView(view)
+        dismissDialog?.show()
     }
 
 
