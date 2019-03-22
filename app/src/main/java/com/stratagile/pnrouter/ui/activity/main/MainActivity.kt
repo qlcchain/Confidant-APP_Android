@@ -128,7 +128,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 2->{
 
                 }
-                3->{
+                3,4->{
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     val keyMap = SpUtil.getAll(AppConfig.instance)
                     for (key in keyMap.keys) {
@@ -185,17 +185,26 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }
-                4->{
-
-                }
                 241->{
 
                 }
                 242->{
 
                 }
-                243->{
+                243->{//有人被移除群
+                    if(jGroupSysPushRsp.params.userId.equals(userId))//如果是自己
+                    {
+                        //需要细化处理 ，弹窗告知详情等
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                        if (ConstantValue.isInit) {
+                            runOnUiThread {
+                                conversationListFragment?.refresh()
+                            }
+                            ConstantValue.isRefeshed = true
+                        }
+                    }else{//是别人
 
+                    }
                 }
 
             }

@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailA
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import com.stratagile.pnrouter.ui.adapter.group.GroupUserAdapter
+import com.stratagile.pnrouter.utils.LibsodiumUtil
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -256,6 +257,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        var aesKey = LibsodiumUtil.DecryptShareKey(groupEntity!!.userKey)+"0000000000000000"
         if (requestCode == addGroupMember && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 var contactSelectedList: ArrayList<UserEntity> = data.getParcelableArrayListExtra("person")
@@ -264,7 +266,8 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                     var keyString = ""
                     contactSelectedList.forEach {
                         listString += it.userId + ","
-                        keyString += it.signPublicKey + ","
+                        var friendAesMi = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, it.miPublicKey))
+                        keyString += friendAesMi + ","
                     }
                     listString = listString.substring(0, listString.length - 1)
                     keyString = keyString.substring(0, keyString.length - 1)

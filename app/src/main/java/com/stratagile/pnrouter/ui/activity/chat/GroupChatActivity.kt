@@ -94,7 +94,15 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             242->{
 
             }
-            243->{
+            243->{//有人被移除群
+                if(jGroupSysPushRsp.params.userId.equals(userId))//如果是自己
+                {
+                    //需要细化处理 ，弹窗告知详情等
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    finish()
+                }else{//是别人
+
+                }
 
             }
 

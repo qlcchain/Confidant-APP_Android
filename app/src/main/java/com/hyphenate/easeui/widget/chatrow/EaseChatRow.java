@@ -177,9 +177,11 @@ public abstract class EaseChatRow extends LinearLayout {
                     {
                         usernameSouce = new  String(RxEncodeTool.base64Decode(user.get(0).getRemarks()));
                     }
+                    usernickView.setText(usernameSouce);
                     userAvatarView.setText(usernameSouce);
                     EaseUserUtils.setUserAvatar(usernameSouce, userAvatarView,user.get(0).getSignPublicKey());
                 } else {
+                    usernickView.setText("UNKNOW");
                     userAvatarView.setText("UNKNOW");
 
                 }

@@ -71,21 +71,25 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             }
             1 -> {
                 runOnUiThread {
+                    isCreate = false
                     toast(getString(R.string.User_ID_error))
                 }
             }
             2 -> {
                 runOnUiThread {
+                    isCreate = false
                     toast(getString(R.string.Input_parameter_error))
                 }
             }
             3 -> {
                 runOnUiThread {
+                    isCreate = false
                     toast(getString(R.string.upper_limit))
                 }
             }
             else -> {
                 runOnUiThread {
+                    isCreate = false
                     toast(getString(R.string.Other_mistakes))
                 }
 
@@ -102,6 +106,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
     lateinit var addUser: UserEntity
     lateinit var reduceUser: UserEntity
     var userList = arrayListOf<UserEntity>()
+    var isCreate:Boolean = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +114,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
 
     override fun initView() {
         setContentView(R.layout.activity_create_group)
+        isCreate = false
         addUser = UserEntity()
         reduceUser = UserEntity()
         reduceUser.userId = "0"
@@ -150,6 +156,18 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
                 toast(R.string.At_least_one_good_friend)
                 return@setOnClickListener
             }
+            if(isCreate)
+            {
+                toast(R.string.waiting)
+                return@setOnClickListener
+            }
+            Thread(Runnable() {
+                run() {
+
+                    Thread.sleep(2000)
+                    isCreate = false
+                }
+            }).start()
             var friendList = groupMemberAdapter!!.data
             var friendStr = "";
             var friendKey = "";
@@ -173,8 +191,10 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             }
             val CreateGroupReq = CreateGroupReq(userId!!, GroupName, UserKey, approve, friendStr, friendKey)
             if (ConstantValue.isWebsocketConnected) {
+                isCreate = true
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, CreateGroupReq))
             } else if (ConstantValue.isToxConnected) {
+                isCreate = true
                 val baseData = BaseData(4, CreateGroupReq)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
