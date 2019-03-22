@@ -245,6 +245,12 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                 usernameSouce = new String(RxEncodeTool.base64Decode(username));
             }
 
+        }else{
+            if(lastMessage.getEmMessage().getFrom().equals(userId))
+            {
+                String name =  SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                usernameSouce = name;
+            }
         }
         if(chatType.equals("Chat"))
         {

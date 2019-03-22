@@ -874,11 +874,14 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                     val fileBase58Name = Base58.encode(fileName.toByteArray())
                                     val fileMD5 = FileUtil.getFileMD5(File(base58files_dir))
                                     val fileNew = File(base58files_dir)
-                                    var fileInfo = "200.0000000*200.0000000"
+                                    var fileInfo = ""
                                     if(ActionResult == 1)
                                     {
                                         val bitmap = BitmapFactory.decodeFile(filePath)
                                         fileInfo = "" + bitmap.width + ".0000000" + "*" + bitmap.height + ".0000000"
+                                    }else if(ActionResult == 4)
+                                    {
+                                        fileInfo = "200.0000000*200.0000000"
                                     }
                                     val GroupSendFileDoneReq = GroupSendFileDoneReq(userId!!,ToIdResult, fileBase58Name, fileMD5!!,fileInfo,fileNew.length().toInt(),ActionResult,FileIdResult.toString(), "GroupSendFileDone")
                                     if (ConstantValue.isWebsocketConnected) {
