@@ -2080,13 +2080,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
 
     public void insertTipMessage(String tip) {
-        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
-        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        message.setFrom(userId);
-        message.setTo("-1");
-        KLog.i("插入提示消息");
-        conversation.insertMessage(message);
-        easeChatMessageList.refresh();
+//        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
+//        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+//        message.setFrom(userId);
+//        message.setTo("-1");
+//        KLog.i("插入提示消息");
+//        conversation.insertMessage(message);
+//        easeChatMessageList.refresh();
     }
 
     //send message
