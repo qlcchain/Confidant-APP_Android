@@ -262,7 +262,11 @@ public class Message {
         private Type() {
         }
     }
-
+    public static enum SpecialId {
+        Leavethisgroupchat;//有人被提出群聊
+        private SpecialId() {
+        }
+    }
     public void setType() {
         switch (MsgType) {
             case 0:

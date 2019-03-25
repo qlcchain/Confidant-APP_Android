@@ -1,4 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation" >
+
     <string name="app_name">Confidant</string>
     <string name="loading">loading...</string>
     <string name="apploading">loading...</string>
@@ -6,14 +8,15 @@
     <string name="file_">Files</string>
     <string name="contacts">Contacts</string>
     <string name="my">Me</string>
-    <string name="loginScanTips">Click here to scan the router’s QR code.</string>
+    <string name="loginScanTips">Click here to scan the circle’s QR code.</string>
     <string name="Login">Login</string>
     <string name="Username">Username</string>
     <string name="Please_type_your_username_here">Please type your username here</string>
     <string name="Cancel">Cancel</string>
+    <string name="Confirm">Confirm</string>
     <string name="fingerprint_success">Fingerprint recognized.</string>
     <string name="fingerprint_not_recognized">Fingerprint not recognized. Try again.</string>
-    <string name="choose_finger_dialog_title">Use the fingerprint to continue</string>
+    <string name="choose_finger_dialog_title">Use the fingerprint to continue.</string>
     <string name="unlock_wallet">UNLOCK WALLET</string>
     <string name="back_btn">BACK</string>
     <string name="cancel_btn_dialog">Cancel</string>
@@ -22,9 +25,14 @@
     <string name="Fingerprint_init_failed_Try_again">Fingerprint init failed! Try again!</string>
     <string name="No_fingerprints_do_you_want_to_set_them_up">No fingerprints, do you want to set them up?</string>
     <string name="details">Details</string>
+    <string name="Settings">Settings</string>
+    <string name="MyQRCode">My QR Code</string>
+    <string name="Exportaccount">Export account</string>
+
     <string name="help">Help</string>
     <string name="shareApp">Share App</string>
-    <string name="collection">Collection</string>
+    <string name="shareContact">Share Contact</string>
+    <string name="collection">Save</string>
     <string name="routerManagement">Management Circles</string>
     <string name="addRecentStatus">Add to my status</string>
     <string name="qr_code_business_card">Invitation QR Code</string>
@@ -41,10 +49,20 @@
     <string name="Agree">Agree</string>
     <string name="Reject">Reject</string>
     <string name="please_type_your_username">please type your username</string>
+    <string name="please_type_your_password">please type your password</string>
     <string name="save_to_phone_success">save to phone success</string>
     <string name="save_picture">save picture</string>
     <string name="skip">skip</string>
     <string name="save_success">save success</string>
+    <string name="Avatar_Update_Successful">success</string>
+
+    <string name="success">success</string>
+    <string name="Name_not_changed">Name not changed</string>
+    <string name="file_hasnot_changed">file hasn\'t changed</string>
+
+    <string name="fail">fail</string>
+    <string name="Alreadyagoodfriend">Already a good friend</string>
+
     <string name="refuse">Decline</string>
     <string name="accept">Accept</string>
 
@@ -78,6 +96,7 @@
     <string name="delete_voice">Delete voice</string>
     <string name="delete_video">Delete video</string>
     <string name="delete">Delete</string>
+    <string name="Importing_users">Importing users</string>
     <string name="resend">Resend</string>
     <string name="confirm_resend">Confirm to resend？</string>
     <string name="connect_failuer_toast">Please check the network or try again later</string>
@@ -136,6 +155,8 @@
     <string name="diagnose">Diagnose</string>
     <string name="push_nick">IOS offline push nick</string>
     <string name="Current_version">Current version</string>
+    <string name="version">Version:</string>
+    <string name="Build">Build:</string>
     <string name="Not_Set">Not set</string>
     <string name="Upload_the_log">Uploading the log</string>
     <string name="The_new_group_chat">Create new group</string>
@@ -156,8 +177,14 @@
     <string name="user_name">User name</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
+    <string name="LoginAdmin">Log in</string>
+    <string name="Administrator_account">Administrator’s account</string>
+    <string name="Modify_Activation_Code">Modify Activation Code</string>
+    <string name="Modify_Router_Password">Modify node Password</string>
+
     <string name="confirmpassword">Confirm password</string>
     <string name="downwaiting">Downloading the file, please wait a moment</string>
+    <string name="waiting">wait…</string>
     <string name="wait">developing</string>
     <string name="mute">Mute</string>
     <string name="Hands_free">Hands free</string>
@@ -166,7 +193,7 @@
     <string name="unable_to_connect">Unable to connect to the server</string>
     <string name="newchat">Create new group</string>
     <string name="agree">Agree</string>
-    <string name="Group_chat">Group chat</string>
+    <string name="Group_chat">Group Chats</string>
     <string name="chat_room">Chat room</string>
     <string name="voice_and_video_conference">Voice and video conference</string>
     <string name="not_download">Did not download:</string>
@@ -198,6 +225,8 @@
     <string name="sd_card_does_not_exist">"SD card does not exist, can't take pictures"</string>
     <string name="cant_find_pictures">"Can't find pictures"</string>
     <string name="File_does_not_exist">File does not exist</string>
+    <string name="Files_100M">Files should not be greater than 100M</string>
+    <string name="Files_0M">The file has no content</string>
     <string name="The_file_is_not_greater_than_10_m">The file is not greater than 10 m</string>
     <string name="Whether_to_empty_all_chats">Clear all messages?</string>
     <string name="Send_voice_need_sdcard_support">Send voice need sdcard support</string>
@@ -341,6 +370,9 @@
     <string name="dl_cancel">Cancel</string>
     <string name="toast_nick_not_isnull">nick cannot be empty!</string>
     <string name="dl_update_nick">update nickname</string>
+    <string name="dl_update">Update</string>
+    <string name="dl_update_failed">Update failed</string>
+    <string name="dl_update_success">Update success</string>
     <string name="dl_update_photo">update photo</string>
     <string name="dl_waiting">waiting…</string>
     <string name="toast_updatenick_success">update nickname success!</string>
@@ -361,6 +393,10 @@
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
     <string name="setting_">Settings</string>
     <string name="scan_qr_code_to_add_me">Sweep on private messages and add me</string>
+    <string name="scan_qr_code_to_export_account">Scan QR code to export account</string>
+    <string name="erase">Please confirm you would like to erase the data and format the hard disk?</string>
+    <string name="erasechoose">Please choose to agree.</string>
+
     <string name="delete_contact">Delete Contact</string>
     <string name="send_a_message">Send a message</string>
     <string name="adam_graspn">Adam Graspn</string>
@@ -369,23 +405,196 @@
     <string name="private_faith">PP Messenger</string>
     <string name="nomore">No more data</string>
     <string name="recall">withDraw</string>
+    <string name="stop">Stop</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
     <string name="wait_for_verification">Wait for verification</string>
-    <string name="agreed">Agreed</string>
+    <string name="agreed">Accepted</string>
     <string name="Revoke">Revoke</string>
     <string name="next">Next</string>
+    <string name="guest_viewpager_1">Complete ownership of a communication network</string>
+    <string name="guest_viewpager_2">Complete ownership of the data</string>
+    <string name="guest_viewpager_3">Unique ID and complete ownership of the account</string>
     <string name="start">Start</string>
     <string name="withdrawn">The message has been withdrawn</string>
     <string name="copy_success">Copy success</string>
     <string name="continue_">continue</string>
-    <string name="multiple">MultiSelect</string>
+    <string name="multiple">Multiple</string>
     <string name="Contacts">Contacts</string>
     <string name="selected">selected:</string>
     <string name="SELECT_PROFILE">SELECT PROFILE</string>
     <string name="error">error</string>
-    <string name="send_failed">send failed</string>
-    <string name="send_success">send success</string>
+    <string name="successful_connection">Successful connection</string>
+    <string name="connection">Connection</string>
+    <string name="failed_to_connect">Failed to connect</string>
+    <string name="top">top</string>
+    <string name="delete_contact_text">Confirm to delete contact. Please be aware that the chatting history, shared files and contact information will be erased.</string>
+    <string name="QR_Code">QR Code</string>
+    <string name="invitation_code">invitation code</string>
+    <string name="Password">Password(At least 6 characters)</string>
+    <string name="Duplicate_Password">Duplicate Password</string>
+    <string name="Reminder_The_password_cannott_be_retrieved">*Reminder: The password can\'t be retrieved.</string>
+    <string name="IdentifyCode">QLCADMIN</string>
+    <string name="Cannot_be_empty">Cannot be empty</string>
+    <string name="Password_inconsistent">Password inconsistent</string>
+    <string name="senderror">send error</string>
+    <string name="Account_Help_Center">Account Help Center</string>
+    <string name="Press_again">Press again</string>
+    <string name="code_error">code error</string>
+    <string name="Please_connect_to_WiFi">Please connect to WiFi</string>
+    <string name="Unable_to_connect_to_router">Unable to connect to the circle</string>
+
+
+    <string name="Router_QR_Code">Circle QR Code</string>
+    <string name="Router_Alias">Circle Name</string>
+    <string name="Adam_Grason">Adam Grason</string>
+    <string name="User_Management">User Management</string>
+    <string name="Create_user_accounts">Create user accounts</string>
+    <string name="Create_temporary_accounts">Create temporary accounts</string>
+    <string name="create">Create</string>
+
+
+
+    <string name="adduserTips">*The nickname filling is convenient for users to manage, and the invitation code is set to designate users safely.</string>
+    <string name="routerpasswordTips">*Please input the password in the user manual book.</string>
+    <string name="routercodeupdata">*Your activation code must include 8 characters.</string>
+    <string name="routerpasswordupdata">*Your password must include 8 characters.</string>
+
+    <string name="Add_Nickname">Add Nickname</string>
+    <string name="Old_password">Old password</string>
+    <string name="newPassword">New password</string>
+    <string name="upPasswordTips">You are advised to change your activation code on a regular basis to safeguard your privacy.</string>
+
+
+    <string name="Routerpassword">Node Password</string>
+    <string name="Activationcode">Activation code</string>
+    <string name="User_QR_Code">User\'s QR Code</string>
+
+    <string name="Modify_Nickname">Modify nickname</string>
+    <string name="Lnvitation_code">Lnvitation code</string>
+    <string name="Modify">Modify</string>
+
+
+    <string name="Createuseraccounts">Create user accounts</string>
+
+
+
+    <string name="askdelete">Are you sure you want to delete it?</string>
+
+    <string name="Encryptionerror">encryption error</string>
+    <string name="Empty_with_parameters">Empty with parameters</string>
+    <string name="nomorecharacters">No more than 264 characters</string>
+    <string name="needs8">Lnvitation code needs 8 characters.</string>
+    <string name="needs35">at most 35 characters.</string>
+    <string name="fixedtwo">fixed two-dimensional code sharing out, users scan the two-dimensional code can automatically generate a temporary account, login, temporary account does not support recovery, default to a circle to support up to 20 temporary accounts.</string>
+    <string name="temporaryaccounts"> Temporary accounts</string>
+    <string name="logoutfailed">Exit failed, please try again</string>
+    <string name="nofile">file does not exist</string>
+    <string name="acceptanceerror">acceptance error</string>
+    <string name="originalgraph">&#8195;Original graph</string>
+    <string name="DestinationUnreachable">destination unreachable</string>
+    <string name="notFreinds">The other person is not your good friend.</string>
+    <string name="noSelected">Please choose your friends</string>
+    <string name="hasbeensent">has been sent</string>
+    <string name="User_ID_error">User ID error</string>
+
+    <string name="file_error">file error</string>
+    <string name="Other_mistakes">Other mistakes</string>
+
+    <string name="Goals_are_not_achievable">Goals are not achievable</string>
+
+    <string name="Addnickname">nickname</string>
+    <string name="Inputnickname">Input nickname</string>
+    <string name="Permissionerror">Permission error</string>
+    <string name="Validationinformation">Validation information</string>
+    <string name="Send_request">Send request</string>
+    <string name="FriendRequest">Friend Request</string>
+    <string name="CRCerror">CRC error</string>
+    <string name="IDerror">ID error</string>
+    <string name="FileOpeningError">File Opening Error</string>
+    <string name="ExcessiveFileBlockLength">Excessive File Block Length</string>
+    <string name="network_reconnecting">network reconnecting...</string>
+    <string name="codeerror">code error</string>
+    <string name="all_Files">All files</string>
+    <string name="files_sent">Files sent</string>
+    <string name="file_received">Files received</string>
+    <string name="most_recent">Most Recent</string>
+    <string name="open_error">open error</string>
+    <string name="send_to_friend">Send it to Friends</string>
+    <string name="download">Download</string>
+    <string name="other_application_open">Other application open</string>
+    <string name="detailed_information">Details</string>
+    <string name="rename">Rename</string>
+    <string name="arrange_by_name">Arrange by name</string>
+    <string name="arrange_by_time">Arrange by time</string>
+    <string name="arrange_by_size">Arrange by size</string>
+    <string name="arrange_by_contact">Arrange by Contact</string>
+    <string name="upload_photos">Upload Photos</string>
+    <string name="upload_video">Upload Video</string>
+    <string name="upload_document">Upload document</string>
+    <string name="disk_management">Disk Management</string>
+
+    <string name="Documents_already_exist">Documents with the same name already exist,Do you want to continue?</string>
+    <string name="not_enough_space">not enough space</string>
+    <string name="Start_uploading">Start upload</string>
+    <string name="deletsuccess">Delete success</string>
+    <string name="No_authority">No authority</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="Download_failed">Download failed</string>
+    <string name="Download_canceled">Download canceled</string>
+    <string name="Upload_success">Upload success</string>
+    <string name="Download_success">Download success</string>
+    <string name="You_need_to_download">You need to download it before you can view it,Start download</string>
+    <string name="no_download_is_required">Files already exist, no download is required</string>
+    <string name="Start_downloading">Start download</string>
+    <string name="Already_on_the_list">Already on the list</string>
+    <string name="Local_file_does_not_exist">Local file does not exist</string>
+
+    <string name="system_busy">The system is busy. Please check again later.</string>
+    <string name="Used_Sapce">Used Sapce：</string>
+    <string name="storage">storage：</string>
+
+    <string name="configured">configured</string>
+    <string name="notconfigured">not configured</string>
+    <string name="notfound">not found</string>
+
+    <string name="automaticlogin">Automatic login</string>
     <string name="notsupported">This mode is not supported</string>
+    <string name="Configuration_success">Configuration success</string>
+    <string name="rebooting">Rebooting...</string>
+    <string name="your_hard_disk_has_been_n_formatted">Your hard disk has been   formatted</string>
+    <string name="please_reboot_your_router">Please reboot your circle</string>
+    <string name="reboot">Reboot</string>
+    <string name="formatting_in_progress">Formatting in progress...</string>
+    <string name="create_an_account">Create an Account</string>
+    <string name="Create_failure">Create failure</string>
+    <string name="Export_account">Export account</string>
+    <string name="login_no_router">*Scan the invitation QR code to join a Confidant Circle. /n*Scan the QR Code on your Confidant node to launch your Circle.</string>
+    <string name="login_has_router">*Select to re-join a circle or scan to join a new one.</string>
+    <string name="Connecting"> Connecting you to the circle</string>
+    <string name="overwritten">This operation will overwrite the current account. Do you want to continue?</string>
+    <string name="Unlock_Confidant">Unlock Confidant</string>
+    <string name="MessageRetrievalService_background_connection_enabled">Background connection enabled</string>
+    <string name="Other_devices">Other devices logged into the account</string>
+    <string name="System_Upgrade">System Upgrade, Forced Exit</string>
+    <string name="other_circle">Other circle</string>
+    <string name="internet_unavailable">internet unavailable</string>
+    <string name="login_">Login...</string>
+    <string name="your_username_will_be_visible_to_all_your_confidant_contacts">Your username will be visible to all your Confidant contacts</string>
+    <string name="set_a_username">Set a Username</string>
+    <string name="password_management">Password Management</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="confirm_modification">Confirm Modification</string>
+    <string name="two_password_different">Two passwords are different</string>
+    <string name="new_requests">New Requests</string>
+    <string name="create_a_group">Create a Group</string>
+    <string name="person">person</string>
+    <string name="create_">Create</string>
+    <string name="select_resource_error">select resource error</string>
+    <string name="Name_cannot_be_empty">Name cannot be empty</string>
+    <string name="At_least_one_good_friend">At least one good friend</string>
+    <string name="Input_parameter_error">Input parameter error</string>
+    <string name="upper_limit">The group has reached the upper limit</string>
+
 
 </resources>

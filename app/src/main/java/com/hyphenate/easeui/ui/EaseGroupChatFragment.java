@@ -2058,14 +2058,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
 
-    public void insertTipMessage(String tip) {
-//        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
-//        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-//        message.setFrom(userId);
-//        message.setTo("-1");
-//        KLog.i("插入提示消息");
-//        conversation.insertMessage(message);
-//        easeChatMessageList.refresh();
+    public void insertTipMessage(String from,String tip) {
+        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setMsgId(Message.SpecialId.Leavethisgroupchat.toString());//特殊消息处理，如果要增加，搜索一下这个id，同步增加
+        message.setFrom(from);
+        message.setTo(toChatUserId);
+        KLog.i("插入提示消息");
+        sendMessageTo(message);
     }
 
     //send message

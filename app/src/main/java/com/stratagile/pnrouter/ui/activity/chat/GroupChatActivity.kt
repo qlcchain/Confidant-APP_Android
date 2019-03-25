@@ -132,7 +132,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     finish()
                 }else{//是别人
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                    chatFragment?.insertTipMessage(name + " Leave this group chat")
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.Leave_this_group_chat))
                 }
 
             }

@@ -404,7 +404,7 @@
     <string name="chats">Chats</string>
     <string name="private_faith">PP Messenger</string>
     <string name="nomore">No more data</string>
-    <string name="recall">Recall</string>
+    <string name="recall">withDraw</string>
     <string name="stop">Stop</string>
     <string name="rejected">Rejected</string>
     <string name="deleted">Deleted</string>
@@ -595,6 +595,6 @@
     <string name="At_least_one_good_friend">At least one good friend</string>
     <string name="Input_parameter_error">Input parameter error</string>
     <string name="upper_limit">The group has reached the upper limit</string>
-
+    <string name="Leave_this_group_chat">Leave this group chat</string>
 
 </resources>

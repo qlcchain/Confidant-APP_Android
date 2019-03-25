@@ -40,6 +40,7 @@ import com.hyphenate.easeui.widget.presenter.EaseChatTextPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatTipPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVideoPresenter;
 import com.hyphenate.easeui.widget.presenter.EaseChatVoicePresenter;
+import com.message.Message;
 import com.socks.library.KLog;
 
 public class EaseMessageAdapter extends BaseAdapter {
@@ -268,22 +269,23 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         switch (message.getType()) {
             case TXT:
+                String msg = ((EMTextMessageBody) message.getBody()).getMessage();
                 if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
                     presenter = new EaseChatBigExpressionPresenter();
                 } else {
                     presenter = new EaseChatTextPresenter();
                 }
-//                if ("-1".equals(message.getTo())) {
-//                    KLog.i("判断是提示消息！！！");
-//                    presenter = new EaseChatTipPresenter();
-//                } else {
-//                    KLog.i("判断为不是提示消息");
-//                    if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
-//                        presenter = new EaseChatBigExpressionPresenter();
-//                    } else {
-//                        presenter = new EaseChatTextPresenter();
-//                    }
-//                }
+                if (Message.SpecialId.Leavethisgroupchat.toString().equals(message.getMsgId())) {
+                    KLog.i("判断是提示消息！！！");
+                    presenter = new EaseChatTipPresenter();
+                } else {
+                    KLog.i("判断为不是提示消息");
+                    if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
+                        presenter = new EaseChatBigExpressionPresenter();
+                    } else {
+                        presenter = new EaseChatTextPresenter();
+                    }
+                }
                 break;
             case LOCATION:
                 presenter = new EaseChatLocationPresenter();
@@ -314,7 +316,7 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         EaseChatRowPresenter presenter = null;
 
-        if (convertView == null) {
+        if (convertView == null || message.getMsgId().equals(Message.SpecialId.Leavethisgroupchat.toString())) {
             presenter = createChatRowPresenter(message, position);
             convertView = presenter.createChatRow(context, message, position, this);
             convertView.setTag(presenter);

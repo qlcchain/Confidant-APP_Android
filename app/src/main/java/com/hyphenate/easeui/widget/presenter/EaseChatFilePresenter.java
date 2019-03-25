@@ -23,6 +23,7 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.GroupDelMsgReq;
@@ -106,7 +107,13 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             }else{
                 if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                 {
-                    floatMenu.inflate(R.menu.popup_menu_file);
+                    if(UserDataManger.currentGroupData.getGAdmin().equals(userId))//如果是群管理员
+                    {
+                        floatMenu.inflate(R.menu.popup_menu_file);
+                    }else{
+                        floatMenu.inflate(R.menu.friendpopup_menu_file);
+                    }
+
                 }else{
                     floatMenu.inflate(R.menu.friendpopup_menu_file);
                 }
