@@ -595,6 +595,12 @@
     <string name="At_least_one_good_friend">At least one good friend</string>
     <string name="Input_parameter_error">Input parameter error</string>
     <string name="upper_limit">The group has reached the upper limit</string>
-    <string name="Leave_this_group_chat">Leave this group chat</string>
 
+
+    <string name="Removed_by_group_owner">removed by group owner</string>
+    <string name="Leave_this_group_chat">leave this group chat</string>
+    <string name="message_was_withdrawn">message was withdrawn</string>
+    <string name="message_was_withdrawn_by_Administrator">message was withdrawn by administrator</string>
+    <string name="modified_the_group_name">modified the group name to</string>
+    <string name="join">join</string>
 </resources>

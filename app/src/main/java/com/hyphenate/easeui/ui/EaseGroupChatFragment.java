@@ -2058,12 +2058,18 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
 
-    public void insertTipMessage(String from,String tip) {
+    /**
+     *
+     * @param from 谁操作的
+     * @param tip 系统提示内容
+     * @param msgId 特殊消息处理，如果要增加，搜索一下这个id，同步增加
+     */
+    public void insertTipMessage(String from,String tip,String msgId) {
         EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         message.setDirection(EMMessage.Direct.RECEIVE);
-        message.setMsgId(Message.SpecialId.Leavethisgroupchat.toString());//特殊消息处理，如果要增加，搜索一下这个id，同步增加
+        message.setMsgId(msgId);
         message.setFrom(from);
         message.setTo(toChatUserId);
         KLog.i("插入提示消息");
@@ -3115,42 +3121,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         }).start();
     }
-
-    /**
-     * 接受文字和表情消息
-     *
-     * @param jPushMsgRsp
-     */
-    public void receiveTxtMessage(JPushMsgRsp jPushMsgRsp) {
-        String msgSouce = RxEncodeTool.RestoreMessage(jPushMsgRsp.getParams().getDstKey(), jPushMsgRsp.getParams().getMsg());
-        if (msgSouce != null && !msgSouce.equals("")) {
-            jPushMsgRsp.getParams().setMsg(msgSouce);
-        }
-        EMMessage message = EMMessage.createTxtSendMessage(jPushMsgRsp.getParams().getMsg(), toChatUserId);
-        message.setDirection(EMMessage.Direct.RECEIVE);
-        message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
-        message.setFrom(jPushMsgRsp.getParams().getFromId());
-        message.setTo(jPushMsgRsp.getParams().getToId());
-
-        Gson gson = new Gson();
-        Message Message = new Message();
-        Message.setMsg(jPushMsgRsp.getParams().getMsg());
-        Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
-        Message.setFrom(jPushMsgRsp.getParams().getFromId());
-        Message.setTo(jPushMsgRsp.getParams().getToId());
-        Message.setTimeStamp(System.currentTimeMillis() / 1000);
-        Message.setUnReadCount(0);
-        Message.setChatType(ChatType.GroupChat);
-        String baseDataJson = gson.toJson(Message);
-        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-        if (Message.getSender() == 0) {
-            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
-        } else {
-            SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
-        }
-        sendMessageTo(message);
-    }
-
     /**
      * 接受文字和表情消息V3
      *
@@ -3169,14 +3139,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             message.setDirection(EMMessage.Direct.RECEIVE);
             message.setMsgId(jPushMsgRsp.getParams().getMsgId() + "");
             message.setFrom(jPushMsgRsp.getParams().getFrom());
-            message.setTo(jPushMsgRsp.getParams().getTo());
+            message.setTo(jPushMsgRsp.getParams().getGId());
 
             Gson gson = new Gson();
             Message Message = new Message();
             Message.setMsg(jPushMsgRsp.getParams().getMsg());
             Message.setMsgId(jPushMsgRsp.getParams().getMsgId());
             Message.setFrom(jPushMsgRsp.getParams().getFrom());
-            Message.setTo(jPushMsgRsp.getParams().getTo());
+            Message.setTo(jPushMsgRsp.getParams().getGId());
             Message.setTimeStamp(System.currentTimeMillis() / 1000);
             Message.setUnReadCount(0);
             Message.setChatType(ChatType.GroupChat);

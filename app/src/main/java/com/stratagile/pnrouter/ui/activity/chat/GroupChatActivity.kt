@@ -48,6 +48,7 @@ import events.ToxChatReceiveFileNoticeEvent
 import events.ToxSendFileFinishedEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.android.synthetic.main.activity_group_info.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -84,22 +85,93 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
         when(jGroupSysPushRsp.params.type){
 
-            1->{
-
+            1->{//群名称修改
+                var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                if(groupList.size > 0)
+                {
+                    var GroupLocal = groupList.get(0)
+                    GroupLocal.gName = jGroupSysPushRsp.params.name
+                    AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+                    EventBus.getDefault().post(GroupLocal)
+                    var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
+                    var groupName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.name))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.modified_the_group_name)+" "+groupName,Message.SpecialId.RenameGroup.toString())
+                }
             }
-            2->{
+            2->{//群审核权限变更
 
             }
             3->{
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
+                var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
+                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),Message.SpecialId.MessageWasWithdrawn.toString())
             }
             4->{
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
+                var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
+                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),Message.SpecialId.MessageWasWithdrawnByAdmin.toString())
             }
             241->{
+               /* if (jGroupSysPushRsp.params.to != userId) {
+                    val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(jGroupSysPushRsp.params.to)).list()
+                    if (userList.size == 0)   //群聊非好友成员数据
+                    {
+                        val UserEntityLocal = UserEntity()
+                        UserEntityLocal.nickName = jGroupSysPushRsp.params.toUserName
+                        UserEntityLocal.userId = jGroupSysPushRsp.params.to
+                        UserEntityLocal.index = ""
+                        //UserEntityLocal.signPublicKey = jGroupSysPushRsp.params.userKey
+                        UserEntityLocal.routeId = ""
+                        UserEntityLocal.routeName = ""
+                        val dst_public_MiKey_Friend = ByteArray(32)
+                        val crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(jGroupSysPushRsp.params.userKey))
+                        if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                            UserEntityLocal.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                        }
+                        UserEntityLocal.remarks = ""
+                        UserEntityLocal.timestamp = Calendar.getInstance().timeInMillis
+                        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(UserEntityLocal)
+                    }
+                    val friendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(jGroupSysPushRsp.params.to)).list()
+                    if(friendList.size == 0)//判断非好友头像是否需要更新
+                    {
 
+                        var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(jGroupSysPushRsp.params.userKey))
+                        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                        var fileMD5 = FileUtil.getFileMD5(File(filePath))
+                        if(fileMD5 == null)
+                        {
+                            fileMD5 = ""
+                        }
+                        val updateAvatarReq = UpdateAvatarReq(userId!!, jGroupSysPushRsp.params.from, fileMD5)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+                        } else if (ConstantValue.isToxConnected) {
+                            val baseData = BaseData(4, updateAvatarReq)
+                            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            } else {
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+                        }
+                    }
+
+                }*/
+                var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
+                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
             }
             242->{
+                if(jGroupSysPushRsp.params.from.equals(userId))//如果是自己
+                {
+                    //需要细化处理 ，弹窗告知详情等
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    finish()
+                }else{
+                    var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.Leave_this_group_chat),Message.SpecialId.Leavethisgroupchat.toString())
+                }
 
             }
             243->{//有人被移除群
@@ -131,8 +203,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
                 }else{//是别人
-                    var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.Leave_this_group_chat))
+                    var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.Removed_by_group_owner),Message.SpecialId.Removethisgroupchat.toString())
                 }
 
             }

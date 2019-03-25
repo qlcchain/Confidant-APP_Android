@@ -1,7 +1,5 @@
 package com.stratagile.pnrouter.entity;
 
-import com.google.gson.annotations.SerializedName;
-
 public class JGroupSysPushRsp extends BaseEntity{
 
 
@@ -56,6 +54,8 @@ public class JGroupSysPushRsp extends BaseEntity{
 
         private String From;
         private String FromUserName;
+        private String ToUserName;
+        private String Name;
         private String To;
 
         public String getAction() {
@@ -112,6 +112,22 @@ public class JGroupSysPushRsp extends BaseEntity{
 
         public void setFromUserName(String FromUserName) {
             this.FromUserName = FromUserName;
+        }
+
+        public String getName() {
+            return Name;
+        }
+
+        public void setName(String name) {
+            this.Name = name;
+        }
+
+        public String getToUserName() {
+            return ToUserName;
+        }
+
+        public void setToUserName(String toUserName) {
+            ToUserName = toUserName;
         }
     }
 }

@@ -115,6 +115,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 //修改群组别名
                 241 -> {
                     groupEntity!!.remark = String(RxEncodeTool.base64Encode(tvGroupAlias.text.toString()))
+                    AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(groupEntity)
                     EventBus.getDefault().post(groupEntity)
                 }
             }

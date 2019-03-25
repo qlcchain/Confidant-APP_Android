@@ -263,7 +263,13 @@ public class Message {
         }
     }
     public static enum SpecialId {
-        Leavethisgroupchat;//有人被提出群聊
+        RenameGroup,//群名字修改
+        GroupAuditing,//群审核权限变更
+        MessageWasWithdrawn,//撤回某条消息
+        MessageWasWithdrawnByAdmin,//群主删除某条消息
+        NewUser,//新用户入群
+        Leavethisgroupchat,//有用户退群
+        Removethisgroupchat;//有用户被踢出群
         private SpecialId() {
         }
     }

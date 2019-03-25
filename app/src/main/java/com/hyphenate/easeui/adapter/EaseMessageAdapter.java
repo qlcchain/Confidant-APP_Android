@@ -275,7 +275,8 @@ public class EaseMessageAdapter extends BaseAdapter {
                 } else {
                     presenter = new EaseChatTextPresenter();
                 }
-                if (Message.SpecialId.Leavethisgroupchat.toString().equals(message.getMsgId())) {
+                //下面if 是对群系统消息的特殊处理，因为ui提示不一样
+                if (message.getMsgId().equals(Message.SpecialId.RenameGroup.toString())|| message.getMsgId().equals(Message.SpecialId.GroupAuditing.toString())|| message.getMsgId().equals(Message.SpecialId.MessageWasWithdrawn.toString())|| message.getMsgId().equals(Message.SpecialId.MessageWasWithdrawnByAdmin.toString())|| message.getMsgId().equals(Message.SpecialId.NewUser.toString())|| message.getMsgId().equals(Message.SpecialId.Leavethisgroupchat.toString())|| message.getMsgId().equals(Message.SpecialId.Removethisgroupchat.toString())) {
                     KLog.i("判断是提示消息！！！");
                     presenter = new EaseChatTipPresenter();
                 } else {
@@ -316,7 +317,7 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         EaseChatRowPresenter presenter = null;
 
-        if (convertView == null || message.getMsgId().equals(Message.SpecialId.Leavethisgroupchat.toString())) {
+        if (convertView == null || message.getMsgId().equals(Message.SpecialId.RenameGroup.toString())|| message.getMsgId().equals(Message.SpecialId.GroupAuditing.toString())|| message.getMsgId().equals(Message.SpecialId.MessageWasWithdrawn.toString())|| message.getMsgId().equals(Message.SpecialId.MessageWasWithdrawnByAdmin.toString())|| message.getMsgId().equals(Message.SpecialId.NewUser.toString())|| message.getMsgId().equals(Message.SpecialId.Leavethisgroupchat.toString())|| message.getMsgId().equals(Message.SpecialId.Removethisgroupchat.toString())) {
             presenter = createChatRowPresenter(message, position);
             convertView = presenter.createChatRow(context, message, position, this);
             convertView.setTag(presenter);

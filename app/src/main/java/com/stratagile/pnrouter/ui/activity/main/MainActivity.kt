@@ -893,7 +893,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         message.setDirection(EMMessage.Direct.RECEIVE)
                         message.msgId = "" + pushMsgRsp?.params.msgId
                         message.from = pushMsgRsp.params.from
-                        message.to = pushMsgRsp.params.to
+                        message.to = pushMsgRsp.params.gId
                         message.isUnread = true
                         message.isAcked = true
                         message.setStatus(EMMessage.Status.SUCCESS)
@@ -903,7 +903,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         Message.setMsg(msgSouce)
                         Message.setMsgId(pushMsgRsp.getParams().getMsgId())
                         Message.setFrom(pushMsgRsp.getParams().from)
-                        Message.setTo(pushMsgRsp.getParams().to)
+                        Message.setTo(pushMsgRsp.getParams().gId)
                         Message.msgType = 0
                         Message.sender = 1
                         Message.status = 1

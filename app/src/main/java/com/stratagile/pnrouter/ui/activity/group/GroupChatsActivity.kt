@@ -74,6 +74,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
                         GroupLocal.remark = item.remark
                         GroupLocal.gId = item.gId
                         GroupLocal.gAdmin = item.gAdmin
+                        GroupLocal.gName = item.gName
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
                     }else{
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
