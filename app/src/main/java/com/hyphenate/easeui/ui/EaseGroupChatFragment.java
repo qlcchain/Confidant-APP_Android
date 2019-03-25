@@ -1276,7 +1276,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStamp());
+            message.setMsgTime(Message.getTimeStamp()*1000);
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }

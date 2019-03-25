@@ -481,7 +481,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                     }
                                 }
 
-                                message.setMsgTime(Message.getTimeStamp());
+                                message.setMsgTime(Message.getTimeStamp()*1000);
                                 message.setMsgId(Message.getMsgId() + "");
                                 if(Message.getChatType() != null)
                                 {
