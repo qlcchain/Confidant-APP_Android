@@ -597,10 +597,13 @@
     <string name="upper_limit">The group has reached the upper limit</string>
 
 
-    <string name="Removed_by_group_owner">removed by group owner</string>
-    <string name="Leave_this_group_chat">leave this group chat</string>
+    <string name="removed">removed</string>
+    <string name="Removed_by_group_owner">from the group</string>
+    <string name="Leave_this_group_chat">left the group</string>
     <string name="message_was_withdrawn">message was withdrawn</string>
     <string name="message_was_withdrawn_by_Administrator">message was withdrawn by administrator</string>
     <string name="modified_the_group_name">modified the group name to</string>
-    <string name="join">join</string>
+    <string name="invited">invited</string>
+    <string name="you">you</string>
+    <string name="join">to the group</string>
 </resources>

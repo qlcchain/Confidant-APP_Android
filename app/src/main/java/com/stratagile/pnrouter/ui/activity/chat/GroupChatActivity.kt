@@ -159,8 +159,15 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     }
 
                 }*/
+                var adminName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
+                if (jGroupSysPushRsp.params.to != userId)
+                {
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+name +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
+                }else{
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+getString(R.string.you) +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
+                }
+
             }
             242->{
                 if(jGroupSysPushRsp.params.from.equals(userId))//如果是自己
@@ -203,8 +210,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
                 }else{//是别人
+                    var adminName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.Removed_by_group_owner),Message.SpecialId.Removethisgroupchat.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner),Message.SpecialId.Removethisgroupchat.toString())
                 }
 
             }

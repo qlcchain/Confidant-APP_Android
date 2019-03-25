@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
@@ -133,7 +134,10 @@ import org.libsodium.jni.Sodium;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -1012,7 +1016,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         ArrayList<EMMessage> messages = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
+        {
             Message Message = messageList.get(i);
             if (Message.getFrom().equals("")) {
                 Message.setFrom(userId);
@@ -1280,7 +1285,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
         KLog.i("开始插入没有发送成功的文本消息查询：userId：" + userId + " friendId:" + toChatUserId + " messageEntityList:" + messageEntityList);
-        /*if (messageEntityList != null) {
+        if (messageEntityList != null) {
             Collections.sort(messageEntityList, new Comparator<MessageEntity>() {
                 @Override
                 public int compare(MessageEntity lhs, MessageEntity rhs) {
@@ -1384,7 +1389,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
 
             }
-        }*/
+        }
     }
 
     public void removeLastMessage() {
