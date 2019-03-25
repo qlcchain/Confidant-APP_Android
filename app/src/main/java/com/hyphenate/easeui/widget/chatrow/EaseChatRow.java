@@ -59,7 +59,7 @@ public abstract class EaseChatRow extends LinearLayout {
     protected EMMessage message;
     protected int position;
 
-    protected TextView timeStampView;
+    protected TextView timestamp;
     protected ImageButtonWithText userAvatarView;
     protected View bubbleLayout;
     protected TextView usernickView;
@@ -108,7 +108,7 @@ public abstract class EaseChatRow extends LinearLayout {
 
     private void initView() {
         onInflateView();
-        timeStampView = (TextView) findViewById(R.id.timestamp);
+        timestamp = (TextView) findViewById(R.id.timestamp);
         userAvatarView = (ImageButtonWithText) findViewById(R.id.iv_userhead);
         bubbleLayout = findViewById(R.id.bubble);
         usernickView = (TextView) findViewById(R.id.tv_userid);
@@ -145,10 +145,9 @@ public abstract class EaseChatRow extends LinearLayout {
 
     private void setUpBaseView() {
     	// set nickname, avatar and background of bubble
-        TextView timestamp = (TextView) findViewById(R.id.timestamp);
         if (timestamp != null) {
             if (position == 0) {
-                timestamp.setText(DateUtil.getTimestampString(new Date(message.getMsgTime()), context));
+                timestamp.setText(DateUtil.getTimestampString(message.getMsgTime(), context));
                 timestamp.setVisibility(View.VISIBLE);
             } else {
             	// show time stamp if interval with last message is > 30 seconds
@@ -156,7 +155,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 if (prevMessage != null && DateUtils.isCloseEnough(message.getMsgTime(), prevMessage.getMsgTime()) && position % 10 != 0) {
                     timestamp.setVisibility(View.GONE);
                 } else {
-                    timestamp.setText(DateUtil.getTimestampString(new Date(message.getMsgTime()), context));
+                    timestamp.setText(DateUtil.getTimestampString(message.getMsgTime(), context));
                     timestamp.setVisibility(View.VISIBLE);
                 }
             }

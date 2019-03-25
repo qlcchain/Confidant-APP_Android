@@ -1559,7 +1559,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         llSort.visibility = View.GONE
         ivQrCode.visibility = View.GONE
-        ivNewGroup.visibility = View.GONE
+        ivNewGroup.visibility = View.VISIBLE
     }
 
     fun setToFile() {

@@ -241,6 +241,7 @@ dependencies {
 //    implementation files('libs/hmssdk-push-2.6.3.301.jar')
     implementation 'com.huawei.android.hms:push:2.6.3.301'
     compile 'com.github.hackware1993:MagicIndicator:1.5.0'
+    implementation 'top.zibin:Luban:1.1.8'
 }
 
 def getSelfDefinedVersion(type) {

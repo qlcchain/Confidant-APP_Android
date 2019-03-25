@@ -55,6 +55,47 @@ public class DateUtil {
         return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(var0);
     }
 
+    public static String getTimestampString(long var0, Context context) {
+        long result = var0 / 1000000000;
+        Date date;
+        if (result > 10) {
+            date = new Date(var0);
+        } else {
+            date = new Date(var0 * 1000);
+        }
+        String var1 = null;
+        String var2 = Locale.getDefault().getLanguage();
+        boolean var3 = var2.startsWith("zh");
+        long var4 = date.getTime();
+        if(isSameDay(var4)) {
+            if (is24Time(context)) {
+                var1 = "HH:mm";
+            } else {
+                var1 = "hh:mm aa";
+            }
+        } else if(isYesterday(var4)) {
+            if (is24Time(context)) {
+                return (new SimpleDateFormat("HH:mm", Locale.ENGLISH)).format(date) +" Yesterday" ;
+            } else {
+                return (new SimpleDateFormat("hh:mm aa", Locale.ENGLISH)).format(date) +" Yesterday" ;
+            }
+        } else if(var3) {
+            if (is24Time(context)) {
+                var1 = "HH:mm MMM dd";
+            } else {
+                var1 = "hh:mm aa MMM dd";
+            }
+        } else {
+            if (is24Time(context)) {
+                var1 = "HH:mm MMM dd";
+            } else {
+                var1 = "hh:mm aa MMM dd";
+            }
+        }
+
+        return (new SimpleDateFormat(var1, Locale.ENGLISH)).format(date);
+    }
+
     private static boolean isSameDay(long var0) {
         TimeInfo var2 = getTodayStartAndEndTime();
         return var0 > var2.getStartTime() && var0 < var2.getEndTime();

@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.group
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
@@ -110,6 +111,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
                     if (view is TextView) {
                         view.setTextColor(resources.getColor(R.color.color_2c2c2c))
                         view.isAllCaps = false
+                        view.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
                     }
                     return@LayoutInflaterFactory view
                 } catch (e: InflateException) {
