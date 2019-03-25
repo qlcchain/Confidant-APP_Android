@@ -616,6 +616,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                 fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer,fileKey.getBytes("UTF-8"));
                             }*/
                             fileBufferMi = AESCipher.aesEncryptBytes(fileBuffer, fileKey!!.toByteArray(charset("UTF-8")))
+                            KLog.i("密文件大小 发送:" + fileBufferMi.size+"_aesKey:"+fileKey)
                             val miend = System.currentTimeMillis() / 1000
                             KLog.i("jiamiTime:" + (miend - miBegin) / 1000)
 

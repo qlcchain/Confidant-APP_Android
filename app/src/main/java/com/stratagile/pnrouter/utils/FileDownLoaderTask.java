@@ -217,7 +217,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 
 				}
 				byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
-				KLog.i("解密文件大小："+fileBufferMi.length +"_aesKey:"+aesKey);
+				KLog.i("密文件大小 接收："+fileBufferMi.length +"_aesKey:"+aesKey);
 				byte [] miFile = AESCipher.aesDecryptBytes(fileBufferMi,aesKey.getBytes("UTF-8"));
 				newInput = FileUtil.byteTOInputStream(miFile);
 			}
