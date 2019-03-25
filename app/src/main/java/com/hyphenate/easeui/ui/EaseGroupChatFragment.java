@@ -524,45 +524,24 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     }
 
+    @Override
     protected void setUpView() {
-        if (UserDataManger.currentGroupData == null)
+        if (UserDataManger.currentGroupData == null) {
             return;
-        String usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.currentGroupData.getGName()));
-        if (UserDataManger.currentGroupData.getRemark() != null && !UserDataManger.currentGroupData.getRemark().equals("")) {
-            usernameSouce = new String(RxEncodeTool.base64Decode(UserDataManger.currentGroupData.getRemark()));
         }
-        titleBar.setTitle(usernameSouce);
-        if (chatType == EaseConstant.CHATTYPE_SINGLE) {
-            // set title
-            if (EaseUserUtils.getUserInfo(toChatUserId) != null) {
-                EaseUser user = EaseUserUtils.getUserInfo(toChatUserId);
-                if (user != null) {
-                    titleBar.setTitle(user.getNick());
-                }
-            }
-            titleBar.setRightImageResource(R.mipmap.data);
+        titleBar.setRightImageResource(R.mipmap.icon_more_3);
+        EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUserId);
+        if (group != null) {
+        }
+        if (groupEntity.getRemark() == null || "".equals(groupEntity.getRemark())) {
+            titleBar.setTitle(new String(RxEncodeTool.base64Decode(groupEntity.getGName())));
         } else {
-            titleBar.setRightImageResource(R.mipmap.icon_more_3);
-            if (chatType == EaseConstant.CHATTYPE_GROUP) {
-                //group chat
-                EMGroup group = EMClient.getInstance().groupManager().getGroup(toChatUserId);
-                if (group != null) {
-                }
-                if ("".equals(groupEntity.getRemark())) {
-                    titleBar.setTitle(new String(RxEncodeTool.base64Decode(groupEntity.getGName())));
-                } else {
-                    titleBar.setTitle(new String(RxEncodeTool.base64Decode(groupEntity.getRemark())));
-                }
-                // listen the event that user moved out group or group is dismissed
-                groupListener = new GroupListener();
-                EMClient.getInstance().groupManager().addGroupChangeListener(groupListener);
-            } else {
-                chatRoomListener = new ChatRoomListener();
-                EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomListener);
-                onChatRoomViewCreation();
-            }
-
+            titleBar.setTitle(new String(RxEncodeTool.base64Decode(groupEntity.getRemark())));
         }
+        // listen the event that user moved out group or group is dismissed
+        groupListener = new GroupListener();
+        EMClient.getInstance().groupManager().addGroupChangeListener(groupListener);
+
         if (chatType != EaseConstant.CHATTYPE_CHATROOM) {
             onConversationInit();
             onMessageListInit();
@@ -1276,7 +1255,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message.setTo(toChatUserId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStamp()*1000);
+            message.setMsgTime(Message.getTimeStamp() * 1000);
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -2553,7 +2532,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1, widthAndHeight.length()));
                                 toxFileData.setPorperty("1");
                                 /*String FriendPublicKey = UserDataManger.currentGroupData.getUserKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());

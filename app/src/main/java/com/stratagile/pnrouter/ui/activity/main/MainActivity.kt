@@ -72,6 +72,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.MainContract
 import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
+import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.ActiveTogglePopWindow
@@ -387,6 +388,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var SELECT_PHOTO = 2
     var SELECT_VIDEO = 3
     var SELECT_DEOCUMENT = 4
+    var create_group = 5
     var isSendRegId = true
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -1771,7 +1773,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             mPresenter.getScanPermission()
         }
         ivNewGroup.setOnClickListener {
-            startActivity(Intent(this@MainActivity, CreateGroupActivity::class.java))
+            var list = arrayListOf<GroupEntity>()
+            startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
         }
         llSort.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
@@ -2121,6 +2124,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             var startIntent = Intent(this, FileTaskListActivity::class.java)
             startIntent.putParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION, list)
             startActivity(startIntent)
+        } else if (requestCode == create_group && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                var contactSelectedList: java.util.ArrayList<GroupEntity> = data.getParcelableArrayListExtra("person")
+                if (contactSelectedList.size > 0) {
+                    var intent = Intent(this, CreateGroupActivity::class.java)
+                    intent.putExtra("personList", contactSelectedList)
+                    startActivity(intent)
+                }
+            }
         }
     }
 
