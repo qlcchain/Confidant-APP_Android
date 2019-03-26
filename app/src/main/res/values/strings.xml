@@ -392,7 +392,7 @@
     <string name="alert_during_typing">Typing ...</string>
     <string name="title_msg_typing">Single chat shows \"Typing\"</string>
     <string name="setting_">Settings</string>
-    <string name="scan_qr_code_to_add_me">Sweep on private messages and add me</string>
+    <string name="scan_qr_code_to_add_me">Scan the QR code to add me on Confidant</string>
     <string name="scan_qr_code_to_export_account">Scan QR code to export account</string>
     <string name="erase">Please confirm you would like to erase the data and format the hard disk?</string>
     <string name="erasechoose">Please choose to agree.</string>
@@ -609,4 +609,5 @@
     <string name="groups">Groups</string>
     <string name="no_files_available_yet">No files available yet</string>
     <string name="group">group</string>
+    <string name="invite_friends_to_conifdant">Invite friends to Confidant</string>
 </resources>

@@ -61,7 +61,7 @@
         android:layout_height="@dimen/x92"
         app:src="@mipmap/icon_qr_code"
         app:showImg="true"
-        app:text1="My QR Code">
+        app:text1="@string/invite_friends_to_conifdant">
     </com.stratagile.pnrouter.view.DetailView>
 
     <include layout="@layout/divide_line"/>

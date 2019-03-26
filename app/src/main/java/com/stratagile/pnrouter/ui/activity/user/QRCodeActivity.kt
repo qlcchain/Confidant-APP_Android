@@ -191,14 +191,14 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         paint.color = resources.getColor(R.color.black)
 
 
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
         //目标图像
-//        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
         //原图像
         canvas.drawBitmap(bitmap, rect, rect, paint)
 
-        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
+//        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
 
 
         return output

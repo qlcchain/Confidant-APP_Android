@@ -74,7 +74,6 @@
                     android:textSize="10sp"
                     android:layout_marginLeft="@dimen/x5"
                     android:gravity="center"
-                    android:text="Scan the QR code to add me on Confidant"
                     android:layout_height="@dimen/x75" />
             </LinearLayout>
         </LinearLayout>

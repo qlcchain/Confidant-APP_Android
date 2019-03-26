@@ -58,7 +58,7 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             llAvatar.visibility = View.VISIBLE
             nickName.visibility = View.VISIBLE
             title.text = getString(R.string.details)
-            qrCode.setTitleText(getString(R.string.MyQRCode))
+            qrCode.setTitleText(getString(R.string.invite_friends_to_conifdant))
         }
 
         qrCode.setOnClickListener {

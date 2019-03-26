@@ -13,11 +13,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.hyphenate.easeui.EaseUI
 import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
@@ -36,7 +38,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     var rootLayout: RelativeLayout? = null
     lateinit var relativeLayout_root: RelativeLayout
     lateinit var view: View
-    lateinit var progressDialog : RxDialogLoading
+    lateinit var progressDialog: RxDialogLoading
     lateinit var title: TextView
     val point = Point()
 
@@ -66,12 +68,41 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
 //        initToolbar()
         setupActivityComponent()
         if (savedInstanceState != null) {
-            KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
-            LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("save"))
+            KLog.i("保存的东西不为空," + savedInstanceState.getString("baseSave"))
+            LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("baseSave"))
             //这里走重新启动app的流程。
+            if ("base".equals(savedInstanceState.getString("baseSave"))) {
+                AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                val intent = Intent(this, SplashActivity::class.java)
+                intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            }
         }
+
         initView()
         initData()
+    }
+
+    fun exitToastBase() {
+        AppConfig.instance.stopAllService()
+        //android进程完美退出方法。
+        var intent = Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+        this.startActivity(intent);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        //System.runFinalizersOnExit(true);
+        System.exit(0);
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putString("baseSave", "base")
+
     }
 
     override fun onDestroy() {
@@ -90,6 +121,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             inputMethodManager?.hideSoftInputFromWindow(currentFocus!!.windowToken,
                     InputMethodManager.HIDE_NOT_ALWAYS)
     }
+
     override fun setContentView(layoutId: Int) {
         setContentView(View.inflate(this, layoutId, null))
     }
@@ -246,28 +278,31 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
 
     }
 
-    fun  showProgressDialog(text: String) {
+    fun showProgressDialog(text: String) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setOnTouchOutside(false)
     }
-    fun  showProgressDialog(text: String, canCancel : Boolean) {
+
+    fun showProgressDialog(text: String, canCancel: Boolean) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.setNoCanceledOnTouchOutside(false)
         progressDialog.show()
     }
+
     fun showProgressNoCanelDialog(text: String) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
         progressDialog.setNoCanceledOnTouchOutside(false)
     }
-    fun showProgressDialog(text: String,onKeyListener: DialogInterface.OnKeyListener ) {
+
+    fun showProgressDialog(text: String, onKeyListener: DialogInterface.OnKeyListener) {
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()
-        progressDialog.setCanceledOnBack(false,onKeyListener)
+        progressDialog.setCanceledOnBack(false, onKeyListener)
     }
 }

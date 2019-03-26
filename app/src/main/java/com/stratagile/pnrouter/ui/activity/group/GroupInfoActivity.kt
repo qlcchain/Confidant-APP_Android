@@ -239,25 +239,29 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 tvDismissGroup.visibility = View.VISIBLE
                 tvLeaveGroup.visibility = View.GONE
                 ivModify.visibility = View.VISIBLE
+                tvGroupNameTip.text = "Set Group Name"
+                groupName.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
+                tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
                 groupName.setOnClickListener{
-                    val intent = Intent(this, EditNickNameActivity::class.java)
-                    intent.putExtra("flag", "Set Group Name")
-                    intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.gName)))
-                    intent.putExtra("hint", "Set Group Name")
-                    startActivityForResult(intent, editGroupName)
+//                    val intent = Intent(this, EditNickNameActivity::class.java)
+//                    intent.putExtra("flag", "Set Group Name")
+//                    intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.gName)))
+//                    intent.putExtra("hint", "Set Group Name")
+//                    startActivityForResult(intent, editGroupName)
                 }
             } else {
                 llApproveInnvitationn.visibility = View.GONE
                 tvIntroduce.visibility = View.GONE
                 tvDismissGroup.visibility = View.GONE
                 tvLeaveGroup.visibility = View.VISIBLE
+                tvGroupNameTip.text = "Set Group Alias"
                 ivModify.visibility = View.GONE
-            }
-            groupName.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
-            if ("".equals(groupEntity!!.remark)) {
-                tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
-            } else {
-                tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.remark))
+                groupName.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
+                if ("".equals(groupEntity!!.remark)) {
+                    tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
+                } else {
+                    tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.remark))
+                }
             }
         }
         groupUserAdapter = GroupUserAdapter(userList)
@@ -277,15 +281,24 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             showLeaveGroupDialog()
         }
         llGroupAlias.setOnClickListener {
-            val intent = Intent(this, EditNickNameActivity::class.java)
-            intent.putExtra("flag", "Set Group Alias")
-            if ("".equals(groupEntity!!.remark)) {
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if (groupEntity!!.gAdmin.equals(userId)) {
+                val intent = Intent(this, EditNickNameActivity::class.java)
+                intent.putExtra("flag", "Set Group Name")
                 intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.gName)))
+                intent.putExtra("hint", "Set Group Name")
+                startActivityForResult(intent, editGroupName)
             } else {
-                intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.remark)))
+                val intent = Intent(this, EditNickNameActivity::class.java)
+                intent.putExtra("flag", "Set Group Alias")
+                if ("".equals(groupEntity!!.remark)) {
+                    intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.gName)))
+                } else {
+                    intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.remark)))
+                }
+                intent.putExtra("hint", "Set Group Alias")
+                startActivityForResult(intent, editGroupAlias)
             }
-            intent.putExtra("hint", "Set Group Alias")
-            startActivityForResult(intent, editGroupAlias)
         }
         groupUserAdapter!!.setOnItemClickListener { adapter, view, position ->
             when (groupUserAdapter!!.data[position].toxId) {
@@ -360,6 +373,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             var groupName1 = data!!.getStringExtra("alias")
             if (groupName1 != null) {
                 groupName.text = groupName1
+                tvGroupAlias.text = groupName1
                 modifyGroupName(groupName1)
             }
         } else if (requestCode == editGroupAlias && resultCode == Activity.RESULT_OK) {

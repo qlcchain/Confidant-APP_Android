@@ -2114,6 +2114,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @SuppressLint("MissingSuperCall")
     override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
         outState?.putString("save", "保存的东西")
     }
 

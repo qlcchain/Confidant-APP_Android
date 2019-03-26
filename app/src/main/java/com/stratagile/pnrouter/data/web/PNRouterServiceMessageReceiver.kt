@@ -419,6 +419,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "GroupListPull" -> {
                     val JGroupListPullRsp = gson.fromJson(text, JGroupListPullRsp::class.java)
                     groupListPullBack?.groupListPull(JGroupListPullRsp)
+                    mainInfoBack?.groupListPull(JGroupListPullRsp)
                 }
                 //71.	群组会话中发文本消息
                 "GroupSendMsg" -> {

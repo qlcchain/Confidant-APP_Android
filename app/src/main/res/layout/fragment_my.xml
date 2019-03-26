@@ -109,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:srcmy="@mipmap/shareapp"
-            app:textmy="Invite friends to Confidant">
+            app:textmy="@string/invite_friends_to_conifdant">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 
