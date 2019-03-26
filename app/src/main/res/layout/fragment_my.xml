@@ -77,7 +77,7 @@
             android:id="@+id/routerManagement"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
-            app:srcmy="@mipmap/rouermanagement"
+            app:srcmy="@mipmap/icon_sub_user"
             app:textmy="@string/routerManagement">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
@@ -109,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
             app:srcmy="@mipmap/shareapp"
-            app:textmy="@string/MyQRCode">
+            app:textmy="Invite friends to Confidant">
 
         </com.stratagile.pnrouter.view.DrawableMyTextView>
 

@@ -141,7 +141,7 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
         }
         newFriendListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
-                R.id.tvAccept -> {
+                R.id.tvOpreate -> {
                     handleUser = newFriendListAdapter!!.getItem(position)
                     var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")

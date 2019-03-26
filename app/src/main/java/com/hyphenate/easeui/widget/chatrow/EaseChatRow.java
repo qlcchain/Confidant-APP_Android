@@ -18,6 +18,7 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
 import com.hyphenate.chat.adapter.message.EMAMessage;
 import com.hyphenate.easeui.EaseUI;
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
@@ -39,6 +40,8 @@ import com.stratagile.pnrouter.view.ImageButtonWithText;
 
 import java.util.Date;
 import java.util.List;
+
+import sourcecode.Line;
 
 public abstract class EaseChatRow extends LinearLayout {
     public interface EaseChatRowActionCallback {
@@ -73,11 +76,13 @@ public abstract class EaseChatRow extends LinearLayout {
     protected TextView deliveredView;
 
     protected ImageView sendStatusView;
+    private View marginView;
 
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
 
     private EaseChatRowActionCallback itemActionCallback;
+    private int count;
 
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context);
@@ -112,7 +117,7 @@ public abstract class EaseChatRow extends LinearLayout {
         userAvatarView = (ImageButtonWithText) findViewById(R.id.iv_userhead);
         bubbleLayout = findViewById(R.id.bubble);
         usernickView = (TextView) findViewById(R.id.tv_userid);
-
+        marginView = findViewById(R.id.marginView);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         statusView = (ImageView) findViewById(R.id.msg_status);
         ackedView = (TextView) findViewById(R.id.tv_ack);
@@ -131,13 +136,13 @@ public abstract class EaseChatRow extends LinearLayout {
     public void setUpView(EMMessage message, int position,
             EaseChatMessageList.MessageListItemClickListener itemClickListener,
                           EaseChatRowActionCallback itemActionCallback,
-                          EaseMessageListItemStyle itemStyle) {
+                          EaseMessageListItemStyle itemStyle, int count) {
         this.message = message;
         this.position = position;
         this.itemClickListener = itemClickListener;
         this.itemActionCallback = itemActionCallback;
         this.itemStyle = itemStyle;
-
+        this.count = count;
         setUpBaseView();
         onSetUpView();
         setClickListener();
@@ -145,6 +150,11 @@ public abstract class EaseChatRow extends LinearLayout {
 
     private void setUpBaseView() {
     	// set nickname, avatar and background of bubble
+        if (position == count - 1) {
+            marginView.setVisibility(View.VISIBLE);
+        } else {
+            marginView.setVisibility(View.GONE);
+        }
         if (timestamp != null) {
             if (position == 0) {
                 timestamp.setText(DateUtil.getTimestampString(message.getMsgTime(), context));

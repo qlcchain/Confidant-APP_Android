@@ -31,8 +31,8 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
         imagebutton.setText(item!!.nickName)
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(item.signPublicKey))+".jpg"
         imagebutton.setImageFile(fileBase58Name)
-        helper!!.addOnClickListener(R.id.tvRefuse)
-        helper!!.addOnClickListener(R.id.tvAccept)
+//        helper!!.addOnClickListener(R.id.tvRefuse)
+        helper!!.addOnClickListener(R.id.tvOpreate)
         var it = FriendEntity()
         it.friendLocalStatus = 7
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -42,39 +42,38 @@ class NewFriendListAdapter(arrayList: ArrayList<UserEntity>) : BaseQuickAdapter<
         when (it.friendLocalStatus) {
             //好友状态， 0 好友， 1 等待对方同意，2 对方决绝， 3 等待我同意， 4 对方删除我， 5 我拒绝， 6 我删除对方
             0-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.agreed))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, "Added")
+                helper.setBackgroundRes(R.id.tvOpreate, R.color.white)
+                helper.setTextColor(R.id.tvOpreate, mContext.resources.getColor(R.color.color_b2b2b2))
+                helper.setVisible(R.id.tvOpreate, true)
             }
             1-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.wait_for_verification))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, mContext.getString(R.string.wait_for_verification))
             }
             2-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.rejected))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, mContext.getString(R.string.rejected))
             }
             3-> {
-                helper.setVisible(R.id.llOperate, true)
-                helper.setGone(R.id.tvStatus, false)
-                helper.setText(R.id.tvStatus, "")
+                helper.setGone(R.id.tvOpreate, false)
+                helper.setText(R.id.tvOpreate, "Accept")
+                helper.setBackgroundRes(R.id.tvOpreate, R.drawable.btn_verify_group)
+                helper.setTextColor(R.id.tvOpreate, mContext.resources.getColor(R.color.white))
+                helper.setVisible(R.id.tvOpreate, true)
             }
             4-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.deleted))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, mContext.getString(R.string.deleted))
             }
             5-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.rejected))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, mContext.getString(R.string.rejected))
             }
             6-> {
-                helper.setGone(R.id.llOperate, false)
-                helper.setVisible(R.id.tvStatus, true)
-                helper.setText(R.id.tvStatus, mContext.getString(R.string.deleted))
+                helper.setVisible(R.id.tvOpreate, true)
+                helper.setText(R.id.tvOpreate, mContext.getString(R.string.deleted))
             }
         }
 

@@ -53,7 +53,7 @@
             android:singleLine="true"
             android:text="Google project development.zip"
             android:textColor="@color/color_3f3f3f"
-            android:textSize="15sp" />
+            android:textSize="16sp" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/x15"
                 android:text="15.4M"
-                android:textSize="10sp" />
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="0px"
@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="105KB/s"
-                android:textSize="10sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
     </LinearLayout>

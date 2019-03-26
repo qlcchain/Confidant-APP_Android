@@ -26,7 +26,7 @@ class NewGroupMemberAdapter(arrayList: MutableList<GroupVerifyEntity>) : BaseQui
         //状态， 0 通过， 1 等待我同意， 2 我拒绝 3, 被移除群聊， 4 群解散
         when(item.verifyType) {
             0 -> {
-                helper.setText(R.id.tvOpreate, "Allowed")
+                helper.setText(R.id.tvOpreate, "Added")
                 helper.setBackgroundRes(R.id.tvOpreate, R.color.white)
                 helper.setTextColor(R.id.tvOpreate, mContext.resources.getColor(R.color.color_b2b2b2))
                 helper.setVisible(R.id.tvOpreate, true)

@@ -68,6 +68,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         if (savedInstanceState != null) {
             KLog.i("保存的东西不为空," + savedInstanceState.getString("save"))
             LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("save"))
+            //这里走重新启动app的流程。
         }
         initView()
         initData()

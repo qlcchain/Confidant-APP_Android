@@ -147,7 +147,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
                 if ("".equals(s.toString())) {
                     GroupAdapter!!.setNewData(groupEntityList)
                 } else {
-                    GroupAdapter!!.setNewData(searchListByName(s.toString()))
+                    GroupAdapter!!.setNewData(searchListByName(s.toString().toLowerCase()))
                 }
             }
         })
@@ -159,7 +159,7 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
     fun searchListByName(name: String): MutableList<GroupEntity> {
         var retList = mutableListOf<GroupEntity>()
         groupEntityList.forEach {
-            var fileName = String(RxEncodeTool.base64Decode(it.gName))
+            var fileName = String(RxEncodeTool.base64Decode(it.gName)).toLowerCase()
             if (fileName.contains(name)) {
                 retList.add(it)
             }

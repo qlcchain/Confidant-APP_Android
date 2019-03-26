@@ -33,7 +33,7 @@
     <string name="shareApp">Share App</string>
     <string name="shareContact">Share Contact</string>
     <string name="collection">Save</string>
-    <string name="routerManagement">Management Circles</string>
+    <string name="routerManagement">Manage Circles</string>
     <string name="addRecentStatus">Add to my status</string>
     <string name="qr_code_business_card">Invitation QR Code</string>
     <string name="search">Search</string>
@@ -529,9 +529,9 @@
     <string name="arrange_by_time">Arrange by time</string>
     <string name="arrange_by_size">Arrange by size</string>
     <string name="arrange_by_contact">Arrange by Contact</string>
-    <string name="upload_photos">Upload Photos</string>
-    <string name="upload_video">Upload Video</string>
-    <string name="upload_document">Upload document</string>
+    <string name="upload_photos">Photo</string>
+    <string name="upload_video">Video</string>
+    <string name="upload_document">File</string>
     <string name="disk_management">Disk Management</string>
 
     <string name="Documents_already_exist">Documents with the same name already exist,Do you want to continue?</string>
@@ -606,4 +606,5 @@
     <string name="invited">invited</string>
     <string name="you">you</string>
     <string name="join">to the group</string>
+    <string name="no_files_available_yet">No files available yet</string>
 </resources>
