@@ -3,17 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/llParent"
-    android:paddingBottom="4dp"
-    android:orientation="vertical"
-    android:layout_marginBottom="@dimen/x10"
-    android:paddingTop="13dp">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/content"
         style="@style/chat_text_date_style"
+        android:layout_marginTop="@dimen/x16"
         android:layout_width="wrap_content"
         android:text=""
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
-
+    <View
+        android:id="@+id/marginView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/x16"
+        android:layout_height="@dimen/x16"/>
 </LinearLayout>

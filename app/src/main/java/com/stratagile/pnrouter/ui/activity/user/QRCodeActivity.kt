@@ -113,7 +113,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + fileBase58Name, "")
         var bitmapAvatar : Bitmap? = null
         if (lastFile.exists()) {
-            bitmapAvatar = getRoundedCornerBitmap1(BitmapFactory.decodeFile(lastFile.path))
+            bitmapAvatar = getRoundedCornerBitmap(getRoundedCornerBitmap1(BitmapFactory.decodeFile(lastFile.path)))
         }
         ivAvatar.setImageFile(fileBase58Name)
         /*var CreateEnglishUserQRCode = ScanCodeTask(userId, ivQrCodeMy)
@@ -151,51 +151,28 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
 
     //生成圆角图片
     fun getRoundedCornerBitmap(bitmap: Bitmap): Bitmap {
+        val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
 
-//        try {
-//            val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-//            val canvas = Canvas(output)
-//            val paint = Paint()
-//            paint.shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-//            paint.isAntiAlias = true
-//            //绘制边框
-//            val mBorderPaint = Paint()
-//            mBorderPaint.style = Paint.Style.STROKE
-//            mBorderPaint.strokeWidth = UIUtils.dip2px(2f, AppConfig.instance).toFloat()//画笔宽度为4px
-//            mBorderPaint.color = resources.getColor(R.color.mainColor)//边框颜色
-//            mBorderPaint.strokeCap = Paint.Cap.ROUND
-//            mBorderPaint.isAntiAlias = true
-//            val r = bitmap.width.toFloat()
-//            canvas.drawBitmap(bitmap, src, rect, paint)
-//            canvas.drawCircle(r / 2, r / 2, r, paint)
-//            return bitmap
-//        } catch (ex : Exception) {
-//            ex.printStackTrace()
-//            return bitmap
-//        }
+        val paint = Paint()
+        val widht = resources.getDimension(R.dimen.x40).toInt()
+        val rect = Rect(0, 0, bitmap.width, bitmap.height)
+        val rect1 = Rect(widht, widht, bitmap.width - widht, bitmap.height - widht)
+        val rectF = RectF(rect)
+        val rectF1 = RectF(rect1)
+        val roundPx = resources.getDimension(R.dimen.x80)
 
-        try {
-            val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(output)
-            val paint = Paint()
-            val rect = Rect(0, 0, bitmap.width, bitmap.height)
-            val rectF = RectF(rect)
-            val roundPx = 14f
-            paint.setAntiAlias(true)
-            paint.strokeWidth = UIUtils.dip2px(4f, AppConfig.instance).toFloat()//画笔宽度为4px
-            paint.strokeCap = Paint.Cap.ROUND
-            canvas.drawARGB(0, 0, 0, 0)
-            paint.setColor(resources.getColor(R.color.white))
-            canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
-            paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
-            val src = Rect(0, 0, bitmap.width, bitmap.height)
-            canvas.drawBitmap(bitmap, src, rect, paint)
-            return output
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return bitmap
-        }
+        paint.isAntiAlias = true
+        canvas.drawARGB(0, 0, 0, 0)
+        paint.color = resources.getColor(R.color.white)
 
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(bitmap, rect1, rect1, paint)
+
+
+        return output
     }
 
     fun getRoundedCornerBitmap1(bitmap: Bitmap): Bitmap {
@@ -204,17 +181,25 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
 
         val paint = Paint()
         val rect = Rect(0, 0, bitmap.width, bitmap.height)
-        val rect1 = Rect(160, 160, bitmap.width - 160, bitmap.height - 160)
+        val rect1 = Rect(0 + 60, 0 + 60, bitmap.width  - 60, bitmap.height  - 60)
         val rectF = RectF(rect)
-        val roundPx = resources.getDimension(R.dimen.x160)
+        val rectF1 = RectF(rect1)
+        val roundPx = resources.getDimension(R.dimen.x80)
 
         paint.isAntiAlias = true
-        canvas.drawARGB(0, 0, 0, 0)
-        paint.color = resources.getColor(R.color.white)
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
+        canvas.drawColor(resources.getColor(R.color.white))
+        paint.color = resources.getColor(R.color.black)
 
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-        canvas.drawBitmap(bitmap, rect1, rect1, paint)
+
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP)
+
+        //目标图像
+//        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
+        //原图像
+        canvas.drawBitmap(bitmap, rect, rect, paint)
+
+        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
+
 
         return output
     }
