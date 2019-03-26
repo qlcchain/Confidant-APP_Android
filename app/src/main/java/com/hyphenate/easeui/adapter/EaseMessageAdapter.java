@@ -276,7 +276,7 @@ public class EaseMessageAdapter extends BaseAdapter {
                     presenter = new EaseChatTextPresenter();
                 }
                 //下面if 是对群系统消息的特殊处理，因为ui提示不一样
-                if (message.getMsgId().contains(Message.SpecialId.GroupSpecialId.toString())) {
+                if (message.getMsgId().contains(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString())) {
                     KLog.i("判断是提示消息！！！");
                     presenter = new EaseChatTipPresenter();
                 } else {
@@ -317,7 +317,7 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         EaseChatRowPresenter presenter = null;
 
-        if (convertView == null || message.getMsgId().contains(Message.SpecialId.GroupSpecialId.toString())) {
+        if (convertView == null || message.getMsgId().contains(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString())) {
             presenter = createChatRowPresenter(message, position);
             convertView = presenter.createChatRow(context, message, position, this);
             convertView.setTag(presenter);
