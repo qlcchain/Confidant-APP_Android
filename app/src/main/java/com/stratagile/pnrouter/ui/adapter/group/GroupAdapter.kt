@@ -20,9 +20,11 @@ import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.view.ImageButtonWithText
 import org.greenrobot.eventbus.EventBus
+import java.util.HashMap
 
 class GroupAdapter (arrayList: List<GroupEntity>) : BaseQuickAdapter<GroupEntity, BaseViewHolder>(R.layout.item_group_layout, arrayList) {
 
+    private var slelctMap =  HashMap<String, Boolean>()
     private var isCheckMode = false
 
     fun isCheckMode(): Boolean {
@@ -45,6 +47,7 @@ class GroupAdapter (arrayList: List<GroupEntity>) : BaseQuickAdapter<GroupEntity
             helper.itemView.setOnClickListener {
                 if (isCheckMode) {
                     helper.setChecked(R.id.checkBox, !checkBox.isChecked)
+                    slelctMap.put(item.gId,checkBox.isChecked)
                     getSelectedCount()
                 }else{
                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
@@ -60,6 +63,14 @@ class GroupAdapter (arrayList: List<GroupEntity>) : BaseQuickAdapter<GroupEntity
 
     private fun getSelectedCount() {
 
-        EventBus.getDefault().post(SelectGroupChange(0))
+        var count = 0;
+        for (item in slelctMap.values)
+        {
+            if(item)
+            {
+                count ++;
+            }
+        }
+        EventBus.getDefault().post(SelectGroupChange(count))
     }
 }

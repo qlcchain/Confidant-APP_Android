@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
@@ -20,6 +21,7 @@ import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
@@ -634,6 +636,17 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
                     }
                 }
             }
+        }
+        return contactList!!
+    }
+    fun getAllSelectedGroup(): ArrayList<GroupEntity> {
+        var contactList = arrayListOf<GroupEntity>()
+        contactAdapter0!!.data.forEachIndexed { index, it ->
+                var checkBox =  contactAdapter0!!.getViewByPosition(recyclerGroupView,index,R.id.checkBox) as CheckBox
+                if(checkBox.isChecked)
+                {
+                    contactList.add(it)
+                }
         }
         return contactList!!
     }

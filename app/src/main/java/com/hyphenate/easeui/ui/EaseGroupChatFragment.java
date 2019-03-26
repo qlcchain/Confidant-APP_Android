@@ -2355,7 +2355,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
-                    SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                    SendFileInfo.setSendTime(System.currentTimeMillis() + "");
                     SendFileInfo.setPorperty("1");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
@@ -2507,7 +2507,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
-                                SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                                SendFileInfo.setSendTime(System.currentTimeMillis() + "");
                                 SendFileInfo.setPorperty("1");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
@@ -2838,7 +2838,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() + "");
                             SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
@@ -3028,7 +3028,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() + "");
                             SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
