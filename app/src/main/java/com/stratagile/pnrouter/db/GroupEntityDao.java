@@ -29,6 +29,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         public final static Property Remark = new Property(4, String.class, "Remark", false, "REMARK");
         public final static Property UserKey = new Property(5, String.class, "UserKey", false, "USER_KEY");
         public final static Property Verify = new Property(6, int.class, "Verify", false, "VERIFY");
+        public final static Property RouterId = new Property(7, String.class, "routerId", false, "ROUTER_ID");
     }
 
 
@@ -50,7 +51,8 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
                 "\"GADMIN\" TEXT," + // 3: GAdmin
                 "\"REMARK\" TEXT," + // 4: Remark
                 "\"USER_KEY\" TEXT," + // 5: UserKey
-                "\"VERIFY\" INTEGER NOT NULL );"); // 6: Verify
+                "\"VERIFY\" INTEGER NOT NULL ," + // 6: Verify
+                "\"ROUTER_ID\" TEXT);"); // 7: routerId
     }
 
     /** Drops the underlying database table. */
@@ -93,6 +95,11 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
             stmt.bindString(6, UserKey);
         }
         stmt.bindLong(7, entity.getVerify());
+ 
+        String routerId = entity.getRouterId();
+        if (routerId != null) {
+            stmt.bindString(8, routerId);
+        }
     }
 
     @Override
@@ -129,6 +136,11 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
             stmt.bindString(6, UserKey);
         }
         stmt.bindLong(7, entity.getVerify());
+ 
+        String routerId = entity.getRouterId();
+        if (routerId != null) {
+            stmt.bindString(8, routerId);
+        }
     }
 
     @Override
@@ -145,7 +157,8 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // GAdmin
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // Remark
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // UserKey
-            cursor.getInt(offset + 6) // Verify
+            cursor.getInt(offset + 6), // Verify
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // routerId
         );
         return entity;
     }
@@ -159,6 +172,7 @@ public class GroupEntityDao extends AbstractDao<GroupEntity, Long> {
         entity.setRemark(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setUserKey(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setVerify(cursor.getInt(offset + 6));
+        entity.setRouterId(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     @Override

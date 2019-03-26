@@ -103,6 +103,34 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
+    override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
+        when(jGroupListPullRsp.params.retCode)
+        {
+            0->
+            {
+                for (item in jGroupListPullRsp.params.payload)
+                {
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
+                    if(groupList.size > 0)
+                    {
+                        var GroupLocal = groupList.get(0)
+                        GroupLocal.userKey = item.userKey
+                        GroupLocal.remark = item.remark
+                        GroupLocal.gId = item.gId
+                        GroupLocal.gAdmin = item.gAdmin
+                        GroupLocal.gName = item.gName
+                        GroupLocal.routerId = ConstantValue.currentRouterId
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+                    }else{
+                        item.routerId = ConstantValue.currentRouterId
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
+                    }
+
+                }
+            }
+        }
+    }
+
     override fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jGroupSysPushRsp.params.gId)) {
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
@@ -848,6 +876,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 GroupLocal.gId = pushMsgRsp.params.gId
                 GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
                 GroupLocal.gName = pushMsgRsp.params.groupName
+                GroupLocal.routerId = ConstantValue.currentRouterId
                 AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
             }else{
                 var GroupLocal = GroupEntity()
@@ -856,6 +885,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 GroupLocal.gId = pushMsgRsp.params.gId
                 GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
                 GroupLocal.gName = pushMsgRsp.params.groupName
+                GroupLocal.routerId = ConstantValue.currentRouterId
                 AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
             }
             if (!AppConfig.instance.isBackGroud) {
@@ -1764,7 +1794,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
         }
-
+        var shelfId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val GroupListPullReq = GroupListPullReq(shelfId!!, ConstantValue.currentRouterId)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, GroupListPullReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, GroupListPullReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        }
         setToNews()
         ivQrCode.setOnClickListener {
             //            val morePopWindow = ActiveTogglePopWindow(this)

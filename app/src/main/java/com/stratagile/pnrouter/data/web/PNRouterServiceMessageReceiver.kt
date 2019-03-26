@@ -705,6 +705,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp)
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
+        fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
     }
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)

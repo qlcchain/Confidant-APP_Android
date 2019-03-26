@@ -19,12 +19,14 @@ public class GroupEntity implements Parcelable{
     private String Remark;
     private String UserKey;
     private int Verify;
+    private String routerId;
 
 
 
-    @Generated(hash = 983277825)
+
+    @Generated(hash = 83016553)
     public GroupEntity(Long id, String GId, String GName, String GAdmin,
-            String Remark, String UserKey, int Verify) {
+            String Remark, String UserKey, int Verify, String routerId) {
         this.id = id;
         this.GId = GId;
         this.GName = GName;
@@ -32,6 +34,7 @@ public class GroupEntity implements Parcelable{
         this.Remark = Remark;
         this.UserKey = UserKey;
         this.Verify = Verify;
+        this.routerId = routerId;
     }
 
     @Generated(hash = 954040478)
@@ -51,6 +54,29 @@ public class GroupEntity implements Parcelable{
         Remark = in.readString();
         UserKey = in.readString();
         Verify = in.readInt();
+        routerId = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(GId);
+        dest.writeString(GName);
+        dest.writeString(GAdmin);
+        dest.writeString(Remark);
+        dest.writeString(UserKey);
+        dest.writeInt(Verify);
+        dest.writeString(routerId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<GroupEntity> CREATOR = new Creator<GroupEntity>() {
@@ -113,33 +139,20 @@ public class GroupEntity implements Parcelable{
         this.id = id;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeLong(id);
-        }
-        parcel.writeString(GId);
-        parcel.writeString(GName);
-        parcel.writeString(GAdmin);
-        parcel.writeString(Remark);
-        parcel.writeString(UserKey);
-        parcel.writeInt(Verify);
-    }
-
     public int getVerify() {
         return this.Verify;
     }
 
     public void setVerify(int Verify) {
         this.Verify = Verify;
+    }
+
+    public String getRouterId() {
+        return routerId;
+    }
+
+    public void setRouterId(String routerId) {
+        this.routerId = routerId;
     }
 }
 

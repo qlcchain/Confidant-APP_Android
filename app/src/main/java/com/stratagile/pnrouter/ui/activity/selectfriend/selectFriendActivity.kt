@@ -1,22 +1,16 @@
 package com.stratagile.pnrouter.ui.activity.selectfriend
 
-import android.app.Activity
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
-import android.widget.LinearLayout
 import butterknife.ButterKnife
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
-import com.alibaba.fastjson.JSONObject
-import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
-import com.message.Message
 import com.pawegio.kandroid.toast
-import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -25,7 +19,7 @@ import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
-import com.stratagile.pnrouter.ui.activity.main.ContactFragment
+import com.stratagile.pnrouter.ui.activity.main.ContactAndGroupFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendContract
 import com.stratagile.pnrouter.ui.activity.selectfriend.module.selectFriendModule
@@ -33,7 +27,6 @@ import com.stratagile.pnrouter.ui.activity.selectfriend.presenter.selectFriendPr
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
-import events.ToxSendFileFinishedEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
 import org.greenrobot.eventbus.EventBus
@@ -41,7 +34,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
@@ -56,10 +48,12 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
     @Inject
     internal lateinit var mPresenter: selectFriendPresenter
-    var fragment: ContactFragment? = null
+    var fragment: ContactAndGroupFragment? = null
     var  userEntity: UserEntity? = null
     var fromId:String? = null
     var message: EMMessage? = null
+    var groupCount = 0
+    var personCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -82,7 +76,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     override fun initData() {
         EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
-        fragment = ContactFragment();
+        fragment = ContactAndGroupFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
         bundle.putString("fromId", fromId)
@@ -142,9 +136,13 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
      */
     fun showSendDialog() {
         var contactSelectedList: ArrayList<UserEntity> = fragment!!.getAllSelectedFriend()
-        if (contactSelectedList.size == 0) {
+
+        var groupSelectedList  = fragment!!.getAllSelectedGroup()
+        if (contactSelectedList.size == 0 && groupSelectedList.size == 0) {
             toast(R.string.noSelected)
-        } else {
+            return
+        }
+        if (contactSelectedList.size != 0) {//给好友列表
             for (i in contactSelectedList) {
                 when (message!!.type) {
                     EMMessage.Type.TXT -> {
@@ -223,33 +221,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isUnread = true
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                           /*
-                                            sendMsgLocalMap.put(uuid, false)
-                                            sendFilePathMap.put(uuid, files_dir)
-                                            sendFileFriendKeyMap.put(uuid, i.signPublicKey)*/
-
-                                          /*  val aesKey = RxEncryptTool.generateAESKey()
-                                            val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
-                                            var SrcKey = ByteArray(256)
-                                            var DstKey = ByteArray(256)
-                                            try {
-
-                                                if (ConstantValue.encryptionType == "1") {
-                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
-                                                }else{
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                }
-                                                sendFileAESKeyByteMap.put(uuid, aesKey.substring(0,16))
-                                                sendFileMyKeyByteMap.put(uuid, SrcKey)
-                                                sendFileFriendKeyByteMap.put(uuid, DstKey)
-                                            } catch (e: Exception) {
-
-                                                return@Runnable
-                                            }*/
-
                                             if (codeSave == 1) {
                                                 val SendFileInfo = SendFileInfo()
                                                 SendFileInfo.userId = userId
@@ -261,7 +232,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 SendFileInfo.friendMiPublicKey = i.miPublicKey
                                                 SendFileInfo.voiceTimeLen = 0
                                                 SendFileInfo.type = "1"
-                                                SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
                                                 SendFileInfo.porperty = "0"
                                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                                 /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
@@ -279,10 +250,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
                                                 message.msgId = uuid.toString() + ""
-
-                                                /*sendMsgLocalMap.put(uuid.toString() + "", false)
-                                                sendFilePathMap.put(uuid.toString() + "", base58files_dir)
-                                                sendFileFriendKeyMap.put(uuid.toString() + "", i.signPublicKey)*/
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -294,6 +261,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE
                                                 toxFileData.fileId = uuid
+                                                toxFileData.widthAndHeight = widthAndHeight.substring(1, widthAndHeight.length)
+                                                toxFileData.porperty = "0"
                                                 val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
@@ -365,31 +334,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            /*message.msgId = uuid
-                                            sendMsgLocalMap[uuid] = false
-                                            sendFilePathMap[uuid] = videoPath
-                                            sendFileFriendKeyMap[uuid] = i.signPublicKey
-
-                                            val aesKey = RxEncryptTool.generateAESKey()
-                                            val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
-                                            var SrcKey = ByteArray(256)
-                                            var DstKey = ByteArray(256)
-                                            try {
-
-                                                if (ConstantValue.encryptionType == "1") {
-                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
-                                                }else{
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                }
-                                                sendFileAESKeyByteMap[uuid] = aesKey.substring(0,16)
-                                                sendFileMyKeyByteMap[uuid] = SrcKey
-                                                sendFileFriendKeyByteMap[uuid] = DstKey
-                                            } catch (e: Exception) {
-                                                return@Runnable
-                                            }*/
                                             val SendFileInfo = SendFileInfo()
                                             SendFileInfo.userId = userId
                                             SendFileInfo.friendId = i.userId
@@ -399,8 +343,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             SendFileInfo.friendMiPublicKey = i.miPublicKey
                                             SendFileInfo.voiceTimeLen = 0
                                             SendFileInfo.type = "3"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
-                                            SendFileInfo.porperty = "0"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                            SendFileInfo.porperty = "1"
                                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
@@ -494,32 +438,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
                                             val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
                                             message.msgId = uuid
-                                            /*sendMsgMap[uuid] = message
-                                            sendMsgLocalMap[uuid] = false
-                                            sendFilePathMap[uuid] = files_dir
-                                            sendFileFriendKeyMap[uuid] = i.signPublicKey*/
 
-                                            /*val aesKey = RxEncryptTool.generateAESKey()
-                                            val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
-                                            val friend = RxEncodeTool.base64Decode(i.signPublicKey)
-                                            var SrcKey = ByteArray(256)
-                                            var DstKey = ByteArray(256)
-                                            try {
-
-                                                if (ConstantValue.encryptionType == "1") {
-                                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
-                                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.EncryptShareKey(aesKey, i.miPublicKey))
-                                                }else{
-                                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), my))
-                                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(aesKey.toByteArray(), friend))
-                                                }
-                                                sendFileAESKeyByteMap[uuid] = aesKey.substring(0,16)
-                                                sendFileMyKeyByteMap[uuid] = SrcKey
-                                                sendFileFriendKeyByteMap[uuid] = DstKey
-                                            } catch (e: Exception) {
-
-                                                return@Runnable
-                                            }*/
                                             val SendFileInfo = SendFileInfo()
                                             SendFileInfo.userId = userId
                                             SendFileInfo.friendId = i.userId
@@ -529,8 +448,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             SendFileInfo.friendMiPublicKey = i.miPublicKey
                                             SendFileInfo.voiceTimeLen = 0
                                             SendFileInfo.type = "4"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis() / 1000).toString() + ""
-                                            SendFileInfo.porperty = "0"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                            SendFileInfo.porperty = "1"
                                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
@@ -542,10 +461,6 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             if (code == 1) {
                                                 val uuid = (System.currentTimeMillis() / 1000).toInt()
                                                 message.msgId = uuid.toString() + ""
-                                                /*sendMsgMap[uuid.toString() + ""] = message
-                                                sendMsgLocalMap[uuid.toString() + ""] = false
-                                                sendFilePathMap[uuid.toString() + ""] = base58files_dir
-                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey*/
                                                 val toxFileData = ToxFileData()
                                                 toxFileData.fromId = userId
                                                 toxFileData.toId = i.userId
@@ -605,8 +520,312 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                 }
             }
             //toast(R.string.hasbeensent)
-            finish()
+
         }
+        if (groupSelectedList.size != 0) {//发给群列表
+            for (i in groupSelectedList) {
+                when (message!!.type) {
+                    EMMessage.Type.TXT -> {
+                        try {
+                            var eMTextMessageBody: EMTextMessageBody = message!!.body as EMTextMessageBody
+                            var msg:String = eMTextMessageBody!!.message
+                            val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                            var aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
+                            var fileBufferMi = AESCipher.aesEncryptBytes(msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
+                            var msgMi = RxEncodeTool.base64Encode2String(fileBufferMi);
+                            var groupSendMsgReq = GroupSendMsgReq(userId!!, i.gId!!, "",msgMi)
+                            var baseData = BaseData(4,groupSendMsgReq)
+                            var msgId = baseData.msgid!!
+                            if (ConstantValue.curreantNetworkType.equals("WIFI")) {
+                                AppConfig.instance.getPNRouterServiceMessageSender().sendGroupChatMsg(baseData)
+                            }else if (ConstantValue.isToxConnected) {
+                                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                            }
+
+                        } catch (e: Exception) {
+                            toast(R.string.Encryptionerror)
+                        }
+                    }
+                    EMMessage.Type.IMAGE -> {
+                        try {
+                            var eMImageMessageBody: EMImageMessageBody = message!!.body as EMImageMessageBody
+                            var imagePath = eMImageMessageBody.localUrl
+                            Thread(Runnable {
+                                try {
+                                    val file = File(imagePath)
+                                    val isHas = file.exists()
+                                    if (isHas) {
+                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1)
+                                        val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
+                                        val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
+                                        val message = EMMessage.createImageSendMessage(files_dir, true, i.gId)
+                                        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                                        val bitmap = BitmapFactory.decodeFile(imagePath)
+                                        val widthAndHeight = "," + bitmap.width + ".0000000" + "*" + bitmap.height + ".0000000"
+
+                                        message.from = userId
+                                        message.to = i.gId
+                                        message.isDelivered = true
+                                        message.setAttribute("wh", widthAndHeight.replace(",", ""))
+                                        message.isAcked = false
+                                        message.isUnread = true
+                                        if (ConstantValue.curreantNetworkType == "WIFI") {
+                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                            if (codeSave == 1) {
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.gId
+                                                SendFileInfo.files_dir = files_dir
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.widthAndHeight = widthAndHeight
+                                                SendFileInfo.friendSignPublicKey = i.userKey
+                                                SendFileInfo.friendMiPublicKey = i.userKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "1"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                                SendFileInfo.porperty = "1"
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                                /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                                EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
+                                            } else {
+
+                                                return@Runnable
+                                            }
+
+                                        } else {
+                                            val strBase58 = Base58.encode(fileName.toByteArray())
+                                            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, aesKey.substring(0,16), false)
+                                            if (code == 1) {
+                                                val uuid = (System.currentTimeMillis() / 1000).toInt()
+                                                message.msgId = uuid.toString() + ""
+                                                val toxFileData = ToxFileData()
+                                                toxFileData.fromId = userId
+                                                toxFileData.toId = i.gId
+                                                val fileMi = File(base58files_dir)
+                                                val fileSize = fileMi.length()
+                                                val fileMD5 = FileUtil.getFileMD5(fileMi)
+                                                toxFileData.fileName = strBase58
+                                                toxFileData.fileMD5 = fileMD5
+                                                toxFileData.fileSize = fileSize.toInt()
+                                                toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE
+                                                toxFileData.fileId = uuid
+                                                toxFileData.widthAndHeight = widthAndHeight.substring(1, widthAndHeight.length)
+                                                toxFileData.porperty = "1"
+
+                                                toxFileData.srcKey = i.userKey
+                                                toxFileData.dstKey = i.userKey
+
+                                                var fileNumber = ""
+                                                if (ConstantValue.isAntox) {
+                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                }else{
+                                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
+                                                }
+                                                ConstantValue.sendToxFileInGroupChapDataMap.put(fileNumber, toxFileData)
+                                            } else {
+
+                                                return@Runnable
+                                            }
+
+                                        }
+                                    } else {
+
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
+                            }).start()
+                        } catch (e: Exception) {
+                            toast(R.string.Encryptionerror)
+                        }
+                    }
+                    EMMessage.Type.VIDEO -> {
+                        try {
+                            var eMVideoMessageBody: EMVideoMessageBody = message!!.body as EMVideoMessageBody
+                            var videoPath = eMVideoMessageBody.localUrl
+                            Thread(Runnable {
+                                try {
+                                    val file = File(videoPath)
+                                    val isHas = file.exists()
+                                    if (isHas) {
+                                        val videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1)
+                                        val videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1)
+                                        val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + videoName + ".png"
+                                        val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
+                                        val videoLength = EaseImageUtils.getVideoDuration(videoPath)
+                                        FileUtil.saveBitmpToFile(bitmap, thumbPath)
+                                        val message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, i.gId)
+                                        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                                        message.from = userId
+                                        message.to = i.gId
+                                        message.isDelivered = true
+                                        message.isAcked = false
+                                        message.isUnread = true
+
+                                        if (ConstantValue.curreantNetworkType == "WIFI") {
+                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                            val SendFileInfo = SendFileInfo()
+                                            SendFileInfo.userId = userId
+                                            SendFileInfo.friendId = i.gId
+                                            SendFileInfo.files_dir = videoPath
+                                            SendFileInfo.msgId = uuid
+                                            SendFileInfo.friendSignPublicKey = i.userKey
+                                            SendFileInfo.friendMiPublicKey = i.userKey
+                                            SendFileInfo.voiceTimeLen = 0
+                                            SendFileInfo.type = "3"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                            SendFileInfo.porperty = "1"
+                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
+
+                                        } else {
+                                            val strBase58 = Base58.encode(videoFileName.toByteArray())
+                                            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, aesKey.substring(0,16))
+                                            if (code == 1) {
+                                                val uuid = (System.currentTimeMillis() / 1000).toInt()
+                                                message.msgId = uuid.toString() + ""
+                                                /*sendMsgMap[uuid.toString() + ""] = message
+                                                sendMsgLocalMap[uuid.toString() + ""] = false
+                                                sendFilePathMap[uuid.toString() + ""] = base58files_dir
+                                                sendFileFriendKeyMap[uuid.toString() + ""] = i.signPublicKey*/
+                                                val toxFileData = ToxFileData()
+                                                toxFileData.fromId = userId
+                                                toxFileData.toId = i.gId
+                                                val fileMi = File(base58files_dir)
+                                                val fileSize = fileMi.length()
+                                                val fileMD5 = FileUtil.getFileMD5(fileMi)
+                                                toxFileData.fileName = strBase58
+                                                toxFileData.fileMD5 = fileMD5
+                                                toxFileData.fileSize = fileSize.toInt()
+                                                toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA
+                                                toxFileData.fileId = uuid
+                                                toxFileData.porperty = "1"
+
+                                                toxFileData.srcKey = i.userKey
+                                                toxFileData.dstKey = i.userKey
+                                                var fileNumber = ""
+                                                if (ConstantValue.isAntox) {
+                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                }else{
+                                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
+                                                }
+
+                                                ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
+                                            }
+                                        }
+                                    } else {
+
+                                    }
+                                } catch (e: Exception) {
+
+                                }
+                            }).start()
+                        } catch (e: Exception) {
+                            toast(R.string.Encryptionerror)
+                        }
+                    }
+                    EMMessage.Type.FILE -> {
+                        try {
+                            var eMNormalFileMessageBody: EMNormalFileMessageBody = message!!.body as EMNormalFileMessageBody
+                            var filePath = eMNormalFileMessageBody.localUrl
+                            Thread(Runnable {
+                                try {
+                                    val file = File(filePath)
+                                    val isHas = file.exists()
+                                    if (isHas) {
+                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
+
+                                        val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
+                                        val message = EMMessage.createFileSendMessage(filePath, i.gId)
+                                        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                                        message.from = userId
+                                        message.to = i.gId
+                                        message.isDelivered = true
+                                        message.isAcked = false
+                                        message.isUnread = true
+
+
+                                        if (ConstantValue.curreantNetworkType == "WIFI") {
+                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                            message.msgId = uuid
+
+                                            val SendFileInfo = SendFileInfo()
+                                            SendFileInfo.userId = userId
+                                            SendFileInfo.friendId = i.gId
+                                            SendFileInfo.files_dir = files_dir
+                                            SendFileInfo.msgId = uuid
+                                            SendFileInfo.friendSignPublicKey = i.userKey
+                                            SendFileInfo.friendMiPublicKey = i.userKey
+                                            SendFileInfo.voiceTimeLen = 0
+                                            SendFileInfo.type = "4"
+                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                            SendFileInfo.porperty = "1"
+                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
+                                        } else {
+                                            val strBase58 = Base58.encode(fileName.toByteArray())
+                                            val base58files_dir = PathUtils.getInstance().tempPath.toString() + "/" + strBase58
+                                            val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey);
+                                            val code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, aesKey.substring(0,16))
+                                            if (code == 1) {
+                                                val uuid = (System.currentTimeMillis() / 1000).toInt()
+                                                message.msgId = uuid.toString() + ""
+                                                val toxFileData = ToxFileData()
+                                                toxFileData.fromId = userId
+                                                toxFileData.toId = i.gId
+                                                val fileMi = File(base58files_dir)
+                                                val fileSize = fileMi.length()
+                                                val fileMD5 = FileUtil.getFileMD5(fileMi)
+                                                toxFileData.fileName = strBase58
+                                                toxFileData.fileMD5 = fileMD5
+                                                toxFileData.fileSize = fileSize.toInt()
+                                                toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_FILE
+                                                toxFileData.fileId = uuid
+                                                toxFileData.porperty = "1"
+
+                                                toxFileData.srcKey = i.userKey
+                                                toxFileData.dstKey = i.userKey
+                                                var fileNumber =""
+                                                if (ConstantValue.isAntox) {
+                                                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey)
+                                                }else{
+                                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.currentRouterId.substring(0, 64)).toString()
+                                                }
+
+                                                ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
+                                            }
+
+                                        }
+                                        FileUtil.copySdcardFile(filePath, files_dir)
+                                    } else {
+
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
+                            }).start()
+                        } catch (e: Exception) {
+                            toast(R.string.Encryptionerror)
+                        }
+                    }
+                }
+            }
+            //toast(R.string.hasbeensent)
+
+        }
+        finish()
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -614,15 +833,64 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun selectFriendChange(selectFriendChange: SelectFriendChange) {
-        if (selectFriendChange.friendNum > 1) {
-            selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.person) + "s"
+        personCount = selectFriendChange.friendNum
+        if (personCount > 1) {
+            if(groupCount > 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + "s And "+ personCount  +" "+ getString(R.string.person) + "s"
+            }else if(groupCount == 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + " And "+ personCount  +" "+ getString(R.string.person) + "s"
+            }else{
+                selectTxt.text = getString(R.string.selected) +" "+ personCount  +" "+ getString(R.string.person) + "s"
+            }
+
         } else {
-            selectTxt.text = getString(R.string.selected) +" "+ selectFriendChange.friendNum  +" "+ getString(R.string.person)
+            if(groupCount > 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + "s And "+ personCount  +" "+ getString(R.string.person)
+            }else if(groupCount == 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + " And "+ personCount  +" "+ getString(R.string.person)
+            }else{
+                selectTxt.text = getString(R.string.selected) +" "+ personCount  +" "+ getString(R.string.person)
+            }
         }
-        if (selectFriendChange.friendNum == 0) {
+        if (personCount == 0 && groupCount == 0) {
             send.text = "Confirm"
         } else {
-            send.text = "Confirm (" + selectFriendChange.friendNum + ")"
+            send.text = "Confirm (" + (personCount + groupCount) + ")"
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun SelectGroupChanges(SelectGroupChange: SelectGroupChange) {
+        groupCount = SelectGroupChange.groupNum
+        if (personCount > 1) {
+            if(groupCount > 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + "s And "+ personCount  +" "+ getString(R.string.person) + "s"
+            }else if(groupCount == 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + " And "+ personCount  +" "+ getString(R.string.person) + "s"
+            }else{
+                selectTxt.text = getString(R.string.selected) +" "+ personCount  +" "+ getString(R.string.person) + "s"
+            }
+
+        } else {
+            if(groupCount > 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + "s And "+ personCount  +" "+ getString(R.string.person)
+            }else if(groupCount == 1)
+            {
+                selectTxt.text = getString(R.string.selected) +" "+ groupCount  +" "+ getString(R.string.group) + " And "+ personCount  +" "+ getString(R.string.person)
+            }else{
+                selectTxt.text = getString(R.string.selected) +" "+ personCount  +" "+ getString(R.string.person)
+            }
+        }
+        if (personCount == 0 && groupCount == 0) {
+            send.text = "Confirm"
+        } else {
+            send.text = "Confirm (" + (personCount + groupCount) + ")"
         }
     }
     override fun setupActivityComponent() {

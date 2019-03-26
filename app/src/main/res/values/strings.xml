@@ -606,5 +606,7 @@
     <string name="invited">invited</string>
     <string name="you">you</string>
     <string name="join">to the group</string>
+    <string name="groups">Groups</string>
     <string name="no_files_available_yet">No files available yet</string>
+    <string name="group">group</string>
 </resources>

@@ -75,8 +75,10 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
                         GroupLocal.gId = item.gId
                         GroupLocal.gAdmin = item.gAdmin
                         GroupLocal.gName = item.gName
+                        GroupLocal.routerId = ConstantValue.currentRouterId
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
                     }else{
+                        item.routerId = ConstantValue.currentRouterId
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
                     }
                     groupEntityList.add(item)

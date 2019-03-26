@@ -587,7 +587,6 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 return msgId.toString()
             }
 
-            var friendMiPublic = RxEncodeTool.base64Decode(point)
             LogUtil.addLog("groupSendMsgV3 UserKey:",UserKey)
             var aesKey = LibsodiumUtil.DecryptShareKey(UserKey)
             var fileBufferMi = AESCipher.aesEncryptBytes(Msg.toByteArray(), aesKey!!.toByteArray(charset("UTF-8")))
@@ -597,7 +596,6 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             msgId = baseData.msgid!!
             if (ConstantValue.curreantNetworkType.equals("WIFI")) {
                 AppConfig.instance.getPNRouterServiceMessageSender().sendGroupChatMsg(baseData)
-
             }else if (ConstantValue.isToxConnected) {
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
