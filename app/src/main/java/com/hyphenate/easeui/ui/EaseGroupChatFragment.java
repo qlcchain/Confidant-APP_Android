@@ -2073,7 +2073,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         int uuid = (int) (System.currentTimeMillis() / 1000);
         message.setDirection(EMMessage.Direct.RECEIVE);
-        message.setMsgId(Message.SpecialId.GroupSpecialId.toString()+"_"+uuid);
+        message.setMsgId(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString()+"_"+uuid);
         message.setFrom(from);
         message.setTo(toChatUserId);
         KLog.i("插入提示消息");
