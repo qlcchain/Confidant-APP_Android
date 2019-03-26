@@ -25,7 +25,7 @@ import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
-import com.stratagile.pnrouter.ui.activity.main.ContactFragment
+import com.stratagile.pnrouter.ui.activity.main.ContactAndGroupFragment
 import com.stratagile.pnrouter.ui.activity.selectfriend.component.DaggerselectFriendComponent
 import com.stratagile.pnrouter.ui.activity.selectfriend.contract.selectFriendContract
 import com.stratagile.pnrouter.ui.activity.selectfriend.module.selectFriendModule
@@ -56,7 +56,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
     @Inject
     internal lateinit var mPresenter: selectFriendPresenter
-    var fragment: ContactFragment? = null
+    var fragment: ContactAndGroupFragment? = null
     var  userEntity: UserEntity? = null
     var fromId:String? = null
     var message: EMMessage? = null
@@ -82,7 +82,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
     override fun initData() {
         EventBus.getDefault().unregister(this)
         EventBus.getDefault().register(this)
-        fragment = ContactFragment();
+        fragment = ContactAndGroupFragment();
         val bundle = Bundle()
         bundle.putString(ConstantValue.selectFriend, "select")
         bundle.putString("fromId", fromId)

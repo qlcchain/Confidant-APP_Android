@@ -63,7 +63,15 @@
 
     </RelativeLayout>
 
+    <android.support.v4.view.ViewPager
+        android:visibility="gone"
+        android:layout_below="@+id/rl1"
+        android:id="@+id/gourpViewPager"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0px">
 
+    </android.support.v4.view.ViewPager>
     <android.support.v4.view.ViewPager
         android:layout_below="@+id/rl1"
         android:id="@+id/viewPager"

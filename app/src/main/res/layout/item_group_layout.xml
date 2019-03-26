@@ -5,6 +5,17 @@
     android:gravity="center_vertical"
     android:background="@color/white"
     android:orientation="horizontal">
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:layout_marginStart="16dp"
+        android:button="@drawable/checkbox_style"
+     />
     <com.stratagile.pnrouter.view.ImageButtonWithText
         android:id="@+id/groupIcon"
         android:layout_width="@dimen/x80"

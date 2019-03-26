@@ -848,6 +848,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 GroupLocal.gId = pushMsgRsp.params.gId
                 GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
                 GroupLocal.gName = pushMsgRsp.params.groupName
+                GroupLocal.routerId = ConstantValue.currentRouterId
                 AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
             }else{
                 var GroupLocal = GroupEntity()
@@ -856,6 +857,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 GroupLocal.gId = pushMsgRsp.params.gId
                 GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
                 GroupLocal.gName = pushMsgRsp.params.groupName
+                GroupLocal.routerId = ConstantValue.currentRouterId
                 AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
             }
             if (!AppConfig.instance.isBackGroud) {

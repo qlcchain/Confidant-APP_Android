@@ -1,8 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,45 +8,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
-import com.message.UserProvider
 import com.pawegio.kandroid.runOnUiThread
 import com.socks.library.KLog
-import com.stratagile.pnrouter.BuildConfig
-
+import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
-import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactComponent
-import com.stratagile.pnrouter.ui.activity.main.contract.ContactContract
-import com.stratagile.pnrouter.ui.activity.main.module.ContactModule
-import com.stratagile.pnrouter.ui.activity.main.presenter.ContactPresenter
-
-import javax.inject.Inject;
-
-import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.PullFriendReq_V4
-import com.stratagile.pnrouter.entity.events.FriendAvatarChange
-import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.entity.events.SelectFriendChange
-import com.stratagile.pnrouter.entity.events.UnReadContactCount
-import com.stratagile.pnrouter.ui.activity.group.GroupChatsActivity
-import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
+import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactAndGroupComponent
+import com.stratagile.pnrouter.ui.activity.main.contract.ContactAndGroupContract
+import com.stratagile.pnrouter.ui.activity.main.module.ContactAndGroupModule
+import com.stratagile.pnrouter.ui.activity.main.presenter.ContactAndGroupPresenter
+import com.stratagile.pnrouter.ui.adapter.group.GroupAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
-import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.ui.adapter.user.UserItem
 import com.stratagile.pnrouter.utils.LogUtil
@@ -58,23 +41,20 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
-import kotlinx.android.synthetic.main.fragment_contact.*
+import kotlinx.android.synthetic.main.fragment_contact_group.*
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import javax.inject.Inject
 
 /**
- * @author hzp
+ * @author zl
  * @Package com.stratagile.pnrouter.ui.activity.main
  * @Description: $description
- * @date 2018/09/10 17:33:27
+ * @date 2019/03/26 11:19:29
  */
 
-class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMessageReceiver.PullFriendCallBack {
+class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , PNRouterServiceMessageReceiver.PullFriendCallBack{
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         //用户表，每个手机是一个用户
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -222,12 +202,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             initData()
         }
     }
-
     @Inject
-    lateinit internal var mPresenter: ContactPresenter
-
+    lateinit internal var mPresenter: ContactAndGroupPresenter
 //    var contactAdapter : ContactListAdapter? = null
 
+    var contactAdapter0: GroupAdapter? = null
     var contactAdapter1: ContactAdapter? = null
 
     lateinit var viewModel: MainViewModel
@@ -241,6 +220,15 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     var routerId: String? = null
     var onViewCreated = false;
 
+    //   @Nullable
+    //   @Override
+    //   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    //       View view = inflater.inflate(R.layout.fragment_contactAndGroup, null);
+    //       ButterKnife.bind(this, view);
+    //       Bundle mBundle = getArguments();
+    //       return view;
+    //   }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fromId = null
         if (arguments != null && arguments!!.get("fromId") != null) {
@@ -250,7 +238,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         if (arguments != null && arguments!!.get("routerId") != null) {
             routerId = arguments!!.get("routerId") as String
         }
-        var view = inflater.inflate(R.layout.fragment_contact, null);
+        var view = inflater.inflate(R.layout.fragment_contact_group, null);
         return view
     }
 
@@ -258,7 +246,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        EventBus.getDefault().register(this)
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
 
         try {
@@ -266,23 +253,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         } catch (e: Exception) {
             var aa = ""
         }
-        viewModel.freindChange.observe(this, Observer<Long> { friendChange ->
-            initData()
-        })
-        newFriend.setOnClickListener {
-            startActivity(Intent(activity!!, NewFriendActivity::class.java))
-        }
         initData()
-        refreshLayout.setOnRefreshListener {
+        /*refreshLayout.setOnRefreshListener {
             pullFriendList()
             KLog.i("拉取好友列表")
-        }
-        if (!BuildConfig.DEBUG) {
-            groupChat.visibility = View.GONE
-        }
-        groupChat.setOnClickListener {
-            startActivity(Intent(activity!!, GroupChatsActivity::class.java))
-        }
+        }*/
         refreshLayout.isEnabled = refreshEnable1
         pullFriendList()
     }
@@ -306,23 +281,8 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         toReduceList = list
         KLog.i("将要不显示的数量为：" + toReduceList?.size)
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun friendChange(friendChange: FriendChange) {
-        initData()
-        pullFriendList()
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun FriendAvatarChange(FriendAvatarChange: FriendAvatarChange) {
-        initData()
-        pullFriendList()
-    }
-
     fun pullFriendList() {
         Log.i("pullFriendList", "webosocket" + ConstantValue.isWebsocketConnected)
-        if (refreshLayout != null)
-            refreshLayout.isRefreshing = false
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
         var pullFriend = PullFriendReq_V4(selfUserId!!)
         var sendData = BaseData(pullFriend)
@@ -408,10 +368,18 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                     {
                         if(it.routeId.equals(routerId))
                         {
-                            contactList.add(it)
+                            if(!it.userId.equals(fromId))
+                            {
+                                contactList.add(it)
+                            }
+
                         }
                     }else{
-                        contactList.add(it)
+                        if(!it.userId.equals(fromId))
+                        {
+                            contactList.add(it)
+                        }
+
                     }
 
                 }
@@ -430,15 +398,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
         }
 
-        if (hasNewFriendRequest) {
-            new_contact_dot.visibility = View.VISIBLE
-//            UserProvider.getInstance().refreshFriend("")
-            EventBus.getDefault().post(UnReadContactCount(newFriendCount))
-        } else {
-            new_contact_dot.visibility = View.GONE
-//            UserProvider.getInstance().refreshFriend("")
-            EventBus.getDefault().post(UnReadContactCount(0))
-        }
         for (i in contactList) {
             if (i?.remarks != null && i?.remarks != "") {
                 i.nickSouceName = String(RxEncodeTool.base64Decode(i.remarks)).toLowerCase()
@@ -477,6 +436,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         contactNewList.sortBy {
             String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
+        val list0 =AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.loadAll()
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
         contactNewList.forEach {
@@ -541,22 +501,23 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 }
             }
         }
+        contactAdapter0 = GroupAdapter(list0)
+        recyclerGroupView.adapter = contactAdapter0
+        if(list0.size > 4)
+        {
+            val layoutParams = recyclerGroupView.layoutParams
+            layoutParams.height = 500
+            recyclerGroupView.layoutParams = layoutParams;
+        }
+
+        if (bundle != null) {
+            contactAdapter0!!.setCheckMode(true)
+        }
         contactAdapter1 = ContactAdapter(list1)
         recyclerView.adapter = contactAdapter1
         if (bundle != null) {
             contactAdapter1!!.isCheckMode = true
         }
-        //一对多数据处理end
-        if (bundle == null) {
-            newFriend.visibility = View.VISIBLE
-            groupChat.visibility = View.VISIBLE
-//            contactAdapter = ContactListAdapter(contactList,false)
-        } else {
-            newFriend.visibility = View.GONE
-            groupChat.visibility = View.GONE
-//            contactAdapter = ContactListAdapter(contactList,true)
-        }
-
         query.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 fiter(s.toString(), contactList)
@@ -677,16 +638,16 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         return contactList!!
     }
     override fun setupFragmentComponent() {
-        DaggerContactComponent
+        DaggerContactAndGroupComponent
                 .builder()
                 .appComponent((activity!!.application as AppConfig).applicationComponent)
-                .contactModule(ContactModule(this))
+                .contactAndGroupModule(ContactAndGroupModule(this))
                 .build()
                 .inject(this)
     }
 
-    override fun setPresenter(presenter: ContactContract.ContactContractPresenter) {
-        mPresenter = presenter as ContactPresenter
+    override fun setPresenter(presenter: ContactAndGroupContract.ContactAndGroupContractPresenter) {
+        mPresenter = presenter as ContactAndGroupPresenter
     }
 
     override fun initDataFromLocal() {
@@ -703,7 +664,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().unregister(this)
         if (AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
     }
