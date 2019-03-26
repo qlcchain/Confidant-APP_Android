@@ -115,12 +115,11 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             return convertView;
         }
         EMMessage eMMessage = conversation.getEmMessage();
-        String chatType =  eMMessage.getChatType().toString();
+        String chatType = eMMessage.getChatType().toString();
         String usernameSouce = "";
         UserEntity friendUser = null;
         GroupEntity groupEntity = null;
-        if(chatType.equals("Chat"))
-        {
+        if (chatType.equals("Chat")) {
 
             List<UserEntity> localFriendList = null;
             if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
@@ -140,9 +139,9 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                 username = friendUser.getRemarks();
             }
             usernameSouce = new String(RxEncodeTool.base64Decode(username));
-        }else{
+        } else {
             List<GroupEntity> localGroupList = null;
-            localGroupList =  AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().loadAll();
+            localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().loadAll();
             localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(lastMessage.getEmMessage().getTo())).list();
             if (localGroupList.size() > 0)
                 groupEntity = localGroupList.get(0);
@@ -162,8 +161,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             // group message, show group avatar
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
             EMGroup group = EMClient.getInstance().groupManager().getGroup(conversationId);
-            if(groupEntity != null)
-            {
+            if (groupEntity != null) {
                 if ("".equals(groupEntity.getRemark())) {
                     String groupnameSouce = new String(RxEncodeTool.base64Decode(groupEntity.getGName()));
                     holder.name.setText(groupnameSouce);
@@ -172,6 +170,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                     holder.name.setText(groupnameSouce);
                 }
             }
+            holder.userRouter.setText("");
             holder.avatar.setGroupHeadImage();
         } else if (conversation.getEmMessage().getChatType() == EMMessage.ChatType.ChatRoom) {
 //            holder.avatar.setImageResource(R.drawable.ease_group_icon);
@@ -185,7 +184,11 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             String fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(friendUser.getSignPublicKey())) + ".jpg";
             holder.avatar.setImageFile(fileBase58Name);
             holder.name.setText(usernameSouce);
-            holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
+            if (!"".equals(new String(RxEncodeTool.base64Decode(friendUser.getRouteName())))) {
+                holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
+            } else {
+                holder.userRouter.setText("");
+            }
             holder.motioned.setVisibility(View.GONE);
         }
 
@@ -236,32 +239,28 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         } else {
             holder.draft.setVisibility(View.GONE);
         }
-        if(friendUser != null)
-        {
+        if (friendUser != null) {
             String username = friendUser.getNickName();
             if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
                 username = friendUser.getRemarks();
             }
-            if(friendUser.getUserId().equals(userId))
-            {
-                String name =  SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+            if (friendUser.getUserId().equals(userId)) {
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
                 usernameSouce = name;
-            }else{
+            } else {
                 usernameSouce = new String(RxEncodeTool.base64Decode(username));
             }
 
-        }else{
-            if(lastMessage.getEmMessage().getFrom().equals(userId))
-            {
-                String name =  SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+        } else {
+            if (lastMessage.getEmMessage().getFrom().equals(userId)) {
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
                 usernameSouce = name;
             }
         }
-        if(chatType.equals("Chat"))
-        {
+        if (chatType.equals("Chat")) {
             holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("//[draft]//", "")));
-        }else{
-            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce+":"+holder.message.getText().toString().replace("//[draft]//", "")));
+        } else {
+            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce + ":" + holder.message.getText().toString().replace("//[draft]//", "")));
         }
 
         holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
@@ -354,36 +353,64 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                 final ArrayList<UnReadEMMessage> newValues = new ArrayList<UnReadEMMessage>();
 
                 for (int i = 0; i < count; i++) {
-
                     final UnReadEMMessage value = mOriginalValues.get(i);
                     UnReadEMMessage lastMessage = value;
                     UserEntity friendUser = null;
+                    GroupEntity groupEntity = null;
                     List<UserEntity> localFriendList = null;
-                    if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
-                        if (localFriendList.size() > 0)
-                            friendUser = localFriendList.get(0);
-                    } else {
-                        localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
-                        if (localFriendList.size() > 0)
-                            friendUser = localFriendList.get(0);
-                    }
-                    String username = new String(RxEncodeTool.base64Decode(friendUser.getNickName()));
-                    if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
-                        username = new String(RxEncodeTool.base64Decode(friendUser.getRemarks()));
-                    }
-                    // First match against the whole ,non-splitted value
-                    if (username.toLowerCase().contains(prefixString.toLowerCase())) {
-                        newValues.add(value);
-                    } else {
-                        final String[] words = username.split(" ");
-                        final int wordCount = words.length;
-
-                        // Start at index 0, in case valueText starts with space(s)
-                        for (String word : words) {
-                            if (word.toLowerCase().contains(prefixString.toLowerCase())) {
+                    List<GroupEntity> localGroupList = null;
+                    if (lastMessage.getEmMessage().getTo().contains("group")) {
+                        //群聊
+                        localGroupList = AppConfig.instance.getMDaoMaster().newSession().getGroupEntityDao().queryBuilder().where(GroupEntityDao.Properties.GId.eq(lastMessage.getEmMessage().getTo())).list();
+                        if (localGroupList.size() > 0) {
+                            groupEntity = localGroupList.get(0);
+                            String username = new String(RxEncodeTool.base64Decode(groupEntity.getGName()));
+                            if (groupEntity.getRemark() != null && !groupEntity.getRemark().equals("")) {
+                                username = new String(RxEncodeTool.base64Decode(groupEntity.getRemark()));
+                            }
+                            if (username.toLowerCase().contains(prefixString.toLowerCase())) {
                                 newValues.add(value);
-                                break;
+                            } else {
+                                final String[] words = username.split(" ");
+                                final int wordCount = words.length;
+
+                                // Start at index 0, in case valueText starts with space(s)
+                                for (String word : words) {
+                                    if (word.toLowerCase().contains(prefixString.toLowerCase())) {
+                                        newValues.add(value);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //单聊
+                        if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
+                            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
+                            if (localFriendList.size() > 0)
+                                friendUser = localFriendList.get(0);
+                        } else {
+                            localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getFrom())).list();
+                            if (localFriendList.size() > 0)
+                                friendUser = localFriendList.get(0);
+                        }
+                        String username = new String(RxEncodeTool.base64Decode(friendUser.getNickName()));
+                        if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
+                            username = new String(RxEncodeTool.base64Decode(friendUser.getRemarks()));
+                        }
+                        // First match against the whole ,non-splitted value
+                        if (username.toLowerCase().contains(prefixString.toLowerCase())) {
+                            newValues.add(value);
+                        } else {
+                            final String[] words = username.split(" ");
+                            final int wordCount = words.length;
+
+                            // Start at index 0, in case valueText starts with space(s)
+                            for (String word : words) {
+                                if (word.toLowerCase().contains(prefixString.toLowerCase())) {
+                                    newValues.add(value);
+                                    break;
+                                }
                             }
                         }
                     }

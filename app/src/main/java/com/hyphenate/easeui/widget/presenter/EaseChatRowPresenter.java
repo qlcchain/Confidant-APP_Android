@@ -24,6 +24,7 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
     private BaseAdapter adapter;
     private EMMessage message;
     private int position;
+    private int count;
 
     private EaseChatMessageList.MessageListItemClickListener itemClickListener;
 
@@ -60,12 +61,12 @@ public abstract class EaseChatRowPresenter implements EaseChatRow.EaseChatRowAct
 
     public void setup(EMMessage msg, int position,
                       EaseChatMessageList.MessageListItemClickListener itemClickListener,
-                      EaseMessageListItemStyle itemStyle) {
+                      EaseMessageListItemStyle itemStyle, int count) {
         this.message = msg;
         this.position = position;
         this.itemClickListener = itemClickListener;
-
-        chatRow.setUpView(message, position, itemClickListener, this, itemStyle);
+        this.count = count;
+        chatRow.setUpView(message, position, itemClickListener, this, itemStyle, count);
 
         handleMessage();
     }

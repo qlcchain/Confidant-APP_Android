@@ -4,20 +4,19 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
-    android:paddingBottom="@dimen/x13"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/x13">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/timestamp"
         style="@style/chat_text_date_style"
+        android:layout_marginTop="@dimen/x24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_chat_activity" >
+        android:layout_marginTop="@dimen/x16" >
 
         <com.stratagile.pnrouter.view.ImageButtonWithText
             android:id="@+id/iv_userhead"
@@ -105,5 +104,11 @@
             android:layout_toLeftOf="@id/bubble"
             />
     </RelativeLayout>
+
+    <View
+        android:id="@+id/marginView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x16"/>
 
 </LinearLayout>

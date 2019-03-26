@@ -18,6 +18,7 @@ import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.UserDataManger;
+import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.events.SelectFriendChange;
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
@@ -28,6 +29,7 @@ import com.stratagile.pnrouter.view.OptAnimationLoader;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder> {
@@ -105,8 +107,8 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                             } else {
                                 lv0.setChecked(!lv0.isChecked());
                                 notifyItemChanged(helper.getAdapterPosition(), "checkChange");
+                                getSelectedCount(lv0.isChecked(), lv0.getUserEntity());
                             }
-                            getSelectedCount();
                         } else {
                             KLog.i("点击头。。" + helper.getAdapterPosition());
                             if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
@@ -117,7 +119,6 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                                     KLog.i("将要展开");
                                     expand(helper.getAdapterPosition());
                                 }
-//                                notifyDataSetChanged();
                             } else {
                                 int pos = helper.getAdapterPosition();
                                 final UserHead data = (UserHead) getItem(pos);
@@ -143,7 +144,7 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     public void onClick(View v) {
                         if (isCheckMode) {
                             lv1.setChecked(!lv1.isChecked());
-                            getSelectedCount();
+                            getSelectedCount(lv1.isChecked(), lv1.getUserEntity());
                             notifyItemChanged(helper.getAdapterPosition(), "checkChange");
                         } else {
                             final UserItem data = (UserItem) getItem(helper.getAdapterPosition());
@@ -216,7 +217,22 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
         }
     }
 
-    private void getSelectedCount() {
+    public ArrayList<UserEntity> selectedUser = new ArrayList<>();
+
+    private void getSelectedCount(boolean isCheck, UserEntity userEntity) {
+        boolean has = false;
+        for (UserEntity user : selectedUser) {
+            if (user.getUserId().equals(userEntity.getUserId())) {
+                has = true;
+                break;
+            }
+        }
+        if (!has && isCheck) {
+            selectedUser.add(userEntity);
+        }
+        if (has && !isCheck) {
+            selectedUser.remove(userEntity);
+        }
         int count = 0;
         for (int i = 0; i < getData().size(); i++) {
             if (getData().get(i).getItemType() == 0) {
@@ -235,6 +251,6 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 }
             }
         }
-        EventBus.getDefault().post(new SelectFriendChange(count, 0));
+        EventBus.getDefault().post(new SelectFriendChange(count, 0, isCheck, userEntity));
     }
 }

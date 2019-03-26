@@ -325,7 +325,7 @@ public class EaseMessageAdapter extends BaseAdapter {
             presenter = (EaseChatRowPresenter) convertView.getTag();
         }
 
-        presenter.setup(message, position, itemClickListener, itemStyle);
+        presenter.setup(message, position, itemClickListener, itemStyle, getCount());
 
         return convertView;
     }

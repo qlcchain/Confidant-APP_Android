@@ -51,10 +51,7 @@ import com.stratagile.pnrouter.ui.adapter.user.ContactAdapter
 import com.stratagile.pnrouter.ui.adapter.user.ContactListAdapter
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.ui.adapter.user.UserItem
-import com.stratagile.pnrouter.utils.LogUtil
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.ease_search_bar.*
@@ -232,7 +229,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
     lateinit var viewModel: MainViewModel
 
+    //需要显示为已经选中的选项
     var toAddList: ArrayList<UserEntity>? = null
+    //不能显示出来的好友，这些好友已经是群成员了。
     var toReduceList: ArrayList<UserEntity>? = null
 
     var fromId: String? = null
@@ -384,7 +383,6 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             it.nickSouceName
         }
         updateAdapterData(contactList)
-//        contactAdapter!!.setNewData(contactList);
     }
 
     fun initData() {
@@ -567,7 +565,9 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+//                getSelectedUser(contactAdapter1!!.data.MutableListToArrayList())
+            }
 
             override fun afterTextChanged(s: Editable) {
 
@@ -621,19 +621,75 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             }
             list1.add(userHead)
         }
+
+
+        if (contactAdapter1!!.selectedUser != null) {
+            //把从外面带过来的数据先设置为已经选中
+            KLog.i("添加已经选中的")
+            list1.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        contactAdapter1!!.selectedUser?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("添加选中")
+                                userItem.isChecked = true
+                            }
+                        }
+                    }
+                } else {
+                    contactAdapter1!!.selectedUser?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("添加选中")
+                            userHead.isChecked = true
+                        }
+                    }
+                }
+            }
+        }
+
+        var list2 = arrayListOf<MultiItemEntity>()
+        list2.addAll(list1)
+        if (toReduceList != null) {
+            list2.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        toReduceList?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("删除。。")
+//                                userItem.isChecked = true
+                                list1.remove(userItem)
+                            }
+                        }
+                    }
+                } else {
+                    toReduceList?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("删除。。")
+//                            userHead.isChecked = true
+                            list1.remove(userHead)
+                        }
+                    }
+                }
+            }
+        }
         contactAdapter1!!.setNewData(list1)
     }
 
 
     fun fiter(key: String, contactList: ArrayList<UserEntity>) {
-        var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
-        for (i in contactList) {
-            if (i.nickSouceName.toLowerCase().contains(key)) {
-                contactListTemp.add(i)
+        if ("".equals(key)) {
+            updateAdapterData(contactList)
+        } else {
+            var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
+            for (i in contactList) {
+                if (i.nickSouceName.toLowerCase().contains(key)) {
+                    contactListTemp.add(i)
+                }
             }
+            updateAdapterData(contactListTemp)
         }
-        updateAdapterData(contactListTemp)
-//        contactAdapter!!.setNewData(contactListTemp)
     }
 
     fun selectOrCancelAll() {
@@ -653,6 +709,29 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 //        }
 //        EventBus.getDefault().post(SelectFriendChange(count,0))
     }
+
+//    fun getSelectedUser(adapterList : ArrayList<MultiItemEntity>) {
+//        var newSelectedUsers = arrayListOf<UserEntity>()
+//        var allSelectUserMap = mutableMapOf<String, UserEntity>()
+//        adapterList.forEach {
+//            if (it.itemType == 0) {
+//                val userHead = it as UserHead
+//                if (userHead.subItems == null || userHead.subItems.size == 0) {
+//                    if (userHead.isChecked) {
+//                        newSelectedUsers.add(userHead.userEntity)
+//                    }
+//                } else {
+//                    for (j in 0 until userHead.subItems.size) {
+//                        val userItem = userHead.subItems[j]
+//                        if (userItem.isChecked) {
+//                            newSelectedUsers.add(userHead.userEntity)
+//                        }
+//                    }
+//                }
+//            }
+////            allSelectUserMap.put(it.userId, it)
+//        }
+//    }
 
     fun getAllSelectedFriend(): ArrayList<UserEntity> {
         var contactList = arrayListOf<UserEntity>()

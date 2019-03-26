@@ -199,12 +199,12 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
     }
 
     fun getRoundedCornerBitmap1(bitmap: Bitmap): Bitmap {
-        val output = Bitmap.createBitmap(bitmap.width,
-                bitmap.height, Bitmap.Config.ARGB_8888)
+        val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
 
         val paint = Paint()
         val rect = Rect(0, 0, bitmap.width, bitmap.height)
+        val rect1 = Rect(160, 160, bitmap.width - 160, bitmap.height - 160)
         val rectF = RectF(rect)
         val roundPx = resources.getDimension(R.dimen.x160)
 
@@ -214,7 +214,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
         canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
 
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-        canvas.drawBitmap(bitmap, rect, rect, paint)
+        canvas.drawBitmap(bitmap, rect1, rect1, paint)
 
         return output
     }
