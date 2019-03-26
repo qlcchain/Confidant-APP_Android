@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
+import com.stratagile.pnrouter.entity.events.SaveMsgEvent
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
@@ -372,6 +373,13 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun deleteMsgEvent(deleteMsgEvent: DeleteMsgEvent) {
         chatFragment?.delMyMsgOnSending(deleteMsgEvent.msgId)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun saveMsgEvent(saveMsgEvent: SaveMsgEvent) {
+        if(saveMsgEvent.result == 1)
+        {
+            toast(R.string.success)
+        }
     }
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 

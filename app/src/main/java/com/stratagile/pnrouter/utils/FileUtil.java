@@ -1552,6 +1552,11 @@ public class FileUtil {
      */
     public static int copyAppFileToSdcard(String fromFile, String toFile)
     {
+        File file = new File(fromFile);
+        if(!file.exists())
+        {
+            return 0;
+        }
         try
         {
             InputStream fosfrom = new FileInputStream(fromFile);
@@ -1568,7 +1573,7 @@ public class FileUtil {
             return 1;
         } catch (Exception ex)
         {
-
+            ex.printStackTrace();
         }
         return 0;
     }

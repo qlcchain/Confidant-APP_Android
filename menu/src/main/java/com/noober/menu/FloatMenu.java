@@ -62,7 +62,7 @@ public class FloatMenu extends PopupWindow{
 
 
 	public interface OnItemClickListener {
-		void onClick(View v, int position);
+		void onClick(View v, int position,String name);
 	}
 
 	public FloatMenu(Activity activity){
@@ -152,7 +152,7 @@ public class FloatMenu extends PopupWindow{
 			}
 			textView.setText(menuModel.getItem());
 			if(onItemClickListener != null){
-				textView.setOnClickListener(new ItemOnClickListener(i));
+				textView.setOnClickListener(new ItemOnClickListener(i,menuModel.getItem()));
 			}
 			menuLayout.addView(textView);
 		}
@@ -287,8 +287,8 @@ public class FloatMenu extends PopupWindow{
 		this.onItemClickListener = onItemClickListener;
 		if(onItemClickListener != null){
 			for (int i = 0; i < menuLayout.getChildCount(); i ++){
-				View view = menuLayout.getChildAt(i);
-				view.setOnClickListener(new ItemOnClickListener(i));
+				TextView view = (TextView)menuLayout.getChildAt(i);
+				view.setOnClickListener(new ItemOnClickListener(i,view.getText().toString()));
 			}
 		}
 	}
@@ -307,16 +307,18 @@ public class FloatMenu extends PopupWindow{
 
 	class ItemOnClickListener implements View.OnClickListener {
 		int position;
+		String name;
 
-		public ItemOnClickListener(int position){
+		public ItemOnClickListener(int position,String name){
 			this.position = position;
+			this.name = name;
 		}
 
 		@Override
 		public void onClick(View v) {
 			dismiss();
 			if(onItemClickListener != null){
-				onItemClickListener.onClick(v, position);
+				onItemClickListener.onClick(v, position,name);
 			}
 		}
 	}

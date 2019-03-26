@@ -11,8 +11,10 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMNormalFileMessageBody;
+import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
 import com.hyphenate.easeui.utils.OpenFileUtil;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
@@ -28,6 +30,7 @@ import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.GroupDelMsgReq;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
+import com.stratagile.pnrouter.entity.events.SaveMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
@@ -103,19 +106,44 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             FloatMenu floatMenu = new  FloatMenu(AppConfig.instance.getApplicationContext(),view);
             if(fromID.equals(userId))
             {
-                floatMenu.inflate(R.menu.popup_menu_file);
+                if( message.getType() == EMMessage.Type.IMAGE || message.getType() == EMMessage.Type.VIDEO)
+                {
+                    floatMenu.inflate(R.menu.popup_menu_pic_video);
+                }else{
+                    floatMenu.inflate(R.menu.popup_menu_file);
+                }
+
             }else{
                 if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                 {
                     if(UserDataManger.currentGroupData.getGAdmin().equals(userId))//如果是群管理员
                     {
-                        floatMenu.inflate(R.menu.popup_menu_file);
+                        if( message.getType() == EMMessage.Type.IMAGE || message.getType() == EMMessage.Type.VIDEO)
+                        {
+                            floatMenu.inflate(R.menu.popup_menu_pic_video);
+                        }else{
+                            floatMenu.inflate(R.menu.popup_menu_file);
+                        }
+
+                    }else{
+                        if( message.getType() == EMMessage.Type.IMAGE || message.getType() == EMMessage.Type.VIDEO)
+                        {
+                            floatMenu.inflate(R.menu.friendpopup_menu_pic_video);
+                        }else{
+                            floatMenu.inflate(R.menu.friendpopup_menu_file);
+                        }
+
+                    }
+
+                }else{
+                    if( message.getType() == EMMessage.Type.IMAGE || message.getType() == EMMessage.Type.VIDEO)
+                    {
+                        floatMenu.inflate(R.menu.friendpopup_menu_pic_video);
                     }else{
                         floatMenu.inflate(R.menu.friendpopup_menu_file);
                     }
 
-                }else{
-                    floatMenu.inflate(R.menu.friendpopup_menu_file);
+
                 }
 
             }
@@ -126,17 +154,17 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
-                public void onClick(View v, int position) {
-                    switch (position)
+                public void onClick(View v, int position,String name) {
+                    switch (name)
                     {
-                        case 0:
+                        case "Forward":
                             Intent intent = new Intent(getContext(), selectFriendActivity.class);
                             intent.putExtra("fromId", message.getTo());
                             intent.putExtra("message",message);
                             getContext().startActivity(intent);
                             ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                             break;
-                        case 1:
+                        case "withDraw":
                             String  msgId = message.getMsgId();
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             if(message.isAcked())
@@ -179,6 +207,38 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             }else{
                                 EventBus.getDefault().post(new DeleteMsgEvent(msgId));
                             }
+                            break;
+                        case "Save":
+                            String galleryPath = Environment.getExternalStorageDirectory()
+                                    + File.separator + Environment.DIRECTORY_DCIM
+                                    + File.separator + "Confidant" + File.separator;
+                            File galleryPathFile = new File(galleryPath);
+                            if(!galleryPathFile.exists())
+                            {
+                                galleryPathFile.mkdir();
+                            }
+                            if( message.getType() == EMMessage.Type.IMAGE)
+                            {
+                                EMImageMessageBody eMImageMessageBody  = (EMImageMessageBody)message.getBody();
+                                String imagePath = eMImageMessageBody.getLocalUrl();
+                                galleryPath += System.currentTimeMillis()+imagePath.substring(imagePath.lastIndexOf("."),imagePath.length());
+                                int result = FileUtil.copyAppFileToSdcard(imagePath, galleryPath);
+                                if (result == 1) {
+
+
+                                }
+                                EventBus.getDefault().post(new SaveMsgEvent("",result));
+                            }else if(message.getType() == EMMessage.Type.VIDEO){
+                                EMVideoMessageBody eMVideoMessageBody  = (EMVideoMessageBody)message.getBody();
+                                String videoPath = eMVideoMessageBody.getLocalUrl();
+                                galleryPath +=  System.currentTimeMillis()+videoPath.substring(videoPath.lastIndexOf("."),videoPath.length());
+                                int result = FileUtil.copyAppFileToSdcard(videoPath, galleryPath);
+                                if (result == 1) {
+
+                                }
+                                EventBus.getDefault().post(new SaveMsgEvent("",result));
+                            }
+
                             break;
                         default:
                             break;

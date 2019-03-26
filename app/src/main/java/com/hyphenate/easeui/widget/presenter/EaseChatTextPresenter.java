@@ -100,10 +100,10 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
         floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
             @Override
-            public void onClick(View v, int position) {
-                switch (position)
+            public void onClick(View v, int position,String name) {
+                switch (name)
                 {
-                    case 0:
+                    case "Copy":
                         ClipboardManager cm = (ClipboardManager) AppConfig.instance.getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                         // 创建普通字符型ClipData
                         ClipData mClipData = ClipData.newPlainText("Label", EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(message, getContext())));
@@ -111,14 +111,14 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                         cm.setPrimaryClip(mClipData);
                         Toast.makeText(AppConfig.instance.getApplicationContext(), R.string.copy_success, Toast.LENGTH_SHORT).show();
                         break;
-                    case 1:
+                    case "Forward":
                         Intent intent = new Intent(getContext(), selectFriendActivity.class);
                         intent.putExtra("fromId", message.getTo());
                         intent.putExtra("message",message);
                         getContext().startActivity(intent);
                         ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                         break;
-                    case 2:
+                    case "withDraw":
                         if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                         {
                             int type = 0;

@@ -91,6 +91,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 {
                     var GroupLocal = groupList.get(0)
                     GroupLocal.gName = jGroupSysPushRsp.params.name
+                    GroupLocal.routerId = ConstantValue.currentRouterId
                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
                     EventBus.getDefault().post(GroupLocal)
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
@@ -545,6 +546,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             GroupLocal.gId = pushMsgRsp.params.gId
             GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
             GroupLocal.gName = pushMsgRsp.params.groupName
+            GroupLocal.routerId = ConstantValue.currentRouterId
             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
         }else{
             var GroupLocal = GroupEntity()
@@ -553,6 +555,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             GroupLocal.gId = pushMsgRsp.params.gId
             GroupLocal.gAdmin = pushMsgRsp.params.gAdmin
             GroupLocal.gName = pushMsgRsp.params.groupName
+            GroupLocal.routerId = ConstantValue.currentRouterId
             AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(GroupLocal);
         }
         when(pushMsgRsp.params.msgType)

@@ -135,10 +135,10 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
             floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
                 @Override
-                public void onClick(View v, int position) {
-                    switch (position)
+                public void onClick(View v, int position,String name) {
+                    switch (name)
                     {
-                        case 0:
+                        case "withDraw":
                             String msgId = message.getMsgId();
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             if(message.isAcked())
