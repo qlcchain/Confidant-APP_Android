@@ -747,12 +747,12 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
         val lastSendSize = sendFileLastByteSizeMap.get(msgId)
         for (msg in sendFileLastByteSizeMap)
         {
-            //KLog.i("错误：lastSendSize  "+msg.key)
+            KLog.i("错误：lastSendSize  "+msg.key+"_"+msgId)
         }
         val fileBuffer = sendFileLeftByteMap.get(msgId)
         for (msg in sendFileLeftByteMap)
         {
-            //KLog.i("错误：fileBuffer  "+msg.key)
+            KLog.i("错误：fileBuffer  "+msg.key +"_"+msgId)
         }
         //KLog.i("错误：sendFileLeftByteMap size:"+sendFileLeftByteMap.size + "  msgId:"+msgId +" fileBuffer: "+fileBuffer+" lastSendSize "+lastSendSize)
         val leftSize = fileBuffer!!.size - lastSendSize!!

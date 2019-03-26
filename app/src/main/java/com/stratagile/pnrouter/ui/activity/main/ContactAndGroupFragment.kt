@@ -20,10 +20,7 @@ import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
-import com.stratagile.pnrouter.db.FriendEntity
-import com.stratagile.pnrouter.db.GroupEntity
-import com.stratagile.pnrouter.db.UserEntity
-import com.stratagile.pnrouter.db.UserEntityDao
+import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.MyFriend
@@ -438,7 +435,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         contactNewList.sortBy {
             String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
-        val list0 =AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.loadAll()
+        val list0 = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId),GroupEntityDao.Properties.GId.notEq(fromId)).list()
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
         contactNewList.forEach {
