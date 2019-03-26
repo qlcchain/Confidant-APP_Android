@@ -161,9 +161,9 @@ public class FloatMenu extends PopupWindow{
 		menuLayout.measure(width,height);
 		menuWidth = menuLayout.getMeasuredWidth();
 		menuHeight = menuLayout.getMeasuredHeight();
-		if(menuHeight < 145)
+		if(menuHeight < 135)
 		{
-			menuHeight = 145;
+			menuHeight = 135;
 		}
 		setContentView(menuLayout);
 		setWidth(Display.dip2px(context, 70) * menuItemList.size());

@@ -2067,14 +2067,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      *
      * @param from 谁操作的
      * @param tip 系统提示内容
-     * @param msgId 特殊消息处理，如果要增加，搜索一下这个id，同步增加
      */
-    public void insertTipMessage(String from,String tip,String msgId) {
+    public void insertTipMessage(String from,String tip) {
         EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        int uuid = (int) (System.currentTimeMillis() / 1000);
         message.setDirection(EMMessage.Direct.RECEIVE);
-        message.setMsgId(msgId);
+        message.setMsgId(Message.SpecialId.GroupSpecialId.toString()+"_"+uuid);
         message.setFrom(from);
         message.setTo(toChatUserId);
         KLog.i("插入提示消息");
@@ -2355,7 +2354,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                     SendFileInfo.setVoiceTimeLen(length);
                     SendFileInfo.setType("2");
-                    SendFileInfo.setSendTime(System.currentTimeMillis() + "");
+                    SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                     SendFileInfo.setPorperty("1");
                     AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
 
@@ -2507,7 +2506,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                                 SendFileInfo.setVoiceTimeLen(0);
                                 SendFileInfo.setType("1");
-                                SendFileInfo.setSendTime(System.currentTimeMillis() + "");
+                                SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                                 SendFileInfo.setPorperty("1");
                                 AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                                 //AppConfig.instance.getPNRouterServiceMessageSender().sendImageMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
@@ -2838,7 +2837,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("3");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() + "");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                             SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());
@@ -3028,7 +3027,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             SendFileInfo.setFriendMiPublicKey(UserDataManger.currentGroupData.getUserKey());
                             SendFileInfo.setVoiceTimeLen(0);
                             SendFileInfo.setType("4");
-                            SendFileInfo.setSendTime(System.currentTimeMillis() + "");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() / 1000 + "");
                             SendFileInfo.setPorperty("1");
                             AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
                             //AppConfig.instance.getPNRouterServiceMessageSender().sendFileMessage(userId,toChatUserId,files_dir,uuid,UserDataManger.currentGroupData.getUserKey(), UserDataManger.currentGroupData.getUserKey());

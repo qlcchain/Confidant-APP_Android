@@ -95,7 +95,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     EventBus.getDefault().post(GroupLocal)
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                     var groupName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.name))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.modified_the_group_name)+" "+groupName,Message.SpecialId.RenameGroup.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.modified_the_group_name)+" "+groupName)
                 }
             }
             2->{//群审核权限变更
@@ -104,12 +104,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             3->{
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),Message.SpecialId.MessageWasWithdrawn.toString())
+                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn))
             }
             4->{
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),Message.SpecialId.MessageWasWithdrawnByAdmin.toString())
+                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator))
             }
             241->{
                /* if (jGroupSysPushRsp.params.to != userId) {
@@ -163,9 +163,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
                 if (jGroupSysPushRsp.params.to != userId)
                 {
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+name +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+name +"  "+ getString(R.string.join))
                 }else{
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+getString(R.string.you) +"  "+ getString(R.string.join),Message.SpecialId.NewUser.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+getString(R.string.you) +"  "+ getString(R.string.join))
                 }
 
             }
@@ -177,7 +177,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     finish()
                 }else{
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.Leave_this_group_chat),Message.SpecialId.Leavethisgroupchat.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.Leave_this_group_chat))
                 }
 
             }
@@ -212,7 +212,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 }else{//是别人
                     var adminName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner),Message.SpecialId.Removethisgroupchat.toString())
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner))
                 }
 
             }
