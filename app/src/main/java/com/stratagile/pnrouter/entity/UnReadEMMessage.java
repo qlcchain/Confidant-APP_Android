@@ -5,13 +5,29 @@ import com.hyphenate.chat.adapter.message.EMAMessage;
 
 public class UnReadEMMessage {
     private int unReadCount = 0;
+    private String draft;
+
+    public String getDraft() {
+        return draft;
+    }
+
+    public void setDraft(String draft) {
+        this.draft = draft;
+    }
+
     private EMMessage emMessage;
 
     public UnReadEMMessage(EMMessage emMessage) {
         this.emMessage = emMessage;
     }
 
-    public UnReadEMMessage(EMMessage emMessage,int unReadCount) {
+    public UnReadEMMessage(EMMessage emMessage, String draft, int unReadCount) {
+        this.unReadCount = unReadCount;
+        this.draft = draft;
+        this.emMessage = emMessage;
+    }
+
+    public UnReadEMMessage(EMMessage emMessage, int unReadCount) {
         this.unReadCount = unReadCount;
         this.emMessage = emMessage;
     }

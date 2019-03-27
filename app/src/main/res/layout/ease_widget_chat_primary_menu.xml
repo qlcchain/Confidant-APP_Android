@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/x108"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/x108"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center"
     android:background="#aaffffff"
-    android:orientation="vertical"
-    android:paddingBottom="6dip"
-    android:paddingTop="4dip">
+    android:paddingBottom="@dimen/x15"
+    android:paddingTop="@dimen/x15">
 
     <LinearLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_set_mode_voice"
-            android:layout_width="@dimen/x54"
-            android:layout_height="@dimen/x54"
-            android:layout_marginLeft="@dimen/x19"
-            android:background="@drawable/ic_yuyin"
-            android:visibility="visible" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/x6"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_set_mode_voice"
+                android:layout_width="@dimen/x54"
+                android:layout_height="@dimen/x54"
+                android:layout_marginLeft="@dimen/x19"
+                android:background="@drawable/ic_yuyin"
+                android:visibility="visible" />
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_set_mode_keyboard"
-            android:layout_width="@dimen/x54"
-            android:layout_height="@dimen/x54"
-            android:layout_marginLeft="@dimen/x19"
-            android:background="@drawable/ic_keyboard"
-            android:visibility="gone" />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_set_mode_keyboard"
+                android:layout_width="@dimen/x54"
+                android:layout_height="@dimen/x54"
+                android:layout_marginLeft="@dimen/x19"
+                android:background="@drawable/ic_keyboard"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/btn_press_to_speak"
             android:layout_width="@dimen/x455"
-            android:layout_height="@dimen/x77"
+            android:layout_gravity="bottom"
+            android:layout_height="@dimen/x78"
             android:layout_marginLeft="@dimen/x15"
             android:layout_marginRight="@dimen/x19"
             android:background="@drawable/input_background"
@@ -57,7 +62,7 @@
         <RelativeLayout
             android:id="@+id/edittext_layout"
             android:layout_width="@dimen/x455"
-            android:layout_height="@dimen/x77"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x15"
             android:layout_marginRight="@dimen/x19"
             android:background="@drawable/input_background"
@@ -66,14 +71,17 @@
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/x77"
+                android:layout_height="wrap_content"
                 android:textCursorDrawable="@drawable/bg_edittext"
                 android:background="@null"
-                android:maxLines="3"
+                android:maxLines="4"
+                android:text=""
+                android:paddingTop="@dimen/x4"
+                android:paddingBottom="@dimen/x4"
                 android:gravity="center_vertical"
                 android:includeFontPadding="false"
                 android:textColor="@color/color_2B2B2B"
-                android:minHeight="@dimen/x77"
+                android:minHeight="@dimen/x78"
                 android:paddingLeft="@dimen/x19"
                 android:paddingRight="@dimen/x19"
                 android:textSize="16sp"
@@ -83,8 +91,11 @@
 
         <RelativeLayout
             android:id="@+id/rl_face"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_marginBottom="@dimen/x12"
+            android:layout_gravity="bottom"
+            android:layout_width="@dimen/x54"
+            android:layout_height="@dimen/x54"
+            >
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/iv_face_normal"
                 android:layout_width="@dimen/x54"
@@ -103,28 +114,35 @@
 
         </RelativeLayout>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_more"
-            android:layout_width="@dimen/x54"
-            android:layout_height="@dimen/x54"
-            android:layout_marginLeft="@dimen/x27"
-            android:visibility="visible"
-            android:layout_marginRight="@dimen/x19"
-            android:background="@drawable/ic_message_more" />
+        <RelativeLayout
+            android:layout_width="@dimen/x100"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/x6"
+            android:layout_height="@dimen/x54">
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_more"
+                android:layout_width="@dimen/x54"
+                android:layout_height="@dimen/x54"
+                android:layout_marginLeft="@dimen/x26"
+                android:visibility="visible"
+                android:layout_marginRight="@dimen/x20"
+                android:background="@drawable/ic_message_more" />
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/btn_send"
-            android:layout_width="@dimen/x80"
-            android:layout_height="@dimen/x60"
-            android:gravity="center"
-            android:layout_marginRight="@dimen/x8"
-            android:layout_marginLeft="@dimen/x12"
-            android:background="@drawable/ease_chat_send_btn_selector"
-            android:text="@string/button_send"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/btn_send"
+                android:layout_width="@dimen/x80"
+                android:layout_height="@dimen/x54"
+                android:gravity="center"
+                android:layout_marginRight="@dimen/x8"
+                android:layout_marginLeft="@dimen/x12"
+                android:background="@drawable/ease_chat_send_btn_selector"
+                android:text="@string/button_send"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

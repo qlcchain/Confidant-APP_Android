@@ -132,7 +132,12 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         KLog.i("setUpView");
         conversationList.clear();
         conversationList.addAll(loadLocalConversationList());
-        conversationListView.init(conversationList);
+        conversationListView.init(conversationList, new EaseConversationList.EaseConversationListHelper() {
+            @Override
+            public String onSetItemSecondaryText(UnReadEMMessage lastMessage) {
+                return lastMessage.getDraft();
+            }
+        });
 
         if (listItemClickListener != null) {
             conversationListView.setOnItemClickListener(new OnItemClickListener() {
@@ -344,7 +349,12 @@ public class EaseConversationListFragment extends EaseBaseFragment {
         conversationList.clear();
         List<UnReadEMMessage> list = loadLocalConversationList();
         conversationList.addAll(list);
-        conversationListView.init(conversationList);
+        conversationListView.init(conversationList, new EaseConversationList.EaseConversationListHelper() {
+            @Override
+            public String onSetItemSecondaryText(UnReadEMMessage lastMessage) {
+                return lastMessage.getDraft();
+            }
+        });
         refresh();
         return list.size();
     }
@@ -411,11 +421,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                             if (Message != null) {
                                 switch (Message.getMsgType()) {
                                     case 0:
-                                        if (draftEntity != null && !draftEntity.getContent().equals("")) {
-                                            message = EMMessage.createTxtSendMessage("//[draft]//" + draftEntity.getContent(), toChatUserId);
-                                        } else {
-                                            message = EMMessage.createTxtSendMessage(Message.getMsg().replace("/[draft]/", ""), toChatUserId);
-                                        }
+                                        message = EMMessage.createTxtSendMessage(Message.getMsg(), toChatUserId);
                                         break;
                                     case 1:
                                         String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
@@ -490,7 +496,11 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                 {
                                     message.setChatType(Message.getChatType());
                                 }
-                                conversations.put(toChatUserId, new UnReadEMMessage(message, Message.getUnReadCount()));
+                                if (draftEntity != null && !draftEntity.getContent().equals("")) {
+                                    conversations.put(toChatUserId, new UnReadEMMessage(message, draftEntity.getContent(), Message.getUnReadCount()));
+                                } else {
+                                    conversations.put(toChatUserId, new UnReadEMMessage(message, "", Message.getUnReadCount()));
+                                }
                             }
 
                         }

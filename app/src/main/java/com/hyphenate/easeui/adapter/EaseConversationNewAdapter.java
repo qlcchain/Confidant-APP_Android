@@ -230,15 +230,6 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         if (cvsListHelper != null) {
             content = cvsListHelper.onSetItemSecondaryText(lastMessage);
         }
-        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))), TextView.BufferType.SPANNABLE);
-        if (content != null) {
-            holder.message.setText(content);
-        }
-        if (holder.message.getText().toString().contains("//[draft]//")) {
-            holder.draft.setVisibility(View.VISIBLE);
-        } else {
-            holder.draft.setVisibility(View.GONE);
-        }
         if (friendUser != null) {
             String username = friendUser.getNickName();
             if (friendUser.getRemarks() != null && !friendUser.getRemarks().equals("")) {
@@ -257,22 +248,36 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
                 usernameSouce = name;
             }
         }
-        if (chatType.equals("Chat")) {
-            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString().replace("//[draft]//", "")));
-        } else {
-            holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce + ":" + holder.message.getText().toString().replace("//[draft]//", "")));
-        }
 
+        holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(lastMessage.getEmMessage(), (this.getContext()))), TextView.BufferType.SPANNABLE);
+        if (content != null && !"".equals(content)) {
+            //设置草稿
+            holder.message.setText(content);
+            holder.draft.setText("[Draft] ");
+            if (chatType.equals("Chat")) {
+                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), content));
+            } else {
+                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString()));
+            }
+        } else {
+            //没有草稿
+            if (chatType.equals("Chat")) {
+                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString()));
+            } else {
+                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce + ": " + holder.message.getText().toString()));
+            }
+            holder.draft.setText("");
+        }
         holder.message.setTextColor(getContext().getResources().getColor(R.color.list_itease_secondary_color));
         //set property
-        holder.name.setTextColor(primaryColor);
-        holder.time.setTextColor(timeColor);
-        if (primarySize != 0)
-            holder.name.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);
-        if (secondarySize != 0)
-            holder.message.setTextSize(TypedValue.COMPLEX_UNIT_PX, secondarySize);
-        if (timeSize != 0)
-            holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
+//        holder.name.setTextColor(primaryColor);
+//        holder.time.setTextColor(timeColor);
+//        if (primarySize != 0)
+//            holder.name.setTextSize(TypedValue.COMPLEX_UNIT_PX, primarySize);
+//        if (secondarySize != 0)
+//            holder.message.setTextSize(TypedValue.COMPLEX_UNIT_PX, secondarySize);
+//        if (timeSize != 0)
+//            holder.time.setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
 
         return convertView;
     }

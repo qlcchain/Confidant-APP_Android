@@ -125,16 +125,15 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!TextUtils.isEmpty(s)) {
+                if (!TextUtils.isEmpty(s) && !"".equals(s.toString().trim())) {
                     if (buttonSend.getVisibility() != View.VISIBLE) {
-                        buttonMore.setVisibility(View.GONE);
-                        String str = getResources().getString(android.R.string.no);
+                        buttonMore.setVisibility(View.INVISIBLE);
                         buttonSend.setVisibility(View.VISIBLE);
                         buttonSend.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.send_button_in));
                     }
                 } else {
                     buttonMore.setVisibility(View.VISIBLE);
-                    buttonSend.setVisibility(View.GONE);
+                    buttonSend.setVisibility(View.INVISIBLE);
                     buttonMore.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.send_button_in));
                 }
 
@@ -178,7 +177,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                         (event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
                          event.getAction() == KeyEvent.ACTION_DOWN &&
                          ctrlPress == true)) {
-                    String s = editText.getText().toString();
+                    String s = editText.getText().toString().trim();
                     editText.setText("");
                     listener.onSendBtnClicked(s);
                     return true;
@@ -256,7 +255,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 return;
             }
             if(listener != null){
-                String s = editText.getText().toString();
+                String s = editText.getText().toString().trim();
                 editText.setText("");
                 listener.onSendBtnClicked(s);
             }
@@ -346,7 +345,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         editText.requestFocus();
         // buttonSend.setVisibility(View.VISIBLE);
         buttonPressToSpeak.setVisibility(View.GONE);
-        if (TextUtils.isEmpty(editText.getText())) {
+        if (TextUtils.isEmpty(editText.getText().toString().trim())) {
             buttonMore.setVisibility(View.VISIBLE);
             buttonSend.setVisibility(View.GONE);
         } else {
