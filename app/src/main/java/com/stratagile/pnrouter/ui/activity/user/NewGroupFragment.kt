@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.db.GroupVerifyEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.FriendChange
 import com.stratagile.pnrouter.entity.events.SetBadge
+import com.stratagile.pnrouter.ui.adapter.user.NewFriendListAdapter
 import com.stratagile.pnrouter.ui.adapter.user.NewGroupMemberAdapter
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -104,7 +105,8 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.UserId.eq(selfUserId)).list()
         if (newGroupMemberAdapter == null) {
-            newGroupMemberAdapter = NewGroupMemberAdapter(verifyList)
+            newGroupMemberAdapter = NewGroupMemberAdapter(arrayListOf())
+            newGroupMemberAdapter!!.setNewData(verifyList.sortedByDescending { it.verifyType == 1 })
             recyclerView.adapter = newGroupMemberAdapter
             newGroupMemberAdapter!!.setOnItemChildClickListener { adapter, view, position ->
                 when(newGroupMemberAdapter!!.data[position].verifyType) {
@@ -114,7 +116,7 @@ class NewGroupFragment : BaseFragment(), NewGroupContract.View, PNRouterServiceM
                 }
             }
         }else{
-            newGroupMemberAdapter!!.setNewData(verifyList)
+            newGroupMemberAdapter!!.setNewData(verifyList.sortedByDescending { it.verifyType == 1 })
         }
 
     }

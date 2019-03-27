@@ -33,6 +33,8 @@ import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.SpUtil
 import kotlinx.android.synthetic.main.layout_fragment_recyclerview.*
 import org.greenrobot.eventbus.EventBus
+import java.util.*
+import java.util.stream.Collectors
 
 /**
  * @author hzp
@@ -50,7 +52,7 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.loadAll()
         for (j in localFriendStatusList) {
-            if (j.userId.equals(userId)&& handleUser!!.userId.equals(j.friendId)) {
+            if (j.userId.equals(userId) && handleUser!!.userId.equals(j.friendId)) {
                 j.friendLocalStatus = friendStatus
                 AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.update(j)
             }
@@ -92,14 +94,14 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
         EventBus.getDefault().post(SetBadge())
         //val transactionVpnRecordList = transactionRecordDao.queryBuilder().where(TransactionRecordDao.Properties.AssetName.eq(AppConfig.currentUseVpn.getVpnName()), TransactionRecordDao.Properties.IsMainNet.eq(isMainNet)).list()
         var list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
-        var userIDStr:String = "";
+        var userIDStr: String = "";
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         for (i in list) {
-            if (userIDStr.indexOf(i.userId+",") > -1) {
+            if (userIDStr.indexOf(i.userId + ",") > -1) {
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.delete(i)
                 continue
             }
-            userIDStr = i.userId+","
+            userIDStr = i.userId + ","
         }
         list = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -126,49 +128,68 @@ class NewUserFragment : BaseFragment(), NewUserContract.View, UserProvider.AddFr
                 if (j.friendLocalStatus != 7 && !hasSame) {
                     var it = UserEntity()
                     var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(j.friendId)).list()
-                    if (localFriendList.size > 0)
+                    if (localFriendList.size > 0) {
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         it = localFriendList.get(0)
+                        var localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(userId), FriendEntityDao.Properties.FriendId.eq(it.userId)).list()
+                        if (localFriendStatusList.size > 0) {
+                            it.friendStatus = localFriendStatusList[0].friendLocalStatus
+                        }
+                    }
                     showlist.add(it)
                 }
             }
         }
-        newFriendListAdapter = NewFriendListAdapter(showlist)
-        newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
-            handleUser = newFriendListAdapter!!.getItem(position)
-            var intent = Intent(activity!!, UserInfoActivity::class.java)
-            intent.putExtra("user", newFriendListAdapter?.getItem(position))
-            startActivityForResult(intent, 1)
-        }
-        newFriendListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
-            when (view.id) {
-                R.id.tvOpreate -> {
-                    handleUser = newFriendListAdapter!!.getItem(position)
-                    var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+
+//        Collections.sort<UserEntity?>(showlist as List<UserEntity?>?, object : Comparator(), Comparator<UserEntity?> {
+//            override fun compare(p0: UserEntity?, p1: UserEntity?): Int {
+//                return p0!!.friendStatus - p1!!.friendStatus
+//            }
+//
+//        })
+
+        if (newFriendListAdapter == null) {
+            newFriendListAdapter = NewFriendListAdapter(arrayListOf())
+            newFriendListAdapter!!.setNewData(showlist.sortedByDescending { it.friendStatus == 3 })
+            recyclerView.adapter = newFriendListAdapter
+            newFriendListAdapter?.setOnItemClickListener { adapter, view, position ->
+                handleUser = newFriendListAdapter!!.getItem(position)
+                var intent = Intent(activity!!, UserInfoActivity::class.java)
+                intent.putExtra("user", newFriendListAdapter?.getItem(position))
+                startActivityForResult(intent, 1)
+            }
+            newFriendListAdapter!!.setOnItemChildClickListener { adapter, view, position ->
+                when (view.id) {
+                    R.id.tvOpreate -> {
+                        handleUser = newFriendListAdapter!!.getItem(position)
+                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
 //                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 0)
-                    friendStatus = 0
+                        friendStatus = 0
 
 //                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-                    if(newFriendListAdapter!!.getItem(position)!!.signPublicKey != null)
-                    {
-                        UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.signPublicKey)
+                        if (newFriendListAdapter!!.getItem(position)!!.signPublicKey != null) {
+                            UserProvider.getInstance().accepteAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, newFriendListAdapter!!.getItem(position)!!.signPublicKey)
+                            showProgressDialog()
+                        }
+                    }
+                    R.id.tvRefuse -> {
+                        handleUser = newFriendListAdapter!!.getItem(position)
+                        var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, "")
+//                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
+                        friendStatus = 5
+//                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
+//                    UserProvider.getInstance().refreshFriend()
                         showProgressDialog()
                     }
                 }
-                R.id.tvRefuse -> {
-                    handleUser = newFriendListAdapter!!.getItem(position)
-                    var nickName = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
-                    var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    UserProvider.getInstance().refuseAddFriend(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, "")
-//                    var addFriendDealReq = AddFriendDealReq(nickName!!, newFriendListAdapter!!.getItem(position)!!.nickName, userId!!, newFriendListAdapter!!.getItem(position)!!.userId, 1)
-                    friendStatus = 5
-//                    AppConfig.instance.messageSender!!.send(BaseData(addFriendDealReq))
-//                    UserProvider.getInstance().refreshFriend()
-                    showProgressDialog()
-                }
             }
+        } else {
+            newFriendListAdapter!!.setNewData(showlist.sortedByDescending { it.friendStatus == 3 })
         }
-        recyclerView.adapter = newFriendListAdapter
+
     }
 
     override fun setPresenter(presenter: NewUserContract.NewUserContractPresenter) {

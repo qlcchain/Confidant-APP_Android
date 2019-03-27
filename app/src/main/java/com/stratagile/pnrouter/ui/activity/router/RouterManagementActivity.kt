@@ -45,6 +45,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View {
     lateinit var routerListAdapter: RouterListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        needFront = true
         super.onCreate(savedInstanceState)
     }
 
