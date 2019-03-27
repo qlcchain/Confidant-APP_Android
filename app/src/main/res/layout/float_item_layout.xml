@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/x130"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_height="@dimen/x116">
+    <ImageView
+        android:id="@+id/itemImg"
+        android:layout_width="@dimen/x46"
+        android:scaleType="fitCenter"
+        android:layout_height="@dimen/x46" />
+    <TextView
+        android:id="@+id/itemContent"
+        android:layout_width="wrap_content"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content" />
+</LinearLayout>

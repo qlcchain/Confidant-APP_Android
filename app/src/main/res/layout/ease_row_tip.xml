@@ -10,6 +10,7 @@
         style="@style/chat_text_date_style"
         android:layout_marginTop="@dimen/x16"
         android:layout_width="wrap_content"
+        android:textSize="14sp"
         android:text=""
         android:layout_height="wrap_content"
         android:layout_gravity="center" />

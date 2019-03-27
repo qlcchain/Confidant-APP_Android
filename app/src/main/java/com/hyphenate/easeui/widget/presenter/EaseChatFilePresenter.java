@@ -155,6 +155,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             KLog.i(loc1[1]);
             floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
+
                 @Override
                 public void onClick(View v, int position,String name) {
                     switch (name)
