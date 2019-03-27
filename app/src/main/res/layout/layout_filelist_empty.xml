@@ -12,6 +12,6 @@
         android:layout_width="wrap_content"
         android:gravity="center"
         android:layout_marginTop="@dimen/x46"
-        android:text="No documents yet \nLet friends share"
+        android:text="No files available yet"
         android:layout_height="wrap_content" />
 </LinearLayout>
