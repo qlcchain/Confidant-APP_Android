@@ -2073,6 +2073,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getSignPublicKey(), content);
                 }
 
+                if(message == null)
+                {
+                    return;
+                }
                 message.setFrom(userId);
                 message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                 message.setDelivered(true);

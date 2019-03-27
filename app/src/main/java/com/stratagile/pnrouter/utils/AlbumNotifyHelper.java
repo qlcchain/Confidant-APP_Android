@@ -180,6 +180,10 @@ public class AlbumNotifyHelper {
     private static boolean checkFile(String filePath) {
         //boolean result = FileUtil.fileIsExist(filePath);
         boolean result = false;
+        if(filePath == null)
+        {
+            return result;
+        }
         File mFile = new File(filePath);
         if (mFile.exists()) {
             result = true;
