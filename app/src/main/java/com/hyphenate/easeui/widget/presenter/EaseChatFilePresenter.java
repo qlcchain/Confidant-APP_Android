@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.entity.GroupDelMsgReq;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
 import com.stratagile.pnrouter.entity.events.SaveMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
+import com.stratagile.pnrouter.utils.AlbumNotifyHelper;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
@@ -43,6 +44,7 @@ import java.io.File;
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
 import im.tox.tox4j.core.enums.ToxMessageType;
+import scala.App;
 import scalaz.Alpha;
 
 
@@ -225,7 +227,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                                 int result = FileUtil.copyAppFileToSdcard(imagePath, galleryPath);
                                 if (result == 1) {
 
-
+                                    AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance,galleryPath,System.currentTimeMillis());
                                 }
                                 EventBus.getDefault().post(new SaveMsgEvent("",result));
                             }else if(message.getType() == EMMessage.Type.VIDEO){
@@ -234,7 +236,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                                 galleryPath +=  System.currentTimeMillis()+videoPath.substring(videoPath.lastIndexOf("."),videoPath.length());
                                 int result = FileUtil.copyAppFileToSdcard(videoPath, galleryPath);
                                 if (result == 1) {
-
+                                    AlbumNotifyHelper.insertVideoToMediaStore(AppConfig.instance,galleryPath,0,5000);
                                 }
                                 EventBus.getDefault().post(new SaveMsgEvent("",result));
                             }

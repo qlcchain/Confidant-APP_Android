@@ -378,7 +378,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     fun saveMsgEvent(saveMsgEvent: SaveMsgEvent) {
         if(saveMsgEvent.result == 1)
         {
-            toast(R.string.success)
+            runOnUiThread {
+                toast(R.string.success)
+            }
+
         }
     }
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {

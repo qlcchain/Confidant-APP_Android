@@ -110,6 +110,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
                         if (ConstantValue.isWebsocketConnected) {
                             var msgId = Calendar.getInstance().timeInMillis /1000
+                            doloadAvatarDataMap.put(msgId.toString(),fileSavePath);
                             FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
                         }else{
                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
@@ -191,6 +192,10 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
 
                 }
                 0x55 -> {
+                    val data = msg.data
+                    val msgId = data.getInt("msgID").toString() + ""
+                    var imgePath = doloadAvatarDataMap.get(msgId)
+                    AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, imgePath, System.currentTimeMillis())
                     //自己头像有更新
                     EventBus.getDefault().post(ResetAvatar())
                     //朋友有头像更新
@@ -207,7 +212,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     var friendOperateListener : FriendOperateListener? = null
     var addFriendDelListener : AddFriendDelListener? = null
     var addGroupMemberListener : AddGroupMemberListener? = null
-
+    var doloadAvatarDataMap = HashMap<String, String>()
     /**
      * APP添加新好友，发送好友请求，等待好友同意
      * 添加好友第一步的返回

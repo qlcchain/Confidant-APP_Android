@@ -277,6 +277,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
                 var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
+                AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, files_dir, System.currentTimeMillis())
             }
             1 -> {
                 runOnUiThread {

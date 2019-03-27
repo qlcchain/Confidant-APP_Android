@@ -67,6 +67,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
                 var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
+                AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, files_dir, System.currentTimeMillis())
                 runOnUiThread {
                     toast(getString(R.string.Avatar_Update_Successful))
                     EventBus.getDefault().post(ResetAvatar())
@@ -284,6 +285,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 fos.flush()
                 fos.close()
                 KLog.i(filePic.name)
+                AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, filePath, System.currentTimeMillis())
                 EventBus.getDefault().post(UpdataAvatrrEvent(filePath,false))
 //                mPresenter.upLoadImg()
             } catch (e: IOException) {

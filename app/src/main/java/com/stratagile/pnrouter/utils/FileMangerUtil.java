@@ -689,6 +689,10 @@ public class FileMangerUtil {
             {
                 String avatarPath = filePath.replace("__Avatar","");
                 code = FileUtil.copyAppFileToSdcard(base58files_dir, avatarPath);
+                if(code == 1)
+                {
+                    AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, avatarPath, System.currentTimeMillis());
+                }
             }else{
                 String  useKey = ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().get(fileMiName);
                 String fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(useKey);
