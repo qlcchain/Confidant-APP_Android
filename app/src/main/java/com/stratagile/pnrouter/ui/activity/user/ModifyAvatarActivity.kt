@@ -243,7 +243,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     dataFile.mkdir()
                 }
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-                var filePath  =dataFile.path + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                var filePath  = dataFile.path + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
                 val filePic: File = File(filePath)
                 //SpUtil.putString(this, ConstantValue.selfImageName, filePic.name)
                 if (!filePic.exists()) {
@@ -286,6 +286,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 fos.close()
                 KLog.i(filePic.name)
                 AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, filePath, System.currentTimeMillis())
+                AlbumNotifyHelper.notifyScanDcim(AppConfig.instance, dataFile.path + "/Avatar/")
                 EventBus.getDefault().post(UpdataAvatrrEvent(filePath,false))
 //                mPresenter.upLoadImg()
             } catch (e: IOException) {
