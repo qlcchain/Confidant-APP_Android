@@ -128,6 +128,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     fun connect() {
+        KLog.i("没有初始化。。connect")
         Log.w(TAG, "WSC connect()...")
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
