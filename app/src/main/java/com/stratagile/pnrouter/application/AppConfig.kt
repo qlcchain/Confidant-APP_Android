@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.os.IBinder
 import android.os.Process
 import android.support.multidex.MultiDexApplication
@@ -77,6 +78,8 @@ class AppConfig : MultiDexApplication() {
 
     var mDaoMaster: DaoMaster? = null
 
+    val point = Point()
+
     var isChatWithFirend:String? = null
     var tempPushMsgList:ArrayList<JPushMsgRsp> = ArrayList<JPushMsgRsp>()
     var tempPushGroupMsgList:ArrayList<JGroupMsgPushRsp> = ArrayList<JGroupMsgPushRsp>()
@@ -123,6 +126,7 @@ class AppConfig : MultiDexApplication() {
 
         return messageReceiver!!
     }
+
     fun getPNRouterServiceMessageToxReceiver() :  PNRouterServiceMessageReceiver{
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),

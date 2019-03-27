@@ -143,13 +143,13 @@ public class FloatMenu extends PopupWindow{
 			textView.setWidth((int) context.getResources().getDimension(R.dimen.x130));
 //			textView.setHeight((int) context.getResources().getDimension(R.dimen.x90));
 			textView.setGravity(Gravity.CENTER);
-			textView.setTextSize(11);
+			textView.setTextSize(13);
 			textView.setTextColor(Color.WHITE);
 			MenuItem menuModel = menuItemList.get(i);
 			if(menuModel.getItemResId() != View.NO_ID){
 				Drawable drawable = ContextCompat.getDrawable(context, menuModel.getItemResId());
 				drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-				textView.setCompoundDrawablePadding(Display.dip2px(context, 4));
+				textView.setCompoundDrawablePadding(Display.dip2px(context, 2));
 				textView.setCompoundDrawables(null, drawable, null, null);
 			}
 			textView.setText(menuModel.getItem());

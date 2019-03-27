@@ -8755,7 +8755,7 @@ func_mode_link ()
       set dummy $rpath
       shift
       test 1 -lt "$#" \
-	&& func_warning "ignoring multiple '-rpath's for a libtool library"
+	&& func_warning "ignoring multiple'-rpath's for a libtool library"
 
       install_libdir=$1
 

@@ -97,7 +97,9 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
         view.getLocationOnScreen(loc1);
         KLog.i(loc1[0]);
         KLog.i(loc1[1]);
-        floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
+        KLog.i(AppConfig.instance.getPoint().x + "");
+        KLog.i(AppConfig.instance.getPoint().y + "");
+        floatMenu.show(new Point(loc1[0], loc1[1]),0,65);
         floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
             @Override
             public void onClick(View v, int position,String name) {

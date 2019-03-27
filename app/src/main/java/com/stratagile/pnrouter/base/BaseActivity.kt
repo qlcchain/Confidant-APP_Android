@@ -88,6 +88,15 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         initData()
     }
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        KLog.i("点击了。。设置点击点")
+        KLog.i("点击点" + event.x.toInt())
+        KLog.i("点击点" + event.y.toInt())
+        AppConfig.instance.point.x = event.x.toInt()
+        AppConfig.instance.point.y = event.y.toInt()
+        return super.onTouchEvent(event)
+    }
+
     fun exitToastBase() {
         AppConfig.instance.stopAllService()
         //android进程完美退出方法。
