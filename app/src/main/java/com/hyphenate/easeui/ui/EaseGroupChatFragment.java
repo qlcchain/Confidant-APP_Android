@@ -2474,7 +2474,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
                         KLog.i("图片的宽高为：" + widthAndHeight);
                         bitmap.recycle();
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1);
+                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+                        if(imgeSouceName.contains("_"))
+                        {
+                            imgeSouceName = imgeSouceName.substring(imgeSouceName.indexOf("_")+1,imgeSouceName.length());
+                        }
+                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imgeSouceName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);

@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentPagerAdapter
 import butterknife.ButterKnife
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
+import com.message.Message
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -190,8 +192,17 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     }
                                 }
                             }
-
-
+                            val gson = Gson()
+                            val Message = Message()
+                            Message.msg = msg
+                            Message.from = userId
+                            Message.to = i.userId
+                            Message.status = 0
+                            Message.timeStamp = System.currentTimeMillis() / 1000
+                            Message.unReadCount = 0
+                            Message.chatType = EMMessage.ChatType.Chat
+                            val baseDataJson = gson.toJson(Message)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
                         }
@@ -297,6 +308,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
 
                                         }
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 1
+                                        Message.fileName = fileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.userId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.Chat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -403,6 +426,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
                                             }
                                         }
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 4
+                                        Message.fileName = videoFileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.userId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.Chat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -505,6 +540,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                         }
                                         FileUtil.copySdcardFile(filePath, files_dir)
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 5
+                                        Message.fileName = fileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.userId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.Chat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
                                     } else {
 
                                     }
@@ -542,7 +589,17 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
-
+                            val gson = Gson()
+                            val Message = Message()
+                            Message.msg = msg
+                            Message.from = userId
+                            Message.to = i.gId
+                            Message.status = 0
+                            Message.timeStamp = System.currentTimeMillis() / 1000
+                            Message.unReadCount = 0
+                            Message.chatType = EMMessage.ChatType.GroupChat
+                            val baseDataJson = gson.toJson(Message)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
                         }
@@ -551,19 +608,23 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                         try {
                             var eMImageMessageBody: EMImageMessageBody = message!!.body as EMImageMessageBody
                             var imagePath = eMImageMessageBody.localUrl
+                            val userId = SpUtil.getString(this, ConstantValue.userId, "")
                             Thread(Runnable {
                                 try {
                                     val file = File(imagePath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1)
+                                        var imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1)
+                                        if (imgeSouceName.contains("_")) {
+                                            imgeSouceName = imgeSouceName.substring(imgeSouceName.indexOf("_") + 1, imgeSouceName.length)
+                                        }
+                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + imgeSouceName
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.gId)
-                                        val userId = SpUtil.getString(this, ConstantValue.userId, "")
+
                                         val bitmap = BitmapFactory.decodeFile(imagePath)
                                         val widthAndHeight = "," + bitmap.width + ".0000000" + "*" + bitmap.height + ".0000000"
-
                                         message.from = userId
                                         message.to = i.gId
                                         message.isDelivered = true
@@ -632,13 +693,23 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
 
                                         }
-                                    } else {
-
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 1
+                                        Message.fileName = fileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.gId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.GroupChat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
                                     }
-
                                 } catch (e: Exception) {
 
                                 }
+
                             }).start()
                         } catch (e: Exception) {
                             toast(R.string.Encryptionerror)
@@ -722,6 +793,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 ConstantValue.sendToxFileDataMap[fileNumber] = toxFileData
                                             }
                                         }
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 4
+                                        Message.fileName = videoFileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.gId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.GroupChat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
                                     } else {
 
                                     }
@@ -808,6 +891,18 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
                                         }
                                         FileUtil.copySdcardFile(filePath, files_dir)
+                                        val gson = Gson()
+                                        val Message = Message()
+                                        Message.msgType = 5
+                                        Message.fileName = fileName
+                                        Message.msg = ""
+                                        Message.from = userId
+                                        Message.to = i.gId
+                                        Message.timeStamp = System.currentTimeMillis() / 1000
+                                        Message.unReadCount = 0
+                                        Message.chatType = EMMessage.ChatType.GroupChat
+                                        val baseDataJson = gson.toJson(Message)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
                                     } else {
 
                                     }

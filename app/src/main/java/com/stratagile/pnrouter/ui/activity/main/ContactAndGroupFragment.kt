@@ -505,7 +505,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         if(list0.size > 4)
         {
             val layoutParams = recyclerGroupView.layoutParams
-            layoutParams.height = 500
+            layoutParams.height = 400
             recyclerGroupView.layoutParams = layoutParams;
         }
 
@@ -639,11 +639,16 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
     fun getAllSelectedGroup(): ArrayList<GroupEntity> {
         var contactList = arrayListOf<GroupEntity>()
         contactAdapter0!!.data.forEachIndexed { index, it ->
+            if(contactAdapter0!!.getViewByPosition(recyclerGroupView,index,R.id.checkBox) != null)
+            {
                 var checkBox =  contactAdapter0!!.getViewByPosition(recyclerGroupView,index,R.id.checkBox) as CheckBox
                 if(checkBox.isChecked)
                 {
                     contactList.add(it)
                 }
+            }else{
+                var aa = ""
+            }
         }
         return contactList!!
     }
