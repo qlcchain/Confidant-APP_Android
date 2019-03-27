@@ -700,7 +700,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
+                Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
@@ -755,7 +755,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
                 Message.setFileName("abc");
 
-                Message.setFrom(userId);
+                Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
@@ -1460,7 +1460,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(Message.getFrom());
+                Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
@@ -2064,6 +2064,26 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
 
     /**
+     *   这里单独提出来，撤回消息显示在对应消息处
+     * @param from 谁操作的
+     * @param tip 消息撤回系统提示内容
+     */
+    public void insertMsgTipMessage(String from,String tip,long msgTime) {
+        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        int uuid = (int) (System.currentTimeMillis() / 1000);
+        message.setDirection(EMMessage.Direct.RECEIVE);
+        message.setMsgId(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString()+"_"+uuid);
+        message.setFrom(from);
+        if(msgTime != 0)
+        {
+            message.setMsgTime(msgTime);
+        }
+        message.setTo(toChatUserId);
+        KLog.i("插入提示消息");
+        sendMessageTo(message);
+    }
+    /**
      *
      * @param from 谁操作的
      * @param tip 系统提示内容
@@ -2158,7 +2178,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
+                Message.setFrom(eMMessage.getFrom());
                 Message.setTo(toChatUserId);
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
 

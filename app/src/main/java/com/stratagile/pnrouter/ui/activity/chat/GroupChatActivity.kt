@@ -15,6 +15,7 @@ import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
+import com.hyphenate.chat.EMClient
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseGroupChatFragment
@@ -103,14 +104,28 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
             }
             3->{
+                val forward_msg = EMClient.getInstance().chatManager().getMessage(jGroupSysPushRsp.getParams().getMsgId().toString())
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn))
+                if(forward_msg != null)
+                {
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),forward_msg.msgTime)
+                }else{
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),0)
+                }
+
             }
             4->{
+                val forward_msg = EMClient.getInstance().chatManager().getMessage(jGroupSysPushRsp.getParams().getMsgId().toString())
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator))
+                if(forward_msg != null)
+                {
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),forward_msg.msgTime)
+                }else{
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),0)
+                }
+
             }
             241->{
                /* if (jGroupSysPushRsp.params.to != userId) {

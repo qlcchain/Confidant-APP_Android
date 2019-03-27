@@ -479,6 +479,10 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                                         message.setDirection(EMMessage.Direct.RECEIVE);
                                     }
                                 }else{
+                                    if(Message.getFrom() == null)
+                                    {
+                                        continue;
+                                    }
                                     if (Message.getFrom().equals(userId)) {
                                         message.setFrom(userId);
                                         message.setTo(toChatUserId);

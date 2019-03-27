@@ -693,8 +693,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
-                Message.setTo(toChatUserId);
+                Message.setFrom(eMMessage.getFrom());
+                Message.setTo(eMMessage.getTo());
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.Chat);
@@ -748,8 +748,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 }
                 Message.setFileName("abc");
 
-                Message.setFrom(userId);
-                Message.setTo(toChatUserId);
+                Message.setFrom(eMMessage.getFrom());
+                Message.setTo(eMMessage.getTo());
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
                 Message.setUnReadCount(0);
                 Message.setChatType(ChatType.Chat);
@@ -1436,8 +1436,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
-                Message.setTo(toChatUserId);
+                Message.setFrom(eMMessage.getFrom());
+                Message.setTo(eMMessage.getTo());
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                 /*String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
@@ -2138,8 +2138,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         break;
                 }
                 Message.setFileName("abc");
-                Message.setFrom(userId);
-                Message.setTo(toChatUserId);
+                Message.setFrom(eMMessage.getFrom());
+                Message.setTo(eMMessage.getTo());
                 Message.setTimeStamp(System.currentTimeMillis() / 1000);
 
                /* String cachStr = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId,"");
