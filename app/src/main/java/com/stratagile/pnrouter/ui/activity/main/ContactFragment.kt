@@ -606,7 +606,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
             contactNewList.add(i)
         }
         contactNewList.sortBy {
-            it.userName
+            String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false

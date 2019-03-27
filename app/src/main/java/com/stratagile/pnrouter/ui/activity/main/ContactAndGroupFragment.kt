@@ -436,6 +436,16 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
             String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
         val list0 = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId),GroupEntityDao.Properties.GId.notEq(fromId)).list()
+        for (i in list0) {
+            if (i?.remark != null && i?.remark != "") {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.remark)).toLowerCase()
+            } else {
+                i.nickSouceName = String(RxEncodeTool.base64Decode(i.gName)).toLowerCase()
+            }
+        }
+        list0.sortBy {
+            it.nickSouceName
+        }
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
         contactNewList.forEach {
@@ -520,6 +530,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         query.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 fiter(s.toString(), contactList)
+                fiterGroup(s.toString(), list0)
                 if (s.length > 0) {
                     search_clear.setVisibility(View.VISIBLE)
                 } else {
@@ -566,7 +577,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
             contactNewList.add(i)
         }
         contactNewList.sortBy {
-            it.userName
+            String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
         }
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
@@ -581,10 +592,59 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
             }
             list1.add(userHead)
         }
+        if (contactAdapter1!!.selectedUser != null) {
+            //把从外面带过来的数据先设置为已经选中
+            KLog.i("添加已经选中的")
+            list1.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        contactAdapter1!!.selectedUser?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("添加选中")
+                                userItem.isChecked = true
+                            }
+                        }
+                    }
+                } else {
+                    contactAdapter1!!.selectedUser?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("添加选中")
+                            userHead.isChecked = true
+                        }
+                    }
+                }
+            }
+        }
+
+        var list2 = arrayListOf<MultiItemEntity>()
+        list2.addAll(list1)
+        if (toReduceList != null) {
+            list2.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        toReduceList?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("删除。。")
+//                                userItem.isChecked = true
+                                list1.remove(userItem)
+                            }
+                        }
+                    }
+                } else {
+                    toReduceList?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("删除。。")
+//                            userHead.isChecked = true
+                            list1.remove(userHead)
+                        }
+                    }
+                }
+            }
+        }
         contactAdapter1!!.setNewData(list1)
     }
-
-
     fun fiter(key: String, contactList: ArrayList<UserEntity>) {
         var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
         for (i in contactList) {
@@ -595,7 +655,15 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         updateAdapterData(contactListTemp)
 //        contactAdapter!!.setNewData(contactListTemp)
     }
-
+    fun fiterGroup(key: String, contactList: List<GroupEntity>) {
+        var groupListTemp: ArrayList<GroupEntity> = arrayListOf<GroupEntity>()
+        for (i in contactList) {
+            if (i.nickSouceName.toLowerCase().contains(key)) {
+                groupListTemp.add(i)
+            }
+        }
+        contactAdapter0!!.setNewData(groupListTemp)
+    }
     fun selectOrCancelAll() {
 //        var itemCount =  contactAdapter!!.itemCount -1
 //

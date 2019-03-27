@@ -20,26 +20,8 @@ public class GroupEntity implements Parcelable{
     private String UserKey;
     private int Verify;
     private String routerId;
-
-
-
-
-    @Generated(hash = 83016553)
-    public GroupEntity(Long id, String GId, String GName, String GAdmin,
-            String Remark, String UserKey, int Verify, String routerId) {
-        this.id = id;
-        this.GId = GId;
-        this.GName = GName;
-        this.GAdmin = GAdmin;
-        this.Remark = Remark;
-        this.UserKey = UserKey;
-        this.Verify = Verify;
-        this.routerId = routerId;
-    }
-
-    @Generated(hash = 954040478)
-    public GroupEntity() {
-    }
+    //昵称
+    private String nickSouceName;
 
 
     protected GroupEntity(Parcel in) {
@@ -55,8 +37,24 @@ public class GroupEntity implements Parcelable{
         UserKey = in.readString();
         Verify = in.readInt();
         routerId = in.readString();
+        nickSouceName = in.readString();
     }
-
+    public GroupEntity() {
+    }
+    @Generated(hash = 1841506147)
+    public GroupEntity(Long id, String GId, String GName, String GAdmin,
+            String Remark, String UserKey, int Verify, String routerId,
+            String nickSouceName) {
+        this.id = id;
+        this.GId = GId;
+        this.GName = GName;
+        this.GAdmin = GAdmin;
+        this.Remark = Remark;
+        this.UserKey = UserKey;
+        this.Verify = Verify;
+        this.routerId = routerId;
+        this.nickSouceName = nickSouceName;
+    }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         if (id == null) {
@@ -72,6 +70,7 @@ public class GroupEntity implements Parcelable{
         dest.writeString(UserKey);
         dest.writeInt(Verify);
         dest.writeString(routerId);
+        dest.writeString(nickSouceName);
     }
 
     @Override
@@ -153,6 +152,14 @@ public class GroupEntity implements Parcelable{
 
     public void setRouterId(String routerId) {
         this.routerId = routerId;
+    }
+
+    public String getNickSouceName() {
+        return nickSouceName;
+    }
+
+    public void setNickSouceName(String nickSouceName) {
+        this.nickSouceName = nickSouceName;
     }
 }
 
