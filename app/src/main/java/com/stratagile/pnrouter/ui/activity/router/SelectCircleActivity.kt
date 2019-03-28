@@ -200,6 +200,9 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
     fun gotoLogin()
     {
+        ConstantValue.unSendMessage.remove("login")
+        ConstantValue.unSendMessageFriendId.remove("login")
+        ConstantValue.unSendMessageSendCount.remove("login")
         ConstantValue.isHasWebsocketInit = true
         if(AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.close()
