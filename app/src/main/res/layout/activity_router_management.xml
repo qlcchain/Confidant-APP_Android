@@ -28,6 +28,7 @@
             android:layout_height="@dimen/x46" />
 
         <ImageView
+            android:visibility="invisible"
             android:id="@+id/ivScan"
             android:layout_width="@dimen/x46"
             android:layout_marginTop="@dimen/x68"
@@ -62,7 +63,7 @@
                 android:text="Quick Switch"
                 android:layout_height="wrap_content" />
             <ImageView
-                android:layout_width="@dimen/x31"
+                android:layout_width="@dimen/x26"
                 android:layout_marginLeft="@dimen/x5"
                 android:src="@mipmap/arrow_down"
                 android:layout_height="@dimen/x31" />
