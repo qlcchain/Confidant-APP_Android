@@ -59,7 +59,7 @@
             android:layout_height="@dimen/x54">
             <TextView
                 android:layout_width="wrap_content"
-                android:text="Switch Circles"
+                android:text="Quick Switch"
                 android:layout_height="wrap_content" />
             <ImageView
                 android:layout_width="@dimen/x31"

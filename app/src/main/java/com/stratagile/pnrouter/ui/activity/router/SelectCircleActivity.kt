@@ -192,14 +192,46 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             LogUtil.addLog("loginBack:" + "f", "LoginActivityActivity")
             /*loginOk = true
             isToxLoginOverTime = false*/
-            if(standaloneCoroutine != null)
-                standaloneCoroutine.cancel()
             var intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
     }
 
+    fun gotoLogin()
+    {
+        ConstantValue.isHasWebsocketInit = true
+        if(AppConfig.instance.messageReceiver != null)
+            AppConfig.instance.messageReceiver!!.close()
+
+        ConstantValue.loginOut = true
+        ConstantValue.logining = false
+        ConstantValue.isHeart = false
+        ConstantValue.currentRouterIp = ""
+        resetUnCompleteFileRecode()
+        if (ConstantValue.isWebsocketConnected) {
+            FileMangerDownloadUtils.init()
+            ConstantValue.webSockeFileMangertList.forEach {
+                it.disconnect(true)
+                //ConstantValue.webSockeFileMangertList.remove(it)
+            }
+            ConstantValue.webSocketFileList.forEach {
+                it.disconnect(true)
+                //ConstantValue.webSocketFileList.remove(it)
+            }
+        }else{
+            val intentTox = Intent(AppConfig.instance, KotlinToxService::class.java)
+            AppConfig.instance.stopService(intentTox)
+        }
+        ConstantValue.loginReq = null
+        ConstantValue.isWebsocketReConnect = false
+        ConstantValue.hasLogin = true
+        ConstantValue.isHeart = true
+        resetUnCompleteFileRecode()
+        var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
+        intent.putExtra("flag", "logout")
+        startActivity(intent)
+    }
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
 
         if(jLogOutRsp.params.retCode == 0)
@@ -397,12 +429,13 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                             showProgressDialog(getString(R.string.login_))
                         }
                         standaloneCoroutine = launch(CommonPool) {
-                            delay(10000)
+                            delay(5000)
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
                                     isloginOutTime = true
-                                    toast("login time out  slelect")
+                                    gotoLogin()
+                                    toast("login time out")
                                 }
                             }
                         }
@@ -474,10 +507,11 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
                     }
                     standaloneCoroutine = launch(CommonPool) {
-                        delay(60000)
+                        delay(30000)
                         if (!loginBack) {
                             runOnUiThread {
                                 closeProgressDialog()
+                                gotoLogin()
                                 toast("time out")
                             }
                         }
@@ -522,12 +556,13 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         loginBack = false
 
                         standaloneCoroutine = launch(CommonPool) {
-                            delay(60000)
+                            delay(30000)
                             if (!loginBack) {
                                 runOnUiThread {
                                     closeProgressDialog()
                                     isloginOutTime = true
-                                    toast("login time out slelect")
+                                    gotoLogin()
+                                    toast("login time out")
                                 }
                             }
                         }
@@ -597,11 +632,11 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         EventBus.getDefault().register(this)
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
-            if (!ConstantValue.isWebsocketConnected &&  !ConstantValue.isToxConnected) {
+            /*if (!ConstantValue.isWebsocketConnected &&  !ConstantValue.isToxConnected) {
 
                 toast("Circle connecting...")
                 return@setOnItemClickListener
-            }
+            }*/
             if (routerListAdapter!!.isCkeckMode) {
                 routerListAdapter!!.data[position].isMultChecked = !routerListAdapter!!.data[position].isMultChecked
                 routerListAdapter!!.notifyItemChanged(position)
@@ -841,7 +876,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             isStartLogin = true
             getServer(routerId, userSn, true, true)
-//                    startLogin()
         } else {
             toast(getString(R.string.internet_unavailable))
         }
@@ -1110,11 +1144,12 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 KLog.i("没有初始化。。设置loginBackListener")
                 AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
                 standaloneCoroutine = launch(CommonPool) {
-                    delay(60000)
+                    delay(30000)
                     if (!loginBack) {
                         runOnUiThread {
                             closeProgressDialog()
                             isloginOutTime = true
+                            gotoLogin()
                             toast("login time out")
                         }
                     }
@@ -1178,7 +1213,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 if (intent.hasExtra("flag")) {
                     if(ConstantValue.isHasWebsocketInit)
                     {
-                        KLog.i("已经初始化了，走重连逻辑")
+                        KLog.i("R")
                         AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
                     }else{
                         KLog.i("没有初始化。。")
@@ -1187,17 +1222,16 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     }
                     KLog.i("没有初始化。。设置loginBackListener")
                     AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
-                   /* standaloneCoroutine = launch(CommonPool) {
-                        delay(6000)
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(3000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout  slelect")
+                                gotoLogin()
+                                toast("Server connection timeout")
                             }
                         }
-                    }*/
+                    }
                 } else {
                     KLog.i("走不带flag")
                     if(ConstantValue.isHasWebsocketInit)
@@ -1212,17 +1246,16 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
                     AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
                     KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.selcectCircleCallBack +"##" +AppConfig.instance.name)
-                   /* standaloneCoroutine = launch(CommonPool) {
-                        delay(6000)
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(3000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
-                                if(AppConfig.instance.messageReceiver != null)
-                                    AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout slelect")
+                                gotoLogin()
+                                toast("Server connection timeout")
                             }
                         }
-                    }*/
+                    }
                 }
             }else{
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
@@ -1239,12 +1272,13 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                 ConstantValue.loginReq = login
                 standaloneCoroutine = launch(CommonPool) {
-                    delay(10000)
+                    delay(3000)
                     if (!loginBack) {
                         runOnUiThread {
                             closeProgressDialog()
                             isloginOutTime = true
-                            toast("login time out slelect")
+                            gotoLogin()
+                            toast("login time out")
                         }
                     }
                 }

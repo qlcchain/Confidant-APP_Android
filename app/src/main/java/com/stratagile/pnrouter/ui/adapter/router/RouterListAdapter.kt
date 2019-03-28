@@ -5,6 +5,7 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<RouterEntity, BaseViewHolder>(R.layout.layout_router_list_item, arrayList) {
     var isCkeckMode = false
@@ -14,6 +15,9 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
     }
 
     override fun convert(helper: BaseViewHolder, item: RouterEntity) {
+
+        var userAvatar = helper.getView<ImageButtonWithText>(R.id.userAvatar)
+        userAvatar.setText( item.routerName)
         if (isCkeckMode) {
             helper.setVisible(R.id.checkBox, true)
             helper.setVisible(R.id.ivSelect, false)
