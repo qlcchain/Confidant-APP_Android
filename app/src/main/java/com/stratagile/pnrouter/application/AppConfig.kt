@@ -147,16 +147,24 @@ class AppConfig : MultiDexApplication() {
 
     fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
         KLog.i("没有初始化。。 getPNRouterServiceMessageReceiver  AAAAA " +this+ "##" +messageReceiver)
-        if (messageReceiver == null) {
+        if (reStart) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
                     BuildConfig.USER_AGENT,
                     APIModule.PipeConnectivityListener())
             MessageRetrievalService.registerActivityStarted(this)
-//            messageReceiver!!.convsationCallBack = MessageProvider.getInstance()
             messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         } else {
-            getPNRouterServiceMessageReceiver()
+            if (messageReceiver == null) {
+                this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
+                        APIModule.DynamicCredentialsProvider(this),
+                        BuildConfig.USER_AGENT,
+                        APIModule.PipeConnectivityListener())
+                MessageRetrievalService.registerActivityStarted(this)
+                messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
+            } else {
+                getPNRouterServiceMessageReceiver()
+            }
         }
         return messageReceiver!!
     }

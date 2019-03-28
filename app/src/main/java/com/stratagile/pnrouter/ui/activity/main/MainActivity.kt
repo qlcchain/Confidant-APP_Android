@@ -104,15 +104,11 @@ import kotlin.collections.ArrayList
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
     override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
-        when(jGroupListPullRsp.params.retCode)
-        {
-            0->
-            {
-                for (item in jGroupListPullRsp.params.payload)
-                {
+        when (jGroupListPullRsp.params.retCode) {
+            0 -> {
+                for (item in jGroupListPullRsp.params.payload) {
                     var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
-                    if(groupList.size > 0)
-                    {
+                    if (groupList.size > 0) {
                         var GroupLocal = groupList.get(0)
                         GroupLocal.userKey = item.userKey
                         GroupLocal.remark = item.remark
@@ -121,7 +117,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         GroupLocal.gName = item.gName
                         GroupLocal.routerId = ConstantValue.currentRouterId
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
-                    }else{
+                    } else {
                         item.routerId = ConstantValue.currentRouterId
                         AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
                     }
@@ -150,15 +146,15 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
 
-            when(jGroupSysPushRsp.params.type){
+            when (jGroupSysPushRsp.params.type) {
 
-                1->{
-
-                }
-                2->{
+                1 -> {
 
                 }
-                3,4->{
+                2 -> {
+
+                }
+                3, 4 -> {
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     val keyMap = SpUtil.getAll(AppConfig.instance)
                     for (key in keyMap.keys) {
@@ -215,14 +211,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }
-                241->{
+                241 -> {
 
                 }
-                242->{
+                242 -> {
 
                 }
-                243->{//有人被移除群
-                    if(jGroupSysPushRsp.params.to.equals(userId))//如果是自己
+                243 -> {//有人被移除群
+                    if (jGroupSysPushRsp.params.to.equals(userId))//如果是自己
                     {
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
@@ -258,7 +254,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             }
                             ConstantValue.isRefeshed = true
                         }
-                    }else{//是别人
+                    } else {//是别人
 
                     }
                 }
@@ -461,16 +457,17 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFileSendFinished(toxSendFileFinishedEvent: ToxSendFileFinishedEvent) {
-        var fileNumber=  toxSendFileFinishedEvent.fileNumber
+        var fileNumber = toxSendFileFinishedEvent.fileNumber
         var key = toxSendFileFinishedEvent.key
         val toxFileData = ConstantValue.sendToxFileDataMap[fileNumber.toString() + ""]
         if (toxFileData != null) {//点对点聊天
             if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileData.toId)) {
                 KLog.i("已经在聊天窗口了，不处理该条数据！")
             } else {
-                val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5,toxFileData.widthAndHeight, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
+                val sendToxFileNotice = SendToxFileNotice(toxFileData.fromId, toxFileData.toId, toxFileData.fileName, toxFileData.fileMD5, toxFileData.widthAndHeight, toxFileData.fileSize, toxFileData.fileType.value(), toxFileData.fileId, toxFileData.srcKey, toxFileData.dstKey, "SendFile")
                 val baseData = BaseData(sendToxFileNotice)
                 val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                 if (ConstantValue.isAntox) {
@@ -482,7 +479,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         val toxFileGroupChatData = ConstantValue.sendToxFileInGroupChapDataMap[fileNumber.toString() + ""]
-        if(toxFileGroupChatData != null)//群聊
+        if (toxFileGroupChatData != null)//群聊
         {
             if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(toxFileGroupChatData.toId)) {
                 KLog.i("已经在聊天窗口了，不处理该条数据！")
@@ -513,6 +510,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
 
     }
+
     override fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(jPushFileMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
@@ -817,6 +815,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         ivQrCode.postDelayed({ mNotificationManager.cancel(0) }, 50)
     }
+
     override fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.gId)) {
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
@@ -843,14 +842,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(UserEntityLocal)
                 }
                 val friendList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
-                if(friendList.size == 0)
-                {
+                if (friendList.size == 0) {
                     //判断非好友头像是否需要更新
-                    var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
-                    var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                    var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
+                    var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
                     var fileMD5 = FileUtil.getFileMD5(File(filePath))
-                    if(fileMD5 == null)
-                    {
+                    if (fileMD5 == null) {
                         fileMD5 = ""
                     }
                     val updateAvatarReq = UpdateAvatarReq(userId!!, pushMsgRsp.params.from, fileMD5)
@@ -869,8 +866,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 }
             }
             var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(pushMsgRsp.params.gId)).list()
-            if(groupList.size > 0)
-            {
+            if (groupList.size > 0) {
                 var GroupLocal = groupList.get(0)
                 GroupLocal.userKey = pushMsgRsp.params.selfKey
                 GroupLocal.remark = ""
@@ -879,7 +875,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 GroupLocal.gName = pushMsgRsp.params.groupName
                 GroupLocal.routerId = ConstantValue.currentRouterId
                 AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
-            }else{
+            } else {
                 var GroupLocal = GroupEntity()
                 GroupLocal.userKey = pushMsgRsp.params.selfKey
                 GroupLocal.remark = ""
@@ -908,10 +904,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
 
-            when(pushMsgRsp.params.msgType)
-            {
-                0 ->
-                {
+            when (pushMsgRsp.params.msgType) {
+                0 -> {
                     val aesKey = LibsodiumUtil.DecryptShareKey(pushMsgRsp.params.selfKey)
                     val base64Scoure = RxEncodeTool.base64Decode(pushMsgRsp.getParams().getMsg())
                     var msgSouce: String? = ""
@@ -963,13 +957,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             conversationListFragment?.refresh()
                             ConstantValue.isRefeshed = true
                         }
-                    }catch (e: Exception)
-                    {
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
-                else ->
-                {
+                else -> {
                     val gson = Gson()
                     val Message = Message()
                     Message.msg = ""
@@ -1006,6 +998,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         }
     }
+
     override fun pushMsgRsp(pushMsgRsp: JPushMsgRsp) {
         if (AppConfig.instance.isChatWithFirend != null && AppConfig.instance.isChatWithFirend.equals(pushMsgRsp.params.fromId)) {
             KLog.i("已经在聊天窗口了，不处理该条数据！")
@@ -1455,7 +1448,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val toChatUserId = tempkey.substring(tempkey.indexOf("_") + 1, tempkey.length)
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
                     if (toChatUserId.indexOf("group") == 0)//这里处理群聊
-                    { val localGroupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list()
+                    {
+                        val localGroupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list()
                         if (localGroupList.size == 0)
                         //如果找不到用户
                         {
@@ -1576,6 +1570,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        reRegesterMiPush()
         KLog.i("onDestroy")
         EventBus.getDefault().unregister(this)
+//        exitToast()
         super.onDestroy()
     }
 
@@ -1916,11 +1911,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         conversationListFragment?.setConversationListItemClickListener(
                 EaseConversationListFragment.EaseConversationListItemClickListener
-                { userid ,chatType ->
-                    if(chatType.equals("Chat"))
-                    {
+                { userid, chatType ->
+                    if (chatType.equals("Chat")) {
                         startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
-                    }else{
+                    } else {
 
                         val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
                         intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
@@ -2199,32 +2193,22 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
     fun exitToast(): Boolean {
-        if (System.currentTimeMillis() - exitTime > 2000) {
-            Toast.makeText(this, R.string.Press_again, Toast.LENGTH_SHORT)
-                    .show()
-            exitTime = System.currentTimeMillis()
-        } else {
-//            if(ConstantValue.curreantNetworkType.equals("TOX"))
-//            {
-//                ToxCoreJni.getInstance().toxKill()
-//            }
-            CrashReport.closeBugly()
-            CrashReport.closeCrashReport()
-            MiPushClient.unregisterPush(this)
-            AppConfig.instance.stopAllService()
-            //android进程完美退出方法。
+        CrashReport.closeBugly()
+        CrashReport.closeCrashReport()
+        MiPushClient.unregisterPush(this)
+        AppConfig.instance.stopAllService()
+        //android进程完美退出方法。
 //            AppConfig.instance.mAppActivityManager.AppExit()
-            var intent = Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-            this.startActivity(intent);
-//            android.os.Process.killProcess(android.os.Process.myPid());
-            //System.runFinalizersOnExit(true);、
-            System.exit(0)
-        }
+        var intent = Intent(Intent.ACTION_MAIN);
+//        intent.addCategory(Intent.CATEGORY_HOME);
+//        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
+//        this.startActivity(intent);
+            android.os.Process.killProcess(android.os.Process.myPid());
+        //System.runFinalizersOnExit(true);
+//        System.exit(0)
         return false
     }
 

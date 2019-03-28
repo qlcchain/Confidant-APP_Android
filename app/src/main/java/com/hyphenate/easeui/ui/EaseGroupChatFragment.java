@@ -876,6 +876,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             case 1:
                                 files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                 messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                                messageData.setAttribute("wh", message.getFileInfo());
                                 break;
                             case 2:
                                 files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
@@ -1638,39 +1639,26 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 List<LocalMedia> list = data.getParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION);
                 KLog.i(list);
                 if (list != null && list.size() > 0) {
-                    if (list.get(0).getPictureType().contains("image")) {
-                        //发图片  LocalMedia{path='/storage/emulated/0/Huawei/MagazineUnlock/magazine-unlock-06-2.3.1281-_0B5D103F7C7FB13BA5C449EB159FD6C1.jpg', compressPath='null', cutPath='null', duration=0, isChecked=false, isCut=false, position=5, num=1, mimeType=0, pictureType='image/jpeg', compressed=false, width=1440, height=2560
-//                    File file = new File(list.get(0).getPath());
-//                    Uri uri = parUri(file);
-                        chooseOriginalImage(list.get(0).getPath());
-                        inputMenu.hideExtendMenuContainer();
-//                    sendPicByUri(uri);
-                    } else {
-                        //发视频
-                        inputMenu.hideExtendMenuContainer();
-//                    videoFile = new File(list.get(0).getPath());
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() / 1000 + ".mp4");
-                                FileUtil.copyFile(list.get(0).getPath(), videoFile.getPath());
-                                inputMenu.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        sendVideoMessage(videoFile.getAbsolutePath(), false);
-                                    }
-                                });
-                            }
-                        }).start();
-                    }
+                    inputMenu.hideExtendMenuContainer();
 
+                    new Thread(() -> {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getPictureType().contains("image")) {
+                                sendImageMessage(list.get(i).getPath(), true);
+                            } else {
+                                //发视频
+                                sendVideoMsg(list.get(i).getPath());
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show();
                 }
-//                if (data != null) {
-//                    Uri selectedImage = data.getData();
-//                    sendPicByUri(selectedImage);
-//                }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
                 double latitude = data.getDoubleExtra("latitude", 0);
                 double longitude = data.getDoubleExtra("longitude", 0);
@@ -1702,6 +1690,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
             }
         }
+    }
+
+    private void sendVideoMsg(String filePath) {
+        KLog.i("要发送的文件的路径为：" +filePath);
+        File file = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
+        KLog.i("要发送的文件的路径为111: " + file.getName());
+        FileUtil.copyFile(filePath, file.getPath());
+        inputMenu.post(() -> sendVideoMessage(file.getAbsolutePath(), false));
     }
 
     /**
@@ -3917,6 +3913,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 case 1:
                                     files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                     messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                                    messageData.setAttribute("wh", message.getFileInfo());
                                     break;
                                 case 2:
                                     files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();

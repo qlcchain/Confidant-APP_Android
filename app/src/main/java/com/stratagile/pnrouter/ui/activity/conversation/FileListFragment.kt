@@ -472,7 +472,9 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 {
                     var data = fileListChooseAdapter!!.data[position]
                     var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    KLog.i("转发的MiName= " + fileMiName)
                     var fileOrginName = String(Base58.decode(fileMiName))
+                    KLog.i("转发的名字= "+ fileOrginName)
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
                     intent.putExtra("fromId", selfUserId);

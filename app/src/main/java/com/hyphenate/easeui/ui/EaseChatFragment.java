@@ -289,7 +289,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {
         String msgId = fileTransformStatus.getMsgid();
-        KLog.i("错误：onFileTransformStatus:" +msgId);
+        KLog.i("错误：onFileTransformStatus:" + msgId);
 
         String friend = fileTransformStatus.getFriendId();
         if (!friend.equals(toChatUserId)) {
@@ -302,7 +302,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 @Override
                 public void run() {
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
-                    if (EMMessage != null && LogIdIdResult!= null) {
+                    if (EMMessage != null && LogIdIdResult != null) {
                         conversation.removeMessage(msgId);
                         EMMessage.setMsgId(LogIdIdResult + "");
                         EMMessage.setAcked(true);
@@ -794,7 +794,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         ToxFileData toxFileData = ConstantValue.INSTANCE.getSendToxFileDataMap().get(fileNumber + "");
         if (toxFileData != null) {
             if (!deleteFileMap.get(toxFileData.getFileId() + "")) {
-                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(),toxFileData.getWidthAndHeight(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
+                SendToxFileNotice sendToxFileNotice = new SendToxFileNotice(toxFileData.getFromId(), toxFileData.getToId(), toxFileData.getFileName(), toxFileData.getFileMD5(), toxFileData.getWidthAndHeight(), toxFileData.getFileSize(), toxFileData.getFileType().value(), toxFileData.getFileId(), toxFileData.getSrcKey(), toxFileData.getDstKey(), "SendFile");
                 BaseData baseData = new BaseData(sendToxFileNotice);
                 String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                 if (ConstantValue.INSTANCE.isAntox()) {
@@ -892,6 +892,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                             messageData.setUnread(true);
                                             break;
                                         case 1:
+                                            messageData.setAttribute("wh", message.getFileInfo());
                                             messageData.setDelivered(true);
                                             messageData.setAcked(true);
                                             messageData.setUnread(true);
@@ -1233,7 +1234,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 message.setTo(userId);
                 message.setDirection(EMMessage.Direct.RECEIVE);
             }
-            message.setMsgTime(Message.getTimeStamp() *1000);
+            message.setMsgTime(Message.getTimeStamp() * 1000);
             if (i == 0) {
                 MsgStartId = Message.getMsgId();
             }
@@ -1605,39 +1606,26 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 List<LocalMedia> list = data.getParcelableArrayListExtra(PictureConfig.EXTRA_RESULT_SELECTION);
                 KLog.i(list);
                 if (list != null && list.size() > 0) {
-                    if (list.get(0).getPictureType().contains("image")) {
-                        //发图片  LocalMedia{path='/storage/emulated/0/Huawei/MagazineUnlock/magazine-unlock-06-2.3.1281-_0B5D103F7C7FB13BA5C449EB159FD6C1.jpg', compressPath='null', cutPath='null', duration=0, isChecked=false, isCut=false, position=5, num=1, mimeType=0, pictureType='image/jpeg', compressed=false, width=1440, height=2560
-//                    File file = new File(list.get(0).getPath());
-//                    Uri uri = parUri(file);
-                        chooseOriginalImage(list.get(0).getPath());
-                        inputMenu.hideExtendMenuContainer();
-//                    sendPicByUri(uri);
-                    } else {
-                        //发视频
-                        inputMenu.hideExtendMenuContainer();
-//                    videoFile = new File(list.get(0).getPath());
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                videoFile = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() / 1000 + ".mp4");
-                                FileUtil.copyFile(list.get(0).getPath(), videoFile.getPath());
-                                inputMenu.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        sendVideoMessage(videoFile.getAbsolutePath(), false);
-                                    }
-                                });
-                            }
-                        }).start();
-                    }
+                    inputMenu.hideExtendMenuContainer();
 
+                    new Thread(() -> {
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).getPictureType().contains("image")) {
+                                sendImageMessage(list.get(i).getPath(), true);
+                            } else {
+                                //发视频
+                                sendVideoMsg(list.get(i).getPath());
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.select_resource_error), Toast.LENGTH_SHORT).show();
                 }
-//                if (data != null) {
-//                    Uri selectedImage = data.getData();
-//                    sendPicByUri(selectedImage);
-//                }
             } else if (requestCode == REQUEST_CODE_MAP) { // location
                 double latitude = data.getDoubleExtra("latitude", 0);
                 double longitude = data.getDoubleExtra("longitude", 0);
@@ -1667,6 +1655,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 sendImageMessage(filePath, !isCheck);
             }
         }
+    }
+
+    private void sendVideoMsg(String filePath) {
+        KLog.i("要发送的文件的路径为：" +filePath);
+        File file = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
+        KLog.i("要发送的文件的路径为111: " + file.getName());
+        FileUtil.copyFile(filePath, file.getPath());
+        inputMenu.post(() -> sendVideoMessage(file.getAbsolutePath(), false));
     }
 
     /**
@@ -2074,8 +2070,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     AppConfig.instance.getMessageReceiver().getChatCallBack().sendMsg(userId, UserDataManger.curreantfriendUserData.getUserId(), UserDataManger.curreantfriendUserData.getSignPublicKey(), content);
                 }
 
-                if(message == null)
-                {
+                if (message == null) {
                     return;
                 }
                 message.setFrom(userId);
@@ -2347,7 +2342,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     String strBase58 = Base58.encode(fileName.getBytes());
                     String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
                     String fileKey = RxEncryptTool.generateAESKey();
-                    int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0,16));
+                    int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                     if (code == 1) {
                         int uuid = (int) (System.currentTimeMillis() / 1000);
                         message.setMsgId(uuid + "");
@@ -2432,7 +2427,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      */
     protected void sendImageMessage(String imagePath, boolean isCompress) {
         if (friendStatus != 0) {
-            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            inputMenu.post(() -> Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show());
             return;
         }
         new Thread(new Runnable() {
@@ -2455,20 +2450,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             });
                             return;
                         }
-                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1,imagePath.lastIndexOf("."));
+                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1, imagePath.lastIndexOf("."));
                         String typeName = imagePath.substring(imagePath.lastIndexOf("."));
                         String leftName = "";
                         if (imgeSouceName.contains("_")) {
-                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
-                            leftName = StringUitl.replaceALL(leftName,"_");
-                            if(StringUitl.isNumeric(leftName))
-                            {
+                            leftName = imgeSouceName.substring(0, imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName, "_");
+                            if (StringUitl.isNumeric(leftName)) {
                                 leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
                             }
-                        }else{
+                        } else {
                             leftName = imgeSouceName;
                         }
-                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String fileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -2515,7 +2509,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
                             String fileKey = RxEncryptTool.generateAESKey();
-                            int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey.substring(0,16), isCompress);
+                            int code = FileUtil.copySdcardToxPicAndEncrypt(imagePath, base58files_dir, fileKey.substring(0, 16), isCompress);
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
@@ -2537,7 +2531,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1, widthAndHeight.length()));
                                 toxFileData.setPorperty("0");
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -2666,7 +2660,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
                             String fileKey = RxEncryptTool.generateAESKey();
-                            int code = FileUtil.copySdcardToxFileAndEncrypt(imagePath, base58files_dir, fileKey.substring(0,16));
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(imagePath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
@@ -2688,7 +2682,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 toxFileData.setFileSize((int) fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuid);
-                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1,widthAndHeight.length()));
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1, widthAndHeight.length()));
                                 toxFileData.setPorperty("0");
                                 String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
@@ -2760,20 +2754,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             });
                             return;
                         }
-                        String imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1,videoPath.lastIndexOf("."));
+                        String imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
                         String typeName = videoPath.substring(videoPath.lastIndexOf("."));
                         String leftName = "";
                         if (imgeSouceName.contains("_")) {
-                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
-                            leftName = StringUitl.replaceALL(leftName,"_");
-                            if(StringUitl.isNumeric(leftName))
-                            {
+                            leftName = imgeSouceName.substring(0, imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName, "_");
+                            if (StringUitl.isNumeric(leftName)) {
                                 leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
                             }
-                        }else{
+                        } else {
                             leftName = imgeSouceName;
                         }
-                        String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String videoFileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
                         //String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
@@ -2855,7 +2848,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String strBase58 = Base58.encode(videoFileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
                             String fileKey = RxEncryptTool.generateAESKey();
-                            int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey.substring(0,16));
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
@@ -2964,20 +2957,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             return;
                         }
 
-                        String imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1,filePath.lastIndexOf("."));
+                        String imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf("."));
                         String typeName = filePath.substring(filePath.lastIndexOf("."));
                         String leftName = "";
                         if (imgeSouceName.contains("_")) {
-                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
-                            leftName = StringUitl.replaceALL(leftName,"_");
-                            if(StringUitl.isNumeric(leftName))
-                            {
+                            leftName = imgeSouceName.substring(0, imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName, "_");
+                            if (StringUitl.isNumeric(leftName)) {
                                 leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
                             }
-                        }else{
+                        } else {
                             leftName = imgeSouceName;
                         }
-                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String fileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -2989,8 +2981,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             int result = FileUtil.copyAppFileToSdcard(filePath, files_dir);
-                            if(result == 0)
-                            {
+                            if (result == 0) {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -3065,7 +3056,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String strBase58 = Base58.encode(fileName.getBytes());
                             String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
                             String fileKey = RxEncryptTool.generateAESKey();
-                            int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0,16));
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(filePath, base58files_dir, fileKey.substring(0, 16));
                             if (code == 1) {
                                 int uuid = (int) (System.currentTimeMillis() / 1000);
                                 message.setMsgId(uuid + "");
@@ -3258,8 +3249,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             default:
                 break;
         }
-        if(message != null)
-        {
+        if (message != null) {
             message.setDirection(EMMessage.Direct.RECEIVE);
             message.setMsgId(msgId);
             message.setFrom(fromId);
@@ -3551,25 +3541,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
      * //todo
      */
     protected void selectPicFromLocal() {
-//        Intent intent;
-//        if (Build.VERSION.SDK_INT < 19) {
-//            intent = new Intent(Intent.ACTION_GET_CONTENT);
-//            //intent.setType("image/*");
-//            intent.setType("*/*");
-//        } else {
-//            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        }
-//        startActivityForResult(intent, REQUEST_CODE_LOCAL);
         PictureSelector.create(this)
                 .openGallery(PictureMimeType.ofAll())
-                .maxSelectNum(100)
+                .maxSelectNum(9)
                 .minSelectNum(1)
                 .imageSpanCount(3)
-                .selectionMode(PictureConfig.SINGLE)
-                .previewImage(false)
-                .previewVideo(false)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
                 .enablePreviewAudio(false)
-                .isCamera(true)
+                .isCamera(false)
                 .imageFormat(PictureMimeType.PNG)
                 .isZoomAnim(true)
                 .sizeMultiplier(0.5f)
@@ -3893,6 +3874,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 case 1:
                                     files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                     messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                                    messageData.setAttribute("wh", message.getFileInfo());
                                     break;
                                 case 2:
                                     files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
@@ -3933,6 +3915,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                                 messageData.setUnread(true);
                                                 break;
                                             case 1:
+
                                                 messageData.setDelivered(true);
                                                 messageData.setAcked(true);
                                                 messageData.setUnread(true);

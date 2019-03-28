@@ -74,8 +74,6 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             LogUtil.addLog("保存的东西不为空," + savedInstanceState.getString("baseSave"))
             //这里走重新启动app的流程。
             if ("base".equals(savedInstanceState.getString("baseSave"))) {
-                CrashReport.closeBugly()
-                CrashReport.closeCrashReport()
                 AppConfig.instance.stopAllService()
                 AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
                 ConstantValue.isHasWebsocketInit = false

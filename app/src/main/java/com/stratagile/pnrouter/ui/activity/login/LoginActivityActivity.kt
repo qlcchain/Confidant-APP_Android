@@ -1428,6 +1428,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener +"##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!! + "##" +AppConfig.instance.name)
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {

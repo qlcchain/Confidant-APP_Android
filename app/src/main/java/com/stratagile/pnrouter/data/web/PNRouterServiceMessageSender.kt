@@ -813,6 +813,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             }
                         }
                     } catch (e: Exception) {
+                        e.printStackTrace()
                          sendFileLeftByteMap.remove(msgId)
                          sendFileNameMap.remove(msgId)
                          sendFileLastByteSizeMap.remove(msgId)

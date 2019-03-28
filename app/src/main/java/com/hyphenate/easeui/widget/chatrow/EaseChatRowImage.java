@@ -69,11 +69,14 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 width = Float.valueOf(whs[0]);
                 height = Float.valueOf(whs[1]);
                 setImageViewSize();
+                KLog.i("位置为：" + position);
                 KLog.i("原始宽高为：" + wh);
                 KLog.i("图片的宽为1：" + width);
                 KLog.i("图片的高为1：" + height);
             }
         } catch (Exception e) {
+            KLog.i("位置为：" + position);
+            KLog.i("文件名字为：" + imgBody.getFileName());
             e.printStackTrace();
         }
         String localUrl = imgBody.getLocalUrl();

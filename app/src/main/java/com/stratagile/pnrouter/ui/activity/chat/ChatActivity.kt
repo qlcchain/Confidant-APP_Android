@@ -295,6 +295,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         val Message = Message()
         Message.msgType = jPushFileMsgRsp.params.fileType
         Message.fileName = jPushFileMsgRsp.params.fileName
+        Message.filePath = jPushFileMsgRsp.params.filePath
         Message.msg = ""
         Message.from = userId
         Message.to = jPushFileMsgRsp.params.fromId

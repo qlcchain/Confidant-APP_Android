@@ -645,6 +645,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
         KLog.i("没有初始化。。createMessagePipe" +pipe)
+        KLog.i("没有初始化。。PNRouterServiceMessageReceiver" + this)
+        KLog.i("没有初始化。。PNRouterServiceMessageReceiver loginBackListener" + loginBackListener)
         if (pipe == null) {
             val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
