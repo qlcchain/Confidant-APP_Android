@@ -18,17 +18,21 @@ public class RouterEntity implements Parcelable{
     private String userId;
     private String index;
     private String routerName;
+    private String routerAlias;
     private Integer dataFileVersion;
     private String dataFilePay;
     private boolean lastCheck; //最后一次选中
     private String loginKey;
+    //多选模式中是否选中
+    private boolean isMultChecked;
 
 
 
-    @Generated(hash = 517680001)
+    @Generated(hash = 1671247076)
     public RouterEntity(Long id, String routerId, String userSn, String username,
-            String userId, String index, String routerName, Integer dataFileVersion,
-            String dataFilePay, boolean lastCheck, String loginKey) {
+            String userId, String index, String routerName, String routerAlias,
+            Integer dataFileVersion, String dataFilePay, boolean lastCheck, String loginKey,
+            boolean isMultChecked) {
         this.id = id;
         this.routerId = routerId;
         this.userSn = userSn;
@@ -36,10 +40,12 @@ public class RouterEntity implements Parcelable{
         this.userId = userId;
         this.index = index;
         this.routerName = routerName;
+        this.routerAlias = routerAlias;
         this.dataFileVersion = dataFileVersion;
         this.dataFilePay = dataFilePay;
         this.lastCheck = lastCheck;
         this.loginKey = loginKey;
+        this.isMultChecked = isMultChecked;
     }
 
     @Generated(hash = 997370902)
@@ -59,6 +65,7 @@ public class RouterEntity implements Parcelable{
         userId = in.readString();
         index = in.readString();
         routerName = in.readString();
+        routerAlias = in.readString();
         if (in.readByte() == 0) {
             dataFileVersion = null;
         } else {
@@ -67,36 +74,7 @@ public class RouterEntity implements Parcelable{
         dataFilePay = in.readString();
         lastCheck = in.readByte() != 0;
         loginKey = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(id);
-        }
-        dest.writeString(routerId);
-        dest.writeString(userSn);
-        dest.writeString(username);
-        dest.writeString(userId);
-        dest.writeString(index);
-        dest.writeString(routerName);
-        if (dataFileVersion == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(dataFileVersion);
-        }
-        dest.writeString(dataFilePay);
-        dest.writeByte((byte) (lastCheck ? 1 : 0));
-        dest.writeString(loginKey);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        isMultChecked = in.readByte() != 0;
     }
 
     public static final Creator<RouterEntity> CREATOR = new Creator<RouterEntity>() {
@@ -197,4 +175,51 @@ public class RouterEntity implements Parcelable{
         this.index = index;
     }
 
+    public String getRouterAlias() {
+        return this.routerAlias;
+    }
+
+    public void setRouterAlias(String routerAlias) {
+        this.routerAlias = routerAlias;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        if (id == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeLong(id);
+        }
+        parcel.writeString(routerId);
+        parcel.writeString(userSn);
+        parcel.writeString(username);
+        parcel.writeString(userId);
+        parcel.writeString(index);
+        parcel.writeString(routerName);
+        parcel.writeString(routerAlias);
+        if (dataFileVersion == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(dataFileVersion);
+        }
+        parcel.writeString(dataFilePay);
+        parcel.writeByte((byte) (lastCheck ? 1 : 0));
+        parcel.writeString(loginKey);
+        parcel.writeByte((byte) (isMultChecked ? 1 : 0));
+    }
+
+    public boolean getIsMultChecked() {
+        return this.isMultChecked;
+    }
+
+    public void setIsMultChecked(boolean isMultChecked) {
+        this.isMultChecked = isMultChecked;
+    }
 }

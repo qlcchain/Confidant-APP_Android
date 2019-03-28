@@ -17,6 +17,7 @@ public class UserEntity implements Parcelable{
     private String userId;
     //用户hashid，14个字节，不能为空
     private String index;
+
     //路由器用户id
     private String routerUserId;
 

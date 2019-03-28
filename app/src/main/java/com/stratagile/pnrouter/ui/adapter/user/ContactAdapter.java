@@ -76,9 +76,9 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                 if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
                     helper.setVisible(R.id.ivArrow, true);
                     if (lv0.isExpanded()) {
-                        helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_down);
-                    } else {
                         helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_upper);
+                    } else {
+                        helper.setImageResource(R.id.ivArrow, R.mipmap.arrow_down);
                     }
                     helper.setText(R.id.tvNickName, nickNameSouce + "(" + lv0.getSubItems().size() + ")");
                 } else {
@@ -199,14 +199,14 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     break;
                 case "expand":
                     //展开
-                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageView,"rotation",0, 180f);
+                    ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageView,"rotation",0, -180f);
                     objectAnimator.setDuration(300);
                     objectAnimator.start();
 //                    imageView.startAnimation(OptAnimationLoader.loadAnimation(mContext, R.anim.anim_contact_list_open));
                     break;
                 case "collapse":
                     //关闭
-                    ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(imageView,"rotation",180f, 0);
+                    ObjectAnimator objectAnimator1 = ObjectAnimator.ofFloat(imageView,"rotation",-180f, 0);
                     objectAnimator1.setDuration(300);
                     objectAnimator1.start();
 //                    imageView.startAnimation(OptAnimationLoader.loadAnimation(mContext, R.anim.anim_contact_list_close));

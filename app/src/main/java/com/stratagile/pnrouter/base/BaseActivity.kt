@@ -103,20 +103,6 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         return super.onTouchEvent(event)
     }
 
-    fun exitToastBase() {
-        AppConfig.instance.stopAllService()
-        //android进程完美退出方法。
-        var intent = Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
-        this.startActivity(intent);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        //System.runFinalizersOnExit(true);
-        System.exit(0);
-    }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
@@ -162,6 +148,8 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             toolbar?.setBackgroundColor(resources.getColor(R.color.color_00000000))
             relativeLayout_root.setBackgroundColor(resources.getColor(R.color.color_00000000))
             val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            this.view = findViewById(R.id.view)
+            toolbar = findViewById(R.id.toolbar)
             rootLayout?.addView(view, params)
             toolbar?.bringToFront()
             toolbar?.setVisibility(View.GONE)
@@ -191,6 +179,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         StatusBarUtil.setTransparent(this)
         view.visibility = View.VISIBLE
         relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x84).toInt())))
+    }
+
+    fun showViewNeedFront() {
+        StatusBarUtil.setTransparent(this)
+        relativeLayout_root.visibility = View.GONE
     }
 
     fun isShouldHideInput(v: View?, event: MotionEvent): Boolean {

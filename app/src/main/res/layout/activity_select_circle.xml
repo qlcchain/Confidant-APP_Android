@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/x84"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/rl1"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/statusBar"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_height="@dimen/x84">
+            <LinearLayout
+                android:id="@+id/llCancel"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="@string/cancel"
+                    android:textSize="15sp"
+                    android:textColor="#2c2c2c"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="title"
+                android:textColor="@color/mainColor"
+                android:textSize="18sp" />
+
+            <RelativeLayout
+                android:id="@+id/multiSelectBtn"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/x22"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/x36"
+                    android:text="Edit"/>
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:text="My Circle"
+            android:textSize="14sp"
+            android:paddingLeft="@dimen/x31"
+            android:textColor="@color/color_999999"
+            android:layout_height="@dimen/x77" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tvLeaveCircle"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:background="@color/mainColor"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_height="@dimen/x84" />
+</RelativeLayout>

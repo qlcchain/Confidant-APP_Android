@@ -104,8 +104,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             progressBar.visibility = View.GONE
             if (fileName.contains(".pdf")) {
                 pdfView.visibility = View.VISIBLE
-                pdfView.fromFile(file)
-                        .load()
+                pdfView.fromFile(file).load()
             } else if(fileName.contains(".txt")){
                 scrollView.visibility = View.VISIBLE
                 tvText.visibility = View.VISIBLE

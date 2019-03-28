@@ -404,7 +404,7 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
 
                     if(routerId != null)//群聊只能添加本路由器好友
                     {
-                        if(it.routeId.equals(routerId))
+                        if(it.routeId != null && it.routeId.equals(routerId))
                         {
                             contactList.add(it)
                         }
