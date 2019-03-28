@@ -606,9 +606,14 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 routerListAdapter!!.data[position].isMultChecked = !routerListAdapter!!.data[position].isMultChecked
                 routerListAdapter!!.notifyItemChanged(position)
             } else {
+
                 routerListAdapter!!.selectedItem = position
                 routerListAdapter!!.notifyDataSetChanged()
                 currentRouterEntity = routerListAdapter!!.data[position]
+                if (currentRouterEntity!!.routerId.equals(lastRouterEntity!!.routerId)) {
+
+                    return@setOnItemClickListener
+                }
                 logOutRouter(lastRouterEntity!!)
                 lastRouterEntity = routerListAdapter!!.data[position]
             }
