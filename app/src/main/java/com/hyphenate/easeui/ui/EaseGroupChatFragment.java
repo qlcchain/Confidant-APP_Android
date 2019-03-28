@@ -108,7 +108,7 @@ import com.stratagile.pnrouter.entity.ToxFileData;
 import com.stratagile.pnrouter.entity.UpdateAvatarReq;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
-import com.stratagile.pnrouter.entity.events.FileTransformStatus;
+import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
@@ -122,6 +122,7 @@ import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.utils.StringUitl;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
@@ -247,6 +248,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     private HashMap<String, Message> receiveFileDataMap = new HashMap<>();
     private HashMap<String, Message> receiveToxFileDataMap = new HashMap<>();
     private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
+    private HashMap<String, String> sendTLogIdFileIdMap = new HashMap<>();
     private long faBegin;
     private long faEnd;
     //是否正在录音，正在录音，其他点击不能生效
@@ -309,7 +311,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {
+    public void onFileTransformStatus(FileGroupTransformStatus fileTransformStatus) {
         String msgId = fileTransformStatus.getMsgid();
         KLog.i("错误：onFileTransformStatus:" + msgId);
 
@@ -318,25 +320,28 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             return;
         }
         String LogIdIdResult = fileTransformStatus.getLogIdIdResult();
+        int FileIdIdResult = fileTransformStatus.getFileId();
         int status = fileTransformStatus.getStatus();
         if (status == 1) {
-            getActivity().runOnUiThread(new Runnable() {
+
+            sendTLogIdFileIdMap.put(FileIdIdResult+"",msgId);
+            /*getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
                     if (EMMessage != null && LogIdIdResult != null) {
-                        conversation.removeMessage(msgId);
-                        EMMessage.setMsgId(LogIdIdResult + "");
-                        EMMessage.setAcked(true);
-                        sendMessageTo(EMMessage);
+                        //conversation.removeMessage(msgId);
+                        EMMessage.setMsgId(FileIdIdResult + "");
+                        //EMMessage.setAcked(true);
+                        //sendMessageTo(EMMessage);
                         conversation.updateMessage(EMMessage);
-                        if (isMessageListInited) {
+                        *//*if (isMessageListInited) {
                             easeChatMessageList.refresh();
-                        }
+                        }*//*
                     }
 
                 }
-            });
+            });*/
 
         } else if (status == 2) {
             getActivity().runOnUiThread(new Runnable() {
@@ -952,7 +957,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     public void onToxFileSendRsp(JGroupSendFileDoneRsp jSendToxFileRsp) {
         if (jSendToxFileRsp.getParams().getRetCode() == 0) {
-            String msgId = jSendToxFileRsp.getParams().getFileId() + "";
+            String msgId = sendTLogIdFileIdMap.get(jSendToxFileRsp.getParams().getFileId() + "");
             String msgServerId = jSendToxFileRsp.getParams().getMsgId() + "";
             EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
             conversation.removeMessage(msgId);
@@ -968,6 +973,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    String msgId = jSendToxFileRsp.getParams().getFileId() + "";
+                    conversation.removeMessage(msgId);
+                    if (isMessageListInited) {
+                        easeChatMessageList.refresh();
+                    }
                     Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
                 }
             });
@@ -2494,12 +2504,20 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String widthAndHeight = "," + bitmap.getWidth() + "*" + bitmap.getHeight();
                         KLog.i("图片的宽高为：" + widthAndHeight);
                         bitmap.recycle();
-                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
-                        if(imgeSouceName.contains("_"))
-                        {
-                            imgeSouceName = imgeSouceName.substring(imgeSouceName.indexOf("_")+1,imgeSouceName.length());
+                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1,imagePath.lastIndexOf("."));
+                        String typeName = imagePath.substring(imagePath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
                         }
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imgeSouceName;
+                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -2792,9 +2810,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             });
                             return;
                         }
-                        String videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
-                        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
-                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                        String imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1,videoPath.lastIndexOf("."));
+                        String typeName = videoPath.substring(videoPath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
+                        }
+                        String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+
+                        //String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
+                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
                         FileUtil.saveBitmpToFile(bitmap, thumbPath);
@@ -2984,7 +3016,20 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             });
                             return;
                         }
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
+                        String imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1,filePath.lastIndexOf("."));
+                        String typeName = filePath.substring(filePath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
+                        }
+                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
 
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
@@ -2994,9 +3039,18 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         message.setDelivered(true);
                         message.setAcked(false);
                         message.setUnread(true);
-
-
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            int result = FileUtil.copyAppFileToSdcard(filePath, files_dir);
+                            if(result == 0)
+                            {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                return;
+                            }
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
@@ -3120,7 +3174,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             }
 
                         }
-                        FileUtil.copySdcardFile(filePath, files_dir);
+                        //FileUtil.copySdcardFile(filePath, files_dir);
                         Gson gson = new Gson();
                         Message Message = new Message();
                         Message.setMsgType(5);

@@ -487,7 +487,14 @@ public class StringUitl {
         Pattern pattern = Pattern.compile("[0-9]*");
         return pattern.matcher(str).matches();
     }
-
+    public static String replaceALL(String str,String substr) {
+        if(str == null || substr == null)
+        {
+            return "";
+        }
+        str = str.replaceAll(substr,"");
+        return str;
+    }
     /**
      * 获取手机品牌
      */

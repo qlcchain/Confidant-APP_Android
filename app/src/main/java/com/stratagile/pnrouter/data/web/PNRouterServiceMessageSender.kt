@@ -859,9 +859,15 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         }
 
                         //KLog.i("错误ToIdResult："+ToIdResult +"  "+ "LogIdIdResult:"+LogIdIdResult +"  msgId:"+msgId)
-                        EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1))
+
+
                         KLog.i("websocket文件发送成功！")
                         var porperty = sendFilePorpertyMap.get(msgId)
+                        if (porperty!= null && porperty.equals("1")) {//群特殊处理
+                            EventBus.getDefault().post(FileGroupTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1,FileIdResult))
+                        }else{
+                            EventBus.getDefault().post(FileTransformStatus(transformReceiverFileMessage.toId, LogIdIdResult.toString(),ToIdResult,1))
+                        }
                         if (porperty!= null && porperty.equals("1")) {
                             val file = File(filePath)
 
@@ -1307,7 +1313,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 2))
                     }
                     val videoFileName = files_dir.substring(files_dir.lastIndexOf("/") + 1)
-                    val videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf(".") + 1)
+                    val videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf("."))
                     val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + videoName + ".png"
                     val bitmap = EaseImageUtils.getVideoPhoto(files_dir)
                     val videoLength = EaseImageUtils.getVideoDuration(files_dir)
@@ -1422,7 +1428,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     if (file.length() > 1024 * 1024 * 100) {
                         EventBus.getDefault().post(FileTransformStatus(msgId!!,"",friendId, 2))
                     }
-                    val fileName = (System.currentTimeMillis() / 1000 ).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
+                    val fileName = filePath.substring(filePath.lastIndexOf("/") + 1)
 
                     val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                     val message = EMMessage.createFileSendMessage(filePath, friendId)
@@ -1495,7 +1501,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                         val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                         EventBus.getDefault().post(FileTransformEntity(msgId, 0, "", wssUrl, "lws-pnr-bin"))
                     }
-                    FileUtil.copySdcardFile(filePath, files_dir)
+                    //FileUtil.copySdcardFile(filePath, files_dir)
                    /* val gson = Gson()
                     val Message = Message()
                     Message.msgType = 5

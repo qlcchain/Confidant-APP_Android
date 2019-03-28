@@ -24,6 +24,7 @@ class SignalServiceMessagePipe internal constructor(private val websocket: WebSo
             this.websocket.onMessageReceiveListener = this
         }else{
 
+            KLog.i("没有初始化。。SignalServiceMessagePipe")
             AppConfig.instance.onToxMessageReceiveListener = this
             this.websocket.onMessageReceiveListener = this
             this.websocket.connect()

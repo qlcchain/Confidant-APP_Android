@@ -60,6 +60,7 @@ import java.util.*
 
 class AppConfig : MultiDexApplication() {
 
+    var name:Long = 0
     val MI_PUSH_APP_ID = "2882303761517914075"
     val MI_PUSH_APP_KEY = "5221791411075"
     val FOREGROUND_ID = 313399
@@ -92,6 +93,7 @@ class AppConfig : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 //        CrashHandler.instance.init(this)
+        name = System.currentTimeMillis()
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
         EaseUI.getInstance().init(this, null)
         //EMClient.getInstance().setDebugMode(true)
@@ -144,6 +146,7 @@ class AppConfig : MultiDexApplication() {
 
 
     fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
+        KLog.i("没有初始化。。 getPNRouterServiceMessageReceiver  AAAAA " +this+ "##" +messageReceiver)
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),

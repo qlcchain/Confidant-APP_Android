@@ -131,6 +131,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     var scanType = 0 // 0 admin   1 其他
     var adminUserSn:String?  = null
     var hasFinger = false
+    var name:Long  = 0;
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
@@ -559,6 +560,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         if (BuildConfig.DEBUG || intent.hasExtra("flag")) {
             isUnlock = true
         }
+        name = System.currentTimeMillis();
         maxLogin = 0
         loginGoMain = false
         needFront = true
@@ -582,6 +584,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     override fun onResume() {
         if(AppConfig.instance.messageReceiver != null)
         {
+            KLog.i("没有初始化。。设置loginBackListener")
             AppConfig.instance.messageReceiver!!.loginBackListener = this
         }
         exitTime = System.currentTimeMillis() - 2001
@@ -590,6 +593,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     override fun onDestroy() {
 
+        KLog.i("没有初始化。。onDestroy")
         AppConfig.instance.messageReceiver?.loginBackListener = null
         if (cancellationSignal != null) {
             cancellationSignal!!.cancel()
@@ -751,6 +755,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                         val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
                         //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        KLog.i("没有初始化。。登录接口设置loginBackListener"+"##" +AppConfig.instance.name +"##"+this.name+"##"+AppConfig.instance.messageReceiver)
+                        AppConfig.instance.messageReceiver!!.loginBackListener = this
                         var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
                         ConstantValue.loginReq = login
                         AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
@@ -791,6 +797,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 {
                     ConstantValue.isHasWebsocketInit = true
                     AppConfig.instance.getPNRouterServiceMessageReceiver()
+                    KLog.i("没有初始化。。设置loginBackListener")
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                 }
                 if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
@@ -1112,6 +1119,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                     }
                                     isStartWebsocket = true
+                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
                                     AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                 }
 
@@ -1315,7 +1323,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 ConstantValue.loginReq = login
                 var baseData = BaseData(4,login)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-
+                KLog.i("没有初始化。。设置loginBackListener")
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 standaloneCoroutine = launch(CommonPool) {
                     delay(60000)
@@ -1393,6 +1401,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
+                    KLog.i("没有初始化。。设置loginBackListener")
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
@@ -1416,7 +1425,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         ConstantValue.isHasWebsocketInit = true
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
+                    KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
                     AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.loginBackListener +"##" +AppConfig.instance.name)
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
@@ -1457,6 +1468,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 runOnUiThread {
                     showProgressDialog(getString(R.string.login_))
                 }
+                KLog.i("没有初始化。。设置loginBackListener")
                 AppConfig.instance.messageReceiver!!.loginBackListener = this
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
             }
@@ -1910,6 +1922,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                                         ConstantValue.isHasWebsocketInit = true
                                                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                                     }
+                                                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
                                                                     AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                                                     Thread.currentThread().interrupt() //方法调用终止线程
                                                                 }else{
@@ -1971,6 +1984,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                             ConstantValue.isHasWebsocketInit = true
                                                             AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                                         }
+                                                        KLog.i("没有初始化。。设置loginBackListener"+this_)
                                                         AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                                     }else{
                                                         startToxAndRecovery()
@@ -2190,6 +2204,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     } else false
                 })
             }
+            KLog.i("没有初始化。。设置loginBackListener")
             AppConfig.instance.messageReceiver!!.loginBackListener = this
             if (ConstantValue.isAntox) {
                 InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)

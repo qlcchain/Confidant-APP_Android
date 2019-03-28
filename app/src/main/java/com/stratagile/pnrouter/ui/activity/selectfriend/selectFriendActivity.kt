@@ -216,7 +216,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(imagePath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + imagePath.substring(imagePath.lastIndexOf("/") + 1)
+                                        var imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1,imagePath.lastIndexOf("."))
+                                        var typeName = imagePath.substring(imagePath.lastIndexOf("."))
+                                        var leftName = ""
+                                        if (imgeSouceName.contains("_")) {
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
+                                        }
+                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString() + typeName
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.userId)
@@ -341,12 +354,26 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(videoPath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1)
-                                        val videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1)
-                                        val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + videoName + ".png"
+                                        var imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1,videoPath.lastIndexOf("."))
+                                        var typeName = videoPath.substring(videoPath.lastIndexOf("."))
+                                        var leftName = ""
+                                        if (imgeSouceName.contains("_")) {
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
+                                        }
+                                        val videoFileName = leftName+"_"+(System.currentTimeMillis() / 1000).toInt().toString() +typeName
+                                        val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
+                                        val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
                                         val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
                                         val videoLength = EaseImageUtils.getVideoDuration(videoPath)
                                         FileUtil.saveBitmpToFile(bitmap, thumbPath)
+
                                         val message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, i.userId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")
                                         message.from = userId
@@ -356,19 +383,24 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isUnread = true
 
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
-                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            val SendFileInfo = SendFileInfo()
-                                            SendFileInfo.userId = userId
-                                            SendFileInfo.friendId = i.userId
-                                            SendFileInfo.files_dir = videoPath
-                                            SendFileInfo.msgId = uuid
-                                            SendFileInfo.friendSignPublicKey = i.signPublicKey
-                                            SendFileInfo.friendMiPublicKey = i.miPublicKey
-                                            SendFileInfo.voiceTimeLen = 0
-                                            SendFileInfo.type = "3"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
-                                            SendFileInfo.porperty = "1"
-                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            val result = FileUtil.copyAppFileToSdcard(videoPath, files_dir)
+                                            if(result == 1)
+                                            {
+                                                val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.userId
+                                                SendFileInfo.files_dir = files_dir
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.friendSignPublicKey = i.signPublicKey
+                                                SendFileInfo.friendMiPublicKey = i.miPublicKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "3"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                                SendFileInfo.porperty = "0"
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            }
+
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
 
@@ -395,6 +427,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA
                                                 toxFileData.fileId = uuid
+                                                toxFileData.porperty = "0"
                                                 val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
@@ -458,7 +491,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(filePath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
+                                        var imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1,filePath.lastIndexOf("."))
+                                        var typeName = filePath.substring(filePath.lastIndexOf("."))
+                                        var leftName = ""
+                                        if (imgeSouceName.contains("_")) {
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
+                                        }
+                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() +typeName
 
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val message = EMMessage.createFileSendMessage(filePath, i.userId)
@@ -469,23 +515,26 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isAcked = false
                                         message.isUnread = true
 
-
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
-                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            message.msgId = uuid
+                                            val codeSave = FileUtil.copyAppFileToSdcard(filePath, files_dir);
+                                            if(codeSave == 1)
+                                            {
+                                                val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                                message.msgId = uuid
 
-                                            val SendFileInfo = SendFileInfo()
-                                            SendFileInfo.userId = userId
-                                            SendFileInfo.friendId = i.userId
-                                            SendFileInfo.files_dir = files_dir
-                                            SendFileInfo.msgId = uuid
-                                            SendFileInfo.friendSignPublicKey = i.signPublicKey
-                                            SendFileInfo.friendMiPublicKey = i.miPublicKey
-                                            SendFileInfo.voiceTimeLen = 0
-                                            SendFileInfo.type = "4"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
-                                            SendFileInfo.porperty = "1"
-                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.userId
+                                                SendFileInfo.files_dir = files_dir
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.friendSignPublicKey = i.signPublicKey
+                                                SendFileInfo.friendMiPublicKey = i.miPublicKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "4"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                                SendFileInfo.porperty = "0"
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            }
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
                                         } else {
@@ -507,6 +556,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                                 toxFileData.fileSize = fileSize.toInt()
                                                 toxFileData.fileType = ToxFileData.FileType.PNR_IM_MSGTYPE_FILE
                                                 toxFileData.fileId = uuid
+                                                toxFileData.porperty = "0"
                                                 val FriendPublicKey = i.signPublicKey
                                                 val my = RxEncodeTool.base64Decode(ConstantValue.publicRAS)
                                                 val friend = RxEncodeTool.base64Decode(FriendPublicKey)
@@ -539,7 +589,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
 
                                         }
-                                        FileUtil.copySdcardFile(filePath, files_dir)
+                                        //FileUtil.copySdcardFile(filePath, files_dir)
                                         val gson = Gson()
                                         val Message = Message()
                                         Message.msgType = 5
@@ -614,11 +664,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(imagePath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        var imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1)
+                                        var imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1,imagePath.lastIndexOf("."))
+                                        var typeName = imagePath.substring(imagePath.lastIndexOf("."))
+                                        var leftName = ""
                                         if (imgeSouceName.contains("_")) {
-                                            imgeSouceName = imgeSouceName.substring(imgeSouceName.indexOf("_") + 1, imgeSouceName.length)
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
                                         }
-                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + imgeSouceName
+                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.gId)
@@ -724,9 +783,23 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(videoPath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1)
-                                        val videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1)
-                                        val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + videoName + ".png"
+                                        var imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1,videoPath.lastIndexOf("."))
+                                        var typeName = videoPath.substring(videoPath.lastIndexOf("."))
+                                        var leftName = ""
+                                        if (imgeSouceName.contains("_")) {
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
+                                        }
+                                        val videoFileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
+                                        val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
+                                        //val videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1)
+                                        val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
                                         val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
                                         val videoLength = EaseImageUtils.getVideoDuration(videoPath)
                                         FileUtil.saveBitmpToFile(bitmap, thumbPath)
@@ -739,21 +812,26 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         message.isUnread = true
 
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
-                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            val SendFileInfo = SendFileInfo()
-                                            SendFileInfo.userId = userId
-                                            SendFileInfo.friendId = i.gId
-                                            SendFileInfo.files_dir = videoPath
-                                            SendFileInfo.msgId = uuid
-                                            SendFileInfo.friendSignPublicKey = i.userKey
-                                            SendFileInfo.friendMiPublicKey = i.userKey
-                                            SendFileInfo.voiceTimeLen = 0
-                                            SendFileInfo.type = "3"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
-                                            SendFileInfo.porperty = "1"
-                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
-                                            /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
-                                            EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
+                                            val result = FileUtil.copyAppFileToSdcard(videoPath, files_dir)
+                                            if(result == 1)
+                                            {
+                                                val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.gId
+                                                SendFileInfo.files_dir = videoPath
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.friendSignPublicKey = i.userKey
+                                                SendFileInfo.friendMiPublicKey = i.userKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "3"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                                SendFileInfo.porperty = "1"
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                                /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
+                                                EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
+                                            }
+
 
                                         } else {
                                             val strBase58 = Base58.encode(videoFileName.toByteArray())
@@ -825,7 +903,20 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                     val file = File(filePath)
                                     val isHas = file.exists()
                                     if (isHas) {
-                                        val fileName = (System.currentTimeMillis() / 1000).toInt().toString() + "_" + filePath.substring(filePath.lastIndexOf("/") + 1)
+                                        var imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1,filePath.lastIndexOf("."))
+                                        var typeName = filePath.substring(filePath.lastIndexOf("."))
+                                        var leftName = ""
+                                        if (imgeSouceName.contains("_")) {
+                                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"))
+                                            leftName = StringUitl.replaceALL(leftName,"_");
+                                            if(StringUitl.isNumeric(leftName))
+                                            {
+                                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length)
+                                            }
+                                        }else{
+                                            leftName = imgeSouceName
+                                        }
+                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() + typeName
 
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val message = EMMessage.createFileSendMessage(filePath, i.gId)
@@ -838,21 +929,26 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
 
 
                                         if (ConstantValue.curreantNetworkType == "WIFI") {
-                                            val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
-                                            message.msgId = uuid
+                                            val codeSave = FileUtil.copyAppFileToSdcard(filePath, files_dir);
+                                            if(codeSave == 1)
+                                            {
+                                                val uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase()
+                                                message.msgId = uuid
 
-                                            val SendFileInfo = SendFileInfo()
-                                            SendFileInfo.userId = userId
-                                            SendFileInfo.friendId = i.gId
-                                            SendFileInfo.files_dir = files_dir
-                                            SendFileInfo.msgId = uuid
-                                            SendFileInfo.friendSignPublicKey = i.userKey
-                                            SendFileInfo.friendMiPublicKey = i.userKey
-                                            SendFileInfo.voiceTimeLen = 0
-                                            SendFileInfo.type = "4"
-                                            SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
-                                            SendFileInfo.porperty = "1"
-                                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                                val SendFileInfo = SendFileInfo()
+                                                SendFileInfo.userId = userId
+                                                SendFileInfo.friendId = i.gId
+                                                SendFileInfo.files_dir = files_dir
+                                                SendFileInfo.msgId = uuid
+                                                SendFileInfo.friendSignPublicKey = i.userKey
+                                                SendFileInfo.friendMiPublicKey = i.userKey
+                                                SendFileInfo.voiceTimeLen = 0
+                                                SendFileInfo.type = "4"
+                                                SendFileInfo.sendTime = (System.currentTimeMillis()).toString() + ""
+                                                SendFileInfo.porperty = "1"
+                                                AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo)
+                                            }
+
                                             /*val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
                                             EventBus.getDefault().post(FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"))*/
                                         } else {
@@ -890,7 +986,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
 
                                         }
-                                        FileUtil.copySdcardFile(filePath, files_dir)
+                                       // FileUtil.copySdcardFile(filePath, files_dir)
                                         val gson = Gson()
                                         val Message = Message()
                                         Message.msgType = 5

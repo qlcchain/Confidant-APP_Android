@@ -111,6 +111,7 @@ import com.stratagile.pnrouter.utils.LogUtil;
 import com.stratagile.pnrouter.utils.RxEncodeTool;
 import com.stratagile.pnrouter.utils.RxEncryptTool;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.utils.StringUitl;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.PermissionListener;
@@ -2267,6 +2268,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     });
                     return;
                 }
+
                 String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
                 String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -2453,12 +2455,20 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             });
                             return;
                         }
-                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
-                        if(imgeSouceName.contains("_"))
-                        {
-                            imgeSouceName = imgeSouceName.substring(imgeSouceName.indexOf("_")+1,imgeSouceName.length());
+                        String imgeSouceName = imagePath.substring(imagePath.lastIndexOf("/") + 1,imagePath.lastIndexOf("."));
+                        String typeName = imagePath.substring(imagePath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
                         }
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + imgeSouceName;
+                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -2750,9 +2760,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             });
                             return;
                         }
-                        String videoFileName = videoPath.substring(videoPath.lastIndexOf("/") + 1);
-                        String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
-                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                        String imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1,videoPath.lastIndexOf("."));
+                        String typeName = videoPath.substring(videoPath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
+                        }
+                        String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        //String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
+                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
                         FileUtil.saveBitmpToFile(bitmap, thumbPath);
@@ -2940,8 +2963,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             });
                             return;
                         }
-                        String fileName = ((int) (System.currentTimeMillis() / 1000)) + "_" + filePath.substring(filePath.lastIndexOf("/") + 1);
 
+                        String imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1,filePath.lastIndexOf("."));
+                        String typeName = filePath.substring(filePath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0,imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName,"_");
+                            if(StringUitl.isNumeric(leftName))
+                            {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        }else{
+                            leftName = imgeSouceName;
+                        }
+                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -2951,8 +2987,18 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         message.setAcked(false);
                         message.setUnread(true);
 
-
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            int result = FileUtil.copyAppFileToSdcard(filePath, files_dir);
+                            if(result == 0)
+                            {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                return;
+                            }
                             String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                             message.setMsgId(uuid);
                             currentSendMsg = message;
@@ -3074,7 +3120,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             }
 
                         }
-                        FileUtil.copySdcardFile(filePath, files_dir);
                         Gson gson = new Gson();
                         Message Message = new Message();
                         Message.setMsgType(5);

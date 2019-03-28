@@ -50,6 +50,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         loginBackListener?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
+                        KLog.i("没有初始化。。登录之后" +loginBackListener)
                         val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
                         LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
                         KLog.i(loginRsp)
@@ -122,6 +123,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     loginBackListener?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
+                    KLog.i("没有初始化。。登录之后" +loginBackListener+ "##" +AppConfig.instance.name)
                     val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
                     LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
                     KLog.i(loginRsp)
@@ -503,7 +505,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     groupchatCallBack?.droupSysPushRsp(JGroupSysPushRsp)
                     mainInfoBack?.droupSysPushRsp(JGroupSysPushRsp)
                 }
-                //发送文件_Tox群消息回馈
+                //发送文件_群消息回馈
                 "GroupSendFileDone" -> {
                     val JGroupSendFileDoneRsp = gson.fromJson(text, JGroupSendFileDoneRsp::class.java)
                     groupchatCallBack?.sendGroupToxFileRsp(JGroupSendFileDoneRsp)
@@ -586,6 +588,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     init {
 //        this.socket = PushServiceSocket(urls, credentialsProvider, userAgent)
+        KLog.i("没有初始化。。PNRouterServiceMessageReceiver")
         createMessagePipe()
 //        pipe!!.read(object : SignalServiceMessagePipe.NullMessagePipeCallback() {
 //            override fun onMessage(envelope: BaseData<*>) {
@@ -634,6 +637,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * @return A SignalServiceMessagePipe for receiving Signal Service messages.
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
+        KLog.i("没有初始化。。createMessagePipe" +pipe)
         if (pipe == null) {
             val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)

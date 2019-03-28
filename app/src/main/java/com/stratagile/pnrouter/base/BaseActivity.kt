@@ -19,6 +19,7 @@ import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.UIUtils
@@ -77,6 +78,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
                 CrashReport.closeCrashReport()
                 AppConfig.instance.stopAllService()
                 AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                ConstantValue.isHasWebsocketInit = false
+                if(AppConfig.instance.messageReceiver != null)
+                    AppConfig.instance.messageReceiver!!.close()
+                AppConfig.instance.messageReceiver = null
+                KLog.i("没有初始化。。savedInstanceState")
                 val intent = Intent(this, SplashActivity::class.java)
                 intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
