@@ -23,8 +23,11 @@ import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.ConnectStatus
+import com.stratagile.pnrouter.entity.events.NameChange
 import com.stratagile.pnrouter.entity.events.StopTox
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
+import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerSelectCircleComponent
@@ -35,7 +38,11 @@ import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
+import events.ToxFriendStatusEvent
+import events.ToxSendInfoEvent
+import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
+import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_select_circle.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -43,6 +50,8 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.ArrayList
 
@@ -134,7 +143,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
-            newRouterEntity.loginKey = loginKey.text.toString()
+            newRouterEntity.loginKey = ""
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
@@ -160,7 +169,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
-            newRouterEntity.loginKey = loginKey.text.toString();
+            newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
@@ -183,13 +192,11 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             LogUtil.addLog("loginBack:" + "f", "LoginActivityActivity")
             /*loginOk = true
             isToxLoginOverTime = false*/
-            ConstantValue.hasLogin = true
-            ConstantValue.isHeart = true
-            resetUnCompleteFileRecode()
-            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+            if(standaloneCoroutine != null)
+                standaloneCoroutine.cancel()
             var intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("flag", "logout")
             startActivity(intent)
+            finish()
         }
     }
 
@@ -222,12 +229,17 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             ConstantValue.loginReq = null
             ConstantValue.isWebsocketReConnect = false
+            ConstantValue.hasLogin = true
+            ConstantValue.isHeart = true
+            resetUnCompleteFileRecode()
+            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             connectRouter(currentRouterEntity!!)
         }
     }
 
     @Inject
     internal lateinit var mPresenter: SelectCirclePresenter
+    var lastRouterEntity:RouterEntity? = null
     var currentRouterEntity:RouterEntity? = null
     var isUnlock = false
     var routerListAdapter : RouterListAdapter? = null
@@ -274,7 +286,303 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             finish()
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+
+        KLog.i("onToxFriendStatusEvent:"+toxFriendStatusEvent.status)
+        if(toxFriendStatusEvent.status == 1)
+        {
+
+            ConstantValue.freindStatus = 1
+            if(!threadInit)
+            {
+                Thread(Runnable() {
+                    run() {
+
+                        while (true)
+                        {
+                            if(ConstantValue.unSendMessage.size >0)
+                            {
+                                for (key in ConstantValue.unSendMessage.keys)
+                                {
+                                    var sendData = ConstantValue.unSendMessage.get(key)
+                                    var friendId = ConstantValue.unSendMessageFriendId.get(key)
+                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if(sendCount < 5)
+                                    {
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                        }
+                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
+                                    }else{
+                                        closeProgressDialog()
+                                        break
+                                    }
+                                }
+
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
+                        }
+
+                    }
+                }).start()
+                threadInit = true
+            }
+
+
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
+        }else{
+            ConstantValue.freindStatus = 0;
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onStopTox(stopTox: StopTox) {
+        try {
+            MessageHelper.clearAllMessage()
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onWebSocketConnected(connectStatus: ConnectStatus) {
+        KLog.i("websocket状态:"+connectStatus.status)
+        when (connectStatus.status) {
+            0 -> {
+                if(standaloneCoroutine != null)
+                    standaloneCoroutine.cancel()
+                ConstantValue.isHasWebsocketInit = true
+                if(isFromScanAdmim)
+                {
+                    runOnUiThread {
+                        closeProgressDialog()
+                    }
+                    var intent = Intent(this, AdminLoginActivity::class.java)
+                    startActivity(intent)
+                    /*closeProgressDialog()
+                    showProgressDialog("wait...")
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
+                    isFromScanAdmim = false
+                }
+                else if(isFromScan)
+                {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        showProgressDialog("wait...")
+                    }
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
+                    isFromScan = false
+                }else{
+                    if(isClickLogin)
+                    {
+                        KLog.i("开始用websocket登录路由器")
+                        loginBack = false
+                        runOnUiThread {
+                            showProgressDialog(getString(R.string.login_))
+                        }
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(10000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    isloginOutTime = true
+                                    toast("login time out  slelect")
+                                }
+                            }
+                        }
+//            standaloneCoroutine.cancel()
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        var sign = ByteArray(32)
+                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        System.arraycopy(time, 0, sign, 0, time.size)
+                        var dst_signed_msg = ByteArray(96)
+                        var signed_msg_len = IntArray(1)
+                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                        val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        KLog.i("没有初始化。。登录接口设置loginBackListener"+"##" +AppConfig.instance.name +"##"+this.name+"##"+AppConfig.instance.messageReceiver)
+                        AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
+                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        ConstantValue.loginReq = login
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+                    }
+
+                }
+
+            }
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.Network_error)
+                }
+
+            }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
+        when (toxStatusEvent.status) {
+            0 -> {
+                KLog.i("P2P连接成功")
+                LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
+                runOnUiThread {
+                    KLog.i("444")
+                    closeProgressDialog()
+                    //toast("login time out")
+                }
+                ConstantValue.isToxConnected = true
+
+                if(ConstantValue.curreantNetworkType.equals("TOX"))
+                {
+                    ConstantValue.isHasWebsocketInit = true
+                    AppConfig.instance.getPNRouterServiceMessageReceiver()
+                    KLog.i("没有初始化。。设置loginBackListener")
+                    AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
+                }
+                if( stopTox ||  ConstantValue.curreantNetworkType.equals("WIFI"))
+                    return
+                if(isFromScan)
+                {
+
+                    if (ConstantValue.isAntox) {
+                        InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+                    }else{
+                        ToxCoreJni.getInstance().addFriend( ConstantValue.scanRouterId)
+                    }
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(60000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("time out")
+                            }
+                        }
+                    }
+
+                    runOnUiThread {
+                        var tips = getString(R.string.login_)
+                        if(ConstantValue.freindStatus == 1)
+                        {
+                            tips = "wait..."
+                        }else{
+                            tips = "circle connecting..."
+                        }
+                        showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                if(standaloneCoroutine != null)
+                                    standaloneCoroutine.cancel()
+                                EventBus.getDefault().post(StopTox())
+                                false
+                            } else false
+                        })
+                    }
+                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                    var recovery = RecoveryReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN,pulicMiKey)
+                    var baseData = BaseData(4,recovery)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+
+                    ConstantValue.unSendMessage.put("recovery",baseDataJson)
+                    ConstantValue.unSendMessageFriendId.put("recovery",ConstantValue.scanRouterId.substring(0, 64))
+                    ConstantValue.unSendMessageSendCount.put("recovery",0)
+                    //ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                    isFromScan = false
+                }else{
+                    if (ConstantValue.isAntox) {
+                        InterfaceScaleUtil.addFriend(routerId,this)
+                    }else{
+                        ToxCoreJni.getInstance().addFriend(routerId)
+                    }
+                    if(isClickLogin)
+                    {
+                        //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
+                        loginBack = false
+
+                        standaloneCoroutine = launch(CommonPool) {
+                            delay(60000)
+                            if (!loginBack) {
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    isloginOutTime = true
+                                    toast("login time out slelect")
+                                }
+                            }
+                        }
+                        runOnUiThread {
+                            var tips = getString(R.string.login_)
+                            if(ConstantValue.freindStatus == 1)
+                            {
+                                tips = getString(R.string.login_)
+                            }else{
+                                tips = "Circle connecting..."
+                            }
+                            showProgressDialog(tips, DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                    if(standaloneCoroutine != null)
+                                        standaloneCoroutine.cancel()
+                                    EventBus.getDefault().post(StopTox())
+                                    false
+                                } else false
+                            })
+                        }
+
+                        var sign = ByteArray(32)
+                        var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                        System.arraycopy(time, 0, sign, 0, time.size)
+                        var dst_signed_msg = ByteArray(96)
+                        var signed_msg_len = IntArray(1)
+                        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                        val NickName = RxEncodeTool.base64Encode2String(username.toByteArray())
+                        //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
+                        var login = LoginReq_V4(routerId,userSn, userId,signBase64, dataFileVersion,NickName)
+                        ConstantValue.loginReq = login
+                        var baseData = BaseData(4,login)
+                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                        ConstantValue.unSendMessage.put("login",baseDataJson)
+                        ConstantValue.unSendMessageFriendId.put("login",routerId.substring(0, 64))
+                        ConstantValue.unSendMessageSendCount.put("login",0)
+                        //ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerId.substring(0, 64))
+                        //MessageHelper.sendMessageFromKotlin(this, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                        isClickLogin = false;
+                    }
+
+                }
+            }
+            1 -> {
+                LogUtil.addLog("P2P连接中Reconnecting:","LoginActivityActivity")
+            }
+        }
+
+    }
     override fun initData() {
+        standaloneCoroutine = launch(CommonPool) {
+            delay(10000)
+        }
         var this_ = this
         AppConfig.instance.messageReceiver?.selcectCircleCallBack = this
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
@@ -283,17 +591,26 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             if (it.lastCheck) {
                 routerEntity = it
                 routerListAdapter?.selectedItem = index
+                lastRouterEntity = routerList[index]
             }
         }
+        EventBus.getDefault().register(this)
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
+            if (!ConstantValue.isWebsocketConnected &&  !ConstantValue.isToxConnected) {
+
+                toast("Circle connecting...")
+                return@setOnItemClickListener
+            }
             if (routerListAdapter!!.isCkeckMode) {
                 routerListAdapter!!.data[position].isMultChecked = !routerListAdapter!!.data[position].isMultChecked
                 routerListAdapter!!.notifyItemChanged(position)
             } else {
                 routerListAdapter!!.selectedItem = position
                 routerListAdapter!!.notifyDataSetChanged()
-                logOutRouter(routerListAdapter!!.data[position])
+                currentRouterEntity = routerListAdapter!!.data[position]
+                logOutRouter(lastRouterEntity!!)
+                lastRouterEntity = routerListAdapter!!.data[position]
             }
         }
         multiSelectBtn.setOnClickListener {
@@ -310,7 +627,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
                 super.handleMessage(msg)
-                when (msg.what) {                   
+                when (msg.what) {
                     MyAuthCallback.MSG_UPD_DATA -> {
                         KLog.i("收到了组播的回复了 ")
                         var obj:String = msg.obj.toString()
@@ -402,7 +719,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
     //先退出当前的路由器
     fun logOutRouter(router : RouterEntity) {
-        currentRouterEntity = router
+        KLog.i("路由器登出："+router.routerName)
         if(ConstantValue.logining)
         {
             var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
@@ -445,6 +762,10 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             ConstantValue.loginReq = null
             ConstantValue.isWebsocketReConnect = false
+            ConstantValue.hasLogin = true
+            ConstantValue.isHeart = true
+            resetUnCompleteFileRecode()
+            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             connectRouter(currentRouterEntity!!)
         }
 
@@ -455,6 +776,12 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
      * 重新登录路由的方法
      */
     fun connectRouter(router : RouterEntity) {
+        KLog.i("路由器登陆："+router.routerName)
+        routerId = router.routerId
+        userSn = router.userSn
+        userId = router.userId
+        username = router.username
+        dataFileVersion = router.dataFileVersion
         if (NetUtils.isNetworkAvalible(this)) {
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             if (routerList.size == 0) {
@@ -500,7 +827,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             ConstantValue.lastRouterId=""
             ConstantValue.lastRouterSN=""
             ConstantValue.lastNetworkType =""
-            isClickLogin = false
+            isClickLogin = true
             try {
                 MessageHelper.clearAllMessage()
             }catch (e:Exception)
@@ -729,6 +1056,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     private fun startLogin()
     {
 
+        KLog.i("SelectCircleActivity  startLogin" )
         isloginOutTime = false
         isStartLogin = true
         if(!ConstantValue.lastNetworkType.equals(""))
@@ -759,7 +1087,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 isToxLoginOverTime = true
                 //var friendKey:FriendKey = FriendKey(routerId.substring(0, 64))
 
-                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
                 var time = (System.currentTimeMillis() /1000).toString().toByteArray()
@@ -855,17 +1182,17 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     }
                     KLog.i("没有初始化。。设置loginBackListener")
                     AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
-                    standaloneCoroutine = launch(CommonPool) {
+                   /* standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout")
+                                toast("Server connection timeout  slelect")
                             }
                         }
-                    }
+                    }*/
                 } else {
                     KLog.i("走不带flag")
                     if(ConstantValue.isHasWebsocketInit)
@@ -880,20 +1207,19 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)
                     AppConfig.instance.messageReceiver!!.selcectCircleCallBack = this
                     KLog.i("没有初始化。。设置loginBackListener 后" + AppConfig.instance.messageReceiver!!.selcectCircleCallBack +"##" +AppConfig.instance.name)
-                    standaloneCoroutine = launch(CommonPool) {
+                   /* standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
                             closeProgressDialog()
                             if (!ConstantValue.isWebsocketConnected) {
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
-                                toast("Server connection timeout")
+                                toast("Server connection timeout slelect")
                             }
                         }
-                    }
+                    }*/
                 }
             }else{
-                var LoginKeySha = RxEncryptTool.encryptSHA256ToString(loginKey.text.toString())
                 //var login = LoginReq( routerId,userSn, userId,LoginKeySha, dataFileVersion)
                 var sign = ByteArray(32)
                 var time = (System.currentTimeMillis() /1000).toString().toByteArray()
@@ -913,7 +1239,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                         runOnUiThread {
                             closeProgressDialog()
                             isloginOutTime = true
-                            toast("login time out")
+                            toast("login time out slelect")
                         }
                     }
                 }
@@ -1000,7 +1326,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         if (handler != null) {
