@@ -234,6 +234,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
         startActivity(intent)
+        finish()
     }
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
 
