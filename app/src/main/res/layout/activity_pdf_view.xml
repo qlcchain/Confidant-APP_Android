@@ -2,14 +2,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.github.barteksc.pdfviewer.PDFView
-        android:layout_above="@+id/llOpreate"
-        android:visibility="gone"
-        android:id="@+id/pdfView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </com.github.barteksc.pdfviewer.PDFView>
     <android.support.v4.widget.NestedScrollView
         android:layout_above="@+id/llOpreate"
         android:id="@+id/scrollView"
@@ -170,4 +162,12 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
+    <com.github.barteksc.pdfviewer.PDFView
+        android:layout_above="@+id/llOpreate"
+        android:visibility="gone"
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.github.barteksc.pdfviewer.PDFView>
 </RelativeLayout>

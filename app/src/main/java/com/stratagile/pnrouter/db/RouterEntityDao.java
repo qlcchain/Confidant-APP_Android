@@ -29,10 +29,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         public final static Property UserId = new Property(4, String.class, "userId", false, "USER_ID");
         public final static Property Index = new Property(5, String.class, "index", false, "INDEX");
         public final static Property RouterName = new Property(6, String.class, "routerName", false, "ROUTER_NAME");
-        public final static Property DataFileVersion = new Property(7, Integer.class, "dataFileVersion", false, "DATA_FILE_VERSION");
-        public final static Property DataFilePay = new Property(8, String.class, "dataFilePay", false, "DATA_FILE_PAY");
-        public final static Property LastCheck = new Property(9, boolean.class, "lastCheck", false, "LAST_CHECK");
-        public final static Property LoginKey = new Property(10, String.class, "loginKey", false, "LOGIN_KEY");
+        public final static Property RouterAlias = new Property(7, String.class, "routerAlias", false, "ROUTER_ALIAS");
+        public final static Property DataFileVersion = new Property(8, Integer.class, "dataFileVersion", false, "DATA_FILE_VERSION");
+        public final static Property DataFilePay = new Property(9, String.class, "dataFilePay", false, "DATA_FILE_PAY");
+        public final static Property LastCheck = new Property(10, boolean.class, "lastCheck", false, "LAST_CHECK");
+        public final static Property LoginKey = new Property(11, String.class, "loginKey", false, "LOGIN_KEY");
+        public final static Property IsMultChecked = new Property(12, boolean.class, "isMultChecked", false, "IS_MULT_CHECKED");
     }
 
 
@@ -55,10 +57,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
                 "\"USER_ID\" TEXT," + // 4: userId
                 "\"INDEX\" TEXT," + // 5: index
                 "\"ROUTER_NAME\" TEXT," + // 6: routerName
-                "\"DATA_FILE_VERSION\" INTEGER," + // 7: dataFileVersion
-                "\"DATA_FILE_PAY\" TEXT," + // 8: dataFilePay
-                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 9: lastCheck
-                "\"LOGIN_KEY\" TEXT);"); // 10: loginKey
+                "\"ROUTER_ALIAS\" TEXT," + // 7: routerAlias
+                "\"DATA_FILE_VERSION\" INTEGER," + // 8: dataFileVersion
+                "\"DATA_FILE_PAY\" TEXT," + // 9: dataFilePay
+                "\"LAST_CHECK\" INTEGER NOT NULL ," + // 10: lastCheck
+                "\"LOGIN_KEY\" TEXT," + // 11: loginKey
+                "\"IS_MULT_CHECKED\" INTEGER NOT NULL );"); // 12: isMultChecked
     }
 
     /** Drops the underlying database table. */
@@ -106,21 +110,27 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(7, routerName);
         }
  
+        String routerAlias = entity.getRouterAlias();
+        if (routerAlias != null) {
+            stmt.bindString(8, routerAlias);
+        }
+ 
         Integer dataFileVersion = entity.getDataFileVersion();
         if (dataFileVersion != null) {
-            stmt.bindLong(8, dataFileVersion);
+            stmt.bindLong(9, dataFileVersion);
         }
  
         String dataFilePay = entity.getDataFilePay();
         if (dataFilePay != null) {
-            stmt.bindString(9, dataFilePay);
+            stmt.bindString(10, dataFilePay);
         }
-        stmt.bindLong(10, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(11, entity.getLastCheck() ? 1L: 0L);
  
         String loginKey = entity.getLoginKey();
         if (loginKey != null) {
-            stmt.bindString(11, loginKey);
+            stmt.bindString(12, loginKey);
         }
+        stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
     }
 
     @Override
@@ -162,21 +172,27 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(7, routerName);
         }
  
+        String routerAlias = entity.getRouterAlias();
+        if (routerAlias != null) {
+            stmt.bindString(8, routerAlias);
+        }
+ 
         Integer dataFileVersion = entity.getDataFileVersion();
         if (dataFileVersion != null) {
-            stmt.bindLong(8, dataFileVersion);
+            stmt.bindLong(9, dataFileVersion);
         }
  
         String dataFilePay = entity.getDataFilePay();
         if (dataFilePay != null) {
-            stmt.bindString(9, dataFilePay);
+            stmt.bindString(10, dataFilePay);
         }
-        stmt.bindLong(10, entity.getLastCheck() ? 1L: 0L);
+        stmt.bindLong(11, entity.getLastCheck() ? 1L: 0L);
  
         String loginKey = entity.getLoginKey();
         if (loginKey != null) {
-            stmt.bindString(11, loginKey);
+            stmt.bindString(12, loginKey);
         }
+        stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
     }
 
     @Override
@@ -194,10 +210,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // userId
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // index
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // routerName
-            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // dataFileVersion
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // dataFilePay
-            cursor.getShort(offset + 9) != 0, // lastCheck
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // loginKey
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // routerAlias
+            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8), // dataFileVersion
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // dataFilePay
+            cursor.getShort(offset + 10) != 0, // lastCheck
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // loginKey
+            cursor.getShort(offset + 12) != 0 // isMultChecked
         );
         return entity;
     }
@@ -211,10 +229,12 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         entity.setUserId(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setIndex(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setRouterName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setDataFileVersion(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
-        entity.setDataFilePay(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setLastCheck(cursor.getShort(offset + 9) != 0);
-        entity.setLoginKey(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setRouterAlias(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setDataFileVersion(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
+        entity.setDataFilePay(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setLastCheck(cursor.getShort(offset + 10) != 0);
+        entity.setLoginKey(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setIsMultChecked(cursor.getShort(offset + 12) != 0);
      }
     
     @Override

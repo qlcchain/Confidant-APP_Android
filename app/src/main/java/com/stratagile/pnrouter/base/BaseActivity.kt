@@ -97,6 +97,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         return super.onTouchEvent(event)
     }
 
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putString("baseSave", "base")
@@ -138,10 +139,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
             return
         }
         if (needFront) {
-//            StatusBarUtil.setTranslucent(this, 0)
             toolbar?.setBackgroundColor(resources.getColor(R.color.color_00000000))
             relativeLayout_root.setBackgroundColor(resources.getColor(R.color.color_00000000))
             val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            this.view = findViewById(R.id.view)
+            toolbar = findViewById(R.id.toolbar)
             rootLayout?.addView(view, params)
             toolbar?.bringToFront()
             toolbar?.setVisibility(View.GONE)
@@ -171,6 +173,11 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         StatusBarUtil.setTransparent(this)
         view.visibility = View.VISIBLE
         relativeLayout_root.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), (UIUtils.getStatusBarHeight(this) + resources.getDimension(R.dimen.x84).toInt())))
+    }
+
+    fun showViewNeedFront() {
+        StatusBarUtil.setTransparent(this)
+        relativeLayout_root.visibility = View.GONE
     }
 
     fun isShouldHideInput(v: View?, event: MotionEvent): Boolean {
