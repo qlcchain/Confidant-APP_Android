@@ -71,7 +71,7 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
-        //AppConfig.instance.messageReceiver = null
+        AppConfig.instance.messageReceiver = null
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
         var this_ = this

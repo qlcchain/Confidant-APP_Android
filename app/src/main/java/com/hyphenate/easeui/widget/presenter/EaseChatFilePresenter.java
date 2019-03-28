@@ -167,7 +167,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
                             getContext().startActivity(intent);
                             ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                             break;
-                        case "withDraw":
+                        case "Withdraw":
                             String  msgId = message.getMsgId();
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             if(message.isAcked())

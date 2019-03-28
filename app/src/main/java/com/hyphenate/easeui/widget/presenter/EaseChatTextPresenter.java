@@ -120,7 +120,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                         getContext().startActivity(intent);
                         ((Activity) getContext()).overridePendingTransition(R.anim.activity_translate_in, R.anim.activity_translate_out);
                         break;
-                    case "withDraw":
+                    case "Withdraw":
                         if(message.getChatType().equals( EMMessage.ChatType.GroupChat))
                         {
                             int type = 0;

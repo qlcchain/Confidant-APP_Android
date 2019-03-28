@@ -2123,7 +2123,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             //String userIndex =  SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserIndex(),"");
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-            ;
+
             if (AppConfig.instance.getMessageReceiver() != null) {
                 msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", "", content, UserDataManger.currentGroupData.getUserKey());
 

@@ -84,6 +84,10 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }
         }
 
+        if(UserDataManger.currentGroupData != null && !UserDataManger.currentGroupData.getGId().equals(jGroupSysPushRsp.params.gId))//如果收到不是正在群聊的群通知，不处理
+        {
+            return;
+        }
         when(jGroupSysPushRsp.params.type){
 
             1->{//群名称修改

@@ -56,10 +56,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         KLog.i(loginRsp)
                         loginBackListener?.loginBack(loginRsp)
                         registerListener?.loginBack(loginRsp)
+                        adminRecoveryCallBack?.loginBack(loginRsp)
+                        selcectCircleCallBack?.loginBack(loginRsp)
                     }
                     "LogOut" -> {
                         val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
                         logOutBack?.logOutBack(JLogOutRsp)
+                        selcectCircleCallBack?.logOutBack(JLogOutRsp)
                     }
                     //admin登陆
                     "RouterLogin" -> {
@@ -130,6 +133,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     loginBackListener?.loginBack(loginRsp)
                     registerListener?.loginBack(loginRsp)
                     adminRecoveryCallBack?.loginBack(loginRsp)
+                    selcectCircleCallBack?.loginBack(loginRsp)
                 }
                 "AddFriendReq" -> {
                     val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -150,6 +154,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 "LogOut" -> {
                     val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
                     logOutBack?.logOutBack(JLogOutRsp)
+                    selcectCircleCallBack?.logOutBack(JLogOutRsp)
                 }
 
                 //对方要加我为好友，服务器给我推送的好友请求
@@ -572,6 +577,8 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var groupMemberback : GroupMemberback? = null
     var groupMemberOpreateBack : GroupMemberOpreateBack? = null
 
+    var selcectCircleCallBack: SelcectCircleCallBack? = null
+
     /**
      * Construct a PNRouterServiceMessageReceiver.
      *
@@ -861,6 +868,10 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     interface GroupMemberOpreateBack {
         fun groupMemberOpreate(jGroupVerifyRsp: JGroupVerifyRsp)
+    }
+    interface SelcectCircleCallBack {
+        fun logOutBack(jLogOutRsp: JLogOutRsp)
+        fun loginBack(loginRsp: JLoginRsp)
     }
 }
 

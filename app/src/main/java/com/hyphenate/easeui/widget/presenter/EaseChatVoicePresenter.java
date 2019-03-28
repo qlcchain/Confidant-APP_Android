@@ -138,7 +138,7 @@ public class EaseChatVoicePresenter extends EaseChatFilePresenter {
                 public void onClick(View v, int position,String name) {
                     switch (name)
                     {
-                        case "withDraw":
+                        case "Withdraw":
                             String msgId = message.getMsgId();
                             ConstantValue.INSTANCE.setDeleteMsgId(message.getMsgId());
                             if(message.isAcked())
