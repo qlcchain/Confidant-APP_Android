@@ -108,6 +108,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
 
                     override fun onComplete() {
+                        AppConfig.instance.messageReceiver = null
                         //                        jump = JUMPTOGUEST;
                         timeOver = true
                         KLog.i("时间到，开始跳转")

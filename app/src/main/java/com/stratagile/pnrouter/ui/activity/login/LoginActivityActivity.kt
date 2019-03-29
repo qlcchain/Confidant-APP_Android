@@ -1402,7 +1402,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
                     KLog.i("没有初始化。。设置loginBackListener")
-                    AppConfig.instance.messageReceiver!!.loginBackListener = this
+                    AppConfig.instance.getPNRouterServiceMessageReceiver().loginBackListener = this
                     standaloneCoroutine = launch(CommonPool) {
                         delay(6000)
                         runOnUiThread {
@@ -1419,10 +1419,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     if(ConstantValue.isHasWebsocketInit)
                     {
                         KLog.i("已经初始化了，走重连逻辑")
-                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                        KLog.i("已经初始化了。。走重连逻辑" +this+ "##" +AppConfig.instance.messageReceiver)
+                        AppConfig.instance.getPNRouterServiceMessageReceiver(true).reConnect()
                     }else{
                         KLog.i("没有初始化。。")
                         ConstantValue.isHasWebsocketInit = true
+                        KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.messageReceiver)
                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                     }
                     KLog.i("没有初始化。。设置loginBackListener前" +this+ "##" +AppConfig.instance.name)

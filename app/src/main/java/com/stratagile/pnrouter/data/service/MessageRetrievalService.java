@@ -33,7 +33,6 @@ public class MessageRetrievalService extends Service implements InjectableType, 
 //    private NetworkRequirement         networkRequirement;
 //    private NetworkRequirementProvider networkRequirementProvider;
 
-    public PNRouterServiceMessageReceiver receiver;
 
     private int                    activeActivities = 0;
     private List<Intent> pushPending      = new LinkedList<>();
@@ -47,8 +46,6 @@ public class MessageRetrievalService extends Service implements InjectableType, 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
            // startForeground(Integer.MAX_VALUE,new Notification()); //这个id不要和应用内的其他同志id一样，不行就写 int.maxValue()        //context.startForeground(SERVICE_ID, builder.getNotification());
         }
-        receiver = AppConfig.instance.getPNRouterServiceMessageReceiver();
-
 //        networkRequirement         = new NetworkRequirement(this);
 //        networkRequirementProvider = new NetworkRequirementProvider(this);
 //
@@ -196,9 +193,9 @@ public class MessageRetrievalService extends Service implements InjectableType, 
                 waitForConnectionNecessary();
 
                 KLog.i("Making websocket connection....");
-                pipe = receiver.createMessagePipe();
+                pipe = AppConfig.instance.getPNRouterServiceMessageReceiver().createMessagePipe();
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(50000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

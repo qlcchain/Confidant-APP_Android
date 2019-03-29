@@ -60,7 +60,7 @@ import java.util.*
 
 class AppConfig : MultiDexApplication() {
 
-    var name:Long = 0
+    var name: Long = 0
     val MI_PUSH_APP_ID = "2882303761517914075"
     val MI_PUSH_APP_KEY = "5221791411075"
     val FOREGROUND_ID = 313399
@@ -68,7 +68,7 @@ class AppConfig : MultiDexApplication() {
 
     var isBackGroud = false
 
-    var onToxMessageReceiveListener : WebSocketConnection.OnMessageReceiveListener? = null
+    var onToxMessageReceiveListener: WebSocketConnection.OnMessageReceiveListener? = null
 
     var messageReceiver: PNRouterServiceMessageReceiver? = null
 
@@ -81,9 +81,9 @@ class AppConfig : MultiDexApplication() {
 
     val point = Point()
 
-    var isChatWithFirend:String? = null
-    var tempPushMsgList:ArrayList<JPushMsgRsp> = ArrayList<JPushMsgRsp>()
-    var tempPushGroupMsgList:ArrayList<JGroupMsgPushRsp> = ArrayList<JGroupMsgPushRsp>()
+    var isChatWithFirend: String? = null
+    var tempPushMsgList: ArrayList<JPushMsgRsp> = ArrayList<JPushMsgRsp>()
+    var tempPushGroupMsgList: ArrayList<JGroupMsgPushRsp> = ArrayList<JGroupMsgPushRsp>()
     var options = RequestOptions()
             .centerCrop()
             .transform(GlideCircleTransformMainColor(this))
@@ -117,19 +117,19 @@ class AppConfig : MultiDexApplication() {
         }*/
 
 
-
-       /* var intent =  Intent(this, MyService::class.java)
-        var sender= PendingIntent.getService(this, 0, intent, 0);
-        var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);*/
+        /* var intent =  Intent(this, MyService::class.java)
+         var sender= PendingIntent.getService(this, 0, intent, 0);
+         var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
+         alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);*/
 //        MessageProvider.init()
     }
-    fun getMessageReceiverInstance():  PNRouterServiceMessageReceiver{
 
-        return messageReceiver!!
+    fun getMessageReceiverInstance(): PNRouterServiceMessageReceiver? {
+
+        return messageReceiver
     }
 
-    fun getPNRouterServiceMessageToxReceiver() :  PNRouterServiceMessageReceiver{
+    fun getPNRouterServiceMessageToxReceiver(): PNRouterServiceMessageReceiver {
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
@@ -143,11 +143,9 @@ class AppConfig : MultiDexApplication() {
     }
 
 
-
-
-    fun getPNRouterServiceMessageReceiver(reStart : Boolean) : PNRouterServiceMessageReceiver{
-        KLog.i("没有初始化。。 getPNRouterServiceMessageReceiver  AAAAA " +this+ "##" +messageReceiver)
-        if (reStart) {
+    fun getPNRouterServiceMessageReceiver(reStart: Boolean): PNRouterServiceMessageReceiver {
+        KLog.i("没有初始化。。 getPNRouterServiceMessageReceiver  AAAAA " + this + "##" + messageReceiver)
+        if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
                     BuildConfig.USER_AGENT,
@@ -155,20 +153,12 @@ class AppConfig : MultiDexApplication() {
             MessageRetrievalService.registerActivityStarted(this)
             messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
         } else {
-            if (messageReceiver == null) {
-                this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
-                        APIModule.DynamicCredentialsProvider(this),
-                        BuildConfig.USER_AGENT,
-                        APIModule.PipeConnectivityListener())
-                MessageRetrievalService.registerActivityStarted(this)
-                messageReceiver!!.userControlleCallBack = UserProvider.getInstance()
-            } else {
-                getPNRouterServiceMessageReceiver()
-            }
+            getPNRouterServiceMessageReceiver()
         }
         return messageReceiver!!
     }
-    fun getPNRouterServiceMessageReceiver() :  PNRouterServiceMessageReceiver{
+
+    fun getPNRouterServiceMessageReceiver(): PNRouterServiceMessageReceiver {
         if (messageReceiver == null) {
             this.messageReceiver = PNRouterServiceMessageReceiver(SignalServiceNetworkAccess(this).getConfiguration(this),
                     APIModule.DynamicCredentialsProvider(this),
@@ -180,14 +170,16 @@ class AppConfig : MultiDexApplication() {
         }
         return messageReceiver!!
     }
-    fun getPNRouterServiceMessageSender() :  PNRouterServiceMessageSender{
+
+    fun getPNRouterServiceMessageSender(): PNRouterServiceMessageSender {
+        KLog.i("没有初始化。。 PNRouterServiceMessageSender  AAAAA " + this + "##" + messageSender)
         if (messageSender == null) {
             messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
         }
         return messageSender!!
     }
 
-    fun getPNRouterServiceMessageSender(reStart: Boolean) :  PNRouterServiceMessageSender{
+    fun getPNRouterServiceMessageSender(reStart: Boolean): PNRouterServiceMessageSender {
         messageSender = PNRouterServiceMessageSender(Optional.fromNullable(MessageRetrievalService.getPipe()), Optional.of(SecurityEventListener(this)))
         return messageSender!!
     }
@@ -201,21 +193,21 @@ class AppConfig : MultiDexApplication() {
                 .build()
         applicationComponent!!.inject(this)
     }
-    fun stopAllService()
-    {
+
+    fun stopAllService() {
         val intent = Intent(this, MessageRetrievalService::class.java)
         this.stopService(intent)
-        if(ConstantValue.isAntox)
-        {
+        if (ConstantValue.isAntox) {
             val intentAnTox = Intent(this, ToxService::class.java)
             this.stopService(intentAnTox)
-        }else{
+        } else {
             val intentTox = Intent(this, KotlinToxService::class.java)
             this.stopService(intentTox)
         }
         val backGroundService = Intent(this, BackGroundService::class.java)
         this.stopService(backGroundService)
     }
+
     companion object {
         lateinit var instance: AppConfig
     }
@@ -255,11 +247,11 @@ class AppConfig : MultiDexApplication() {
                 // ignore
             }
 
-            override  fun log(content: String, t: Throwable) {
+            override fun log(content: String, t: Throwable) {
                 KLog.i("小米推送" + content + t)
             }
 
-            override  fun log(content: String) {
+            override fun log(content: String) {
                 KLog.i("小米推送" + content)
             }
         }
@@ -274,7 +266,7 @@ class AppConfig : MultiDexApplication() {
         }
     }
 
-    fun clear(content : String) {
+    fun clear(content: String) {
         var preferences = getSharedPreferences(content, Context.MODE_PRIVATE)
         var editor = preferences.edit()
         editor.clear()
@@ -288,14 +280,13 @@ class AppConfig : MultiDexApplication() {
                 KLog.i("当前程序切换到前台")
                 LogUtil.addLog("当前程序切换到前台")
                 isBackGroud = false
-                var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime,0)
+                var unlockTime = SpUtil.getLong(AppConfig.instance, ConstantValue.unlockTime, 0)
                 KLog.i(unlockTime)
                 KLog.i(ConstantValue.logining)
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
                 var isUnlock = SpUtil.getBoolean(this@AppConfig, ConstantValue.isUnLock, false)
                 // && !BuildConfig.DEBUG
-                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG  && !ConstantValue.isShowVerify) || (!isUnlock && !BuildConfig.DEBUG))
-                {
+                if ((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG && !ConstantValue.isShowVerify) || (!isUnlock && !BuildConfig.DEBUG)) {
                     EventBus.getDefault().post(StartVerify())
                 }
 //                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000) && !ConstantValue.isShowVerify)
@@ -304,8 +295,8 @@ class AppConfig : MultiDexApplication() {
 //                    EventBus.getDefault().post(StartVerify())
 //                }
                 if (ConstantValue.logining) {
-                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,0)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
+                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!, 0)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq))
                 }
             }
 
@@ -317,8 +308,8 @@ class AppConfig : MultiDexApplication() {
                 SpUtil.putLong(AppConfig.instance, ConstantValue.unlockTime, Calendar.getInstance().timeInMillis)
                 //EventBus.getDefault().post(ForegroundCallBack(false))
                 if (ConstantValue.logining) {
-                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!,1)
-                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq ))
+                    var heartBeatReq = HeartBeatReq(SpUtil.getString(instance, ConstantValue.userId, "")!!, 1)
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(heartBeatReq))
                 }
             }
         })
@@ -359,11 +350,12 @@ class AppConfig : MultiDexApplication() {
             return Service.START_STICKY
         }
     }
+
     fun loadLibrary() {
-        try{
+        try {
             KLog.i("load tox库")
             System.loadLibrary("tox")
-        } catch (exception : java.lang.Exception) {
+        } catch (exception: java.lang.Exception) {
             exception.printStackTrace()
         }
     }

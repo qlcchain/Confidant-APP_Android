@@ -16,25 +16,21 @@ import im.tox.tox4j.core.enums.ToxMessageType
 import java.io.IOException
 
 
-class PNRouterServiceMessageReceiver
-/**
- * Construct a PNRouterServiceMessageReceiver.
- *
- * @param urls The URL of the Signal Service.
- * @param credentials The Signal Service user's credentials.
- */
-constructor(private val urls: SignalServiceConfiguration, private val credentialsProvider: CredentialsProvider, private val userAgent: String, private val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
-
+class PNRouterServiceMessageReceiver constructor(private val urls: SignalServiceConfiguration, private
+val credentialsProvider: CredentialsProvider, private
+                                                 val userAgent: String, private
+                                                 val connectivityListener: ConnectivityListener) : SignalServiceMessagePipe.MessagePipeCallback {
+    init {
+        KLog.i("PNRouterServiceMessageReceiver")
+    }
     override fun onMessage(baseData: BaseData, text: String?) {
 //        KLog.i(baseData.baseDataToJson())
 //        KLog.i(baseData.params.toString())
         var gson = GsonUtil.getIntGson()
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
         var action = JSONObject.parseObject(paramsStr).getString("Action")
-        if( ConstantValue.loginOut)
-        {
-            if(action.toString().contains("Recovery") || action.toString().contains("Register")|| action.toString().contains("Login")|| action.toString().contains("LogOut")|| action.toString().contains("RouterLogin")|| action.toString().contains("ResetRouterKey")|| action.toString().contains("ResetUserIdcode"))
-            {
+        if (ConstantValue.loginOut) {
+            if (action.toString().contains("Recovery") || action.toString().contains("Register") || action.toString().contains("Login") || action.toString().contains("LogOut") || action.toString().contains("RouterLogin") || action.toString().contains("ResetRouterKey") || action.toString().contains("ResetUserIdcode")) {
                 when (action) {
                     "Recovery" -> {
                         val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
@@ -50,9 +46,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         loginBackListener?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
-                        KLog.i("没有初始化。。登录之后" +loginBackListener)
+                        KLog.i("没有初始化。。登录之后" + loginBackListener)
                         val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
-                        LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
+                        LogUtil.addLog("Login" + loginBackListener, "PNRouterServiceMessageReceiver")
                         KLog.i(loginRsp)
                         loginBackListener?.loginBack(loginRsp)
                         registerListener?.loginBack(loginRsp)
@@ -93,16 +89,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                         val jOnlineStatusPushRsp = gson.fromJson(text, JOnlineStatusPushRsp::class.java)
                         mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                        var msgData = OnlineStatusPushRsp(0,"", userId!!)
+                        var msgData = OnlineStatusPushRsp(0, "", userId!!)
                         if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
-                        }else if (ConstantValue.isToxConnected) {
-                            var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jOnlineStatusPushRsp.msgid))
+                        } else if (ConstantValue.isToxConnected) {
+                            var baseData = BaseData(4, msgData, jOnlineStatusPushRsp.msgid)
                             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                             if (ConstantValue.isAntox) {
                                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                            }else{
+                            } else {
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                             }
                         }
@@ -110,7 +106,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 }
             }
 
-        }else{
+        } else {
             when (action) {
                 "Recovery" -> {
                     val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
@@ -126,9 +122,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     loginBackListener?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
-                    KLog.i("没有初始化。。登录之后" +loginBackListener+ "##" +AppConfig.instance.name)
+                    KLog.i("没有初始化。。登录之后" + loginBackListener + "##" + AppConfig.instance.name)
                     val loginRsp = gson.fromJson(text, JLoginRsp::class.java)
-                    LogUtil.addLog("Login"+loginBackListener,"PNRouterServiceMessageReceiver")
+                    LogUtil.addLog("Login" + loginBackListener, "PNRouterServiceMessageReceiver")
                     KLog.i(loginRsp)
                     loginBackListener?.loginBack(loginRsp)
                     registerListener?.loginBack(loginRsp)
@@ -215,15 +211,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val JSendMsgRsp = gson.fromJson(text, JSendMsgRsp::class.java)
                     if (ConstantValue.isWebsocketConnected) {
                         try {
-                            var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
-                            for (item in toSendMessage)
-                            {
-                                if(item.msgid == JSendMsgRsp.msgid)
-                                {
+                            var toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
+                            for (item in toSendMessage) {
+                                if (item.msgid == JSendMsgRsp.msgid) {
                                     toSendMessage.remove(item)
                                     var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-                                    if(messageEntityList != null)
-                                    {
+                                    if (messageEntityList != null) {
                                         messageEntityList.forEach {
                                             if (it.msgId.equals(JSendMsgRsp.msgid.toString())) {
                                                 AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
@@ -234,7 +227,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                                     break
                                 }
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -271,7 +264,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //拉取某个好友的消息,一次十条
                 "PullMsg" -> {
                     val JPullMsgRsp = gson.fromJson(text, JPullMsgRsp::class.java)
-                    KLog.i("insertMessage:PNRouterServiceMessageReceiver"+chatCallBack)
+                    KLog.i("insertMessage:PNRouterServiceMessageReceiver" + chatCallBack)
                     //KLog.i("insertMessage:PNRouterServiceMessageReceiver"+convsationCallBack)
                     chatCallBack?.pullMsgRsp(JPullMsgRsp)
                     convsationCallBack?.pullMsgRsp(JPullMsgRsp)
@@ -374,16 +367,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
                     mainInfoBack?.OnlineStatusPush(jOnlineStatusPushRsp)
                     var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                    var msgData = OnlineStatusPushRsp(0,"", userId!!)
+                    var msgData = OnlineStatusPushRsp(0, "", userId!!)
                     if (ConstantValue.isWebsocketConnected) {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,msgData,jOnlineStatusPushRsp.msgid))
-                    }else if (ConstantValue.isToxConnected) {
-                        var baseData = BaseData(4,msgData,jOnlineStatusPushRsp.msgid)
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, msgData, jOnlineStatusPushRsp.msgid))
+                    } else if (ConstantValue.isToxConnected) {
+                        var baseData = BaseData(4, msgData, jOnlineStatusPushRsp.msgid)
                         var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                         if (ConstantValue.isAntox) {
                             var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }else{
+                        } else {
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                         }
                     }
@@ -401,10 +394,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                 //79.	用户上传头像
                 "UploadAvatar" -> {
                     val JUploadAvatarRsp = gson.fromJson(text, JUploadAvatarRsp::class.java)
-                    if(uploadAvatarBack!= null)
-                    {
+                    if (uploadAvatarBack != null) {
                         uploadAvatarBack?.uploadAvatarReq(JUploadAvatarRsp)
-                    }else{
+                    } else {
 
                         mainInfoBack?.uploadAvatarReq(JUploadAvatarRsp)
                     }
@@ -433,15 +425,12 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                     val JGroupSendMsgRsp = gson.fromJson(text, JGroupSendMsgRsp::class.java)
                     if (ConstantValue.isWebsocketConnected) {
                         try {
-                            var  toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
-                            for (item in toSendMessage)
-                            {
-                                if(item.msgid == JGroupSendMsgRsp.msgid)
-                                {
+                            var toSendMessage = AppConfig.instance.getPNRouterServiceMessageSender().toSendChatMessage
+                            for (item in toSendMessage) {
+                                if (item.msgid == JGroupSendMsgRsp.msgid) {
                                     toSendMessage.remove(item)
                                     var messageEntityList = AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.loadAll()
-                                    if(messageEntityList != null)
-                                    {
+                                    if (messageEntityList != null) {
                                         messageEntityList.forEach {
                                             if (it.msgId.equals(JGroupSendMsgRsp.msgid.toString())) {
                                                 AppConfig.instance.mDaoMaster!!.newSession().messageEntityDao.delete(it)
@@ -452,7 +441,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
                                     break
                                 }
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -547,7 +536,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var adminLoginCallBack: AdminLoginCallBack? = null
 
-    var resetRouterNameCallBack:ResetRouterNameCallBack? = null
+    var resetRouterNameCallBack: ResetRouterNameCallBack? = null
 
     var adminUpdataPassWordCallBack: AdminUpdataPassWordCallBack? = null
 
@@ -555,16 +544,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
 
     var adminRecoveryCallBack: AdminRecoveryCallBack? = null
 
-    var userControlleCallBack : UserControlleCallBack? = null
+    var userControlleCallBack: UserControlleCallBack? = null
 
     var fileTaskBack: FileTaskBack? = null
 
-    var fileManageBack : FileManageBack? = null
-    var fileMainManageBack : FileMainManageBack? = null
+    var fileManageBack: FileManageBack? = null
+    var fileMainManageBack: FileMainManageBack? = null
 
-    var getDiskTotalInfoBack : GetDiskTotalInfoBack? = null
+    var getDiskTotalInfoBack: GetDiskTotalInfoBack? = null
 
-    var getDiskDetailInfoBack : GetDiskDetailInfoBack? = null
+    var getDiskDetailInfoBack: GetDiskDetailInfoBack? = null
 
     var formatDiskBack: FormatDiskBack? = null
 
@@ -573,9 +562,9 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     var updateAvatarBackBack: UpdateAvatarBack? = null
     var groupBack: GroupBack? = null
     var groupListPullBack: GroupListPullBack? = null
-    var groupDetailBack : GroupDetailBack? = null
-    var groupMemberback : GroupMemberback? = null
-    var groupMemberOpreateBack : GroupMemberOpreateBack? = null
+    var groupDetailBack: GroupDetailBack? = null
+    var groupMemberback: GroupMemberback? = null
+    var groupMemberOpreateBack: GroupMemberOpreateBack? = null
 
     var selcectCircleCallBack: SelcectCircleCallBack? = null
 
@@ -594,7 +583,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     init {
-//        this.socket = PushServiceSocket(urls, credentialsProvider, userAgent)
+        //        this.socket = PushServiceSocket(urls, credentialsProvider, userAgent)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver")
         createMessagePipe()
 //        pipe!!.read(object : SignalServiceMessagePipe.NullMessagePipeCallback() {
@@ -644,12 +633,13 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
      * @return A SignalServiceMessagePipe for receiving Signal Service messages.
      */
     fun createMessagePipe(): SignalServiceMessagePipe {
-        KLog.i("没有初始化。。createMessagePipe" +pipe)
+        KLog.i("没有初始化。。createMessagePipe" + pipe)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver" + this)
         KLog.i("没有初始化。。PNRouterServiceMessageReceiver loginBackListener" + loginBackListener)
         if (pipe == null) {
             val webSocket = WebSocketConnection(urls.signalServiceUrls[0].url, urls.signalServiceUrls[0].trustStore, credentialsProvider, userAgent, connectivityListener)
             pipe = SignalServiceMessagePipe(webSocket, credentialsProvider)
+            KLog.i("pipe 重新设置监听。。。")
             pipe!!.messagePipeCallback = this
             return pipe!!
         } else {
@@ -660,15 +650,18 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     fun shutdown() {
         pipe!!.shutdown()
     }
-    fun close()
-    {
+
+    fun close() {
+        KLog.i("pipe close。。。")
         pipe!!.close()
     }
+
     fun reConnect() {
+        KLog.i("pipe reConnect。。。")
         pipe!!.reConenct()
     }
 
-    fun getTrustStore() : TrustStore{
+    fun getTrustStore(): TrustStore {
         return urls.signalServiceUrls[0].trustStore
     }
 
@@ -682,13 +675,16 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     class NullMessageReceivedCallback : MessageReceivedCallback {
         override fun onMessage(envelope: BaseData) {}
     }
+
     interface RecoveryMessageCallback {
         fun recoveryBack(recoveryRsp: JRecoveryRsp)
     }
+
     interface RegisterMessageCallback {
         fun registerBack(registerRsp: JRegisterRsp)
         fun loginBack(loginRsp: JLoginRsp)
     }
+
     interface LoginMessageCallback {
         fun registerBack(registerRsp: JRegisterRsp)
         fun loginBack(loginRsp: JLoginRsp)
@@ -698,12 +694,15 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface AddfrendCallBack {
         fun addFriendBack(addFriendRsp: JAddFreindRsp)
     }
+
     interface UserInfoUpdateCallBack {
         fun UserInfoUpdateCallBack(jUserInfoUpdateRsp: JUserInfoUpdateRsp)
     }
+
     interface LogOutCallBack {
         fun logOutBack(jLogOutRsp: JLogOutRsp)
     }
+
     interface MainInfoBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
@@ -714,16 +713,18 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun pushDelMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
         fun pushFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
-        fun OnlineStatusPush(jOnlineStatusPushRsp : JOnlineStatusPushRsp)
+        fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp)
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
         fun pushLogoutRsp(jPushLogoutRsp: JPushLogoutRsp)
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
     }
+
     interface FileTaskBack {
         fun UploadFileRsp(jUploadFileRsp: JUploadFileRsp)
     }
+
     interface UserControlleCallBack {
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
@@ -734,7 +735,7 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun delFriendCmdRsp(jDelFriendCmdRsp: JDelFriendCmdRsp)
         fun changeRemarksRsp(jChangeRemarksRsp: JChangeRemarksRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
-        fun groupVerifyPush(jGroupVerifyPushRsp : JGroupVerifyPushRsp)
+        fun groupVerifyPush(jGroupVerifyPushRsp: JGroupVerifyPushRsp)
 //        fun groupVerify()
     }
 
@@ -749,31 +750,39 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface PullFriendCallBack {
         fun firendList(jPullFriendRsp: JPullFriendRsp)
     }
+
     interface PullUserCallBack {
         fun userList(jPullUserRsp: JPullUserRsp)
     }
+
     interface CreateUserCallBack {
         fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp)
     }
+
     interface AdminLoginCallBack {
         fun login(jAdminLoginRsp: JAdminLoginRsp)
     }
+
     interface ResetRouterNameCallBack {
         fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp)
     }
+
     interface AdminUpdataCodeCallBack {
-        fun updataCode(jAdminUpdataCodeRsp:JAdminUpdataCodeRsp)
+        fun updataCode(jAdminUpdataCodeRsp: JAdminUpdataCodeRsp)
     }
+
     interface AdminRecoveryCallBack {
         fun recoveryBack(recoveryRsp: JRecoveryRsp)
         fun loginBack(loginRsp: JLoginRsp)
     }
-    interface AdminUpdataPassWordCallBack{
-        fun updataPassWord(jAdminUpdataPasswordRsp:JAdminUpdataPasswordRsp)
+
+    interface AdminUpdataPassWordCallBack {
+        fun updataPassWord(jAdminUpdataPasswordRsp: JAdminUpdataPasswordRsp)
     }
+
     interface ChatCallBack {
-        fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String,Msg: String);
-        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey:String,Msg: String):String;
+        fun sendMsg(FromId: String, ToId: String, FriendPublicKey: String, Msg: String);
+        fun sendMsgV3(FromIndex: String, ToIndex: String, FriendPublicKey: String, Msg: String): String;
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun pushMsgRsp(pushMsgRsp: JPushMsgRsp)
         fun pullMsgRsp(pushMsgRsp: JPullMsgRsp)
@@ -784,24 +793,27 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
         fun sendToxFileRsp(jSendToxFileRsp: JSendToxFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
-        fun queryFriend(FriendId :String)
+        fun queryFriend(FriendId: String)
         fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
+
     interface GroupChatCallBack {
-        fun sendGroupMsg(userId: String, gId: String, point:String, Msg: String,userKey:String):String;
+        fun sendGroupMsg(userId: String, gId: String, point: String, Msg: String, userKey: String): String;
         fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
         fun pushGroupMsgRsp(pushMsgRsp: JGroupMsgPushRsp)
         fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp)
         fun delGroupMsgRsp(delMsgRsp: JGroupDelMsgRsp)
         fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp)
         fun pushDelGroupMsgRsp(delMsgPushRsp: JDelMsgPushRsp)
-       /* fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)*/
+        /* fun pushGroupFileMsgRsp(jPushFileMsgRsp: JPushFileMsgRsp)*/
         fun readMsgPushRsp(jReadMsgPushRsp: JReadMsgPushRsp)
+
         fun sendGroupToxFileRsp(jSendToxFileRsp: JGroupSendFileDoneRsp)
         fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
     }
+
     interface CoversationCallBack {
         fun sendMsgRsp(sendMsgRsp: JSendMsgRsp)
         fun sendGroupMsgRsp(jGroupSendMsgRsp: JGroupSendMsgRsp)
@@ -818,17 +830,19 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     }
 
     interface FileManageBack {
-        fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
-        fun deleFileRsp(jDelFileRsp :JDelFileRsp)
+        fun pullFileListRsp(pullFileListRsp: JPullFileListRsp)
+        fun deleFileRsp(jDelFileRsp: JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
     }
+
     //主页面文件对文件的操作回调
     interface FileMainManageBack {
-        fun pullFileListRsp(pullFileListRsp : JPullFileListRsp)
-        fun deleFileRsp(jDelFileRsp :JDelFileRsp)
+        fun pullFileListRsp(pullFileListRsp: JPullFileListRsp)
+        fun deleFileRsp(jDelFileRsp: JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun fileRenameReq(jFileRenameRsp: JFileRenameRsp)
     }
+
     interface GetDiskTotalInfoBack {
         fun getDiskTotalInfoReq(JGetDiskTotalInfoRsp: JGetDiskTotalInfoRsp)
         fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
@@ -837,40 +851,47 @@ constructor(private val urls: SignalServiceConfiguration, private val credential
     interface GetDiskDetailInfoBack {
         fun getDiskDetailInfoReq(JGetDiskDetailInfoRsp: JGetDiskDetailInfoRsp)
     }
+
     interface FormatDiskBack {
         fun formatDiskReq(jFormatDiskRsp: JFormatDiskRsp)
     }
+
     interface FileForwardBack {
         fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
     }
+
     interface UploadAvatarBack {
         fun uploadAvatarReq(jUploadAvatarRsp: JUploadAvatarRsp)
     }
+
     interface UpdateAvatarBack {
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
     }
+
     interface GroupBack {
         fun createGroup(jCreateGroupRsp: JCreateGroupRsp)
     }
+
     interface GroupListPullBack {
         fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
     }
 
     interface GroupDetailBack {
-        fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
-        fun groupConfig(jGroupConfigRsp : JGroupConfigRsp)
-        fun quitGroup(jGroupQuitRsp : JGroupQuitRsp)
-        fun groupInvite(jGroupInviteDealRsp : JGroupInviteDealRsp)
+        fun groupUserPull(jGroupUserPullRsp: JGroupUserPullRsp)
+        fun groupConfig(jGroupConfigRsp: JGroupConfigRsp)
+        fun quitGroup(jGroupQuitRsp: JGroupQuitRsp)
+        fun groupInvite(jGroupInviteDealRsp: JGroupInviteDealRsp)
     }
 
     interface GroupMemberback {
-        fun groupUserPull(jGroupUserPullRsp : JGroupUserPullRsp)
-        fun groupInvite(jGroupInviteDealRsp : JGroupInviteDealRsp)
+        fun groupUserPull(jGroupUserPullRsp: JGroupUserPullRsp)
+        fun groupInvite(jGroupInviteDealRsp: JGroupInviteDealRsp)
     }
 
     interface GroupMemberOpreateBack {
         fun groupMemberOpreate(jGroupVerifyRsp: JGroupVerifyRsp)
     }
+
     interface SelcectCircleCallBack {
         fun logOutBack(jLogOutRsp: JLogOutRsp)
         fun loginBack(loginRsp: JLoginRsp)

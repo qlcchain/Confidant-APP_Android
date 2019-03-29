@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
+import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.base.ActivityDelegate;
 
 import java.util.Stack;
@@ -82,6 +83,9 @@ public class AppActivityManager {
             if (!activity.isContainerDead()) {
                 activity.destoryContainer();
             }
+            if (activityStack.empty()) {
+                AppExit();
+            }
         }
     }
 
@@ -93,6 +97,9 @@ public class AppActivityManager {
     public void removeActivity(ActivityDelegate activity) {
         if (activity != null) {
             activityStack.remove(activity);
+        }
+        if (activityStack.empty()) {
+            AppExit();
         }
     }
 
@@ -209,6 +216,7 @@ public class AppActivityManager {
      */
     public void AppExit() {
         try {
+            AppConfig.instance.stopAllService();
             finishAllActivity();
             ActivityManager activityMgr = (ActivityManager) mApplication
                     .getSystemService(Context.ACTIVITY_SERVICE);
