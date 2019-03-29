@@ -40,7 +40,6 @@
                 android:textSize="18sp" />
 
             <RelativeLayout
-                android:visibility="invisible"
                 android:id="@+id/multiSelectBtn"
                 android:layout_width="wrap_content"
                 android:layout_centerVertical="true"
@@ -79,6 +78,7 @@
         android:visibility="gone"
         android:id="@+id/tvLeaveCircle"
         android:layout_width="match_parent"
+        android:text="@string/Leave_the_Circle"
         android:layout_alignParentBottom="true"
         android:background="@color/mainColor"
         android:gravity="center"

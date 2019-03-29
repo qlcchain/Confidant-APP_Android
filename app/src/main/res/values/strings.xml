@@ -601,7 +601,7 @@
     <string name="Removed_by_group_owner">from the group</string>
     <string name="Leave_this_group_chat">left the group</string>
     <string name="message_was_withdrawn">message was withdrawn</string>
-    <string name="message_was_withdrawn_by_Administrator">message was withdrawn by administrator</string>
+    <string name="message_was_withdrawn_by_Administrator">message was deleted by administrator</string>
     <string name="modified_the_group_name">modified the group name to</string>
     <string name="invited">invited</string>
     <string name="you">you</string>
@@ -610,4 +610,8 @@
     <string name="no_files_available_yet">No files available yet</string>
     <string name="group">group</string>
     <string name="invite_friends_to_conifdant">Invite friends to Confidant</string>
+    <string name="Leave_the_Circle">Leave the Circle</string>
+    <string name="leave_circle_ask">Are you sure you want to leave the circle?</string>
+    <string name="leave">Leave</string>
+    <string name="deleted_a_message">deleted a message</string>
 </resources>

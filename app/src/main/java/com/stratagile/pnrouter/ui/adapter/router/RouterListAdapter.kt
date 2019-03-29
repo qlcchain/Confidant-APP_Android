@@ -1,9 +1,11 @@
 package com.stratagile.pnrouter.ui.adapter.router
 
+import androidx.core.view.isGone
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
@@ -23,6 +25,7 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
             helper.setVisible(R.id.ivSelect, false)
             helper.setChecked(R.id.checkBox, item.isMultChecked)
         } else {
+            helper.itemView.isGone = false
             helper.setGone(R.id.checkBox, false)
 
             if (helper.layoutPosition == selectedItem) {

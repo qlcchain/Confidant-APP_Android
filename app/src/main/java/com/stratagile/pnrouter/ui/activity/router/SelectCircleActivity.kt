@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -36,6 +37,7 @@ import com.stratagile.pnrouter.ui.activity.router.module.SelectCircleModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.SelectCirclePresenter
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxFriendStatusEvent
@@ -43,7 +45,6 @@ import events.ToxSendInfoEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_select_circle.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -231,6 +232,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         ConstantValue.hasLogin = true
         ConstantValue.isHeart = true
         resetUnCompleteFileRecode()
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
         startActivity(intent)
@@ -534,6 +536,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
+                                gotoLogin()
                                 false
                             } else false
                         })
@@ -583,6 +586,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                     if(standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
                                     EventBus.getDefault().post(StopTox())
+                                    gotoLogin()
                                     false
                                 } else false
                             })
@@ -624,15 +628,22 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         }
         var this_ = this
         AppConfig.instance.messageReceiver?.selcectCircleCallBack = this
-        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        var routerListInit = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        routerListInit.forEachIndexed { index, it ->
+            if (it.lastCheck) {
+                routerEntity = it
+                lastRouterEntity = routerListInit[index]
+            }
+        }
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.notEq(ConstantValue.currentRouterId)).list()
         routerListAdapter = RouterListAdapter(routerList.MutableListToArrayList())
-        routerList.forEachIndexed { index, it ->
+        /*routerList.forEachIndexed { index, it ->
             if (it.lastCheck) {
                 routerEntity = it
                 routerListAdapter?.selectedItem = index
                 lastRouterEntity = routerList[index]
             }
-        }
+        }*/
         EventBus.getDefault().register(this)
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
@@ -644,6 +655,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             if (routerListAdapter!!.isCkeckMode) {
                 routerListAdapter!!.data[position].isMultChecked = !routerListAdapter!!.data[position].isMultChecked
                 routerListAdapter!!.notifyItemChanged(position)
+                updataCount()
             } else {
 
                 routerListAdapter!!.selectedItem = position
@@ -667,6 +679,9 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 }
                 routerListAdapter!!.notifyDataSetChanged()
             }
+        }
+        tvLeaveCircle.setOnClickListener {
+            showDeleteDialog()
         }
         handler = object : Handler() {
             override fun handleMessage(msg: Message) {
@@ -760,7 +775,69 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
         }
     }
+    fun showDeleteDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setTitleText(getString(R.string.leave)).
+                        setContentText(getString(R.string.leave_circle_ask))
+                .setConfirmClickListener {
+                    onDeleteSuccess()
+                }
+                .show()
 
+    }
+    fun onDeleteSuccess() {
+        var  deleteStr = ""
+        var isHasCurrentLogin = false
+        routerListAdapter!!.data.forEachIndexed { index, it ->
+            if(it.isMultChecked)
+            {
+                deleteStr+=index.toString()+","
+                var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(it.userSn)
+                AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(deleteRouterEntity)
+            }
+            if(it.routerId.equals(ConstantValue.currentRouterId))
+            {
+                isHasCurrentLogin = true
+            }
+        }
+
+
+        if(isHasCurrentLogin)
+        {
+            gotoLogin()
+        }else{
+            deleteStr = deleteStr.substring(0,deleteStr.length -1)
+            var deleteArray = deleteStr.split(",")
+            var len = deleteArray.size
+            for (i in len -1 downTo 0){
+                var index = deleteArray[i]
+                if(!index.equals(""))
+                {
+                    routerListAdapter!!.remove(index.toInt())
+                }
+            }
+            routerListAdapter!!.notifyDataSetChanged()
+        }
+
+
+    }
+    fun updataCount()
+    {
+        var count = 0;
+        routerListAdapter!!.data.forEachIndexed { index, it ->
+            if(it.isMultChecked)
+            {
+                count ++;
+            }
+        }
+        if(count > 0)
+        {
+            tvLeaveCircle.setText(getString(R.string.Leave_the_Circle)+"("+count+")")
+        }else{
+            tvLeaveCircle.setText(getString(R.string.Leave_the_Circle))
+        }
+
+    }
     //先退出当前的路由器
     fun logOutRouter(router : RouterEntity) {
         KLog.i("路由器登出："+router.routerName)
@@ -808,8 +885,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             ConstantValue.isWebsocketReConnect = false
             ConstantValue.hasLogin = true
             ConstantValue.isHeart = true
-            resetUnCompleteFileRecode()
-            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             connectRouter(currentRouterEntity!!)
         }
 
@@ -848,6 +923,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
+                                gotoLogin()
                                 false
                             } else false
                         })
@@ -1171,6 +1247,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                             if(standaloneCoroutine != null)
                                 standaloneCoroutine.cancel()
                             EventBus.getDefault().post(StopTox())
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -1193,6 +1270,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             stopTox = true
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -1306,6 +1384,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         stopTox = true
+                        gotoLogin()
                         false
                     } else false
                 })

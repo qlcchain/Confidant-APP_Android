@@ -132,17 +132,20 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
         routerList.remove(selectedRouter)
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
-        var msgData = GetDiskTotalInfoReq()
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
-        } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(3, msgData)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            } else {
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(selectedRouter.userSn))
+        {//管理员才调用此接口
+            var msgData = GetDiskTotalInfoReq()
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(3, msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
             }
         }
 

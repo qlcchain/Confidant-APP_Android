@@ -111,23 +111,27 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 val forward_msg = EMClient.getInstance().chatManager().getMessage(jGroupSysPushRsp.getParams().getMsgId().toString())
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
+                if (jGroupSysPushRsp.params.from == userId)
+                {
+                    name = getString(R.string.you)
+                }
                 if(forward_msg != null)
                 {
-                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),forward_msg.msgTime)
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.deleted_a_message),forward_msg.msgTime)
                 }else{
-                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn),0)
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +" " + getString(R.string.deleted_a_message),0)
                 }
 
             }
             4->{
                 val forward_msg = EMClient.getInstance().chatManager().getMessage(jGroupSysPushRsp.getParams().getMsgId().toString())
                 chatFragment?.delFreindMsg(jGroupSysPushRsp)
-                var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
+                var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                 if(forward_msg != null)
                 {
-                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),forward_msg.msgTime)
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name  +" "+ getString(R.string.deleted_a_message),forward_msg.msgTime)
                 }else{
-                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +"' "+ getString(R.string.message_was_withdrawn_by_Administrator),0)
+                    chatFragment?.insertMsgTipMessage(jGroupSysPushRsp.params.from,name +" " + getString(R.string.deleted_a_message),0)
                 }
 
             }
