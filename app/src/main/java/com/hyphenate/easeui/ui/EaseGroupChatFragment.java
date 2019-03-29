@@ -809,7 +809,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 String fileMD5 = FileUtil.getFileMD5(new File(toxFileData.getFilePath()));
                 String fileInfo = "";
                 if (toxFileData.getFileType().value() == 1) {
-                    if (toxFileData.getWidthAndHeight() != null) {
+                    if (toxFileData.getWidthAndHeight() != null && !toxFileData.getWidthAndHeight().equals("")) {
                         fileInfo = toxFileData.getWidthAndHeight();
                     } else {
                         fileInfo = "200.0000000*200.0000000";
@@ -868,7 +868,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileNameTemp;
                     String fileKey = "";
 
-                    fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    if(message.getFileKey() != null && !message.getFileKey().equals(""))
+                    {
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(message.getFileKey());
+                    }else{
+                        fileKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                    }
+
                     int code = FileUtil.copySdcardToxFileAndDecrypt(base58files_dir, files_dirTemp, fileKey);
                     if (code == 1) {
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
@@ -1109,7 +1115,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
-                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
+                            if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
+                            {
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                            }else{
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                            }
 
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1143,7 +1156,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
-                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
+                            if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
+                            {
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                            }else{
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                            }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
@@ -1181,7 +1201,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
-                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
+                            if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
+                            {
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                            }else{
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                            }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");
@@ -1213,7 +1240,14 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
-                            FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey());
+                            if(Message.getFileKey() != null && !Message.getFileKey().equals(""))//判断是从文件管理转发还是聊天转发
+                            {
+                                String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
+                                String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
+                            }else{
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"1");
+                            }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
                             receiveToxFileIdMap.put(Base58.encode(Message.getFileName().getBytes()), Message.getMsgId() + "");

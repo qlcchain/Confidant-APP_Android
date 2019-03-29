@@ -298,6 +298,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     intent.putExtra("fromId", selfUserId);
                                     intent.putExtra("msgId",data.msgId);
                                     intent.putExtra("fileName",fileOrginName)
+                                    intent.putExtra("fileInfo",data.fileInfo)
                                     intent.putExtra("fileKey",data.userKey)
                                     startActivity(intent);
                                 }
@@ -479,7 +480,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
                     intent.putExtra("fromId", selfUserId);
                     intent.putExtra("msgId",data.msgId);
-                    intent.putExtra("fileName",fileOrginName);
+                    intent.putExtra("fileName",fileOrginName)
+                    intent.putExtra("fileInfo",data.fileInfo)
                     intent.putExtra("fileKey",data.userKey)
                     startActivity(intent);
                 }

@@ -462,7 +462,15 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-                FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey)
+                if(jPushFileMsgRsp.params.fileKey != null && !jPushFileMsgRsp.params.fileKey.equals(""))//判断是从文件管理转发还是聊天转发
+                {
+                    val aesKey = LibsodiumUtil.DecryptShareKey(UserDataManger.currentGroupData.userKey)
+                    var fileKey = RxEncodeTool.getSouceKey(jPushFileMsgRsp.params.fileKey,aesKey)
+                    FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,fileKey,"1")//文件管理转发过来
+                }else{
+                    FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey,"0")//正常群里聊天
+                }
+
             }else{
 
                 receiveToxFileDataMap.put(jPushFileMsgRsp.params.fileName,jPushFileMsgRsp)
@@ -592,7 +600,10 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }
             else ->
             {
-                pushGroupFileMsgRsp(pushMsgRsp)
+                if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
+                    pushGroupFileMsgRsp(pushMsgRsp)
+                }
+
             }
 
         }

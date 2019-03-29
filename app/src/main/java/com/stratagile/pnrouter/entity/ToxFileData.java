@@ -108,7 +108,7 @@ public class  ToxFileData {
     }
 
     public String getWidthAndHeight() {
-        return widthAndHeight;
+        return widthAndHeight == null ? "" : widthAndHeight;
     }
 
     public void setWidthAndHeight(String widthAndHeight) {

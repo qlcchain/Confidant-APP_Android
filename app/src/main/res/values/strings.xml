@@ -494,7 +494,7 @@
     <string name="originalgraph">&#8195;Original graph</string>
     <string name="DestinationUnreachable">destination unreachable</string>
     <string name="notFreinds">The other person is not your good friend.</string>
-    <string name="noSelected">Please choose your friends</string>
+    <string name="noSelected">Please choose your friends or groups</string>
     <string name="hasbeensent">has been sent</string>
     <string name="User_ID_error">User ID error</string>
 

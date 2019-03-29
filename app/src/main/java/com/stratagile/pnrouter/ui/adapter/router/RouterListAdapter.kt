@@ -34,11 +34,11 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
                 helper.setVisible(R.id.ivSelect, false)
             }
         }
-        if (helper.layoutPosition == 0) {
+       /* if (helper.layoutPosition == 0) {
             helper.setVisible(R.id.divideLine, false)
         } else {
             helper.setVisible(R.id.divideLine, true)
-        }
+        }*/
         helper.setText(R.id.routerName, item.routerName)
     }
 

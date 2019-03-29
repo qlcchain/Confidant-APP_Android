@@ -30,14 +30,25 @@ public class FileDownloadUtils {
             task.cancel(true);
         }
     }
-    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key){
+
+    /**
+     *
+     * @param path
+     * @param to
+     * @param context
+     * @param msgId
+     * @param handler
+     * @param key
+     * @param type 0 正常解密  1 群聊中收到文件转发的aes解密
+     */
+    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,String type){
         ///data/data/com.johnny.testzipanddownload/files
         File destDir = new File(to);
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
         KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to);
-        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key);
+        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key,type);
         task.execute();
     }
 

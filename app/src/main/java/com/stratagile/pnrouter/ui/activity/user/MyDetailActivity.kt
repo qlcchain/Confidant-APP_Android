@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
+import chat.tox.antox.tox.MessageHelper
+import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.pawegio.kandroid.startActivity
 import com.pawegio.kandroid.startActivityForResult
 import com.stratagile.pnrouter.R
@@ -12,17 +15,22 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RouterEntityDao
+import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.LogOutReq
+import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.events.ResetAvatar
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
 import com.stratagile.pnrouter.ui.activity.user.module.MyDetailModule
 import com.stratagile.pnrouter.ui.activity.user.presenter.MyDetailPresenter
-import com.stratagile.pnrouter.utils.Base58
-import com.stratagile.pnrouter.utils.RxEncodeTool
-import com.stratagile.pnrouter.utils.SpUtil
-import kotlinx.android.synthetic.main.activity_main.*
+import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.KotlinToxService
+import com.stratagile.tox.toxcore.ToxCoreJni
+import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_my_detail.*
-import kotlinx.android.synthetic.main.fragment_my.view.*
 import org.greenrobot.eventbus.EventBus
 
 import javax.inject.Inject;
@@ -76,8 +84,99 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         llAvatar.setOnClickListener {
             startActivityForResult(Intent(this, ModifyAvatarActivity::class.java), 2)
         }
+        tvLogOut.setOnClickListener {
+            //            onLogOutSuccess()
+            showDialog()
+        }
     }
+    fun showDialog() {
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId)).list()
 
+        if(routerList .size  > 0)
+        {
+            var routerEntity = routerList[0]
+            SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                    .setTitleText("Log Out")
+                    .setConfirmClickListener {
+                        var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                        var msgData = LogOutReq(routerEntity.routerId,selfUserId!!,routerEntity.userSn)
+                        if (ConstantValue.isWebsocketConnected) {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                        } else if (ConstantValue.isToxConnected) {
+                            val baseData = BaseData(2,msgData)
+                            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(routerEntity.routerId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }else{
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, routerEntity.routerId.substring(0, 64))
+                            }
+                        }
+
+                        ConstantValue.isHasWebsocketInit = true
+                        if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()
+
+                        ConstantValue.loginOut = true
+                        ConstantValue.logining = false
+                        ConstantValue.isHeart = false
+                        ConstantValue.currentRouterIp = ""
+                        //isUserExit = true
+                        resetUnCompleteFileRecode()
+                        if (ConstantValue.isWebsocketConnected) {
+                            FileMangerDownloadUtils.init()
+                            ConstantValue.webSockeFileMangertList.forEach {
+                                it.disconnect(true)
+                                //ConstantValue.webSockeFileMangertList.remove(it)
+                            }
+                            ConstantValue.webSocketFileList.forEach {
+                                it.disconnect(true)
+                                //ConstantValue.webSocketFileList.remove(it)
+                            }
+                        }else{
+                            val intentTox = Intent(this, KotlinToxService::class.java)
+                            this.stopService(intentTox)
+                        }
+                        ConstantValue.isWebsocketConnected = false
+                        onLogOutSuccess()
+                        /*ConstantValue.isHasWebsocketInit = true
+                        if(AppConfig.instance.messageReceiver != null)
+                            AppConfig.instance.messageReceiver!!.close()
+                        ConstantValue.isWebsocketConnected = false*/
+                        //onLogOutSuccess()
+                    }
+                    .show()
+        }
+
+
+    }
+    fun onLogOutSuccess() {
+        ConstantValue.loginReq = null
+        ConstantValue.isWebsocketReConnect = false
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+        var intent = Intent(this, LoginActivityActivity::class.java)
+        intent.putExtra("flag", "logout")
+        startActivity(intent)
+        finish()
+    }
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = "1"
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         EventBus.getDefault().post(ResetAvatar())

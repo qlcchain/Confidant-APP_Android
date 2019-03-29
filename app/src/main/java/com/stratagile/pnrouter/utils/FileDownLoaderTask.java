@@ -56,6 +56,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	private String keyStr;
 	private String fileUlr;
 	private String FileNameOld;
+	private String typeStr;
 
 	/**
 	 *
@@ -64,11 +65,12 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key){
+	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key,String type){
 		super();
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
+		typeStr = type;
 		if(context!=null){
 			mContext = context;
 			handler = message;
@@ -209,12 +211,18 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			if(!keyStr.equals(""))
 			{
 				String aesKey = "";
-				if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+				KLog.i("文件转发 下载："+keyStr);
+				if(typeStr.equals("1"))
 				{
-					aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+					aesKey = keyStr;
 				}else{
-					aesKey =  RxEncodeTool.getAESKey(keyStr);
+					if(ConstantValue.INSTANCE.getEncryptionType().equals("1"))
+					{
+						aesKey =  LibsodiumUtil.INSTANCE.DecryptShareKey(keyStr);
+					}else{
+						aesKey =  RxEncodeTool.getAESKey(keyStr);
 
+					}
 				}
 				byte[] fileBufferMi =  FileUtil.InputStreamTOByte(input);
 				KLog.i("密文件大小 接收："+fileBufferMi.length +"_aesKey:"+aesKey);

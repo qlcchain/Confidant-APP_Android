@@ -386,7 +386,7 @@ data class DelFileReq(var UserId :String, var FileName : String,var Action : Str
  * 24.	发送文件_Tox消息 上传文件
  * (2)	响应（APP->Router）
  */
-data class SendToxUploadFileNotice(var UserId :String,  var FileName : String, var FileMD5 : String, var FileSize : Int, var FileType : Int,  var UserKey : String,  var Action : String = "UploadFile")
+data class SendToxUploadFileNotice(var UserId :String,  var FileName : String, var FileInfo : String, var FileMD5 : String, var FileSize : Int, var FileType : Int,  var UserKey : String,  var Action : String = "UploadFile")
 
 /**
  * 50.	设备磁盘统计信息
@@ -437,7 +437,7 @@ data class FileRenameReq(var UserId :String, var MsgId : Int, var Filename : Str
  * 78.	文件转发
  * (2)	响应（APP->Router）
  */
-data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FileName : String, var FileKey : String,var Action : String = "FileForward")
+data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FileName : String, var FileInfo : String, var FileKey : String,var Action : String = "FileForward")
 
 /**
  * 79.	用户上传头像

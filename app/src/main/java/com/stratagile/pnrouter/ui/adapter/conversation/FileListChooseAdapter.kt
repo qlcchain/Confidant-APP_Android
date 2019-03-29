@@ -29,7 +29,14 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
 //        var checkBox = helper.getView<SmoothCheckBox>(R.id.checkBox)
         helper.setText(R.id.tvFileTime, TimeUtil.getFileListTime(item.timestamp.toLong()))
         KLog.i("文件的名字为：" + item.fileName)
-        var fileName = String(Base58.decode(item.fileName.substring(item.fileName.lastIndexOf("/") + 1)))
+        var fileName = ""
+        try {
+            var subName = item.fileName.substring(item.fileName.lastIndexOf("/") + 1)
+            fileName = String(Base58.decode(subName))
+        }catch (e :Exception)
+        {
+
+        }
         helper.setText(R.id.tvFileName, fileName)
         helper.setText(R.id.tvFileSize, NetUtils.parseSize(item.fileSize.toLong()))
         var userAvatar = helper.getView<ImageButtonWithText>(R.id.userAvatar)

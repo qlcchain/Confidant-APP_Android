@@ -226,4 +226,15 @@ public class RxEncodeTool {
             return "";
         }
     }
+    public static String getSouceKey(String miKey,String aesKey)
+    {
+        try {
+            byte[] msgMi = RxEncodeTool.base64Decode(miKey.replace("\n",""));
+            String keySouce = new String(AESCipher.aesDecryptBytes(msgMi, aesKey.getBytes()));
+            return keySouce;
+        }catch (Exception e)
+        {
+            return "";
+        }
+    }
 }

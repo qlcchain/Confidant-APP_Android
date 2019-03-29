@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.utils;
 
 import android.content.ClipboardManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -149,6 +150,7 @@ public class FileMangerUtil {
     private static ConcurrentHashMap<String, byte[]> sendFileLeftByteMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, String> sendMsgIdMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, Message> receiveFileDataMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, String> sendFileWidthAndHeightMap =new  ConcurrentHashMap<>();
     private static long  faBegin;
     private static long faEnd;
 
@@ -171,6 +173,7 @@ public class FileMangerUtil {
         sendFileLeftByteMap = new ConcurrentHashMap<>();
         sendMsgIdMap = new ConcurrentHashMap<>();
         receiveFileDataMap = new ConcurrentHashMap<>();
+        sendFileWidthAndHeightMap = new ConcurrentHashMap<>();
         String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         fromUserId = userId;
     }
@@ -538,7 +541,15 @@ public class FileMangerUtil {
             sendFileData.setCotinue((byte) 0);
             //String strBase64 = RxEncodeTool.base64Encode2String(fileName.getBytes());
             String strBase58 = Base58.encode(fileName.getBytes());
-            sendFileData.setFileName(strBase58.getBytes());
+            if (action == 1 && sendFileWidthAndHeightMap.get(msgId) != null || action == 4 && sendFileWidthAndHeightMap.get(msgId) != null) {
+                String fileTempName = strBase58 + sendFileWidthAndHeightMap.get(msgId);
+                sendFileData.setFileName(fileTempName.getBytes());
+                KLog.i("发送文件的宽高为："  + msgId + "  " + sendFileWidthAndHeightMap.get(msgId));
+                //KLog.i("发送的文件的名字为：" + String(sendFileData.fileName))
+            } else {
+                sendFileData.setFileName(strBase58.getBytes());
+            }
+
             sendFileData.setFromId(From.getBytes());
             byte[] toRouter = new byte[77];
             Arrays.fill(toRouter,(byte) 0);
@@ -625,7 +636,7 @@ public class FileMangerUtil {
             {
                 if(fieType != 6)
                 {
-                    SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
+                    SendToxUploadFileNotice sendToxFileNotice = new SendToxUploadFileNotice( toxFileData.getFromId(),toxFileData.getFileName(),toxFileData.getWidthAndHeight(),toxFileData.getFileMD5(),toxFileData.getFileSize(),toxFileData.getFileType().value(),toxFileData.getSrcKey(),"UploadFile");
                     BaseData baseData = new BaseData(2,sendToxFileNotice);
                     String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
                     if(ConstantValue.INSTANCE.isAntox())
@@ -956,7 +967,9 @@ public class FileMangerUtil {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
-
+                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+                    String widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
+                    KLog.i("图片的宽高为：" + widthAndHeight);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
@@ -988,6 +1001,7 @@ public class FileMangerUtil {
                         FileUtil.recordRecentFile(fileName, 0, 0, "Router");
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
+                            sendFileWidthAndHeightMap.put(uuid, widthAndHeight);
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             UpLoadFile uploadFile = new UpLoadFile(fileName,imagePath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);
@@ -1061,7 +1075,7 @@ public class FileMangerUtil {
                                 toxFileData.setFileSize((int)fileSize);
                                 toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_IMAGE);
                                 toxFileData.setFileId(uuidTox);
-
+                                toxFileData.setWidthAndHeight(widthAndHeight.substring(1, widthAndHeight.length()));
                                 byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
                                 byte[] SrcKey = new byte[256];
                                 byte[] DstKey = new byte[256];
@@ -1324,7 +1338,7 @@ public class FileMangerUtil {
                         if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
                         {
 
-
+                            sendFileWidthAndHeightMap.put(uuid, ",200.0000000*200.0000000");
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
                             UpLoadFile uploadFile = new UpLoadFile(videoFileName,videoPath,fileSouceSize, false, false, "2",0,segSeqTotal,0,false,"",0,0,uuid,false);

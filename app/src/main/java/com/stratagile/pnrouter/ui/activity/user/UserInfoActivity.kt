@@ -70,7 +70,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             fileName = fileName.replace("__Avatar","")
             var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
             var msgId = Calendar.getInstance().timeInMillis /1000
-            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "")
+            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "","0")
         }
     }
 

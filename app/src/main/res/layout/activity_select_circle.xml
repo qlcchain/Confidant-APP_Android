@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/mainColor"
-                    android:textSize="@dimen/x36"
+                    android:textSize="15sp"
                     android:text="Edit"/>
             </RelativeLayout>
 

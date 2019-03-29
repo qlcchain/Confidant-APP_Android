@@ -42,7 +42,7 @@ public class Message {
     private String PriKey;//文件加密秘钥
     private int unReadCount;
     private  EMMessage.ChatType chatType;
-
+    private String FileKey;//从文件转发过来的消息特有
     public String getFileInfo() {
         return FileInfo;
     }
@@ -362,5 +362,13 @@ public class Message {
 
     public void setChatType(EMMessage.ChatType chatType) {
         this.chatType = chatType;
+    }
+
+    public String getFileKey() {
+        return FileKey;
+    }
+
+    public void setFileKey(String fileKey) {
+        FileKey = fileKey;
     }
 }

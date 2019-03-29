@@ -69,6 +69,7 @@ public class JGroupMsgPushRsp extends BaseEntity{
         private int FileSize;
         private String FileInfo;
         private String Msg;
+        private String FileKey;//从文件转发过来的消息特有
 
 
         public String getAction() {
@@ -221,6 +222,14 @@ public class JGroupMsgPushRsp extends BaseEntity{
 
         public void setMsg(String Msg) {
             this.Msg = Msg;
+        }
+
+        public String getFileKey() {
+            return FileKey;
+        }
+
+        public void setFileKey(String fileKey) {
+            FileKey = fileKey;
         }
     }
 }

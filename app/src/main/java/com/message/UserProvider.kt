@@ -111,7 +111,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         if (ConstantValue.isWebsocketConnected) {
                             var msgId = Calendar.getInstance().timeInMillis /1000
                             doloadAvatarDataMap.put(msgId.toString(),fileSavePath);
-                            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "","0")
                         }else{
                             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                             var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 2)
@@ -134,7 +134,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
                     if (ConstantValue.isWebsocketConnected) {
                         var msgId = Calendar.getInstance().timeInMillis /1000
-                        FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                        FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "","0")
                     }else{
                         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 2)
@@ -157,7 +157,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
                 if (ConstantValue.isWebsocketConnected) {
                     var msgId = Calendar.getInstance().timeInMillis /1000
-                    FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "")
+                    FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "","0")
                 }else{
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var msgData = PullFileReq(jUpdateAvatarRsp.params.toId, selfUserId!!, fileBase58Name, 0, 4, 3)

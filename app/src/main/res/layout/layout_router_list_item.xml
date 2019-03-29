@@ -3,10 +3,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="@dimen/x105">
-    <View
-        android:id="@+id/divideLine"
-        style="@style/divide_line"
-        android:layout_marginLeft="@dimen/x31"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center_vertical"
@@ -44,4 +41,8 @@
             android:layout_marginRight="@dimen/x31"
             android:layout_height="@dimen/x31" />
     </LinearLayout>
+    <View
+        android:id="@+id/divideLine"
+        style="@style/divide_line"
+        android:layout_marginLeft="@dimen/x31"/>
 </LinearLayout>

@@ -87,6 +87,7 @@ public class JPullFileListRsp extends BaseEntity {
             private int FileType;
             private String FileName;
             private String FileMD5;
+            private String  FileInfo;
             private int FileSize;
             private String Sender;
             private String UserKey;
@@ -157,6 +158,14 @@ public class JPullFileListRsp extends BaseEntity {
 
             public void setFileMD5(String FileMD5) {
                 this.FileMD5 = FileMD5;
+            }
+
+            public String getFileInfo() {
+                return FileInfo;
+            }
+
+            public void setFileInfo(String fileInfo) {
+                FileInfo = fileInfo;
             }
 
             public int getFileSize() {

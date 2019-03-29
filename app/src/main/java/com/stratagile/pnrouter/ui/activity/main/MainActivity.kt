@@ -488,7 +488,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 val fileMD5 = FileUtil.getFileMD5(File(toxFileGroupChatData.getFilePath()))
                 var fileInfo = ""
                 if (toxFileGroupChatData.getFileType().value() == 1) {
-                    if (toxFileGroupChatData.getWidthAndHeight() != null) {
+                    if (toxFileGroupChatData.getWidthAndHeight() != null && !toxFileGroupChatData.getWidthAndHeight().equals("")) {
                         fileInfo = toxFileGroupChatData.getWidthAndHeight()
                     } else {
                         fileInfo = "200.0000000*200.0000000"
