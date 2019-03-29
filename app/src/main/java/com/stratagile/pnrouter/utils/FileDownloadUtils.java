@@ -47,7 +47,7 @@ public class FileDownloadUtils {
         if (!destDir.exists()) {
             destDir.mkdirs();
         }
-        KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to);
+        KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to+"_key:"+key+"_type:"+type);
         FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key,type);
         task.execute();
     }
