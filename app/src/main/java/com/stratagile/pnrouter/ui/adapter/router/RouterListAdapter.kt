@@ -34,6 +34,7 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
                 helper.setVisible(R.id.ivSelect, false)
             }
         }
+        helper.setVisible(R.id.divideLine, true)
        /* if (helper.layoutPosition == 0) {
             helper.setVisible(R.id.divideLine, false)
         } else {
