@@ -43,12 +43,6 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         setContentView(R.layout.activity_web_view)
     }
     override fun initData() {
-        val wcc = object : WebChromeClient() {
-           override fun onReceivedTitle(view: WebView, titleContent: String) {
-                super.onReceivedTitle(view, titleContent)
-               title.text = titleContent
-            }
-        }
         var url = intent.getStringExtra("url")
         var titleStr = intent.getStringExtra("title")
         title.text = titleStr
