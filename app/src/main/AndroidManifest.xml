@@ -466,6 +466,8 @@
         <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" />
         <activity android:name=".ui.activity.group.GroupMembersActivity" />
         <activity android:name=".ui.activity.router.SelectCircleActivity" />
+        <activity android:name=".ui.activity.user.UserInfoActaivity" />
+        <activity android:name=".ui.activity.main.WebViewActivity" />
     </application>
 
 </manifest>

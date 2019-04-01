@@ -14,7 +14,6 @@ import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.entity.events.SelectFriendChange
 import com.stratagile.pnrouter.entity.events.SelectGroupChange
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
-import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.utils.Base58
 import com.stratagile.pnrouter.utils.RxEncodeTool

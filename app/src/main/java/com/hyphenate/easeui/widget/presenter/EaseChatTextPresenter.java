@@ -108,7 +108,7 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
                     case "Copy":
                         ClipboardManager cm = (ClipboardManager) AppConfig.instance.getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
                         // 创建普通字符型ClipData
-                        ClipData mClipData = ClipData.newPlainText("Label", EaseSmileUtils.getSmiledText(getContext(), EaseCommonUtils.getMessageDigest(message, getContext())));
+                        ClipData mClipData = ClipData.newPlainText("Label", EaseSmileUtils.getSmiledTextInput(getContext(), EaseCommonUtils.getMessageDigest(message, getContext())));
                         // 将ClipData内容放到系统剪贴板里。
                         cm.setPrimaryClip(mClipData);
                         Toast.makeText(AppConfig.instance.getApplicationContext(), R.string.copy_success, Toast.LENGTH_SHORT).show();

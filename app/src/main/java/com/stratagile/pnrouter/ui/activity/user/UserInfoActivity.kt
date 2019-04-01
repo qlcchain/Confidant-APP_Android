@@ -130,6 +130,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     override fun addFriendRsp(retCode: Int) {
         runOnUiThread {
             if (retCode == 0) {
+                toast(getString(R.string.success))
                 standaloneCoroutine.cancel()
                 friendStatus = 1
                 AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(userInfo)

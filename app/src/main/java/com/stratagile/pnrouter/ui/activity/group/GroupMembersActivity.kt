@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.ui.activity.group.contract.GroupMembersContract
 import com.stratagile.pnrouter.ui.activity.group.module.GroupMembersModule
 import com.stratagile.pnrouter.ui.activity.group.presenter.GroupMembersPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailActivity
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -122,6 +123,34 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         refreshLayout.setOnRefreshListener {
             pullGourpUsersList()
             refreshLayout.isRefreshing = false
+        }
+        groupMemberAdapter?.setOnItemClickListener { adapter, view, position ->
+            /**
+             * Id : 22
+             * Type : 2
+             * Local : 1
+             * ToxId : FF16BC404B8AD7787CA27C93F176A73CFA03C829E12974138BD22AE1E6F3494A6FE7C38C8C2E
+             * Nickname : aHc4ODg=
+             * Remarks :
+             * UserKey : tWl8pN/7gCJ3LXO/7+D1s10qAYjeJKJdcItZH16RAy4=
+             */
+            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if (userId.equals(groupMemberAdapter!!.data[position].toxId)) {
+                return@setOnItemClickListener
+            }
+            var user = UserEntity()
+            user.userId = groupMemberAdapter!!.data[position].toxId
+            user.nickName = groupMemberAdapter!!.data[position].nickname
+            user.signPublicKey = groupMemberAdapter!!.data[position].userKey
+            val userEntities = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
+            userEntities.forEach {
+                if (it.userId.equals(groupMemberAdapter!!.data[position].toxId)) {
+                    user = it
+                }
+            }
+            val intent = Intent(this, UserInfoActivity::class.java)
+            intent.putExtra("user", user)
+            startActivity(intent)
         }
         if (groupEntity!!.gAdmin.equals(SpUtil.getString(AppConfig.instance, ConstantValue.userId, ""))) {
 
