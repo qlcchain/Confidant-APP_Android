@@ -87,6 +87,8 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
     }
     override fun initData() {
         flag = intent.getIntExtra("flag",0);
+        var routerNameFrom = intent.getStringExtra("routerName")
+        ivAvatar.setText(routerNameFrom)
         LoginInBtn.setOnClickListener {
             if(routerName.text.toString().equals(""))
             {

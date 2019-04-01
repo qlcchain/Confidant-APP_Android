@@ -21,6 +21,7 @@
     </com.stratagile.pnrouter.view.ImageButtonWithText>
     
     <ImageView
+        android:visibility="gone"
         android:id="@+id/ivScan"
         android:layout_width="@dimen/x46"
         android:layout_alignParentRight="true"
@@ -89,7 +90,10 @@
                 app:text="@string/password_management">
 
             </com.stratagile.pnrouter.view.DrawableTextView>
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x18"
+                android:background="@color/color_f2f2f2"/>
             <LinearLayout
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"

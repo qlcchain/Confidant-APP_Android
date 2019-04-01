@@ -21,6 +21,7 @@
     </com.stratagile.pnrouter.view.ImageButtonWithText>
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/ivScan"
         android:layout_width="@dimen/x46"
         android:layout_alignParentRight="true"
@@ -49,11 +50,16 @@
                 android:layout_marginRight="@dimen/x60"
                 android:textColor="@color/mainColor"
                 android:layout_height="wrap_content" />
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x18"
+                android:layout_marginTop="@dimen/x25"
+                android:background="@color/color_f2f2f2"/>
             <LinearLayout
+
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x28"
+                android:layout_marginTop="@dimen/x8"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_marginRight="@dimen/x31"
                 android:layout_height="wrap_content">

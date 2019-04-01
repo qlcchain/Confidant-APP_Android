@@ -8,6 +8,7 @@
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:layout_marginTop="@dimen/x90"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -35,22 +36,23 @@
 
         <EditText
             android:id="@+id/adminPassWord"
-            android:layout_width="300dp"
+            android:layout_width="@dimen/x538"
             android:layout_height="53dp"
             android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:ems="10"
-            android:gravity="left"
             android:hint="@string/Routerpassword"
             android:inputType="textPassword"
             android:maxLength="8"
             android:paddingBottom="@dimen/x35"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="@dimen/x90"
             android:singleLine="true"
             android:textColor="@color/regeisetInput"
             android:textColorHint="@color/color_808080"
             android:textSize="@dimen/x31"
             android:theme="@style/MyEditText"
-            tools:layout_editor_absoluteX="47dp"
-            tools:layout_editor_absoluteY="36dp" />
+
+             />
 
         <TextView
             android:id="@+id/textView5"
