@@ -2296,7 +2296,11 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 userSn = it.userSn
                                 userId = it.userId
                                 username = it.username
-                                dataFileVersion = it.dataFileVersion
+                                if (it.dataFileVersion == null) {
+                                    dataFileVersion = 0
+                                } else {
+                                    dataFileVersion = it.dataFileVersion
+                                }
                                 routerNameTips.setTextColor(resources.getColor(R.color.white))
                                 if(it.routerName != null){
                                     routerNameTips.text = it.routerName
