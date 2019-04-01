@@ -1,10 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.os.Bundle
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -61,8 +58,27 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         webView.getSettings().setAppCacheEnabled(false)
         webView.getSettings().setUseWideViewPort(true)
         webView.getSettings().setLoadWithOverviewMode(true)
-        webView.webViewClient = WebViewClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onReceivedTitle(view: WebView, title1: String?) {
+                super.onReceivedTitle(view, title1)
+                if (title1 != null) {
+                    title.text = title1
+                }
+            }
+
+        }
+        webView.webViewClient = object  : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                view.loadUrl(url)
+                return super.shouldOverrideUrlLoading(view, url)
+            }
+        }
         webView.loadUrl(url)
+
+    }
+
+    class MyWeb : WebViewClient() {
+
     }
 
     override fun setupActivityComponent() {

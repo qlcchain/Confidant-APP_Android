@@ -2,6 +2,10 @@ package com.stratagile.pnrouter.db;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+
+import com.stratagile.pnrouter.application.AppConfig;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -88,6 +92,8 @@ public class RouterEntity implements Parcelable{
             return new RouterEntity[size];
         }
     };
+
+
 
     public Long getId() {
         return this.id;
