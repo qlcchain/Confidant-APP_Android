@@ -713,6 +713,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
                     isFromScanAdmim = false
+                    finish()
                 }
                 else if(isFromScan)
                 {

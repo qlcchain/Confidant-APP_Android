@@ -614,4 +614,5 @@
     <string name="leave_circle_ask">Are you sure you want to leave the circle?</string>
     <string name="leave">Leave</string>
     <string name="deleted_a_message">deleted a message</string>
+    <string name="no_choice">no choice</string>
 </resources>

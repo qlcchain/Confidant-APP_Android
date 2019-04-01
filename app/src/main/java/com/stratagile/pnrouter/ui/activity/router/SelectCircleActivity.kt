@@ -801,6 +801,11 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
         }
 
+        if(deleteStr.equals(""))
+        {
+            toast(R.string.no_choice)
+            return
+        }
 
         if(isHasCurrentLogin)
         {

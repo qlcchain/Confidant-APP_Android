@@ -31,6 +31,7 @@ import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.router.RouterAliasSetActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminqrcode.*
@@ -82,37 +83,45 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             }
         } else {
             ConstantValue.loginOut = false
+            ConstantValue.logining = true
+            LogUtil.addLog("loginBack:"+"begin","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
-            FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
+            //FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
+            LogUtil.addLog("loginBack:"+"a","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
+            LogUtil.addLog("loginBack:"+"b","LoginActivityActivity")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
+            LogUtil.addLog("loginBack:"+"c","LoginActivityActivity")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
+            ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
-            newRouterEntity.index  = loginRsp.params!!.index
+            newRouterEntity.index = loginRsp.params!!.index
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
-            newRouterEntity.loginKey = ""
-            newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
-            newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
+            if(loginRsp.params.nickName != null)
+                newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
+            newRouterEntity.userSn = loginRsp.params!!.userSn
+            newRouterEntity.loginKey = ""
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
-            myUserData.nickName = newRouterEntity.username;
+            myUserData.nickName = loginRsp.params!!.nickName
             UserDataManger.myUserData = myUserData
             var contains = false
             for (i in routerList) {
                 if (i.userSn.equals(loginRsp.params!!.userSn)) {
                     contains = true
                     newRouterEntity = i
-                    newRouterEntity.lastCheck = true
+
                     break
                 }
             }
+            LogUtil.addLog("loginBack:"+"d","LoginActivityActivity")
             var needUpdate :ArrayList<MyRouter> = ArrayList();
             routerList.forEach {
                 it.lastCheck = false
@@ -124,7 +133,8 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
-            newRouterEntity.loginKey = "";
+            newRouterEntity.loginKey = ""
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -133,6 +143,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
+            LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()
             myRouter.setType(0)
@@ -140,12 +151,13 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             LocalRouterUtils.insertLocalAssets(myRouter)
             runOnUiThread {
                 closeProgressDialog()
+                KLog.i("333")
             }
+            LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
             ConstantValue.hasLogin = true
             ConstantValue.isHeart = true
-            ConstantValue.currentRouterId = ConstantValue.scanRouterId
-            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN
             startActivity(Intent(this, MainActivity::class.java))
+            LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
             finish()
         }
     }
@@ -187,7 +199,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
                 var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
                 var login = LoginReq_V4(  recoveryRsp.params.routeId,recoveryRsp.params.userSn, recoveryRsp.params.userId,signBase64, recoveryRsp.params.dataFileVersion,recoveryRsp.params.routerName)
-
+                runOnUiThread {
+                    showProgressDialog("logining...")
+                }
                 ConstantValue.loginReq = login
                 if(ConstantValue.isWebsocketConnected)
                 {
@@ -204,13 +218,13 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
                 }
-                var intent = Intent(this, LoginActivityActivity::class.java)
+               /* var intent = Intent(this, LoginActivityActivity::class.java)
                 intent.putExtra("adminRouterIdOK",recoveryRsp.params.routeId)
                 intent.putExtra("adminUserSnOK",recoveryRsp.params.userSn)
                 intent.putExtra("adminUserIdOK",recoveryRsp.params.userId)
                 intent.putExtra("adminUserNameOK",String(RxEncodeTool.base64Decode(recoveryRsp.params.nickName)))
                 startActivity(intent)
-                finish()
+                finish()*/
             }
             1 -> {
                 ConstantValue.scanRouterId = recoveryRsp.params.routeId
