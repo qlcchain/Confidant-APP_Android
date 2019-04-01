@@ -28,6 +28,7 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.activity_edit_nick_name.*
 import org.libsodium.jni.Sodium
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -292,6 +293,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                             }
                         }
 
@@ -308,6 +310,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
                                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                             }
                         }
                     }

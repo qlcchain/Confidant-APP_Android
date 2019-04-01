@@ -6,6 +6,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.utils.SpUtil;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -112,7 +114,8 @@ public class RouterEntity implements Parcelable{
     }
 
     public String getUsername() {
-        return this.username;
+        String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+        return name;
     }
 
     public void setUsername(String username) {

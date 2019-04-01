@@ -2237,11 +2237,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 routerList.forEach {
                     if(adminUserSn != null && !adminUserSn.equals(""))
                     {
+                        val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         if (it.userSn.equals(adminUserSn)) {
                             routerId = it.routerId
                             userSn = it.userSn
                             userId = it.userId
-                            username = it.username
+                            username = name!!
                             dataFileVersion = it.dataFileVersion
                             routerNameTips.setTextColor(resources.getColor(R.color.white))
                             if(it.routerName != null){
@@ -2251,7 +2252,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 routerNameTips.text =  "Router 1"
                                 ivAvatar.setText("Router 1")
                             }
-                            tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+
+                            tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                             if(it.loginKey != null){
                                 loginKey.setText(it.loginKey)
                             }else{
@@ -2263,6 +2265,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }else{
                         var autoLoginRouterSn = SpUtil.getString(this, ConstantValue.autoLoginRouterSn, "")
+                        val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                         if(!autoLoginRouterSn.equals(""))
                         {
                             if (it.userSn.equals(autoLoginRouterSn)) {
@@ -2280,7 +2283,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ivAvatar.setText("Router 1")
                                 }
                                 desc.text = getString(R.string.login_has_router)
-                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+                                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                                tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
                                 }else{
@@ -2295,7 +2299,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 routerId = it.routerId
                                 userSn = it.userSn
                                 userId = it.userId
-                                username = it.username
+                                username = name!!
                                 if (it.dataFileVersion == null) {
                                     dataFileVersion = 0
                                 } else {
@@ -2310,7 +2314,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     ivAvatar.setText("Router 1")
                                 }
                                 desc.text = getString(R.string.login_has_router)
-                                tvUserName.text = "Hello\n"+it.username+"\nWelcome back!"
+                                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                                tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                                 if(it.loginKey != null){
                                     loginKey.setText(it.loginKey)
                                 }else{
@@ -2332,7 +2337,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 userId = routerList[0].userId
                 username = routerList[0].username
                 desc.text = getString(R.string.login_has_router)
-                tvUserName.text = "Hello\n"+ username+"\nWelcome back!"
+                val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
+                tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                 dataFileVersion = routerList[0].dataFileVersion
                 routerNameTips.setTextColor(resources.getColor(R.color.white))
                 if(routerList[0].routerName != null){
