@@ -2429,8 +2429,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             isStartLogin = true
 //                            getServer(routerId,userSn,false,false)
-                            /* if(AppConfig.instance.messageReceiver != null)
-                                 AppConfig.instance.messageReceiver!!.close()*/
+                             if(AppConfig.instance.messageReceiver != null)
+                                 AppConfig.instance.messageReceiver!!.close()
                             //routerList[position].lastCheck = true
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)

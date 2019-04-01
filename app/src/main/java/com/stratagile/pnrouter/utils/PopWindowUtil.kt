@@ -24,6 +24,7 @@ import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.ShareBean
 import com.stratagile.pnrouter.entity.file.Arrange
 import com.stratagile.pnrouter.entity.file.FileOpreateType
+import com.stratagile.pnrouter.ui.adapter.file.SelectPictureAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileChooseOpreateAdapter
 import com.stratagile.pnrouter.ui.adapter.login.SelectRouterAdapter
 import com.stratagile.pnrouter.ui.adapter.popwindow.FileSortAdapter
@@ -118,6 +119,43 @@ object PopWindowUtil {
         recyclerView.layoutManager = linearLayoutManager
         var list = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         val selecRouterAdapter = SelectRouterAdapter(arrayListOf())
+        selecRouterAdapter.setNewData(list)
+        recyclerView.adapter = selecRouterAdapter
+        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+            CustomPopWindow.onBackPressed()
+        }
+        //对具体的view的事件的处理
+        maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
+
+        CustomPopWindow.PopupWindowBuilder(activity)
+                .setView(maskView)
+                .setClippingEnable(false)
+                .setContenView(contentView)
+                .setFocusable(false)
+                .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
+                .create()
+                .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+    /**
+     * @param activity 上下文
+     * @param showView 从activity中传进来的view,用于让popWindow附着的
+     */
+    fun showSelecMenuPopWindow(activity: Activity, showView: View,list:ArrayList<String>, onRouterSelectListener : OnSelectListener) {
+        val maskView = LayoutInflater.from(activity).inflate(R.layout.select_router_pop_layout, null)
+        val contentView = maskView.findViewById<View>(R.id.ll_popup)
+//        maskView.animation = AnimationUtils.loadAnimation(activity, R.anim.open_fade)
+//        contentView.animation = AnimationUtils.loadAnimation(activity, R.anim.pop_manage_product_in)
+        val translate = TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        )
+        translate.duration = 200
+        contentView.animation = translate
+        val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
+        val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = linearLayoutManager
+        val selecRouterAdapter = SelectPictureAdapter(arrayListOf())
         selecRouterAdapter.setNewData(list)
         recyclerView.adapter = selecRouterAdapter
         selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->

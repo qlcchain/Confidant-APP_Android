@@ -1,7 +1,10 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.os.Bundle
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -13,6 +16,12 @@ import com.stratagile.pnrouter.ui.activity.main.presenter.WebViewPresenter
 import kotlinx.android.synthetic.main.activity_web_view.*
 
 import javax.inject.Inject;
+import com.stratagile.pnrouter.R.id.webView
+import com.stratagile.pnrouter.R.id.tvTitle
+
+
+
+
 
 /**
  * @author hzp
@@ -34,6 +43,12 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         setContentView(R.layout.activity_web_view)
     }
     override fun initData() {
+        val wcc = object : WebChromeClient() {
+           override fun onReceivedTitle(view: WebView, titleContent: String) {
+                super.onReceivedTitle(view, titleContent)
+               title.text = titleContent
+            }
+        }
         var url = intent.getStringExtra("url")
         var titleStr = intent.getStringExtra("title")
         title.text = titleStr
@@ -52,6 +67,7 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         webView.getSettings().setAppCacheEnabled(false)
         webView.getSettings().setUseWideViewPort(true)
         webView.getSettings().setLoadWithOverviewMode(true)
+        webView.webViewClient = WebViewClient()
         webView.loadUrl(url)
     }
 

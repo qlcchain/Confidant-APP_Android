@@ -99,6 +99,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
             intent.putExtra("uri", uri);
+            intent.putExtra("fileUrl", imgBody.getLocalUrl());
         } else {
             // The local full size pic does not exist yet.
             // ShowBigImage needs to download it from the server
