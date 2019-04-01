@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -79,10 +80,11 @@ public class RxPhotoTool {
     }
 
     public static void cropImage(Activity activity, Uri srcUri) {
-        cropImageUri = createImagePathUri(activity);
+//        cropImageUri = createImagePathUri(activity);
+        cropImageUri = srcUri;
 
         Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(srcUri, "image/*");
+        intent.setDataAndType(Uri.fromFile(new File(srcUri.getPath())), "image/*");
         intent.putExtra("crop", "true");
 
         ////////////////////////////////////////////////////////////////

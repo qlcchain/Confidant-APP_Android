@@ -207,7 +207,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
             startPhotoZoom(data.data)
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             bitmap = decodeUriAsBitmap(inputUri)
-            //            bitmap = rotateBitmapByDegree(bitmap, getBitmapDegree(imageFile.getPath()));
+//                        bitmap = rotateBitmapByDegree(bitmap, getBitmapDegree(imageFile.getPath()));
             Glide.with(this)
                     .load(bitmap)
                     .apply(options)

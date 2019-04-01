@@ -13,6 +13,7 @@ import android.support.multidex.MultiDexApplication
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import chat.tox.antox.tox.ToxService
+import cn.bingoogolapple.qrcode.core.BGAQRCodeUtil
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions

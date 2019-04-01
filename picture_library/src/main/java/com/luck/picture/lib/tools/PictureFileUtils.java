@@ -345,6 +345,7 @@ public class PictureFileUtils {
         }
     }
 
+
     /**
      * 读取图片属性：旋转的角度
      *

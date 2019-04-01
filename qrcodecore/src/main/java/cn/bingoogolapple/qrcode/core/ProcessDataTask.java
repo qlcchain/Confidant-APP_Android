@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
@@ -106,6 +107,7 @@ class ProcessDataTask extends AsyncTask<Void, Void, ScanResult> {
             return qrCodeView.processBitmapData(BGAQRCodeUtil.getDecodeAbleBitmap(mPicturePath));
         } else if (mBitmap != null) {
             ScanResult result = qrCodeView.processBitmapData(mBitmap);
+//            Log.i("二维码扫描  ", result.result);
             mBitmap = null;
             return result;
         } else {
@@ -120,9 +122,9 @@ class ProcessDataTask extends AsyncTask<Void, Void, ScanResult> {
             if (BGAQRCodeUtil.isDebug()) {
                 long time = System.currentTimeMillis() - startTime;
                 if (scanResult != null && !TextUtils.isEmpty(scanResult.result)) {
-                    BGAQRCodeUtil.d("识别成功时间为：" + time);
+                    Log.d("识别成功时间为：",  time + "");
                 } else {
-                    BGAQRCodeUtil.e("识别失败时间为：" + time);
+                    Log.e("识别失败时间为：",  time + "");
                 }
             }
 
