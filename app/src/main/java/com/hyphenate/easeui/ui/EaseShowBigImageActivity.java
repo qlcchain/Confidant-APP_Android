@@ -142,18 +142,16 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 				finish();
 			}
 		});
-		/*Bitmap obmp = ((BitmapDrawable) (image).getDrawable()).getBitmap();
+		Bitmap obmp = ((BitmapDrawable) (image).getDrawable()).getBitmap();
 		new Thread(new Runnable() {
 			public void run() {
-
+				hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp);
 			}
-		}).start();*/
+		}).start();
 		image.setOnLongClickListener(new View.OnLongClickListener() {
 
 			@Override
 			public boolean onLongClick(View v) {
-				Bitmap obmp = ((BitmapDrawable) (image).getDrawable()).getBitmap();
-				hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp);
 				ArrayList<String> list = new ArrayList<>();
 				list.add("Save Image");
 				if(hasQRCode != null && !hasQRCode.equals(""))
