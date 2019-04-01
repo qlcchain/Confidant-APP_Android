@@ -35,6 +35,10 @@ object SpUtil {
         {
             return
         }
+        if(key.equals("username"))
+        {
+            var aa =""
+        }
         if (sp == null) {
             sp = context.getSharedPreferences("config", Context.MODE_PRIVATE)
         }

@@ -105,7 +105,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
 //            newRouterEntity.dataFileVersion = loginRsp.params!!.dataFileVersion
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             if(loginRsp.params.nickName != null)
-                newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
+                newRouterEntity.username = ConstantValue.localUserName!!
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.loginKey = ""
@@ -132,6 +132,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 myRouter.setRouterEntity(it)
                 needUpdate.add(myRouter);
             }
+            LocalRouterUtils.updateList(needUpdate)
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = ""
@@ -144,7 +145,6 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
 
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
-            LocalRouterUtils.updateList(needUpdate)
             LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
             //更新sd卡路由器数据begin
             val myRouter = MyRouter()

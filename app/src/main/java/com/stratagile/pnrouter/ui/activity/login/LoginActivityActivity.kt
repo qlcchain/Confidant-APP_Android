@@ -468,7 +468,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.index = loginRsp.params!!.index
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
-            SpUtil.putString(this, ConstantValue.username,username)
+            SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
