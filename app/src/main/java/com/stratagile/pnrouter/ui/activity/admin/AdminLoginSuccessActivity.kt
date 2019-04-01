@@ -109,6 +109,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.loginKey = ""
+            newRouterEntity.dataFileVersion = dataFileVersion
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
@@ -174,6 +175,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
 
                 }else{
+                    dataFileVersion = recoveryRsp.params.dataFileVersion
                    /* var newRouterEntity = RouterEntity()
                     newRouterEntity.routerId = recoveryRsp.params.routeId
                     newRouterEntity.userSn = recoveryRsp.params.userSn
@@ -259,6 +261,8 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     @Inject
     internal lateinit var mPresenter: AdminLoginSuccessPresenter
     var newRouterEntity = RouterEntity()
+    var dataFileVersion = 0;
+    var dataFilePay = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
         super.onCreate(savedInstanceState)

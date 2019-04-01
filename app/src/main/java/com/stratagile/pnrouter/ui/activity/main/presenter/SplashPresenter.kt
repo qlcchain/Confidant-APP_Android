@@ -164,7 +164,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var abvc = ""
             routerList.forEach {
-                if (it.routerId == null || it.routerId.equals("") || it.userSn == null || it.userSn.equals("") || it.userId == null || it.userId.equals("") || it.username == null || it.username.equals("") || it.dataFileVersion == null || it.dataFileVersion.equals("")) {
+                if (it.routerId == null || it.routerId.equals("") || it.userSn == null || it.userSn.equals("") || it.userId == null || it.userId.equals("") || it.username == null || it.username.equals("")) {
                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(it)
                 }
             }
