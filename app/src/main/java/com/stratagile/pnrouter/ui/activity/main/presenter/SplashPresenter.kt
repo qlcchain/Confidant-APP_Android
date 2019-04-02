@@ -146,46 +146,7 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             DeleteUtils.deleteDirectory(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/temp/")//删除外部查看文件的临时路径
             FileUtil.init()
             PathUtils.getInstance().initDirs("", "", AppConfig.instance)
-            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
-            LocalRouterUtils.inspectionLocalData();
-            LocalRouterUtils.updateGreanDaoFromLocal()
-            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"//删除聊天的临时加密文件
-            val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
-            RxFileTool.deleteFilesInDir(tempFile)
-            RxFileTool.deleteNodefile(savedNodeFile)
-            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            if(userId == null || userId.equals(""))
-            {
-                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData3.json")
-            }
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"image_defalut_bg.xml",1)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_amr.amr",2)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_vedio.mp4",3)
-            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_downloading.*",5)
-            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
-            var abvc = ""
-            routerList.forEach {
-                if (it.routerId == null || it.routerId.equals("") || it.userSn == null || it.userSn.equals("") || it.userId == null || it.userId.equals("") || it.username == null || it.username.equals("")) {
-                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(it)
-                }
-            }
 
-
-
-            if(ConstantValue.isAntox)
-            {
-                var toxData: ToxData = CreateUserUtils.createToxData("myRouter",AppConfig.instance)
-                var toxId:String =  FileUtil.getLocalUserData("toxId")
-                if(toxId == null || toxId.equals(""))            {
-
-                    if(toxData != null && toxData.address()!= null)
-                    {
-                        var toxAddress: ToxAddress = toxData.address()
-                        var toxId = toxAddress.toString()
-                        FileUtil.saveUserData2Local(toxId,"toxId")
-                    }
-                }
-            }
             if(ConstantValue.encryptionType.equals("0"))
             {
                 ConstantValue.privateRAS = SpUtil.getString(AppConfig.instance, ConstantValue.privateRASSp, "")
@@ -316,6 +277,47 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
                     }
                 }
             }
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+            LocalRouterUtils.inspectionLocalData();
+            LocalRouterUtils.updateGreanDaoFromLocal()
+            var tempFile = AppConfig.instance.getFilesDir().getAbsolutePath() +"/temp/"//删除聊天的临时加密文件
+            val savedNodeFile = Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/Nodefile.json"
+            RxFileTool.deleteFilesInDir(tempFile)
+            RxFileTool.deleteNodefile(savedNodeFile)
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(userId == null || userId.equals(""))
+            {
+                DeleteUtils.deleteFile(Environment.getExternalStorageDirectory().toString()+ConstantValue.localPath+"/RouterList/fileData3.json")
+            }
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"image_defalut_bg.xml",1)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_amr.amr",2)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_vedio.mp4",3)
+            FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_downloading.*",5)
+            var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+            var abvc = ""
+            routerList.forEach {
+                if (it.routerId == null || it.routerId.equals("") || it.userSn == null || it.userSn.equals("") || it.userId == null || it.userId.equals("")) {
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(it)
+                }
+            }
+
+
+
+            if(ConstantValue.isAntox)
+            {
+                var toxData: ToxData = CreateUserUtils.createToxData("myRouter",AppConfig.instance)
+                var toxId:String =  FileUtil.getLocalUserData("toxId")
+                if(toxId == null || toxId.equals(""))            {
+
+                    if(toxData != null && toxData.address()!= null)
+                    {
+                        var toxAddress: ToxAddress = toxData.address()
+                        var toxId = toxAddress.toString()
+                        FileUtil.saveUserData2Local(toxId,"toxId")
+                    }
+                }
+            }
+
             getLastVersion()
             var lastLoginRouterId = FileUtil.getLocalUserData("routerid")
             var lastLoginUserSn = FileUtil.getLocalUserData("usersn")
