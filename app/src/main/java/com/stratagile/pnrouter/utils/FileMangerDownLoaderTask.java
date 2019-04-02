@@ -69,7 +69,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 */
 	public FileMangerDownLoaderTask(String url, String out, Context context, int msgId, Handler message, String key, HashMap<String, String> downFilePathMap,int FileFrom){
 		super();
-		bytesCopiedFlag = 0;
+		bytesCopiedFlag = -1;
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
@@ -144,7 +144,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					handler.sendMessage(msg);
 					return;
 				}
-				if(bytesCopiedFlag != 0 && !isCancel)
+				if(bytesCopiedFlag != -1 && !isCancel)
 				{
 					String temp = files_Temp_dir +FileNameOld;
 					String out = outPath +FileNameOld;

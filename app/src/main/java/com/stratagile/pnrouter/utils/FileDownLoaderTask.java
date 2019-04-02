@@ -67,6 +67,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 */
 	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key,String type){
 		super();
+		bytesCopiedFlag = -1;
 		msgID = msgId;
 		keyStr = key;
 		fileUlr = url;
@@ -135,7 +136,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					handler.sendMessage(msg);
 					return;
 				}
-				if(bytesCopiedFlag != 0)
+				if(bytesCopiedFlag != -1)
 					msg.what = 0x55;
 				else
 				{

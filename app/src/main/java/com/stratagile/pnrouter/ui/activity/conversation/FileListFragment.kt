@@ -300,6 +300,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     intent.putExtra("fileName",fileOrginName)
                                     intent.putExtra("fileInfo",data.fileInfo)
                                     intent.putExtra("fileKey",data.userKey)
+                                    intent.putExtra("fileType",data.fileType)
                                     startActivity(intent);
                                 }
                                 1 -> {
@@ -483,6 +484,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     intent.putExtra("fileName",fileOrginName)
                     intent.putExtra("fileInfo",data.fileInfo)
                     intent.putExtra("fileKey",data.userKey)
+                    intent.putExtra("fileType",data.fileType)
                     startActivity(intent);
                 }
             }

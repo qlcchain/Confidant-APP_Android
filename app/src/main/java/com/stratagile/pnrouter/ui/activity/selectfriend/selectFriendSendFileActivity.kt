@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import butterknife.ButterKnife
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.google.gson.Gson
 import com.hyphenate.chat.*
 import com.message.Message
 import com.pawegio.kandroid.toast
@@ -96,6 +97,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
     var msgId:Int? = null
     var fileName:String? = null
     var fileKey:String? = null
+    var fileType:Int? = null
     var fileInfo:String? = null
     var message: EMMessage? = null
 
@@ -112,6 +114,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         fileName = intent.getStringExtra("fileName")
         fileInfo = intent.getStringExtra("fileInfo")
         fileKey = intent.getStringExtra("fileKey")
+        fileType = intent.getIntExtra("fileType",0)
         //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_select_friend)
         tvTitle.text = getString(R.string.Contacts)
@@ -181,6 +184,18 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
+            val gson = Gson()
+            val Message = Message()
+            Message.msgType = fileType!!
+            Message.fileName = fileName
+            Message.msg = ""
+            Message.from = userId
+            Message.to = i.userId
+            Message.timeStamp = System.currentTimeMillis() / 1000
+            Message.unReadCount = 0
+            Message.chatType = EMMessage.ChatType.Chat
+            val baseDataJson = gson.toJson(Message)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.userId, baseDataJson)
         }
         for (i in groupSelectedList) {
             val aesKey = LibsodiumUtil.DecryptShareKey(i.userKey)
@@ -203,6 +218,18 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
+            val gson = Gson()
+            val Message = Message()
+            Message.msgType =  fileType!!
+            Message.fileName = fileName
+            Message.msg = ""
+            Message.from = userId
+            Message.to = i.gId
+            Message.timeStamp = System.currentTimeMillis() / 1000
+            Message.unReadCount = 0
+            Message.chatType = EMMessage.ChatType.GroupChat
+            val baseDataJson = gson.toJson(Message)
+            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + i.gId, baseDataJson)
         }
         finish()
     }
