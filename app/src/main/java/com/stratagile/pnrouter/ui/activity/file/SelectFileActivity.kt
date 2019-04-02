@@ -90,7 +90,11 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
 
         })
         fileListChooseAdapter?.setOnItemClickListener { adapter, view, position ->
-            //todo
+            var data =  fileListChooseAdapter!!.getItem(position)
+            var intent = Intent()
+            intent.putExtra("fileData", data)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
         AppConfig.instance.messageReceiver?.fileChooseBack = this
         pullFileList(0)

@@ -30,6 +30,7 @@ import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.entity.events.BeginDownloadForwad
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
 import com.stratagile.pnrouter.entity.events.SaveMsgEvent
@@ -60,6 +61,10 @@ import javax.inject.Inject
  */
 
 class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
+        chatFragment?.upateForwardMessage(jFileForwardRsp)
+    }
+
     override fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp) {
         if(jUpdateAvatarRsp.params.retCode == 0)
         {
@@ -152,6 +157,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var key = toxSendFileFinishedEvent.key
         chatFragment?.onToxFileSendFinished(fileNumber,key)
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun OnToxChatReceiveFileNoticeEvent(toxReceiveFileNoticeEvent: ToxChatReceiveFileNoticeEvent) {
         var fileNumber=  toxReceiveFileNoticeEvent.fileNumber

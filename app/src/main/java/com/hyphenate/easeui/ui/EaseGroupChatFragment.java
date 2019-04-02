@@ -94,6 +94,7 @@ import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.GroupMsgPullReq;
 import com.stratagile.pnrouter.entity.GroupSendFileDoneReq;
+import com.stratagile.pnrouter.entity.JFileForwardRsp;
 import com.stratagile.pnrouter.entity.JGroupMsgPushRsp;
 import com.stratagile.pnrouter.entity.JGroupQuitRsp;
 import com.stratagile.pnrouter.entity.JGroupSendFileDoneRsp;
@@ -2301,7 +2302,65 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
 
     }
+    public void upateForwardMessage(JFileForwardRsp jSendMsgRsp) {
+        if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
+        }
+
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getMsgid() + "");
+        KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
+        LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
+        switch (jSendMsgRsp.getParams().getRetCode()) {
+            case 0:
+                if (conversation != null) {
+                    if (forward_msg != null) {
+                        conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
+                        forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setAcked(true);
+                        conversation.insertMessage(forward_msg);
+                        KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_upateMessage");
+                        if (isMessageListInited) {
+                            easeChatMessageList.refresh();
+                        }
+                    }
+
+                }
+                break;
+            case 1:
+                if (conversation != null) {
+                    conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
+                    if (isMessageListInited) {
+                        easeChatMessageList.refresh();
+                    }
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case 2:
+                if (conversation != null) {
+                    conversation.removeMessage(jSendMsgRsp.getMsgid() + "");
+                    if (isMessageListInited) {
+                        easeChatMessageList.refresh();
+                    }
+                }
+                friendStatus = 1;
+                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                break;
+        }
+
+    }
     /**
      * send @ message, only support group chat message
      *

@@ -87,7 +87,10 @@ import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
 import com.stratagile.pnrouter.entity.BaseData;
+import com.stratagile.pnrouter.entity.FileForwardReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
+import com.stratagile.pnrouter.entity.JFileForwardRsp;
+import com.stratagile.pnrouter.entity.JPullFileListRsp;
 import com.stratagile.pnrouter.entity.JPushMsgRsp;
 import com.stratagile.pnrouter.entity.JSendMsgRsp;
 import com.stratagile.pnrouter.entity.JSendToxFileRsp;
@@ -97,7 +100,9 @@ import com.stratagile.pnrouter.entity.PullMsgReq;
 import com.stratagile.pnrouter.entity.SendFileInfo;
 import com.stratagile.pnrouter.entity.SendToxFileNotice;
 import com.stratagile.pnrouter.entity.ToxFileData;
+import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.ChatKeyboard;
+import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
@@ -286,7 +291,100 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         toChatUserId = id;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginDownloadForwad(BeginDownloadForwad beginDownloadForwad ) {
+        receiveFileDataMap.put(beginDownloadForwad.getMsgId() + "", beginDownloadForwad.getMessage());
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeginDownloadForwad(DownloadForwadSuccess downloadForwadSuccess ) {
+        String msgId = downloadForwadSuccess.getMsgId();
+        if (conversation != null && ConstantValue.INSTANCE.getUserId() != null) {
+            String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+            Message message = receiveFileDataMap.get(msgId);
+            conversation.removeMessage(msgId);
+            String files_dir = "";
+            EMMessage messageData = null;
+            if (message != null) {
+                switch (message.getMsgType()) {
+                    case 1:
+                        files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
+                        messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
+                        messageData.setAttribute("wh", message.getFileInfo());
+                        break;
+                    case 2:
+                        files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
+                        int longTime = FileUtil.getAmrDuration(new File(files_dir));
+                        messageData = EMMessage.createVoiceSendMessage(files_dir, longTime, toChatUserId);
+                        break;
+                    case 4:
+                        files_dir = PathUtils.getInstance().getVideoPath() + "/" + message.getFileName();
+                        int beginIndex = files_dir.lastIndexOf("/") + 1;
+                        int endIndex = files_dir.lastIndexOf(".") + 1;
+                        if (endIndex < beginIndex) {
+                            return;
+                        }
+                        String videoName = files_dir.substring(beginIndex, endIndex);
+                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                        Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
+                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
+                        break;
+                    case 5:
+                        files_dir = PathUtils.getInstance().getFilePath() + "/" + message.getFileName();
+                        messageData = EMMessage.createFileSendMessage(files_dir, toChatUserId);
+                        break;
+                }
+                if (messageData != null) {
+                    messageData.setFrom(message.getFrom());
+                    messageData.setTo(message.getTo());
+                    messageData.setUnread(false);
 
+                    if (message.getFrom() == null) {
+                        if (message.getSender() == 0) {
+                            messageData.setFrom(userId);
+                            messageData.setTo(toChatUserId);
+                            switch (message.getStatus()) {
+                                case 0:
+                                    messageData.setDelivered(true);
+                                    messageData.setAcked(false);
+                                    messageData.setUnread(true);
+                                    break;
+                                case 1:
+
+                                    messageData.setDelivered(true);
+                                    messageData.setAcked(true);
+                                    messageData.setUnread(true);
+                                    break;
+                                case 2:
+                                    messageData.setDelivered(true);
+                                    messageData.setAcked(true);
+                                    messageData.setUnread(false);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            messageData.setDirection(EMMessage.Direct.SEND);
+                        } else {
+                            messageData.setFrom(toChatUserId);
+                            messageData.setTo(userId);
+                            messageData.setDirection(EMMessage.Direct.RECEIVE);
+                        }
+                    } else {
+                        if (message.getFrom() != null && message.getFrom().equals(userId)) {
+                            messageData.setDirection(EMMessage.Direct.SEND);
+                        } else {
+                            messageData.setDirection(EMMessage.Direct.RECEIVE);
+                        }
+                    }
+
+                    messageData.setMsgTime(message.getTimeStamp() * 1000);
+                    messageData.setMsgId(message.getMsgId() + "");
+                    sendMessageTo(messageData);
+                }
+            }
+
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {
         String msgId = fileTransformStatus.getMsgid();
@@ -1645,12 +1743,23 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 EMMessage dingMsg = EaseDingMessageHelper.get().createDingMessage(toChatUserId, msgContent);
                 sendMessageTo(dingMsg);
             } else if (requestCode == REQUEST_CODE_FILE) {
-                String filePath = data.getStringExtra("path");
-                File file = new File(filePath);
-                String md5Data = "";
-                if (file.exists()) {
-                    sendFileMessage(filePath);
+                if(data.hasExtra("path"))
+                {
+                    String filePath = data.getStringExtra("path");
+                    if(filePath != null)
+                    {
+                        File file = new File(filePath);
+                        String md5Data = "";
+                        if (file.exists()) {
+                            sendFileMessage(filePath);
+                        }
+                    }
                 }
+                else{
+                    JPullFileListRsp.ParamsBean.PayloadBean fileData = data.getParcelableExtra("fileData");
+                    sendFileFileForward(fileData);
+                }
+
             } else if (requestCode == CHOOSE_PIC) {
                 String filePath = data.getStringExtra("path");
                 Boolean isCheck = data.getBooleanExtra("isCheck", false);
@@ -2217,7 +2326,65 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         }
 
     }
+    public void upateForwardMessage(JFileForwardRsp jSendMsgRsp) {
+        if (jSendMsgRsp.getParams().getRetCode() == 0) {
 
+        }
+
+        EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(jSendMsgRsp.getParams().getMsgId() + "");
+        KLog.i("upateMessage:" + "forward_msg" + (forward_msg != null));
+        LogUtil.addLog("upateMessage:", "forward_msg" + (forward_msg != null));
+        switch (jSendMsgRsp.getParams().getRetCode()) {
+            case 0:
+                if (conversation != null) {
+                    if (forward_msg != null) {
+                        conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setMsgId(jSendMsgRsp.getParams().getMsgId() + "");
+                        forward_msg.setAcked(true);
+                        conversation.insertMessage(forward_msg);
+                        KLog.i("insertMessage:" + "EaseChatFragment" + "_upateMessage");
+                        if (isMessageListInited) {
+                            easeChatMessageList.refresh();
+                        }
+                    }
+
+                }
+                break;
+            case 1:
+                if (conversation != null) {
+                    conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
+                    if (isMessageListInited) {
+                        easeChatMessageList.refresh();
+                    }
+                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case 2:
+                if (conversation != null) {
+                    conversation.removeMessage(jSendMsgRsp.getParams().getMsgId() + "");
+                    if (isMessageListInited) {
+                        easeChatMessageList.refresh();
+                    }
+                }
+                friendStatus = 1;
+                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                break;
+        }
+
+    }
     /**
      * send @ message, only support group chat message
      *
@@ -3171,7 +3338,181 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         }).start();
     }
+    protected void sendFileFileForward(JPullFileListRsp.ParamsBean.PayloadBean fileData) {
+        if (friendStatus != 0) {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new Thread(new Runnable() {
+            public void run() {
 
+                try {
+                    String fileName = fileData.getFileName();
+                       /*   "png", "jpg", "jpeg","webp" -> action = 1
+                        "amr" -> action = 2
+                        "mp4" -> action = 4
+                        else -> action = 5*/
+                    String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.png";
+                    EMMessage message = EMMessage.createFileSendMessage(ease_default_image, toChatUserId);
+                    String fileMiName = fileData.getFileName().substring(fileData.getFileName().lastIndexOf("/") + 1, fileData.getFileName().length());
+                    String msgId = fileData.getMsgId()+"";
+                    String fileOrginName = new String(Base58.decode(fileMiName));
+                    String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
+                    String fileMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
+                    File file = new File(filePath);
+
+                    switch (fileData.getFileType())
+                    {
+                        case 1:
+                            if(file.exists())
+                            {
+                                //String fileMD5 = FileUtil.getFileMD5(file);
+                                message = EMMessage.createImageSendMessage(filePath, true, toChatUserId);
+                                if (fileData.getFileInfo() != null) {
+                                    message.setAttribute("wh", fileData.getFileInfo());
+                                }
+                               /* if(fileMD5.equals(fileData.getFileMD5()))
+                                {
+                                    message = EMMessage.createImageSendMessage(filePath, true, toChatUserId);
+                                    if (fileData.getFileInfo() != null) {
+                                        message.setAttribute("wh", fileData.getFileInfo());
+                                    }
+                                }else {
+                                    ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.png";
+                                    message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
+                                    if (fileData.getFileInfo() != null) {
+                                        message.setAttribute("wh", fileData.getFileInfo());
+                                    }
+                                }*/
+
+                            }else{
+                                ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.png";
+                                message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
+                                if (fileData.getFileInfo() != null) {
+                                    message.setAttribute("wh", fileData.getFileInfo());
+                                }
+                            }
+
+                            break;
+                        case 2:
+                            break;
+                        case 4:
+                            if(file.exists())
+                            {
+                                //String fileMD5 = FileUtil.getFileMD5(file);
+                                String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
+                                String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                                Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
+                                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
+                              /*  if(fileMD5.equals(fileData.getFileMD5()))
+                                {
+                                    String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
+                                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                                    Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
+                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
+                                }else{
+                                    String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
+                                    String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
+                                    Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
+                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
+                                }*/
+
+                            }else{
+                                String thumbPath = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.png";
+                                String videoPath = PathUtils.getInstance().getVideoPath() + "/" + "ease_default_fileForward_vedio.mp4";
+                                message = EMMessage.createVideoSendMessage(videoPath, thumbPath, fileData.getFileSize(), toChatUserId);
+                            }
+
+                            break;
+                        case 5:
+                            if(file.exists())
+                            {
+                                message = EMMessage.createFileSendMessage(filePath, toChatUserId);
+                                /*String fileMD5 = FileUtil.getFileMD5(file);
+                                if(fileMD5.equals(fileData.getFileMD5()))
+                                {
+                                    message = EMMessage.createFileSendMessage(filePath, toChatUserId);
+                                }else{
+                                    String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + "file_fileForward.*";
+                                    message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
+                                }*/
+
+                            }else{
+                                String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + "file_fileForward.*";
+                                message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
+                            }
+                            break;
+                    }
+                    Gson gsonData = new Gson();
+                    String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                    message.setAttribute("fileData",gsonData.toJson(fileData));
+                    message.setFrom(userId);
+                    message.setTo(UserDataManger.curreantfriendUserData.getUserId());
+                    message.setDelivered(true);
+                    message.setAcked(false);
+                    message.setUnread(true);
+                    EMMessage forward_msg = EMClient.getInstance().chatManager().getMessage(fileData.getMsgId()+"");
+                    if(forward_msg == null)
+                    {
+                        message.setMsgId(fileData.getMsgId()+"");
+                    }else{
+                        message.setMsgId(fileData.getMsgId() +((int) (System.currentTimeMillis() / 1000))+"");
+                    }
+
+                    String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());
+                    String FileKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.INSTANCE.EncryptShareKey(fileSouceKey+"0000000000000000", UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                    String fileInfo  = fileData.getFileInfo();
+                    if(fileInfo == null || fileInfo.equals(""))
+                    {
+                        fileInfo = "";
+                    }
+                    String strBase58 = Base58.encode(fileOrginName.getBytes());
+                    FileForwardReq fileForwardReq = new FileForwardReq(fileData.getMsgId(),userId, UserDataManger.curreantfriendUserData.getUserId(), strBase58,fileInfo, FileKey,"FileForward");
+                    if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+                        AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(4,fileForwardReq));
+                    } else if (ConstantValue.INSTANCE.isToxConnected()) {
+                        BaseData baseData = new BaseData(4,fileForwardReq);
+                        String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                        if (ConstantValue.INSTANCE.isAntox()) {
+                            FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                        }else{
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                        }
+                    }
+
+                    Gson gson = new Gson();
+                    Message Message = new Message();
+                    Message.setMsgType(fileData.getFileType());
+                    Message.setFileName(fileOrginName);
+                    Message.setMsg("");
+                    Message.setFrom(userId);
+                    Message.setTo(toChatUserId);
+                    Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                    Message.setUnReadCount(0);
+                    Message.setChatType(ChatType.Chat);
+                    String baseDataJson = gson.toJson(Message);
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                    Message.setFileName(fileMiName);
+                    message.setAttribute("Message",gsonData.toJson(Message));
+                    sendMessageTo(message);
+
+
+                } catch (Exception e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+        }).start();
+    }
     /**
      * 接受文字和表情消息
      *

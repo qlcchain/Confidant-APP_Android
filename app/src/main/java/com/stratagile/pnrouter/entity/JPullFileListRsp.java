@@ -101,6 +101,7 @@ public class JPullFileListRsp extends BaseEntity {
                 FileType = in.readInt();
                 FileName = in.readString();
                 FileMD5 = in.readString();
+                FileInfo = in.readString();
                 FileSize = in.readInt();
                 Sender = in.readString();
                 UserKey = in.readString();
@@ -220,6 +221,7 @@ public class JPullFileListRsp extends BaseEntity {
                 parcel.writeInt(FileType);
                 parcel.writeString(FileName);
                 parcel.writeString(FileMD5);
+                parcel.writeString(FileInfo);
                 parcel.writeInt(FileSize);
                 parcel.writeString(Sender);
                 parcel.writeString(UserKey);

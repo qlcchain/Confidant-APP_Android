@@ -68,6 +68,9 @@ import javax.inject.Inject;
  */
 
 class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServiceMessageReceiver.GroupChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+    override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
+        chatFragment?.upateForwardMessage(jFileForwardRsp)
+    }
     override fun droupSysPushRsp(jGroupSysPushRsp: JGroupSysPushRsp) {
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = GroupSysPushRsp(0, userId!!)

@@ -75,6 +75,12 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
+        var aa = "昏沉沉的确实是个人崇拜自己找到了吗啡一旦失去了吗啡一旦你会议案发展史实施日常.png"
+        var fileName = Base58.encode(aa.toByteArray());
+        var ab = fileName.toByteArray();
+        var cc = ab.size
+        var accc = RxEncodeTool.base64Encode(aa.toByteArray())
+        var ddd = accc.size
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
         var this_ = this

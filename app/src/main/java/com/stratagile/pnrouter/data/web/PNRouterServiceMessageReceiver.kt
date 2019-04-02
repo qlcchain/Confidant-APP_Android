@@ -391,6 +391,8 @@ val credentialsProvider: CredentialsProvider, private
                 "FileForward" -> {
                     val JFileForwardRsp = gson.fromJson(text, JFileForwardRsp::class.java)
                     fileForwardBack?.fileForwardReq(JFileForwardRsp)
+                    chatCallBack?.fileForwardReq(JFileForwardRsp)
+                    groupchatCallBack?.fileForwardReq(JFileForwardRsp)
                 }
                 //79.	用户上传头像
                 "UploadAvatar" -> {
@@ -798,6 +800,7 @@ val credentialsProvider: CredentialsProvider, private
         fun queryFriend(FriendId: String)
         fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
+        fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
     }
 
     interface GroupChatCallBack {
@@ -814,6 +817,7 @@ val credentialsProvider: CredentialsProvider, private
         fun sendGroupToxFileRsp(jSendToxFileRsp: JGroupSendFileDoneRsp)
         fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
+        fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
     }
 
     interface CoversationCallBack {
