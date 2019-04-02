@@ -101,22 +101,20 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             Gson gson = GsonUtil.getIntGson();
             JPullFileListRsp.ParamsBean.PayloadBean data = gson.fromJson(fileDataJson, JPullFileListRsp.ParamsBean.PayloadBean.class);
             Message messageData = gson.fromJson(messageDataJson, Message.class);
-            String aa = "";
             String fileMiName = data.getFileName().substring(data.getFileName().lastIndexOf("/") + 1, data.getFileName().length());
-            String msgId = data.getMsgId()+"";
             String fileOrginName = new String(Base58.decode(fileMiName));
-            String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
-            String fileMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
-            File file = new File(filePath);
+            String fileLocalPath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
+            String fileLocalMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
+            File fileLocal = new File(fileLocalPath);
 
-            if(file.exists())
+            if(fileLocal.exists())
             {
-                DeleteUtils.deleteFile(filePath);
+                DeleteUtils.deleteFile(fileLocalPath);
             }
-            File fileMi = new File(fileMiPath);
+            File fileMi = new File(fileLocalMiPath);
             if(fileMi.exists())
             {
-                DeleteUtils.deleteFile(fileMiPath);
+                DeleteUtils.deleteFile(fileLocalMiPath);
             }
             EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData));
             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFileName();

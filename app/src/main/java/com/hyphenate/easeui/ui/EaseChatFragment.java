@@ -294,6 +294,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBeginDownloadForwad(BeginDownloadForwad beginDownloadForwad ) {
         receiveFileDataMap.put(beginDownloadForwad.getMsgId() + "", beginDownloadForwad.getMessage());
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), R.string.Start_downloading, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBeginDownloadForwad(DownloadForwadSuccess downloadForwadSuccess ) {
@@ -1661,7 +1667,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         swipeRefreshLayout.setRefreshing(true);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
-        PullMsgReq pullMsgList = new PullMsgReq(userId, toChatUserId, 1, MsgStartId, 10, "PullMsg");
+        PullMsgReq pullMsgList = new PullMsgReq(userId, toChatUserId, 0, MsgStartId, 10, "PullMsg");
         BaseData sendData = new BaseData(pullMsgList);
         if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
             sendData = new BaseData(3, pullMsgList);

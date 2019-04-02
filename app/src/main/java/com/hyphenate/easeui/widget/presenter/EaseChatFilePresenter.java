@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
@@ -17,9 +20,11 @@ import com.hyphenate.chat.EMNormalFileMessageBody;
 import com.hyphenate.chat.EMVideoMessageBody;
 import com.hyphenate.easeui.ui.EaseShowNormalFileActivity;
 import com.hyphenate.easeui.utils.OpenFileUtil;
+import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowFile;
 import com.hyphenate.exceptions.HyphenateException;
+import com.message.Message;
 import com.noober.menu.FloatMenu;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -29,11 +34,19 @@ import com.stratagile.pnrouter.constant.UserDataManger;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.GroupDelMsgReq;
+import com.stratagile.pnrouter.entity.JPullFileListRsp;
+import com.stratagile.pnrouter.entity.PullFileReq;
+import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent;
+import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
 import com.stratagile.pnrouter.entity.events.SaveMsgEvent;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.AlbumNotifyHelper;
+import com.stratagile.pnrouter.utils.Base58;
+import com.stratagile.pnrouter.utils.DeleteUtils;
+import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
+import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
@@ -66,6 +79,56 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
+        if(file.getName().contains("file_fileForward"))
+        {
+            String fileDataJson = message.getStringAttribute("fileData","");
+            String messageDataJson = message.getStringAttribute("Message","");
+            Gson gson = GsonUtil.getIntGson();
+            JPullFileListRsp.ParamsBean.PayloadBean data = gson.fromJson(fileDataJson, JPullFileListRsp.ParamsBean.PayloadBean.class);
+            Message messageData = gson.fromJson(messageDataJson, Message.class);
+            String fileMiName = data.getFileName().substring(data.getFileName().lastIndexOf("/") + 1, data.getFileName().length());
+            String fileOrginName = new String(Base58.decode(fileMiName));
+            String fileLocalPath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
+            String fileLocalMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
+            File fileLocal = new File(fileLocalPath);
+
+            if(fileLocal.exists())
+            {
+                DeleteUtils.deleteFile(fileLocalPath);
+            }
+            File fileMi = new File(fileLocalMiPath);
+            if(fileMi.exists())
+            {
+                DeleteUtils.deleteFile(fileLocalMiPath);
+            }
+            EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData));
+            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFileName();
+            String files_dir = PathUtils.getInstance().getFilePath().toString() + "/";
+            if (ConstantValue.INSTANCE.isWebsocketConnected()) {
+                //receiveFileDataMap.put(data.getMsgId()+"", data);
+
+                new Thread(new Runnable(){
+                    public void run(){
+                        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.getMsgId(), handler, data.getUserKey(),data.getFileFrom()+"");
+                    }
+                }).start();
+
+            } else {
+                //receiveToxFileDataMap.put(fileOrginName,data);
+                ConstantValue.INSTANCE.getReceiveToxFileGlobalDataMap().put(fileMiName,data.getUserKey());
+                String selfUserId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                PullFileReq msgData = new PullFileReq(selfUserId, selfUserId, fileMiName, data.getMsgId(), data.getFileFrom(), 2,"PullFile");
+                BaseData baseData = new BaseData(msgData);
+                String baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "");
+                if (ConstantValue.INSTANCE.isAntox()) {
+                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL);
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                }
+            }
+            return;
+        }
         if (file.exists() && !file.getName().contains("file_downloading")) {
             String newFilePath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/temp/"+file.getName();
             int result = FileUtil.copyAppFileToSdcard(filePath,newFilePath);
@@ -85,7 +148,9 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
 
         } else {
             // download the file
-            Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(AppConfig.instance, R.string.open_error, Toast.LENGTH_SHORT).show();
+
             //getContext().startActivity(new Intent(getContext(), EaseShowNormalFileActivity.class).putExtra("msg", message));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE && !message.isAcked() && message.getChatType() == EMMessage.ChatType.Chat) {
@@ -97,6 +162,20 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             }
         }
     }
+    protected Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case 0x404:
+                    break;
+                case 0x55:
+                    Bundle data = msg.getData();
+                    String msgId = data.getInt("msgID") + "";
+                    EventBus.getDefault().post(new DownloadForwadSuccess(msgId));
+                    break;
+            }
+
+        }
+    };
     @Override
     public void onBubbleLongClick(EMMessage message, View view) {
         super.onBubbleLongClick(message,view);
