@@ -1593,7 +1593,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists()) {
-                    chooseOriginalImage(cameraFile.getAbsolutePath());
+                    //chooseOriginalImage(cameraFile.getAbsolutePath());
+                    sendImageMessage(cameraFile.getAbsolutePath(), true);
                     //sendCameraImageMessage(cameraFile.getAbsolutePath());
                 }
             } else if (requestCode == REQUEST_CODE_VIDEO) {
