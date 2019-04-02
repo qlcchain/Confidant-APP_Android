@@ -637,6 +637,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
         }
+        view1.postDelayed({
+            if (SpUtil.getInt(this@ChatActivity, ConstantValue.realKeyboardHeight, 0) == 0) {
+                chatFragment?.inputMenu?.chatPrimaryMenu?.showKeyBorad()
+            }
+        }, 300)
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)

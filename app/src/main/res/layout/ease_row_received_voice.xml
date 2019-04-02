@@ -73,7 +73,7 @@
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_centerVertical="true"
             android:layout_toRightOf="@id/iv_unread_voice"
             android:visibility="invisible" />
 

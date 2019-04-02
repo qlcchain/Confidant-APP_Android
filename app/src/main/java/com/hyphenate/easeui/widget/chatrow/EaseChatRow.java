@@ -3,6 +3,7 @@ package com.hyphenate.easeui.widget.chatrow;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -96,6 +97,14 @@ public abstract class EaseChatRow extends LinearLayout {
         initView();
     }
 
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        KLog.i("touch...");
+//        AppConfig.instance.getPoint().x = (int) event.getX();
+//        AppConfig.instance.getPoint().y = (int) event.getY();
+//        return super.onTouchEvent(event);
+//    }
+
     @Override
     protected void onDetachedFromWindow() {
         itemActionCallback.onDetachedFromWindow();
@@ -123,7 +132,6 @@ public abstract class EaseChatRow extends LinearLayout {
         ackedView = (TextView) findViewById(R.id.tv_ack);
         sendStatusView = (ImageView) findViewById(R.id.msg_sendstatus);
         deliveredView = (TextView) findViewById(R.id.tv_delivered);
-
         onFindViewById();
     }
 
@@ -306,6 +314,16 @@ public abstract class EaseChatRow extends LinearLayout {
                     }
                 }
             });
+
+//            bubbleLayout.setOnTouchListener(new OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View view, MotionEvent motionEvent) {
+//                    KLog.i("touch...");
+//                    AppConfig.instance.getPoint().x = (int) motionEvent.getRawX();
+//                    AppConfig.instance.getPoint().y = (int) motionEvent.getRawY();
+//                    return true;
+//                }
+//            });
     
             bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
     

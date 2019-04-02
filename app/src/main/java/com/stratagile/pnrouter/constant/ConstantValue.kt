@@ -109,6 +109,6 @@ object ConstantValue {
         var isFormat = false
         var isReRegesterMiPush = "isReRegesterMiPush"
         var isShowVerify = false
-        var fileNameMaxLen = 50//文件名最大长度
+        var fileNameMaxLen = 35//文件名最大长度
 
 }

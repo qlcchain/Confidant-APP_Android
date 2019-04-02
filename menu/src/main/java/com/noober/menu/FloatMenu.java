@@ -73,6 +73,7 @@ public class FloatMenu extends PopupWindow{
 		super(context);
 		setOutsideTouchable(true);
 		setFocusable(true);
+		setClippingEnabled(false);
 		setBackgroundDrawable(new BitmapDrawable());
 		view.setOnTouchListener(new MenuTouchListener());
 		this.context = context;

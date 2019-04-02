@@ -150,7 +150,7 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
         if (intent.hasExtra("flag")) {
             if (etNickName.text.toString().equals(intent.getStringExtra("alias"))) {
                 setResult(0)
-            } else if (!etNickName.text.toString().equals("")){
+            } else if (true){
                 var intent1 = Intent()
                 intent1.putExtra("alias", etNickName.text.toString())
                 setResult(Activity.RESULT_OK, intent1)

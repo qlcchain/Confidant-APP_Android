@@ -512,12 +512,12 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }
         contactAdapter0 = GroupAdapter(list0)
         recyclerGroupView.adapter = contactAdapter0
-        if(list0.size > 4)
-        {
-            val layoutParams = recyclerGroupView.layoutParams
-            layoutParams.height = 400
-            recyclerGroupView.layoutParams = layoutParams;
-        }
+//        if(list0.size > 4)
+//        {
+//            val layoutParams = recyclerGroupView.layoutParams
+//            layoutParams.height = 400
+//            recyclerGroupView.layoutParams = layoutParams;
+//        }
 
         if (bundle != null) {
             contactAdapter0!!.setCheckMode(true)

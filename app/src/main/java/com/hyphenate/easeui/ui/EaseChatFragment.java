@@ -171,7 +171,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected String toChatUserId;
     protected int friendStatus = 0;
     protected EaseChatMessageList easeChatMessageList;
-    protected EaseChatInputMenu inputMenu;
+    public EaseChatInputMenu inputMenu;
 
     protected EMConversation conversation;
 
@@ -285,7 +285,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     public void setChatUserId(String id) {
         toChatUserId = id;
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFileTransformStatus(FileTransformStatus fileTransformStatus) {
@@ -3905,7 +3904,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 case 1:
                                     files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                                     messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
-                                    messageData.setAttribute("wh", message.getFileInfo());
+                                    if (messageData == null) {
+                                        return;
+                                    }
+                                    if (message.getFileInfo() != null) {
+                                        messageData.setAttribute("wh", message.getFileInfo());
+                                    } else {
+                                        messageData.setAttribute("wh", "");
+                                    }
                                     break;
                                 case 2:
                                     files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();

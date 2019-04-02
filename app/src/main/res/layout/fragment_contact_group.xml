@@ -74,7 +74,7 @@
             android:id="@+id/recyclerGroupView"
             android:layout_width="match_parent"
             android:layout_height="0px"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:background="@color/white"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 
@@ -98,7 +98,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0px"
-            android:layout_weight="1"
+            android:layout_weight="6"
             android:background="@color/white"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 

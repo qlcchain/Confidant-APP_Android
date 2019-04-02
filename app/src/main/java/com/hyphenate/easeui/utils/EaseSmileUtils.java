@@ -188,7 +188,7 @@ public class EaseSmileUtils {
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	                }else{
 						Drawable drawable = context.getResources().getDrawable((Integer)value);
-						drawable.setBounds(0, 0, (int) context.getResources().getDimension(R.dimen.x38), (int) context.getResources().getDimension(R.dimen.x38));//这里设置图片的大小
+						drawable.setBounds(0, 0, (int) context.getResources().getDimension(R.dimen.x46), (int) context.getResources().getDimension(R.dimen.x46));//这里设置图片的大小
 	                    spannable.setSpan(new MyImageSpan(drawable, 0),
 	                            matcher.start(), matcher.end(),
 	                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
