@@ -1340,7 +1340,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     if (fileFile.exists()) {
                         message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
                     } else {
-                        FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,Message.getFileName(),5);
+                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
@@ -1352,7 +1352,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
                                 FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                             }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"1");
+                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);

@@ -1271,7 +1271,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if (fileFile.exists()) {
                         message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
                     } else {
-                        FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,Message.getFileName(),5);
+                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
 
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
