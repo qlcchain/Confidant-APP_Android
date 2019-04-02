@@ -1335,12 +1335,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     }
                     break;
                 case 5:
-                    String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + "file_downloading.*";
                     String file_dir = PathUtils.getInstance().getImagePath().toString() + "/" + Message.getFileName();
                     File fileFile = new File(file_dir);
                     if (fileFile.exists()) {
                         message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
                     } else {
+                        FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,Message.getFileName(),5);
+                        String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
