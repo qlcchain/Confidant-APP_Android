@@ -24,7 +24,7 @@
         android:layout_marginLeft="@dimen/x30"
         android:text="Google project development.zip"
         android:textColor="@color/color_3f3f3f"
-        android:textSize="15sp"
+        android:textSize="@dimen/commemTextSize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

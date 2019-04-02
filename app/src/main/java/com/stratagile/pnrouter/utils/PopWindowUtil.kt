@@ -275,8 +275,8 @@ object PopWindowUtil {
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
         var list = arrayListOf<FileOpreateType>();
-        list.add(FileOpreateType("ic_upload_photo", activity.getString(R.string.upload_photos)))
-        list.add(FileOpreateType("ic_upload_photo", activity.getString(R.string.upload_video)))
+        list.add(FileOpreateType("doc_img", activity.getString(R.string.upload_photos)))
+        list.add(FileOpreateType("video", activity.getString(R.string.upload_video)))
         list.add(FileOpreateType("ic_upload_document", activity.getString(R.string.upload_document)))
         val selecRouterAdapter = FileChooseOpreateAdapter(list)
         recyclerView.adapter = selecRouterAdapter

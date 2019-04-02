@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="John"
             android:textColor="@color/color_3f3f3f"
-            android:textSize="15sp" />
+            android:textSize="@dimen/commemTextSize" />
 
     </LinearLayout>
 

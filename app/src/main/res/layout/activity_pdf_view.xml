@@ -49,6 +49,7 @@
             android:singleLine="true"
             android:maxEms="20"
             android:ellipsize="middle"
+            android:textSize="@dimen/commemTextSize"
             android:layout_marginTop="@dimen/x60"
             android:layout_height="wrap_content" />
         <TextView
@@ -76,6 +77,7 @@
             android:layout_marginTop="@dimen/x60"
             android:gravity="center"
             android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
             android:text="Preview Download"
             android:background="@drawable/filepreview_bg"
             android:layout_height="@dimen/x84" />

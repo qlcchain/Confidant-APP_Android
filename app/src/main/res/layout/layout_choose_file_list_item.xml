@@ -45,7 +45,7 @@
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:text="tom"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/commemTextSize"
                     android:textColor="@color/color_2B2B2B" />
                 <TextView
                     android:id="@+id/tvFileTime"
@@ -109,7 +109,7 @@
                 android:singleLine="true"
                 android:text="Google project development.zip"
                 android:textColor="@color/color_2B2B2B"
-                android:textSize="16sp" />
+                android:textSize="@dimen/commemTextSize"/>
 
             <TextView
                 android:id="@+id/tvFileSize"

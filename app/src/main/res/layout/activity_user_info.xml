@@ -126,6 +126,7 @@
             <TextView
                 android:id="@+id/tvRefuse"
                 android:layout_width="0dp"
+                android:textSize="@dimen/commemTextSize"
                 android:layout_weight="1"
                 android:textColor="@color/main_color"
                 android:background="@drawable/btn_white"
@@ -141,6 +142,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textSize="@dimen/commemTextSize"
                 android:textColor="@color/white"
                 android:background="@drawable/btn_maincolor"
                 android:text="@string/accept"
@@ -151,6 +153,7 @@
             android:visibility="gone"
             android:layout_width="@dimen/x200"
             android:layout_marginTop="@dimen/x50"
+            android:textSize="@dimen/commemTextSize"
             android:gravity="center"
             android:textColor="@color/white"
             android:background="@color/main_color"

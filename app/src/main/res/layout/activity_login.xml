@@ -46,6 +46,7 @@
             android:id="@+id/joincircle"
             android:layout_width="wrap_content"
             android:text="Join a circle"
+            android:textSize="@dimen/commemTextSize"
             app:layout_constraintTop_toBottomOf="@+id/tvUserName"
             app:layout_constraintLeft_toLeftOf="@+id/tvUserName"
             android:layout_marginTop="@dimen/x38"
@@ -87,7 +88,7 @@
                 android:layout_weight="1"
                 android:text=""
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="@dimen/commemTextSize" />
 
             <ImageView
                 android:id="@+id/routerNameTipsmore"
@@ -265,7 +266,7 @@
             android:gravity="center"
             android:text="@string/Login"
             android:textColor="@color/color_2B2B2B"
-            android:textSize="14sp"
+            android:textSize="@dimen/commemTextSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

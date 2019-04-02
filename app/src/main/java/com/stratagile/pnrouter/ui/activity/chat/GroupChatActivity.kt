@@ -392,6 +392,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         }
         //存一份到本地
         if (softInputHeight > 0) {
+            KLog.i("获取到的键盘的高度为: " + softInputHeight)
             SpUtil.putInt(this@GroupChatActivity, ConstantValue.realKeyboardHeight, softInputHeight)
         }
         return softInputHeight

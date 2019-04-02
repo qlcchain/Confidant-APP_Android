@@ -47,10 +47,13 @@ import java.util.List;
  *    EaseEmojiconMenu: emoji icons
  */
 public class EaseChatInputMenu extends LinearLayout {
+
     FrameLayout primaryMenuContainer, emojiconMenuContainer;
     protected EaseChatPrimaryMenu chatPrimaryMenu;
     protected EaseEmojiconMenuBase emojiconMenu;
     protected EaseChatExtendMenu chatExtendMenu;
+
+    //选择其他的，如图片菜单，文件菜单，的容器
     protected FrameLayout chatExtendMenuContainer;
     protected LayoutInflater layoutInflater;
     private ChatMenuOpenListenter chatMenuOpenListenter;
@@ -69,6 +72,8 @@ public class EaseChatInputMenu extends LinearLayout {
     private boolean inited;
     private View contentView;
     private InputMethodManager mInputManager;//软键盘管理类
+
+    private int menuDefalutHeight;
 
     //是否正在录音，正在录音，其他点击不能生效
 //    private boolean isRecording = false;
@@ -96,23 +101,23 @@ public class EaseChatInputMenu extends LinearLayout {
         layoutInflater = LayoutInflater.from(context);
         layoutInflater.inflate(R.layout.ease_widget_chat_input_menu, this);
         mInputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        //输入文字的带edittext
+        //输入文字的带edittext的 容器
         primaryMenuContainer = (FrameLayout) findViewById(R.id.primary_menu_container);
 
-        //emoji显示的
+        //emoji显示的 容器
         emojiconMenuContainer = (FrameLayout) findViewById(R.id.emojicon_menu_container);
 
         //选择其他的，如图片菜单，文件菜单，的容器
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
         int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), 587);
+        menuDefalutHeight = height;
         KLog.i("sp中记录的键盘的高度为：" + height);
-        if (height != 0) {
-            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(UIUtils.getDisplayWidth((Activity) getContext()), height);
-            chatExtendMenuContainer.setLayoutParams(llp);
-        }
-         // extend menu  选择其他的，如图片菜单，文件菜单
+//        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(UIUtils.getDisplayWidth((Activity) getContext()), height / 2);
+//        chatExtendMenuContainer.setLayoutParams(llp);
+        // extend menu  选择其他的，如图片菜单，文件菜单
          chatExtendMenu = (EaseChatExtendMenu) findViewById(R.id.extend_menu);
+         chatExtendMenu.getLayoutParams().height = menuDefalutHeight / 2;
 
     }
 
@@ -155,6 +160,7 @@ public class EaseChatInputMenu extends LinearLayout {
             ((EaseEmojiconMenu)emojiconMenu).init(emojiconGroupList);
         }
         emojiconMenuContainer.addView(emojiconMenu);
+        emojiconMenu.getLayoutParams().height = menuDefalutHeight;
 
         processChatMenu();
         chatExtendMenu.init();
@@ -369,6 +375,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 chatExtendMenuContainer.setVisibility(View.VISIBLE);
                 KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                 chatExtendMenu.setVisibility(View.VISIBLE);
+                chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight / 2;
                 emojiconMenu.setVisibility(View.GONE);
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
             } else {
@@ -377,8 +384,9 @@ public class EaseChatInputMenu extends LinearLayout {
                         chatExtendMenuContainer.setVisibility(View.VISIBLE);
                         KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                         chatExtendMenu.setVisibility(View.VISIBLE);
+                        chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight / 2;
                         emojiconMenu.setVisibility(View.GONE);
-                        chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
+//                        chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
                     }
                 }, 50);
             }
@@ -392,6 +400,7 @@ public class EaseChatInputMenu extends LinearLayout {
             if (emojiconMenu.getVisibility() == View.VISIBLE) {
                 emojiconMenu.setVisibility(View.GONE);
                 chatExtendMenu.setVisibility(View.VISIBLE);
+                chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight / 2;
             } else {
                 if (isSoftInputShown()) {//同上
                     KLog.i("更多按钮点击, 隐藏键盘");
@@ -400,9 +409,11 @@ public class EaseChatInputMenu extends LinearLayout {
                     hideKeyboard();
                     chatExtendMenuContainer.setVisibility(VISIBLE);
                     chatExtendMenu.setVisibility(View.VISIBLE);
+                    chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight / 2;
                     emojiconMenu.setVisibility(View.GONE);
                     unlockContentHeightDelayed();
                 } else {
+                    chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight;
                     KLog.i("更多按钮点击, 显示键盘");
                     //键盘是关闭的，就是就要关闭菜单页面，比如文件，，，
                     lockContentHeight();//显示软件盘时，锁定内容高度，防止跳闪。
@@ -430,6 +441,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 hideKeyboard();
                 chatExtendMenuContainer.setVisibility(VISIBLE);
                 emojiconMenu.setVisibility(View.VISIBLE);
+                chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight;
                 chatExtendMenu.setVisibility(View.GONE);
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
             } else {
@@ -439,7 +451,8 @@ public class EaseChatInputMenu extends LinearLayout {
                         KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                         chatExtendMenu.setVisibility(View.GONE);
                         emojiconMenu.setVisibility(View.VISIBLE);
-                        chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
+                        chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight;
+//                        chatExtendMenuContainer.setAnimation(AnimationUtils.loadAnimation(context, R.anim.push_bottom_in));
                     }
                 }, 50);
             }
@@ -459,6 +472,7 @@ public class EaseChatInputMenu extends LinearLayout {
                 KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                 emojiconMenu.setVisibility(View.GONE);
                 chatExtendMenu.setVisibility(View.GONE);
+                chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight;
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
 //                chatExtendMenuContainer.setVisibility(View.GONE);
 //                emojiconMenu.setVisibility(View.GONE);
@@ -481,6 +495,7 @@ public class EaseChatInputMenu extends LinearLayout {
                     KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                     chatExtendMenu.setVisibility(View.GONE);
                     emojiconMenu.setVisibility(View.VISIBLE);
+                    chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight;
                 }
 //                chatExtendMenu.setVisibility(View.GONE);
 //                emojiconMenu.setVisibility(View.VISIBLE);

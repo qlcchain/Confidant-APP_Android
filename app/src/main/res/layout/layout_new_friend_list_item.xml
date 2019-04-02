@@ -41,7 +41,7 @@
             android:id="@+id/tvNickName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="@dimen/commemTextSize"
             android:text="name"
             android:textColor="@color/black" />
 
