@@ -22,6 +22,7 @@ import android.support.v4.view.ViewPager
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import android.widget.Toast
 import chat.tox.antox.tox.MessageHelper
@@ -1807,7 +1808,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             //            val morePopWindow = ActiveTogglePopWindow(this)
 //            morePopWindow.setOnItemClickListener(this@MainActivity)
 //            morePopWindow.showPopupWindow(ivQrCode)
-            mPresenter.getScanPermission()
+            startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+//            mPresenter.getScanPermission()
         }
         ivNewGroup.setOnClickListener {
             startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
@@ -2023,6 +2025,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             override fun onPageSelected(position: Int) {
                 // 将当前的页面对应的底部标签设为选中状态
 //                bottomNavigation.getMenu().getItem(position).setChecked(true)
+                inputMethodManager?.hideSoftInputFromWindow(viewPager.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS)
                 when (position) {
                     0 -> setToNews()
                     1 -> setToFile()

@@ -49,7 +49,7 @@ import java.util.List;
 public class EaseChatInputMenu extends LinearLayout {
 
     FrameLayout primaryMenuContainer, emojiconMenuContainer;
-    protected EaseChatPrimaryMenu chatPrimaryMenu;
+    public EaseChatPrimaryMenu chatPrimaryMenu;
     protected EaseEmojiconMenuBase emojiconMenu;
     protected EaseChatExtendMenu chatExtendMenu;
 
@@ -110,7 +110,7 @@ public class EaseChatInputMenu extends LinearLayout {
         //选择其他的，如图片菜单，文件菜单，的容器
         chatExtendMenuContainer = (FrameLayout) findViewById(R.id.extend_menu_container);
 
-        int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), 587);
+        int height = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), ((int) getResources().getDimension(R.dimen.x550)));
         menuDefalutHeight = height;
         KLog.i("sp中记录的键盘的高度为：" + height);
 //        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(UIUtils.getDisplayWidth((Activity) getContext()), height / 2);
@@ -160,7 +160,7 @@ public class EaseChatInputMenu extends LinearLayout {
             ((EaseEmojiconMenu)emojiconMenu).init(emojiconGroupList);
         }
         emojiconMenuContainer.addView(emojiconMenu);
-        emojiconMenu.getLayoutParams().height = menuDefalutHeight;
+//        emojiconMenu.getLayoutParams().height = menuDefalutHeight;
 
         processChatMenu();
         chatExtendMenu.init();
@@ -383,6 +383,7 @@ public class EaseChatInputMenu extends LinearLayout {
      * 
      */
     protected void toggleMore() {
+        menuDefalutHeight = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), ((int) getResources().getDimension(R.dimen.x550)));
         //更多点击。
         chatPrimaryMenu.setModeKeyboard();
         if (chatExtendMenuContainer.getVisibility() == View.GONE) {
@@ -452,6 +453,7 @@ public class EaseChatInputMenu extends LinearLayout {
      * show or hide emojicon
      */
     protected void toggleEmojicon() {
+        menuDefalutHeight = SpUtil.INSTANCE.getInt(getContext(), ConstantValue.INSTANCE.getRealKeyboardHeight(), ((int) getResources().getDimension(R.dimen.x550)));
         //表情菜单关闭状态
         chatPrimaryMenu.setModeKeyboard();
         if (chatExtendMenuContainer.getVisibility() == View.GONE) {

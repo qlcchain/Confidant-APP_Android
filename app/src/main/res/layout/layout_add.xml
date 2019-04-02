@@ -1,73 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/color_f2f2f2"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    android:layout_height="wrap_content"
+    android:background="@color/color_f2f2f2"
+    android:orientation="vertical"
+    app:layout_constraintTop_toBottomOf="@+id/status">
+    <!--<View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/x5"
+        android:background="@color/color_f2f2f2"/>-->
+    <com.stratagile.pnrouter.view.DrawableAddTextView
+        android:id="@+id/createGroup"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:layout_height="@dimen/x108"
+        app:srcmy="@mipmap/group_add_a"
+        app:subtitle="@string/Create_a_Group_sub"
+        app:textmy="@string/Create_a_Group">
+
+    </com.stratagile.pnrouter.view.DrawableAddTextView>
+
+    <com.stratagile.pnrouter.view.DrawableAddTextView
+        android:id="@+id/scanadd"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
         android:layout_marginTop="@dimen/x1"
-        android:background="@color/white"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/status">
-        <!--<View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x5"
-            android:background="@color/color_f2f2f2"/>-->
-        <com.stratagile.pnrouter.view.DrawableAddTextView
-            android:id="@+id/createGroup"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x122"
-            app:srcmy="@mipmap/group_add_a"
-            app:textmy="@string/Create_a_Group"
-            app:subtitle="@string/Create_a_Group_sub">
+        app:srcmy="@mipmap/scavenging_a"
+        app:subtitle="@string/Scan_to_add_contacts_code"
+        app:textmy="@string/Scan_to_add_contacts">
 
-        </com.stratagile.pnrouter.view.DrawableAddTextView>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x18"
-            android:background="@color/color_f2f2f2"/>
+    </com.stratagile.pnrouter.view.DrawableAddTextView>
 
-        <com.stratagile.pnrouter.view.DrawableAddTextView
-            android:id="@+id/scanadd"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x122"
-            app:srcmy="@mipmap/scavenging_a"
-            app:textmy="@string/Scan_to_add_contacts"
-            app:subtitle="@string/Scan_to_add_contacts_code">
+    <com.stratagile.pnrouter.view.DrawableAddTextView
+        android:id="@+id/sharecard"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
+        android:layout_marginTop="@dimen/x20"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:srcmy="@mipmap/business_a"
+        app:subtitle="@string/Scan_my_Contact_Card_QR_Code"
+        app:textmy="@string/Share_My_Contact_Card">
 
-        </com.stratagile.pnrouter.view.DrawableAddTextView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x18"
-            android:background="@color/color_f2f2f2"/>
-
-        <com.stratagile.pnrouter.view.DrawableAddTextView
-            android:visibility="gone"
-            android:id="@+id/help"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x92"
-            app:textmy="@string/help">
-
-        </com.stratagile.pnrouter.view.DrawableAddTextView>
-
-        <com.stratagile.pnrouter.view.DrawableAddTextView
-            android:id="@+id/sharecard"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x122"
-            android:layout_marginTop="@dimen/x1"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:srcmy="@mipmap/business_a"
-            app:textmy="@string/Share_My_Contact_Card"
-            app:subtitle="@string/Scan_my_Contact_Card_QR_Code">
-
-        </com.stratagile.pnrouter.view.DrawableAddTextView>
-    </LinearLayout>
-
-</android.support.constraint.ConstraintLayout>
+    </com.stratagile.pnrouter.view.DrawableAddTextView>
+</LinearLayout>

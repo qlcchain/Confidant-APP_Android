@@ -712,7 +712,11 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             }
         }
         EventBus.getDefault().register(this)
-
+        view1.postDelayed({
+            if (SpUtil.getInt(this@GroupChatActivity, ConstantValue.realKeyboardHeight, 0) == 0) {
+                chatFragment?.inputMenu?.chatPrimaryMenu?.showKeyBorad()
+            }
+        }, 300)
 
     }
     private var isCanShotNetCoonect = true

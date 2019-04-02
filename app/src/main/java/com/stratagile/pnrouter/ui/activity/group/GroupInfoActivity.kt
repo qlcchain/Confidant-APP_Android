@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
+import com.stratagile.pnrouter.db.GroupEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
@@ -86,6 +87,9 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      */
     override fun groupConfig(jGroupConfigRsp: JGroupConfigRsp) {
         if (jGroupConfigRsp.params.retCode == 0) {
+            runOnUiThread {
+                toast(R.string.success)
+            }
             when(jGroupConfigRsp.params.type) {
                 //修改群名称
                 1 -> {
@@ -211,6 +215,10 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
     override fun initData() {
         userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")!!
         groupEntity = intent.getParcelableExtra(EaseConstant.EXTRA_CHAT_GROUP)
+        var list = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(groupEntity!!.gId)).list()
+        if (list.size > 0) {
+            groupEntity = list.get(0)
+        }
         AppConfig.instance.messageReceiver?.groupDetailBack = this
         pullGourpUsersList()
         approveInvitation.isChecked = groupEntity!!.verify == 1
@@ -453,13 +461,24 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
      * 修改群别名
      */
     fun modifyGroupAlias(alias : String) {
-        val groupQuitReq = ModifyGroupAliasReq(userId, groupEntity!!.gId.toString(), String(RxEncodeTool.base64Encode(alias)))
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupQuitReq))
-        } else if (ConstantValue.isToxConnected) {
-            val baseData = BaseData(4, groupQuitReq)
-            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        if ("".equals(alias)) {
+            val groupQuitReq = ModifyGroupAliasReq(userId, groupEntity!!.gId.toString(), groupEntity!!.gName)
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupQuitReq))
+            } else if (ConstantValue.isToxConnected) {
+                val baseData = BaseData(4, groupQuitReq)
+                val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        } else {
+            val groupQuitReq = ModifyGroupAliasReq(userId, groupEntity!!.gId.toString(), String(RxEncodeTool.base64Encode(alias)))
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, groupQuitReq))
+            } else if (ConstantValue.isToxConnected) {
+                val baseData = BaseData(4, groupQuitReq)
+                val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
         }
     }
 

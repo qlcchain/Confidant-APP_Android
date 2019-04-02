@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.text.Spannable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import com.hyphenate.chat.EMTextMessageBody;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.utils.EaseSmileUtils;
+import com.stratagile.pnrouter.application.AppConfig;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class EaseChatRowText extends EaseChatRow{
 				R.layout.ease_row_received_message : R.layout.ease_row_sent_message, this);
 	}
 
-	@Override
+    @Override
 	protected void onFindViewById() {
 		contentView = (TextView) findViewById(R.id.tv_chatcontent);
 	}
@@ -37,7 +39,7 @@ public class EaseChatRowText extends EaseChatRow{
     @Override
     public void onSetUpView() {
         EMTextMessageBody txtBody = (EMTextMessageBody) message.getBody();
-        Spannable span = EaseSmileUtils.getSmiledTextChat(context, txtBody.getMessage());
+        Spannable span = EaseSmileUtils.getSmiledTextInput(context, txtBody.getMessage());
         // 设置内容
         contentView.setText(span, BufferType.SPANNABLE);
     }

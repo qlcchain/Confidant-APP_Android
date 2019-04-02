@@ -186,6 +186,12 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
+        if (pullFileListRsp.params.fileNum < 10) {
+            runOnUiThread {
+                KLog.i("加载更多完成。。。")
+                fileListChooseAdapter?.loadMoreEnd(true)
+            }
+        }
         if (currentPage == 0) {
             if (pullFileListRsp.params.payload != null && pullFileListRsp.params.payload.size != 0) {
                 lastPayload = pullFileListRsp.params!!.payload.last()
@@ -544,16 +550,14 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         fileListChooseAdapter?.setOnLoadMoreListener(object : BaseQuickAdapter.RequestLoadMoreListener{
             override fun onLoadMoreRequested() {
                 recyclerView.postDelayed({
-                    if (lastPayload == null) {
+                    if (lastPayload == null || fileListChooseAdapter!!.data.size < 10) {
                         fileListChooseAdapter?.loadMoreEnd(true)
                         fileListChooseAdapter!!.loadMoreComplete()
                     } else {
-//                    currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
                         currentPage = lastPayload!!.msgId
-//                    pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
                         pullFileList(lastPayload!!.msgId)
                     }
-                }, 500)
+                }, 0)
             }
 
         })
