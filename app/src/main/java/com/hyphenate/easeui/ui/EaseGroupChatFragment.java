@@ -2025,7 +2025,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 case ITEM_FILE:
-                    startActivityForResult(new Intent(getActivity(), SelectFileActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
+                    startActivityForResult(new Intent(getActivity(), FileChooseActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
+                    //startActivityForResult(new Intent(getActivity(), SelectFileActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
                     break;
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
