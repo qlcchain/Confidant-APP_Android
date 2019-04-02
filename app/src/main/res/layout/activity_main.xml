@@ -92,7 +92,7 @@
                 android:layout_width="@dimen/x60"
                 android:padding="@dimen/x10"
                 android:layout_height="@dimen/x60"
-                android:src="@mipmap/icon_new_group"
+                android:src="@mipmap/icon_add_friend"
                 android:visibility="visible" />
         </RelativeLayout>
 

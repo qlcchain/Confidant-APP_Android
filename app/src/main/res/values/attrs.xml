@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="DrawableMyTextView">
         <attr name="textmy" format="string"/>
+        <attr name="subtitle" format="string"/>
         <attr name="textSizemy" format="dimension"/>
         <attr name="textColormy" format="reference"/>
         <attr name="showNextmy" format="boolean"/>

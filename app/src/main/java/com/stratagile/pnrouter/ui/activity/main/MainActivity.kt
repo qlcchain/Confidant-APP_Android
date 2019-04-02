@@ -59,6 +59,7 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.reciver.WinqMessageReceiver
+import com.stratagile.pnrouter.ui.activity.add.addFriendOrGroupActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
@@ -73,6 +74,7 @@ import com.stratagile.pnrouter.ui.activity.main.module.MainModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.MainPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
+import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.ActiveTogglePopWindow
@@ -414,6 +416,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var SELECT_VIDEO = 3
     var SELECT_DEOCUMENT = 4
     var create_group = 5
+    var add_activity = 6
     var isSendRegId = true
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -1807,8 +1810,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             mPresenter.getScanPermission()
         }
         ivNewGroup.setOnClickListener {
-            var list = arrayListOf<GroupEntity>()
-            startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+            startActivityForResult(Intent(this, addFriendOrGroupActivity::class.java), add_activity)
+            /* var list = arrayListOf<GroupEntity>()
+             startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)*/
         }
         llSort.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
@@ -2167,7 +2171,32 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     startActivity(intent)
                 }
             }
+        }else if (requestCode == add_activity && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                var result = data!!.getStringExtra("result")
+                when(result)
+                {
+                    "0" ->
+                    {
+                        var list = arrayListOf<GroupEntity>()
+                        startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)
+                    }
+                    "1" ->
+                    {
+                        mPresenter.getScanPermission()
+                    }
+                    "2" ->
+                    {
+                        var intent = Intent(this, QRCodeActivity::class.java)
+                        intent.putExtra("flag",0)
+                        startActivity(intent)
+                    }
+                }
+
+            }
         }
+
+
     }
 
     private fun getContacts(): Map<String, EaseUser> {
@@ -2206,7 +2235,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //
 //        //让Activity的生命周期进入后台，否则在某些手机上即使sendSignal 3和9了，还是由于Activity的生命周期导致进程退出不了。除非调用了Activity.finish()
 //        this.startActivity(intent);
-            android.os.Process.killProcess(android.os.Process.myPid());
+        android.os.Process.killProcess(android.os.Process.myPid());
         //System.runFinalizersOnExit(true);
 //        System.exit(0)
         return false

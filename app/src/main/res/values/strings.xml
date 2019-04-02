@@ -616,4 +616,10 @@
     <string name="deleted_a_message">deleted a message</string>
     <string name="no_choice">no choice</string>
     <string name="Too_long_name">Too long name</string>
+    <string name="Create_a_Group">Create a Group</string>
+    <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
+    <string name="Scan_to_add_contacts">Scan to add contacts</string>
+    <string name="Scan_to_add_contacts_code">Scan your friend\'s Contact Card QR Code</string>
+    <string name="Share_My_Contact_Card">Share My Contact Card</string>
+    <string name="Scan_my_Contact_Card_QR_Code">Scan my Contact Card QR Code</string>
 </resources>

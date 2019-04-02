@@ -282,11 +282,17 @@
         <activity
             android:name=".ui.activity.main.SettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.group.GroupChatsActivity" />
-        <activity android:name=".ui.activity.group.CreateGroupActivity" />
-        <activity android:name=".ui.activity.selectfriend.SelectFriendCreateGroupActivity" />
-        <activity android:name=".ui.activity.group.RemoveGroupMemberActivity" />
-
+        <activity android:name=".ui.activity.group.GroupChatsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.group.CreateGroupActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.selectfriend.SelectFriendCreateGroupActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.group.RemoveGroupMemberActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activity.add.addFriendOrGroupActivity"
+            android:screenOrientation="portrait" />
         <provider
             android:name=".utils.MyShareFileProvider"
             android:authorities="com.stratagile.pnrouter.fileprovider"
