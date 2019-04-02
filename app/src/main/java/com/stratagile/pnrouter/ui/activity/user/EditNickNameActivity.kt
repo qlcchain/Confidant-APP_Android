@@ -67,6 +67,7 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
                     SignData.privateKey = cryptoBoxKeypairOld!!.privateKey
                     SignData.publicKey = cryptoBoxKeypairOld!!.publicKey
                     SignData.userName = etNickName.text.toString().trim()
+                    ConstantValue.localUserName = etNickName.text.toString().trim()
                     var localSignArrayListNew =  arrayListOf<CryptoBoxKeypair>()
                     localSignArrayListNew.add(SignData)
                     FileUtil.saveKeyData(gson.toJson(localSignArrayListNew),"libsodiumdata_sign")
@@ -86,6 +87,7 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
                     RSAData.privateKey = cryptoBoxKeypairOld!!.privateKey
                     RSAData.publicKey = cryptoBoxKeypairOld!!.publicKey
                     RSAData.userName = etNickName.text.toString().trim()
+                    ConstantValue.localUserName = etNickName.text.toString().trim()
                     var localMiArrayListNew =  arrayListOf<CryptoBoxKeypair>()
                     localMiArrayListNew.add(RSAData)
                     FileUtil.saveKeyData(gson.toJson(localMiArrayListNew),"libsodiumdata_mi")

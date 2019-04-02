@@ -98,7 +98,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             newRouterEntity.index = loginRsp.params!!.index
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
-            SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
+            //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
