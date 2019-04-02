@@ -1640,7 +1640,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             getToken()
         }
         SpUtil.putBoolean(this, ConstantValue.isUnLock, true)
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+//        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         FileMangerUtil.init()
         FileMangerDownloadUtils.init()
         try {

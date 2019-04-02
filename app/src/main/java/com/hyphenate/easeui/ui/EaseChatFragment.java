@@ -3550,7 +3550,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 .previewImage(true)
                 .previewVideo(true)
                 .enablePreviewAudio(false)
-                .isCamera(true)
+                .isCamera(false)
                 .imageFormat(PictureMimeType.PNG)
                 .isZoomAnim(true)
                 .sizeMultiplier(0.5f)

@@ -242,7 +242,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     fun pullFileList(startId : Int) {
         currentPage = startId
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-        var pullFileListReq = PullFileListReq(selfUserId!!, startId, 5, 0, 0)
+        var pullFileListReq = PullFileListReq(selfUserId!!, startId, 10, 0, 0)
         var sendData = BaseData(2, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())

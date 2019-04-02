@@ -45,7 +45,7 @@
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:text="tom"
-                    android:textSize="15sp"
+                    android:textSize="16sp"
                     android:textColor="@color/color_2B2B2B" />
                 <TextView
                     android:id="@+id/tvFileTime"
@@ -97,7 +97,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:orientation="vertical"
-            android:layout_marginLeft="@dimen/x20"
+            android:layout_marginLeft="@dimen/x10"
             android:layout_marginBottom="@dimen/x2"
             android:layout_height="wrap_content">
             <TextView
@@ -109,7 +109,7 @@
                 android:singleLine="true"
                 android:text="Google project development.zip"
                 android:textColor="@color/color_2B2B2B"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tvFileSize"

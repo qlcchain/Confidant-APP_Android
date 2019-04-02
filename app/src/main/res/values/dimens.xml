@@ -43,6 +43,7 @@
     <dimen name="sp9">9sp</dimen>
     <dimen name="sp7">7sp</dimen>
     <dimen name="sp15">15sp</dimen>
+    <dimen name="commemTextSize">16sp</dimen>
 
     <dimen name="fundspace">1080px</dimen>
     <dimen name="paddingItemsSidebarLog">20dp</dimen>
