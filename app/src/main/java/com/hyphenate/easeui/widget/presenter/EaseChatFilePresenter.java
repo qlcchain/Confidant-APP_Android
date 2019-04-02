@@ -129,6 +129,11 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             }
             return;
         }
+        if(!message.getStringAttribute("kong","").equals(""))
+        {
+            Toast.makeText(AppConfig.instance, R.string.downwaiting, Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (file.exists() && !file.getName().contains("file_downloading")) {
             String newFilePath = Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/temp/"+file.getName();
             int result = FileUtil.copyAppFileToSdcard(filePath,newFilePath);

@@ -1275,6 +1275,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
 
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
+                        message.setAttribute("kong","1");
                         if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMMessage;
@@ -22,6 +23,7 @@ public class EaseChatRowFile extends EaseChatRow{
     protected TextView fileNameView;
 	protected TextView fileSizeView;
     protected TextView fileStateView;
+    private ProgressBar progressBarShelf;
     protected LinearLayout ll_loading;
     
     private EMNormalFileMessageBody fileMessageBody;
@@ -43,6 +45,7 @@ public class EaseChatRowFile extends EaseChatRow{
         fileStateView = (TextView) findViewById(R.id.tv_file_state);
         percentageView = (TextView) findViewById(R.id.percentage);
         ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
+        progressBarShelf = (ProgressBar) findViewById(R.id.progress_bar);
 	}
 
 
@@ -62,8 +65,16 @@ public class EaseChatRowFile extends EaseChatRow{
         }
         File file = new File(filePath);
         if (file.exists() && !file.getName().contains("file_downloading")) {
-            fileSizeView.setText(NetUtils.INSTANCE.parseSize(fileMessageBody.getFileSize()));
+            if(!message.getStringAttribute("kong","").equals(""))
+            {
+                fileSizeView.setText(NetUtils.INSTANCE.parseSize(0));
+                progressBarShelf.setVisibility(View.VISIBLE);
+            }else{
+                fileSizeView.setText(NetUtils.INSTANCE.parseSize(fileMessageBody.getFileSize()));
+                progressBarShelf.setVisibility(View.INVISIBLE);
+            }
         }else{
+            progressBarShelf.setVisibility(View.VISIBLE);
             fileSizeView.setText(NetUtils.INSTANCE.parseSize(0));
         }
         if (message.direct() == EMMessage.Direct.RECEIVE) {
