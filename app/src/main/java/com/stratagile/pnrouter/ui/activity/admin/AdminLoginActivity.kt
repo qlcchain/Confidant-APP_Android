@@ -23,6 +23,7 @@ import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminLoginPresenter
 import com.stratagile.pnrouter.ui.activity.router.RouterAliasSetActivity
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminlogin.*
@@ -45,21 +46,29 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
         when (jAdminLoginRsp.params.retCode) {
             0 -> {
                 runOnUiThread {
-                             toast("Login success")
+                    toast("Login success")
+                    var intent = Intent(this, RouterAliasSetActivity::class.java)
+                    if(jAdminLoginRsp.params.routerName !=null &&  !jAdminLoginRsp.params.routerName.equals(""))
+                    {
+                        intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                    }
+                    intent.putExtra("flag",0)
+                    intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
+                    intent.putExtra("adminUserSn",jAdminLoginRsp.params.userSn)
+                    intent.putExtra("adminIdentifyCode",jAdminLoginRsp.params.identifyCode)
+                    intent.putExtra("adminQrcode",jAdminLoginRsp.params.qrcode)
+                    if(jAdminLoginRsp.params.routerName == null)
+                    {
+                        intent.putExtra("routerName","")
+                    }else{
+                        intent.putExtra("routerName",jAdminLoginRsp.params.routerName!!)
+                    }
+
+                    startActivity(intent)
+                    finish()
                 }
-                var intent = Intent(this, RouterAliasSetActivity::class.java)
-                if(!jAdminLoginRsp.params.routerName.equals(""))
-                {
-                    intent = Intent(this, AdminLoginSuccessActivity::class.java)
-                }
-                intent.putExtra("flag",0)
-                intent.putExtra("adminRouterId",jAdminLoginRsp.params.routerId)
-                intent.putExtra("adminUserSn",jAdminLoginRsp.params.userSn)
-                intent.putExtra("adminIdentifyCode",jAdminLoginRsp.params.identifyCode)
-                intent.putExtra("adminQrcode",jAdminLoginRsp.params.qrcode)
-                intent.putExtra("routerName",jAdminLoginRsp.params.routerName)
-                startActivity(intent)
-                finish()
+
+
             }
             1 -> {
                 runOnUiThread {
@@ -68,7 +77,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
             }
             2 -> {
                 runOnUiThread {
-                       toast("Device MAC error")
+                    toast("Device MAC error")
                 }
             }
             3 -> {
@@ -78,7 +87,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
             }
             4 -> {
                 runOnUiThread {
-                          toast("Other mistakes")
+                    toast("Other mistakes")
                 }
             }
 
