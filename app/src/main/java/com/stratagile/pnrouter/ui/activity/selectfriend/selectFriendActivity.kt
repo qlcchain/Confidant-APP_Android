@@ -229,6 +229,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         }else{
                                             leftName = imgeSouceName
                                         }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
+                                        }
                                         val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString() + typeName
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
@@ -367,6 +370,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         }else{
                                             leftName = imgeSouceName
                                         }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
+                                        }
                                         val videoFileName = leftName+"_"+(System.currentTimeMillis() / 1000).toInt().toString() +typeName
                                         val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
                                         val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
@@ -503,6 +509,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
                                         }else{
                                             leftName = imgeSouceName
+                                        }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
                                         val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() +typeName
 
@@ -677,6 +686,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         }else{
                                             leftName = imgeSouceName
                                         }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
+                                        }
                                         val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
@@ -795,6 +807,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
                                         }else{
                                             leftName = imgeSouceName
+                                        }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
                                         val videoFileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
                                         val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
@@ -915,6 +930,9 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                             }
                                         }else{
                                             leftName = imgeSouceName
+                                        }
+                                        if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
+                                            leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
                                         val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() + typeName
 

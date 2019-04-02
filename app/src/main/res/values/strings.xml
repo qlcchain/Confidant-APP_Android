@@ -615,4 +615,5 @@
     <string name="leave">Leave</string>
     <string name="deleted_a_message">deleted a message</string>
     <string name="no_choice">no choice</string>
+    <string name="Too_long_name">Too long name</string>
 </resources>

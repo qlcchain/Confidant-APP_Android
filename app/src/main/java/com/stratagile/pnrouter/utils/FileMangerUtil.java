@@ -198,7 +198,8 @@ public class FileMangerUtil {
                         try
                         {
                             String filePath = sendFilePathMap.get(fileTransformEntity.getToId());
-                            String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                            //String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+                            String fileName = sendFileNameMap.get(fileTransformEntity.getToId());
                             String fileKey = sendFileKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] SrcKey = sendFileMyKeyByteMap.get(fileTransformEntity.getToId());
                             byte[] DstKey = sendFileFriendKeyByteMap.get(fileTransformEntity.getToId());
@@ -570,7 +571,6 @@ public class FileMangerUtil {
             int newCRC = 1;
             sendFileData.setCRC(FormatTransfer.reverseShort((short)newCRC));
             sendData = sendFileData.toByteArray();
-            sendFileNameMap.put(msgId+"",fileName);
             sendFileLastByteSizeMap.put(msgId+"",segSize);
             sendFileLeftByteMap.put(msgId+"",fileLeftBuffer);
             sendMsgIdMap.put(fileId+"",msgId);
@@ -967,6 +967,13 @@ public class FileMangerUtil {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
+                    String fileNameEnd = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+                    String fileNamePre = fileName.substring(0,fileName.lastIndexOf("."));
+                    if(fileNamePre.length() > ConstantValue.INSTANCE.getFileNameMaxLen())
+                    {
+                        fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
+                    }
+                    fileName = fileNamePre + fileNameEnd;
                     Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
                     String widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                     KLog.i("图片的宽高为：" + widthAndHeight);
@@ -1011,6 +1018,7 @@ public class FileMangerUtil {
                             myRouter.setUpLoadFile(uploadFile);
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
+                            sendFileNameMap.put(uuid,fileName);
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
@@ -1152,7 +1160,13 @@ public class FileMangerUtil {
                     File file = new File(imagePath);
                     boolean isHas = file.exists();
                     String fileName = imagePath.substring(imagePath.lastIndexOf("/")+1);
-
+                    String fileNameEnd = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+                    String fileNamePre = fileName.substring(0,fileName.lastIndexOf("."));
+                    if(fileNamePre.length() > ConstantValue.INSTANCE.getFileNameMaxLen())
+                    {
+                        fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
+                    }
+                    fileName = fileNamePre + fileNameEnd;
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     if(!msgId.equals(""))
                     {
@@ -1171,6 +1185,7 @@ public class FileMangerUtil {
                         {
                             long fileSouceSize = file.length();
                             int segSeqTotal = (int)Math.ceil(fileSouceSize / ConstantValue.INSTANCE.getSendFileSizeMax());
+                            sendFileNameMap.put(uuid,fileName);
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());
@@ -1302,6 +1317,15 @@ public class FileMangerUtil {
                     File file = new File(videoPath);
                     boolean isHas = file.exists();
                     String videoFileName = videoPath.substring(videoPath.lastIndexOf("/")+1);
+
+                    String fileNameEnd = videoFileName.substring(videoFileName.lastIndexOf("."),videoFileName.length());
+                    String fileNamePre = videoFileName.substring(0,videoFileName.lastIndexOf("."));
+                    if(fileNamePre.length() > ConstantValue.INSTANCE.getFileNameMaxLen())
+                    {
+                        fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
+                    }
+                    videoFileName = fileNamePre + fileNameEnd;
+
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
@@ -1349,7 +1373,7 @@ public class FileMangerUtil {
                             LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
                             EventBus.getDefault().post(new FileStatus(videoFileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
-
+                            sendFileNameMap.put(uuid,videoFileName);
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,videoPath);
                             sendFileSize.put(uuid,file.length());
@@ -1488,6 +1512,15 @@ public class FileMangerUtil {
                     File file = new File(filePath);
                     boolean isHas = file.exists();
                     String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
+
+                    String fileNameEnd = fileName.substring(fileName.lastIndexOf("."),fileName.length());
+                    String fileNamePre = fileName.substring(0,fileName.lastIndexOf("."));
+                    if(fileNamePre.length() > ConstantValue.INSTANCE.getFileNameMaxLen())
+                    {
+                        fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
+                    }
+                    fileName = fileNamePre + fileNameEnd;
+
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))
@@ -1530,7 +1563,7 @@ public class FileMangerUtil {
                             EventBus.getDefault().post(new FileStatus(fileName+"__"+uuid,fileSouceSize, false, false, false,0,segSeqTotal,0,false,0));
 
 
-
+                            sendFileNameMap.put(uuid,fileName);
                             sendMsgLocalMap.put(uuid,false);
                             sendFilePathMap.put(uuid,files_dir);
                             sendFileSize.put(uuid,file.length());

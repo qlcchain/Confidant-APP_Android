@@ -600,6 +600,12 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
             var rename = Base58.encode((etContent.text.toString()+type).toByteArray())
+            var renameLen = etContent.text.toString()
+            if(renameLen.length > ConstantValue.fileNameMaxLen)
+            {
+                toast(R.string.Too_long_name)
+                return@setOnClickListener
+            }
             var fileRenameReq = FileRenameReq(selfUserId!!, data.msgId, fileMiName, rename )
             if(fileMiName.equals(rename))
             {

@@ -2348,7 +2348,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     });
                     return;
                 }
-                String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+                String imgeSouceName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf("."));
+                String typeName = filePath.substring(filePath.lastIndexOf("."));
+                String leftName = "";
+                if (imgeSouceName.contains("_")) {
+                    leftName = imgeSouceName.substring(0, imgeSouceName.lastIndexOf("_"));
+                    leftName = StringUitl.replaceALL(leftName, "_");
+                    if (StringUitl.isNumeric(leftName)) {
+                        leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                    }
+                } else {
+                    leftName = imgeSouceName;
+                }
+                if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+                {
+                    leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+                }
+                String fileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
                 String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                 message.setFrom(userId);
@@ -2547,6 +2563,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             }
                         }else{
                             leftName = imgeSouceName;
+                        }
+                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+                        {
+                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
                         }
                         String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
@@ -2854,6 +2874,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }else{
                             leftName = imgeSouceName;
                         }
+                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+                        {
+                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+                        }
                         String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
 
                         //String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
@@ -3059,6 +3083,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             }
                         }else{
                             leftName = imgeSouceName;
+                        }
+                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+                        {
+                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
                         }
                         String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
 
