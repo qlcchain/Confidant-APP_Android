@@ -27,7 +27,7 @@ public class EaseEmojiconPagerView extends ViewPager{
 
     private PagerAdapter pagerAdapter;
     
-    private int emojiconRows = 3;
+    private int emojiconRows = 4;
     private int emojiconColumns = 7;
     
     private int bigEmojiconRows = 2;

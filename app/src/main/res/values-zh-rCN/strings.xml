@@ -74,14 +74,14 @@
     <string name="release_to_send">Release to send</string>
     <string name="button_send">Send</string>
     <string name="attach_smile">Emoticon</string>
-    <string name="attach_picture">Image</string>
-    <string name="attach_take_pic">Capture</string>
+    <string name="attach_picture">Album</string>
+    <string name="attach_take_pic">Camera</string>
     <string name="attach_location">Location</string>
     <string name="attach_Short_video">Short video</string>
     <string name="attach_video">Video</string>
     <string name="attach_Meeting">Meetting</string>
     <string name="attach_Video_call">Video call</string>
-    <string name="attach_file">Local</string>
+    <string name="attach_file">File</string>
     <string name="attach_Privatefile">Private</string>
     <string name="attach_voice_call">Voice call</string>
     <string name="attach_video_call">Video call</string>
@@ -422,7 +422,7 @@
     <string name="multiple">Multiple</string>
     <string name="Contacts">Contacts</string>
     <string name="selected">selected:</string>
-    <string name="SELECT_PROFILE">SELECT PROFILE</string>
+    <string name="SELECT_PROFILE">Select a File</string>
     <string name="error">error</string>
     <string name="successful_connection">Successful connection</string>
     <string name="connection">Connection</string>

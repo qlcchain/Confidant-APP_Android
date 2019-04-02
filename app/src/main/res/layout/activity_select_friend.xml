@@ -41,7 +41,7 @@
             android:layout_centerInParent="true"
             android:text="title"
             android:textColor="@color/mainColor"
-            android:textSize="18sp" />
+            android:textSize="@dimen/commemTextSize" />
 
         <RelativeLayout
             android:id="@+id/multiSelectBtn"

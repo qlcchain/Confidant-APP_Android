@@ -328,7 +328,8 @@ val credentialsProvider: CredentialsProvider, private
                 "PullFileList" -> {
                     val jPullFileListRsp = gson.fromJson(text, JPullFileListRsp::class.java)
                     fileManageBack?.pullFileListRsp(jPullFileListRsp)
-                    if (fileManageBack == null) {
+                    fileChooseBack?.pullFileListRsp(jPullFileListRsp)
+                    if (fileManageBack == null && fileChooseBack == null) {
                         fileMainManageBack?.pullFileListRsp(jPullFileListRsp)
                     }
                 }
@@ -550,6 +551,7 @@ val credentialsProvider: CredentialsProvider, private
 
     var fileManageBack: FileManageBack? = null
     var fileMainManageBack: FileMainManageBack? = null
+    var fileChooseBack: FileChooseBack? = null
 
     var getDiskTotalInfoBack: GetDiskTotalInfoBack? = null
 
@@ -841,6 +843,10 @@ val credentialsProvider: CredentialsProvider, private
         fun deleFileRsp(jDelFileRsp: JDelFileRsp)
         fun pullFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun fileRenameReq(jFileRenameRsp: JFileRenameRsp)
+    }
+
+    interface FileChooseBack {
+        fun pullFileListRsp(pullFileListRsp: JPullFileListRsp)
     }
 
     interface GetDiskTotalInfoBack {

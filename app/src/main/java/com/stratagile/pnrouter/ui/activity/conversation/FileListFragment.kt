@@ -100,6 +100,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     var receiveFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var receiveToxFileDataMap = ConcurrentHashMap<String, JPullFileListRsp.ParamsBean.PayloadBean>()
     var currentPage = 0
+    var lastPayload : JPullFileListRsp.ParamsBean.PayloadBean? = null
 
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
@@ -186,6 +187,9 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         KLog.i("页面收到了文件列表拉取的返回了。")
         if (currentPage == 0) {
+            if (pullFileListRsp.params.payload != null && pullFileListRsp.params.payload.size != 0) {
+                lastPayload = pullFileListRsp.params!!.payload.last()
+            }
             runOnUiThread {
                 when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
                     0 -> {
@@ -207,9 +211,11 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 fileListChooseAdapter?.loadMoreComplete()
                 if (pullFileListRsp.params.fileNum == 0) {
                     KLog.i("全部数据加载完成。。")
+                    lastPayload = null
                     fileListChooseAdapter?.loadMoreEnd(true)
                 } else {
                     KLog.i("还有数据需要加载。。")
+                    lastPayload = pullFileListRsp.params!!.payload.last()
                     fileListChooseAdapter!!.addData(pullFileListRsp.params!!.payload)
                     when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
                         0 -> {
@@ -538,8 +544,15 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         fileListChooseAdapter?.setOnLoadMoreListener(object : BaseQuickAdapter.RequestLoadMoreListener{
             override fun onLoadMoreRequested() {
                 recyclerView.postDelayed({
-                    currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
-                    pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
+                    if (lastPayload == null) {
+                        fileListChooseAdapter?.loadMoreEnd(true)
+                        fileListChooseAdapter!!.loadMoreComplete()
+                    } else {
+//                    currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
+                        currentPage = lastPayload!!.msgId
+//                    pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
+                        pullFileList(lastPayload!!.msgId)
+                    }
                 }, 500)
             }
 

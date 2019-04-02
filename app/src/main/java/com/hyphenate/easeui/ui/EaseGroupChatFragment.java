@@ -110,6 +110,7 @@ import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
+import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.AESCipher;
@@ -2023,7 +2024,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();
                     break;
                 case ITEM_FILE:
-                    startActivityForResult(new Intent(getActivity(), FileChooseActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
+                    startActivityForResult(new Intent(getActivity(), SelectFileActivity.class).putExtra("fileType", 2), REQUEST_CODE_FILE);
                     break;
                 default:
                     Toast.makeText(getActivity(), R.string.wait, Toast.LENGTH_SHORT).show();

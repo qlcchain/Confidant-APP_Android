@@ -112,6 +112,10 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 KLog.i("焦点：" + hasFocus);
+                if (hasFocus) {
+                    if(listener != null)
+                        listener.onEditTextClicked();
+                }
 //                if (hasFocus) {
 //                    edittext_layout.setBackgroundResource(R.drawable.ease_input_bar_bg_active);
 //                } else {
@@ -294,6 +298,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             if(listener != null)
                 listener.onToggleExtendClicked();
         } else if (id == R.id.et_sendmessage) {
+            KLog.i("输入框点击");
             if (isRecording) {
                 KLog.i("拦截点击");
                 return;

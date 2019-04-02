@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/color_f2f2f2"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <com.stratagile.pnrouter.view.DrawableMyTextView
+        android:id="@+id/localFiles"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x17"
+        android:layout_height="@dimen/x92"
+        app:srcmy="@mipmap/btn_file_n"
+        app:textmy="Local Files">
+
+    </com.stratagile.pnrouter.view.DrawableMyTextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/x31"
+        android:paddingTop="@dimen/x10"
+        android:paddingRight="@dimen/x31"
+        android:textColor="@color/color_999999"
+        android:text="Documents sent through from 'Local Files' will be automatically added to ‘Confidant Drive'"
+        android:textSize="12sp"
+        android:layout_height="@dimen/x100" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/x31"
+        android:textColor="@color/color_2B2B2B"
+        android:text="Confidant Drive"
+        android:textSize="14sp"
+        android:background="@color/white"
+        android:layout_height="@dimen/x77" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

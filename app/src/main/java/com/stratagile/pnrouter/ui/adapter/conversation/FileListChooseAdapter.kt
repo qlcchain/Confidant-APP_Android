@@ -28,7 +28,7 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
         //helper.addOnClickListener(R.id.ivDownload)
 //        var checkBox = helper.getView<SmoothCheckBox>(R.id.checkBox)
         helper.setText(R.id.tvFileTime, TimeUtil.getFileListTime(item.timestamp.toLong()))
-        KLog.i("文件的名字为：" + item.fileName)
+//        KLog.i("文件的名字为：" + item.fileName)
         var fileName = ""
         try {
             var subName = item.fileName.substring(item.fileName.lastIndexOf("/") + 1)

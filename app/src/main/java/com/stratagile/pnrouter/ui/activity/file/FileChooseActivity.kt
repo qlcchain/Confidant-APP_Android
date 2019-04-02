@@ -73,7 +73,7 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         setContentView(R.layout.activity_file_infos)
         ButterKnife.bind(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        setTitle(getString(R.string.SELECT_PROFILE).toUpperCase())
+        setTitle(getString(R.string.SELECT_PROFILE))
     }
 
     override fun initData() {

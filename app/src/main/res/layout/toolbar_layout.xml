@@ -41,6 +41,6 @@
                 android:text=""
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/mainColor"
-                android:textSize="17sp" />
+                android:textSize="@dimen/commemTextSize" />
         </android.support.v7.widget.Toolbar>
 </RelativeLayout>

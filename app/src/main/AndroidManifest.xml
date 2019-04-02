@@ -474,6 +474,7 @@
         <activity android:name=".ui.activity.router.SelectCircleActivity" />
         <activity android:name=".ui.activity.user.UserInfoActaivity" />
         <activity android:name=".ui.activity.main.WebViewActivity" />
+        <activity android:name=".ui.activity.file.SelectFileActivity" />
     </application>
 
 </manifest>
