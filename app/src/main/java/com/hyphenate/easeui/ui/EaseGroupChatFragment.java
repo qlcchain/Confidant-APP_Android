@@ -3620,7 +3620,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 .previewImage(true)
                 .previewVideo(true)
                 .enablePreviewAudio(false)
-                .isCamera(true)
+                .isCamera(false)
                 .imageFormat(PictureMimeType.PNG)
                 .isZoomAnim(true)
                 .sizeMultiplier(0.5f)

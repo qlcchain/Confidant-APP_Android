@@ -1,7 +1,9 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.os.Bundle
+import android.view.View
 import android.webkit.*
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -36,11 +38,15 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
         super.onCreate(savedInstanceState)
     }
 
+    var url = ""
+
     override fun initView() {
         setContentView(R.layout.activity_web_view)
     }
     override fun initData() {
         var url = intent.getStringExtra("url")
+        KLog.i(url)
+        this.url = url
         var titleStr = intent.getStringExtra("title")
         title.text = titleStr
         webView.getSettings().setBuiltInZoomControls(true)
@@ -66,6 +72,16 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
                 }
             }
 
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                if (newProgress == 100) {
+                    progressBar.visibility = View.GONE
+                } else {
+                    progressBar.visibility = View.VISIBLE
+                    progressBar.progress = newProgress
+                }
+                super.onProgressChanged(view, newProgress)
+            }
+
         }
         webView.webViewClient = object  : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -77,8 +93,16 @@ class WebViewActivity : BaseActivity(), WebViewContract.View {
 
     }
 
-    class MyWeb : WebViewClient() {
-
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            if (webView.url.equals(url)) {
+                super.onBackPressed()
+            } else {
+                webView.goBack()
+            }
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun setupActivityComponent() {
