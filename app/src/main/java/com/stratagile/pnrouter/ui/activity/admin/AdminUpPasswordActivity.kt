@@ -148,8 +148,8 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
         })
     }
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver!!.adminUpdataPassWordCallBack = null
+        super.onDestroy()
     }
     override fun setupActivityComponent() {
        DaggerAdminUpPasswordComponent

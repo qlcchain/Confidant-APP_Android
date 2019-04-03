@@ -498,8 +498,8 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
     }
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver!!.adminRecoveryCallBack = null
+        super.onDestroy()
     }
     override fun setupActivityComponent() {
         DaggerAdminLoginSuccessComponent
