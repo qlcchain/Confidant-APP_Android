@@ -2563,11 +2563,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     leftName = imgeSouceName;
                 }
-                if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
-                {
-                    leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
-                }
-                String fileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
+//                if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+//                {
+//                    leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+//                }
+//                String fileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
+                String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                 EMMessage message = EMMessage.createVoiceSendMessage(filePath, length, toChatUserId);
                 String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                 message.setFrom(userId);
@@ -2767,11 +2768,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }else{
                             leftName = imgeSouceName;
                         }
-                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
-                        {
-                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
-                        }
-                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+//                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+//                        {
+//                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+//                        }
+//                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
@@ -3077,11 +3079,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }else{
                             leftName = imgeSouceName;
                         }
-                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
-                        {
-                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
-                        }
-                        String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+//                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+//                        {
+//                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+//                        }
+//                        String videoFileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String videoFileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
 
                         //String videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
@@ -3287,12 +3290,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }else{
                             leftName = imgeSouceName;
                         }
-                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
-                        {
-                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
-                        }
-                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
-
+//                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+//                        {
+//                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+//                        }
+//                        String fileName = leftName+ "_" +((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");

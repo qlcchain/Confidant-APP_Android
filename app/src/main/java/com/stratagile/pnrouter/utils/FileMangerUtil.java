@@ -973,7 +973,8 @@ public class FileMangerUtil {
                     {
                         fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
                     }
-                    fileName = fileNamePre + fileNameEnd;
+//                    fileName = fileNamePre + fileNameEnd;
+                    fileName = Base58.getBase58NameWithOrginName(fileNamePre, fileNameEnd);
                     Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
                     String widthAndHeight = "," + bitmap.getWidth() + ".0000000" + "*" + bitmap.getHeight() + ".0000000";
                     KLog.i("图片的宽高为：" + widthAndHeight);
@@ -1166,7 +1167,8 @@ public class FileMangerUtil {
                     {
                         fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
                     }
-                    fileName = fileNamePre + fileNameEnd;
+//                    fileName = fileNamePre + fileNameEnd;
+                    fileName = Base58.getBase58NameWithOrginName(fileNamePre, fileNameEnd);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     if(!msgId.equals(""))
                     {
@@ -1324,7 +1326,8 @@ public class FileMangerUtil {
                     {
                         fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
                     }
-                    videoFileName = fileNamePre + fileNameEnd;
+//                    videoFileName = fileNamePre + fileNameEnd;
+                    videoFileName = Base58.getBase58NameWithOrginName(fileNamePre, fileNameEnd);
 
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
@@ -1519,8 +1522,8 @@ public class FileMangerUtil {
                     {
                         fileNamePre = fileNamePre.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen());
                     }
-                    fileName = fileNamePre + fileNameEnd;
-
+//                    fileName = fileNamePre + fileNameEnd;
+                    fileName = Base58.getBase58NameWithOrginName(fileNamePre, fileNameEnd);
                     String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
                     int uuidTox = (int)(System.currentTimeMillis()/1000);
                     if( ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI"))

@@ -237,7 +237,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             view.getLocationOnScreen(loc1);
             KLog.i(loc1[0]);
             KLog.i(loc1[1]);
-            floatMenu.show(new Point(loc1[0],loc1[1]),0,65);
+            floatMenu.show(new Point(loc1[0],loc1[1]),60,65);
             floatMenu.setOnItemClickListener(new FloatMenu.OnItemClickListener() {
 
                 @Override

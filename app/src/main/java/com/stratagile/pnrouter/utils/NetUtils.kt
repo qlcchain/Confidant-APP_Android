@@ -6,7 +6,7 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.support.v4.content.ContextCompat.getSystemService
-
+import java.util.regex.Pattern
 
 
 object NetUtils {
@@ -52,5 +52,18 @@ object NetUtils {
             }
         }
         return false
+    }
+
+    fun isMacAddress(mac: String): Boolean {
+        val patternMac = "^[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}$"
+        val pa = Pattern.compile(patternMac)
+        val isMac = pa.matcher(mac).find()
+        if (!isMac) {
+            val patternMac1 = "^[a-fA-F0-9]{2}+:[a-fA-F0-9]{2}+:[a-fA-F0-9]{2}+:[a-fA-F0-9]{2}+:[a-fA-F0-9]{2}+:[a-fA-F0-9]{2}$"
+            val pa1 = Pattern.compile(patternMac1)
+            val isMac1 = pa1.matcher(mac).find()
+            return isMac1
+        }
+        return isMac
     }
 }

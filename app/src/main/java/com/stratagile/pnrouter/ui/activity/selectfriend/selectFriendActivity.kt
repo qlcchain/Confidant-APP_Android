@@ -31,6 +31,7 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
+import kotlinx.android.synthetic.main.item_filetask_content.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -232,7 +233,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString() + typeName
+//                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString() + typeName
+                                        val fileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.userId)
@@ -373,7 +375,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val videoFileName = leftName+"_"+(System.currentTimeMillis() / 1000).toInt().toString() +typeName
+//                                        val videoFileName = leftName+"_"+(System.currentTimeMillis() / 1000).toInt().toString() +typeName
+                                        val videoFileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
                                         val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
                                         val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
@@ -513,8 +516,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() +typeName
-
+//                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() +typeName
+                                        val fileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val message = EMMessage.createFileSendMessage(filePath, i.userId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")
@@ -689,7 +692,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
+//                                        val fileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
+                                        val fileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, false)
                                         val message = EMMessage.createImageSendMessage(files_dir, true, i.gId)
@@ -811,7 +815,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val videoFileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
+//                                        val videoFileName = leftName +"_"+(System.currentTimeMillis() / 1000).toInt().toString()+typeName
+                                        val videoFileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir =  PathUtils.getInstance().videoPath.toString() + "/" +videoFileName
                                         //val videoName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf(".") + 1)
                                         val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
@@ -934,8 +939,8 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         if (leftName.length > ConstantValue.fileNameMaxLen - 12) {
                                             leftName = leftName.substring(0, ConstantValue.fileNameMaxLen - 12)
                                         }
-                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() + typeName
-
+//                                        val fileName = leftName+ "_" +(System.currentTimeMillis() / 1000).toInt().toString() + typeName
+                                        val fileName = Base58.getBase58TwoName(leftName, "_"+(System.currentTimeMillis() / 1000).toInt().toString(), typeName)
                                         val files_dir = PathUtils.getInstance().imagePath.toString() + "/" + fileName
                                         val message = EMMessage.createFileSendMessage(filePath, i.gId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")

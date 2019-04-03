@@ -42,6 +42,7 @@ import com.stratagile.pnrouter.utils.RxPhotoTool.GET_IMAGE_FROM_PHONE
 import com.stratagile.pnrouter.utils.SystemUtil
 import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import java.io.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.concurrent.thread
 
@@ -97,22 +98,52 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
     }
 
     override fun onScanQRCodeSuccess(result: String?) {
+        KLog.i("result:$result")
         if (result == null) {
             startPhotoZoom(tempUri)
         } else {
-            KLog.i("result:$result")
-            //initDialogResult(result)
-            mZXingView.stopSpot()
-            vibrate()
-            val intent = Intent()
-            if (result == null) {
-                intent.putExtra("result", "")
+            if (isExpectResult(result)) {
+                mZXingView.stopSpot()
+                vibrate()
+                val intent = Intent()
+                if (result == null) {
+                    intent.putExtra("result", "")
+                } else {
+                    if (isMacAddress(result)) {
+                        var macAddress  = ""
+                        for (i in 0..5) {
+                            macAddress = macAddress + result.substring(i * 2, (i + 1) * 2) + ":"
+                        }
+                        macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
+                        KLog.i("mac地址为：" + macAddress)
+                        intent.putExtra("result", macAddress)
+                    } else {
+                        intent.putExtra("result", result)
+                    }
+                }
+                setResult(RESULT_OK, intent)
+                finish()
             } else {
-                intent.putExtra("result", result)
+                mZXingView.startSpot()
             }
-            setResult(RESULT_OK, intent)
-            finish()
         }
+    }
+
+    fun isExpectResult(string: String) : Boolean {
+        if (string.contains("type_")) {
+            return true
+        }
+        if (isMacAddress(string)) {
+            return true
+        }
+        return false
+    }
+
+    private fun isMacAddress(mac: String): Boolean {
+        val patternMac = "^[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}+[a-fA-F0-9]{2}$"
+        val pa = Pattern.compile(patternMac)
+        val isMac = pa.matcher(mac).find()
+        return isMac
     }
 
     override fun onScanQRCodeOpenCameraError() {
