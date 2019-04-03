@@ -116,7 +116,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             {
                 DeleteUtils.deleteFile(fileLocalMiPath);
             }
-            EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData));
+            EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData,data));
             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFileName();
             String files_dir = PathUtils.getInstance().getFilePath().toString() + "/";
             if (ConstantValue.INSTANCE.isWebsocketConnected()) {

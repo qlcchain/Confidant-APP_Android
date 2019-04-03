@@ -79,7 +79,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
         EMNormalFileMessageBody fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         File file = new File(filePath);
-        if(file.getName().contains("file_fileForward"))
+        if(!message.getStringAttribute("fileForward","").equals(""))
         {
             String fileDataJson = message.getStringAttribute("fileData","");
             String messageDataJson = message.getStringAttribute("Message","");
@@ -101,7 +101,7 @@ public class EaseChatFilePresenter extends EaseChatRowPresenter {
             {
                 DeleteUtils.deleteFile(fileLocalMiPath);
             }
-            EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData));
+            EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData,data));
             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFileName();
             String files_dir = PathUtils.getInstance().getFilePath().toString() + "/";
             if (ConstantValue.INSTANCE.isWebsocketConnected()) {

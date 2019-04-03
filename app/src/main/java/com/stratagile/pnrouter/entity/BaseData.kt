@@ -443,7 +443,7 @@ data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String
  * 79.	用户上传头像
  * (2)	响应（APP->Router）
  */
-data class UploadAvatarReq(var Uid : String, var FileName : String, var FileMd5 : String,var Action : String = "UploadAvatar")
+data class UploadAvatarReq(var Uid : String, var FileName : String, var FileMD5 : String, var Action : String = "UploadAvatar")
 
 /**
  * 80.	更新好友用户和自己头像

@@ -86,6 +86,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_gravity="center_vertical"
                         android:textColor="#818181"
+                        android:text="123"
                         android:visibility="invisible"
                         android:textSize="14sp" />
                     <ImageView
