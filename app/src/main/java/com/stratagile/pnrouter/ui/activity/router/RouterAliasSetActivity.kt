@@ -68,6 +68,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                     intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
                     intent.putExtra("routerName",routerName.text.toString())
                     startActivity(intent)
+                    finish()
                 }else{
                     var intent = Intent()
                     intent.putExtra("routerName", routerName.text.toString())
