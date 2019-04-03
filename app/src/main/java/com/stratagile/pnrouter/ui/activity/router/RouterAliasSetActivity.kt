@@ -59,15 +59,28 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         if(jResetRouterNameRsp.params.retCode == 0)
         {
             runOnUiThread {
-                var intent = Intent(this, AdminLoginSuccessActivity::class.java)
-                intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
-                intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
-                intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
-                intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
-                var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
-                intent.putExtra("routerName",routerName)
-                startActivity(intent)
-                finish()
+                if(flag == 0)
+                {
+                    var intent = Intent(this, AdminLoginSuccessActivity::class.java)
+                    intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
+                    intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
+                    intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
+                    intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
+                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+                    intent.putExtra("routerName",routerName)
+                    startActivity(intent)
+                    finish()
+                }else{
+                    var intent = Intent()
+                    intent.putExtra("adminRouterId",intent.getStringExtra("adminRouterId"))
+                    intent.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
+                    intent.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
+                    intent.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
+                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+                    intent.putExtra("routerName",routerName)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
 
             }
         }else  if(jResetRouterNameRsp.params.retCode == 1)

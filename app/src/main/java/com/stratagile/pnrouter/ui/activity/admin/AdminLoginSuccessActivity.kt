@@ -482,9 +482,15 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            var result = data!!.getStringExtra("routerName")
-            adminName.text   = result
-            ivAvatarAdmin.setText(result)
+
+            adminRouterId = data!!.getStringExtra("adminRouterId")
+            adminUserSn = data!!.getStringExtra("adminUserSn")
+            adminIdentifyCode = data!!.getStringExtra("adminIdentifyCode")
+            adminQrcode = data!!.getStringExtra("adminQrcode")
+            routerName = data!!.getStringExtra("routerName")
+            routerName =  String(RxEncodeTool.base64Decode(routerName))
+            adminName.text   = routerName
+            ivAvatarAdmin.setText(routerName)
             return
         }
     }
