@@ -42,13 +42,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:text="You have activated a confidant router, proceed to complete your registration now"
-                android:textSize="11sp"
+                android:textSize="14sp"
                 android:gravity="center"
-                android:layout_marginLeft="@dimen/x60"
-                android:paddingLeft="@dimen/x30"
-                android:paddingRight="@dimen/x30"
-                android:layout_marginRight="@dimen/x60"
-                android:textColor="@color/mainColor"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_marginRight="@dimen/x30"
+                android:textColor="@color/color_2c2c2c"
                 android:layout_height="wrap_content" />
             <View
                 android:layout_width="match_parent"
@@ -82,23 +80,27 @@
                             android:layout_centerVertical="true"
                             android:text="Set an Alias for your circle"
                             android:textColor="@color/color_2c2c2c"
-                            android:textSize="17sp" />
+                            android:textSize="18sp" />
                         <TextView
                             android:layout_width="wrap_content"
-                            android:textSize="12sp"
+                            android:textSize="14sp"
+                            android:textColor="@color/color_2c2c2c"
+                            android:layout_marginRight="@dimen/x60"
                             android:text="The circle alias indicates which node you are connected to."
                             android:layout_marginTop="@dimen/x10"
                             android:layout_height="wrap_content" />
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_marginTop="@dimen/x70"
+                            android:layout_marginTop="@dimen/x30"
                             android:text="Circle Alias"
-                            android:textColor="@color/mainColor"
+                            android:textSize="14sp"
+                            android:textColor="@color/color_2c2c2c"
                             android:layout_height="wrap_content" />
 
                         <EditText
                             android:id="@+id/routerName"
                             android:layout_width="match_parent"
+                            android:textSize="@dimen/commemTextSize"
                             android:hint="Alice's Cabinet"
                             android:background="@null"
                             android:layout_height="wrap_content" />
@@ -136,7 +138,7 @@
             <LinearLayout
                 android:id="@+id/llNext"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x50"
+                android:layout_marginTop="@dimen/x85"
                 android:background="@drawable/btn_d5d5d5"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_marginRight="@dimen/x31"
@@ -149,6 +151,7 @@
                     android:layout_width="@dimen/x450"
                     android:textColor="@color/white"
                     android:text="@string/next"
+                    android:textSize="@dimen/commemTextSize"
                     android:gravity="center"
                     android:layout_height="@dimen/x85" />
             </LinearLayout>

@@ -2,35 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/x108"
-    android:gravity="center_vertical"
     android:background="@color/white"
-    android:orientation="horizontal">
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:clickable="false"
-        android:layout_marginStart="16dp"
-        android:button="@drawable/checkbox_style"
-     />
-    <com.stratagile.pnrouter.view.ImageButtonWithText
-        android:id="@+id/groupIcon"
-        android:layout_width="@dimen/x80"
-        android:layout_marginLeft="@dimen/x30"
-        android:layout_height="@dimen/x80">
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x107">
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:layout_marginStart="16dp"
+            android:button="@drawable/checkbox_style"
+            />
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/groupIcon"
+            android:layout_width="@dimen/x80"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_height="@dimen/x80">
 
-    </com.stratagile.pnrouter.view.ImageButtonWithText>
-    <TextView
-        android:id="@+id/groupName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="@dimen/commemTextSize"
-        android:textColor="@color/color_2B2B2B"
-        android:layout_marginLeft="@dimen/x20"
-        android:layout_gravity="center"
-        android:text="Group name"/>
+        </com.stratagile.pnrouter.view.ImageButtonWithText>
+        <TextView
+            android:id="@+id/groupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/commemTextSize"
+            android:textColor="@color/color_2B2B2B"
+            android:layout_marginLeft="@dimen/x20"
+            android:layout_gravity="center"
+            android:text="Group name"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x30"
+        android:layout_height="@dimen/x1"
+        android:background="@color/color_f2f2f2"/>
 </LinearLayout>

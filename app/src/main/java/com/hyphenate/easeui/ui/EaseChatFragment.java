@@ -314,7 +314,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
         String fileMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
         File file = new File(filePath);
-        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+        FileUtil.getKongFile(fileOrginName);
         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
         message.setMsgId(fileData.getMsgId()+"");
@@ -1298,7 +1298,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if (fileFile.exists()) {
                         if(fileFile.length() == 0 && Message.getFileSize() != null && Message.getFileSize() > 0)
                         {
-                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
+                            FileUtil.getKongFile(Message.getFileName());
+//                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                             String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                             message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                             message.setAttribute("kong","1");
@@ -1334,7 +1335,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
                         }
                     } else {
-                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
+                        FileUtil.getKongFile(Message.getFileName());
+//                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                         message.setAttribute("kong","1");
@@ -3506,7 +3508,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             {
                                 if(file.length() == 0 && fileData.getFileSize() > 0)
                                 {
-                                    FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                                    FileUtil.getKongFile(fileOrginName);
+//                                    FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                                     String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                                     message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                     message.setAttribute("fileForward","1");
@@ -3525,7 +3528,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 }*/
 
                             }else{
-                                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                                FileUtil.getKongFile(fileOrginName);
+//                                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                                 String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                                 message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                 message.setAttribute("fileForward","1");
