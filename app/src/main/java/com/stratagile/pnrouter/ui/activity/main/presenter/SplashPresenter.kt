@@ -298,14 +298,14 @@ constructor(internal var httpAPIWrapper: HttpAPIWrapper, private val mView: Spla
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"ease_default_fileForward_vedio.mp4",3)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_downloading.*",5)
             FileUtil.drawableToFile(AppConfig.instance,R.drawable.image_defalut_bg,"file_fileForward.*",5)
-            FileUtil.getKongFile("image_defalut_bg.xml")
+            /*FileUtil.getKongFile("image_defalut_bg.xml")
             FileUtil.getKongFile("image_defalut_bg.png")
             FileUtil.getKongFile("image_defalut_fileForward_bg.png")
             FileUtil.getKongFile("ease_default_amr.amr")
             FileUtil.getKongFile("ease_default_vedio.mp4")
             FileUtil.getKongFile("ease_default_fileForward_vedio.mp4")
             FileUtil.getKongFile("file_downloading.*")
-            FileUtil.getKongFile("file_fileForward.*")
+            FileUtil.getKongFile("file_fileForward.*")*/
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             var abvc = ""
             routerList.forEach {
