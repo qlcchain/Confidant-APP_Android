@@ -119,7 +119,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
             }
             isBack = false
             standaloneCoroutine = launch(CommonPool) {
-                delay(3000)
+                delay(8000)
                 if(!isBack) {
                     runOnUiThread {
                         showLeaveGroupDialog()
