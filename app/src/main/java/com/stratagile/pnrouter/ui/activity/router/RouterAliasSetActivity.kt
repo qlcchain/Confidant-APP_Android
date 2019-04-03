@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.TextView
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.pawegio.kandroid.startActivity
 import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -19,15 +21,23 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JResetRouterNameRsp
 import com.stratagile.pnrouter.entity.ResetRouterNameReq
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterAliasSetComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterAliasSetContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterAliasSetModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterAliasSetPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_routeraliasset.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 
 /**
@@ -43,6 +53,9 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         runOnUiThread {
             closeProgressDialog()
         }
+        isBack = true
+        if(standaloneCoroutine != null)
+            standaloneCoroutine.cancel()
         if(jResetRouterNameRsp.params.retCode == 0)
         {
             runOnUiThread {
@@ -78,6 +91,8 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
 
     @Inject
     internal lateinit var mPresenter: RouterAliasSetPresenter
+    private lateinit var standaloneCoroutine : Job
+    private var isBack:Boolean = false
     var flag = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -102,6 +117,17 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
+            isBack = false
+            standaloneCoroutine = launch(CommonPool) {
+                delay(3000)
+                if(!isBack) {
+                    runOnUiThread {
+                        showLeaveGroupDialog()
+                    }
+
+                    //showProgressDialog(getString(R.string.The_server_did_not_respond))
+                }
+            }
             AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
             var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
             showProgressDialog("waiting...")
@@ -119,6 +145,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
+
         }
         routerName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -140,17 +167,37 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         })
     }
 
+    var hasBeenFormatDialog : CommonDialog? = null
+    fun showLeaveGroupDialog() {
+        val view = View.inflate(this, R.layout.layout_two_check_notitle_with_content_ok, null)
+        //取消或确定按钮监听事件处l
+        hasBeenFormatDialog = CommonDialog(this)
+        hasBeenFormatDialog?.setCancelable(true)
+        val window = hasBeenFormatDialog?.window
+        val tvContent = view.findViewById<TextView>(R.id.tvContent)
+        val tvLeft = view.findViewById<TextView>(R.id.tvLeft)
+        tvLeft.setOnClickListener {
+            hasBeenFormatDialog?.dismissWithAnimation()
+            var intent = Intent(this, LoginActivityActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        tvContent.text = getString(R.string.The_server_did_not_respond)
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        hasBeenFormatDialog?.setView(view)
+        hasBeenFormatDialog?.show()
+    }
     override fun setupActivityComponent() {
-       DaggerRouterAliasSetComponent
-               .builder()
-               .appComponent((application as AppConfig).applicationComponent)
-               .routerAliasSetModule(RouterAliasSetModule(this))
-               .build()
-               .inject(this)
+        DaggerRouterAliasSetComponent
+                .builder()
+                .appComponent((application as AppConfig).applicationComponent)
+                .routerAliasSetModule(RouterAliasSetModule(this))
+                .build()
+                .inject(this)
     }
     override fun setPresenter(presenter: RouterAliasSetContract.RouterAliasSetContractPresenter) {
-            mPresenter = presenter as RouterAliasSetPresenter
-        }
+        mPresenter = presenter as RouterAliasSetPresenter
+    }
 
     override fun showProgressDialog() {
         progressDialog.show()

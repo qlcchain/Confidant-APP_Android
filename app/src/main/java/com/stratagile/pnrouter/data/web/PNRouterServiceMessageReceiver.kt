@@ -30,7 +30,7 @@ val credentialsProvider: CredentialsProvider, private
         var paramsStr = (JSONObject.parseObject(baseData.baseDataToJson())).get("params").toString()
         var action = JSONObject.parseObject(paramsStr).getString("Action")
         if (ConstantValue.loginOut) {
-            if (action.toString().contains("Recovery") || action.toString().contains("Register") || action.toString().contains("Login") || action.toString().contains("LogOut") || action.toString().contains("RouterLogin") || action.toString().contains("ResetRouterKey") || action.toString().contains("ResetUserIdcode")) {
+            if (action.toString().contains("Recovery") || action.toString().contains("Register") || action.toString().contains("Login") || action.toString().contains("LogOut") || action.toString().contains("RouterLogin") || action.toString().contains("ResetRouterKey") || action.toString().contains("ResetUserIdcode") || action.toString().contains("ResetRouterName") || action.toString().contains("OnlineStatusPush")) {
                 when (action) {
                     "Recovery" -> {
                         val jRecoveryRsp = gson.fromJson(text, JRecoveryRsp::class.java)
