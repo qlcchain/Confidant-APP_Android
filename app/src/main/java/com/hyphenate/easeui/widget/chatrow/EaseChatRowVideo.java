@@ -67,7 +67,16 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
         String localThumb = videoBody.getLocalThumb();
         String localUrl = videoBody.getLocalUrl();
-        if(localUrl.contains("ease_default_vedio"))
+        if(localUrl.contains("ease_default_fileForward_vedio"))
+        {
+            if(!message.getStringAttribute("kong","").equals(""))
+            {
+                progressBarShelf.setVisibility(View.VISIBLE);
+            }else {
+                progressBarShelf.setVisibility(View.INVISIBLE);
+            }
+        }
+        else if(localUrl.contains("ease_default_vedio"))
         {
             progressBarShelf.setVisibility(View.VISIBLE);
         }else{

@@ -75,14 +75,25 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 KLog.i("图片的高为1：" + height);
             }
         } catch (Exception e) {
+            width =  getContext().getResources().getDimension(R.dimen.x300);
+            height = getContext().getResources().getDimension(R.dimen.x400);
             KLog.i("位置为：" + position);
             KLog.i("文件名字为：" + imgBody.getFileName());
             e.printStackTrace();
         }
         String localUrl = imgBody.getLocalUrl();
-        if (localUrl.contains("ease_default_amr")) {
-            progressBarShelf.setVisibility(View.VISIBLE);
-        } else {
+        if (localUrl.contains("image_defalut_fileForward_bg")) {
+            if(!message.getStringAttribute("kong","").equals(""))
+            {
+                progressBarShelf.setVisibility(View.VISIBLE);
+            }else {
+                progressBarShelf.setVisibility(View.INVISIBLE);
+            }
+
+        } else  if (localUrl.contains("image_defalut_bg")) {
+            progressBarShelf.setVisibility(View.INVISIBLE);
+        }else
+        {
             progressBarShelf.setVisibility(View.INVISIBLE);
         }
         // received messages
