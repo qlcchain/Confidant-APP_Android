@@ -2,9 +2,11 @@ package com.stratagile.pnrouter.ui.activity.router
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -84,11 +86,16 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
 
     override fun initView() {
         setContentView(R.layout.activity_routeraliasset)
+        showViewNeedFront()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
+        }
     }
     override fun initData() {
         flag = intent.getIntExtra("flag",0);
         var routerNameFrom = intent.getStringExtra("routerName")
-        ivAvatar.setText(routerNameFrom)
+        ivAvatar.withShape = true
+        ivAvatar.setTextWithShape(routerNameFrom)
         LoginInBtn.setOnClickListener {
             if(routerName.text.toString().equals(""))
             {
@@ -153,7 +160,11 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         progressDialog.hide()
     }
     override fun onDestroy() {
+        try {
+            AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
         super.onDestroy()
-        AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
     }
 }

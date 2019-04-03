@@ -114,6 +114,30 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         }
         textView.text = showText
     }
+    fun setTextWithShape(buttonText: CharSequence?) {
+        textView.visibility = View.VISIBLE
+        imageView.visibility = View.GONE
+        val strings = buttonText.toString().toUpperCase().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val stringArrayList = Arrays.asList(*strings)
+        val itTemp = stringArrayList.iterator()
+        val realList = ArrayList<String>()
+        while (itTemp.hasNext()) {
+            val next = itTemp.next() as String
+            if ("" != next) {
+                realList.add(next)
+            }
+        }
+        var showText = ""
+        for (i in realList.indices) {
+            if (i < 2) {
+                showText += realList[i].substring(0, 1)
+            }
+        }
+        if (withShape) {
+            textView.background = context.resources.getDrawable(R.drawable.imagebutton_withtext_shape_bg)
+        }
+        textView.text = showText
+    }
 
     fun setTextColor(color: Int) {
         textView.setTextColor(color)

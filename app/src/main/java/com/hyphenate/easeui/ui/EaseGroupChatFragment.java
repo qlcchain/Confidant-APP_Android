@@ -355,7 +355,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message = EMMessage.createVideoSendMessage(videoPath, thumbPath, fileData.getFileSize(), toChatUserId);
                 break;
             case 5:
-                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                FileUtil.getKongFile(fileOrginName);
+               //FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                 String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                 message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                 break;
@@ -1388,7 +1389,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     if (fileFile.exists()) {
                         if(fileFile.length() == 0 && Message.getFileSize() != null && Message.getFileSize() > 0)
                         {
-                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
+                            FileUtil.getKongFile(Message.getFileName());
+//                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                             String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                             message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                             message.setAttribute("kong","1");
@@ -1424,7 +1426,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }
 
                     } else {
-                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
+                        FileUtil.getKongFile(Message.getFileName());
+//                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                         message.setAttribute("kong","1");
@@ -3671,7 +3674,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             {
                                 if(file.length() == 0 && fileData.getFileSize() > 0)
                                 {
-                                    FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                                    FileUtil.getKongFile(fileOrginName);
+                                    //FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                                     String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                                     message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                     message.setAttribute("fileForward","1");
@@ -3690,7 +3694,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 }*/
 
                             }else{
-                                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                                FileUtil.getKongFile(fileOrginName);
+//                                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                                 String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                                 message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                                 message.setAttribute("fileForward","1");

@@ -160,7 +160,7 @@ public class EaseSmileUtils {
 	 * @return
 	 */
 	public static boolean addSmilesInput(Context context, Spannable spannable) {
-		KLog.i("添加文字，。");
+//		KLog.i("添加文字，。");
 	    boolean hasChanges = false;
 	    for (Entry<Pattern, Object> entry : emoticons.entrySet()) {
 	        Matcher matcher = entry.getKey().matcher(spannable);

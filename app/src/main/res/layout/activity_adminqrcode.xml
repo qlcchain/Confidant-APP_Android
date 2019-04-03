@@ -44,7 +44,6 @@
                 android:id="@+id/llModifyName"
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
                 android:layout_marginLeft="@dimen/x30"
                 android:layout_marginRight="@dimen/x30"
                 android:layout_height="@dimen/x92">
@@ -56,24 +55,6 @@
                     android:textSize="19sp"
                     android:textColor="@color/mainColor"
                     android:layout_height="wrap_content" />
-                <TextView
-                    android:id="@+id/righttitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:visibility="gone"
-                    android:text="@string/Modify"
-                    android:textColor="@color/color_2c2c2c"
-                    android:layout_marginLeft="15dp"
-                    />
-                <ImageView
-                    android:id="@+id/ivNext"
-                    android:layout_width="@dimen/x30"
-                    android:visibility="gone"
-                    android:rotation="180"
-                    android:layout_height="@dimen/x30"
-                    android:src="@mipmap/icon_back"
-                    />
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -116,23 +97,25 @@
                             android:id="@+id/tvUserName"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="17sp"
+                            android:textSize="18sp"
                             android:text="Administrator Account QR Code"
                             android:layout_centerVertical="true"
                             android:textColor="@color/color_2c2c2c"
                             />
                         <TextView
                             android:layout_width="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/color_2c2c2c"
                             android:text="Please keep your account QR code safely for logging in to your account."
                             android:layout_marginTop="@dimen/x10"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
                     <ImageView
                         android:id="@+id/ivQrCodeAdmin"
-                        android:layout_width="@dimen/x450"
+                        android:layout_width="@dimen/x390"
                         android:layout_marginTop="@dimen/x20"
                         android:layout_marginBottom="@dimen/x60"
-                        android:layout_height="@dimen/x450" />
+                        android:layout_height="@dimen/x390" />
                     />
                 </LinearLayout>
             </LinearLayout>
@@ -157,24 +140,27 @@
                 </com.stratagile.pnrouter.view.DrawableTextView>
 
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x20"
-                android:background="@drawable/btn_maincolor"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_marginRight="@dimen/x31"
-                android:layout_marginBottom="@dimen/x50"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/LoginInBtn"
-                    android:layout_width="@dimen/x450"
-                    android:textColor="@color/white"
-                    android:text="@string/next"
-                    android:gravity="center"
-                    android:layout_height="@dimen/x85" />
-            </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:background="@drawable/btn_maincolor"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/x31"
+        android:layout_marginRight="@dimen/x31"
+        android:layout_marginBottom="@dimen/x20"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/LoginInBtn"
+            android:layout_width="@dimen/x450"
+            android:textColor="@color/white"
+            android:text="@string/next"
+            android:textSize="@dimen/commemTextSize"
+            android:gravity="center"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
 </RelativeLayout>

@@ -582,6 +582,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
+        ivAvatar.withShape = true
     }
     override fun onResume() {
         if(AppConfig.instance.messageReceiver != null)
@@ -621,7 +622,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNameChange(nameChange: NameChange) {
         routerNameTips.text = nameChange.name
-        ivAvatar.setText(nameChange.name)
+        ivAvatar.setTextWithShape(nameChange.name)
         loginKey.setText(nameChange.loginkey)
         getServer(routerId,userSn,true,true)
     }
@@ -715,7 +716,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*/
                     isFromScanAdmim = false
-                    finish()
+//                    finish()
                 }
                 else if(isFromScan)
                 {

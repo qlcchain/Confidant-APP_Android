@@ -142,7 +142,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
             } else {
-
+                newRouterEntity.routerAlias = newRouterEntity.routerName
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
             }
             LogUtil.addLog("loginBack:"+"e","LoginActivityActivity")
@@ -273,6 +273,10 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
+        showViewNeedFront()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
+        }
     }
     override fun initData() {
 
@@ -283,7 +287,8 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         var routerName = intent.getStringExtra("routerName")
         routerName =  String(RxEncodeTool.base64Decode(routerName))
         adminName.text   = routerName
-        ivAvatarAdmin.setText(routerName)
+        ivAvatarAdmin.withShape = true
+        ivAvatarAdmin.setTextWithShape(routerName)
         Activationcode.setRightTitleText(adminIdentifyCode)
         Routerpassword.setRightTitleText(getString(R.string.Modify))
         if(AppConfig.instance.messageReceiver != null)
@@ -329,6 +334,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             startActivityForResult(intent,1)
         }
         LoginInBtn.setOnClickListener {
+            AppConfig.instance.mAppActivityManager.finishActivity(LoginActivityActivity::class.java)
             showProgressDialog("wait...")
             var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
             var recovery = RecoveryReq(adminRouterId, adminUserSn,pulicMiKey)

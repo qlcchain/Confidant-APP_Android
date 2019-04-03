@@ -106,8 +106,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 
     override fun initView() {
         setContentView(R.layout.activity_router_management)
-        showViewNeedFront()
         EventBus.getDefault().register(this)
+        showViewNeedFront()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }

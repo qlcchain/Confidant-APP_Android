@@ -49,7 +49,7 @@
             android:singleLine="true"
             android:textColor="@color/regeisetInput"
             android:textColorHint="@color/color_808080"
-            android:textSize="@dimen/x31"
+            android:textSize="@dimen/commemTextSize"
             android:theme="@style/MyEditText"
 
              />
@@ -63,7 +63,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/routerpasswordTips"
             android:textColor="@color/color_b3b3b3"
-            android:textSize="@dimen/x21"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.414"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,6 +78,7 @@
             android:layout_marginTop="@dimen/x54"
             android:background="@drawable/btn_d5d5d5"
             android:gravity="center"
+            android:textSize="@dimen/commemTextSize"
             android:text="@string/LoginAdmin"
             android:textColor="@color/color_efefef"
             app:layout_constraintEnd_toEndOf="parent"

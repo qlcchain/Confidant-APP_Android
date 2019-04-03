@@ -216,7 +216,6 @@ public class FileUtil {
         }
         return sb.toString().trim();
     }
-
     public static String getJson(Context mContext, String fileName) {
         // TODO Auto-generated method stub
         StringBuilder sb = new StringBuilder();
@@ -1010,6 +1009,21 @@ public class FileUtil {
         }
         return file;
     }
+
+    public static File getKongFile(String fileName) {
+        // TODO Auto-generated method stub
+        String defaultPath = PathUtils.getInstance().getFilePath()+"/" + fileName;
+        File file = new File(defaultPath);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
 
     /**
      * 拷贝本地文件
