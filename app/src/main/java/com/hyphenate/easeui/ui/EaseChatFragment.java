@@ -300,6 +300,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 Toast.makeText(getActivity(), R.string.Start_downloading, Toast.LENGTH_SHORT).show();
             }
         });
+       if(fileData.getFileType() != 5)
+       {
+           return;
+       }
         EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(beginDownloadForwad.getMsgId());
         conversation.removeMessage(beginDownloadForwad.getMsgId() + "");
         String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_bg.xml";
@@ -3415,7 +3419,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             public void run() {
 
                 try {
-                    String fileName = fileData.getFileName();
                        /*   "png", "jpg", "jpeg","webp" -> action = 1
                         "amr" -> action = 2
                         "mp4" -> action = 4
