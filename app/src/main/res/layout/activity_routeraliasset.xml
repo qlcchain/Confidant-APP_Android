@@ -78,7 +78,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:text="Set an Alias for your circle"
+                            android:text="Set a Alias for your circle"
                             android:textColor="@color/color_2c2c2c"
                             android:textSize="18sp" />
                         <TextView
@@ -101,6 +101,7 @@
                             android:id="@+id/routerName"
                             android:layout_width="match_parent"
                             android:textSize="@dimen/commemTextSize"
+                            android:layout_marginTop="@dimen/x20"
                             android:hint="Alice's Cabinet"
                             android:background="@null"
                             android:layout_height="wrap_content" />

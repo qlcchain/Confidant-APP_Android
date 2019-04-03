@@ -939,6 +939,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 showUnlock()
                 return@setOnClickListener
             }
+            isFromScanAdmim = false
+            isFromScan = false
             if (NetUtils.isNetworkAvalible(this)) {
                 var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
                 if (routerList.size == 0) {
@@ -1876,6 +1878,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                                 {
                                                     runOnUiThread {
                                                         closeProgressDialog()
+                                                        RouterMacStr = ""
+                                                        isFromScanAdmim = false
                                                         toast(R.string.Unable_to_connect_to_router)
                                                     }
                                                 }
@@ -2100,6 +2104,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                             {
                                                 runOnUiThread {
                                                     closeProgressDialog()
+                                                    RouterMacStr = ""
+                                                    isFromScanAdmim = false
                                                     toast(R.string.Unable_to_connect_to_router)
                                                 }
                                             }
