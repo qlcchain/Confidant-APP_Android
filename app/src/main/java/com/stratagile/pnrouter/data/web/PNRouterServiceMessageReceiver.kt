@@ -44,6 +44,7 @@ val credentialsProvider: CredentialsProvider, private
                         KLog.i(JRegisterRsp)
                         registerListener?.registerBack(JRegisterRsp)
                         loginBackListener?.registerBack(JRegisterRsp)
+                        adminRecoveryCallBack?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
                         KLog.i("没有初始化。。登录之后" + loginBackListener)
@@ -120,6 +121,7 @@ val credentialsProvider: CredentialsProvider, private
                     KLog.i(JRegisterRsp)
                     registerListener?.registerBack(JRegisterRsp)
                     loginBackListener?.registerBack(JRegisterRsp)
+                    adminRecoveryCallBack?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
                     KLog.i("没有初始化。。登录之后" + loginBackListener + "##" + AppConfig.instance.name)
@@ -778,8 +780,10 @@ val credentialsProvider: CredentialsProvider, private
     }
 
     interface AdminRecoveryCallBack {
+        fun registerBack(registerRsp: JRegisterRsp)
         fun recoveryBack(recoveryRsp: JRecoveryRsp)
         fun loginBack(loginRsp: JLoginRsp)
+
     }
 
     interface AdminUpdataPassWordCallBack {

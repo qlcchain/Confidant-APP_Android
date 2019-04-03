@@ -163,7 +163,90 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             finish()
         }
     }
+    override fun registerBack(registerRsp: JRegisterRsp) {
+        if (registerRsp.params.retCode != 0) {
+            if (registerRsp.params.retCode == 1) {
+                runOnUiThread {
+                    toast("RouterId Error")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 2) {
+                runOnUiThread {
+                    toast("The two-dimensional code has been activated by other users.")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast("Error Verification Code")
+                    closeProgressDialog()
+                }
+            }
+            if (registerRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast("Other Error")
+                    closeProgressDialog()
+                }
+            }
+            return
+        }
+        if ("".equals(registerRsp.params.userId)) {
+            runOnUiThread {
+                toast("Too many users")
+                closeProgressDialog()
+            }
+        } else {
+            runOnUiThread {
+                closeProgressDialog()
+                KLog.i("1111")
+            }
+            var newRouterEntity = RouterEntity()
+            newRouterEntity.routerId = registerRsp.params.routeId
+            newRouterEntity.userSn = registerRsp.params.userSn
+            newRouterEntity.username = ConstantValue.localUserName
+            newRouterEntity.userId = registerRsp.params.userId
+            newRouterEntity.loginKey = "";
+            newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
+            newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+            var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
+            newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
+            val myRouter = MyRouter()
+            myRouter.setType(0)
+            myRouter.setRouterEntity(newRouterEntity)
+            LocalRouterUtils.insertLocalAssets(myRouter)
+            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.insert(newRouterEntity)
+            var sign = ByteArray(32)
+            var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+            System.arraycopy(time, 0, sign, 0, time.size)
+            var dst_signed_msg = ByteArray(96)
+            var signed_msg_len = IntArray(1)
+            var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+            var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+            var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+            val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+            //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+            //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
+            var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
+            ConstantValue.loginReq = login
+            if(ConstantValue.isWebsocketConnected)
+            {
 
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,login))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(4,login)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(registerRsp.params.routeId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, registerRsp.params.routeId.substring(0, 64))
+                }
+            }
+        }
+    }
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         runOnUiThread {
             closeProgressDialog()
@@ -230,11 +313,44 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 finish()*/
             }
             1 -> {
-                ConstantValue.scanRouterId = recoveryRsp.params.routeId
+
+                runOnUiThread {
+                    showProgressDialog("waiting...")
+                }
+
+                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, signBase64,pulicMiKey,NickName)
+                if(ConstantValue.isWebsocketConnected)
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                }
+                else if(ConstantValue.isToxConnected)
+                {
+                    var baseData = BaseData(4,regeister)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                    }
+                }
+                /*ConstantValue.scanRouterId = recoveryRsp.params.routeId
                 ConstantValue.scanRouterSN = recoveryRsp.params.userSn
                 AppConfig.instance.messageReceiver!!.adminRecoveryCallBack = null
                 startActivity(Intent(this, RegisterActivity::class.java))
-                finish()
+                finish()*/
             }
             2 -> {
                 runOnUiThread {
