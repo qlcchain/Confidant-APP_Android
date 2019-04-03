@@ -402,16 +402,19 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     var routerName = ""
     override fun initData() {
 
-        adminRouterId = intent.getStringExtra("adminRouterId")
-        adminUserSn = intent.getStringExtra("adminUserSn")
-        adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
-        adminQrcode = intent.getStringExtra("adminQrcode")
-        routerName = intent.getStringExtra("routerName")
-        routerName =  String(RxEncodeTool.base64Decode(routerName))
-        adminName.text   = routerName
-        ivAvatarAdmin.withShape = true
-        ivAvatarAdmin.setTextWithShape(routerName)
-        Activationcode.setRightTitleText(adminIdentifyCode)
+        if(intent.getStringExtra("adminRouterId") != null)
+        {
+            adminRouterId = intent.getStringExtra("adminRouterId")
+            adminUserSn = intent.getStringExtra("adminUserSn")
+            adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
+            adminQrcode = intent.getStringExtra("adminQrcode")
+            routerName = intent.getStringExtra("routerName")
+            routerName =  String(RxEncodeTool.base64Decode(routerName))
+            adminName.text   = routerName
+            ivAvatarAdmin.withShape = true
+            ivAvatarAdmin.setTextWithShape(routerName)
+            Activationcode.setRightTitleText(adminIdentifyCode)
+        }
         Routerpassword.setRightTitleText(getString(R.string.Modify))
         if(AppConfig.instance.messageReceiver != null)
         {
