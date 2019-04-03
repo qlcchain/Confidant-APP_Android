@@ -251,7 +251,6 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                 width = activity.getWindowManager().getDefaultDisplay().getWidth() / 3;
                                 height = activity.getWindowManager().getDefaultDisplay().getHeight() / 3;
                             }
-                            imageView.setImageResource(R.drawable.image_defalut_bg);
                             if (showHeight != 0) {
                                 return EaseImageUtils.decodeScaleImage(thumbernailPath, showWidth, showHeight);
                             } else {
@@ -293,7 +292,6 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                     return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), width, height);
                                 }
                             } else {
-                                imageView.setImageResource(R.drawable.image_defalut_bg);
                                 return null;
                             }
                         } else {
@@ -334,15 +332,12 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                             return EaseImageUtils.decodeScaleImage(localFullSizePath, width, height);
                                         }
                                     } else {
-                                        imageView.setImageResource(R.drawable.image_defalut_bg);
                                         return null;
                                     }
                                 } else {
-                                    imageView.setImageResource(R.drawable.image_defalut_bg);
                                     return null;
                                 }
                             } else {
-                                imageView.setImageResource(R.drawable.image_defalut_bg);
                                 return null;
                             }
                         }
@@ -359,6 +354,8 @@ public class EaseChatRowImage extends EaseChatRowFile {
                             }
                             imageView.setImageBitmap(bitmap2);
                             EaseImageCache.getInstance().put(thumbernailPath, bitmap2);
+                        } else {
+                            imageView.setImageResource(R.drawable.image_defalut_bg);
                         }
                     }
                 }.execute();

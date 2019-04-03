@@ -93,7 +93,7 @@ public class EaseChatMessageList extends RelativeLayout{
     public void refresh(){
         KLog.i("刷新");
         if (messageAdapter != null) {
-            messageAdapter.refreshSelectLast();
+            messageAdapter.refresh();
         }
     }
 
@@ -108,7 +108,7 @@ public class EaseChatMessageList extends RelativeLayout{
      * refresh and jump to the last
      */
     public void refreshSelectLast(){
-        //KLog.i("刷新到底");
+        KLog.i("刷新到底");
         if (messageAdapter != null) {
             messageAdapter.refreshSelectLast();
         }

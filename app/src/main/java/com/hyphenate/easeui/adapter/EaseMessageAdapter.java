@@ -280,7 +280,7 @@ public class EaseMessageAdapter extends BaseAdapter {
                     KLog.i("判断是提示消息！！！");
                     presenter = new EaseChatTipPresenter();
                 } else {
-                    KLog.i("判断为不是提示消息");
+//                    KLog.i("判断为不是提示消息");
                     if (message.getBooleanAttribute(EaseConstant.MESSAGE_ATTR_IS_BIG_EXPRESSION, false)) {
                         presenter = new EaseChatBigExpressionPresenter();
                     } else {
