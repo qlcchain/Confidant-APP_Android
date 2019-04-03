@@ -596,8 +596,15 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         formatDialog?.show()
         var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
         var nameAndType = String(Base58.decode(fileMiName))
-        var name = nameAndType.substring(0,nameAndType.lastIndexOf("."))
-        var type =  nameAndType.substring(nameAndType.lastIndexOf("."),nameAndType.length)
+        KLog.i(nameAndType)
+        var name = "null"
+        var type = ".unknown"
+        try {
+            name = nameAndType.substring(0,nameAndType.lastIndexOf("."))
+            type =  nameAndType.substring(nameAndType.lastIndexOf("."),nameAndType.length)
+        } catch (ex : Exception) {
+            ex.printStackTrace()
+        }
         etContent.setText(name)
         etContent.setSelection(etContent.text.length)
         etContent.requestFocus()
@@ -616,13 +623,13 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             formatDialog.dismissWithAnimation()
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-            var rename = Base58.encode((etContent.text.toString()+type).toByteArray())
-            var renameLen = etContent.text.toString()
-            if(renameLen.length > ConstantValue.fileNameMaxLen)
-            {
-                toast(R.string.Too_long_name)
-                return@setOnClickListener
-            }
+            var rename = Base58.getBase58Name(etContent.text.toString(), type)
+            KLog.i("重命名时，base58之后的长度为：" + rename.length)
+//            if(renameLen.length > ConstantValue.fileNameMaxLen)
+//            {
+//                toast(R.string.Too_long_name)
+//                return@setOnClickListener
+//            }
             var fileRenameReq = FileRenameReq(selfUserId!!, data.msgId, fileMiName, rename )
             if(fileMiName.equals(rename))
             {

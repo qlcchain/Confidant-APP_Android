@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.utils;
 
+import com.socks.library.KLog;
+
 public class Base58 {
     private static final char[] ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
             .toCharArray();
@@ -130,6 +132,19 @@ public class Base58 {
         byte[] range = new byte[to - from];
         System.arraycopy(source, from, range, 0, range.length);
         return range;
+    }
+
+    public static String getBase58Name(String name, String type) {
+        for (int i = name.length(); i > 0; i--) {
+            KLog.i("encode的原值：" + (name.substring(0, i) + type));
+            String result = Base58.encode((name.substring(0, i) + type).getBytes());
+            KLog.i("encode之后：" + result);
+            KLog.i("decode之后：" + new String(decode(result)));
+            if (result.length() < 128) {
+                return result;
+            }
+        }
+        return "";
     }
 
 

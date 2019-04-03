@@ -48,6 +48,8 @@
             android:textColor="@color/color_3f3f3f"
             android:singleLine="true"
             android:maxEms="20"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginRight="@dimen/x31"
             android:ellipsize="middle"
             android:textSize="@dimen/commemTextSize"
             android:layout_marginTop="@dimen/x60"

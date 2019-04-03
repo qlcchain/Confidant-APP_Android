@@ -109,6 +109,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
         when (jGroupListPullRsp.params.retCode) {
             0 -> {
+                AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.deleteAll()
                 for (item in jGroupListPullRsp.params.payload) {
                     var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
                     if (groupList.size > 0) {

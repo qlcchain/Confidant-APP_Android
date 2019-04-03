@@ -76,6 +76,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
             SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupQuitRsp.params.gId, "")//移除临时会话UI
             EventBus.getDefault().post(jGroupQuitRsp)
             EventBus.getDefault().post(groupEntity)
+            AppConfig.instance.mDaoMaster?.newSession()?.groupEntityDao?.delete(groupEntity)
             runOnUiThread {
                 finish()
             }

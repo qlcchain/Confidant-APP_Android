@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,7 +26,8 @@ public class EaseChatRowFile extends EaseChatRow{
     protected TextView fileStateView;
     private ProgressBar progressBarShelf;
     protected LinearLayout ll_loading;
-    
+    protected ImageView ivFileType;
+
     private EMNormalFileMessageBody fileMessageBody;
 
     public EaseChatRowFile(Context context, EMMessage message, int position, BaseAdapter adapter) {
@@ -45,6 +47,7 @@ public class EaseChatRowFile extends EaseChatRow{
         fileStateView = (TextView) findViewById(R.id.tv_file_state);
         percentageView = (TextView) findViewById(R.id.percentage);
         ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
+        ivFileType = findViewById(R.id.ivFileType);
         progressBarShelf = (ProgressBar) findViewById(R.id.progress_bar);
 	}
 
@@ -54,6 +57,26 @@ public class EaseChatRowFile extends EaseChatRow{
 	    fileMessageBody = (EMNormalFileMessageBody) message.getBody();
         String filePath = fileMessageBody.getLocalUrl();
         fileNameView.setText(fileMessageBody.getFileName());
+        String fileName = fileMessageBody.getFileName();
+        if (fileName.contains("jpg")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.picture));
+        } else if (fileName.contains("pdf")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.pdf));
+        } else if (fileName.contains("mp4")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.video));
+        } else if (fileName.contains("png")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.picture));
+        } else if (fileName.contains("txt")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.txt));
+        } else if (fileName.contains("ppt")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.ppt));
+        } else if (fileName.contains("xls")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.xls));
+        } else if (fileName.contains("doc")) {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.doc));
+        } else {
+            ivFileType.setImageDrawable(getResources().getDrawable(R.mipmap.other));
+        }
         if(ll_loading !=null)
         {
             if(filePath.contains("ease_default_file"))

@@ -615,7 +615,7 @@
     <string name="leave">Leave</string>
     <string name="deleted_a_message">deleted a message</string>
     <string name="no_choice">no choice</string>
-    <string name="Too_long_name">Too long name</string>
+    <string name="Too_long_name">The file name is too long.</string>
     <string name="select_a_file">Select a File</string>
     <string name="Create_a_Group">Create a Group</string>
     <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
