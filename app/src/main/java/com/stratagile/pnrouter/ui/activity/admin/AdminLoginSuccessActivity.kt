@@ -155,11 +155,11 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 closeProgressDialog()
                 KLog.i("333")
             }
-            LogUtil.addLog("loginBack:"+"f","LoginActivityActivity")
+            LogUtil.addLog("loginBack:"+"f","AdminLoginSuccessActivity")
             ConstantValue.hasLogin = true
             ConstantValue.isHeart = true
             startActivity(Intent(this, MainActivity::class.java))
-            LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
+            LogUtil.addLog("loginBack:"+"g","AdminLoginSuccessActivity")
             finish()
         }
     }
@@ -330,7 +330,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                var regeister = RegeisterReq_V4( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, signBase64,pulicMiKey,NickName)
+                var regeister = RegeisterReq_V4( recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
                 if(ConstantValue.isWebsocketConnected)
                 {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
