@@ -134,14 +134,35 @@ public class Base58 {
         return range;
     }
 
+    public static int encodeNameLength = 160;
+
     public static String getBase58Name(String name, String type) {
         for (int i = name.length(); i > 0; i--) {
             KLog.i("encode的原值：" + (name.substring(0, i) + type));
             String result = Base58.encode((name.substring(0, i) + type).getBytes());
             KLog.i("encode之后：" + result);
             KLog.i("decode之后：" + new String(decode(result)));
-            if (result.length() < 128) {
+            if (result.length() < encodeNameLength) {
                 return result;
+            }
+        }
+        return "";
+    }
+    public static String getBase58NameWithOrginName(String name, String type) {
+        for (int i = name.length(); i > 0; i--) {
+            String result = Base58.encode((name.substring(0, i) + type).getBytes());
+            if (result.length() < encodeNameLength) {
+                return new String(decode(result));
+            }
+        }
+        return "";
+    }
+
+    public static String getBase58TwoName(String name, String extraNname, String type) {
+        for (int i = name.length(); i > 0; i--) {
+            String result = Base58.encode((name.substring(0, i) + extraNname + type).getBytes());
+            if (result.length() < encodeNameLength) {
+                return new String(decode(result));
             }
         }
         return "";

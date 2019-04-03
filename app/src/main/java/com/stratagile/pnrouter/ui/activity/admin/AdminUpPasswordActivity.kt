@@ -127,25 +127,25 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
                     ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                 }
             }
-            repeatNewPassword.addTextChangedListener(object : TextWatcher{
-                override fun afterTextChanged(p0: Editable?) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    if (p0?.length == 8) {
-                        updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
-                    } else {
-                        updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)
-                    }
-                }
-
-            })
         }
+        repeatNewPassword.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (p0?.toString()?.length == 8) {
+                    updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
+                } else {
+                    updateAdminPasswordBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                }
+            }
+
+        })
     }
     override fun onDestroy() {
         super.onDestroy()

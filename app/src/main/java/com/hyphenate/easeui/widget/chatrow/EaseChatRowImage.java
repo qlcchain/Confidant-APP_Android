@@ -103,7 +103,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
             } else {
                 showHeight = windowWidth / 3;
             }
-            showWidth = (int) (width / height) * showHeight;
+            showWidth = (int) ((width / height) * showHeight);
         } else {
             //以宽为标准
             if (height / width >= 1.5) {
@@ -251,6 +251,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                 width = activity.getWindowManager().getDefaultDisplay().getWidth() / 3;
                                 height = activity.getWindowManager().getDefaultDisplay().getHeight() / 3;
                             }
+                            imageView.setImageResource(R.drawable.image_defalut_bg);
                             if (showHeight != 0) {
                                 return EaseImageUtils.decodeScaleImage(thumbernailPath, showWidth, showHeight);
                             } else {
@@ -292,6 +293,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                     return EaseImageUtils.decodeScaleImage(imgBody.thumbnailLocalPath(), width, height);
                                 }
                             } else {
+                                imageView.setImageResource(R.drawable.image_defalut_bg);
                                 return null;
                             }
                         } else {
@@ -332,9 +334,11 @@ public class EaseChatRowImage extends EaseChatRowFile {
                                             return EaseImageUtils.decodeScaleImage(localFullSizePath, width, height);
                                         }
                                     } else {
+                                        imageView.setImageResource(R.drawable.image_defalut_bg);
                                         return null;
                                     }
                                 } else {
+                                    imageView.setImageResource(R.drawable.image_defalut_bg);
                                     return null;
                                 }
                             } else {

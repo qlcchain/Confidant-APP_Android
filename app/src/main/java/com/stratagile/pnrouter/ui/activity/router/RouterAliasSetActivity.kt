@@ -123,7 +123,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if ("".equals(p0)) {
+                if (!"".equals(p0?.toString())) {
                     llNext.background = resources.getDrawable(R.drawable.btn_maincolor)
                 } else {
                     llNext.background = resources.getDrawable(R.drawable.btn_d5d5d5)

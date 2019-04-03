@@ -52,6 +52,7 @@ import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.MainActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.utils.NetUtils.isMacAddress
 import com.stratagile.pnrouter.view.CommonDialog
 import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.KotlinToxService
@@ -72,6 +73,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.libsodium.jni.Sodium
 import java.util.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 
@@ -1836,6 +1838,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         return false
     }
+
     override  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         var this_ = this
@@ -1846,8 +1849,72 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 var result = data!!.getStringExtra("result");
                 if(!result.contains("type_"))
                 {
-                    toast(R.string.code_error)
-                    return
+                    if (isMacAddress(result)) {
+                        //todo
+                        scanType = 0;
+                        RouterMacStr = result
+                        if(RouterMacStr != null && !RouterMacStr.equals(""))
+                        {
+                            if(AppConfig.instance.messageReceiver != null)
+                                AppConfig.instance.messageReceiver!!.close()
+                            if(WiFiUtil.isWifiConnect())
+                            {
+                                showProgressDialog("wait...")
+                                ConstantValue.currentRouterMac  = ""
+                                isFromScanAdmim = true
+                                var count =0;
+                                KLog.i("测试计时器Mac" + count)
+                                Thread(Runnable() {
+                                    run() {
+
+                                        while (true)
+                                        {
+                                            if(count >=3)
+                                            {
+                                                if(ConstantValue.currentRouterMac.equals(""))
+                                                {
+                                                    runOnUiThread {
+                                                        closeProgressDialog()
+                                                        toast(R.string.Unable_to_connect_to_router)
+                                                    }
+                                                }
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                break;
+                                            }else if(!ConstantValue.currentRouterMac.equals(""))
+                                            {
+                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                break;
+                                            }
+                                            count ++;
+                                            MobileSocketClient.getInstance().init(handler,this)
+                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                            MobileSocketClient.getInstance().destroy()
+                                            MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                            MobileSocketClient.getInstance().receive()
+                                            KLog.i("测试计时器Mac" + count)
+                                            Thread.sleep(1000)
+                                        }
+
+                                    }
+                                }).start()
+
+                            }else{
+                                runOnUiThread {
+                                    closeProgressDialog()
+                                    toast(R.string.Please_connect_to_WiFi)
+                                }
+                            }
+                        }else{
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast(R.string.code_error)
+                            }
+                        }
+                        return
+                    } else {
+                        toast(R.string.code_error)
+                        return
+                    }
                 }
                 var type = result.substring(0,6);
                 var data = result.substring(7,result.length);
