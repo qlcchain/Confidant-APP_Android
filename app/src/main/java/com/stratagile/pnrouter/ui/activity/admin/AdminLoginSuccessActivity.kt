@@ -394,13 +394,19 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
     }
+
+    var adminRouterId = ""
+    var adminUserSn = ""
+    var adminIdentifyCode = ""
+    var adminQrcode = ""
+    var routerName = ""
     override fun initData() {
 
-        var adminRouterId = intent.getStringExtra("adminRouterId")
-        var adminUserSn = intent.getStringExtra("adminUserSn")
-        var adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
-        var adminQrcode = intent.getStringExtra("adminQrcode")
-        var routerName = intent.getStringExtra("routerName")
+        adminRouterId = intent.getStringExtra("adminRouterId")
+        adminUserSn = intent.getStringExtra("adminUserSn")
+        adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
+        adminQrcode = intent.getStringExtra("adminQrcode")
+        routerName = intent.getStringExtra("routerName")
         routerName =  String(RxEncodeTool.base64Decode(routerName))
         adminName.text   = routerName
         ivAvatarAdmin.withShape = true
