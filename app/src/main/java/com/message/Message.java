@@ -31,7 +31,7 @@ public class Message {
     private int Status;//消息状态
     private int Sender;//发送还是接收
     private String FileName;//文件名
-    private String FileMd5;//文件md5
+    private String FileMD5;//文件md5
     private String  FilePath;//文件消息路径
     private String FileInfo;//文件附加信息
     private Long FileSize;//文件大小
@@ -62,12 +62,12 @@ public class Message {
         FileName = fileName;
     }
 
-    public String getFileMd5() {
-        return FileMd5;
+    public String getFileMD5() {
+        return FileMD5;
     }
 
-    public void setFileMd5(String fileMd5) {
-        FileMd5 = fileMd5;
+    public void setFileMD5(String fileMD5) {
+        FileMD5 = fileMD5;
     }
 
     @Override

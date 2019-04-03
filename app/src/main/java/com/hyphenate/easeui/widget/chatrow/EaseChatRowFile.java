@@ -83,17 +83,33 @@ public class EaseChatRowFile extends EaseChatRow{
             {
                 ll_loading.setVisibility(View.VISIBLE);
             }else{
-                ll_loading.setVisibility(View.INVISIBLE);
+                if(!message.getStringAttribute("kong","").equals(""))
+                {
+                    ll_loading.setVisibility(View.VISIBLE);
+                }else{
+                    ll_loading.setVisibility(View.INVISIBLE);
+                }
+
             }
         }
         File file = new File(filePath);
         if (file.exists() && !file.getName().contains("file_downloading")) {
             if(!message.getStringAttribute("kong","").equals(""))
             {
-                fileSizeView.setText(NetUtils.INSTANCE.parseSize(0));
+                if(message.getIntAttribute("fileSize",0) == 0)
+                {
+                    fileSizeView.setText(NetUtils.INSTANCE.parseSize(0));
+                }else{
+                    fileSizeView.setText(NetUtils.INSTANCE.parseSize(message.getIntAttribute("fileSize",0)));
+                }
                 progressBarShelf.setVisibility(View.VISIBLE);
             }else{
-                fileSizeView.setText(NetUtils.INSTANCE.parseSize(fileMessageBody.getFileSize()));
+                if(message.getIntAttribute("fileSize",0) != 0)
+                {
+                    fileSizeView.setText(NetUtils.INSTANCE.parseSize(message.getIntAttribute("fileSize",0)));
+                }else{
+                    fileSizeView.setText(NetUtils.INSTANCE.parseSize(fileMessageBody.getFileSize()));
+                }
                 progressBarShelf.setVisibility(View.INVISIBLE);
             }
         }else{
