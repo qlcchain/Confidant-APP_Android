@@ -101,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x20"
         android:layout_height="@dimen/x108"
-        app:contentStr="HZP"
+        app:contentStr=""
         app:showImg="false"
         app:text1="Circle Members">
     </com.stratagile.pnrouter.view.DetailView>
@@ -112,7 +112,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x20"
         android:layout_height="@dimen/x108"
-        app:contentStr="HZP"
+        app:contentStr=""
         app:showImg="false"
         app:text1="Circle Name">
     </com.stratagile.pnrouter.view.DetailView>
@@ -165,7 +165,7 @@
                 android:layout_width="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/color_808080"
-                android:text="886.2 G / 2055 G （43.1%）"
+                android:text="-- G / -- G （--%）"
                 android:layout_marginLeft="@dimen/x31"
                 android:layout_height="wrap_content" />
         </LinearLayout>

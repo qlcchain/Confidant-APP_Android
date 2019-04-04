@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.ui.activity.add.component.DaggeraddFriendOrGroupC
 import com.stratagile.pnrouter.ui.activity.add.contract.addFriendOrGroupContract
 import com.stratagile.pnrouter.ui.activity.add.module.addFriendOrGroupModule
 import com.stratagile.pnrouter.ui.activity.add.presenter.addFriendOrGroupPresenter
+import com.stratagile.pnrouter.ui.activity.router.RouterCreateUserActivity
 import kotlinx.android.synthetic.main.layout_add.*
 
 import javax.inject.Inject;
@@ -65,14 +66,16 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View {
                 {
                     //管理员
                     addNewMember.visibility = View.VISIBLE
+                    addNewMember.setOnClickListener {
+                        var intent = Intent(this, RouterCreateUserActivity::class.java)
+                        intent.putExtra("routerUserEntity", routerEntity)
+                        startActivity(intent)
+                    }
                 }else{
                     addNewMember.visibility = View.GONE
                 }
                 return@forEach
             }
-        }
-        addNewMember.setOnClickListener {
-
         }
     }
 
