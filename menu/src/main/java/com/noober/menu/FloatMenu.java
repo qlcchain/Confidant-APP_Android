@@ -73,7 +73,6 @@ public class FloatMenu extends PopupWindow{
 		super(context);
 		setOutsideTouchable(true);
 		setFocusable(true);
-		setClippingEnabled(false);
 		setBackgroundDrawable(new BitmapDrawable());
 		view.setOnTouchListener(new MenuTouchListener());
 		this.context = context;
@@ -134,23 +133,21 @@ public class FloatMenu extends PopupWindow{
 		menuLayout = new LinearLayout(context);
 		menuLayout.setBackgroundDrawable(ContextCompat.getDrawable(context, R.mipmap.icon_more_select));
 		menuLayout.setOrientation(LinearLayout.HORIZONTAL);
-		menuLayout.setGravity(Gravity.CENTER_VERTICAL);
 		int padding = Display.dip2px(context, 1);
 		for(int i = 0; i < menuItemList.size(); i ++){
 			TextView textView = new TextView(context);
 			textView.setClickable(true);
 			//textView.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.shape_main_list_bg));
-//			textView.setPadding(padding, padding, padding, 0);
-			textView.setWidth((int) context.getResources().getDimension(R.dimen.x130));
-//			textView.setHeight((int) context.getResources().getDimension(R.dimen.x90));
+			textView.setPadding(padding, padding, padding, 0);
+			textView.setWidth(itemWidth);
 			textView.setGravity(Gravity.CENTER);
-			textView.setTextSize(13);
+			textView.setTextSize(11);
 			textView.setTextColor(Color.WHITE);
 			MenuItem menuModel = menuItemList.get(i);
 			if(menuModel.getItemResId() != View.NO_ID){
 				Drawable drawable = ContextCompat.getDrawable(context, menuModel.getItemResId());
 				drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-				textView.setCompoundDrawablePadding(Display.dip2px(context, 2));
+				textView.setCompoundDrawablePadding(Display.dip2px(context, 1));
 				textView.setCompoundDrawables(null, drawable, null, null);
 			}
 			textView.setText(menuModel.getItem());
@@ -158,21 +155,19 @@ public class FloatMenu extends PopupWindow{
 				textView.setOnClickListener(new ItemOnClickListener(i,menuModel.getItem()));
 			}
 			menuLayout.addView(textView);
-//			textView.getLayoutParams().width = (int) context.getResources().getDimension(R.dimen.x130);
-//			textView.getLayoutParams().height = (int) context.getResources().getDimension(R.dimen.x90);
 		}
-//		int width = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-//		int height =View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-//		menuLayout.measure(width,height);
-//		menuWidth = menuLayout.getMeasuredWidth();
-//		menuHeight = menuLayout.getMeasuredHeight();
-//		if(menuHeight < 135)
-//		{
-//			menuHeight = 135;
-//		}
+		int width = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+		int height =View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+		menuLayout.measure(width,height);
+		menuWidth = menuLayout.getMeasuredWidth();
+		menuHeight = menuLayout.getMeasuredHeight();
+		if(menuHeight < 145)
+		{
+			menuHeight = 145;
+		}
 		setContentView(menuLayout);
-//		setWidth(Display.dip2px(context, 70) * menuItemList.size());
-		setHeight((int) context.getResources().getDimension(R.dimen.x115));
+		setWidth(Display.dip2px(context, 70) * menuItemList.size());
+		setHeight(menuHeight - 35);
 
 	}
 

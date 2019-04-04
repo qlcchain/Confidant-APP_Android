@@ -23,13 +23,12 @@ public class EaseChatRowLocation extends EaseChatRow{
 
     @Override
     protected void onInflateView() {
-        inflater.inflate(message.direct() == EMMessage.Direct.RECEIVE ?
-                R.layout.ease_row_received_location : R.layout.ease_row_sent_location, this);
+        inflater.inflate(R.layout.ease_row_tip, this);
     }
 
     @Override
     protected void onFindViewById() {
-    	locationView = (TextView) findViewById(R.id.tv_location);
+    	locationView = (TextView) findViewById(R.id.content);
     }
 
 

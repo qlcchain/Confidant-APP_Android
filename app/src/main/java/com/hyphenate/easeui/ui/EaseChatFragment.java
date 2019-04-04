@@ -800,7 +800,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
-        if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
+       /* if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
             EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
@@ -816,7 +816,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             EMNormalFileMessageBody imgBody = (EMNormalFileMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
-        }
+        }*/
         if (conversation != null) {
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             EMMessage eMMessage = conversation.getLastMessage();

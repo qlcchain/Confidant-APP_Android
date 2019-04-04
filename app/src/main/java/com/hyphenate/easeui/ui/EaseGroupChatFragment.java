@@ -812,7 +812,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (isMessageListInited) {
             easeChatMessageList.refresh();
         }
-        if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
+        /*if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
             EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
@@ -828,7 +828,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             EMNormalFileMessageBody imgBody = (EMNormalFileMessageBody) forward_msg.getBody();
             String localUrl = imgBody.getLocalUrl();
             FileUtil.deleteFile(localUrl);
-        }
+        }*/
         if (conversation != null) {
             String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
             EMMessage eMMessage = conversation.getLastMessage();
@@ -2315,7 +2315,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param tip 消息撤回系统提示内容
      */
     public void insertMsgTipMessage(String from,String tip,long msgTime) {
-        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
+        EMMessage message = EMMessage.createLocationSendMessage(0,0,tip, toChatUserId);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         int uuid = (int) (System.currentTimeMillis() / 1000);
         message.setDirection(EMMessage.Direct.RECEIVE);
@@ -2335,7 +2335,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param tip 系统提示内容
      */
     public void insertTipMessage(String from,String tip) {
-        EMMessage message = EMMessage.createTxtSendMessage(tip, toChatUserId);
+        EMMessage message = EMMessage.createLocationSendMessage(0,0,tip, toChatUserId);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         int uuid = (int) (System.currentTimeMillis() / 1000);
         message.setDirection(EMMessage.Direct.RECEIVE);
