@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.pawegio.kandroid.e
 import java.util.*
 
 object SpUtil {
@@ -35,7 +36,7 @@ object SpUtil {
         {
             return
         }
-        if(key.equals("username"))
+        if(key.indexOf("message_") > -1 && key.equals(""))
         {
             var aa =""
         }

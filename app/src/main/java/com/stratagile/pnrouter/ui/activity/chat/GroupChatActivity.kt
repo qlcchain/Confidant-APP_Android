@@ -199,6 +199,11 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             242->{
                 if(jGroupSysPushRsp.params.from.equals(userId))//如果是自己
                 {
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                    if (groupList.size > 0) {
+                        var GroupLocal = groupList.get(0)
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                    }
                     //需要细化处理 ，弹窗告知详情等
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
@@ -211,6 +216,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             243->{//有人被移除群
                 if(jGroupSysPushRsp.params.to.equals(userId))//如果是自己
                 {
+
                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                     var verifyList = AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.queryBuilder().where(GroupVerifyEntityDao.Properties.Aduit.eq(selfUserId)).list()
                     var hasVerify = false
@@ -233,6 +239,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                         groupVerifyEntity.fromUserName = jGroupSysPushRsp.params.fromUserName
                         AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.insert(groupVerifyEntity)
                     }
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                    if (groupList.size > 0) {
+                        var GroupLocal = groupList.get(0)
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                    }
+                    toast(R.string.You_removed)
                     //需要细化处理 ，弹窗告知详情等
                     SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                     finish()
@@ -242,6 +254,20 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner))
                 }
 
+            }
+            244-> {//管理员解散群
+                var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                if (groupList.size > 0) {
+                    var GroupLocal = groupList.get(0)
+                    AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                }
+                runOnUiThread {
+
+                    toast(R.string.Group_disbanded)
+                }
+                //需要细化处理 ，弹窗告知详情等
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                finish()
             }
 
         }

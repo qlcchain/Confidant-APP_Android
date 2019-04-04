@@ -109,7 +109,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
         when (jGroupListPullRsp.params.retCode) {
             0 -> {
-                AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.deleteAll()
+                //AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.deleteAll()
                 for (item in jGroupListPullRsp.params.payload) {
                     var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
                     if (groupList.size > 0) {
@@ -219,7 +219,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                 }
                 242 -> {
-
+                    if(jGroupSysPushRsp.params.from.equals(userId))//如果是自己
+                    {
+                        var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                        if (groupList.size > 0) {
+                            var GroupLocal = groupList.get(0)
+                            AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                        }
+                        //需要细化处理 ，弹窗告知详情等
+                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                    }
                 }
                 243 -> {//有人被移除群
                     if (jGroupSysPushRsp.params.to.equals(userId))//如果是自己
@@ -249,7 +258,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             groupVerifyEntity.fromUserName = jGroupSysPushRsp.params.fromUserName
                             AppConfig.instance.mDaoMaster!!.newSession().groupVerifyEntityDao.insert(groupVerifyEntity)
                         }
-
+                        var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                        if (groupList.size > 0) {
+                            var GroupLocal = groupList.get(0)
+                            AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                        }
                         //需要细化处理 ，弹窗告知详情等
                         SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                         if (ConstantValue.isInit) {
@@ -262,7 +275,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     }
                 }
+                244 -> {//有人被移除群
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
+                    if (groupList.size > 0) {
+                        var GroupLocal = groupList.get(0)
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
+                    }
+                    runOnUiThread {
 
+                        toast(R.string.Group_disbanded)
+                    }
+                    //需要细化处理 ，弹窗告知详情等
+                    SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
+                }
             }
         }
     }
@@ -1454,6 +1479,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if (toChatUserId != null && toChatUserId != "" && toChatUserId != "null") {
                     if (toChatUserId.indexOf("group") == 0)//这里处理群聊
                     {
+                        val localGroupListss = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.loadAll()
                         val localGroupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(toChatUserId)).list()
                         if (localGroupList.size == 0)
                         //如果找不到用户

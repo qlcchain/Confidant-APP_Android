@@ -624,5 +624,8 @@
     <string name="Share_My_Contact_Card">Share My Contact Card</string>
     <string name="Scan_my_Contact_Card_QR_Code">Scan my Contact Card QR Code</string>
     <string name="The_server_did_not_respond">The node is not responding, please scan the code again to log in</string>
+    <string name="Group_disbanded">Group disbanded</string>
+    <string name="You_removed">You\'re removed from group chat by the group leader</string>
+
 
 </resources>
