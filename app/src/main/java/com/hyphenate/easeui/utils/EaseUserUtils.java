@@ -88,15 +88,15 @@ public class EaseUserUtils {
                     {
                         usernameSouce = new  String(RxEncodeTool.base64Decode(userEntityList.get(i).getRemarks()));
                     }
-                    textView.setText(usernameSouce);
+//                    textView.setText(usernameSouce);
                     String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userEntityList.get(i).getSignPublicKey()))+".jpg";
-                    textView.setImageFileInChat(fileBase58Name);
+                    textView.setImageFileInChat(fileBase58Name, usernameSouce);
                     return;
                 }
             }
-            textView.setText(username);
+//            textView.setText(username);
             String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(signPublicKey))+".jpg";
-            textView.setImageFileInChat(fileBase58Name);
+            textView.setImageFileInChat(fileBase58Name, username);
         }
     }
 

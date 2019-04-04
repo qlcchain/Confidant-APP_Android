@@ -20,6 +20,7 @@ import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.LogUtil
 import com.stratagile.pnrouter.utils.UIUtils
@@ -162,6 +163,9 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
         title = toolbar?.findViewById(R.id.title)!!
+        title.setOnClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
+        }
         relativeLayout_root = findViewById<View>(R.id.root_rl) as RelativeLayout
         view = findViewById(R.id.view)
         view.setLayoutParams(RelativeLayout.LayoutParams(UIUtils.getDisplayWidth(this), UIUtils.getStatusBarHeight(this) as Int))

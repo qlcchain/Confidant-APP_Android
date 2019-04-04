@@ -14,12 +14,11 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserQRCodeComp
 import com.stratagile.pnrouter.ui.activity.router.contract.UserQRCodeContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserQRCodeModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserQRCodePresenter
-import kotlinx.android.synthetic.main.activity_qrcode.*
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
 import android.content.Intent.ACTION_SEND
 import android.net.Uri
-import android.support.v4.view.accessibility.AccessibilityEventCompat.setAction
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.utils.*
 import org.greenrobot.eventbus.EventBus
@@ -51,35 +50,48 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerUserEntity = intent.getParcelableExtra("user")
         EventBus.getDefault().register(this)
-        tvShareUser.setOnClickListener {
-
-            cardViewUser.setDrawingCacheEnabled(true);
-            cardViewUser.buildDrawingCache();
-            val bitmapPic = Bitmap.createBitmap(cardViewUser.getDrawingCache())
-            if(bitmapPic != null)
-            {
-                var dir = ConstantValue.localPath + "/RA/" + routerUserEntity.userSN + ".jpg"
-                var share_intent = Intent()
-                share_intent.action = Intent.ACTION_SEND//设置分享行为
-                share_intent.type = "image/*"  //设置分享内容的类型
-                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
-                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                //创建分享的Dialog
-                share_intent = Intent.createChooser(share_intent, "share")
-                startActivity(share_intent)
-            }
-            //PopWindowUtil.showSharePopWindow(this, tvShareUser)
-        }
+//        tvShareUser.setOnClickListener {
+//
+//            cardViewUser.setDrawingCacheEnabled(true);
+//            cardViewUser.buildDrawingCache();
+//            val bitmapPic = Bitmap.createBitmap(cardViewUser.getDrawingCache())
+//            if(bitmapPic != null)
+//            {
+//                var dir = ConstantValue.localPath + "/RA/" + routerUserEntity.userSN + ".jpg"
+//                var share_intent = Intent()
+//                share_intent.action = Intent.ACTION_SEND//设置分享行为
+//                share_intent.type = "image/*"  //设置分享内容的类型
+//                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+//                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                //创建分享的Dialog
+//                share_intent = Intent.createChooser(share_intent, "share")
+//                startActivity(share_intent)
+//            }
+//            //PopWindowUtil.showSharePopWindow(this, tvShareUser)
+//        }
         if(routerUserEntity.nickName !=null  &&  !routerUserEntity.nickName.equals(""))
         {
-            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.nickName))
+//            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.nickName))
             ivAvatarUser.setText(String(RxEncodeTool.base64Decode(routerUserEntity.nickName)))
             ivAvatarUser.setImageFile(String(RxEncodeTool.base64Decode(routerUserEntity.nickName)))
         }else if(routerUserEntity.mnemonic !=null  &&  !routerUserEntity.mnemonic.equals(""))
         {
-            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic))
+//            tvRouterNameUser.text = String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic))
             ivAvatarUser.setText(String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic)))
             ivAvatarUser.setImageFile(String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic)))
+        }
+        var selectedRouter : RouterEntity
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        routerList.forEach {
+            if (it.lastCheck) {
+                tvRouterName.text = "【" + it.routerName + "】"
+                ivAvatarUser.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
+                var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
+                ivAvatarUser.setImageFile(fileBase58Name)
+                selectedRouter = it
+                ivAvatarUser.withShape = true
+                return@forEach
+            }
         }
         /* createEnglishQRCode = ThreadUtil.Companion.CreateEnglishQRCode(routerUserEntity.routerId, ivQrCode2)
          createEnglishQRCode.execute()*/
@@ -88,7 +100,7 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
 
                 var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(routerUserEntity.qrcode, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
                 runOnUiThread {
-                    ivQrCodeUser.setImageBitmap(bitmap)
+                    ivQrCode2.setImageBitmap(bitmap)
                 }
 
             }

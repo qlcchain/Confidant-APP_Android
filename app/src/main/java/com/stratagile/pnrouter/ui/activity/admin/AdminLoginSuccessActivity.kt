@@ -49,6 +49,9 @@ import javax.inject.Inject
 class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View, PNRouterServiceMessageReceiver.AdminRecoveryCallBack {
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
+//        runOnUiThread {
+//            toast(loginRsp.toString())
+//        }
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
@@ -164,6 +167,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
+//        runOnUiThread {
+//            toast(registerRsp.toString())
+//        }
         if (registerRsp.params.retCode != 0) {
             if (registerRsp.params.retCode == 1) {
                 runOnUiThread {
@@ -201,6 +207,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 closeProgressDialog()
                 KLog.i("1111")
             }
+            runOnUiThread {
+                showProgressDialog("logining...")
+            }
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn
@@ -228,6 +237,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
             var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
+            runOnUiThread {
+                toast(login.toString())
+            }
             ConstantValue.loginReq = login
             if(ConstantValue.isWebsocketConnected)
             {
@@ -249,6 +261,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     }
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         runOnUiThread {
+//            toast(recoveryRsp.toString())
             closeProgressDialog()
         }
         when (recoveryRsp.params.retCode) {
@@ -287,6 +300,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 var login = LoginReq_V4(  recoveryRsp.params.routeId,recoveryRsp.params.userSn, recoveryRsp.params.userId,signBase64, recoveryRsp.params.dataFileVersion,recoveryRsp.params.routerName)
                 runOnUiThread {
                     showProgressDialog("logining...")
+//                    toast(login.toString())
                 }
                 ConstantValue.loginReq = login
                 if(ConstantValue.isWebsocketConnected)
@@ -331,6 +345,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
                 var regeister = RegeisterReq_V4( recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
+//                runOnUiThread {
+//                    toast(regeister.toString())
+//                }
                 if(ConstantValue.isWebsocketConnected)
                 {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
@@ -498,7 +515,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
     }
     override fun onDestroy() {
-        AppConfig.instance.messageReceiver!!.adminRecoveryCallBack = null
+        AppConfig.instance.getPNRouterServiceMessageReceiver().adminRecoveryCallBack = null
         super.onDestroy()
     }
     override fun setupActivityComponent() {

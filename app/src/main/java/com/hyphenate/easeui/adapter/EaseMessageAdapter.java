@@ -317,16 +317,13 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         EaseChatRowPresenter presenter = null;
 
-        if (convertView == null) {
+         if (convertView == null) {
             presenter = createChatRowPresenter(message, position);
             convertView = presenter.createChatRow(context, message, position, this);
             convertView.setTag(presenter);
         } else {
             presenter = (EaseChatRowPresenter) convertView.getTag();
         }
-       /* presenter = createChatRowPresenter(message, position);
-        convertView = presenter.createChatRow(context, message, position, this);
-        convertView.setTag(presenter);*/
         presenter.setup(message, position, itemClickListener, itemStyle, getCount());
 
         return convertView;

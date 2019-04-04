@@ -3,6 +3,13 @@ package com.stratagile.pnrouter.entity;
 public class JLoginRsp extends BaseEntity {
 
 
+    @Override
+    public String toString() {
+        return "JLoginRsp{" +
+                "params=" + params.toString() +
+                '}';
+    }
+
     /**
      * params : {"Action":"Login","RetCode":0,"Routerid":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000010B827EBD089CB00005BF7CD9A","UserId":"50D065FC0DEF163E03B2D7100D8A2244F7A6B374E85B42D99DA7D0DB793B740ADAFF9CA03DD3","NeedAsysn":0,"NickName":"cmVkOQ=="}
      */
@@ -18,6 +25,21 @@ public class JLoginRsp extends BaseEntity {
     }
 
     public static class ParamsBean {
+        @Override
+        public String toString() {
+            return "ParamsBean{" +
+                    "Action='" + Action + '\'' +
+                    ", RetCode=" + RetCode +
+                    ", Index='" + Index + '\'' +
+                    ", Routerid='" + Routerid + '\'' +
+                    ", RouterName='" + RouterName + '\'' +
+                    ", UserSn='" + UserSn + '\'' +
+                    ", UserId='" + UserId + '\'' +
+                    ", NeedAsysn=" + NeedAsysn +
+                    ", NickName='" + NickName + '\'' +
+                    '}';
+        }
+
         /**
          * Action : Login
          * RetCode : 0

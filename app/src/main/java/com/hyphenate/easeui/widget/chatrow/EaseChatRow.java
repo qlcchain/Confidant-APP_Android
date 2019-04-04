@@ -183,9 +183,9 @@ public abstract class EaseChatRow extends LinearLayout {
             if (message.direct() == Direct.SEND) {
 //                EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
                 //设置自己的头像
-                userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
+//                userAvatarView.setText(SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
                 String fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getLibsodiumpublicSignKey()))+".jpg";
-                userAvatarView.setImageFileInChat(fileBase58Name);
+                userAvatarView.setImageFileInChat(fileBase58Name, SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), ""));
             } else {
                 List<UserEntity> user = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(message.getFrom())).list();
                 if (user.size() != 0) {
@@ -315,16 +315,6 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             });
 
-//            bubbleLayout.setOnTouchListener(new OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View view, MotionEvent motionEvent) {
-//                    KLog.i("touch...");
-//                    AppConfig.instance.getPoint().x = (int) motionEvent.getRawX();
-//                    AppConfig.instance.getPoint().y = (int) motionEvent.getRawY();
-//                    return true;
-//                }
-//            });
-    
             bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
     
                 @Override

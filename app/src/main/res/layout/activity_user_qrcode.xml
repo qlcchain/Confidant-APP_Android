@@ -1,99 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
     android:background="@color/color_efefef"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
+
     <android.support.v7.widget.CardView
-        android:id="@+id/cardViewUser"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/x28"
-        android:layout_marginLeft="@dimen/x50"
-        app:cardCornerRadius="@dimen/x5"
+        android:id="@+id/cardView2"
+        android:layout_width="@dimen/x660"
+        android:layout_height="wrap_content"
         android:elevation="@dimen/x5"
-        android:layout_marginRight="@dimen/x50"
-        android:layout_height="wrap_content">
+        app:cardCornerRadius="@dimen/x16">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x257"
+            android:src="@mipmap/invitation_background" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/x40"
-                android:layout_marginBottom="@dimen/x40"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/tvRouterNameUser"
-                    android:layout_width="wrap_content"
-                    android:textSize="17sp"
-                    android:text="Hzp"
-                    android:layout_centerVertical="true"
-                    android:textColor="@color/color_2c2c2c"
-                    android:layout_marginLeft="@dimen/x40"
-                    android:layout_height="wrap_content" />
+            android:orientation="vertical">
 
-                <com.stratagile.pnrouter.view.ImageButtonWithText
-                    android:layout_width="@dimen/x75"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="@dimen/x40"
-                    app:imageButtonTextSize="20"
-                    android:layout_height="@dimen/x75"
-                    android:id="@+id/ivAvatarUser" />
-            </RelativeLayout>
-            <View
-                android:layout_width="match_parent"
-                android:background="@color/color_ebebeb"
-                android:layout_height="@dimen/x1" />
-            <ImageView
-                android:id="@+id/ivQrCodeUser"
-                android:layout_width="@dimen/x490"
-                android:layout_marginTop="@dimen/x60"
-                android:layout_marginBottom="@dimen/x60"
-                android:layout_height="@dimen/x490" />
-            <View
-                android:layout_width="match_parent"
-                android:background="@color/color_ebebeb"
-                android:layout_height="@dimen/x1" />
             <TextView
                 android:layout_width="wrap_content"
+                android:text="This is an invitation for joining the circle"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="@dimen/x52"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvRouterName"
+                android:textSize="15sp"
                 android:layout_marginTop="@dimen/x20"
-                android:layout_marginBottom="@dimen/x20"
-                android:textSize="12sp"
-                android:textColor="@color/color_b3b3b3"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+
+            <com.stratagile.pnrouter.view.ImageButtonWithText
+                android:id="@+id/ivAvatarUser"
+                android:layout_width="@dimen/x108"
+                android:layout_marginTop="@dimen/x50"
+                android:layout_height="@dimen/x108" />
+
+
+            <ImageView
+                android:id="@+id/ivQrCode2"
+                android:layout_width="@dimen/x375"
+                android:layout_height="@dimen/x375"
+                android:layout_marginTop="@dimen/x60" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Scan code registration account"
-                />
+                android:layout_marginTop="@dimen/x30"
+                android:layout_marginBottom="@dimen/x20"
+                android:text="Never expose the QR code to anyone!"
+                android:textColor="@color/color_b3b3b3"
+                android:textSize="12sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x1"
+                android:background="@color/color_f2f2f2"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_marginRight="@dimen/x30"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginLeft="@dimen/x30"
+                android:gravity="center"
+                android:layout_marginRight="@dimen/x30"
+                android:layout_height="@dimen/x75">
+                <ImageView
+                    android:layout_width="@dimen/x30"
+                    android:src="@mipmap/icon_sub_user"
+                    android:layout_height="@dimen/x30" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/color_666666"
+                    android:textSize="10sp"
+                    android:layout_marginLeft="@dimen/x5"
+                    android:gravity="center"
+                    android:text="Open the QR code with Confidant app to join the circle"
+                    android:layout_height="@dimen/x75" />
+            </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/x50"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tvSaveToPhoneUser"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textColor="@color/main_color"
-            android:background="@color/white"
-            android:text="Delete User"
-            android:gravity="center"
-            android:layout_height="@dimen/x85" />
-        <View
-            android:layout_width="@dimen/x20"
-            android:layout_height="@dimen/x2"/>
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvShareUser"
+            android:id="@+id/tvSaveToPhone2"
             android:layout_width="0dp"
+            android:layout_height="@dimen/x85"
             android:layout_weight="1"
+            android:background="@drawable/btn_white"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:background="@color/main_color"
-            android:text="Invitation code"
-            android:layout_height="@dimen/x85" />
+            android:text="Save to Phone"
+            android:textColor="@color/main_color" />
+
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2" />
+
+        <TextView
+            android:id="@+id/tvShare2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/x85"
+            android:layout_weight="1"
+            android:background="@drawable/btn_maincolor"
+            android:gravity="center"
+            android:text="Share"
+            android:textColor="@color/white" />
     </LinearLayout>
 </LinearLayout>
