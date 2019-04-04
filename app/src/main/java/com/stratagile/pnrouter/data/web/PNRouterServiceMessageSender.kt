@@ -299,7 +299,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             }
             var toSendChatMessageQueue = msgHashMap.get(userId!!) as Queue<BaseData>
             if (toSendChatMessageQueue != null && toSendChatMessageQueue.isNotEmpty()){
-                Log.i("sendChat_size", toSendChatMessageQueue.size.toString())
+                KLog.i("sendChat_size" + toSendChatMessageQueue.size.toString())
                 if(sendNow)
                 {
                     var message = BaseData()
@@ -309,7 +309,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                     }else{
                         message = toSendChatMessageQueue.peek()
                     }
-                    Log.i("sendChat_message", message.baseDataToJson().replace("\\", ""))
+                    KLog.i("sendChat_message" + message.baseDataToJson().replace("\\", ""))
                     LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
                     var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                     LogUtil.addLog("发送结果：${reslut}")
@@ -322,7 +322,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                             if(Calendar.getInstance().timeInMillis - item.timestamp!!.toLong() > 10 * 1000)
                             {
                                 item.timestamp = Calendar.getInstance().timeInMillis.toString();
-                                Log.i("sendChat_message_Thread", item.baseDataToJson().replace("\\", ""))
+                                KLog.i("sendChat_message_Thread" + item.baseDataToJson().replace("\\", ""))
                                 LogUtil.addLog("发送信息：${item.baseDataToJson().replace("\\", "")}")
                                 var reslut= pipe.get().get().webSocketConnection().send(item.baseDataToJson().replace("\\", ""))
                                 LogUtil.addLog("发送结果：${reslut}")
@@ -348,7 +348,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             }
             var toSendChatFileQueue = fileHashMap.get(userId!!) as Queue<SendFileInfo>
             if (toSendChatFileQueue != null && toSendChatFileQueue.isNotEmpty()){
-                Log.i("sendFile_size", toSendChatFileQueue.size.toString())
+                KLog.i("sendFile_size" + toSendChatFileQueue.size.toString())
                 if(sendNow)
                 {
                     var message = SendFileInfo()
@@ -380,7 +380,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 }else{
                     if(ConstantValue.logining)
                     {
-                        Log.i("sendFile_size_Auto", toSendChatFileQueue.size.toString())
+                        KLog.i("sendFile_size_Auto" + toSendChatFileQueue.size.toString())
                         Thread(Runnable() {
                             run() {
 
@@ -394,10 +394,10 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                                             KLog.i("bb")
                                             if(sendFileMsgTimeMap[item.msgId] != null)
                                             {
-                                                Log.i("sendFile_size_Auto1", "重置前:"+sendFileMsgTimeMap[item.msgId] +"   相差：" +(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong()))
+                                                KLog.i("sendFile_size_Auto1" + "重置前:"+sendFileMsgTimeMap[item.msgId] +"   相差：" +(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong()))
                                                 if(Calendar.getInstance().timeInMillis - sendFileMsgTimeMap[item.msgId]!!.toLong() > 40 * 1000)
                                                 {
-                                                    Log.i("sendFile_size_Auto2", "重置")
+                                                    KLog.i("sendFile_size_Auto2" + "重置")
                                                     val message = EMMessage.createImageSendMessage(item.files_dir, true, item.friendId)
                                                     ConstantValue.sendFileMsgMap[item.msgId] = message
                                                     val wssUrl = "https://" + ConstantValue.currentRouterIp + ConstantValue.filePort
@@ -488,7 +488,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
             if (toSendMessage != null && toSendMessage.isNotEmpty()){
 
                 var message = toSendMessage.poll()
-                Log.i("send", message.baseDataToJson().replace("\\", ""))
+                KLog.i("send " + message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送信息：${message.baseDataToJson().replace("\\", "")}")
                 var reslut= pipe.get().get().webSocketConnection().send(message.baseDataToJson().replace("\\", ""))
                 LogUtil.addLog("发送结果：${reslut}")

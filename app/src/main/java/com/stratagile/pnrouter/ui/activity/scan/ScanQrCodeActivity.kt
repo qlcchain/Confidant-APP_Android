@@ -353,37 +353,6 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
 
     //==============================================================================================解析结果 及 后续处理 end
 
-    private fun initDialogResult(result: String) {
-        val realContent = result
-        val builder = AlertDialog.Builder(this)
-        val view = View.inflate(this, R.layout.dialog_layout, null)
-        builder.setView(view)
-        builder.setCancelable(true)
-        val title = view.findViewById<View>(R.id.title) as TextView//设置标题
-        val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
-        val btn_cancel = view.findViewById<View>(R.id.btn_left) as Button//取消按钮
-        val btn_comfirm = view.findViewById<View>(R.id.btn_right) as Button//确定按钮
-        title.setText(R.string.result)
-        tvContent.setText(realContent)
-        //取消或确定按钮监听事件处l
-        val dialog = builder.create()
-        btn_cancel.text = getString(R.string.cancel).toLowerCase()
-        btn_cancel.setOnClickListener {
-            dialog.dismiss()
-            mZXingView.startSpot() // 延迟0.5秒后开始识别
-            // 连续扫描，不发送此消息扫描一次结束后就不能再次扫描
-//            handler?.sendEmptyMessage(com.vondear.rxtools.R.id.restart_preview)
-        }
-        btn_comfirm.setOnClickListener {
-            dialog.dismiss()
-            val intent = Intent()
-            intent.putExtra("result", realContent)
-            setResult(RESULT_OK, intent)
-            finish()
-        }
-        dialog.show()
-    }
-
     var mFlashing = false
     private fun light() {
         if (mFlashing) {

@@ -375,7 +375,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         if (text!!.indexOf("HeartBeat") < 0) {
-            Log.w(TAG, "onMessage(text)! " + text!!)
+            KLog.w("onMessage(text)! ", text!!)
             LogUtil.addLog("websocket接收信息：${text}")
         }
 

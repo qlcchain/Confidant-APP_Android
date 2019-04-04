@@ -98,6 +98,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     private var builderTips: AlertDialog? = null
 
     var formatDialog : CommonDialog? = null
+    var importUserDialog : CommonDialog? = null
 
     internal var finger: ImageView? = null
 
@@ -2150,6 +2151,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     left = left.substring(usersn.length+1,left.length)
                     var username = left.substring(0,left.length)
                     username = String(RxEncodeTool.base64Decode(username))
+                    SpUtil.putString(this@LoginActivityActivity, ConstantValue.username, username)
                     var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
 
                     if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
@@ -2158,11 +2160,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         return;
                     }else{
                         runOnUiThread {
+                            importUserDialog = CommonDialog(this)
                             val realContent = getString(R.string.overwritten)
-                            val builder = android.app.AlertDialog.Builder(this)
+//                            val builder = android.app.AlertDialog.Builder(this)
                             val view = View.inflate(this, R.layout.dialog_layout, null)
-                            builder.setView(view)
-                            builder.setCancelable(true)
+//                            builder.setView(view)
+//                            builder.setCancelable(true)
                             val title = view.findViewById<View>(R.id.title) as TextView//设置标题
                             val tvContent = view.findViewById<View>(R.id.tv_content) as TextView//输入内容
                             val btn_cancel = view.findViewById<View>(R.id.btn_left) as Button//取消按钮
@@ -2170,13 +2173,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             title.setText(R.string.Importing_users)
                             tvContent.setText(realContent)
                             //取消或确定按钮监听事件处l
-                            val dialog = builder.create()
-                            btn_cancel.text = getString(R.string.cancel).toLowerCase()
+                            importUserDialog?.setView(view)
+//                            val dialog = builder.create()
+                            btn_cancel.text = getString(R.string.cancel)
                             btn_cancel.setOnClickListener {
-                                dialog.dismiss()
+                                importUserDialog?.dismissWithAnimation()
                             }
                             btn_comfirm.setOnClickListener {
-                                dialog.dismiss()
+                                importUserDialog?.dismissWithAnimation()
                                 FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
                                 val localSignArrayList: ArrayList<CryptoBoxKeypair>
@@ -2232,7 +2236,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                     initRouterUI()
                                 }
                             }
-                            dialog.show()
+                            importUserDialog?.show()
                         }
                     }
                 }
@@ -2307,6 +2311,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         if (routerList.size != 0) {
             var hasCheckedRouter = false
+            loginBtn.background = resources.getDrawable(R.drawable.btn_white)
             run breaking@ {
                 routerList.forEach {
                     if(adminUserSn != null && !adminUserSn.equals(""))

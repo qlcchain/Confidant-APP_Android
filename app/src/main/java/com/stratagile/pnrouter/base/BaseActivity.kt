@@ -164,7 +164,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         toolbar = findViewById(R.id.toolbar)
         title = toolbar?.findViewById(R.id.title)!!
         title.setOnClickListener {
-            startActivity(Intent(this, LogActivity::class.java))
+//            startActivity(Intent(this, LogActivity::class.java))
         }
         relativeLayout_root = findViewById<View>(R.id.root_rl) as RelativeLayout
         view = findViewById(R.id.view)

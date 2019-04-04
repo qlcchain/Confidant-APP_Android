@@ -84,6 +84,7 @@ class VerifyingFingerprintActivity : BaseActivity(), VerifyingFingerprintContrac
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
+        showViewNeedFront()
         var count = 0
         iv0.setOnClickListener {
             count++
