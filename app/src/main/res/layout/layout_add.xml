@@ -45,4 +45,17 @@
         app:textmy="@string/Share_My_Contact_Card">
 
     </com.stratagile.pnrouter.view.DrawableAddTextView>
+
+    <com.stratagile.pnrouter.view.DrawableAddTextView
+        android:visibility="gone"
+        android:id="@+id/addNewMember"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
+        android:layout_marginTop="@dimen/x20"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:srcmy="@mipmap/add_member_a"
+        app:subtitle="Generate a user account to add a circle member"
+        app:textmy="Add a New Member">
+
+    </com.stratagile.pnrouter.view.DrawableAddTextView>
 </LinearLayout>

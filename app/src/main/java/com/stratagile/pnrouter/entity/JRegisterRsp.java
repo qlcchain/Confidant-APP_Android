@@ -4,22 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class JRegisterRsp extends BaseEntity {
 
+    @Override
+    public String toString() {
+        return "JRegisterRsp{" +
+                "params=" + params.toString() +
+                '}';
+    }
 
     /**
      * timestamp : 1550817467
      * params : {"Action":"Register","RetCode":0,"RouteId":"D8662FBE4E2DBC81076EACEF4976F035BEE26E29F1B90C137693AAAC8AC22B76F1F00BCBBD67","RouterName":"Q2hhbmdzaGE=","UserSn":"03F00001B827EBD089CB00005C6F750E","UserId":"9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D","DataFileVersion":0,"DataFilePay":"9A7435C4569CAD9D9BF918E1CAA584059D4FAFE11AAC39BEAE03683C74E8DF6D88F4C486A97D"}
      */
 
-    private int timestampX;
     private ParamsBean params;
-
-    public int getTimestampX() {
-        return timestampX;
-    }
-
-    public void setTimestampX(int timestampX) {
-        this.timestampX = timestampX;
-    }
 
     public ParamsBean getParams() {
         return params;
@@ -30,6 +27,20 @@ public class JRegisterRsp extends BaseEntity {
     }
 
     public static class ParamsBean {
+        @Override
+        public String toString() {
+            return "ParamsBean{" +
+                    "Action='" + Action + '\'' +
+                    ", RetCode=" + RetCode +
+                    ", RouteId='" + RouteId + '\'' +
+                    ", RouterName='" + RouterName + '\'' +
+                    ", UserSn='" + UserSn + '\'' +
+                    ", UserId='" + UserId + '\'' +
+                    ", DataFileVersion=" + DataFileVersion +
+                    ", DataFilePay='" + DataFilePay + '\'' +
+                    '}';
+        }
+
         /**
          * Action : Register
          * RetCode : 0

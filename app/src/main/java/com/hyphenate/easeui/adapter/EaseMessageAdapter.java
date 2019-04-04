@@ -317,13 +317,13 @@ public class EaseMessageAdapter extends BaseAdapter {
 
         EaseChatRowPresenter presenter = null;
 
-        /*if (convertView == null || message.getMsgId().contains(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString())) {
-            presenter = createChatRowPresenter(message, position);
-            convertView = presenter.createChatRow(context, message, position, this);
-            convertView.setTag(presenter);
-        } else {
-            presenter = (EaseChatRowPresenter) convertView.getTag();
-        }*/
+//        if (convertView == null || message.getMsgId().contains(Message.SpecialId.GroupSpecialIdABDFEGEKLOIHHYGJHKIUFEGHEL.toString())) {
+//            presenter = createChatRowPresenter(message, position);
+//            convertView = presenter.createChatRow(context, message, position, this);
+//            convertView.setTag(presenter);
+//        } else {
+//            presenter = (EaseChatRowPresenter) convertView.getTag();
+//        }
         presenter = createChatRowPresenter(message, position);
         convertView = presenter.createChatRow(context, message, position, this);
         convertView.setTag(presenter);

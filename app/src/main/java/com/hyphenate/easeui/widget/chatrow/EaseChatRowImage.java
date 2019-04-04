@@ -69,10 +69,10 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 width = Float.valueOf(whs[0]);
                 height = Float.valueOf(whs[1]);
                 setImageViewSize();
-                KLog.i("位置为：" + position);
-                KLog.i("原始宽高为：" + wh);
-                KLog.i("图片的宽为1：" + width);
-                KLog.i("图片的高为1：" + height);
+//                KLog.i("位置为：" + position);
+//                KLog.i("原始宽高为：" + wh);
+//                KLog.i("图片的宽为1：" + width);
+//                KLog.i("图片的高为1：" + height);
             }
         } catch (Exception e) {
             width =  getContext().getResources().getDimension(R.dimen.x300);
@@ -128,8 +128,8 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 showHeight = (int) ((height / width) * showWidth);
             }
         }
-        KLog.i("设置图片的宽为：" + showWidth);
-        KLog.i("设置图片的高为：" + showHeight);
+//        KLog.i("设置图片的宽为：" + showWidth);
+//        KLog.i("设置图片的高为：" + showHeight);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(showWidth, showHeight);
         imageView.setLayoutParams(lp);
     }
@@ -214,7 +214,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
         // first check if the thumbnail image already loaded into cache s
         Bitmap bitmap = EaseImageCache.getInstance().get(thumbernailPath);
         if (bitmap != null) {
-            KLog.i("图片来源缓存");
+//            KLog.i("图片来源缓存");
             Bitmap bitmap2;
             if (bitmap.getHeight() / bitmap.getWidth() >= 3) {
                 bitmap2 = getRoundCornerImage(bitmap, bitmap.getWidth(), bitmap.getWidth() * 3);

@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -81,7 +82,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         textView.gravity = Gravity.CENTER
         textView.setTextColor(getContext().resources.getColor(R.color.white))
         textView.setPadding(0, 0, 0, 0)
-        imageView.visibility = View.INVISIBLE
+//        imageView.visibility = View.INVISIBLE
 //        imageView.background = getContext().resources.getDrawable(R.drawable.nick_text_bg)
     }
 
@@ -146,6 +147,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     fun setImage(url: Int) {
         if (0 == url) {
             textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
         } else {
             textView.visibility = View.GONE
             imageView.visibility = View.VISIBLE
@@ -158,6 +160,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     fun setImageResource(url: Int, withShape : Boolean) {
         if (0 == url) {
             textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
         } else {
             textView.visibility = View.GONE
             imageView.visibility = View.VISIBLE
@@ -187,6 +190,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     fun setImageFile(url: String) {
         if ("" == url) {
             textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
         } else {
                 val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
                 if (lastFile.exists()) {
@@ -216,6 +220,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     fun setImageFileInChat(url: String) {
         if ("" == url) {
             textView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
         } else {
             val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
             if (lastFile.exists()) {
@@ -263,16 +268,15 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     }
     fun setImageFileInChat(url: String, name : String) {
         if ("" == url) {
-            textView.visibility = View.VISIBLE
-            imageView.visibility = View.GONE
             setText(name)
         } else {
             val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
             if (lastFile.exists()) {
                 textView.visibility = View.GONE
                 imageView.visibility = View.VISIBLE
+                KLog.i("聊天中设置头像")
                 Glide.with(this)
-                        .load(lastFile)
+                        .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
                         .apply(optionsChat)
                         .into(imageView)
             } else {

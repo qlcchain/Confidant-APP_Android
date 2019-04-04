@@ -2,15 +2,17 @@ package com.stratagile.pnrouter.ui.activity.add
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.ui.activity.add.component.DaggeraddFriendOrGroupComponent
 import com.stratagile.pnrouter.ui.activity.add.contract.addFriendOrGroupContract
 import com.stratagile.pnrouter.ui.activity.add.module.addFriendOrGroupModule
 import com.stratagile.pnrouter.ui.activity.add.presenter.addFriendOrGroupPresenter
-import kotlinx.android.synthetic.main.activity_select_friend.*
 import kotlinx.android.synthetic.main.layout_add.*
 
 import javax.inject.Inject;
@@ -53,6 +55,24 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View {
             intent.putExtra("result", "2")
             setResult(RESULT_OK, intent)
             finish()
+        }
+        var routerEntity : RouterEntity
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+        routerList.forEach {
+            if (it.lastCheck) {
+                routerEntity = it
+                if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
+                {
+                    //管理员
+                    addNewMember.visibility = View.VISIBLE
+                }else{
+                    addNewMember.visibility = View.GONE
+                }
+                return@forEach
+            }
+        }
+        addNewMember.setOnClickListener {
+
         }
     }
 

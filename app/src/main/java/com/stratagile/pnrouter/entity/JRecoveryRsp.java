@@ -3,6 +3,13 @@ package com.stratagile.pnrouter.entity;
 public class JRecoveryRsp extends BaseEntity {
 
 
+    @Override
+    public String toString() {
+        return "JRecoveryRsp{" +
+                "params=" + params.toString() +
+                '}';
+    }
+
     /**
      * params : {"Action":"Recovery","RetCode":0,"RouteId":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000009B827EBD089CB00005BF760D1","UserId":"EF88AE41E7DC8BBD18FB280CC3DC4F3CE2ABAE3AE38B0CE744D0DDEB9447A42822CB7CFBC526","NickName":"cmVkMg==","DataFileVersion":0}
      */
@@ -18,6 +25,20 @@ public class JRecoveryRsp extends BaseEntity {
     }
 
     public static class ParamsBean {
+        @Override
+        public String toString() {
+            return "ParamsBean{" +
+                    "Action='" + Action + '\'' +
+                    ", RetCode=" + RetCode +
+                    ", RouteId='" + RouteId + '\'' +
+                    ", RouterName='" + RouterName + '\'' +
+                    ", UserSn='" + UserSn + '\'' +
+                    ", UserId='" + UserId + '\'' +
+                    ", NickName='" + NickName + '\'' +
+                    ", DataFileVersion=" + DataFileVersion +
+                    '}';
+        }
+
         /**
          * Action : Recovery
          * RetCode : 0
