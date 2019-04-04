@@ -53,7 +53,6 @@
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
             android:textColor="@color/regeisetInput"
-            android:textColorHint="@color/color_2c2c2c"
             android:textSize="@dimen/commemTextSize"
             android:theme="@style/MyEditText"
             app:layout_constraintEnd_toEndOf="parent"

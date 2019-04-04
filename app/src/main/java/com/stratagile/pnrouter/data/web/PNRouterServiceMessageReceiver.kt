@@ -511,6 +511,12 @@ val credentialsProvider: CredentialsProvider, private
                     val JGroupSendFileDoneRsp = gson.fromJson(text, JGroupSendFileDoneRsp::class.java)
                     groupchatCallBack?.sendGroupToxFileRsp(JGroupSendFileDoneRsp)
                 }
+                //83.	拉取临时账户信息
+                "PullTmpAccount" -> {
+                    val jPullTmpAccountRsp = gson.fromJson(text, JPullTmpAccountRsp::class.java)
+                    createUserCallBack?.pullTmpAccount(jPullTmpAccountRsp)
+                    //userControlleCallBack?.firendList(jPullFriendRsp)
+                }
             }
         }
 
@@ -765,6 +771,7 @@ val credentialsProvider: CredentialsProvider, private
 
     interface CreateUserCallBack {
         fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp)
+        fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp)
     }
 
     interface AdminLoginCallBack {

@@ -15,15 +15,14 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.db.RouterUserEntity
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.CreateNormalUserReq
-import com.stratagile.pnrouter.entity.JCreateNormalUserRsp
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterCreateUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterCreateUserContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterCreateUserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterCreateUserPresenter
 import com.stratagile.pnrouter.utils.RxEncodeTool
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -42,24 +41,60 @@ import javax.inject.Inject
  */
 
 class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, PNRouterServiceMessageReceiver.CreateUserCallBack {
-    override fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp) {
-        runOnUiThread {
-            var intent = Intent(this, UserQRCodeActivity::class.java)
-            var routerUserEntity = RouterUserEntity()
-            routerUserEntity.userSN = jCreateNormalUserRsp.params.userSN
-            routerUserEntity.userType = 2
-            routerUserEntity.active = 0
-            routerUserEntity.identifyCode = "0"
-            routerUserEntity.mnemonic = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
-            routerUserEntity.nickName = ""
-            routerUserEntity.userId = ""
-            routerUserEntity.lastLoginTime = 0
-            routerUserEntity.qrcode = jCreateNormalUserRsp.params.qrcode
-            intent.putExtra("user", routerUserEntity)
-            startActivity(intent)
-            closeProgressDialog()
-            finish()
+    override fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp) {
+        if(jPullTmpAccountRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                var intent = Intent(this, UserQRCodeActivity::class.java)
+                var routerUserEntity = RouterUserEntity()
+                routerUserEntity.userSN = jPullTmpAccountRsp.params.userSN
+                routerUserEntity.userType = 1
+                routerUserEntity.active = 0
+                routerUserEntity.identifyCode = "0"
+                routerUserEntity.mnemonic = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
+                routerUserEntity.nickName = ""
+                routerUserEntity.userId = ""
+                routerUserEntity.lastLoginTime = 0
+                routerUserEntity.qrcode = jPullTmpAccountRsp.params.qrcode
+                intent.putExtra("user", routerUserEntity)
+                startActivity(intent)
+                closeProgressDialog()
+            }
+        }else{
+            runOnUiThread {
+
+                toast(R.string.error)
+            }
         }
+    }
+
+    override fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp) {
+        if(jCreateNormalUserRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                var intent = Intent(this, UserQRCodeActivity::class.java)
+                var routerUserEntity = RouterUserEntity()
+                routerUserEntity.userSN = jCreateNormalUserRsp.params.userSN
+                routerUserEntity.userType = 2
+                routerUserEntity.active = 0
+                routerUserEntity.identifyCode = "0"
+                routerUserEntity.mnemonic = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
+                routerUserEntity.nickName = ""
+                routerUserEntity.userId = ""
+                routerUserEntity.lastLoginTime = 0
+                routerUserEntity.qrcode = jCreateNormalUserRsp.params.qrcode
+                intent.putExtra("user", routerUserEntity)
+                startActivity(intent)
+                closeProgressDialog()
+                finish()
+            }
+        }else{
+            runOnUiThread {
+
+                toast(R.string.error)
+            }
+        }
+
     }
 
     @Inject
@@ -111,6 +146,25 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
         }
         tempQrcode.setOnClickListener {
 
+            showProgressDialog("waiting...")
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+//            var IdentifyCode = IdentifyCode.text.toString().trim()
+            var pullTmpAccountReq = PullTmpAccountReq(userId!!)
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,pullTmpAccountReq))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(4,pullTmpAccountReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                }
+            }
         }
 
         mnemonic.addTextChangedListener(object : TextWatcher{

@@ -616,3 +616,9 @@ data class GroupSysPushReq(var UserId : String, var GId : String, var Type : Int
  * (2)	响应（APP->Router
  */
 data class GroupSysPushRsp(var RetCode : Int, var ToId : String,var Action : String = "GroupSysPush")
+
+/**
+ * 83.	拉取临时账户信息
+ * (2)	响应（APP->Router）
+ */
+data class PullTmpAccountReq(var UserId :String,  var Action : String = "PullTmpAccount")
