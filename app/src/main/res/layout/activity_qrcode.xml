@@ -71,6 +71,7 @@
                     android:layout_width="wrap_content"
                     android:textColor="@color/color_666666"
                     android:textSize="10sp"
+                    android:text="@string/scan_qr_code_to_add_me"
                     android:layout_marginLeft="@dimen/x5"
                     android:gravity="center"
                     android:layout_height="@dimen/x75" />

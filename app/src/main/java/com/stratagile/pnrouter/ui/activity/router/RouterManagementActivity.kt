@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
@@ -56,7 +57,16 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         if (jResetRouterNameRsp.params.retCode == 0) {
             KLog.i("修改圈子名字成功")
             selectedRouter.routerName = tvRouterName.text.toString()
+            selectedRouter.routerAlias = tvRouterName.text.toString()
             AppConfig.instance.mDaoMaster?.newSession()?.routerEntityDao?.update(selectedRouter)
+            var userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.RouteId.eq(selectedRouter.routerId)).list()
+            userList.forEach {
+                it.routeName = tvRouterName.text.toString()
+                it.routerAlias = tvRouterName.text.toString()
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+            }
+            LocalRouterUtils.insertLocalAssets(MyRouter(0, selectedRouter))
+            EventBus.getDefault().post(RouterChange())
         } else if (jResetRouterNameRsp.params.retCode == 1) {
             runOnUiThread {
                 toast("No authority")
@@ -188,7 +198,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             var intent = Intent(this, EditNickNameActivity::class.java)
             intent.putExtra("flag", "Alias")
             intent.putExtra("hint", "Edit alias")
-            intent.putExtra("alias", selectedRouter.routerName)
+            intent.putExtra("alias", circleAlias.tvContent.text.toString())
             startActivityForResult(intent, circleAlias1)
         }
         circleMembers.setOnClickListener {
@@ -379,6 +389,12 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
             selectedRouter.routerAlias = data!!.getStringExtra("alias")
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(selectedRouter)
+            var userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.RouteId.eq(selectedRouter.routerId)).list()
+            userList.forEach {
+                it.routerAlias = data!!.getStringExtra("alias")
+                AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(it)
+            }
+            LocalRouterUtils.insertLocalAssets(MyRouter(0, selectedRouter))
             initData()
             EventBus.getDefault().post(RouterChange())
         }

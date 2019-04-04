@@ -158,6 +158,10 @@ object LocalRouterUtils {
                                             {
                                                 myRouter.getRouterEntity().setRouterName(routerEntity.routerName)
                                             }
+                                            if(routerEntity.routerAlias != null)
+                                            {
+                                                myRouter.getRouterEntity().routerAlias = (routerEntity.routerAlias)
+                                            }
                                             if(routerEntity.dataFileVersion != null)
                                             {
                                                 myRouter.getRouterEntity().setDataFileVersion(routerEntity.dataFileVersion)

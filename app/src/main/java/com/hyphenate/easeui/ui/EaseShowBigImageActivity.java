@@ -49,6 +49,7 @@ import com.stratagile.pnrouter.utils.AlbumNotifyHelper;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.PopWindowUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.view.CustomPopWindow;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -263,6 +264,7 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 		});
 	}
 
+
 	/**
 	 * download image
 	 *
@@ -361,8 +363,12 @@ public class EaseShowBigImageActivity extends EaseBaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (isDownloaded)
-			setResult(RESULT_OK);
-		finish();
+		if (CustomPopWindow.onBackPressed()) {
+
+		} else {
+			if (isDownloaded)
+				setResult(RESULT_OK);
+			finish();
+		}
 	}
 }

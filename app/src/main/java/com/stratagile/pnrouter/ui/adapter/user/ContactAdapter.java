@@ -137,8 +137,13 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     helper.setGone(R.id.tvChat, false);
                     helper.setChecked(R.id.checkBox, lv1.isChecked());
                 }
-                String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv1.getUserEntity().getRouteName()));
-                helper.setText(R.id.routerName, nickNameSouce1);
+                if (lv1.getUserEntity().getRouterAlias() == null || "".equals(lv1.getUserEntity().getRouterAlias())) {
+                    String nickNameSouce1 = new String(RxEncodeTool.base64Decode(lv1.getUserEntity().getRouteName()));
+                    helper.setText(R.id.routerName, nickNameSouce1);
+                } else {
+                    String nickNameSouce1 = lv1.getUserEntity().getRouterAlias();
+                    helper.setText(R.id.routerName, nickNameSouce1);
+                }
                 helper.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

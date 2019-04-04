@@ -257,7 +257,7 @@
         <TextView
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
-            android:layout_height="51dp"
+            android:layout_height="@dimen/x84"
             android:layout_marginStart="@dimen/x60"
             android:layout_marginTop="@dimen/x80"
             android:layout_marginEnd="@dimen/x60"

@@ -14,10 +14,18 @@ public class MyRouter {
         return type;
     }
 
+    public MyRouter() {
+    }
+
     public void setType(int type) {
         this.type = type;
     }
 
+
+    public MyRouter(int type, RouterEntity routerEntity) {
+        this.type = type;
+        this.routerEntity = routerEntity;
+    }
 
     /**
      * 资产类型

@@ -40,10 +40,7 @@ import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.JPullFriendRsp
 import com.stratagile.pnrouter.entity.MyFriend
 import com.stratagile.pnrouter.entity.PullFriendReq_V4
-import com.stratagile.pnrouter.entity.events.FriendAvatarChange
-import com.stratagile.pnrouter.entity.events.FriendChange
-import com.stratagile.pnrouter.entity.events.SelectFriendChange
-import com.stratagile.pnrouter.entity.events.UnReadContactCount
+import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.group.GroupChatsActivity
 import com.stratagile.pnrouter.ui.activity.user.NewFriendActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
@@ -218,6 +215,11 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         runOnUiThread {
             initData()
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun routerChange(routerChange: RouterChange) {
+        pullFriendList()
     }
 
     @Inject

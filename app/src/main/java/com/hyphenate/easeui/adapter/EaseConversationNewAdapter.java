@@ -184,10 +184,14 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             String fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(friendUser.getSignPublicKey())) + ".jpg";
             holder.avatar.setImageFile(fileBase58Name);
             holder.name.setText(usernameSouce);
-            if (!"".equals(new String(RxEncodeTool.base64Decode(friendUser.getRouteName())))) {
-                holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
+            if (friendUser.getRouterAlias() == null || "".equals(friendUser.getRouterAlias())) {
+                if (!"".equals(new String(RxEncodeTool.base64Decode(friendUser.getRouteName())))) {
+                    holder.userRouter.setText("- " + new String(RxEncodeTool.base64Decode(friendUser.getRouteName())));
+                } else {
+                    holder.userRouter.setText("");
+                }
             } else {
-                holder.userRouter.setText("");
+                holder.userRouter.setText("- " + friendUser.getRouterAlias());
             }
             holder.motioned.setVisibility(View.GONE);
         }
