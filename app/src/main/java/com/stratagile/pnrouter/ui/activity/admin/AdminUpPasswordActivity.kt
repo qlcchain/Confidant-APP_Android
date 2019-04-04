@@ -98,15 +98,15 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
             AppConfig.instance.messageReceiver!!.adminUpdataPassWordCallBack = this
         }
         updateAdminPasswordBtn.setOnClickListener {
-            if (oldPassword.text.toString().equals("") || newPassword.text.toString().equals("")) {
+            if (oldPassword.text.toString().trim().equals("") || newPassword.text.toString().trim().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if (oldPassword.text.toString().length != 8 || newPassword.text.toString().length != 8 || repeatNewPassword.text.toString().length != 8) {
+            if (oldPassword.text.toString().trim().length != 8 || newPassword.text.toString().trim().length != 8 || repeatNewPassword.text.toString().trim().length != 8) {
                 toast(getString(R.string.routerpasswordupdata))
                 return@setOnClickListener
             }
-            if (!repeatNewPassword.text.toString().equals(repeatNewPassword.text.toString())) {
+            if (!repeatNewPassword.text.toString().trim().equals(repeatNewPassword.text.toString().trim())) {
                 toast(getString(R.string.two_password_different))
                 return@setOnClickListener
             }

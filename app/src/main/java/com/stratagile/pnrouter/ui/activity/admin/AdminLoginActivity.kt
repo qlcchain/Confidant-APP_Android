@@ -112,7 +112,7 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
             {
                 AppConfig.instance.messageReceiver!!.adminLoginCallBack = this
             }
-            if (adminPassWord.text.toString().equals("")) {
+            if (adminPassWord.text.toString().trim().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }

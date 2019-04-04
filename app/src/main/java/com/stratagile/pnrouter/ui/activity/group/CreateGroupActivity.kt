@@ -152,7 +152,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             select_people_number.text = "" + getGroupPeople() + " people"
         }
         createGroup.setOnClickListener {
-            if (groupName.text.toString().equals("")) {
+            if (groupName.text.toString().trim().equals("")) {
                 toast(R.string.Name_cannot_be_empty)
                 return@setOnClickListener
             }
@@ -187,7 +187,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
             friendStr = friendStr.substring(0, friendStr.lastIndexOf(","))
             friendKey = friendKey.substring(0, friendKey.lastIndexOf(","))
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().toByteArray())
+            val GroupName = RxEncodeTool.base64Encode2String(groupName.text.toString().trim().toByteArray())
             var UserKey = RxEncodeTool.base64Encode2String(LibsodiumUtil.EncryptShareKey(aesKey, ConstantValue.libsodiumpublicMiKey!!))
             var approve = 0
             if (approveInvitation.isChecked) {

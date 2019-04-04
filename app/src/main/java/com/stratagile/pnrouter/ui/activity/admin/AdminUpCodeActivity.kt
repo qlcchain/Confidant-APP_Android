@@ -97,11 +97,11 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
             AppConfig.instance.messageReceiver!!.adminUpdataCodeCallBack = this
         }
         adminUpCodeBtn.setOnClickListener {
-            if (activationCode.text.toString().equals("")) {
+            if (activationCode.text.toString().trim().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if (activationCode.text.toString().length != 8) {
+            if (activationCode.text.toString().trim().length != 8) {
                 toast(getString(R.string.routercodeupdata))
                 return@setOnClickListener
             }

@@ -110,18 +110,18 @@ class SendAddFriendActivity : BaseActivity(), SendAddFriendContract.View, UserPr
         sendNickName.setText(String(RxEncodeTool.base64Decode(userEntity.nickName)))
         EventBus.getDefault().register(this)
         sendRequestBtn.setOnClickListener {
-            if (sendNickName.text.toString().equals("")) {
+            if (sendNickName.text.trim().toString().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if(validation.text.toString().length >35)
+            if(validation.text.toString().trim().length >35)
             {
                 toast(getString(R.string.needs35))
                 return@setOnClickListener
             }
             showProgressDialog("waiting...")
             var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            var msg= RxEncodeTool.base64Encode2String(validation.text.toString().toByteArray())
+            var msg= RxEncodeTool.base64Encode2String(validation.text.toString().trim().toByteArray())
 
             val strBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
             var addFriendReq = AddFriendReq( selfUserId!!, strBase64, userEntity.userId,ConstantValue.publicRAS!!,msg)

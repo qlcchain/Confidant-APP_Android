@@ -479,7 +479,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
             newRouterEntity.lastCheck = true
             newRouterEntity.userSn = loginRsp.params!!.userSn
-            newRouterEntity.loginKey = loginKey.text.toString()
+            newRouterEntity.loginKey = loginKey.text.toString().trim()
             var myUserData = UserEntity()
             myUserData.userId = loginRsp.params!!.userId
             myUserData.nickName = loginRsp.params!!.nickName
@@ -505,7 +505,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
-            newRouterEntity.loginKey = loginKey.text.toString();
+            newRouterEntity.loginKey = loginKey.text.toString().trim();
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {

@@ -100,7 +100,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             SpUtil.putString(this, ConstantValue.routerId, loginRsp.params!!.routerid)
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             newRouterEntity.routerId = loginRsp.params!!.routerid
-            newRouterEntity.loginKey = userName3.text.toString();
+            newRouterEntity.loginKey = userName3.text.toString().trim();
             newRouterEntity.userSn = loginRsp.params!!.userSn
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             newRouterEntity.username = String(RxEncodeTool.base64Decode(loginRsp.params.nickName))
@@ -129,7 +129,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.updateInTx(routerList)
             LocalRouterUtils.updateList(needUpdate)
             newRouterEntity.lastCheck = true
-            newRouterEntity.loginKey = userName3.text.toString();
+            newRouterEntity.loginKey = userName3.text.toString().trim();
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -194,9 +194,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
             newRouterEntity.userSn = registerRsp.params.userSn
-            newRouterEntity.username = createName.text.toString()
+            newRouterEntity.username = createName.text.toString().trim()
             newRouterEntity.userId = registerRsp.params.userId
-            newRouterEntity.loginKey = userName3.text.toString();
+            newRouterEntity.loginKey = userName3.text.toString().trim();
             newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
             newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
             var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
@@ -214,7 +214,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
             var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
             var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
+            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().trim().toByteArray())
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
             var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
@@ -310,7 +310,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
                 return@setOnClickListener
             }*/
             showProgressDialog("waiting...")
-            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().toByteArray())
+            val NickName = RxEncodeTool.base64Encode2String(createName.text.toString().trim().toByteArray())
             var sign = ByteArray(32)
             var time = (System.currentTimeMillis() /1000).toString().toByteArray()
             System.arraycopy(time, 0, sign, 0, time.size)

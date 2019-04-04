@@ -138,7 +138,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             finish()
         }
         setNext.setOnClickListener {
-            if (imputUserName.text.toString().equals("")) {
+            if (imputUserName.text.toString().trim().equals("")) {
                 toast(getString(R.string.please_type_your_username))
                 return@setOnClickListener
             }

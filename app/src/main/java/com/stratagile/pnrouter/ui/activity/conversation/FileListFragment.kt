@@ -623,7 +623,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             formatDialog.dismissWithAnimation()
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
-            var rename = Base58.getBase58Name(etContent.text.toString(), type)
+            var rename = Base58.getBase58Name(etContent.text.toString().trim(), type)
             KLog.i("重命名时，base58之后的长度为：" + rename.length)
 //            if(renameLen.length > ConstantValue.fileNameMaxLen)
 //            {

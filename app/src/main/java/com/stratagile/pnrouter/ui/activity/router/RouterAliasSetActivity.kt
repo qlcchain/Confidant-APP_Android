@@ -66,7 +66,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                     intent1.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
                     intent1.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
                     intent1.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
-                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().trim().toByteArray())
                     intent1.putExtra("routerName",routerName)
                     startActivity(intent1)
                     finish()
@@ -76,7 +76,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                     intent1.putExtra("adminUserSn",intent.getStringExtra("adminUserSn"))
                     intent1.putExtra("adminIdentifyCode",intent.getStringExtra("adminIdentifyCode"))
                     intent1.putExtra("adminQrcode",intent.getStringExtra("adminQrcode"))
-                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+                    var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().trim().toByteArray())
                     intent1.putExtra("routerName",routerName)
                     setResult(Activity.RESULT_OK, intent1)
                     finish()
@@ -119,7 +119,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
         ivAvatar.withShape = true
         ivAvatar.setTextWithShape(routerNameFrom)
         LoginInBtn.setOnClickListener {
-            if(routerName.text.toString().equals(""))
+            if(routerName.text.toString().trim().equals(""))
             {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
@@ -136,7 +136,7 @@ class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRo
                 }
             }
             AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
-            var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().toByteArray())
+            var routerName =  RxEncodeTool.base64Encode2String(routerName.text.toString().trim().toByteArray())
             showProgressDialog("waiting...")
             var resetRouterNameReq = ResetRouterNameReq(intent.getStringExtra("adminRouterId"),routerName)
             if(ConstantValue.isWebsocketConnected)

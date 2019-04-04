@@ -62,17 +62,17 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
         AppConfig.instance.messageReceiver!!.createUserCallBack = this
         EventBus.getDefault().register(this)
         registerUserBtn.setOnClickListener {
-            if (mnemonic.text.toString().equals("") || IdentifyCode.text.toString().equals("")) {
+            if (mnemonic.text.toString().trim().equals("") || IdentifyCode.text.toString().trim().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if ( IdentifyCode.text.toString().length <8) {
+            if ( IdentifyCode.text.toString().trim().length <8) {
                 toast(getString(R.string.needs8))
                 return@setOnClickListener
             }
             showProgressDialog("waiting...")
-            val NickName = RxEncodeTool.base64Encode2String(mnemonic.text.toString().toByteArray())
-            var IdentifyCode = IdentifyCode.text.toString()
+            val NickName = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
+            var IdentifyCode = IdentifyCode.text.toString().trim()
             var createNormalUser = CreateNormalUserReq(routerEntity.routerId,routerEntity.userId, NickName,IdentifyCode)
             if(ConstantValue.isWebsocketConnected)
             {

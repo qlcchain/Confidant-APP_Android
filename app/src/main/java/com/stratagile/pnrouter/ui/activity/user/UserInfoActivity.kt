@@ -332,7 +332,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                     .setConfirmClickListener {
 
                         var content = it;
-                        remark = RxEncodeTool.base64Encode2String(content!!.toString().toByteArray())
+                        remark = RxEncodeTool.base64Encode2String(content!!.toString().trim().toByteArray())
                         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                         var msgData = ChangeRemarksReq(userId!!, userInfo!!.userId,remark)
                         if (ConstantValue.isWebsocketConnected) {

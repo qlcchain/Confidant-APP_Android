@@ -148,11 +148,11 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
 
     override fun onBackPressed() {
         if (intent.hasExtra("flag")) {
-            if (etNickName.text.toString().equals(intent.getStringExtra("alias"))) {
+            if (etNickName.text.toString().trim().equals(intent.getStringExtra("alias"))) {
                 setResult(0)
             } else if (true){
                 var intent1 = Intent()
-                intent1.putExtra("alias", etNickName.text.toString())
+                intent1.putExtra("alias", etNickName.text.toString().trim())
                 setResult(Activity.RESULT_OK, intent1)
             }
         }
@@ -177,7 +177,8 @@ class EditNickNameActivity : BaseActivity(), EditNickNameContract.View, PNRouter
                     if(!nickName.equals(etNickName.text.toString()))
                     {
                         showProgressDialog("wait...")
-                        val strBase64 = RxEncodeTool.base64Encode2String(etNickName.text.toString().toByteArray())
+                        var nickNameStr = etNickName.text.toString().trim();
+                        val strBase64 = RxEncodeTool.base64Encode2String(nickNameStr.toByteArray())
                         var userInfoUpdate = UserInfoUpdateReq( selfUserId!!, strBase64!!)
                         if (ConstantValue.isWebsocketConnected) {
                             AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,userInfoUpdate))
