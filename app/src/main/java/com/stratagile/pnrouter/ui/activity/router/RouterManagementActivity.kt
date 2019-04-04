@@ -281,7 +281,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 
     override fun onResume() {
         super.onResume()
-        initData()
+//        initData()
     }
 
     override fun onDestroy() {
