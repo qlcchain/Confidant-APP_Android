@@ -1,6 +1,10 @@
 package com.stratagile.pnrouter.ui.activity.router
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Base64
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
@@ -10,6 +14,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.CreateNormalUserReq
 import com.stratagile.pnrouter.entity.JCreateNormalUserRsp
@@ -26,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_adduser.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -38,7 +44,19 @@ import javax.inject.Inject
 class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, PNRouterServiceMessageReceiver.CreateUserCallBack {
     override fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp) {
         runOnUiThread {
-
+            var intent = Intent(this, UserQRCodeActivity::class.java)
+            var routerUserEntity = RouterUserEntity()
+            routerUserEntity.userSN = jCreateNormalUserRsp.params.userSN
+            routerUserEntity.userType = 2
+            routerUserEntity.active = 0
+            routerUserEntity.identifyCode = "0"
+            routerUserEntity.mnemonic = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
+            routerUserEntity.nickName = ""
+            routerUserEntity.userId = ""
+            routerUserEntity.lastLoginTime = 0
+            routerUserEntity.qrcode = jCreateNormalUserRsp.params.qrcode
+            intent.putExtra("user", routerUserEntity)
+            startActivity(intent)
             closeProgressDialog()
             finish()
         }
@@ -56,24 +74,24 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
         setContentView(R.layout.activity_adduser)
     }
     override fun initData() {
-        title.text = getString(R.string.Createuseraccounts)
+        title.text = "Add a New Member"
         routerEntity = intent.getParcelableExtra("routerUserEntity")
 
         AppConfig.instance.messageReceiver!!.createUserCallBack = this
         EventBus.getDefault().register(this)
         registerUserBtn.setOnClickListener {
-            if (mnemonic.text.toString().trim().equals("") || IdentifyCode.text.toString().trim().equals("")) {
+            if (mnemonic.text.toString().trim().equals("")) {
                 toast(getString(R.string.Cannot_be_empty))
                 return@setOnClickListener
             }
-            if ( IdentifyCode.text.toString().trim().length <8) {
-                toast(getString(R.string.needs8))
-                return@setOnClickListener
-            }
+//            if ( IdentifyCode.text.toString().trim().length <8) {
+//                toast(getString(R.string.needs8))
+//                return@setOnClickListener
+//            }
             showProgressDialog("waiting...")
             val NickName = RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray())
-            var IdentifyCode = IdentifyCode.text.toString().trim()
-            var createNormalUser = CreateNormalUserReq(routerEntity.routerId,routerEntity.userId, NickName,IdentifyCode)
+//            var IdentifyCode = IdentifyCode.text.toString().trim()
+            var createNormalUser = CreateNormalUserReq(routerEntity.routerId,routerEntity.userId, NickName,"")
             if(ConstantValue.isWebsocketConnected)
             {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,createNormalUser))
@@ -91,6 +109,28 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
             }
 
         }
+        tempQrcode.setOnClickListener {
+
+        }
+
+        mnemonic.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (!"".equals(p0?.toString())) {
+                    registerUserBtn.background = resources.getDrawable(R.drawable.btn_maincolor)
+                } else {
+                    registerUserBtn.background = resources.getDrawable(R.drawable.btn_d5d5d5)
+                }
+            }
+
+        })
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)

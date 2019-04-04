@@ -128,10 +128,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
         }
-        userAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
-        var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
         userAvatar.withShape = true
-        userAvatar.setImageFile(fileBase58Name)
+        userAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         ivBack.setOnClickListener {
             finish()
         }
@@ -151,6 +149,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
         if (ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN.indexOf("01") == 0 && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {//管理员才调用此接口
             var msgData = GetDiskTotalInfoReq()
+            var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
+            userAvatar.setImageFile(fileBase58Name)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
             } else if (ConstantValue.isToxConnected) {
@@ -384,7 +384,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
         if (requestCode == circleMember1 && resultCode == Activity.RESULT_OK) {
             //修改圈子成员
-
+            initData()
         }
         if (requestCode == circleName1 && resultCode == Activity.RESULT_OK) {
             //修改圈子名字

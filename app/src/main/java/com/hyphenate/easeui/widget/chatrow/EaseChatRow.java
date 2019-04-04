@@ -315,16 +315,6 @@ public abstract class EaseChatRow extends LinearLayout {
                 }
             });
 
-//            bubbleLayout.setOnTouchListener(new OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View view, MotionEvent motionEvent) {
-//                    KLog.i("touch...");
-//                    AppConfig.instance.getPoint().x = (int) motionEvent.getRawX();
-//                    AppConfig.instance.getPoint().y = (int) motionEvent.getRawY();
-//                    return true;
-//                }
-//            });
-    
             bubbleLayout.setOnLongClickListener(new OnLongClickListener() {
     
                 @Override

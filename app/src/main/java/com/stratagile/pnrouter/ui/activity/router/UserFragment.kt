@@ -128,7 +128,7 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
         newUser.setOnClickListener {
             var intent = Intent(activity!!, RouterCreateUserActivity::class.java)
             intent.putExtra("routerUserEntity", routerEntity)
-            startActivity(intent)
+            startActivityForResult(intent, 0)
         }
         newTempUser.setOnClickListener {
             toast("developing")
@@ -141,6 +141,11 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
         }
         pullFriendList()
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        pullFriendList()
+        super.onActivityResult(requestCode, resultCode, data)
     }
     fun showDialog() {
         TempRouterAlertDialog(activity!!, TempRouterAlertDialog.BUTTON_NEUTRAL)

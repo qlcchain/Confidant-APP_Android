@@ -49,9 +49,9 @@ import javax.inject.Inject
 class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View, PNRouterServiceMessageReceiver.AdminRecoveryCallBack {
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
-        runOnUiThread {
-            toast(loginRsp.toString())
-        }
+//        runOnUiThread {
+//            toast(loginRsp.toString())
+//        }
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
@@ -167,9 +167,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
     }
     override fun registerBack(registerRsp: JRegisterRsp) {
-        runOnUiThread {
-            toast(registerRsp.toString())
-        }
+//        runOnUiThread {
+//            toast(registerRsp.toString())
+//        }
         if (registerRsp.params.retCode != 0) {
             if (registerRsp.params.retCode == 1) {
                 runOnUiThread {
@@ -261,7 +261,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
     }
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         runOnUiThread {
-            toast(recoveryRsp.toString())
+//            toast(recoveryRsp.toString())
             closeProgressDialog()
         }
         when (recoveryRsp.params.retCode) {
@@ -300,7 +300,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 var login = LoginReq_V4(  recoveryRsp.params.routeId,recoveryRsp.params.userSn, recoveryRsp.params.userId,signBase64, recoveryRsp.params.dataFileVersion,recoveryRsp.params.routerName)
                 runOnUiThread {
                     showProgressDialog("logining...")
-                    toast(login.toString())
+//                    toast(login.toString())
                 }
                 ConstantValue.loginReq = login
                 if(ConstantValue.isWebsocketConnected)
@@ -345,9 +345,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
                 //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
                 //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
                 var regeister = RegeisterReq_V4( recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                runOnUiThread {
-                    toast(regeister.toString())
-                }
+//                runOnUiThread {
+//                    toast(regeister.toString())
+//                }
                 if(ConstantValue.isWebsocketConnected)
                 {
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))

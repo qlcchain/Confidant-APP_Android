@@ -1,54 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/adduserbg"
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="253dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/black" />
 
-        <android.support.constraint.Group
-            android:id="@+id/noRoutergroup"
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginTop="@dimen/x42"
+            android:layout_marginLeft="@dimen/x30"
+            android:textSize="18sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="Set an alias"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/x12"
+            android:textSize="12sp"
+            android:textColor="@color/color_999999"
+            android:layout_marginLeft="@dimen/x30"
+            android:text="Set an Alias for the new contact before you send the invitation."
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/x42"
+        android:layout_marginLeft="@dimen/x30"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:text="Contact Name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/mnemonic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x94"
-            android:layout_marginLeft="@dimen/x94"
-            android:layout_marginTop="36dp"
+            android:layout_marginRight="@dimen/x28"
+            android:layout_marginLeft="@dimen/x28"
             android:ems="10"
             android:gravity="left"
-            android:hint="@string/Add_Nickname"
+            android:hint="Annie"
             android:inputType="text"
             android:paddingBottom="@dimen/x35"
             android:singleLine="true"
             android:textColor="@color/regeisetInput"
-            android:textColorHint="@color/color_808080"
-            android:textSize="@dimen/x31"
+            android:textColorHint="@color/color_2c2c2c"
+            android:textSize="@dimen/commemTextSize"
             android:theme="@style/MyEditText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.41"
@@ -57,6 +63,7 @@
 
         <EditText
             android:id="@+id/IdentifyCode"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/x94"
@@ -80,30 +87,16 @@
             app:layout_constraintTop_toBottomOf="@+id/mnemonic" />
 
         <TextView
-            android:id="@+id/textView5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x94"
-            android:layout_marginLeft="@dimen/x94"
-            android:layout_marginTop="8dp"
-            android:text="@string/adduserTips"
-            android:textColor="@color/color_b3b3b3"
-            android:textSize="@dimen/x21"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.414"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/IdentifyCode" />
-
-        <TextView
             android:id="@+id/registerUserBtn"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x84"
-            android:layout_marginRight="@dimen/x94"
-            android:layout_marginLeft="@dimen/x94"
-            android:layout_marginTop="20dp"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"
+            android:layout_marginTop="@dimen/x86"
             android:background="@drawable/textview_border"
             android:gravity="center"
-            android:text="@string/create"
+            android:text="@string/next"
+            android:textSize="@dimen/commemTextSize"
             android:textColor="@color/color_efefef"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,8 +119,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+    <TextView
+        android:id="@+id/tempQrcode"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/x80"
+        android:textColor="@color/color_2B2B2B"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:drawablePadding="@dimen/x10"
+        android:drawableRight="@mipmap/temp_qrcode_enter"
+        android:text="Send the Temporary Account QR Code"
+        android:layout_height="wrap_content" />
 
 
-    </android.support.constraint.ConstraintLayout>
-
-</android.support.v4.widget.NestedScrollView>
+    </LinearLayout>
