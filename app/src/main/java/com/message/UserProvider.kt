@@ -5,6 +5,7 @@ import android.os.Handler
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
+import com.hyphenate.easeui.utils.PathUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
@@ -93,7 +94,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             if(userId.equals(jUpdateAvatarRsp.params.targetId))
             {
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
-                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name
+                var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name
                 var file = File(filePath)
                 if(file.exists())
                 {
@@ -107,7 +108,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                         var fileName = String(Base58.decode(fileBase58Name));
                         val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
                         fileName = fileName.replace("__Avatar","")
-                        var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+                        var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
                         if (ConstantValue.isWebsocketConnected) {
                             var msgId = Calendar.getInstance().timeInMillis /1000
                             doloadAvatarDataMap.put(msgId.toString(),fileSavePath);
@@ -131,7 +132,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                     var fileName = String(Base58.decode(fileBase58Name));
                     val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
                     fileName = fileName.replace("__Avatar","")
-                    var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+                    var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
                     if (ConstantValue.isWebsocketConnected) {
                         var msgId = Calendar.getInstance().timeInMillis /1000
                         FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "","0")
@@ -154,7 +155,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
                 var fileName = String(Base58.decode(fileBase58Name));
                 val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
                 fileName = fileName.replace("__Avatar","")
-                var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+                var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
                 if (ConstantValue.isWebsocketConnected) {
                     var msgId = Calendar.getInstance().timeInMillis /1000
                     FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, AppConfig.instance, msgId.toInt(), handlerDown, "","0")
@@ -178,7 +179,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
             if(userId.equals(jUpdateAvatarRsp.params.targetId))
             {
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+ ".jpg"
-                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name
+                var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name
                 FileMangerUtil.sendAvatarFile(filePath,"", false)
             }
 
@@ -321,7 +322,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
         }
 
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(jAddFriendPushRsp.params.userKey))
-        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
         if(fileMD5 == null)
         {
@@ -590,7 +591,7 @@ class UserProvider : PNRouterServiceMessageReceiver.UserControlleCallBack {
     override fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp) {
         if (jAddFriendReplyRsp.params.result == 0) {
             var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(jAddFriendReplyRsp.params.userKey))
-            var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+            var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
             var fileMD5 = FileUtil.getFileMD5(File(filePath))
             if(fileMD5 == null)
             {

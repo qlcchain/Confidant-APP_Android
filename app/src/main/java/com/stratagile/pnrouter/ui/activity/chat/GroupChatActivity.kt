@@ -164,7 +164,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     {
 
                         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(jGroupSysPushRsp.params.userKey))
-                        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                        var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
                         var fileMD5 = FileUtil.getFileMD5(File(filePath))
                         if(fileMD5 == null)
                         {
@@ -576,7 +576,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
             {
 
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
-                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
                 var fileMD5 = FileUtil.getFileMD5(File(filePath))
                 if(fileMD5 == null)
                 {

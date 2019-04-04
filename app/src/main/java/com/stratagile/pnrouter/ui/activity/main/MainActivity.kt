@@ -36,6 +36,7 @@ import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.domain.EaseUser
 import com.hyphenate.easeui.ui.EaseConversationListFragment
 import com.hyphenate.easeui.utils.EaseCommonUtils
+import com.hyphenate.easeui.utils.PathUtils
 import com.jaeger.library.StatusBarUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -299,8 +300,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     //toast(getString(R.string.Avatar_Update_Successful))
                 }
                 var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-                var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
-                var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + "__Avatar.jpg"
+                var files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
                 AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, files_dir, System.currentTimeMillis())
             }
@@ -875,7 +876,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if (friendList.size == 0) {
                     //判断非好友头像是否需要更新
                     var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(pushMsgRsp.params.userKey))
-                    var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                    var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
                     var fileMD5 = FileUtil.getFileMD5(File(filePath))
                     if (fileMD5 == null) {
                         fileMD5 = ""
@@ -2087,7 +2088,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-        var filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
         if (fileMD5 == null) {
             fileMD5 = ""

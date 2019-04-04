@@ -32,12 +32,7 @@ import java.io.FileOutputStream
 import kotlin.concurrent.thread
 import android.opengl.ETC1.getHeight
 import android.opengl.ETC1.getWidth
-
-
-
-
-
-
+import com.hyphenate.easeui.utils.PathUtils
 
 
 /**
@@ -110,7 +105,7 @@ class QRCodeActivity : BaseActivity(), QRCodeContract.View, View.OnClickListener
 
         ivAvatar.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
-        val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + fileBase58Name, "")
+        val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name, "")
         var bitmapAvatar : Bitmap? = null
         if (lastFile.exists()) {
             bitmapAvatar = getRoundedCornerBitmap(getRoundedCornerBitmap1(BitmapFactory.decodeFile(lastFile.path)))

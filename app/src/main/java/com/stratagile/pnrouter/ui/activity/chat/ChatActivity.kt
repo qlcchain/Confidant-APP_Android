@@ -73,7 +73,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             var fileBase58Name = filePath.substring(8,filePath.length)
             var fileName = String(Base58.decode(fileBase58Name));
             val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
-            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+            var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
             var msgId = Calendar.getInstance().timeInMillis /1000
             FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "","0")
         }
@@ -624,7 +624,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         EventBus.getDefault().register(this)
 
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData!!.signPublicKey))
-        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
         if(fileMD5 == null)
         {

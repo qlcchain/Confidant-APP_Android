@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.hyphenate.easeui.utils.PathUtils
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -192,7 +193,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             textView.visibility = View.VISIBLE
             imageView.visibility = View.GONE
         } else {
-                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+                val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
                     imageView.visibility = View.VISIBLE
@@ -222,7 +223,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             textView.visibility = View.VISIBLE
             imageView.visibility = View.GONE
         } else {
-            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+            val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
             if (lastFile.exists()) {
                 textView.visibility = View.GONE
                 imageView.visibility = View.VISIBLE
@@ -241,7 +242,7 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
             imageView.visibility = View.GONE
             setText(name)
         } else {
-                val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+                val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
                     imageView.visibility = View.VISIBLE
@@ -270,13 +271,13 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
         if ("" == url) {
             setText(name)
         } else {
-            val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url, "")
+            val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
             if (lastFile.exists()) {
                 textView.visibility = View.GONE
                 imageView.visibility = View.VISIBLE
                 KLog.i("聊天中设置头像")
                 Glide.with(this)
-                        .load(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + url)
+                        .load(PathUtils.getInstance().filePath.toString() + "/" + url)
                         .apply(optionsChat)
                         .into(imageView)
             } else {

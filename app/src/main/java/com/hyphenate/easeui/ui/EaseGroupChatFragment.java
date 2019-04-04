@@ -1217,7 +1217,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     if (friendList.size() == 0)//群聊非好友成员数据
                     {
                         String fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(Message.getUserKey()));
-                        String filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath() + "/Avatar/" + fileBase58Name + ".jpg";
+                        String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileBase58Name + ".jpg";
                         String fileMD5 = FileUtil.getFileMD5(new File(filePath));
                         if (fileMD5 == null) {
                             fileMD5 = "";

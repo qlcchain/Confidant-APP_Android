@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.hyphenate.easeui.utils.PathUtils
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
@@ -64,8 +65,8 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
             {
 
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-                var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
-                var files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+                var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + "__Avatar.jpg"
+                var files_dir = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
                 FileUtil.copySdcardFile(filePath, files_dir)
                 AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, files_dir, System.currentTimeMillis())
                 runOnUiThread {
@@ -135,7 +136,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
 
         }
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
-        val lastFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/" + fileBase58Name, "")
+        val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name, "")
         if (lastFile.exists()) {
             Glide.with(this)
                     .load(lastFile)
@@ -147,7 +148,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 .getInstalledPackages(0)
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
             var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/"+fileBase58Name+"__Avatar.jpg")
+            val tempFile = File(PathUtils.getInstance().filePath.toString() + "/"+fileBase58Name+"__Avatar.jpg")
             inputUri = RxFileTool.getUriForFile(this, tempFile)
             outputFile = Uri.fromFile(tempFile)
         }
@@ -243,7 +244,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     dataFile.mkdir()
                 }
                 var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-                var filePath  = dataFile.path + "/Avatar/" + fileBase58Name + "__Avatar.jpg"
+                var filePath  = PathUtils.getInstance().getFilePath().toString() + "/"  + fileBase58Name + "__Avatar.jpg"
                 val filePic: File = File(filePath)
                 //SpUtil.putString(this, ConstantValue.selfImageName, filePic.name)
                 if (!filePic.exists()) {
@@ -286,7 +287,7 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 fos.close()
                 KLog.i(filePic.name)
                 AlbumNotifyHelper.insertImageToMediaStore(AppConfig.instance, filePath, System.currentTimeMillis())
-                AlbumNotifyHelper.notifyScanDcim(AppConfig.instance, dataFile.path + "/Avatar/")
+                AlbumNotifyHelper.notifyScanDcim(AppConfig.instance, PathUtils.getInstance().getFilePath().toString() + "/")
                 EventBus.getDefault().post(UpdataAvatrrEvent(filePath,false))
 //                mPresenter.upLoadImg()
             } catch (e: IOException) {

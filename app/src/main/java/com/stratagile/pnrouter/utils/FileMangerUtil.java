@@ -694,7 +694,7 @@ public class FileMangerUtil {
 
             String base58files_dir = PathUtils.getInstance().getTempPath() + "/" + fileOrginName;
             String files_dirTemp = PathUtils.getInstance().getFilePath() + "/" + fileOrginName;
-            String filePath = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + fileOrginName ;
+            String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName ;
             int code = 0;
             if(fileType.equals("3"))
             {
@@ -1218,7 +1218,7 @@ public class FileMangerUtil {
 
                         }else{
                             String strBase58 = Base58.encode(fileName.getBytes());
-                            String base58files_dir = Environment.getExternalStorageDirectory().toString() + ConstantValue.INSTANCE.getLocalPath()+"/Avatar/" + strBase58;
+                            String base58files_dir = PathUtils.getInstance().getFilePath().toString() + "/" + strBase58;
                             String fileKey =  RxEncryptTool.generateAESKey();
                             int code =  FileUtil.copyAppFileToSdcard(imagePath,base58files_dir);
                             if(code == 1)

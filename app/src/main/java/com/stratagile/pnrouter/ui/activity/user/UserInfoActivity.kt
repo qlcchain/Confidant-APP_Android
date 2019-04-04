@@ -68,7 +68,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             var fileName = String(Base58.decode(fileBase58Name));
             val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
             fileName = fileName.replace("__Avatar","")
-            var fileSavePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/"
+            var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
             var msgId = Calendar.getInstance().timeInMillis /1000
             FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "","0")
         }
@@ -414,7 +414,7 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         }
         AppConfig.instance.messageReceiver!!.updateAvatarBackBack = this
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))
-        var filePath  = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/Avatar/" + fileBase58Name + ".jpg"
+        var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
         if(fileMD5 == null)
         {
