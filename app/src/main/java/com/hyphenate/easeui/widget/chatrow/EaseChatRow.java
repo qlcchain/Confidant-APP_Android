@@ -349,7 +349,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 public void onClick(View v) {
                     if (itemClickListener != null) {
                         if (message.direct() == Direct.SEND) {
-                            itemClickListener.onUserAvatarClick(EMClient.getInstance().getCurrentUser());
+                            itemClickListener.onUserAvatarClick(message.getFrom());
                         } else {
                             itemClickListener.onUserAvatarClick(message.getFrom());
                         }
@@ -362,7 +362,7 @@ public abstract class EaseChatRow extends LinearLayout {
                 public boolean onLongClick(View v) {
                     if(itemClickListener != null){
                         if (message.direct() == Direct.SEND) {
-                            itemClickListener.onUserAvatarLongClick(EMClient.getInstance().getCurrentUser());
+                            itemClickListener.onUserAvatarLongClick(message.getFrom());
                         } else {
                             itemClickListener.onUserAvatarLongClick(message.getFrom());
                         }
