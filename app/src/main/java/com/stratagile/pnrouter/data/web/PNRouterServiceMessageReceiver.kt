@@ -193,7 +193,10 @@ val credentialsProvider: CredentialsProvider, private
                 //拉取好友列表
                 "PullFriend" -> {
                     val jPullFriendRsp = gson.fromJson(text, JPullFriendRsp::class.java)
-                    pullFriendCallBack?.firendList(jPullFriendRsp)
+                    forwardFriendAndGroupBack?.firendList(jPullFriendRsp = jPullFriendRsp)
+                    if (forwardFriendAndGroupBack == null) {
+                        pullFriendCallBack?.firendList(jPullFriendRsp)
+                    }
                     //userControlleCallBack?.firendList(jPullFriendRsp)
                 }
                 //拉取用户列表
@@ -423,7 +426,8 @@ val credentialsProvider: CredentialsProvider, private
                 "GroupListPull" -> {
                     val JGroupListPullRsp = gson.fromJson(text, JGroupListPullRsp::class.java)
                     groupListPullBack?.groupListPull(JGroupListPullRsp)
-                    if (groupListPullBack == null) {
+                    forwardFriendAndGroupBack?.groupListPull(jGroupListPullRsp = JGroupListPullRsp)
+                    if (groupListPullBack == null && forwardFriendAndGroupBack == null) {
                         mainInfoBack?.groupListPull(JGroupListPullRsp)
                     }
                 }
@@ -581,6 +585,8 @@ val credentialsProvider: CredentialsProvider, private
     var groupMemberOpreateBack: GroupMemberOpreateBack? = null
 
     var selcectCircleCallBack: SelcectCircleCallBack? = null
+
+    var forwardFriendAndGroupBack : ForwardFriendAndGroupBack? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -763,6 +769,14 @@ val credentialsProvider: CredentialsProvider, private
 
     interface PullFriendCallBack {
         fun firendList(jPullFriendRsp: JPullFriendRsp)
+    }
+
+    /**
+     * 转发页面获取好友和群组的接口
+     */
+    interface ForwardFriendAndGroupBack {
+        fun firendList(jPullFriendRsp: JPullFriendRsp)
+        fun groupListPull(jGroupListPullRsp: JGroupListPullRsp)
     }
 
     interface PullUserCallBack {

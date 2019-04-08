@@ -11,9 +11,11 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
+import com.alibaba.fastjson.JSONObject
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.hyphenate.chat.EMMessage
 import com.pawegio.kandroid.runOnUiThread
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -21,10 +23,7 @@ import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.*
-import com.stratagile.pnrouter.entity.BaseData
-import com.stratagile.pnrouter.entity.JPullFriendRsp
-import com.stratagile.pnrouter.entity.MyFriend
-import com.stratagile.pnrouter.entity.PullFriendReq_V4
+import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerContactAndGroupComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.ContactAndGroupContract
 import com.stratagile.pnrouter.ui.activity.main.module.ContactAndGroupModule
@@ -43,6 +42,7 @@ import kotlinx.android.synthetic.main.ease_search_bar.*
 import kotlinx.android.synthetic.main.fragment_contact_group.*
 import org.greenrobot.eventbus.EventBus
 import org.libsodium.jni.Sodium
+import scalaz.Alpha
 import java.util.*
 import javax.inject.Inject
 
@@ -53,7 +53,61 @@ import javax.inject.Inject
  * @date 2019/03/26 11:19:29
  */
 
-class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , PNRouterServiceMessageReceiver.PullFriendCallBack{
+class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PNRouterServiceMessageReceiver.ForwardFriendAndGroupBack {
+    override fun groupListPull(jGroupListPullRsp: JGroupListPullRsp) {
+        KLog.i("拉取群组列表返回了")
+        when(jGroupListPullRsp.params.retCode)
+        {
+            0->
+            {
+                groupEntityList = arrayListOf<GroupEntity>()
+                for (item in jGroupListPullRsp.params.payload)
+                {
+                    var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(item.gId)).list()
+                    if(groupList.size > 0)
+                    {
+                        var GroupLocal = groupList.get(0)
+                        GroupLocal.userKey = item.userKey
+                        GroupLocal.remark = item.remark
+                        GroupLocal.gId = item.gId
+                        GroupLocal.gAdmin = item.gAdmin
+                        GroupLocal.gName = item.gName
+                        GroupLocal.routerId = ConstantValue.currentRouterId
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.update(GroupLocal);
+                    }else{
+                        item.routerId = ConstantValue.currentRouterId
+                        AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(item);
+                    }
+                    groupEntityList.add(item)
+                }
+                for (i in groupEntityList) {
+                    if (i?.remark != null && i?.remark != "") {
+                        i.nickSouceName = String(RxEncodeTool.base64Decode(i.remark)).toLowerCase()
+                    } else {
+                        i.nickSouceName = String(RxEncodeTool.base64Decode(i.gName)).toLowerCase()
+                    }
+                }
+                groupEntityList.sortBy {
+                    it.nickSouceName
+                }
+                runOnUiThread {
+                    if (groupEntityList.size >= 4) {
+                        recyclerGroupView.layoutParams.height = resources.getDimension(R.dimen.x432).toInt()
+                    }
+                    contactAdapter0!!.setNewData(groupEntityList)
+                }
+            }
+            else ->
+            {
+                runOnUiThread {
+                    toast(getString(R.string.Other_mistakes))
+                }
+
+            }
+        }
+
+    }
+
     override fun firendList(jPullFriendRsp: JPullFriendRsp) {
         //用户表，每个手机是一个用户
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
@@ -201,6 +255,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
             initData()
         }
     }
+
     @Inject
     lateinit internal var mPresenter: ContactAndGroupPresenter
 //    var contactAdapter : ContactListAdapter? = null
@@ -218,6 +273,8 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
     var refreshEnable1 = true
     var routerId: String? = null
     var onViewCreated = false;
+
+    var groupEntityList = arrayListOf<GroupEntity>()
 
     //   @Nullable
     //   @Override
@@ -241,6 +298,18 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         return view
     }
 
+    fun pullGroup() {
+        var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+        val GroupListPullReq = GroupListPullReq(userId!!, ConstantValue.currentRouterId)
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, GroupListPullReq))
+        } else if (ConstantValue.isToxConnected) {
+            val baseData = BaseData(4, GroupListPullReq)
+            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -248,7 +317,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         viewModel = ViewModelProviders.of(activity!!).get(MainViewModel::class.java)
 
         try {
-            AppConfig.instance.messageReceiver!!.pullFriendCallBack = this
+            AppConfig.instance.messageReceiver!!.forwardFriendAndGroupBack = this
         } catch (e: Exception) {
             var aa = ""
         }
@@ -259,6 +328,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }*/
         refreshLayout.isEnabled = refreshEnable1
         pullFriendList()
+        pullGroup()
     }
 
     fun setRefreshEnable(enable: Boolean) {
@@ -280,6 +350,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         toReduceList = list
         KLog.i("将要不显示的数量为：" + toReduceList?.size)
     }
+
     fun pullFriendList() {
         Log.i("pullFriendList", "webosocket" + ConstantValue.isWebsocketConnected)
         var selfUserId = SpUtil.getString(activity!!, ConstantValue.userId, "")
@@ -363,19 +434,16 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
                     if (localFriendList.size > 0)
                         it = localFriendList.get(0)
 
-                    if(routerId != null)//群聊只能添加本路由器好友
+                    if (routerId != null)//群聊只能添加本路由器好友
                     {
-                        if(it.routeId.equals(routerId))
-                        {
-                            if(!it.userId.equals(fromId))
-                            {
+                        if (it.routeId.equals(routerId)) {
+                            if (!it.userId.equals(fromId)) {
                                 contactList.add(it)
                             }
 
                         }
-                    }else{
-                        if(!it.userId.equals(fromId))
-                        {
+                    } else {
+                        if (!it.userId.equals(fromId)) {
                             contactList.add(it)
                         }
 
@@ -434,17 +502,6 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }
         contactNewList.sortBy {
             String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
-        }
-        val list0 = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.RouterId.eq(ConstantValue.currentRouterId),GroupEntityDao.Properties.GId.notEq(fromId)).list()
-        for (i in list0) {
-            if (i?.remark != null && i?.remark != "") {
-                i.nickSouceName = String(RxEncodeTool.base64Decode(i.remark)).toLowerCase()
-            } else {
-                i.nickSouceName = String(RxEncodeTool.base64Decode(i.gName)).toLowerCase()
-            }
-        }
-        list0.sortBy {
-            it.nickSouceName
         }
         val list1 = arrayListOf<MultiItemEntity>()
         var isIn = false
@@ -510,12 +567,8 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
                 }
             }
         }
-        contactAdapter0 = GroupAdapter(list0)
+        contactAdapter0 = GroupAdapter(groupEntityList)
         recyclerGroupView.adapter = contactAdapter0
-        if(list0.size >= 4)
-        {
-            recyclerGroupView.layoutParams.height = resources.getDimension(R.dimen.x432).toInt()
-        }
 
         if (bundle != null) {
             contactAdapter0!!.setCheckMode(true)
@@ -528,7 +581,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         query.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 fiter(s.toString(), contactList)
-                fiterGroup(s.toString(), list0)
+                fiterGroup(s.toString(), groupEntityList)
                 if (s.length > 0) {
                     search_clear.setVisibility(View.VISIBLE)
                 } else {
@@ -643,6 +696,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }
         contactAdapter1!!.setNewData(list1)
     }
+
     fun fiter(key: String, contactList: ArrayList<UserEntity>) {
         var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
         for (i in contactList) {
@@ -653,6 +707,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         updateAdapterData(contactListTemp)
 //        contactAdapter!!.setNewData(contactListTemp)
     }
+
     fun fiterGroup(key: String, contactList: List<GroupEntity>) {
         var groupListTemp: ArrayList<GroupEntity> = arrayListOf<GroupEntity>()
         for (i in contactList) {
@@ -662,6 +717,7 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }
         contactAdapter0!!.setNewData(groupListTemp)
     }
+
     fun selectOrCancelAll() {
 //        var itemCount =  contactAdapter!!.itemCount -1
 //
@@ -702,22 +758,22 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
         }
         return contactList!!
     }
+
     fun getAllSelectedGroup(): ArrayList<GroupEntity> {
         var contactList = arrayListOf<GroupEntity>()
         contactAdapter0!!.data.forEachIndexed { index, it ->
-            if(contactAdapter0!!.getViewByPosition(recyclerGroupView,index,R.id.checkBox) != null)
-            {
-                var checkBox =  contactAdapter0!!.getViewByPosition(recyclerGroupView,index,R.id.checkBox) as CheckBox
-                if(checkBox.isChecked)
-                {
+            if (contactAdapter0!!.getViewByPosition(recyclerGroupView, index, R.id.checkBox) != null) {
+                var checkBox = contactAdapter0!!.getViewByPosition(recyclerGroupView, index, R.id.checkBox) as CheckBox
+                if (checkBox.isChecked) {
                     contactList.add(it)
                 }
-            }else{
+            } else {
                 var aa = ""
             }
         }
         return contactList!!
     }
+
     override fun setupFragmentComponent() {
         DaggerContactAndGroupComponent
                 .builder()
@@ -744,8 +800,8 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View , P
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (AppConfig.instance.messageReceiver != null)
-            AppConfig.instance.messageReceiver!!.pullFriendCallBack = null
+            AppConfig.instance.messageReceiver!!.forwardFriendAndGroupBack = null
+        super.onDestroy()
     }
 }

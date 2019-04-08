@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.util.Xml;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -137,17 +138,15 @@ public class FloatMenu extends PopupWindow{
 		for(int i = 0; i < menuItemList.size(); i ++){
 			TextView textView = new TextView(context);
 			textView.setClickable(true);
-			//textView.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.shape_main_list_bg));
-			textView.setPadding(padding, padding, padding, 0);
+			textView.setPadding(0, 0, 0, 4);
 			textView.setWidth((int) context.getResources().getDimension(R.dimen.x140));
 			textView.setGravity(Gravity.CENTER);
-			textView.setTextSize(13);
+			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
 			textView.setTextColor(Color.WHITE);
 			MenuItem menuModel = menuItemList.get(i);
 			if(menuModel.getItemResId() != View.NO_ID){
 				Drawable drawable = ContextCompat.getDrawable(context, menuModel.getItemResId());
-				drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-				textView.setCompoundDrawablePadding(Display.dip2px(context, 1));
+				drawable.setBounds(0, 0, (int) context.getResources().getDimension(R.dimen.x36), (int) context.getResources().getDimension(R.dimen.x36));
 				textView.setCompoundDrawables(null, drawable, null, null);
 			}
 			textView.setText(menuModel.getItem());
@@ -167,7 +166,7 @@ public class FloatMenu extends PopupWindow{
 		}
 		setContentView(menuLayout);
 		setWidth(((int) context.getResources().getDimension(R.dimen.x140)) * menuItemList.size());
-		setHeight(menuHeight);
+		setHeight((int) context.getResources().getDimension(R.dimen.x100));
 
 	}
 

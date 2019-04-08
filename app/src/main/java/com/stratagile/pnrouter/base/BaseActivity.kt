@@ -57,7 +57,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR//设置状态栏黑色字体
         }
-        window.navigationBarColor = resources.getColor(R.color.white)
+//        window.navigationBarColor = resources.getColor(R.color.white)
         AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {
             val intent = intent
