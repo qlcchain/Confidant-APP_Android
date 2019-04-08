@@ -1330,7 +1330,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                     if (fileFile.exists()) {
                         if(fileFile.length() == 0 && Message.getFileSize() != null && Message.getFileSize() > 0)
                         {
-                            FileUtil.getKongFile(Message.getFileName());
+                            File resultFile =  FileUtil.getKongFile(Message.getFileName());
+                            if(resultFile == null )
+                            {
+                                continue;
+                            }
 //                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                             String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                             message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
@@ -1367,7 +1371,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             message = EMMessage.createFileSendMessage(file_dir, toChatUserId);
                         }
                     } else {
-                        FileUtil.getKongFile(Message.getFileName());
+                        File resultFile =  FileUtil.getKongFile(Message.getFileName());
+                        if(resultFile == null )
+                        {
+                            continue;
+                        }
 //                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);

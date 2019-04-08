@@ -1019,6 +1019,7 @@ public class FileUtil {
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+                return null;
             }
         }
         return file;

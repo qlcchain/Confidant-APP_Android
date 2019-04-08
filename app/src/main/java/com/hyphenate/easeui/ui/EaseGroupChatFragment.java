@@ -355,8 +355,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 message = EMMessage.createVideoSendMessage(videoPath, thumbPath, fileData.getFileSize(), toChatUserId);
                 break;
             case 5:
-                FileUtil.getKongFile(fileOrginName);
-               //FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
+                File resultFile =FileUtil.getKongFile(fileOrginName);
+                if(resultFile == null )
+                {
+                    break;
+                }
+                //FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                 String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                 message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
                 break;
@@ -1389,7 +1393,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     if (fileFile.exists()) {
                         if(fileFile.length() == 0 && Message.getFileSize() != null && Message.getFileSize() > 0)
                         {
-                            FileUtil.getKongFile(Message.getFileName());
+                            File resultFile =  FileUtil.getKongFile(Message.getFileName());
+                            if(resultFile == null )
+                            {
+                                continue;
+                            }
 //                            FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                             String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                             message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
@@ -1426,7 +1434,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         }
 
                     } else {
-                        FileUtil.getKongFile(Message.getFileName());
+                        File resultFile =  FileUtil.getKongFile(Message.getFileName());
+                        if(resultFile == null )
+                        {
+                            continue;
+                        }
 //                        FileUtil.drawableToFile(AppConfig.instance,R.mipmap.doc_img_default,Message.getFileName(),5);
                         String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + Message.getFileName();
                         message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);
@@ -1574,7 +1586,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         switch (type) {
                             case "1":
                                 EMMessage message = EMMessage.createImageSendMessage(filePath, true, friendId);
-                                 Bitmap bitmap1 = BitmapFactory.decodeFile(filePath);
+                                Bitmap bitmap1 = BitmapFactory.decodeFile(filePath);
                                 String widthAndHeight = "," + bitmap1.getWidth() + "*" + bitmap1.getHeight();
                                 if (bitmap1 != null) {
                                     message.setAttribute("wh", widthAndHeight.replace(",", ""));
@@ -3694,7 +3706,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 }*/
 
                             }else{
-                                FileUtil.getKongFile(fileOrginName);
+                                File resultFile =FileUtil.getKongFile(fileOrginName);
 //                                FileUtil.drawableToFile(AppConfig.instance,R.mipmap.kong,fileOrginName,5);
                                 String ease_default_file = PathUtils.getInstance().getImagePath() + "/" + fileOrginName;
                                 message = EMMessage.createFileSendMessage(ease_default_file, toChatUserId);

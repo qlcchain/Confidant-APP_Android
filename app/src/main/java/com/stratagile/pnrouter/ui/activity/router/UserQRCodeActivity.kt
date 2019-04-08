@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
 import android.content.Intent.ACTION_SEND
 import android.net.Uri
+import android.view.Menu
+import android.view.MenuItem
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.utils.*
@@ -155,6 +157,33 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
                 }
             }
         }
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.share) {
+            cardView2.setDrawingCacheEnabled(true);
+            cardView2.buildDrawingCache();
+            var userId = FileUtil.getLocalUserData("userid")
+            val bitmapPic = Bitmap.createBitmap(cardView2.getDrawingCache())
+            if(bitmapPic != null)
+            {
+                var dir = ConstantValue.localPath + "/RA/" + userId + ".jpg"
+                var share_intent = Intent()
+                share_intent.action = Intent.ACTION_SEND//设置分享行为
+                share_intent.type = "image/*"  //设置分享内容的类型
+                share_intent.putExtra(Intent.EXTRA_STREAM, ShareUtil.saveBitmap(this, bitmapPic,dir))
+                share_intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                //创建分享的Dialog
+                share_intent = Intent.createChooser(share_intent, "share")
+                startActivity(share_intent)
+            }
+            //PopWindowUtil.showSharePopWindow(this, tvShare)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.share_self, menu)
+        return super.onCreateOptionsMenu(menu)
     }
     override fun onDestroy() {
         super.onDestroy()
