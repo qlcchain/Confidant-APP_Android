@@ -148,7 +148,8 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                 .getInstalledPackages(0)
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
             var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-            val tempFile = File(PathUtils.getInstance().filePath.toString() + "/"+fileBase58Name+"__Avatar.jpg")
+            val tempFile = File(Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath+"/Avatar/"+fileBase58Name+"__Avatar.jpg")
+            val saveFile = File(PathUtils.getInstance().filePath.toString() + "/"+fileBase58Name+".jpg")
             inputUri = RxFileTool.getUriForFile(this, tempFile)
             outputFile = Uri.fromFile(tempFile)
         }
