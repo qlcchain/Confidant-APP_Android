@@ -36,7 +36,7 @@ object SpUtil {
         {
             return
         }
-        if(key.indexOf("message_") > -1 && key.equals(""))
+        if(key.indexOf("UserId") > -1)
         {
             var aa =""
         }

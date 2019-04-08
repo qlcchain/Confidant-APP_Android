@@ -38,6 +38,7 @@ val credentialsProvider: CredentialsProvider, private
                         recoveryBackListener?.recoveryBack(jRecoveryRsp)
                         loginBackListener?.recoveryBack(jRecoveryRsp)
                         adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
+                        mainInfoBack?.recoveryBack(jRecoveryRsp)
                     }
                     "Register" -> {
                         val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -45,6 +46,7 @@ val credentialsProvider: CredentialsProvider, private
                         registerListener?.registerBack(JRegisterRsp)
                         loginBackListener?.registerBack(JRegisterRsp)
                         adminRecoveryCallBack?.registerBack(JRegisterRsp)
+                        mainInfoBack?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
                         KLog.i("没有初始化。。登录之后" + loginBackListener)
@@ -55,6 +57,7 @@ val credentialsProvider: CredentialsProvider, private
                         registerListener?.loginBack(loginRsp)
                         adminRecoveryCallBack?.loginBack(loginRsp)
                         selcectCircleCallBack?.loginBack(loginRsp)
+                        mainInfoBack?.loginBack(loginRsp)
                     }
                     "LogOut" -> {
                         val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
@@ -115,6 +118,7 @@ val credentialsProvider: CredentialsProvider, private
                     recoveryBackListener?.recoveryBack(jRecoveryRsp)
                     loginBackListener?.recoveryBack(jRecoveryRsp)
                     adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
+                    mainInfoBack?.recoveryBack(jRecoveryRsp)
                 }
                 "Register" -> {
                     val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -122,6 +126,7 @@ val credentialsProvider: CredentialsProvider, private
                     registerListener?.registerBack(JRegisterRsp)
                     loginBackListener?.registerBack(JRegisterRsp)
                     adminRecoveryCallBack?.registerBack(JRegisterRsp)
+                    mainInfoBack?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
                     KLog.i("没有初始化。。登录之后" + loginBackListener + "##" + AppConfig.instance.name)
@@ -132,6 +137,7 @@ val credentialsProvider: CredentialsProvider, private
                     registerListener?.loginBack(loginRsp)
                     adminRecoveryCallBack?.loginBack(loginRsp)
                     selcectCircleCallBack?.loginBack(loginRsp)
+                    mainInfoBack?.loginBack(loginRsp)
                 }
                 "AddFriendReq" -> {
                     val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -724,6 +730,10 @@ val credentialsProvider: CredentialsProvider, private
     }
 
     interface MainInfoBack {
+        fun registerBack(registerRsp: JRegisterRsp)
+        fun loginBack(loginRsp: JLoginRsp)
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
+
         fun addFriendPushRsp(jAddFriendPushRsp: JAddFriendPushRsp)
         fun addFriendReplyRsp(jAddFriendReplyRsp: JAddFriendReplyRsp)
         fun delFriendPushRsp(jDelFriendPushRsp: JDelFriendPushRsp)

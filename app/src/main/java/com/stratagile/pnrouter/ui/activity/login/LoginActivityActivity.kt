@@ -1921,6 +1921,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         toast(R.string.code_error)
                         return
                     }
+                    toast(R.string.code_error)
+                    return;
                 }
                 var type = result.substring(0,6);
                 var data = result.substring(7,result.length);

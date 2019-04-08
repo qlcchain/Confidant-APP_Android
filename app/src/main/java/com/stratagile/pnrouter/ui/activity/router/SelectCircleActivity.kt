@@ -210,9 +210,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
         ConstantValue.loginOut = true
         ConstantValue.logining = false
-        ConstantValue.isHeart = false
         ConstantValue.currentRouterIp = ""
-        resetUnCompleteFileRecode()
         if (ConstantValue.isWebsocketConnected) {
             FileMangerDownloadUtils.init()
             ConstantValue.webSockeFileMangertList.forEach {
@@ -230,7 +228,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         ConstantValue.loginReq = null
         ConstantValue.isWebsocketReConnect = false
         ConstantValue.hasLogin = true
-        ConstantValue.isHeart = true
+        ConstantValue.isHeart = false
         resetUnCompleteFileRecode()
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
