@@ -101,8 +101,8 @@
             <ProgressBar
                 android:id="@+id/progress_bar"
                 style="?android:attr/progressBarStyleSmall"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:visibility="invisible" />
         </LinearLayout>
     </RelativeLayout>
