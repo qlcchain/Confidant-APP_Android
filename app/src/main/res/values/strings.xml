@@ -619,8 +619,8 @@
     <string name="select_a_file">Select a File</string>
     <string name="Create_a_Group">Create a Group</string>
     <string name="Create_a_Group_sub">Create a group to share ideas with more friends</string>
-    <string name="Scan_to_add_contacts">Scan to add contacts</string>
-    <string name="Scan_to_add_contacts_code">Scan your friend\'s Contact Card QR Code</string>
+    <string name="Scan_to_add_contacts">Scan</string>
+    <string name="Scan_to_add_contacts_code">Add contacts, join a circle or activate a Station</string>
     <string name="Share_My_Contact_Card">Share My Contact Card</string>
     <string name="Scan_my_Contact_Card_QR_Code">Scan my Contact Card QR Code</string>
     <string name="The_server_did_not_respond">The node is not responding, please scan the code again to log in</string>

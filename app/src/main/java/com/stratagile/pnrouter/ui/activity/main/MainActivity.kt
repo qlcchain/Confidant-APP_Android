@@ -3545,77 +3545,84 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 if(!result.contains("type_"))
                 {
                     if (NetUtils.isMacAddress(result)) {
-                        var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
-                        var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
-                        if (ConstantValue.isWebsocketConnected) {
-                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
-                        } else if (ConstantValue.isToxConnected) {
-                            val baseData = BaseData(2,msgData)
-                            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                        }
-                        isScanSwitch = true
-                        scanType = 0;
-                        RouterMacStr = result
-                        if(RouterMacStr != null && !RouterMacStr.equals(""))
-                        {
-                            if(AppConfig.instance.messageReceiver != null)
-                                AppConfig.instance.messageReceiver!!.close()
-                            if(WiFiUtil.isWifiConnect())
-                            {
-                                showProgressDialog("wait...")
-                                ConstantValue.currentRouterMac  = ""
-                                isFromScanAdmim = true
-                                var count =0;
-                                KLog.i("测试计时器Mac" + count)
-                                Thread(Runnable() {
-                                    run() {
-
-                                        while (true)
-                                        {
-                                            if(count >=3)
-                                            {
-                                                if(ConstantValue.currentRouterMac.equals(""))
-                                                {
-                                                    runOnUiThread {
-                                                        closeProgressDialog()
-                                                        RouterMacStr = ""
-                                                        isFromScanAdmim = false
-                                                        toast(R.string.Unable_to_connect_to_router)
-                                                    }
-                                                }
-                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                                break;
-                                            }else if(!ConstantValue.currentRouterMac.equals(""))
-                                            {
-                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                                break;
-                                            }
-                                            count ++;
-                                            MobileSocketClient.getInstance().init(handler,this)
-                                            var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
-                                            MobileSocketClient.getInstance().destroy()
-                                            MobileSocketClient.getInstance().send("MAC"+toMacMi)
-                                            MobileSocketClient.getInstance().receive()
-                                            KLog.i("测试计时器Mac" + count)
-                                            Thread.sleep(1000)
-                                        }
-
+                        SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
+                                .setConfirmClickListener {
+                                    var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
+                                    var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
+                                    if (ConstantValue.isWebsocketConnected) {
+                                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,msgData))
+                                    } else if (ConstantValue.isToxConnected) {
+                                        val baseData = BaseData(2,msgData)
+                                        val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
-                                }).start()
+                                    isScanSwitch = true
+                                    scanType = 0;
+                                    RouterMacStr = result
+                                    if(RouterMacStr != null && !RouterMacStr.equals(""))
+                                    {
+                                        if(AppConfig.instance.messageReceiver != null)
+                                            AppConfig.instance.messageReceiver!!.close()
+                                        if(WiFiUtil.isWifiConnect())
+                                        {
+                                            showProgressDialog("wait...")
+                                            ConstantValue.currentRouterMac  = ""
+                                            isFromScanAdmim = true
+                                            var count =0;
+                                            KLog.i("测试计时器Mac" + count)
+                                            Thread(Runnable() {
+                                                run() {
 
-                            }else{
-                                runOnUiThread {
-                                    closeProgressDialog()
-                                    toast(R.string.Please_connect_to_WiFi)
+                                                    while (true)
+                                                    {
+                                                        if(count >=3)
+                                                        {
+                                                            if(ConstantValue.currentRouterMac.equals(""))
+                                                            {
+                                                                runOnUiThread {
+                                                                    closeProgressDialog()
+                                                                    RouterMacStr = ""
+                                                                    isFromScanAdmim = false
+                                                                    toast(R.string.Unable_to_connect_to_router)
+                                                                }
+                                                            }
+                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                            break;
+                                                        }else if(!ConstantValue.currentRouterMac.equals(""))
+                                                        {
+                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                            break;
+                                                        }
+                                                        count ++;
+                                                        MobileSocketClient.getInstance().init(handler,this)
+                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                        MobileSocketClient.getInstance().destroy()
+                                                        MobileSocketClient.getInstance().send("MAC"+toMacMi)
+                                                        MobileSocketClient.getInstance().receive()
+                                                        KLog.i("测试计时器Mac" + count)
+                                                        Thread.sleep(1000)
+                                                    }
+
+                                                }
+                                            }).start()
+
+                                        }else{
+                                            runOnUiThread {
+                                                closeProgressDialog()
+                                                toast(R.string.Please_connect_to_WiFi)
+                                            }
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            closeProgressDialog()
+                                            toast(R.string.code_error)
+                                        }
+                                    }
+
                                 }
-                            }
-                        }else{
-                            runOnUiThread {
-                                closeProgressDialog()
-                                toast(R.string.code_error)
-                            }
-                        }
+                                .show()
+
                         return
                     } else {
                         runOnUiThread {
@@ -3663,7 +3670,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                         runOnUiThread {
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
-                                    .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
+                                    .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
                                         showProgressDialog("switch...")
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
