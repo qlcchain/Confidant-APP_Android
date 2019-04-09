@@ -130,23 +130,27 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     toast("RouterId Error")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             if (registerRsp.params.retCode == 2) {
                 runOnUiThread {
                     toast("The two-dimensional code has been activated by other users.")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             if (registerRsp.params.retCode == 3) {
                 runOnUiThread {
                     toast("Error Verification Code")
+                    gotoLogin()
                     closeProgressDialog()
                 }
             }
             if (registerRsp.params.retCode == 4) {
                 runOnUiThread {
                     toast("Other Error")
+                    gotoLogin()
                     closeProgressDialog()
                 }
             }
@@ -155,6 +159,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         if ("".equals(registerRsp.params.userId)) {
             runOnUiThread {
                 toast("Too many users")
+                gotoLogin()
                 closeProgressDialog()
             }
         } else {
@@ -235,36 +240,42 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     toast("need Verification")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
                     toast("rid error")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
                     toast("uid error")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
                     toast("Validation failed")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
                     toast("Verification code error")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else{
                 runOnUiThread {
                     toast("other error")
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             return
@@ -482,6 +493,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             2 -> {
                 runOnUiThread {
                     toast("Rid error")
+                    gotoLogin()
                 }
 
             }
@@ -555,11 +567,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             4 -> {
                 runOnUiThread {
                     toast("Other mistakes")
+                    gotoLogin()
                 }
             }
             else -> {
                 runOnUiThread {
                     toast("The two-dimensional code has been activated by other users.")
+                    gotoLogin()
                 }
             }
         }
@@ -3639,6 +3653,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             toast(R.string.The_same_circle_without_switching)
                             return
                         }
+                        showProgressDialog("switch...")
                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                         var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
                         if (ConstantValue.isWebsocketConnected) {
@@ -3738,7 +3753,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 }
                             }).start()
                         }else{
-                            showProgressDialog("wait...")
+                            showProgressDialog("switch...")
                             Thread(Runnable() {
                                 run() {
                                     OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
@@ -3792,6 +3807,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     RouterMacStr = String(soureData)
                     if(RouterMacStr != null && !RouterMacStr.equals(""))
                     {
+                        showProgressDialog("switch...")
                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                         var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
                         if (ConstantValue.isWebsocketConnected) {
