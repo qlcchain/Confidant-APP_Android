@@ -227,7 +227,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         }
         ConstantValue.loginReq = null
         ConstantValue.isWebsocketReConnect = false
-        ConstantValue.hasLogin = true
+        ConstantValue.hasLogin = false
         ConstantValue.isHeart = false
         resetUnCompleteFileRecode()
         AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()

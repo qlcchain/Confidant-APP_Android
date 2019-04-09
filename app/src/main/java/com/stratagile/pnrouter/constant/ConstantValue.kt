@@ -102,8 +102,8 @@ object ConstantValue {
         var mHuaWeiRegId = ""
 //        var pushURL = "http://47.96.76.184:9000/v1/pareg"
         var pushURL = "https://pprouter.online:9001/v1/pareg"
-        var loginOut = false
-        var logining = false
+        var loginOut = false//是否登出
+        var logining = false//登录状态
         var freindStatus = 0
         var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn
         var isFormat = false

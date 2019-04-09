@@ -626,5 +626,10 @@
     <string name="The_server_did_not_respond">The node is not responding, please scan the code again to log in</string>
     <string name="Group_disbanded">Group disbanded</string>
     <string name="You_removed">You\'re removed from group chat by the group leader</string>
-    <string name="The_same_circle_without_switching">The same circle, without switching</string>
+    <string name="The_same_circle_without_switching">Already in the same circle.</string>
+    <string name="The_same_user">The same user.</string>
+    <string name="Are_you_sure_you_want_to_leave_the_circle">Do you want to switch the circle?</string>
+    <string name="Do_you_leave_the_circle_to_import_new_accounts">Do you leave the circle to import new accounts?</string>
+
+
 </resources>
