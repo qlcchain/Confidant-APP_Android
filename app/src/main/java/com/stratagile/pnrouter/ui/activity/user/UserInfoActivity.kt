@@ -39,6 +39,7 @@ import events.ToxSendInfoEvent
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_user_info.*
+import kotlinx.android.synthetic.main.toolbar_layout.view.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -382,34 +383,50 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             0-> {
                 tvRefuse.text = getString(R.string.delete_contact)
                 tvAccept.text = getString(R.string.send_a_message)
+                setNoteName.visibility = View.VISIBLE
+                shareAppFreind.visibility = View.VISIBLE
             }
             1-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             2-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             3-> {
                 tvRefuse.text = getString(R.string.refuse)
                 tvAccept.text = getString(R.string.accept)
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             4-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             5-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             6-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
             7-> {
                 llOperate.visibility = View.GONE
                 tvAddFriend.visibility = View.VISIBLE
+                setNoteName.visibility = View.GONE
+                shareAppFreind.visibility = View.GONE
             }
         }
         AppConfig.instance.messageReceiver!!.updateAvatarBackBack = this
