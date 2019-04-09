@@ -179,7 +179,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             }
             if (registerRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("The two-dimensional code has been activated by other users.")
+                    toast("QR code has been activated by other users.")
                     closeProgressDialog()
                 }
             }

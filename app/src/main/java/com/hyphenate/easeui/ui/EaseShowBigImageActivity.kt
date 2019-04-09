@@ -159,7 +159,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
             if (registerRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("The two-dimensional code has been activated by other users.")
+                    toast("QR code has been activated by other users.")
                     closeProgressDialog()
                     gotoLogin()
                 }
@@ -597,7 +597,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
             else -> {
                 runOnUiThread {
-                    toast("The two-dimensional code has been activated by other users.")
+                    toast("QR code has been activated by other users.")
                     gotoLogin()
                 }
             }
@@ -808,9 +808,14 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                 soureData =  AESCipher.aesDecryptByte(data,"welcometoqlc0101")
                             }
                             if (hasQRCode!!.indexOf("http://") > -1 || hasQRCode!!.indexOf("https://") > -1) {
-                                val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
+                                /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
                                 intent.putExtra("url", hasQRCode)
                                 intent.putExtra("title", "Other websites")
+                                startActivity(intent)*/
+                                val intent = Intent()
+                                intent.action = "android.intent.action.VIEW"
+                                val url = Uri.parse(hasQRCode)
+                                intent.data = url
                                 startActivity(intent)
                             } else if (!result!!.contains("type_")){
                                 if (NetUtils.isMacAddress(result)) {
