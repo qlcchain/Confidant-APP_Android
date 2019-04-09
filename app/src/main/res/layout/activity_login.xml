@@ -33,25 +33,25 @@
         <TextView
             android:id="@+id/tvUserName"
             android:layout_width="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x60"
-            android:textColor="@color/white"
-            android:text="Hello\n****\nWelcome back!"
-            android:textSize="19sp"
             android:layout_marginTop="@dimen/x365"
-            android:layout_height="wrap_content" />
+            android:text="Hello\n****\nWelcome back!"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/joincircle"
             android:layout_width="wrap_content"
-            android:text="Join a circle"
-            android:textSize="@dimen/commemTextSize"
-            app:layout_constraintTop_toBottomOf="@+id/tvUserName"
-            app:layout_constraintLeft_toLeftOf="@+id/tvUserName"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x38"
+            android:text="Join a circle"
             android:textColor="@color/white"
-            android:layout_height="wrap_content" />
+            android:textSize="@dimen/commemTextSize"
+            app:layout_constraintLeft_toLeftOf="@+id/tvUserName"
+            app:layout_constraintTop_toBottomOf="@+id/tvUserName" />
 
         <LinearLayout
             android:id="@+id/llCircle"
@@ -100,12 +100,12 @@
         <View
             android:id="@+id/viewLine"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/llCircle"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_height="@dimen/x2"
             android:layout_marginLeft="@dimen/x60"
             android:layout_marginRight="@dimen/x60"
-            android:layout_height="@dimen/x2"
-            android:background="@color/color_b2b2b2"/>
+            android:background="@color/color_b2b2b2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llCircle" />
 
         <TextView
             android:id="@+id/desc"
@@ -160,11 +160,11 @@
             android:id="@+id/miniScanIconLogin"
             android:layout_width="@dimen/x60"
             android:layout_height="@dimen/x60"
-            android:padding="@dimen/x10"
-            android:layout_marginTop="@dimen/x60"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             android:layout_marginRight="@dimen/x30"
+            android:layout_marginTop="@dimen/x60"
+            android:padding="@dimen/x10"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/icon_scan2" />
 
         <android.support.constraint.Group
@@ -179,25 +179,25 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:visibility="gone"
             android:id="@+id/scanBg"
             android:layout_width="@dimen/x268"
             android:layout_height="@dimen/x268"
             android:layout_marginTop="@dimen/x440"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/adduserbg"
             app:srcCompat="@mipmap/icon_headportrai" />
 
         <ImageView
-            android:visibility="gone"
             android:id="@+id/scanIconLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="@dimen/x8"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/scanBg"
             app:layout_constraintEnd_toEndOf="@+id/scanBg"
             app:layout_constraintStart_toStartOf="@+id/scanBg"
@@ -216,7 +216,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -226,18 +225,19 @@
             android:text="@string/loginScanTips"
             android:textColor="@color/white"
             android:textSize="@dimen/x30"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scanBg" />
 
         <EditText
-            android:visibility="gone"
             android:id="@+id/loginKey"
             android:layout_width="300dp"
             android:layout_height="51dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/x60"
+            android:background="@drawable/edittext_bg_selector"
             android:ems="10"
             android:gravity="left"
             android:hint="@string/password"
@@ -248,7 +248,7 @@
             android:textColor="@color/white"
             android:textColorHint="@color/color_808080"
             android:textSize="@dimen/x31"
-            android:background="@drawable/edittext_bg_selector"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.494"
             app:layout_constraintStart_toStartOf="parent"
@@ -258,9 +258,9 @@
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x84"
+            android:layout_marginEnd="@dimen/x60"
             android:layout_marginStart="@dimen/x60"
             android:layout_marginTop="@dimen/x80"
-            android:layout_marginEnd="@dimen/x60"
             android:background="@drawable/btn_white"
             android:gravity="center"
             android:text="@string/Login"
@@ -272,7 +272,6 @@
             app:layout_constraintTop_toBottomOf="@+id/desc" />
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -280,11 +279,24 @@
             android:layout_marginStart="8dp"
             android:text="@string/Reminder_The_password_cannott_be_retrieved"
             android:textColor="@color/color_808080"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/loginKey" />
 
-
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="@dimen/x1100"
+            android:text="@string/version"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/x20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scanIconLogin" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v4.widget.NestedScrollView>

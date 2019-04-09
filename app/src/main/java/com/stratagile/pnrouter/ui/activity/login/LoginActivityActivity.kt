@@ -63,7 +63,6 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_scan_qr_code.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -923,6 +922,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     }
     override fun initData() {
+        version.text = getString(R.string.version) +""+ BuildConfig.VERSION_NAME +"("+getString(R.string.Build)+BuildConfig.VERSION_CODE+")"
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }

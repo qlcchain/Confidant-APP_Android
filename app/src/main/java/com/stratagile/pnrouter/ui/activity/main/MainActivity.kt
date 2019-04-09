@@ -3406,29 +3406,25 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
         }
-        setToNews()
+        //setToNews()
 
-        if (!ConstantValue.isInit) {
-            var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
-            var pullFriend = PullFriendReq_V4(selfUserId!!)
-            var sendData = BaseData(pullFriend)
-            if (ConstantValue.encryptionType.equals("1")) {
-                sendData = BaseData(4, pullFriend)
+        var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
+        var pullFriend = PullFriendReq_V4(selfUserId!!)
+        var sendData = BaseData(pullFriend)
+        if (ConstantValue.encryptionType.equals("1")) {
+            sendData = BaseData(4, pullFriend)
+        }
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = sendData
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
             }
-            if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
-            } else if (ConstantValue.isToxConnected) {
-                var baseData = sendData
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                } else {
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
-                }
-            }
-
-            ConstantValue.isInit = true
         }
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
@@ -3519,13 +3515,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onActivityResult(requestCode, resultCode, data)
         var this_ = this
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            var resultType0 = data!!.getStringExtra("result")
+         /*   var resultType0 = data!!.getStringExtra("result")
             if (!resultType0.contains("type_0")) {
                 toast(getString(R.string.codeerror))
                 return;
             }
             viewModel.toAddUserId.value = resultType0.substring(7, resultType0.length)
-            return
+            return*/
             try {
                 var result = data!!.getStringExtra("result");
                 if(!result.contains("type_"))
