@@ -455,6 +455,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             intent.putExtra("adminRouterId",adminRouterId)
             intent.putExtra("adminIdentifyCode",adminIdentifyCode)
             intent.putExtra("adminQrcode",adminQrcode)
+            intent.putExtra("routerName",routerName)
             startActivity(intent)
         }
         Routerpassword.setOnClickListener {
@@ -463,6 +464,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             intent.putExtra("adminRouterId",adminRouterId)
             intent.putExtra("adminIdentifyCode",adminIdentifyCode)
             intent.putExtra("adminQrcode",adminQrcode)
+            intent.putExtra("routerName",routerName)
             startActivity(intent)
         }
         llModifyName.setOnClickListener {
