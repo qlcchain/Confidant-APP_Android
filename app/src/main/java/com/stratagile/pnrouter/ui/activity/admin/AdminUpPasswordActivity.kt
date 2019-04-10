@@ -20,6 +20,7 @@ import com.stratagile.pnrouter.ui.activity.admin.component.DaggerAdminUpPassword
 import com.stratagile.pnrouter.ui.activity.admin.contract.AdminUpPasswordContract
 import com.stratagile.pnrouter.ui.activity.admin.module.AdminUpPasswordModule
 import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminUpPasswordPresenter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.RxEncryptTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -52,6 +53,8 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
                 intent.putExtra("adminUserSn",adminUserSn)
                 intent.putExtra("adminIdentifyCode",adminIdentifyCode)
                 intent.putExtra("adminQrcode",adminQrcode)
+                var routerNameMi =  RxEncodeTool.base64Encode2String(routerName!!.toByteArray())
+                intent.putExtra("routerName",routerNameMi)
                 startActivity(intent)
                 finish()
             }
@@ -77,6 +80,7 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
     var adminUserSn = ""
     var adminIdentifyCode = ""
     var adminQrcode = ""
+    var routerName = ""
     @Inject
     internal lateinit var mPresenter: AdminUpPasswordPresenter
 
@@ -93,6 +97,7 @@ class AdminUpPasswordActivity : BaseActivity(), AdminUpPasswordContract.View , P
         adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
         adminUserSn = intent.getStringExtra("adminUserSn")
         adminQrcode = intent.getStringExtra("adminQrcode")
+        routerName = intent.getStringExtra("routerName")
         if(AppConfig.instance.messageReceiver != null)
         {
             AppConfig.instance.messageReceiver!!.adminUpdataPassWordCallBack = this

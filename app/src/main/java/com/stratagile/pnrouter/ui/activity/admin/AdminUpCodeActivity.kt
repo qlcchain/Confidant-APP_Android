@@ -18,10 +18,12 @@ import com.stratagile.pnrouter.ui.activity.admin.component.DaggerAdminUpCodeComp
 import com.stratagile.pnrouter.ui.activity.admin.contract.AdminUpCodeContract
 import com.stratagile.pnrouter.ui.activity.admin.module.AdminUpCodeModule
 import com.stratagile.pnrouter.ui.activity.admin.presenter.AdminUpCodePresenter
+import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adminupcode.*
+import kotlinx.android.synthetic.main.activity_routeraliasset.*
 
 import javax.inject.Inject;
 
@@ -47,6 +49,8 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
                 intent.putExtra("adminUserSn",adminUserSn)
                 intent.putExtra("adminIdentifyCode",activationCode.text.toString())
                 intent.putExtra("adminQrcode",adminQrcode)
+                var routerNameMi =  RxEncodeTool.base64Encode2String(routerName!!.toByteArray())
+                intent.putExtra("routerName",routerNameMi)
                 startActivity(intent)
                 finish()
             }
@@ -76,6 +80,7 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
     var adminUserSn = ""
     var adminIdentifyCode = ""
     var adminQrcode = ""
+    var routerName = ""
     @Inject
     internal lateinit var mPresenter: AdminUpCodePresenter
 
@@ -92,6 +97,7 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
         adminIdentifyCode = intent.getStringExtra("adminIdentifyCode")
         adminUserSn = intent.getStringExtra("adminUserSn")
         adminQrcode = intent.getStringExtra("adminQrcode")
+        routerName = intent.getStringExtra("routerName")
         if(AppConfig.instance.messageReceiver != null)
         {
             AppConfig.instance.messageReceiver!!.adminUpdataCodeCallBack = this
