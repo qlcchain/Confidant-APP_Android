@@ -246,7 +246,8 @@ public class EaseBaiduMapActivity extends EaseBaseActivity {
 		}
 	}
 
-	public void back(View v) {
+	@Override
+    public void back(View v) {
 		finish();
 	}
 

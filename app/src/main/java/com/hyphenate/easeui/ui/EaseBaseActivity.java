@@ -15,8 +15,10 @@
 package com.hyphenate.easeui.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -24,15 +26,18 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.hyphenate.easeui.EaseUI;
+import com.stratagile.pnrouter.application.AppConfig;
+import com.stratagile.pnrouter.base.ActivityDelegate;
 
 @SuppressLint({"NewApi", "Registered"})
-public class EaseBaseActivity extends FragmentActivity {
+public class EaseBaseActivity extends FragmentActivity implements ActivityDelegate {
 
     protected InputMethodManager inputMethodManager;
 
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
+        AppConfig.instance.mAppActivityManager.addActivity(this);
         //http://stackoverflow.com/questions/4341600/how-to-prevent-multiple-instances-of-an-activity-when-it-is-launched-with-differ/
         // should be in launcher activity, but all app use this can avoid the problem
         if(!isTaskRoot()){
@@ -69,5 +74,20 @@ public class EaseBaseActivity extends FragmentActivity {
      */
     public void back(View view) {
         finish();
+    }
+
+    @Override
+    public void destoryContainer() {
+        finish();
+    }
+
+    @Override
+    public Activity getContainerActivity() {
+        return this;
+    }
+
+    @Override
+    public boolean isContainerDead() {
+        return false;
     }
 }

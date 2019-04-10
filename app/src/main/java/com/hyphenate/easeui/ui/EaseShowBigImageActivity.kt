@@ -395,15 +395,10 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                  return
             isScanSwitch = false
             ConstantValue.isInit = false
-            AppConfig.instance.mAppActivityManager.finishAllActivity()
+            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             startActivity(Intent(this, MainActivity::class.java))
             loginGoMain  = true
             LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
-
-            image!!.postDelayed({
-                finish()
-            },1000)
-
         }
     }
 
