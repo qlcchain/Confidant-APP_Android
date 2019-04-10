@@ -2490,7 +2490,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             userSn = routerList[position].userSn
                             userId = routerList[position].userId
                             username = routerList[position].username
-                            dataFileVersion = routerList[position].dataFileVersion
+                            if(routerList[position].dataFileVersion != null)
+                            {
+                                dataFileVersion = routerList[position].dataFileVersion
+                            }else{
+                                dataFileVersion = 0
+                            }
                             routerNameTips.text = routerList[position].routerName
 
                             ivAvatar.setText(routerList[position].routerName)
@@ -2526,7 +2531,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)
                         {
-
+                             e.printStackTrace()
                         }
 
                     }
