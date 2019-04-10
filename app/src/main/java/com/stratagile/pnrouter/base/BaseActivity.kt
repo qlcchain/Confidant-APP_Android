@@ -293,6 +293,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     }
 
     fun showProgressDialog(text: String) {
+        KLog.i("弹窗：showProgressDialog_"+text)
         progressDialog.hide()
         progressDialog.setDialogText(text)
         progressDialog.show()

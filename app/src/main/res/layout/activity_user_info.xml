@@ -151,12 +151,12 @@
         <TextView
             android:id="@+id/tvAddFriend"
             android:visibility="gone"
-            android:layout_width="@dimen/x200"
-            android:layout_marginTop="@dimen/x50"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x20"
             android:textSize="@dimen/commemTextSize"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:background="@color/main_color"
+            android:textColor="@color/main_color"
+            android:background="@color/white"
             android:text="Add Friend"
             android:layout_height="@dimen/x85" />
 

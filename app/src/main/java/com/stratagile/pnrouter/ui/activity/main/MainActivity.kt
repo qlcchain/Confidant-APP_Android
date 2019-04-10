@@ -2318,6 +2318,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     override fun closeProgressDialog() {
+        KLog.i("弹窗：closeProgressDialog")
         progressDialog.hide()
     }
 
@@ -2335,8 +2336,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 ConstantValue.isHasWebsocketInit = true
                 if(isFromScanAdmim)
                 {
-                    runOnUiThread {
-                        closeProgressDialog()
+                    if(!isScanSwitch)
+                    {
+                        runOnUiThread {
+                            closeProgressDialog()
+                        }
                     }
                     gotoActivity(1)
                     /* var intent = Intent(this, AdminLoginActivity::class.java)
@@ -2351,8 +2355,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 else if(isFromScan)
                 {
                     runOnUiThread {
-                        closeProgressDialog()
-                        showProgressDialog("wait...")
+                        if(!isScanSwitch)
+                        {
+                            closeProgressDialog()
+                            showProgressDialog("wait...")
+                        }
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
@@ -2410,7 +2417,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     closeProgressDialog()
                     toast(R.string.Network_error)
                 }
-
+                if(isScanSwitch)
+                {
+                    isScanSwitch = false
+                    gotoLogin()
+                }
             }
         }
     }
@@ -2732,7 +2743,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun connectNetWorkStatusChange(statusChange: ConnectStatus) {
         when (statusChange.status) {
             0 -> {
-                closeProgressDialog()
+                if(!isScanSwitch)
+                {
+                    closeProgressDialog()
+                }
+
                 isCanShotNetCoonect = true
             }
             1 -> {
@@ -2741,7 +2756,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             2 -> {
                 if (isCanShotNetCoonect) {
                     if (!ConstantValue.loginOut) {
-                        closeProgressDialog()
+                        if(!isScanSwitch)
+                        {
+                            closeProgressDialog()
+                        }
                         //showProgressDialog(getString(R.string.network_reconnecting))
                     }
                     isCanShotNetCoonect = false
@@ -2749,7 +2767,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             3 -> {
                 if (isCanShotNetCoonect) {
-                    closeProgressDialog()
+                    if(!isScanSwitch)
+                    {
+                        closeProgressDialog()
+                    }
                     //showProgressDialog(getString(R.string.network_reconnecting))
                     isCanShotNetCoonect = false
                 }
@@ -3672,7 +3693,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
-                                        showProgressDialog("switch...")
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                                         var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
                                         if (ConstantValue.isWebsocketConnected) {
@@ -3682,6 +3702,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
+                                        showProgressDialog("wait...")
                                         isScanSwitch = true
                                         if(AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
@@ -3697,7 +3718,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         ConstantValue.currentRouterIp = ""
                                         if(WiFiUtil.isWifiConnect())
                                         {
-                                            showProgressDialog("wait...")
                                             var count =0;
                                             KLog.i("测试计时器" + count)
                                             Thread(Runnable() {
@@ -3772,7 +3792,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 }
                                             }).start()
                                         }else{
-                                            showProgressDialog("switch...")
+                                            showProgressDialog("wait...")
                                             Thread(Runnable() {
                                                 run() {
                                                     OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + RouterIdStr,  object : OkHttpUtils.OkCallback {
@@ -3837,7 +3857,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Are_you_sure_you_want_to_leave_the_circle))
                                     .setConfirmClickListener {
-                                        showProgressDialog("switch...")
                                         var selfUserId = SpUtil.getString(this!!, ConstantValue.userId, "")
                                         var msgData = LogOutReq(ConstantValue.currentRouterId,selfUserId!!,ConstantValue.currentRouterSN)
                                         if (ConstantValue.isWebsocketConnected) {
@@ -3848,11 +3867,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                         isScanSwitch = true
+                                        showProgressDialog("wait...")
                                         if(AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
                                         if(WiFiUtil.isWifiConnect())
                                         {
-                                            showProgressDialog("wait...")
                                             ConstantValue.currentRouterMac  = ""
                                             isFromScanAdmim = true
                                             var count =0;
