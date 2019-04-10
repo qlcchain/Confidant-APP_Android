@@ -3446,24 +3446,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))
-        var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
-        var fileMD5 = FileUtil.getFileMD5(File(filePath))
-        if (fileMD5 == null) {
-            fileMD5 = ""
-        }
-        val updateAvatarReq = UpdateAvatarReq(userId!!, userId!!, fileMD5)
-        if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
-        } else if (ConstantValue.isToxConnected) {
-            val baseData = BaseData(4, updateAvatarReq)
-            val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            } else {
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+        try
+        {
+            var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
+            var fileMD5 = FileUtil.getFileMD5(File(filePath))
+            if (fileMD5 == null) {
+                fileMD5 = ""
             }
+            val updateAvatarReq = UpdateAvatarReq(userId!!, userId!!, fileMD5)
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4, updateAvatarReq))
+            } else if (ConstantValue.isToxConnected) {
+                val baseData = BaseData(4, updateAvatarReq)
+                val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    val friendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
         }
+
     }
     fun initSwitchData() {
         var this_ = this
