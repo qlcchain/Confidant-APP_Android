@@ -873,7 +873,12 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                                         }
                                                                         count ++;
                                                                         MobileSocketClient.getInstance().init(handler,AppConfig.instance)
-                                                                        var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")
+                                                                        var macAddress  = ""
+                                                                        for (i in 0..5) {
+                                                                            macAddress = macAddress + RouterMacStr.substring(i * 2, (i + 1) * 2) + ":"
+                                                                        }
+                                                                        macAddress = macAddress.subSequence(0, macAddress.length - 1).toString()
+                                                                        var toMacMi = AESCipher.aesEncryptString(macAddress,"slph\$%*&^@-78231")
                                                                         MobileSocketClient.getInstance().destroy()
                                                                         MobileSocketClient.getInstance().send("MAC"+toMacMi)
                                                                         MobileSocketClient.getInstance().receive()
