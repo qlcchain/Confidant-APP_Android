@@ -399,6 +399,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             startActivity(Intent(this, MainActivity::class.java))
             loginGoMain  = true
             LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
+            finish()
         }
     }
 
@@ -1611,7 +1612,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         ConstantValue.hasLogin = false
         ConstantValue.isHeart = false
         resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivity()
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
         startActivity(intent)
@@ -2088,7 +2089,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             AppConfig.instance.stopService(intentTox)
         }
         resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivity()
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
         when(index)
         {
             0->{
