@@ -1080,7 +1080,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         if (RxBus.getDefault().isRegistered(this)) {
             RxBus.getDefault().unregister(this);
         }
@@ -1094,6 +1094,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        super.onDestroy();
     }
 
     @Override

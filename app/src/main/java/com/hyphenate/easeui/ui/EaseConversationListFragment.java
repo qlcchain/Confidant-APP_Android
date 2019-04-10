@@ -590,8 +590,8 @@ public class EaseConversationListFragment extends EaseBaseFragment {
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
-        super.onDestroy();
         EMClient.getInstance().removeConnectionListener(connectionListener);
+        super.onDestroy();
     }
 
     @Override

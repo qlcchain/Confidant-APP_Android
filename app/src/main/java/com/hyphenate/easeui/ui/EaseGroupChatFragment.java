@@ -2001,7 +2001,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+
         EventBus.getDefault().unregister(this);
         if (groupListener != null) {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
@@ -2014,6 +2014,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUserId);
         }
+        super.onDestroy();
     }
 
     /**

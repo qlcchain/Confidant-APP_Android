@@ -454,9 +454,9 @@ public class PictureBaseActivity extends FragmentActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         dismissCompressDialog();
         dismissDialog();
+        super.onDestroy();
     }
 
 

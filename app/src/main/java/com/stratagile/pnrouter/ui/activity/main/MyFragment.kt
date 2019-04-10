@@ -106,8 +106,8 @@ class MyFragment : BaseFragment(), MyContract.View {
         }
     }
     override fun onDestroy() {
-        super.onDestroy()
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

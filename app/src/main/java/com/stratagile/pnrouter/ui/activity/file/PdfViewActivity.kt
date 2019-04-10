@@ -319,7 +319,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         progressDialog.hide()
     }
     override fun onDestroy() {
-        super.onDestroy()
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

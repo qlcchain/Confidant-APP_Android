@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
+import com.socks.library.KLog;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.base.ActivityDelegate;
 
@@ -160,6 +161,7 @@ public class AppActivityManager {
      * 结束所有Activity除了指定Activity外
      */
     public void finishAllActivityWithoutThis() {
+        KLog.i("finishAllActivityWithoutThis");
         ActivityDelegate act = activityStack.lastElement();
         for (int i = (activityStack.size() - 1); i >= 0; i--) {
             if (activityStack.get(i) != null) {

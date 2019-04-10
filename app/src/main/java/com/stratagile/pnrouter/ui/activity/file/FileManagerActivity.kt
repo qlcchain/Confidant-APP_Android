@@ -647,8 +647,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
         }
     }
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver?.fileManageBack = null
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 }

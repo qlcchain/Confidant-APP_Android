@@ -29,8 +29,8 @@ class FileTransformService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

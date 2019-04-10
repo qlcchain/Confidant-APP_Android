@@ -128,12 +128,14 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
     @Synchronized
     fun connect() {
+        isNeedReConnect = true
         KLog.i("没有初始化。。connect")
         Log.w(TAG, "WSC connect()...")
         KLog.i("网管地址为：${WiFiUtil.getGateWay(AppConfig.instance)}")
         WiFiUtil.getGateWay(AppConfig.instance)
         ipAddress = WiFiUtil.getGateWay(AppConfig.instance)
         filledUri = "wss://" + ipAddress + port
+        KLog.i("调试mac connect" + filledUri)
         //ConstantValue.currentIp = WiFiUtil.getGateWay(AppConfig.instance)
         webSocketClient = null
         if (webSocketClient == null) {
@@ -419,6 +421,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             webSocketClient = null
             connected = false
         }
+        KLog.i("调试mac onClosed" + isNeedReConnect +"_"+isReconnectting)
         if (isNeedReConnect && !isReconnectting) {
             isReconnectting = true
             Thread(Runnable() {

@@ -1939,7 +1939,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+
         EventBus.getDefault().unregister(this);
         if (groupListener != null) {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupListener);
@@ -1952,6 +1952,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUserId);
         }
+        super.onDestroy();
     }
 
     /**

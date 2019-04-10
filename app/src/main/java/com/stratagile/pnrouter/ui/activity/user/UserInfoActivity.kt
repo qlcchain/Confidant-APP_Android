@@ -225,12 +225,13 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     override fun onDestroy() {
-        super.onDestroy()
+
         EventBus.getDefault().unregister(this)
 //        AppConfig.instance.messageReceiver!!.addfrendCallBack = null
 //        AppConfig.instance.messageReceiver!!.delFriendCallBack = null
         UserProvider.getInstance().friendOperateListener = null
         AppConfig.instance.messageReceiver!!.updateAvatarBackBack = null
+        super.onDestroy()
     }
 
     @Inject

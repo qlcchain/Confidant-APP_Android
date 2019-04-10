@@ -308,6 +308,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             runOnUiThread {
                 toast("userId is empty")
                 closeProgressDialog()
+                gotoLogin()
             }
         } else {
             islogining = false
@@ -848,7 +849,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                             KLog.i("测试计时器Mac" + count)
                                                             Thread(Runnable() {
                                                                 run() {
-
+                                                                    Thread.sleep(1500)
                                                                     while (true)
                                                                     {
                                                                         if(count >=3)
@@ -1026,6 +1027,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         showProgressDialog("wait...")
                                                         var count =0;
                                                         KLog.i("测试计时器" + count)
+                                                        Thread.sleep(1500)
                                                         Thread(Runnable() {
                                                             run() {
 
@@ -1184,7 +1186,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         KLog.i("测试计时器Mac" + count)
                                                         Thread(Runnable() {
                                                             run() {
-
+                                                                Thread.sleep(1500)
                                                                 while (true)
                                                                 {
                                                                     if(count >=3)

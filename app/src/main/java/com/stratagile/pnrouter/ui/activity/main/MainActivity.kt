@@ -121,10 +121,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun registerBack(registerRsp: JRegisterRsp) {
         if(!isScanSwitch)
         {
-            runOnUiThread {
-                closeProgressDialog()
-            }
+
             return;
+        }
+        runOnUiThread {
+            closeProgressDialog()
         }
         if (registerRsp.params.retCode != 0) {
             if (registerRsp.params.retCode == 1) {
@@ -223,10 +224,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 //        }
         if(!isScanSwitch)
         {
-            runOnUiThread {
-                closeProgressDialog()
-            }
             return;
+        }
+        runOnUiThread {
+            closeProgressDialog()
         }
         islogining = false
         ConstantValue.unSendMessage.remove("login")
@@ -285,6 +286,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             runOnUiThread {
                 toast("userId is empty")
                 closeProgressDialog()
+                gotoLogin()
             }
         } else {
             islogining = false
@@ -379,12 +381,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun recoveryBack(recoveryRsp: JRecoveryRsp) {
         if(!isScanSwitch)
         {
-            runOnUiThread {
-                closeProgressDialog()
-            }
+
             return;
         }
-        closeProgressDialog()
+        runOnUiThread {
+            closeProgressDialog()
+        }
         KLog.i("222")
         ConstantValue.unSendMessage.remove("recovery")
         ConstantValue.unSendMessageFriendId.remove("recovery")
@@ -2324,7 +2326,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        KLog.i("websocket状态MainActivity:" + connectStatus.status)
+        KLog.i("调试mac onWebSocketConnected" + connectStatus.status)
         if (connectStatus.status != 0) {
             resetUnCompleteFileRecode()
             EventBus.getDefault().post(AllFileStatus())
@@ -2410,7 +2412,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             }
             2 -> {
-
             }
             3 -> {
                 runOnUiThread {
@@ -2867,8 +2868,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 super.handleMessage(msg)
                 when (msg.what) {
                     MyAuthCallback.MSG_UPD_DATA -> {
-                        KLog.i("收到了组播的回复了 ")
                         var obj:String = msg.obj.toString()
+                        KLog.i("调试mac "+obj)
                         if(!obj.equals(""))
                         {
                             var objArray = obj.split("##")
@@ -2883,7 +2884,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                                         if(udpRouterArray.size > 1)
                                         {
-                                            println("ipdizhi:"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
+                                            println("调试mac :"+udpRouterArray[1] +" ip: "+udpRouterArray[0])
                                             //ConstantValue.updRouterData.put(udpRouterArray[1],udpRouterArray[0])
                                             if(scanType == 1)//不是admin二维码
                                             {
@@ -2942,7 +2943,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         AppConfig.instance.getPNRouterServiceMessageReceiver(true)
                                     }
                                     isStartWebsocket = true
-                                    KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                    KLog.i("调试mac "+ConstantValue.currentRouterIp+ConstantValue.port)
                                     //AppConfig.instance.messageReceiver!!.loginBackListener = this_
                                 }
 
@@ -3595,6 +3596,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             Thread(Runnable() {
                                                 run() {
 
+                                                    Thread.sleep(1500)
                                                     while (true)
                                                     {
                                                         if(count >=3)
@@ -3722,7 +3724,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             KLog.i("测试计时器" + count)
                                             Thread(Runnable() {
                                                 run() {
-
+                                                    Thread.sleep(1500)
                                                     while (true)
                                                     {
                                                         if(count >=3)
@@ -3878,7 +3880,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             KLog.i("测试计时器Mac" + count)
                                             Thread(Runnable() {
                                                 run() {
-
+                                                    Thread.sleep(1500)
                                                     while (true)
                                                     {
                                                         if(count >=3)
@@ -4137,6 +4139,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun gotoActivity(index:Int)
     {
+        runOnUiThread {
+            closeProgressDialog()
+        }
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")

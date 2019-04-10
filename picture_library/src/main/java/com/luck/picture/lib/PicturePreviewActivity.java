@@ -466,7 +466,6 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (RxBus.getDefault().isRegistered(this)) {
             RxBus.getDefault().unregister(this);
         }
@@ -478,6 +477,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             animation.cancel();
             animation = null;
         }
+        super.onDestroy();
     }
 
     @Override

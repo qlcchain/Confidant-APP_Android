@@ -194,11 +194,12 @@ public class PicturePlayAudioActivity extends PictureBaseActivity implements Vie
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         if (mediaPlayer != null && handler != null) {
             handler.removeCallbacks(runnable);
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        super.onDestroy();
     }
 }

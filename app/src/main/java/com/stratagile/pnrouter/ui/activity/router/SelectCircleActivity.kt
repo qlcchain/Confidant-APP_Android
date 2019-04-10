@@ -1453,7 +1453,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (handler != null) {
             handler?.removeCallbacksAndMessages(null)
         }
@@ -1462,5 +1461,6 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         }
         EventBus.getDefault().unregister(this)
         AppConfig.instance.messageReceiver?.selcectCircleCallBack = null
+        super.onDestroy()
     }
 }

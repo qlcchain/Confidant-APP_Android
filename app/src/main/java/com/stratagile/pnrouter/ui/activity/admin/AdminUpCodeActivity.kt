@@ -124,8 +124,8 @@ class AdminUpCodeActivity : BaseActivity(), AdminUpCodeContract.View , PNRouterS
         }
     }
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver!!.adminUpdataCodeCallBack = null
+        super.onDestroy()
     }
     override fun setupActivityComponent() {
        DaggerAdminUpCodeComponent

@@ -170,8 +170,8 @@ class AdminLoginActivity : BaseActivity(), AdminLoginContract.View , PNRouterSer
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         AppConfig.instance.messageReceiver!!.adminLoginCallBack = null
+        super.onDestroy()
     }
     override fun closeProgressDialog() {
         progressDialog.hide()
