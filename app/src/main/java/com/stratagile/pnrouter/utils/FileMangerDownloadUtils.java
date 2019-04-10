@@ -43,39 +43,54 @@ public class FileMangerDownloadUtils {
 
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
         ///data/data/com.johnny.testzipanddownload/files
-        File destDir = new File(to);
-        if (!destDir.exists()) {
-            destDir.mkdirs();
-        }
-        if(!downFilePathMap.containsKey(msgId+""))
+        try
         {
-            KLog.i("FiledoDownLoadWork:"+path+"_TO::"+to);
-            String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
-            UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, "0",0,1,0,false,key,FileFrom,0,msgId+"",false);
-            MyFile myRouter = new MyFile();
-            myRouter.setType(0);
-            myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
-            myRouter.setUpLoadFile(uploadFile);
-            LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
-            EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgId,0, true, false, false,0,1,0,false,0));
+            File destDir = new File(to);
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
+            if(!downFilePathMap.containsKey(msgId+""))
+            {
+                KLog.i("FiledoDownLoadWork:"+path+"_TO::"+to);
+                String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
+                UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, "0",0,1,0,false,key,FileFrom,0,msgId+"",false);
+                MyFile myRouter = new MyFile();
+                myRouter.setType(0);
+                myRouter.setUserSn(ConstantValue.INSTANCE.getCurrentRouterSN());
+                myRouter.setUpLoadFile(uploadFile);
+                LocalFileUtils.INSTANCE.insertLocalAssets(myRouter);
+                EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgId,0, true, false, false,0,1,0,false,0));
 
-            downFilePathMap.put(msgId+"",path);
-            FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
-            task.execute();
-            taskListMap.put(msgId+"",task);
-        }else{
+                downFilePathMap.put(msgId+"",path);
+                FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
+                task.execute();
+                taskListMap.put(msgId+"",task);
+            }else{
 
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
+
     }
     public static void cancelWork(int msgId){
 
-        FileMangerDownLoaderTask task = taskListMap.get(msgId+"");
-        if(task != null)
+        try
         {
-            task.cancelWork();
-            taskListMap.remove(msgId+"");
-            downFilePathMap.remove(msgId+"");
+            FileMangerDownLoaderTask task = taskListMap.get(msgId+"");
+            if(task != null)
+            {
+                task.cancelWork();
+                taskListMap.remove(msgId+"");
+                downFilePathMap.remove(msgId+"");
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
+
+
     }
 
 }

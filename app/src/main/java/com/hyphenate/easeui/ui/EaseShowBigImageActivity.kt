@@ -766,15 +766,31 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
 
         image!!.setOnClickListener { finish() }
         val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
-        Thread(Runnable { hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp) }).start()
+        Thread(Runnable {
+            if(hasQRCode == null || hasQRCode.equals(""))
+            {
+                val list = ArrayList<String>()
+                list.add("Save Image")
+                hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
+                if (hasQRCode != null && hasQRCode != "") {
+                    EventBus.getDefault().post(AddMenu())
+                }
+            }
+        }).start()
         var _this = this
         image!!.setOnLongClickListener {
             val list = ArrayList<String>()
             list.add("Save Image")
             if (hasQRCode != null && hasQRCode != "") {
                 list.add("Scan QR Code in Image")
+            }else{
+                Thread(Runnable {
+                    if(hasQRCode == null || hasQRCode.equals(""))
+                    {
+                        EventBus.getDefault().post(AddMenu())
+                    }
+                }).start()
             }
-
             PopWindowUtil.showSelecMenuPopWindow(this@EaseShowBigImageActivity, image!!, list, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
 
@@ -1268,7 +1284,20 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             true
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun addMenu(addMenu: AddMenu) {
+        val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
+        val list = ArrayList<String>()
+        list.add("Save Image")
+        hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
+        if (hasQRCode != null && hasQRCode != "") {
+            list.add("Scan QR Code in Image")
+            runOnUiThread {
+                PopWindowUtil.showSelecMenuPopWindowNotice(list);
+            }
 
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {
         KLog.i("websocket状态MainActivity:" + connectStatus.status)

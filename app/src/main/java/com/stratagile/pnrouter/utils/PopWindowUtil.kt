@@ -137,6 +137,8 @@ object PopWindowUtil {
                 .create()
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
     }
+
+    var selecRouterAdapter:SelectPictureAdapter? = null
     /**
      * @param activity 上下文
      * @param showView 从activity中传进来的view,用于让popWindow附着的
@@ -155,12 +157,13 @@ object PopWindowUtil {
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = linearLayoutManager
-        val selecRouterAdapter = SelectPictureAdapter(arrayListOf())
-        selecRouterAdapter.setNewData(list)
+        selecRouterAdapter = SelectPictureAdapter(arrayListOf())
+        selecRouterAdapter!!.setNewData(list)
         recyclerView.adapter = selecRouterAdapter
-        selecRouterAdapter.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
-            onRouterSelectListener.onSelect(position, selecRouterAdapter.data[position])
+        selecRouterAdapter!!.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+            onRouterSelectListener.onSelect(position, selecRouterAdapter!!.data[position])
             CustomPopWindow.onBackPressed()
+            selecRouterAdapter = null
         }
         //对具体的view的事件的处理
         maskView.setOnClickListener { CustomPopWindow.onBackPressed() }
@@ -173,6 +176,14 @@ object PopWindowUtil {
                 .size(UIUtils.getDisplayWidth(activity), UIUtils.getDisplayHeigh(activity))
                 .create()
                 .showAtLocation(showView, Gravity.NO_GRAVITY, 0, 0)
+    }
+    fun showSelecMenuPopWindowNotice(list:ArrayList<String>)
+    {
+        if(selecRouterAdapter != null)
+        {
+            selecRouterAdapter!!.setNewData(list)
+        }
+
     }
     /**
      * @param activity 上下文

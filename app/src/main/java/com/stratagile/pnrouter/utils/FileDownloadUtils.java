@@ -43,13 +43,20 @@ public class FileDownloadUtils {
      */
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,String type){
         ///data/data/com.johnny.testzipanddownload/files
-        File destDir = new File(to);
-        if (!destDir.exists()) {
-            destDir.mkdirs();
+        try
+        {
+            File destDir = new File(to);
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
+            KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to+"_key:"+key+"_type:"+type);
+            FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key,type);
+            task.execute();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
-        KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to+"_key:"+key+"_type:"+type);
-        FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key,type);
-        task.execute();
+
     }
 
 }
