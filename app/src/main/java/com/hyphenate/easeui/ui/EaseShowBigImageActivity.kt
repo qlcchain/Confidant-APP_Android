@@ -77,6 +77,8 @@ import com.stratagile.pnrouter.view.RxDialogLoading
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
+import events.ToxFriendStatusEvent
+import events.ToxSendInfoEvent
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
@@ -1027,10 +1029,9 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         showProgressDialog("wait...")
                                                         var count =0;
                                                         KLog.i("测试计时器" + count)
-                                                        Thread.sleep(1500)
                                                         Thread(Runnable() {
                                                             run() {
-
+                                                                Thread.sleep(1500)
                                                                 while (true)
                                                                 {
                                                                     if(count >=3)
@@ -1315,6 +1316,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     closeProgressDialog()
                                     isloginOutTime = true
                                     toast("login time out")
+                                    gotoLogin()
                                 }
                             }
                         }
@@ -1354,6 +1356,76 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 }
 
             }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+
+        if(toxFriendStatusEvent.status == 1)
+        {
+
+            ConstantValue.freindStatus = 1
+            if(!threadInit)
+            {
+                Thread(Runnable() {
+                    run() {
+
+                        while (true)
+                        {
+                            if(ConstantValue.unSendMessage.size >0)
+                            {
+                                for (key in ConstantValue.unSendMessage.keys)
+                                {
+                                    var sendData = ConstantValue.unSendMessage.get(key)
+                                    var friendId = ConstantValue.unSendMessageFriendId.get(key)
+                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if(sendCount < 5)
+                                    {
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                        }
+                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
+                                    }else{
+                                        closeProgressDialog()
+                                        break
+                                    }
+                                }
+
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
+                        }
+
+                    }
+                }).start()
+                threadInit = true
+            }
+
+
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
+        }else{
+            ConstantValue.freindStatus = 0;
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onStopTox(stopTox: StopTox) {
+        try {
+            MessageHelper.clearAllMessage()
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1397,6 +1469,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             runOnUiThread {
                                 closeProgressDialog()
                                 toast("time out")
+                                gotoLogin()
                             }
                         }
                     }
@@ -1414,6 +1487,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
+                                gotoLogin()
                                 false
                             } else false
                         })
@@ -1446,6 +1520,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     closeProgressDialog()
                                     isloginOutTime = true
                                     toast("login time out")
+                                    gotoLogin()
                                 }
                             }
                         }
@@ -1462,6 +1537,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     if(standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
                                     EventBus.getDefault().post(StopTox())
+                                    gotoLogin()
                                     false
                                 } else false
                             })
@@ -1758,6 +1834,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         stopTox = true
+                        gotoLogin()
                         false
                     } else false
                 })
@@ -1833,6 +1910,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             closeProgressDialog()
                             isloginOutTime = true
                             toast("login time out")
+                            gotoLogin()
                         }
                     }
                 }
@@ -1849,6 +1927,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             if(standaloneCoroutine != null)
                                 standaloneCoroutine.cancel()
                             EventBus.getDefault().post(StopTox())
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -1871,6 +1950,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                     showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             stopTox = true
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -1912,6 +1992,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
+                                gotoLogin()
                             }
                         }
                     }
@@ -1940,6 +2021,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
+                                gotoLogin()
                             }
                         }
                     }
@@ -1965,6 +2047,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             closeProgressDialog()
                             isloginOutTime = true
                             toast("login time out")
+                            gotoLogin()
                         }
                     }
                 }
@@ -2140,6 +2223,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         stopTox = true
+                        gotoLogin()
                         false
                     } else false
                 })
@@ -2157,6 +2241,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         EventBus.getDefault().post(StopTox())
+                        gotoLogin()
                         false
                     } else false
                 })

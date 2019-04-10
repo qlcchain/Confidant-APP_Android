@@ -803,6 +803,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         stopTox = true
+                        gotoLogin()
                         false
                     } else false
                 })
@@ -878,6 +879,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             closeProgressDialog()
                             isloginOutTime = true
                             toast("login time out")
+                            gotoLogin()
                         }
                     }
                 }
@@ -894,6 +896,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             if(standaloneCoroutine != null)
                                 standaloneCoroutine.cancel()
                             EventBus.getDefault().post(StopTox())
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -916,6 +919,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             stopTox = true
+                            gotoLogin()
                             false
                         } else false
                     })
@@ -957,6 +961,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
+                                gotoLogin()
                             }
                         }
                     }
@@ -985,6 +990,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 if(AppConfig.instance.messageReceiver != null)
                                     AppConfig.instance.messageReceiver!!.close()
                                 toast("Server connection timeout")
+                                gotoLogin()
                             }
                         }
                     }
@@ -1010,6 +1016,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             closeProgressDialog()
                             isloginOutTime = true
                             toast("login time out")
+                            gotoLogin()
                         }
                     }
                 }
@@ -2271,11 +2278,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
-        LogUtil.addLog("Tox发送消息：" + toxSendInfoEvent.info)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onNikNameChange(editnickName: EditNickName) {
         contactFragment?.initData()
     }
@@ -2382,6 +2384,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     closeProgressDialog()
                                     isloginOutTime = true
                                     toast("login time out")
+                                    gotoLogin()
                                 }
                             }
                         }
@@ -2427,6 +2430,81 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxSendInfoEvent(toxSendInfoEvent: ToxSendInfoEvent) {
+        LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
+
+        KLog.i("tox好友状态MainActivity:" + toxFriendStatusEvent.status)
+        if (toxFriendStatusEvent.status == 0) {
+            resetUnCompleteFileRecode()
+            EventBus.getDefault().post(AllFileStatus())
+        }
+        if(toxFriendStatusEvent.status == 1)
+        {
+
+            ConstantValue.freindStatus = 1
+            if(!threadInit)
+            {
+                Thread(Runnable() {
+                    run() {
+
+                        while (true)
+                        {
+                            if(ConstantValue.unSendMessage.size >0)
+                            {
+                                for (key in ConstantValue.unSendMessage.keys)
+                                {
+                                    var sendData = ConstantValue.unSendMessage.get(key)
+                                    var friendId = ConstantValue.unSendMessageFriendId.get(key)
+                                    var sendCount:Int = ConstantValue.unSendMessageSendCount.get(key) as Int
+                                    if(sendCount < 5)
+                                    {
+                                        if (ConstantValue.isAntox) {
+                                            var friendKey: FriendKey = FriendKey(routerId.substring(0, 64))
+                                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, sendData, ToxMessageType.NORMAL)
+                                        }else{
+                                            ToxCoreJni.getInstance().senToxMessage(sendData, friendId)
+                                        }
+                                        ConstantValue.unSendMessageSendCount.put(key,sendCount++)
+                                    }else{
+                                        closeProgressDialog()
+                                        break
+                                    }
+                                }
+
+                            }else{
+                                closeProgressDialog()
+                                break
+                            }
+                            Thread.sleep(2000)
+                        }
+
+                    }
+                }).start()
+                threadInit = true
+            }
+
+
+            LogUtil.addLog("P2P检测路由好友上线，可以发消息:","LoginActivityActivity")
+        }else{
+            ConstantValue.freindStatus = 0;
+            LogUtil.addLog("P2P检测路由好友未上线，不可以发消息:","LoginActivityActivity")
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onStopTox(stopTox: StopTox) {
+        try {
+            MessageHelper.clearAllMessage()
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxConnected(toxStatusEvent: ToxStatusEvent) {
         KLog.i("tox状态MainActivity:" + toxStatusEvent.status)
         if (toxStatusEvent.status != 0) {
@@ -2435,6 +2513,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         when (toxStatusEvent.status) {
             0 -> {
+                reConnect.visibility = View.GONE
                 KLog.i("P2P连接成功")
                 LogUtil.addLog("P2P连接成功:","LoginActivityActivity")
                 runOnUiThread {
@@ -2467,6 +2546,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             runOnUiThread {
                                 closeProgressDialog()
                                 toast("time out")
+                                gotoLogin()
                             }
                         }
                     }
@@ -2484,6 +2564,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 if(standaloneCoroutine != null)
                                     standaloneCoroutine.cancel()
                                 EventBus.getDefault().post(StopTox())
+                                gotoLogin()
                                 false
                             } else false
                         })
@@ -2516,6 +2597,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     closeProgressDialog()
                                     isloginOutTime = true
                                     toast("login time out")
+                                    gotoLogin()
                                 }
                             }
                         }
@@ -2532,6 +2614,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                     if(standaloneCoroutine != null)
                                         standaloneCoroutine.cancel()
                                     EventBus.getDefault().post(StopTox())
+                                    gotoLogin()
                                     false
                                 } else false
                             })
@@ -2565,17 +2648,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
-        KLog.i("tox好友状态MainActivity:" + toxFriendStatusEvent.status)
-        if (toxFriendStatusEvent.status == 0) {
-            resetUnCompleteFileRecode()
-            EventBus.getDefault().post(AllFileStatus())
-        }
-
-    }
-
     private fun getToken() {
         HMSAgent.Push.getToken {
             KLog.i("华为推送 get token: end" + it)
@@ -4016,9 +4088,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         stopTox = false
         if (!ConstantValue.isToxConnected) {
             runOnUiThread {
+                closeProgressDialog()
                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         stopTox = true
+                        gotoLogin()
                         false
                     } else false
                 })
@@ -4033,9 +4107,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         } else {
             //var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
             runOnUiThread {
+                closeProgressDialog()
                 showProgressDialog("wait...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         EventBus.getDefault().post(StopTox())
+                        gotoLogin()
                         false
                     } else false
                 })
