@@ -395,11 +395,15 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                  return
             isScanSwitch = false
             ConstantValue.isInit = false
-            AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+            AppConfig.instance.mAppActivityManager.finishAllActivity()
             startActivity(Intent(this, MainActivity::class.java))
             loginGoMain  = true
             LogUtil.addLog("loginBack:"+"g","LoginActivityActivity")
-            finish()
+
+            image!!.postDelayed({
+                finish()
+            },1000)
+
         }
     }
 
@@ -1577,6 +1581,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
     }
     fun gotoLogin()
     {
+        closeProgressDialog()
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")
@@ -1606,7 +1611,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         ConstantValue.hasLogin = false
         ConstantValue.isHeart = false
         resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+        AppConfig.instance.mAppActivityManager.finishAllActivity()
         var intent = Intent(AppConfig.instance, LoginActivityActivity::class.java)
         intent.putExtra("flag", "logout")
         startActivity(intent)
@@ -2083,7 +2088,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             AppConfig.instance.stopService(intentTox)
         }
         resetUnCompleteFileRecode()
-        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+        AppConfig.instance.mAppActivityManager.finishAllActivity()
         when(index)
         {
             0->{

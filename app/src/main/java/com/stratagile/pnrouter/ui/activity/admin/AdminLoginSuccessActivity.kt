@@ -237,9 +237,9 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             //var LoginKeySha = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
             //var login = LoginReq(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,LoginKeySha, registerRsp.params.dataFileVersion)
             var login = LoginReq_V4(  registerRsp.params.routeId,registerRsp.params.userSn, registerRsp.params.userId,signBase64, registerRsp.params.dataFileVersion,NickName)
-            runOnUiThread {
+            /*runOnUiThread {
                 toast(login.toString())
-            }
+            }*/
             ConstantValue.loginReq = login
             if(ConstantValue.isWebsocketConnected)
             {

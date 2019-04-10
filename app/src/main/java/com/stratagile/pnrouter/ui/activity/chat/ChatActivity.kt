@@ -678,11 +678,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
     override fun onDestroy() {
         try {
-            super.onDestroy()
             AppConfig.instance.messageReceiver!!.chatCallBack = null
             AppConfig.instance.isChatWithFirend = null
             activityInstance = null
             EventBus.getDefault().unregister(this)
+            super.onDestroy()
         }catch (e :Exception)
         {
 

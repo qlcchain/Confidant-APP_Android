@@ -4178,6 +4178,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     fun gotoLogin()
     {
+        closeProgressDialog()
         ConstantValue.unSendMessage.remove("login")
         ConstantValue.unSendMessageFriendId.remove("login")
         ConstantValue.unSendMessageSendCount.remove("login")

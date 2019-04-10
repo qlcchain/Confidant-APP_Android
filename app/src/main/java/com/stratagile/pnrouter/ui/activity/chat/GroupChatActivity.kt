@@ -774,11 +774,11 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
     override fun onDestroy() {
         try {
-            super.onDestroy()
             AppConfig.instance.messageReceiver!!.groupchatCallBack = null
             AppConfig.instance.isChatWithFirend = null
             activityInstance = null
             EventBus.getDefault().unregister(this)
+            super.onDestroy()
         }catch (e :Exception)
         {
 

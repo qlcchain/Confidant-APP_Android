@@ -166,7 +166,9 @@ public class AppActivityManager {
         for (int i = (activityStack.size() - 1); i >= 0; i--) {
             if (activityStack.get(i) != null) {
                 if (!act.equals(activityStack.get(i)) && !activityStack.get(i).isContainerDead()) {
+                    KLog.i("finishAllActivityWithoutThis:"+activityStack.get(i).getClass().getSimpleName());
                     activityStack.get(i).destoryContainer();
+
                 }
             }
         }
