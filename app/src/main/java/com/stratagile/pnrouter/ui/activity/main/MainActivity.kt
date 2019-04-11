@@ -343,6 +343,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
+            newRouterEntity.dataFileVersion = 0
+            newRouterEntity.dataFilePay =  ""
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -513,7 +515,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             userSn = i.userSn
                             userId = i.userId
                             username = i.username
-                            dataFileVersion = i.dataFileVersion
+                            if(i.dataFileVersion == null)
+                            {
+                                dataFileVersion = 0
+                            }else{
+                                dataFileVersion = i.dataFileVersion
+                            }
                             runOnUiThread()
                             {
                                 routerNameTips.text = i.routerName

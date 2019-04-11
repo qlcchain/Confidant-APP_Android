@@ -172,6 +172,8 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
+            newRouterEntity.dataFileVersion = 0
+            newRouterEntity.dataFilePay =  ""
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -903,7 +905,12 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         userSn = router.userSn
         userId = router.userId
         username = router.username
-        dataFileVersion = router.dataFileVersion
+        if(router.dataFileVersion == null)
+        {
+            dataFileVersion = 0
+        }else{
+            dataFileVersion = router.dataFileVersion
+        }
         if (NetUtils.isNetworkAvalible(this)) {
             var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
             if (routerList.size == 0) {

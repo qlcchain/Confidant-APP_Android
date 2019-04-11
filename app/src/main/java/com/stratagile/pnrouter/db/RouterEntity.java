@@ -154,6 +154,10 @@ public class RouterEntity implements Parcelable{
     }
 
     public Integer getDataFileVersion() {
+        if(dataFileVersion == null)
+        {
+            return 0;
+        }
         return dataFileVersion;
     }
 

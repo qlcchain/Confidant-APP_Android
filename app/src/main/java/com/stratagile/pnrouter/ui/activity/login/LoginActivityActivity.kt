@@ -236,7 +236,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     userSn = routerEntity.userSn
                     userId = routerEntity.userId
                     username = routerEntity.username
-                    dataFileVersion = routerEntity.dataFileVersion
+                    if(routerEntity.dataFileVersion == null)
+                    {
+                        dataFileVersion = 0
+                    }else{
+                        dataFileVersion = routerEntity.dataFileVersion
+                    }
                     /*runOnUiThread {
                         routerNameTips.text = newRouterEntity.routerName
                     }*/
@@ -323,7 +328,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             userSn = i.userSn
                             userId = i.userId
                             username = i.username
-                            dataFileVersion = i.dataFileVersion
+                            if(i.dataFileVersion == null)
+                            {
+                                dataFileVersion = 0
+                            }else{
+                                dataFileVersion = i.dataFileVersion
+                            }
                             runOnUiThread()
                             {
                                 routerNameTips.text = i.routerName
@@ -507,6 +517,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = loginKey.text.toString().trim();
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
+            newRouterEntity.dataFileVersion = 0
+            newRouterEntity.dataFilePay =  ""
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
@@ -2324,7 +2336,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             userSn = it.userSn
                             userId = it.userId
                             username = name!!
-                            dataFileVersion = it.dataFileVersion
+                            if(it.dataFileVersion == null)
+                            {
+                                dataFileVersion = 0
+                            }else{
+                                dataFileVersion = it.dataFileVersion
+                            }
                             routerNameTips.setTextColor(resources.getColor(R.color.white))
                             if(it.routerName != null){
                                 routerNameTips.text = it.routerName
@@ -2354,7 +2371,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                 userSn = it.userSn
                                 userId = it.userId
                                 username = it.username
-                                dataFileVersion = it.dataFileVersion
+                                if(it.dataFileVersion == null)
+                                {
+                                    dataFileVersion = 0
+                                }else{
+                                    dataFileVersion = it.dataFileVersion
+                                }
 
                                 if(it.routerName != null){
                                     routerNameTips.text = it.routerName
@@ -2421,6 +2443,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 val name = SpUtil.getString(AppConfig.instance, ConstantValue.username, "")
                 tvUserName.text = "Hello\n"+name+"\nWelcome back!"
                 dataFileVersion = routerList[0].dataFileVersion
+                if(routerList[0].dataFileVersion == null)
+                {
+                    dataFileVersion = 0
+                }else{
+                    dataFileVersion = routerList[0].dataFileVersion
+                }
                 routerNameTips.setTextColor(resources.getColor(R.color.white))
                 if(routerList[0].routerName != null){
                     routerNameTips.text = routerList[0].routerName

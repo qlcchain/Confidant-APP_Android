@@ -140,6 +140,8 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = ""
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
+            newRouterEntity.dataFileVersion = 0
+            newRouterEntity.dataFilePay =  ""
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")

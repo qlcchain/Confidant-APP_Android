@@ -131,6 +131,8 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             newRouterEntity.lastCheck = true
             newRouterEntity.loginKey = userName3.text.toString().trim();
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
+            newRouterEntity.dataFileVersion = 0
+            newRouterEntity.dataFilePay =  ""
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)

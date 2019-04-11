@@ -165,6 +165,8 @@ object LocalRouterUtils {
                                             if(routerEntity.dataFileVersion != null)
                                             {
                                                 myRouter.getRouterEntity().setDataFileVersion(routerEntity.dataFileVersion)
+                                            }else{
+                                                myRouter.getRouterEntity().setDataFileVersion(0)
                                             }
                                             if(routerEntity.dataFilePay != null)
                                             {
