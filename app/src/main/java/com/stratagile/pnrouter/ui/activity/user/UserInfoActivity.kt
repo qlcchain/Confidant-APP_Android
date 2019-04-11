@@ -327,9 +327,15 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
             }
         }
         avatar.setOnClickListener {
-            var intent = Intent(this, FriendAvatarActivity::class.java)
-            intent.putExtra("libsodiumpublicSignKey", userInfo!!.signPublicKey)
-            startActivity(intent)
+            var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))+".jpg"
+            val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name, "")
+            if(lastFile.exists())
+            {
+                var intent = Intent(this, FriendAvatarActivity::class.java)
+                intent.putExtra("libsodiumpublicSignKey", userInfo!!.signPublicKey)
+                startActivity(intent)
+            }
+
         }
         setNoteName.setOnClickListener {
 
