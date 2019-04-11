@@ -166,6 +166,9 @@
             android:name=".ui.activity.user.ModifyAvatarActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.user.FriendAvatarActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"
             android:screenOrientation="portrait" />
 

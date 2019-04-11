@@ -86,6 +86,7 @@ import com.stratagile.pnrouter.db.DraftEntityDao;
 import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.db.MessageEntityDao;
 import com.stratagile.pnrouter.db.UserEntity;
+import com.stratagile.pnrouter.db.UserEntityDao;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.FileForwardReq;
 import com.stratagile.pnrouter.entity.JDelMsgPushRsp;
@@ -1702,9 +1703,22 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         easeChatMessageList.setItemClickListener(new EaseChatMessageList.MessageListItemClickListener() {
 
             @Override
-            public void onUserAvatarClick(String username) {
+            public void onUserAvatarClick(String fromUserId) {
                 if (chatFragmentHelper != null) {
-                    chatFragmentHelper.onAvatarClick(username);
+                    chatFragmentHelper.onAvatarClick(fromUserId);
+                }
+                String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                if(!userId.equals(fromUserId))
+                {
+                    List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(fromUserId)).list();
+                    if(userList.size() > 0)
+                    {
+                        UserEntity user = userList.get(0);
+                        Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+                        intent.putExtra("user", user);
+                        startActivity(intent);
+                    }
+
                 }
             }
 

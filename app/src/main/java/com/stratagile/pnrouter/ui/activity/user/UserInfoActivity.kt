@@ -326,6 +326,11 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 refuseFriend()
             }
         }
+        avatar.setOnClickListener {
+            var intent = Intent(this, FriendAvatarActivity::class.java)
+            intent.putExtra("libsodiumpublicSignKey", userInfo!!.signPublicKey)
+            startActivity(intent)
+        }
         setNoteName.setOnClickListener {
 
             var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))

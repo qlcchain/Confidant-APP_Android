@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/color_efefef"
+    android:layout_height="match_parent"
+    android:id="@+id/avatarParent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/cardView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x250"
+        android:layout_marginLeft="@dimen/x28"
+        android:layout_marginRight="@dimen/x28"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x656"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivPicture"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/x90"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/img_camera"
+                android:transitionName="avater" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x28"
+        android:layout_marginRight="@dimen/x28"
+        android:gravity="center_vertical"
+        android:layout_marginTop="@dimen/x50"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/cardView3">
+        <TextView
+            android:id="@+id/bt_skip"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/main_color"
+            android:background="@color/white"
+            android:text="@string/skip"
+            android:gravity="center"
+            android:layout_height="@dimen/x85" />
+        <View
+            android:layout_width="@dimen/x20"
+            android:layout_height="@dimen/x2"/>
+        <TextView
+            android:id="@+id/bt_save"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@color/main_color"
+            android:text="@string/save_picture"
+            android:layout_height="@dimen/x85" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
