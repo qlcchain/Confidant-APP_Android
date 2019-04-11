@@ -1906,38 +1906,44 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         if (msgSouce != null && msgSouce != "") {
                             message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.from)
                         }
-                        message.setDirection(EMMessage.Direct.RECEIVE)
-                        message.msgId = "" + pushMsgRsp?.params.msgId
-                        message.from = pushMsgRsp.params.from
-                        message.to = pushMsgRsp.params.gId
-                        message.isUnread = true
-                        message.isAcked = true
-                        message.setStatus(EMMessage.Status.SUCCESS)
-                        //if (conversation != null){
-                        var gson = Gson()
-                        var Message = Message()
-                        Message.setMsg(msgSouce)
-                        Message.setMsgId(pushMsgRsp.getParams().getMsgId())
-                        Message.setFrom(pushMsgRsp.getParams().from)
-                        Message.setTo(pushMsgRsp.getParams().gId)
-                        Message.msgType = 0
-                        Message.sender = 1
-                        Message.status = 1
-                        Message.timeStamp = pushMsgRsp?.timestamp
-                        Message.chatType = EMMessage.ChatType.GroupChat
-                        Message.msgId = pushMsgRsp?.params.msgId
-                        var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
-                        val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
-                        var unReadCount = 0
-                        if (MessageLocal != null && MessageLocal.unReadCount != null) {
-                            unReadCount = MessageLocal.unReadCount
+                        try {
+                            message.setDirection(EMMessage.Direct.RECEIVE)
+                            message.msgId = "" + pushMsgRsp?.params.msgId
+                            message.from = pushMsgRsp.params.from
+                            message.to = pushMsgRsp.params.gId
+                            message.isUnread = true
+                            message.isAcked = true
+                            message.setStatus(EMMessage.Status.SUCCESS)
+                            //if (conversation != null){
+                            var gson = Gson()
+                            var Message = Message()
+                            Message.setMsg(msgSouce)
+                            Message.setMsgId(pushMsgRsp.getParams().getMsgId())
+                            Message.setFrom(pushMsgRsp.getParams().from)
+                            Message.setTo(pushMsgRsp.getParams().gId)
+                            Message.msgType = 0
+                            Message.sender = 1
+                            Message.status = 1
+                            Message.timeStamp = pushMsgRsp?.timestamp
+                            Message.chatType = EMMessage.ChatType.GroupChat
+                            Message.msgId = pushMsgRsp?.params.msgId
+                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, "")
+                            val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+                            var unReadCount = 0
+                            if (MessageLocal != null && MessageLocal.unReadCount != null) {
+                                unReadCount = MessageLocal.unReadCount
+                            }
+                            Message.unReadCount = unReadCount + 1;
+
+
+                            var baseDataJson = gson.toJson(Message)
+                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
+                            KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
+                        }catch (e:Exception)
+                        {
+                            e.printStackTrace()
                         }
-                        Message.unReadCount = unReadCount + 1;
 
-
-                        var baseDataJson = gson.toJson(Message)
-                        SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.gId, baseDataJson)
-                        KLog.i("insertMessage:" + "MainActivity" + "_pushMsgRsp")
                         //conversation.insertMessage(message)
                         //}
                         if (ConstantValue.isInit) {
@@ -3352,37 +3358,43 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         } else {
                             msgSouce = RxEncodeTool.RestoreMessage(pushMsgRsp.params.dstKey, pushMsgRsp.params.msg)
                         }
-                        val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
-                        message.setDirection(EMMessage.Direct.RECEIVE)
-                        message.msgId = pushMsgRsp?.params.msgId.toString()
-                        message.from = pushMsgRsp.params.fromId
-                        message.to = pushMsgRsp.params.toId
-                        message.isUnread = true
-                        message.isAcked = true
-                        message.setStatus(EMMessage.Status.SUCCESS)
-                        if (conversation != null) {
-                            var gson = Gson()
-                            var Message = Message()
-                            Message.setMsg(pushMsgRsp.getParams().getMsg())
-                            Message.setMsgId(pushMsgRsp.getParams().getMsgId())
-                            Message.setFrom(pushMsgRsp.getParams().getFromId())
-                            Message.setTo(pushMsgRsp.getParams().getToId())
-                            Message.chatType = EMMessage.ChatType.Chat
+                        try {
+                            val message = EMMessage.createTxtSendMessage(msgSouce, pushMsgRsp.params.fromId)
+                            message.setDirection(EMMessage.Direct.RECEIVE)
+                            message.msgId = pushMsgRsp?.params.msgId.toString()
+                            message.from = pushMsgRsp.params.fromId
+                            message.to = pushMsgRsp.params.toId
+                            message.isUnread = true
+                            message.isAcked = true
+                            message.setStatus(EMMessage.Status.SUCCESS)
+                            if (conversation != null) {
+                                var gson = Gson()
+                                var Message = Message()
+                                Message.setMsg(pushMsgRsp.getParams().getMsg())
+                                Message.setMsgId(pushMsgRsp.getParams().getMsgId())
+                                Message.setFrom(pushMsgRsp.getParams().getFromId())
+                                Message.setTo(pushMsgRsp.getParams().getToId())
+                                Message.chatType = EMMessage.ChatType.Chat
 
-                            var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
-                            val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
-                            var unReadCount = 0
-                            if (MessageLocal != null && MessageLocal.unReadCount != null) {
-                                unReadCount = MessageLocal.unReadCount
+                                var cachStr = SpUtil.getString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, "")
+                                val MessageLocal = gson.fromJson<Message>(cachStr, com.message.Message::class.java)
+                                var unReadCount = 0
+                                if (MessageLocal != null && MessageLocal.unReadCount != null) {
+                                    unReadCount = MessageLocal.unReadCount
+                                }
+                                Message.unReadCount = unReadCount + AppConfig.instance.tempPushMsgList.size;
+
+                                var baseDataJson = gson.toJson(Message)
+                                var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
+                                KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
+                                //conversation.insertMessage(message)
                             }
-                            Message.unReadCount = unReadCount + AppConfig.instance.tempPushMsgList.size;
-
-                            var baseDataJson = gson.toJson(Message)
-                            var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                            SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + pushMsgRsp.params.fromId, baseDataJson)
-                            KLog.i("insertMessage:" + "MainActivity" + "_tempPushMsgList")
-                            //conversation.insertMessage(message)
+                        }catch (e:Exception)
+                        {
+                            e.printStackTrace()
                         }
+
 
                         if (ConstantValue.isInit) {
                             conversationListFragment?.refresh()
