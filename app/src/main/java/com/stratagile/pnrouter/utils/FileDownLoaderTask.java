@@ -234,6 +234,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 		}catch (Exception e)
 		{
+			DeleteUtils.deleteFile(mFile.getPath());
 			KLog.i("FileDownLoaderTask jiemi  error ");
 		}
 		byte[] buffer = new byte[1024*1024*10];
@@ -244,6 +245,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			while((n=in.read(buffer, 0, 1024*1024*10))!=-1){
 				if(ConstantValue.INSTANCE.getLoginOut())
 				{
+					DeleteUtils.deleteFile(mFile.getPath());
 					return 0;
 				}
 				out.write(buffer, 0, n);

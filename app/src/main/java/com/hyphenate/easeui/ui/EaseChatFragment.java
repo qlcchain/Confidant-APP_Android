@@ -1899,7 +1899,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
         }
         FileUtil.copyFile(filePath, file.getPath());
-        inputMenu.post(() -> sendVideoMessage(file.getAbsolutePath(), false));
+        inputMenu.post(() -> sendVideoMessageFromAlbum(file.getAbsolutePath(),filePath, false));
     }
 
     /**
@@ -3311,7 +3311,209 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
     }
+    protected void sendVideoMessageFromAlbum(String videoPath,String albumPath, boolean isLocal) {
+        if (friendStatus != 0) {
+            Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new Thread(new Runnable() {
+            public void run() {
 
+                try {
+                    File file = new File(videoPath);
+                    boolean isHas = file.exists();
+                    if (isHas) {
+                        if (file.length() > 1024 * 1024 * 100) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return;
+                        }
+                        String imgeSouceName = videoPath.substring(videoPath.lastIndexOf("/") + 1, videoPath.lastIndexOf("."));
+                        String typeName = videoPath.substring(videoPath.lastIndexOf("."));
+                        String leftName = "";
+                        if (imgeSouceName.contains("_")) {
+                            leftName = imgeSouceName.substring(0, imgeSouceName.lastIndexOf("_"));
+                            leftName = StringUitl.replaceALL(leftName, "_");
+                            if (StringUitl.isNumeric(leftName)) {
+                                leftName = imgeSouceName.substring(imgeSouceName.lastIndexOf("_") + 1, imgeSouceName.length());
+                            }
+                        } else {
+                            leftName = imgeSouceName;
+                        }
+//                        if(leftName.length() > ConstantValue.INSTANCE.getFileNameMaxLen() -12)
+//                        {
+//                            leftName = leftName.substring(0,ConstantValue.INSTANCE.getFileNameMaxLen() -12);
+//                        }
+//                        String videoFileName = leftName + "_" + ((int) (System.currentTimeMillis() / 1000)) + typeName;
+                        String videoFileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
+                        String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
+                        Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
+                        int videoLength = EaseImageUtils.getVideoDuration(videoPath);
+                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
+                        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                        message.setFrom(userId);
+                        message.setTo(UserDataManger.curreantfriendUserData.getUserId());
+                        message.setDelivered(true);
+                        message.setAcked(false);
+                        message.setUnread(true);
+
+                        if (ConstantValue.INSTANCE.getCurreantNetworkType().equals("WIFI")) {
+                            String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+                            message.setMsgId(uuid);
+                            currentSendMsg = message;
+                            //ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid, message);
+                          /*  sendMsgLocalMap.put(uuid, false);
+                            sendFilePathMap.put(uuid, videoPath);
+                            deleteFileMap.put(uuid, false);
+                            sendFileFriendKeyMap.put(uuid, UserDataManger.curreantfriendUserData.getSignPublicKey());*/
+
+
+                            //数据库记录
+                            /*MessageEntity messageEntity  = new MessageEntity();
+                            messageEntity.setUserId(userId);
+                            messageEntity.setFriendId(UserDataManger.curreantfriendUserData.getUserId());
+                            messageEntity.setSendTime(System.currentTimeMillis() +"");
+                            messageEntity.setType("3");//这里要改
+                            messageEntity.setMsgId(uuid);
+                            messageEntity.setComplete(false);
+                            messageEntity.setFilePath(videoPath);
+                            messageEntity.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            messageEntity.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            KLog.i("消息数据增加视频文件：userId："+userId +" friendId:"+UserDataManger.curreantfriendUserData.getUserId());
+                            AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().insert(messageEntity);*/
+
+
+                         /*   String fileKey = RxEncryptTool.generateAESKey();
+                            byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                            byte[] friend = RxEncodeTool.base64Decode(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            byte[] SrcKey = new byte[256];
+                            byte[] DstKey = new byte[256];
+                            try {
+
+                                if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                    SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                    DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                } else {
+                                    SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                    DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                }
+                                sendFileKeyByteMap.put(uuid, fileKey.substring(0, 16));
+                                sendFileMyKeyByteMap.put(uuid, SrcKey);
+                                sendFileFriendKeyByteMap.put(uuid, DstKey);
+                            } catch (Exception e) {
+                                Toast.makeText(getActivity(), R.string.Encryptionerror, Toast.LENGTH_SHORT).show();
+                                return;
+                            }*/
+                            SendFileInfo SendFileInfo = new SendFileInfo();
+                            SendFileInfo.setUserId(userId);
+                            SendFileInfo.setFriendId(toChatUserId);
+                            SendFileInfo.setFiles_dir(videoPath);
+                            SendFileInfo.setMsgId(uuid);
+                            SendFileInfo.setFriendSignPublicKey(UserDataManger.curreantfriendUserData.getSignPublicKey());
+                            SendFileInfo.setFriendMiPublicKey(UserDataManger.curreantfriendUserData.getMiPublicKey());
+                            SendFileInfo.setVoiceTimeLen(0);
+                            SendFileInfo.setType("3");
+                            SendFileInfo.setSendTime(System.currentTimeMillis() + "");
+                            SendFileInfo.setPorperty("0");
+                            AppConfig.instance.getPNRouterServiceMessageSender().sendFileMsg(SendFileInfo);
+                            //AppConfig.instance.getPNRouterServiceMessageSender().sendVideoMessage(userId,toChatUserId,videoPath,uuid,UserDataManger.curreantfriendUserData.getSignPublicKey(), UserDataManger.curreantfriendUserData.getMiPublicKey());
+
+                            /*String wssUrl = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getFilePort();
+                            EventBus.getDefault().post(new FileTransformEntity(uuid, 0, "", wssUrl, "lws-pnr-bin"));*/
+
+                        } else {
+                            String strBase58 = Base58.encode(videoFileName.getBytes());
+                            String base58files_dir = PathUtils.getInstance().getTempPath().toString() + "/" + strBase58;
+                            String fileKey = RxEncryptTool.generateAESKey();
+                            int code = FileUtil.copySdcardToxFileAndEncrypt(videoPath, base58files_dir, fileKey.substring(0, 16));
+                            if (code == 1) {
+                                int uuid = (int) (System.currentTimeMillis() / 1000);
+                                message.setMsgId(uuid + "");
+                                currentSendMsg = message;
+                                ConstantValue.INSTANCE.getSendFileMsgMap().put(uuid + "", message);
+                                sendMsgLocalMap.put(uuid + "", false);
+                                sendFilePathMap.put(uuid + "", base58files_dir);
+                                deleteFileMap.put(uuid + "", false);
+                                sendFileFriendKeyMap.put(uuid + "", UserDataManger.curreantfriendUserData.getSignPublicKey());
+                                ToxFileData toxFileData = new ToxFileData();
+                                toxFileData.setFromId(userId);
+                                toxFileData.setToId(UserDataManger.curreantfriendUserData.getUserId());
+                                File fileMi = new File(base58files_dir);
+                                long fileSize = fileMi.length();
+                                String fileMD5 = FileUtil.getFileMD5(fileMi);
+                                toxFileData.setFileName(strBase58);
+                                toxFileData.setFileMD5(fileMD5);
+                                toxFileData.setFilePath(base58files_dir);
+                                toxFileData.setFileSize((int) fileSize);
+                                toxFileData.setFileType(ToxFileData.FileType.PNR_IM_MSGTYPE_MEDIA);
+                                toxFileData.setFileId(uuid);
+                                toxFileData.setPorperty("0");
+                                String FriendPublicKey = UserDataManger.curreantfriendUserData.getSignPublicKey();
+                                byte[] my = RxEncodeTool.base64Decode(ConstantValue.INSTANCE.getPublicRAS());
+                                byte[] friend = RxEncodeTool.base64Decode(FriendPublicKey);
+                                byte[] SrcKey = new byte[256];
+                                byte[] DstKey = new byte[256];
+                                try {
+
+                                    if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
+                                        SrcKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, ConstantValue.INSTANCE.getLibsodiumpublicMiKey()));
+                                        DstKey = RxEncodeTool.base64Encode(LibsodiumUtil.INSTANCE.EncryptShareKey(fileKey, UserDataManger.curreantfriendUserData.getMiPublicKey()));
+                                    } else {
+                                        SrcKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), my));
+                                        DstKey = RxEncodeTool.base64Encode(RxEncryptTool.encryptByPublicKey(fileKey.getBytes(), friend));
+                                    }
+                                } catch (Exception e) {
+
+                                }
+                                toxFileData.setSrcKey(new String(SrcKey));
+                                toxFileData.setDstKey(new String(DstKey));
+
+                                String fileNumber = "";
+                                if (ConstantValue.INSTANCE.isAntox()) {
+                                    FriendKey friendKey = new FriendKey(ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64));
+                                    fileNumber = MessageHelper.sendFileSendRequestFromKotlin(AppConfig.instance, base58files_dir, friendKey);
+                                } else {
+                                    fileNumber = ToxCoreJni.getInstance().senToxFile(base58files_dir, ConstantValue.INSTANCE.getCurrentRouterId().substring(0, 64)) + "";
+                                }
+
+                                ConstantValue.INSTANCE.getSendToxFileDataMap().put(fileNumber, toxFileData);
+                            }
+                        }
+                        Gson gson = new Gson();
+                        Message Message = new Message();
+                        Message.setMsgType(4);
+                        Message.setFileName(videoFileName);
+                        Message.setMsg("");
+                        Message.setFrom(userId);
+                        Message.setTo(toChatUserId);
+                        Message.setTimeStamp(System.currentTimeMillis() / 1000);
+                        Message.setUnReadCount(0);
+                        Message.setChatType(ChatType.Chat);
+                        String baseDataJson = gson.toJson(Message);
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
+                        sendMessageTo(message);
+                    } else {
+                        Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+        }).start();
+
+
+    }
     protected void sendFileMessage(String filePath) {
        /* EMMessage message = EMMessage.createFileSendMessage(filePath, toChatUserId);
         sendMessageTo(message);*/

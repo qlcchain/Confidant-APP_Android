@@ -138,6 +138,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				if(isCancelled())
 				{
 					DeleteUtils.deleteFile(mFile.getPath());
+					DeleteUtils.deleteFile(outPath +FileNameOld);
 					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
 					EventBus.getDefault().post(new AllFileStatus());
 					msg.what = 0x404;
@@ -172,12 +173,14 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 						msg.what = 0x55;
 					}else{
 						DeleteUtils.deleteFile(mFile.getPath());
+						DeleteUtils.deleteFile(outPath +FileNameOld);
 						msg.what = 0x404;
 					}
 				}
 				else
 				{
 					DeleteUtils.deleteFile(mFile.getPath());
+					DeleteUtils.deleteFile(outPath +FileNameOld);
 					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
 					EventBus.getDefault().post(new AllFileStatus());
 					downFilePathTaskMap.remove(msgID+"");
@@ -243,6 +246,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			mOutputStream.close();
 		} catch (IOException e) {
 			DeleteUtils.deleteFile(mFile.getPath());
+			DeleteUtils.deleteFile(outPath +FileNameOld);
 			e.printStackTrace();
 		}finally {
 			KLog.d(TAG+":nopath");
@@ -305,18 +309,21 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			out.flush();
 		} catch (IOException e) {
 			DeleteUtils.deleteFile(mFile.getPath());
+			DeleteUtils.deleteFile(outPath +FileNameOld);
 			e.printStackTrace();
 		}finally{
 			try {
 				out.close();
 			} catch (IOException e) {
 				DeleteUtils.deleteFile(mFile.getPath());
+				DeleteUtils.deleteFile(outPath +FileNameOld);
 				e.printStackTrace();
 			}
 			try {
 				in.close();
 			} catch (IOException e) {
 				DeleteUtils.deleteFile(mFile.getPath());
+				DeleteUtils.deleteFile(outPath +FileNameOld);
 				e.printStackTrace();
 			}
 		}

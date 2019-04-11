@@ -174,7 +174,7 @@ public class FileUtil {
      * @param newPath String 复制后路径 如：f:/fqf.txt
      * @return boolean
      */
-    public static void copyFile(String oldPath, String newPath) {
+    public static int copyFile(String oldPath, String newPath) {
         KLog.i("复制文件。。。。。。");
         try {
             int bytesum = 0;
@@ -195,8 +195,9 @@ public class FileUtil {
         } catch (Exception e) {
             System.out.println("复制单个文件操作出错");
             e.printStackTrace();
+            return 0;
         }
-
+        return 1;
     }
 
     public static String getAssetJson(Context mContext, String fileName) {
