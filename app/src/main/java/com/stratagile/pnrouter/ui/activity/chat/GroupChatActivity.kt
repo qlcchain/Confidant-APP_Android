@@ -699,7 +699,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
 
     override fun initView() {
         setContentView(R.layout.activity_chat)
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        //禁止截屏
+        //window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         activityInstance = this
         //user or group id
         AppConfig.instance.isChatWithFirend = toChatUserID

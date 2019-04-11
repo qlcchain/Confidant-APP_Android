@@ -1885,6 +1885,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         KLog.i("要发送的文件的路径为：" +filePath);
         File file = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
         KLog.i("要发送的文件的路径为111: " + file.getName());
+        File fileLocal = new File(filePath);
+        boolean isHas = fileLocal.exists();
+        if (isHas) {
+            if (fileLocal.length() > 1024 * 1024 * 100) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.Files_100M, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+        }
         FileUtil.copyFile(filePath, file.getPath());
         inputMenu.post(() -> sendVideoMessage(file.getAbsolutePath(), false));
     }
