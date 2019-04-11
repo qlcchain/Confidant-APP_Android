@@ -137,6 +137,7 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				msg.setData(data);
 				if(isCancelled())
 				{
+					DeleteUtils.deleteFile(mFile.getPath());
 					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
 					EventBus.getDefault().post(new AllFileStatus());
 					msg.what = 0x404;
@@ -170,11 +171,13 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 						EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgID,bytesCopiedFlag, true, true, false,1,1,0,false,0));
 						msg.what = 0x55;
 					}else{
+						DeleteUtils.deleteFile(mFile.getPath());
 						msg.what = 0x404;
 					}
 				}
 				else
 				{
+					DeleteUtils.deleteFile(mFile.getPath());
 					LocalFileUtils.INSTANCE.deleteLocalAssets(msgID+"");
 					EventBus.getDefault().post(new AllFileStatus());
 					downFilePathTaskMap.remove(msgID+"");
@@ -301,19 +304,19 @@ public class FileMangerDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			DeleteUtils.deleteFile(mFile.getPath());
 			e.printStackTrace();
 		}finally{
 			try {
 				out.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				DeleteUtils.deleteFile(mFile.getPath());
 				e.printStackTrace();
 			}
 			try {
 				in.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				DeleteUtils.deleteFile(mFile.getPath());
 				e.printStackTrace();
 			}
 		}

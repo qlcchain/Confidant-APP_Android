@@ -132,6 +132,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				msg.setData(data);
 				if(isCancelled())
 				{
+					DeleteUtils.deleteFile(mFile.getPath());
 					msg.what = 0x404;
 					handler.sendMessage(msg);
 					return;
@@ -140,6 +141,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					msg.what = 0x55;
 				else
 				{
+					DeleteUtils.deleteFile(mFile.getPath());
 					msg.what = 0x404;
 				}
 				handler.sendMessage(msg);
@@ -251,19 +253,19 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			}
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			DeleteUtils.deleteFile(mFile.getPath());
 			e.printStackTrace();
 		}finally{
 			try {
 				out.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				DeleteUtils.deleteFile(mFile.getPath());
 				e.printStackTrace();
 			}
 			try {
 				in.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				DeleteUtils.deleteFile(mFile.getPath());
 				e.printStackTrace();
 			}
 		}
