@@ -772,7 +772,9 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             image!!.setImageResource(default_res)
         }
 
-        image!!.setOnClickListener { finish() }
+        image!!.setOnClickListener {
+            finish()
+        }
         val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
         Thread(Runnable {
             if(hasQRCode == null || hasQRCode.equals(""))
@@ -1294,17 +1296,19 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun addMenu(addMenu: AddMenu) {
-        val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
-        val list = ArrayList<String>()
-        list.add("Save Image")
-        hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
-        if (hasQRCode != null && hasQRCode != "") {
-            list.add("Scan QR Code in Image")
-            runOnUiThread {
-                PopWindowUtil.showSelecMenuPopWindowNotice(list);
-            }
+        Thread(Runnable {
+            val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
+            val list = ArrayList<String>()
+            list.add("Save Image")
+            hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
+            if (hasQRCode != null && hasQRCode != "") {
+                list.add("Scan QR Code in Image")
+                runOnUiThread {
+                    PopWindowUtil.showSelecMenuPopWindowNotice(list);
+                }
 
-        }
+            }
+        }).start()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onWebSocketConnected(connectStatus: ConnectStatus) {

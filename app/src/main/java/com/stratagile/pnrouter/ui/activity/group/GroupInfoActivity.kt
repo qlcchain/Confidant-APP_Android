@@ -32,6 +32,7 @@ import com.stratagile.pnrouter.ui.activity.group.presenter.GroupInfoPresenter
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
+import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberDecoration
 import com.stratagile.pnrouter.ui.adapter.group.GroupUserAdapter
 import com.stratagile.pnrouter.utils.*
@@ -252,7 +253,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                 groupName.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
                 tvGroupAlias.text = String(RxEncodeTool.base64Decode(groupEntity!!.gName))
                 groupName.setOnClickListener{
-//                    val intent = Intent(this, EditNickNameActivity::class.java)
+                    //                    val intent = Intent(this, EditNickNameActivity::class.java)
 //                    intent.putExtra("flag", "Set Group Name")
 //                    intent.putExtra("alias", String(RxEncodeTool.base64Decode(groupEntity!!.gName)))
 //                    intent.putExtra("hint", "Set Group Name")
@@ -321,7 +322,16 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                     var list = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
                     list.addAll(groupUserAdapter!!.data)
                     startActivityForResult(Intent(this@GroupInfoActivity, SelectFriendGroupDetailActivity::class.java).putParcelableArrayListExtra("person", allGroupUser!!.MutableListToArrayList()), addGroupMember)
+                }else ->{
+                val userId = SpUtil.getString(this, ConstantValue.userId, "")
+                val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(groupUserAdapter!!.data[position].toxId)).list()
+                if (userList.size > 0) {
+                    val user = userList[0]
+                    val intent = Intent(this, UserInfoActivity::class.java)
+                    intent.putExtra("user", user)
+                    startActivity(intent)
                 }
+            }
             }
         }
     }
