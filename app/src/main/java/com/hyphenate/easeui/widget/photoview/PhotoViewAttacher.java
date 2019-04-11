@@ -47,6 +47,11 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
+import com.socks.library.KLog;
+import com.stratagile.pnrouter.entity.events.FinishEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, VersionedGestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener, ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -404,7 +409,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, VersionedGe
 
 	public final boolean onSingleTapConfirmed(MotionEvent e) {
 		ImageView imageView = getImageView();
-
+		float scale = getScale();
 		if (null != imageView) {
 			if (null != mPhotoTapListener) {
 				final RectF displayRect = getDisplayRect();
@@ -428,6 +433,10 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, VersionedGe
 			}
 		}
 
+		if(scale == 1)
+		{
+			EventBus.getDefault().post(new FinishEvent());
+		}
 		return false;
 	}
 
@@ -445,6 +454,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, VersionedGe
 				// If we're flinging, and the user presses down, cancel
 				// fling
 				cancelFling();
+				KLog.i("点击图片ACTION_DOWN");
 				break;
 
 			case MotionEvent.ACTION_CANCEL:
@@ -455,9 +465,11 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener, VersionedGe
 					RectF rect = getDisplayRect();
 					if (null != rect) {
 						v.post(new AnimatedZoomRunnable(getScale(), mMinScale, rect.centerX(), rect.centerY()));
+						KLog.i("点击图片ACTION_CANCEL——ACTION_UP——post" + getScale());
 						handled = true;
 					}
 				}
+				KLog.i("点击图片ACTION_CANCEL——ACTION_UP");
 				break;
 			}
 

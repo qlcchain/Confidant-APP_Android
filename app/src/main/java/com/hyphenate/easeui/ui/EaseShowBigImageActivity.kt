@@ -1295,6 +1295,10 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun finishEvent(finishEvent: FinishEvent) {
+        finish()
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun addMenu(addMenu: AddMenu) {
         Thread(Runnable {
             val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap

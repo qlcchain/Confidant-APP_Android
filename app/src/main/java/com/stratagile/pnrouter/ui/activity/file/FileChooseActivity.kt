@@ -37,6 +37,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import io.julian.common.Preconditions
 import kotlinx.android.synthetic.main.activity_file_infos.*
+import java.io.File
 
 /**
  * @author zl
@@ -147,7 +148,13 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
     fun showDirectoryWithNone() {
         KLog.d("showDirectoryWithNone11111: " + (if (mSelectedDirectory == null) "null" else mSelectedDirectory!!.name) + ", size: " + mDirectories.size)
         if (mSelectedDirectory == null) {
-            mSelectedDirectory = FileInfo(Environment.getExternalStorageDirectory())
+            var file = File(Environment.getExternalStorageDirectory().absolutePath+"/Download")
+            if(file.exists())
+            {
+                mSelectedDirectory = FileInfo(File(Environment.getExternalStorageDirectory().absolutePath+"/Download"))
+            }else{
+                mSelectedDirectory = FileInfo(Environment.getExternalStorageDirectory())
+            }
             mDirectories.add(mSelectedDirectory!!)
         }
 

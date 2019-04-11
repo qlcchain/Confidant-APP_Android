@@ -324,12 +324,14 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
                     startActivityForResult(Intent(this@GroupInfoActivity, SelectFriendGroupDetailActivity::class.java).putParcelableArrayListExtra("person", allGroupUser!!.MutableListToArrayList()), addGroupMember)
                 }else ->{
                 val userId = SpUtil.getString(this, ConstantValue.userId, "")
-                val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(groupUserAdapter!!.data[position].toxId)).list()
-                if (userList.size > 0) {
-                    val user = userList[0]
-                    val intent = Intent(this, UserInfoActivity::class.java)
-                    intent.putExtra("user", user)
-                    startActivity(intent)
+                if (userId != groupUserAdapter!!.data[position].toxId) {
+                    val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(groupUserAdapter!!.data[position].toxId)).list()
+                    if (userList.size > 0) {
+                        val user = userList[0]
+                        val intent = Intent(this, UserInfoActivity::class.java)
+                        intent.putExtra("user", user)
+                        startActivity(intent)
+                    }
                 }
             }
             }
