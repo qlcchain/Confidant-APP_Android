@@ -61,11 +61,13 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             llAvatar.visibility = View.GONE
             nickName.visibility = View.GONE
             title.text = getString(R.string.Settings)
+            qrCode.visibility= View.GONE
             qrCode.setTitleText(getString(R.string.Exportaccount))
         }else{
             llAvatar.visibility = View.VISIBLE
             nickName.visibility = View.VISIBLE
             title.text = getString(R.string.details)
+            qrCode.visibility= View.VISIBLE
             qrCode.setTitleText(getString(R.string.invite_friends_to_conifdant))
         }
 
