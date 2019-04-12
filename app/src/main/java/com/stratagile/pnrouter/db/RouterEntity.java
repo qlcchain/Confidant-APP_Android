@@ -32,13 +32,20 @@ public class RouterEntity implements Parcelable{
     //多选模式中是否选中
     private boolean isMultChecked;
 
+    private String AdminId;
+    private String AdminName;
+    private String AdminKey;
 
 
-    @Generated(hash = 1671247076)
-    public RouterEntity(Long id, String routerId, String userSn, String username,
-            String userId, String index, String routerName, String routerAlias,
-            Integer dataFileVersion, String dataFilePay, boolean lastCheck, String loginKey,
-            boolean isMultChecked) {
+
+
+
+
+
+    @Generated(hash = 2120409963)
+    public RouterEntity(Long id, String routerId, String userSn, String username, String userId, String index,
+            String routerName, String routerAlias, Integer dataFileVersion, String dataFilePay, boolean lastCheck,
+            String loginKey, boolean isMultChecked, String AdminId, String AdminName, String AdminKey) {
         this.id = id;
         this.routerId = routerId;
         this.userSn = userSn;
@@ -52,6 +59,9 @@ public class RouterEntity implements Parcelable{
         this.lastCheck = lastCheck;
         this.loginKey = loginKey;
         this.isMultChecked = isMultChecked;
+        this.AdminId = AdminId;
+        this.AdminName = AdminName;
+        this.AdminKey = AdminKey;
     }
 
     @Generated(hash = 997370902)
@@ -81,6 +91,44 @@ public class RouterEntity implements Parcelable{
         lastCheck = in.readByte() != 0;
         loginKey = in.readString();
         isMultChecked = in.readByte() != 0;
+        AdminId = in.readString();
+        AdminName = in.readString();
+        AdminKey = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(routerId);
+        dest.writeString(userSn);
+        dest.writeString(username);
+        dest.writeString(userId);
+        dest.writeString(index);
+        dest.writeString(routerName);
+        dest.writeString(routerAlias);
+        if (dataFileVersion == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(dataFileVersion);
+        }
+        dest.writeString(dataFilePay);
+        dest.writeByte((byte) (lastCheck ? 1 : 0));
+        dest.writeString(loginKey);
+        dest.writeByte((byte) (isMultChecked ? 1 : 0));
+        dest.writeString(AdminId);
+        dest.writeString(AdminName);
+        dest.writeString(AdminKey);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<RouterEntity> CREATOR = new Creator<RouterEntity>() {
@@ -94,8 +142,6 @@ public class RouterEntity implements Parcelable{
             return new RouterEntity[size];
         }
     };
-
-
 
     public Long getId() {
         return this.id;
@@ -196,37 +242,7 @@ public class RouterEntity implements Parcelable{
         this.routerAlias = routerAlias;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeLong(id);
-        }
-        parcel.writeString(routerId);
-        parcel.writeString(userSn);
-        parcel.writeString(username);
-        parcel.writeString(userId);
-        parcel.writeString(index);
-        parcel.writeString(routerName);
-        parcel.writeString(routerAlias);
-        if (dataFileVersion == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeInt(dataFileVersion);
-        }
-        parcel.writeString(dataFilePay);
-        parcel.writeByte((byte) (lastCheck ? 1 : 0));
-        parcel.writeString(loginKey);
-        parcel.writeByte((byte) (isMultChecked ? 1 : 0));
-    }
 
     public boolean getIsMultChecked() {
         return this.isMultChecked;
@@ -234,5 +250,29 @@ public class RouterEntity implements Parcelable{
 
     public void setIsMultChecked(boolean isMultChecked) {
         this.isMultChecked = isMultChecked;
+    }
+
+    public String getAdminId() {
+        return AdminId;
+    }
+
+    public void setAdminId(String adminId) {
+        AdminId = adminId;
+    }
+
+    public String getAdminName() {
+        return AdminName;
+    }
+
+    public void setAdminName(String adminName) {
+        AdminName = adminName;
+    }
+
+    public String getAdminKey() {
+        return AdminKey;
+    }
+
+    public void setAdminKey(String adminKey) {
+        AdminKey = adminKey;
     }
 }

@@ -1,7 +1,17 @@
 package com.stratagile.pnrouter.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 public class JLoginRsp extends BaseEntity {
 
+
+    /**
+     * timestamp : 1555049147
+     * params : {"Action":"Login","RetCode":0,"Routerid":"3089876DD8A1A76274A3150FB87F9B24EF0C4C9AF16FAA37BAFE99C955DA2538155D6D0E5998","RouterName":"cG93IG5vZGU=","UserSn":"0100000200163E04B79700005C6FE08D","UserId":"5C783F904E7DDF5943E2818B3FFCFBBC8D6DB1B3788A8AEBA053507003234051C330AF9FE5A4","NeedAsysn":0,"NickName":"aHpwNjY2","AdminId":"B46DB9F7758AAD04364837FCCD103AF2DE85FFD2C260A4E8DEDFE88F6BC276658FD49825589B","AdminName":"Y2FvNA==","AdminKey":"eK659D5T5AJcyfRI2vV1R5SEm9c9IWtgNJyiBX7kNLI="}
+     */
+
+    private int timestampX;
+    private ParamsBean params;
 
     @Override
     public String toString() {
@@ -10,11 +20,13 @@ public class JLoginRsp extends BaseEntity {
                 '}';
     }
 
-    /**
-     * params : {"Action":"Login","RetCode":0,"Routerid":"D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472","UserSn":"02000010B827EBD089CB00005BF7CD9A","UserId":"50D065FC0DEF163E03B2D7100D8A2244F7A6B374E85B42D99DA7D0DB793B740ADAFF9CA03DD3","NeedAsysn":0,"NickName":"cmVkOQ=="}
-     */
+    public int getTimestampX() {
+        return timestampX;
+    }
 
-    private ParamsBean params;
+    public void setTimestampX(int timestampX) {
+        this.timestampX = timestampX;
+    }
 
     public ParamsBean getParams() {
         return params;
@@ -24,41 +36,33 @@ public class JLoginRsp extends BaseEntity {
         this.params = params;
     }
 
-    public static class ParamsBean {
-        @Override
-        public String toString() {
-            return "ParamsBean{" +
-                    "Action='" + Action + '\'' +
-                    ", RetCode=" + RetCode +
-                    ", Index='" + Index + '\'' +
-                    ", Routerid='" + Routerid + '\'' +
-                    ", RouterName='" + RouterName + '\'' +
-                    ", UserSn='" + UserSn + '\'' +
-                    ", UserId='" + UserId + '\'' +
-                    ", NeedAsysn=" + NeedAsysn +
-                    ", NickName='" + NickName + '\'' +
-                    '}';
-        }
 
+    public static class ParamsBean {
         /**
          * Action : Login
          * RetCode : 0
-         * Routerid : D2339E23514255AEE2FB35F21C54B50EC7B2E2A7DD33ABCFA83CF88077B208121E8DF0A5A472
-         * UserSn : 02000010B827EBD089CB00005BF7CD9A
-         * UserId : 50D065FC0DEF163E03B2D7100D8A2244F7A6B374E85B42D99DA7D0DB793B740ADAFF9CA03DD3
+         * Routerid : 3089876DD8A1A76274A3150FB87F9B24EF0C4C9AF16FAA37BAFE99C955DA2538155D6D0E5998
+         * RouterName : cG93IG5vZGU=
+         * UserSn : 0100000200163E04B79700005C6FE08D
+         * UserId : 5C783F904E7DDF5943E2818B3FFCFBBC8D6DB1B3788A8AEBA053507003234051C330AF9FE5A4
          * NeedAsysn : 0
-         * NickName : cmVkOQ==
+         * NickName : aHpwNjY2
+         * AdminId : B46DB9F7758AAD04364837FCCD103AF2DE85FFD2C260A4E8DEDFE88F6BC276658FD49825589B
+         * AdminName : Y2FvNA==
+         * AdminKey : eK659D5T5AJcyfRI2vV1R5SEm9c9IWtgNJyiBX7kNLI=
          */
 
         private String Action;
         private int RetCode;
-        private String Index;
         private String Routerid;
         private String RouterName;
         private String UserSn;
         private String UserId;
         private int NeedAsysn;
         private String NickName;
+        private String AdminId;
+        private String AdminName;
+        private String AdminKey;
 
         public String getAction() {
             return Action;
@@ -66,14 +70,6 @@ public class JLoginRsp extends BaseEntity {
 
         public void setAction(String Action) {
             this.Action = Action;
-        }
-
-        public String getIndex() {
-            return Index;
-        }
-
-        public void setIndex(String index) {
-            Index = index;
         }
 
         public int getRetCode() {
@@ -96,8 +92,8 @@ public class JLoginRsp extends BaseEntity {
             return RouterName;
         }
 
-        public void setRouterName(String routerName) {
-            RouterName = routerName;
+        public void setRouterName(String RouterName) {
+            this.RouterName = RouterName;
         }
 
         public String getUserSn() {
@@ -130,6 +126,30 @@ public class JLoginRsp extends BaseEntity {
 
         public void setNickName(String NickName) {
             this.NickName = NickName;
+        }
+
+        public String getAdminId() {
+            return AdminId;
+        }
+
+        public void setAdminId(String AdminId) {
+            this.AdminId = AdminId;
+        }
+
+        public String getAdminName() {
+            return AdminName;
+        }
+
+        public void setAdminName(String AdminName) {
+            this.AdminName = AdminName;
+        }
+
+        public String getAdminKey() {
+            return AdminKey;
+        }
+
+        public void setAdminKey(String AdminKey) {
+            this.AdminKey = AdminKey;
         }
     }
 }

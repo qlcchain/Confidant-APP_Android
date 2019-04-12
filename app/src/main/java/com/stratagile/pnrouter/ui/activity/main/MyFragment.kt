@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.ui.activity.main
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.constant.ConstantValue.helpUrl
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.EditNickName
 import com.stratagile.pnrouter.entity.events.ResetAvatar
@@ -59,6 +61,13 @@ class MyFragment : BaseFragment(), MyContract.View {
         settings.setOnClickListener {
             var intent= Intent(activity, MyDetailActivity::class.java)
             intent.putExtra("flag",1)
+            startActivity(intent)
+        }
+        HelpCenter.setOnClickListener {
+            val intent = Intent()
+            intent.action = "android.intent.action.VIEW"
+            val url = Uri.parse(helpUrl)
+            intent.data = url
             startActivity(intent)
         }
         shareApp.setOnClickListener {

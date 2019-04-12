@@ -38,6 +38,9 @@ public class JRegisterRsp extends BaseEntity {
                     ", UserId='" + UserId + '\'' +
                     ", DataFileVersion=" + DataFileVersion +
                     ", DataFilePay='" + DataFilePay + '\'' +
+                    ", AdminId='" + AdminId + '\'' +
+                    ", AdminName=" + AdminName +
+                    ", AdminKey='" + AdminKey + '\'' +
                     '}';
         }
 
@@ -60,6 +63,9 @@ public class JRegisterRsp extends BaseEntity {
         private String UserId;
         private int DataFileVersion;
         private String DataFilePay;
+        private String AdminId;
+        private String AdminName;
+        private String AdminKey;
 
         public String getAction() {
             return Action;
@@ -123,6 +129,30 @@ public class JRegisterRsp extends BaseEntity {
 
         public void setDataFilePay(String DataFilePay) {
             this.DataFilePay = DataFilePay;
+        }
+
+        public String getAdminId() {
+            return AdminId;
+        }
+
+        public void setAdminId(String adminId) {
+            AdminId = adminId;
+        }
+
+        public String getAdminName() {
+            return AdminName;
+        }
+
+        public void setAdminName(String adminName) {
+            AdminName = adminName;
+        }
+
+        public String getAdminKey() {
+            return AdminKey;
+        }
+
+        public void setAdminKey(String adminKey) {
+            AdminKey = adminKey;
         }
     }
 }

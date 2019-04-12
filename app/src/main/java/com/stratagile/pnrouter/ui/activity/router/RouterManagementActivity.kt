@@ -206,6 +206,11 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             intent.putExtra("userEntity", selectedRouter)
             startActivityForResult(intent, circleMember1)
         }
+        addMembers.setOnClickListener {
+            var intent = Intent(this, RouterQRCodeActivity::class.java)
+            intent.putExtra("router", selectedRouter)
+            startActivity(intent)
+        }
         circleName.tvContent.text = selectedRouter.routerName
         circleName.setOnClickListener {
             var intent = Intent(this, EditNickNameActivity::class.java)
@@ -247,6 +252,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 
             circleName.visibility = View.VISIBLE
             circleMembers.visibility = View.VISIBLE
+            addMembers.visibility = View.VISIBLE
             userdSpace.visibility = View.VISIBLE
             manageDisk.visibility = View.VISIBLE
         } else {
@@ -254,6 +260,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 
             circleName.visibility = View.GONE
             circleMembers.visibility = View.GONE
+            addMembers.visibility = View.GONE
             userdSpace.visibility = View.GONE
             manageDisk.visibility = View.GONE
         }

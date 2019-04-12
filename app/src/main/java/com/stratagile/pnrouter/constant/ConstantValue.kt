@@ -16,6 +16,7 @@ object ConstantValue {
         var localPath = "/ARouterNewData"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
         var isInit = false;
+        var helpUrl = "https://myconfidant.io/support"
         var isRefeshed = false
         var testValue = "testValue"
         var fingerprintUnLock = "fingerprintUnLock"

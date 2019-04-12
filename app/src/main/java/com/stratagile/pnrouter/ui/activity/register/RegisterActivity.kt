@@ -88,12 +88,12 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             ConstantValue.loginOut = false
             ConstantValue.logining = true
             FileUtil.saveUserData2Local(loginRsp.params!!.userId,"userid")
-            FileUtil.saveUserData2Local(loginRsp.params!!.index,"userIndex")
+            FileUtil.saveUserData2Local("","userIndex")
             FileUtil.saveUserData2Local(loginRsp.params!!.userSn,"usersn")
             FileUtil.saveUserData2Local(loginRsp.params!!.routerid,"routerid")
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             newRouterEntity.userId = loginRsp.params!!.userId
-            newRouterEntity.index  = loginRsp.params!!.index
+            newRouterEntity.index  = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
@@ -133,6 +133,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             newRouterEntity.dataFileVersion = 0
             newRouterEntity.dataFilePay =  ""
+            newRouterEntity.adminId = loginRsp.params!!.adminId
+            newRouterEntity.adminName = loginRsp.params!!.adminName
+            newRouterEntity.adminKey = loginRsp.params!!.adminKey
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -201,6 +204,9 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
             newRouterEntity.loginKey = userName3.text.toString().trim();
             newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
             newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+            newRouterEntity.adminId = registerRsp.params!!.adminId
+            newRouterEntity.adminName = registerRsp.params!!.adminName
+            newRouterEntity.adminKey = registerRsp.params!!.adminKey
             var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
             val myRouter = MyRouter()

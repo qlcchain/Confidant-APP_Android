@@ -60,7 +60,8 @@ class RouterQRCodeActivity : BaseActivity(), RouterQRCodeContract.View {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerEntity = intent.getParcelableExtra("router")
         tvRouterName.text = "【" + routerEntity.routerName + "】"
-        tvRouterInvitationInfo.text = "\n" + "an invitation to join this circle"
+        adminName.text = getString(R.string.Circle_Owner)+ String(RxEncodeTool.base64Decode(routerEntity.adminName))
+        tvRouterInvitationInfo.text = "\n" + "This is an invitation to join this circle"
         ivAvatarUser.withShape = true
         ivAvatarUser.setImageFile("", routerEntity.routerName)
         tvShare2.setOnClickListener {

@@ -35,6 +35,9 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         public final static Property LastCheck = new Property(10, boolean.class, "lastCheck", false, "LAST_CHECK");
         public final static Property LoginKey = new Property(11, String.class, "loginKey", false, "LOGIN_KEY");
         public final static Property IsMultChecked = new Property(12, boolean.class, "isMultChecked", false, "IS_MULT_CHECKED");
+        public final static Property AdminId = new Property(13, String.class, "AdminId", false, "ADMIN_ID");
+        public final static Property AdminName = new Property(14, String.class, "AdminName", false, "ADMIN_NAME");
+        public final static Property AdminKey = new Property(15, String.class, "AdminKey", false, "ADMIN_KEY");
     }
 
 
@@ -62,7 +65,10 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
                 "\"DATA_FILE_PAY\" TEXT," + // 9: dataFilePay
                 "\"LAST_CHECK\" INTEGER NOT NULL ," + // 10: lastCheck
                 "\"LOGIN_KEY\" TEXT," + // 11: loginKey
-                "\"IS_MULT_CHECKED\" INTEGER NOT NULL );"); // 12: isMultChecked
+                "\"IS_MULT_CHECKED\" INTEGER NOT NULL ," + // 12: isMultChecked
+                "\"ADMIN_ID\" TEXT," + // 13: AdminId
+                "\"ADMIN_NAME\" TEXT," + // 14: AdminName
+                "\"ADMIN_KEY\" TEXT);"); // 15: AdminKey
     }
 
     /** Drops the underlying database table. */
@@ -131,6 +137,21 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(12, loginKey);
         }
         stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
+ 
+        String AdminId = entity.getAdminId();
+        if (AdminId != null) {
+            stmt.bindString(14, AdminId);
+        }
+ 
+        String AdminName = entity.getAdminName();
+        if (AdminName != null) {
+            stmt.bindString(15, AdminName);
+        }
+ 
+        String AdminKey = entity.getAdminKey();
+        if (AdminKey != null) {
+            stmt.bindString(16, AdminKey);
+        }
     }
 
     @Override
@@ -193,6 +214,21 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             stmt.bindString(12, loginKey);
         }
         stmt.bindLong(13, entity.getIsMultChecked() ? 1L: 0L);
+ 
+        String AdminId = entity.getAdminId();
+        if (AdminId != null) {
+            stmt.bindString(14, AdminId);
+        }
+ 
+        String AdminName = entity.getAdminName();
+        if (AdminName != null) {
+            stmt.bindString(15, AdminName);
+        }
+ 
+        String AdminKey = entity.getAdminKey();
+        if (AdminKey != null) {
+            stmt.bindString(16, AdminKey);
+        }
     }
 
     @Override
@@ -215,7 +251,10 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // dataFilePay
             cursor.getShort(offset + 10) != 0, // lastCheck
             cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // loginKey
-            cursor.getShort(offset + 12) != 0 // isMultChecked
+            cursor.getShort(offset + 12) != 0, // isMultChecked
+            cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13), // AdminId
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // AdminName
+            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15) // AdminKey
         );
         return entity;
     }
@@ -235,6 +274,9 @@ public class RouterEntityDao extends AbstractDao<RouterEntity, Long> {
         entity.setLastCheck(cursor.getShort(offset + 10) != 0);
         entity.setLoginKey(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
         entity.setIsMultChecked(cursor.getShort(offset + 12) != 0);
+        entity.setAdminId(cursor.isNull(offset + 13) ? null : cursor.getString(offset + 13));
+        entity.setAdminName(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setAdminKey(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
      }
     
     @Override

@@ -105,6 +105,16 @@
         app:showImg="false"
         app:text1="Circle Members">
     </com.stratagile.pnrouter.view.DetailView>
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/addMembers"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x20"
+        android:layout_height="@dimen/x108"
+        app:contentStr=""
+        app:showImg="false"
+        app:text1="@string/Add_a_New_Member">
+    </com.stratagile.pnrouter.view.DetailView>
 
     <com.stratagile.pnrouter.view.DetailView
         android:visibility="gone"
@@ -125,16 +135,6 @@
         app:contentStr=""
         app:showImg="false"
         app:text1="Cirle Alias">
-    </com.stratagile.pnrouter.view.DetailView>
-
-    <com.stratagile.pnrouter.view.DetailView
-        android:id="@+id/qrCode"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x108"
-        android:layout_marginTop="@dimen/x1"
-        app:src="@mipmap/icon_qr"
-        app:showImg="true"
-        app:text1="Circle QR Code">
     </com.stratagile.pnrouter.view.DetailView>
 
     <LinearLayout
@@ -222,4 +222,13 @@
             android:layout_marginRight="@dimen/x30"
             android:layout_marginLeft="@dimen/x30"/>
     </LinearLayout>
+    <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/qrCode"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x108"
+        android:layout_marginTop="@dimen/x20"
+        app:src="@mipmap/icon_qr"
+        app:showImg="true"
+        app:text1="@string/Circle_Login_QR_Code">
+    </com.stratagile.pnrouter.view.DetailView>
 </LinearLayout>

@@ -1,9 +1,12 @@
 package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.provider.MediaStore
 import com.jaeger.library.StatusBarUtil
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -64,8 +67,30 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         needFront = true
         AppConfig.instance.stopAllService()
         super.onCreate(savedInstanceState)
-    }
+        /*var intent = getIntent();
+        var action = intent.getAction();//action
+        var type = intent.getType();//类型
 
+        //类型
+        if (Intent.ACTION_SEND.equals(action) && type != null *//*&& "video/mp4".equals(type)*//*) {
+            var uri =  intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+            //如果是媒体类型需要从数据库获取路径
+            var filePath=getRealPathFromURI(uri);
+            KLog.i("外部分享："+filePath)
+        }*/
+    }
+    /**
+     * 通过Uri获取文件在本地存储的真实路径
+     */
+    fun  getRealPathFromURI(contentUri: Uri?):String {
+        var proj = arrayOf(MediaStore.MediaColumns.DATA)
+        var  cursor=getContentResolver().query(contentUri, proj!!, null, null, null);
+        if(cursor.moveToNext()){
+            return cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
+        }
+        cursor.close();
+        return "";
+    }
     override fun onDestroy() {
         super.onDestroy()
     }

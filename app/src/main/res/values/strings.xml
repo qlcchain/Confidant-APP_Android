@@ -630,6 +630,10 @@
     <string name="The_same_user">The same user.</string>
     <string name="Are_you_sure_you_want_to_leave_the_circle">Do you want to switch the circle?</string>
     <string name="Do_you_leave_the_circle_to_import_new_accounts">Do you leave the circle to import new accounts?</string>
+    <string name="Help_Center">Help Center</string>
+    <string name="Add_a_New_Member">Add a New Member</string>
+    <string name="Circle_Login_QR_Code">Circle Login QR Code</string>
+    <string name="Circle_Owner">Circle Owner：</string>
 
 
 </resources>

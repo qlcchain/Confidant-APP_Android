@@ -181,6 +181,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.loginKey = "";
             newRouterEntity.dataFileVersion = registerRsp.params.dataFileVersion
             newRouterEntity.dataFilePay = registerRsp.params.dataFilePay
+            newRouterEntity.adminId = registerRsp.params!!.adminId
+            newRouterEntity.adminName = registerRsp.params!!.adminName
+            newRouterEntity.adminKey = registerRsp.params!!.adminKey
             var localData: ArrayList<MyRouter> =  LocalRouterUtils.localAssetsList
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(registerRsp.params!!.routerName))
             val myRouter = MyRouter()
@@ -477,7 +480,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             KLog.i("服务器返回的userId：${loginRsp.params!!.userId}")
             ConstantValue.currentRouterId = loginRsp.params!!.routerid
             newRouterEntity.userId = loginRsp.params!!.userId
-            newRouterEntity.index = loginRsp.params!!.index
+            newRouterEntity.index = ""
             SpUtil.putString(this, ConstantValue.userId, loginRsp.params!!.userId)
             //SpUtil.putString(this, ConstantValue.userIndex, loginRsp.params!!.index)
             //SpUtil.putString(this, ConstantValue.username,ConstantValue.localUserName!!)
@@ -519,6 +522,9 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.routerName = String(RxEncodeTool.base64Decode(loginRsp.params!!.routerName))
             newRouterEntity.dataFileVersion = 0
             newRouterEntity.dataFilePay =  ""
+            newRouterEntity.adminId = loginRsp.params!!.adminId
+            newRouterEntity.adminName = loginRsp.params!!.adminName
+            newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")

@@ -105,6 +105,15 @@
         <View style="@style/divide_line" />
 
         <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:id="@+id/HelpCenter"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:srcmy="@mipmap/ic_verified2"
+            app:textmy="@string/Help_Center">
+
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
+        <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:visibility="gone"
             android:id="@+id/shareApp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/x92"
