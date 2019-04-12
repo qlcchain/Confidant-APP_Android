@@ -70,6 +70,7 @@ import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
+import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
 import com.stratagile.pnrouter.ui.activity.group.CreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
@@ -3495,7 +3496,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             e.printStackTrace()
         }
-
+       if(!ConstantValue.shareFromLocalPath.equals(""))
+       {
+           var startIntent = Intent(this, FileSendShareActivity::class.java)
+           startIntent.putExtra("fileLocalPath",ConstantValue.shareFromLocalPath)
+           startActivity(startIntent)
+           ConstantValue.shareFromLocalPath = ""
+       }
     }
     fun initSwitchData() {
         var this_ = this

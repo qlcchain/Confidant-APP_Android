@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v4.widget.NestedScrollView
+        android:layout_above="@+id/llOpreate"
+        android:id="@+id/scrollView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/tvText"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:padding="@dimen/x20"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/llNoFile"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/llOperate"
+        android:orientation="vertical"
+        android:background="@color/color_f2f2f2"
+        android:gravity="center_horizontal"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/ivFileType"
+            android:src="@mipmap/icon_ppt"
+            android:layout_marginTop="@dimen/x68"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvFileName"
+            android:layout_width="wrap_content"
+            android:textColor="@color/color_3f3f3f"
+            android:singleLine="true"
+            android:maxEms="20"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginRight="@dimen/x31"
+            android:ellipsize="middle"
+            android:textSize="@dimen/commemTextSize"
+            android:layout_marginTop="@dimen/x60"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvFileSie"
+            android:textColor="@color/color_808080"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/x10"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x33"
+            android:layout_marginRight="@dimen/x33"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/progress_bar"
+            android:max="100"
+            android:indeterminate="false"
+            android:layout_height="@dimen/x8" />
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tvFileOpreate"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x33"
+            android:layout_marginRight="@dimen/x33"
+            android:layout_marginTop="@dimen/x60"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/commemTextSize"
+            android:text="Preview Download"
+            android:background="@drawable/filepreview_bg"
+            android:layout_height="@dimen/x84" />
+        <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:id="@+id/send"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:srcmy="@mipmap/data"
+            app:textmy="@string/Send_to_a_Contact">
+
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
+
+        <com.stratagile.pnrouter.view.DrawableMyTextView
+            android:layout_marginTop="@dimen/x4"
+            android:id="@+id/upload"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:srcmy="@mipmap/upload_a"
+            app:textmy="@string/Upload_to_Files">
+
+        </com.stratagile.pnrouter.view.DrawableMyTextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/llOpreate"
+        android:orientation="horizontal"
+        android:background="@color/mainColor"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="@dimen/x94">
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_download"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Download"
+                android:layout_marginTop="@dimen/x8"
+                android:textSize="9sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_download"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Save"
+                android:layout_marginTop="@dimen/x8"
+                android:textSize="9sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_forward"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Forward"
+                android:layout_marginTop="@dimen/x8"
+                android:textSize="9sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@mipmap/icon_forward"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Delete"
+                android:layout_marginTop="@dimen/x8"
+                android:textSize="9sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+    <com.github.barteksc.pdfviewer.PDFView
+        android:layout_above="@+id/llOpreate"
+        android:visibility="gone"
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.github.barteksc.pdfviewer.PDFView>
+</RelativeLayout>

@@ -138,6 +138,7 @@ repositories {
     maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
     mavenCentral()
     jcenter()
+    google()//新增这一行
     flatDir {
         dirs 'libs' //就是你放aar的目录地址
     }

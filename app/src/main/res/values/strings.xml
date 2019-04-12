@@ -461,6 +461,7 @@
     <string name="routerpasswordupdata">*Your password must include 8 characters.</string>
 
     <string name="Add_Nickname">Add Nickname</string>
+    <string name="Nickname">Nickname</string>
     <string name="Old_password">Old password</string>
     <string name="newPassword">New password</string>
     <string name="upPasswordTips">You are advised to change your activation code on a regular basis to safeguard your privacy.</string>
@@ -632,8 +633,10 @@
     <string name="Do_you_leave_the_circle_to_import_new_accounts">Do you leave the circle to import new accounts?</string>
     <string name="Help_Center">Help Center</string>
     <string name="Add_a_New_Member">Add a New Member</string>
-    <string name="Circle_Login_QR_Code">Circle Login QR Code</string>
+    <string name="Circle_Login_QR_Code">My private code</string>
     <string name="Circle_Owner">Circle Owner：</string>
 
+    <string name="Send_to_a_Contact">Send to a Contact</string>
+    <string name="Upload_to_Files">Upload to Files</string>
 
 </resources>
