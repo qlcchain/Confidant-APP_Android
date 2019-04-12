@@ -28,6 +28,7 @@ import com.stratagile.pnrouter.ui.activity.router.module.RouterManagementModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.RouterManagementPresenter
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
+import com.stratagile.pnrouter.ui.activity.user.UserAccoutCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
@@ -221,7 +222,11 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
 
         qrCode.setOnClickListener {
-            var intent = Intent(this, RouterQRCodeActivity::class.java)
+            /*var intent = Intent(this, RouterQRCodeActivity::class.java)
+            intent.putExtra("router", selectedRouter)
+            startActivity(intent)*/
+
+            var intent = Intent(this, UserAccoutCodeActivity::class.java)
             intent.putExtra("router", selectedRouter)
             startActivity(intent)
         }

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_bg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/x80"
+            android:layout_marginBottom="@dimen/x1"
+            android:src="@mipmap/sharp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="@dimen/x630"
+            android:textSize="18sp"
+            android:layout_marginTop="@dimen/x15"
+            android:layout_centerVertical="true"
+            android:text="Never share the codes and please save them. You will need these codes when you switch to a new device."
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" />
+        <android.support.v7.widget.CardView
+            android:visibility="visible"
+            android:id="@+id/cardView"
+            android:layout_width="@dimen/x400"
+            android:layout_marginTop="@dimen/x15"
+            android:layout_marginLeft="@dimen/x50"
+            app:cardCornerRadius="@dimen/x25"
+            app:cardElevation="@dimen/x5"
+            android:layout_marginRight="@dimen/x50"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:text="Private Key QR Code"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/color_2c2c2c"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_width="match_parent"
+                    android:background="@color/color_ebebeb"
+                    android:layout_height="@dimen/x1" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_marginBottom="@dimen/x1"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvUserName"
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:text="@string/ok"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/color_2c2c2c"
+                        android:layout_marginLeft="@dimen/x40"
+                        android:layout_height="wrap_content" />
+
+                    <com.stratagile.pnrouter.view.ImageButtonWithText
+                        android:layout_width="@dimen/x55"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/x40"
+                        app:imageButtonTextSize="20"
+                        android:layout_height="@dimen/x55"
+                        android:id="@+id/ivAvatar" />
+                </RelativeLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/x1"
+                    android:layout_marginBottom="@dimen/x1"
+                    android:src="@mipmap/rec"
+                    android:layout_height="@dimen/x85" />
+                <!--<View
+                    android:layout_width="match_parent"
+                    android:background="@color/color_ebebeb"
+                    android:layout_height="@dimen/x1" />-->
+                <ImageView
+                    android:id="@+id/ivQrCodeMy"
+                    android:layout_width="@dimen/x300"
+                    android:layout_marginTop="@dimen/x1"
+                    android:layout_marginBottom="@dimen/x35"
+                    android:layout_height="@dimen/x300" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView2"
+            android:visibility="visible"
+            android:layout_width="@dimen/x400"
+            android:layout_marginTop="@dimen/x25"
+            android:layout_marginLeft="@dimen/x50"
+            app:cardCornerRadius="@dimen/x25"
+            app:cardElevation="@dimen/x5"
+            android:layout_marginRight="@dimen/x50"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_width="wrap_content"
+                    android:textSize="15sp"
+                    android:text="Circle Login QR Code"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/color_2c2c2c"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_width="match_parent"
+                    android:background="@color/color_ebebeb"
+                    android:layout_height="@dimen/x1" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/x10"
+                    android:layout_marginBottom="@dimen/x10"
+                    android:layout_height="wrap_content">
+
+
+                    <com.stratagile.pnrouter.view.ImageButtonWithText
+                        android:layout_width="@dimen/x55"
+
+                        android:layout_marginLeft="@dimen/x40"
+                        app:imageButtonTextSize="20"
+                        android:layout_height="@dimen/x55"
+                        android:id="@+id/ivAvatar2" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/tvRouterName"
+                            android:layout_width="wrap_content"
+                            android:textSize="13sp"
+                            android:text="@string/ok"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/color_2c2c2c"
+                            android:layout_marginLeft="@dimen/x120"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/adminName"
+                            android:layout_width="wrap_content"
+                            android:textSize="12sp"
+                            android:text="@string/ok"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/color_2c2c2c"
+                            android:layout_marginLeft="@dimen/x120"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+                <!--<View
+                    android:layout_width="match_parent"
+                    android:background="@color/color_ebebeb"
+                    android:layout_height="@dimen/x1" />-->
+                <ImageView
+                    android:id="@+id/ivQrCode2"
+                    android:layout_width="@dimen/x300"
+                    android:layout_marginTop="@dimen/x20"
+                    android:layout_marginBottom="@dimen/x35"
+                    android:layout_height="@dimen/x300" />
+                <View
+                    android:layout_width="match_parent"
+                    android:background="@color/color_ebebeb"
+                    android:layout_height="@dimen/x1" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <LinearLayout
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_margin="@dimen/x50"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+
+            <TextView
+                android:id="@+id/tvShare"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="@dimen/commemTextSize"
+                android:textColor="@color/main_color"
+                android:background="@drawable/textview_whiteborder"
+                android:text="Share"
+                android:layout_height="@dimen/x85" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

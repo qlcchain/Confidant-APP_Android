@@ -18,7 +18,7 @@ object ConstantValue {
         var isInit = false;
         var helpUrl = "https://myconfidant.io/support"
         var isRefeshed = false
-        var shareFromLocalPath = ""
+        var shareFromLocalPath = ""///storage/emulated/0/Huawei/MagazineUnlock/magazine-unlock-05-2.3.1311-_F195D9518633FCDD030C4B23A3B2FCE5.jpg
         var testValue = "testValue"
         var fingerprintUnLock = "fingerprintUnLock"
         var fingerPassWord = "fingerPassWord" //指纹密码

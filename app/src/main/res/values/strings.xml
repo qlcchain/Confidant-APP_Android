@@ -638,5 +638,6 @@
 
     <string name="Send_to_a_Contact">Send to a Contact</string>
     <string name="Upload_to_Files">Upload to Files</string>
+    <string name="Login_on_a_New_Device">Login on a New Device</string>
 
 </resources>

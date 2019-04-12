@@ -158,6 +158,9 @@
             android:name=".ui.activity.user.SendAddFriendActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.user.UserAccoutCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.user.QRCodeActivity"
             android:screenOrientation="portrait" />
         <activity
