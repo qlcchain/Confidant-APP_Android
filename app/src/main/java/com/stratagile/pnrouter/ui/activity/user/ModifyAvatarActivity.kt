@@ -214,6 +214,9 @@ class ModifyAvatarActivity : BaseActivity(), ModifyAvatarContract.View, PNRouter
                     .load(bitmap)
                     .apply(options)
                     .into(ivPicture)
+            if (bitmap != null) {
+                saveBitmap(bitmap!!)
+            }
         }
     }
 

@@ -165,7 +165,7 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
             dView2.isDrawingCacheEnabled = true
             dView2.buildDrawingCache()
             val bitmap2 = Bitmap.createBitmap(dView2.drawingCache)
-            if (bitmap != null) {
+            if (bitmap2 != null) {
                 try {
                     // 获取内置SD卡路径
                     val sdCardPath = Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath
@@ -173,7 +173,7 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
                     val filePath = sdCardPath + File.separator + routerEntity.routerName + ".png"
                     val file = File(filePath)
                     val os = FileOutputStream(file)
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
+                    bitmap2.compress(Bitmap.CompressFormat.PNG, 100, os)
                     os.flush()
                     os.close()
                     runOnUiThread {

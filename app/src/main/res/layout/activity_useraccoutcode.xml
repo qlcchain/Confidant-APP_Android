@@ -135,6 +135,7 @@
                     <com.stratagile.pnrouter.view.ImageButtonWithText
                         android:layout_width="@dimen/x55"
 
+                        android:layout_marginTop="@dimen/x8"
                         android:layout_marginLeft="@dimen/x40"
                         app:imageButtonTextSize="20"
                         android:layout_height="@dimen/x55"
