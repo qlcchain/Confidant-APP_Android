@@ -199,7 +199,7 @@
                 android:textSize="@dimen/commemTextSize"
                 android:textColor="@color/main_color"
                 android:background="@drawable/textview_whiteborder"
-                android:text="Share"
+                android:text="@string/save"
                 android:layout_height="@dimen/x85" />
 
 

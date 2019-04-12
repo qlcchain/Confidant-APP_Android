@@ -1276,14 +1276,31 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     }
                                 }
                             }else if (hasQRCode!!.contains("type_3")) {
-                                runOnUiThread {
-                                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
-                                            .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
-                                            .setConfirmClickListener {
-                                                gotoLogin()
-                                            }
-                                            .show()
+                                var left = result.substring(7,result.length)
+                                var signprivatek = left.substring(0,left.indexOf(","))
+                                left = left.substring(signprivatek.length+1,left.length)
+                                var usersn = left.substring(0,left.indexOf(","))
+                                left = left.substring(usersn.length+1,left.length)
+                                var username = left.substring(0,left.length)
+                                username = String(RxEncodeTool.base64Decode(username))
+                                SpUtil.putString(AppConfig.instance, ConstantValue.username, username)
+                                var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+
+                                if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
+                                {
+                                    toast("Same account, no need to import")
+                                    return;
+                                }else{
+                                    runOnUiThread {
+                                        SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                                .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
+                                                .setConfirmClickListener {
+                                                    gotoLogin()
+                                                }
+                                                .show()
+                                    }
                                 }
+
                             }else{
                                 runOnUiThread {
                                     closeProgressDialog()

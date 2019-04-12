@@ -140,11 +140,16 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
             val bitmap = Bitmap.createBitmap(dView.drawingCache)
             if (bitmap != null) {
                 try {
-                    // 获取内置SD卡路径
-                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath
+                    var galleryPath = (Environment.getExternalStorageDirectory().toString()
+                            + File.separator + Environment.DIRECTORY_DCIM
+                            + File.separator + "Confidant" + File.separator)
+                    val galleryPathFile = File(galleryPath)
+                    if (!galleryPathFile.exists()) {
+                        galleryPathFile.mkdir()
+                    }
                     // 图片文件路径
                     var username = SpUtil.getString(this, ConstantValue.username, "")
-                    val filePath = sdCardPath + File.separator + username + ".png"
+                    val filePath = galleryPath+ username + ".png"
                     val file = File(filePath)
                     val os = FileOutputStream(file)
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
@@ -168,9 +173,15 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
             if (bitmap2 != null) {
                 try {
                     // 获取内置SD卡路径
-                    val sdCardPath = Environment.getExternalStorageDirectory().getPath() + ConstantValue.localPath
+                    var galleryPath = (Environment.getExternalStorageDirectory().toString()
+                            + File.separator + Environment.DIRECTORY_DCIM
+                            + File.separator + "Confidant" + File.separator)
+                    val galleryPathFile = File(galleryPath)
+                    if (!galleryPathFile.exists()) {
+                        galleryPathFile.mkdir()
+                    }
                     // 图片文件路径
-                    val filePath = sdCardPath + File.separator + routerEntity.routerName + ".png"
+                    val filePath = galleryPath + routerEntity.routerName + ".png"
                     val file = File(filePath)
                     val os = FileOutputStream(file)
                     bitmap2.compress(Bitmap.CompressFormat.PNG, 100, os)

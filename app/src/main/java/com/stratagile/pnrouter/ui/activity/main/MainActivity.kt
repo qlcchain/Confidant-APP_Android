@@ -4042,14 +4042,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }else if (type!!.contains("type_3")) {
-                    runOnUiThread {
-                        SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
-                                .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
-                                .setConfirmClickListener {
-                                    gotoLogin()
-                                }
-                                .show()
+                    var left = result.substring(7,result.length)
+                    var signprivatek = left.substring(0,left.indexOf(","))
+                    left = left.substring(signprivatek.length+1,left.length)
+                    var usersn = left.substring(0,left.indexOf(","))
+                    left = left.substring(usersn.length+1,left.length)
+                    var username = left.substring(0,left.length)
+                    username = String(RxEncodeTool.base64Decode(username))
+                    SpUtil.putString(this, ConstantValue.username, username)
+                    var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
+
+                    if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
+                    {
+                        toast("Same account, no need to import")
+                        return;
+                    }else{
+                        runOnUiThread {
+                            SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
+                                    .setConfirmClickListener {
+                                        gotoLogin()
+                                    }
+                                    .show()
+                        }
                     }
+
                 }else{
                     runOnUiThread {
                         closeProgressDialog()
