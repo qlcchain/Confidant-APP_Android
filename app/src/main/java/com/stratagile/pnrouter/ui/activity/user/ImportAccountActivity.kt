@@ -96,7 +96,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 }*/
                 if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
                 {
-                    toast("Same account, no need to import")
+                    toast(R.string.Same_account_no_need_to_import)
                     return;
                 }else{
                     FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
@@ -121,6 +121,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 localSignArrayList = ArrayList()
                 var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
                 SignData.privateKey = strSignPrivate
@@ -143,6 +144,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 localMiArrayList = ArrayList()
                 var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
                 RSAData.privateKey = strMiPrivate

@@ -265,6 +265,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 localSignArrayList = ArrayList()
                 var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
                 SignData.privateKey = strSignPrivate
@@ -287,6 +288,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
                 SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 localMiArrayList = ArrayList()
                 var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
                 RSAData.privateKey = strMiPrivate
@@ -310,6 +312,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)}
+                        SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 }
 
                 var miStr = miData
@@ -325,6 +328,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                        SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                     }
                 }
             }

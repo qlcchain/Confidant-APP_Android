@@ -14,6 +14,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -3718,6 +3719,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                                     closeProgressDialog()
                                                                     RouterMacStr = ""
                                                                     isFromScanAdmim = false
+                                                                    gotoLogin()
                                                                     toast(R.string.Unable_to_connect_to_router)
                                                                 }
                                                             }
@@ -3744,6 +3746,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         }else{
                                             runOnUiThread {
                                                 closeProgressDialog()
+                                                gotoLogin()
                                                 toast(R.string.Please_connect_to_WiFi)
                                             }
                                         }
@@ -4054,14 +4057,78 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     if(signprivatek.equals(ConstantValue.libsodiumprivateSignKey))
                     {
-                        toast("Same account, no need to import")
+                        toast(R.string.Same_account_no_need_to_import)
                         return;
                     }else{
                         runOnUiThread {
                             SweetAlertDialog(this_, SweetAlertDialog.BUTTON_NEUTRAL)
                                     .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
                                     .setConfirmClickListener {
-                                        gotoLogin()
+                                        var type = result.substring(0,6);
+                                        var left = result.substring(7,result.length)
+                                        var signprivatek = left.substring(0,left.indexOf(","))
+                                        left = left.substring(signprivatek.length+1,left.length)
+                                        var usersn = left.substring(0,left.indexOf(","))
+                                        left = left.substring(usersn.length+1,left.length)
+                                        var username = left.substring(0,left.length)
+                                        username = String(RxEncodeTool.base64Decode(username))
+                                        val localSignArrayList: java.util.ArrayList<CryptoBoxKeypair>
+                                        val localMiArrayList: java.util.ArrayList<CryptoBoxKeypair>
+                                        val gson = Gson()
+
+                                        var strSignPublicSouce = ByteArray(32)
+                                        var  signprivatekByteArray = RxEncodeTool.base64Decode(signprivatek)
+                                        System.arraycopy(signprivatekByteArray, 32, strSignPublicSouce, 0, 32)
+
+
+                                        var dst_public_SignKey = strSignPublicSouce
+                                        var dst_private_Signkey = signprivatekByteArray
+                                        val strSignPrivate:String =  signprivatek
+                                        val strSignPublic =  RxEncodeTool.base64Encode2String(strSignPublicSouce)
+                                        ConstantValue.libsodiumprivateSignKey = strSignPrivate
+                                        ConstantValue.libsodiumpublicSignKey = strSignPublic
+                                        ConstantValue.localUserName = username
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
+                                        localSignArrayList = java.util.ArrayList()
+                                        var SignData: CryptoBoxKeypair = CryptoBoxKeypair()
+                                        SignData.privateKey = strSignPrivate
+                                        SignData.publicKey = strSignPublic
+                                        SignData.userName = username
+                                        localSignArrayList.add(SignData)
+                                        FileUtil.saveKeyData(gson.toJson(localSignArrayList),"libsodiumdata_sign")
+
+
+                                        var dst_public_MiKey = ByteArray(32)
+                                        var dst_private_Mikey = ByteArray(32)
+                                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey,dst_public_SignKey)
+                                        var crypto_sign_ed25519_sk_to_curve25519_result = Sodium.crypto_sign_ed25519_sk_to_curve25519(dst_private_Mikey,dst_private_Signkey)
+
+                                        val strMiPrivate:String =  RxEncodeTool.base64Encode2String(dst_private_Mikey)
+                                        val strMiPublic =  RxEncodeTool.base64Encode2String(dst_public_MiKey)
+                                        ConstantValue.libsodiumprivateMiKey = strMiPrivate
+                                        ConstantValue.libsodiumpublicMiKey = strMiPublic
+                                        ConstantValue.localUserName = username
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateMiKeySp, ConstantValue.libsodiumprivateMiKey!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicMiKeySp, ConstantValue.libsodiumpublicMiKey!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)
+                                        SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
+                                        localMiArrayList = java.util.ArrayList()
+                                        var RSAData: CryptoBoxKeypair = CryptoBoxKeypair()
+                                        RSAData.privateKey = strMiPrivate
+                                        RSAData.publicKey = strMiPublic
+                                        RSAData.userName = username
+                                        localMiArrayList.add(RSAData)
+                                        FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
+                                        FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
+                                        AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+                                        runOnUiThread {
+                                            toast("Import success")
+                                            startActivity(Intent(this, LoginActivityActivity::class.java))
+                                            finish()
+                                        }
                                     }
                                     .show()
                         }
