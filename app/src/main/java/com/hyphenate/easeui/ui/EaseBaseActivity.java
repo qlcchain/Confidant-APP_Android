@@ -28,6 +28,8 @@ import android.view.inputmethod.InputMethodManager;
 import com.hyphenate.easeui.EaseUI;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.base.ActivityDelegate;
+import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.utils.SpUtil;
 
 @SuppressLint({"NewApi", "Registered"})
 public class EaseBaseActivity extends FragmentActivity implements ActivityDelegate {
@@ -47,6 +49,13 @@ public class EaseBaseActivity extends FragmentActivity implements ActivityDelega
                 finish();
                 return;
             }
+        }
+        String screenshotsSettingFlag = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getScreenshotsSetting(), "1");
+        if(screenshotsSettingFlag.equals("1"))
+        {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }else{
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     }

@@ -589,6 +589,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         if(screenshotsSettingFlag.equals("1"))
         {
             window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }else{
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         activityInstance = this
         //user or group id

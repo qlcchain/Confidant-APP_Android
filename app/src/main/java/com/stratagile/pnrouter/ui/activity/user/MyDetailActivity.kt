@@ -19,6 +19,7 @@ import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.MyFile
+import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.ResetAvatar
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
@@ -104,6 +105,7 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             } else {
                 SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
             }
+            EventBus.getDefault().post(Sceen())
         }
         tvLogOut.setOnClickListener {
             //            onLogOutSuccess()

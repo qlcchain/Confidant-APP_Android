@@ -2683,6 +2683,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
         if(screenshotsSettingFlag.equals("1"))
         {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }else{
             window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
     }

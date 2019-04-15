@@ -23,6 +23,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.ui.activity.main.LogActivity
 import com.stratagile.pnrouter.ui.activity.main.SplashActivity
 import com.stratagile.pnrouter.utils.LogUtil
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.UIUtils
 import com.stratagile.pnrouter.utils.swipeback.BGASwipeBackHelper
 import com.stratagile.pnrouter.view.RxDialogLoading
@@ -67,6 +68,14 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
                 finish()
                 return
             }
+        }
+        //禁止截屏
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if(screenshotsSettingFlag.equals("1"))
+        {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }else{
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         }
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 //        initToolbar()

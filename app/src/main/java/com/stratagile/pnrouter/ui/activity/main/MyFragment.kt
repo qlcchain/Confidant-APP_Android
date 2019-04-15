@@ -97,14 +97,14 @@ class MyFragment : BaseFragment(), MyContract.View {
             count++
 
         }
-        viewDot.setOnClickListener {
+       /* viewDot.setOnClickListener {
             if (count == 5) {
                 EventBus.getDefault().post(Sceen())
                 count = 0
             } else {
                 count = 0
             }
-        }
+        }*/
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
