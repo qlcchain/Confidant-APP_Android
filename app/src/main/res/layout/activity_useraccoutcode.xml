@@ -175,10 +175,10 @@
                     android:layout_marginTop="@dimen/x20"
                     android:layout_marginBottom="@dimen/x35"
                     android:layout_height="@dimen/x300" />
-                <View
+               <!-- <View
                     android:layout_width="match_parent"
                     android:background="@color/color_ebebeb"
-                    android:layout_height="@dimen/x1" />
+                    android:layout_height="@dimen/x1" />-->
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

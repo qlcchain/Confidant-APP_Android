@@ -108,6 +108,8 @@ object ConstantValue {
         var logining = false//登录状态
         var freindStatus = 0
         var autoLoginRouterSn = "autoLoginRouterSn"//设置的自动登录的路由器sn
+        var fingerprintSetting = "fingerprintSetting"//指纹设置
+        var screenshotsSetting = "screenshotsSetting"//截屏设置
         var isFormat = false
         var isReRegesterMiPush = "isReRegesterMiPush"
         var isShowVerify = false

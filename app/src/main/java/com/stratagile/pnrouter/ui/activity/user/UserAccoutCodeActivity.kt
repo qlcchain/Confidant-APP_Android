@@ -59,9 +59,9 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
         ivAvatar2.setText(SpUtil.getString(this, ConstantValue.username, "")!!)
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))+".jpg"
         val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name, "")
-        var bitmapAvatar : Bitmap? = null
+        var bitmapAvatarUser : Bitmap? = null
         if (lastFile.exists()) {
-            bitmapAvatar = getRoundedCornerBitmap(getRoundedCornerBitmap1(BitmapFactory.decodeFile(lastFile.path)))
+            bitmapAvatarUser = getRoundedCornerBitmap(BitmapFactory.decodeFile(lastFile.path))
         }
         ivAvatar.setImageFile(fileBase58Name)
         ivAvatar2.setImageFile(fileBase58Name)
@@ -70,9 +70,9 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
 
                 val selfNickNameBase64 = RxEncodeTool.base64Encode2String(nickName!!.toByteArray())
                 var  bitmap: Bitmap? = null
-                if (bitmapAvatar != null) {
+                if (bitmapAvatarUser != null) {
 
-                    bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatar)
+                    bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor), bitmapAvatarUser)
 
                 } else {
                     bitmap =   QRCodeEncoder.syncEncodeQRCode("type_3,"+ConstantValue.libsodiumprivateSignKey+","+ConstantValue.currentRouterSN+","+selfNickNameBase64, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
@@ -127,6 +127,32 @@ class UserAccoutCodeActivity : BaseActivity(), UserAccoutCodeContract.View {
         canvas.drawBitmap(bitmap, rect, rect, paint)
 
 //        canvas.drawRoundRect(rectF1, roundPx, roundPx, paint)
+
+
+        return output
+    }
+    //生成圆角图片
+    fun getRoundedCornerBitmap(bitmap: Bitmap): Bitmap {
+        var offWidth = 0
+        val roundPx = resources.getDimension(R.dimen.x10)
+        val widht = resources.getDimension(R.dimen.x20).toInt()
+        val output = Bitmap.createBitmap(bitmap.width +offWidth, bitmap.height+ offWidth, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+
+        val paint = Paint()
+        val rect = Rect(0, 0, bitmap.width+offWidth, bitmap.height+offWidth)
+        val rect1 = Rect(widht / 4, widht / 4, bitmap.width + widht / 4+offWidth, bitmap.height + widht / 4+offWidth)
+        val rectF = RectF(rect)
+        val rectF1 = RectF(rect1)
+
+        paint.isAntiAlias = true
+        canvas.drawARGB(0, 0, 0, 0)
+        paint.color = resources.getColor(R.color.white)
+
+
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(bitmap, rect1, rect1, paint)
 
 
         return output

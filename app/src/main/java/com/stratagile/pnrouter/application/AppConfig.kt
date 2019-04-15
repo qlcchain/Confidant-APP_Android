@@ -287,8 +287,13 @@ class AppConfig : MultiDexApplication() {
                 KLog.i(Calendar.getInstance().timeInMillis - unlockTime)
                 var isUnlock = SpUtil.getBoolean(this@AppConfig, ConstantValue.isUnLock, false)
                 // && !BuildConfig.DEBUG
+                var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
                 if ((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG && !ConstantValue.isShowVerify) || (!isUnlock && !BuildConfig.DEBUG)) {
-                    EventBus.getDefault().post(StartVerify())
+                    if(fingerprintSwitchFlag.equals("1") )
+                    {
+                        EventBus.getDefault().post(StartVerify())
+                    }
+
                 }
 //                if((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 1 * 1000) && !ConstantValue.isShowVerify)
 //                {

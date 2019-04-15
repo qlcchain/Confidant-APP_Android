@@ -2680,7 +2680,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun openSceen(screen: Sceen) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if(screenshotsSettingFlag.equals("1"))
+        {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     fun resetUnCompleteFileRecode() {

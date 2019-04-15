@@ -86,6 +86,25 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         llAvatar.setOnClickListener {
             startActivityForResult(Intent(this, ModifyAvatarActivity::class.java), 2)
         }
+        var fingerprintSwitchFlag = SpUtil.getString(this, ConstantValue.fingerprintSetting, "1")
+        fingerprintSwitch.isChecked = fingerprintSwitchFlag.equals("1")
+        fingerprintSwitch.setOnClickListener {
+            if (fingerprintSwitch.isChecked) {
+                SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+            } else {
+                SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
+            }
+        }
+
+        var screenshotsFlag = SpUtil.getString(this, ConstantValue.screenshotsSetting, "1")
+        screenshotsSwitch.isChecked = screenshotsFlag.equals("1")
+        screenshotsSwitch.setOnClickListener {
+            if (screenshotsSwitch.isChecked) {
+                SpUtil.putString(this, ConstantValue.screenshotsSetting, "1")
+            } else {
+                SpUtil.putString(this, ConstantValue.screenshotsSetting, "0")
+            }
+        }
         tvLogOut.setOnClickListener {
             //            onLogOutSuccess()
             showDialog()

@@ -585,7 +585,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun initView() {
         setContentView(R.layout.activity_chat)
         //禁止截屏
-        //window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        var screenshotsSettingFlag = SpUtil.getString(AppConfig.instance, ConstantValue.screenshotsSetting, "1")
+        if(screenshotsSettingFlag.equals("1"))
+        {
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
         activityInstance = this
         //user or group id
         AppConfig.instance.isChatWithFirend = toChatUserID
