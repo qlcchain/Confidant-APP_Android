@@ -62,6 +62,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base"
         tools:replace="android:allowBackup">
+        <activity
+            android:name=".ui.activity.main.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="*/*" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/mp4"/>
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/*" />
+                <data android:mimeType="audio/amr" />
+            </intent-filter>
+        </activity>
         <service
             android:name="chat.tox.antox.tox.ToxService"
             android:exported="false"
@@ -111,26 +131,6 @@
         <activity
             android:name=".ui.activity.admin.AdminLoginSuccessActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.activity.main.SplashActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="*/*" />
-                <data android:mimeType="image/*" />
-                <data android:mimeType="video/mp4"/>
-                <data android:mimeType="text/plain" />
-                <data android:mimeType="application/*" />
-                <data android:mimeType="audio/amr" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ui.activity.tox.TestToxActivity"
             android:screenOrientation="portrait"
@@ -394,7 +394,7 @@
         <service
             android:name="com.xiaomi.push.service.XMJobService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:process=":pushservice" />
 
@@ -491,7 +491,6 @@
         <activity android:name=".ui.activity.selectfriend.SelectFriendGroupDetailActivity" />
         <activity android:name=".ui.activity.group.GroupMembersActivity" />
         <activity android:name=".ui.activity.router.SelectCircleActivity" />
-        <activity android:name=".ui.activity.user.UserInfoActaivity" />
         <activity android:name=".ui.activity.main.WebViewActivity" />
         <activity android:name=".ui.activity.file.SelectFileActivity" />
     </application>

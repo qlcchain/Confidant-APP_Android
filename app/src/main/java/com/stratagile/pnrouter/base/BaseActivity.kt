@@ -60,6 +60,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
 //        window.navigationBarColor = resources.getColor(R.color.white)
         AppConfig.instance.mAppActivityManager.addActivity(this)
         if (!isTaskRoot) {
+            KLog.i("isTaskRoot")
             val intent = intent
             val action = intent.action
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && action == Intent.ACTION_MAIN) {
