@@ -40,7 +40,6 @@ object ConstantValue {
         var isUnLock = "isUnLock"
         var realKeyboardHeight = "realKeyboardHeight"
         var port =":18006"
-        var currentIp= ""//当前选择的ip
         var filePort =":18007"
         var status = "status"
         var msgIndex:Int = 1 //客户端的消息ID

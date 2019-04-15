@@ -67,18 +67,25 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         needFront = true
         AppConfig.instance.stopAllService()
         super.onCreate(savedInstanceState)
-        var intent = getIntent();
-        var action = intent.getAction();//action
-        var type = intent.getType();//类型
 
-        //类型
-        if (Intent.ACTION_SEND.equals(action) && type != null /*&& "video/mp4".equals(type)*/) {
-            var uri =  intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
-            //如果是媒体类型需要从数据库获取路径
-            var filePath=getRealPathFromURI(uri);
-            KLog.i("外部分享："+filePath)
-            ConstantValue.shareFromLocalPath = filePath;
-        }
+        /*try {
+            var intent = getIntent();
+            var action = intent.getAction();//action
+            var type = intent.getType();//类型
+
+            //类型
+            if (Intent.ACTION_SEND.equals(action) && type != null *//*&& "video/mp4".equals(type)*//*) {
+                var uri =  intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+                //如果是媒体类型需要从数据库获取路径
+                var filePath=getRealPathFromURI(uri);
+                KLog.i("外部分享："+filePath)
+                ConstantValue.shareFromLocalPath = filePath;
+            }
+        }catch (e:Exception)
+        {
+
+        }*/
+
     }
     /**
      * 通过Uri获取文件在本地存储的真实路径

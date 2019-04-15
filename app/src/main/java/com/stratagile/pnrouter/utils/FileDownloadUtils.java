@@ -43,6 +43,10 @@ public class FileDownloadUtils {
      */
     public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,String type){
         ///data/data/com.johnny.testzipanddownload/files
+        if(path.indexOf("https://:") > -1)
+        {
+            return;
+        }
         try
         {
             File destDir = new File(to);

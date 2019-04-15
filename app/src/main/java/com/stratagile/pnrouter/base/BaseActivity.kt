@@ -303,31 +303,55 @@ abstract class BaseActivity : AppCompatActivity(), ActivityDelegate {
     }
 
     fun showProgressDialog(text: String) {
-        KLog.i("弹窗：showProgressDialog_"+text)
-        progressDialog.hide()
-        progressDialog.setDialogText(text)
-        progressDialog.show()
-        progressDialog.setOnTouchOutside(false)
+        try {
+            KLog.i("弹窗：showProgressDialog_"+text)
+            progressDialog.hide()
+            progressDialog.setDialogText(text)
+            progressDialog.show()
+            progressDialog.setOnTouchOutside(false)
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
 
     fun showProgressDialog(text: String, canCancel: Boolean) {
-        progressDialog.hide()
-        progressDialog.setDialogText(text)
-        progressDialog.setNoCanceledOnTouchOutside(false)
-        progressDialog.show()
+        try {
+            progressDialog.hide()
+            progressDialog.setDialogText(text)
+            progressDialog.setNoCanceledOnTouchOutside(false)
+            progressDialog.show()
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
 
     fun showProgressNoCanelDialog(text: String) {
-        progressDialog.hide()
-        progressDialog.setDialogText(text)
-        progressDialog.show()
-        progressDialog.setNoCanceledOnTouchOutside(false)
+        try {
+            progressDialog.hide()
+            progressDialog.setDialogText(text)
+            progressDialog.show()
+            progressDialog.setNoCanceledOnTouchOutside(false)
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
 
     fun showProgressDialog(text: String, onKeyListener: DialogInterface.OnKeyListener) {
-        progressDialog.hide()
-        progressDialog.setDialogText(text)
-        progressDialog.show()
-        progressDialog.setCanceledOnBack(false, onKeyListener)
+        try {
+            progressDialog.hide()
+            progressDialog.setDialogText(text)
+            progressDialog.show()
+            progressDialog.setCanceledOnBack(false, onKeyListener)
+        }catch (e:Exception)
+        {
+          e.printStackTrace()
+        }
+
     }
 }

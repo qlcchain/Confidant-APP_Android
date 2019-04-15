@@ -307,9 +307,14 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
     }
 
     override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
-        AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
-        AppConfig.instance.messageReceiver!!.getDiskDetailInfoBack = null
+        try {
+            EventBus.getDefault().unregister(this)
+            AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
+            AppConfig.instance.messageReceiver!!.getDiskDetailInfoBack = null
+        }catch (e:Exception)
+        {
+             e.printStackTrace()
+        }
         super.onDestroy()
     }
 
