@@ -32,6 +32,7 @@
 
             <LinearLayout
                 android:id="@+id/newUser"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/x90"
                 android:background="@color/white"

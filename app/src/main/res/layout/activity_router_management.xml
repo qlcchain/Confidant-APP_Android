@@ -1,234 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/color_f2f2f2"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/ivRouter"
-            android:layout_width="@dimen/x720"
-            android:layout_height="@dimen/x246"
-            android:scaleType="fitXY"
-            app:layout_constraintRight_toRightOf="parent"
-            android:src="@mipmap/login_router_bg"
-            app:layout_constraintTop_toTopOf="parent" />
-        
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="@dimen/x46"
-            android:layout_marginLeft="@dimen/x23"
-            android:layout_marginTop="@dimen/x68"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:src="@mipmap/arrow_exit"
-            android:layout_height="@dimen/x46" />
-
-        <ImageView
-            android:visibility="invisible"
-            android:id="@+id/ivScan"
-            android:layout_width="@dimen/x46"
-            android:layout_marginTop="@dimen/x68"
-            android:layout_marginRight="@dimen/x23"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:src="@mipmap/icon_scan2"
-            android:layout_height="@dimen/x46" />
-
-        <View
-            android:id="@+id/view1"
-            android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivRouter"
-            android:layout_height="@dimen/x211"
-            android:background="@color/white"/>
-
-        <LinearLayout
-            android:id="@+id/selectCircle"
-            android:layout_width="wrap_content"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginRight="@dimen/x31"
-            android:layout_marginTop="@dimen/x17"
-            android:gravity="center_vertical"
-            android:paddingLeft="@dimen/x15"
-            android:background="@drawable/switch_circle_bg"
-            android:paddingRight="@dimen/x15"
-            app:layout_constraintTop_toBottomOf="@+id/ivRouter"
-            android:orientation="horizontal"
-            android:layout_height="@dimen/x54">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Quick Switch"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:layout_width="@dimen/x26"
-                android:layout_marginLeft="@dimen/x5"
-                android:src="@mipmap/arrow_down"
-                android:layout_height="@dimen/x31" />
-        </LinearLayout>
-
-        <com.stratagile.pnrouter.view.ImageButtonWithText
-            android:id="@+id/userAvatar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="@dimen/x200"
-            android:layout_marginLeft="@dimen/x30"
-            android:layout_width="@dimen/x123"
-            android:layout_height="@dimen/x123">
-
-        </com.stratagile.pnrouter.view.ImageButtonWithText>
-
-        <TextView
-            android:id="@+id/tvRouterName"
-            android:layout_width="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/userAvatar"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x31"
-            android:layout_marginTop="@dimen/x35"
-            android:text="Router 1"
-            android:textSize="20sp"
-            android:textColor="@color/color_2c2c2c" />
-
-
-    </android.support.constraint.ConstraintLayout>
-
-    <com.stratagile.pnrouter.view.DetailView
-        android:visibility="gone"
-        android:id="@+id/circleMembers"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_height="@dimen/x108"
-        app:contentStr=""
-        app:showImg="false"
-        app:text1="Circle Members">
-    </com.stratagile.pnrouter.view.DetailView>
-    <com.stratagile.pnrouter.view.DetailView
-        android:visibility="gone"
-        android:id="@+id/addMembers"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_height="@dimen/x108"
-        app:contentStr=""
-        app:showImg="false"
-        app:text1="@string/Add_a_New_Member">
-    </com.stratagile.pnrouter.view.DetailView>
-
-    <com.stratagile.pnrouter.view.DetailView
-        android:visibility="gone"
-        android:id="@+id/circleName"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_height="@dimen/x108"
-        app:contentStr=""
-        app:showImg="false"
-        app:text1="Circle Name">
-    </com.stratagile.pnrouter.view.DetailView>
-
-    <com.stratagile.pnrouter.view.DetailView
-        android:id="@+id/circleAlias"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/x20"
-        android:layout_height="@dimen/x108"
-        app:contentStr=""
-        app:showImg="false"
-        app:text1="Cirle Alias">
-    </com.stratagile.pnrouter.view.DetailView>
-
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/userdSpace"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/x20"
-        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_height="@dimen/x108">
-
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginRight="@dimen/x31"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="0px"
-                android:layout_weight="1"
-                android:textSize="16sp"
-                android:textColor="@color/color_2B2B2B"
-                android:text="Used Sapce"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/UsedAndTotal"
+            <ImageView
+                android:id="@+id/ivRouter"
+                android:layout_width="@dimen/x720"
+                android:layout_height="@dimen/x246"
+                android:scaleType="fitXY"
+                app:layout_constraintRight_toRightOf="parent"
+                android:src="@mipmap/login_router_bg"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="@dimen/x46"
+                android:layout_marginLeft="@dimen/x23"
+                android:layout_marginTop="@dimen/x68"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:src="@mipmap/arrow_exit"
+                android:layout_height="@dimen/x46" />
+
+            <ImageView
+                android:visibility="invisible"
+                android:id="@+id/ivScan"
+                android:layout_width="@dimen/x46"
+                android:layout_marginTop="@dimen/x68"
+                android:layout_marginRight="@dimen/x23"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:src="@mipmap/icon_scan2"
+                android:layout_height="@dimen/x46" />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivRouter"
+                android:layout_height="@dimen/x211"
+                android:background="@color/white"/>
+
+            <LinearLayout
+                android:id="@+id/selectCircle"
                 android:layout_width="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/color_808080"
-                android:text="-- G / -- G （--%）"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="@dimen/x31"
+                android:layout_marginTop="@dimen/x17"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/x15"
+                android:background="@drawable/switch_circle_bg"
+                android:paddingRight="@dimen/x15"
+                app:layout_constraintTop_toBottomOf="@+id/ivRouter"
+                android:orientation="horizontal"
+                android:layout_height="@dimen/x54">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Quick Switch"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_width="@dimen/x26"
+                    android:layout_marginLeft="@dimen/x5"
+                    android:src="@mipmap/arrow_down"
+                    android:layout_height="@dimen/x31" />
+            </LinearLayout>
+
+            <com.stratagile.pnrouter.view.ImageButtonWithText
+                android:id="@+id/userAvatar"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="@dimen/x200"
+                android:layout_marginLeft="@dimen/x30"
+                android:layout_width="@dimen/x123"
+                android:layout_height="@dimen/x123">
+
+            </com.stratagile.pnrouter.view.ImageButtonWithText>
+
+            <TextView
+                android:id="@+id/tvRouterName"
+                android:layout_width="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userAvatar"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/x31"
-                android:layout_height="wrap_content" />
+                android:layout_marginTop="@dimen/x35"
+                android:text="Router 1"
+                android:textSize="20sp"
+                android:textColor="@color/color_2c2c2c" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/circleMembers"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_height="@dimen/x108"
+            app:contentStr=""
+            app:showImg="false"
+            app:text1="Circle Members">
+        </com.stratagile.pnrouter.view.DetailView>
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/addMembers"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_height="@dimen/x108"
+            app:contentStr=""
+            app:showImg="false"
+            app:text1="@string/Add_a_New_Member">
+        </com.stratagile.pnrouter.view.DetailView>
+
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/circleName"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_height="@dimen/x108"
+            app:contentStr=""
+            app:showImg="false"
+            app:text1="Circle Name">
+        </com.stratagile.pnrouter.view.DetailView>
+
+        <com.stratagile.pnrouter.view.DetailView
+            android:id="@+id/circleAlias"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/x20"
+            android:layout_height="@dimen/x108"
+            app:contentStr=""
+            app:showImg="false"
+            app:text1="Cirle Alias">
+        </com.stratagile.pnrouter.view.DetailView>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/userdSpace"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/x20"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="@dimen/x108">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginRight="@dimen/x31"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_2B2B2B"
+                    android:text="Used Sapce"
+                    android:layout_marginLeft="@dimen/x31"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/UsedAndTotal"
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/color_808080"
+                    android:text="-- G / -- G （--%）"
+                    android:layout_marginLeft="@dimen/x31"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/progress_bar"
+                android:max="100"
+                android:indeterminate="false"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x19"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_marginRight="@dimen/x31"
+                android:layout_marginTop="@dimen/x6"/>
+
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:progressDrawable="@drawable/progress_bar"
-            android:max="100"
-            android:indeterminate="false"
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/manageDisk"
+            android:layout_marginTop="@dimen/x1"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/x19"
-            android:layout_marginLeft="@dimen/x31"
-            android:layout_marginRight="@dimen/x31"
-            android:layout_marginTop="@dimen/x6"/>
+            android:layout_height="@dimen/x108"
+            app:contentStr=""
+            app:showImg="false"
+            app:text1="Manage Disks">
+        </com.stratagile.pnrouter.view.DetailView>
+
+        <LinearLayout
+            android:id="@+id/autoLogin"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_marginTop="@dimen/x20"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_height="@dimen/x108">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color_2c2c2c"
+                android:layout_marginLeft="@dimen/x30"
+                android:textSize="@dimen/commemTextSize"
+                android:text="Enable Auto Login"
+                />
+            <View
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <Switch
+                android:id="@+id/autoLoginSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/x30"
+                android:layout_marginLeft="@dimen/x30"/>
+        </LinearLayout>
+        <com.stratagile.pnrouter.view.DetailView
+            android:id="@+id/qrCode"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x108"
+            android:layout_marginTop="@dimen/x20"
+            app:src="@mipmap/icon_qr"
+            app:showImg="true"
+            app:text1="@string/Circle_Login_QR_Code">
+        </com.stratagile.pnrouter.view.DetailView>
 
     </LinearLayout>
 
-    <com.stratagile.pnrouter.view.DetailView
-        android:visibility="gone"
-        android:id="@+id/manageDisk"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x108"
-        app:contentStr=""
-        app:showImg="false"
-        app:text1="Manage Disks">
-    </com.stratagile.pnrouter.view.DetailView>
-
-    <LinearLayout
-        android:id="@+id/autoLogin"
-        android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_marginTop="@dimen/x20"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_height="@dimen/x108">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/color_2c2c2c"
-            android:layout_marginLeft="@dimen/x30"
-            android:textSize="@dimen/commemTextSize"
-            android:text="Enable Auto Login"
-            />
-        <View
-            android:layout_width="0px"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-        <Switch
-            android:id="@+id/autoLoginSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x30"
-            android:layout_marginLeft="@dimen/x30"/>
-    </LinearLayout>
-    <com.stratagile.pnrouter.view.DetailView
-        android:id="@+id/qrCode"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x108"
-        android:layout_marginTop="@dimen/x20"
-        app:src="@mipmap/icon_qr"
-        app:showImg="true"
-        app:text1="@string/Circle_Login_QR_Code">
-    </com.stratagile.pnrouter.view.DetailView>
-</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

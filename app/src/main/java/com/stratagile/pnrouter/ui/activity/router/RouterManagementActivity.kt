@@ -208,9 +208,12 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             startActivityForResult(intent, circleMember1)
         }
         addMembers.setOnClickListener {
-            var intent = Intent(this, RouterQRCodeActivity::class.java)
+            /*var intent = Intent(this, RouterQRCodeActivity::class.java)
             intent.putExtra("router", selectedRouter)
-            startActivity(intent)
+            startActivity(intent)*/
+            var intent = Intent(this, RouterCreateUserActivity::class.java)
+            intent.putExtra("routerUserEntity", selectedRouter)
+            startActivityForResult(intent, 0)
         }
         circleName.tvContent.text = selectedRouter.routerName
         circleName.setOnClickListener {
