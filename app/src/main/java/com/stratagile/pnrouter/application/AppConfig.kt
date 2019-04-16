@@ -288,7 +288,7 @@ class AppConfig : MultiDexApplication() {
                 var isUnlock = SpUtil.getBoolean(this@AppConfig, ConstantValue.isUnLock, false)
                 // && !BuildConfig.DEBUG
                 var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-                if ((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000 && !BuildConfig.DEBUG && !ConstantValue.isShowVerify) || (!isUnlock && !BuildConfig.DEBUG)) {
+                if ((unlockTime != 0L && Calendar.getInstance().timeInMillis - unlockTime > 5 * 60 * 1000  && !ConstantValue.isShowVerify) || (!isUnlock)) {
                     if(fingerprintSwitchFlag.equals("1") )
                     {
                         EventBus.getDefault().post(StartVerify())

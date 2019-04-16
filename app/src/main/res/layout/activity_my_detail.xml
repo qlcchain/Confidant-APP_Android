@@ -79,7 +79,7 @@
             android:textColor="@color/color_2c2c2c"
             android:layout_marginLeft="@dimen/x30"
             android:textSize="@dimen/commemTextSize"
-            android:text="Fingerprint Verification"
+            android:text="Screen lock"
             />
         <View
             android:layout_width="0px"
@@ -107,7 +107,7 @@
             android:textColor="@color/color_2c2c2c"
             android:layout_marginLeft="@dimen/x30"
             android:textSize="@dimen/commemTextSize"
-            android:text="Ban Screenshots"
+            android:text="Screen security"
             />
         <View
             android:layout_width="0px"

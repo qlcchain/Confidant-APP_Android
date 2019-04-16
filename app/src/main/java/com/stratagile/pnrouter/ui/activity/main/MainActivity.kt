@@ -3697,6 +3697,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                     }
+                                    ConstantValue.loginReq = null
                                     isScanSwitch = true
                                     scanType = 0;
                                     RouterMacStr = result
@@ -3824,6 +3825,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
+                                        ConstantValue.loginReq = null
                                         showProgressDialog("wait...")
                                         isScanSwitch = true
                                         if(AppConfig.instance.messageReceiver != null)
@@ -3989,6 +3991,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                         }
                                         isScanSwitch = true
+                                        ConstantValue.loginReq = null
                                         showProgressDialog("wait...")
                                         if(AppConfig.instance.messageReceiver != null)
                                             AppConfig.instance.messageReceiver!!.close()
@@ -4130,6 +4133,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
                                         FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                                         AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+                                        ConstantValue.loginReq = null
                                         runOnUiThread {
                                             toast("Import success")
                                             startActivity(Intent(this, LoginActivityActivity::class.java))
@@ -4314,7 +4318,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ConstantValue.isHasWebsocketInit = true
         if(AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.close()
-
         ConstantValue.loginOut = true
         ConstantValue.logining = false
         ConstantValue.currentRouterIp = ""

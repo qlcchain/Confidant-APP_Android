@@ -577,7 +577,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (BuildConfig.DEBUG || intent.hasExtra("flag")) {
+        if (intent.hasExtra("flag")) {
             isUnlock = true
         }
         name = System.currentTimeMillis();
@@ -1163,7 +1163,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         //!BuildConfig.DEBUG &&
         var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-        if (!BuildConfig.DEBUG && !ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fingerprintSwitchFlag.equals("1")) {
+        if(fingerprintSwitchFlag.equals("0"))
+        {
+            isUnlock = true
+            hasFinger = true
+            return;
+        }
+        if (!ConstantValue.loginOut && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // init fingerprint.
             try {
                 val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager

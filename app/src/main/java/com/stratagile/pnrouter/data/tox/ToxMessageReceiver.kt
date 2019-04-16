@@ -41,7 +41,7 @@ class ToxMessageReceiver(){
                 {
                     var loginReq = ConstantValue.loginReq
                     LogUtil.addLog("Tox重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
-                    var baseDataJson = BaseData(loginReq).baseDataToJson().replace("\\", "")
+                    var baseDataJson = BaseData(4,loginReq).baseDataToJson().replace("\\", "")
                     if (ConstantValue.isAntox) {
                         var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
                         MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)

@@ -868,6 +868,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                     }
+                                                    ConstantValue.loginReq = null
                                                     isScanSwitch = true
                                                     scanType = 0;
                                                     RouterMacStr = result
@@ -1051,6 +1052,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                     }
+                                                    ConstantValue.loginReq = null
                                                     isScanSwitch = true
                                                     if(AppConfig.instance.messageReceiver != null)
                                                         AppConfig.instance.messageReceiver!!.close()
@@ -1215,6 +1217,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                         val baseDataJson = JSONObject.toJSON(baseData).toString().replace("\\", "")
                                                         ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
                                                     }
+                                                    ConstantValue.loginReq = null
                                                     isScanSwitch = true
                                                     if(AppConfig.instance.messageReceiver != null)
                                                         AppConfig.instance.messageReceiver!!.close()
@@ -1358,6 +1361,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                                     FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
                                                     FileUtil.deleteFile(Environment.getExternalStorageDirectory().getPath()+ConstantValue.localPath + "/RouterList/routerData.json")
                                                     AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.deleteAll()
+                                                    ConstantValue.loginReq = null
                                                     runOnUiThread {
                                                         toast("Import success")
                                                         startActivity(Intent(this_, LoginActivityActivity::class.java))

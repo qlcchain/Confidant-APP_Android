@@ -365,7 +365,7 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
             if (ConstantValue.isWebsocketReConnect && ConstantValue.loginReq != null && ConstantValue.hasLogin) {
                 var loginReq = ConstantValue.loginReq
                 LogUtil.addLog("websocket重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
-                var reslut = send(BaseData(loginReq!!).baseDataToJson().replace("\\", ""))
+                var reslut = send(BaseData(4,loginReq!!).baseDataToJson().replace("\\", ""))
             }
         }
     }
