@@ -646,6 +646,6 @@
     <string name="Want_to_switch">Want to switch to another device with your account synchronised? Export the configuration QR code for quick login.\n
         1. Go to \'My\', find \'Settings\'\n
         2. Export the configuration QR code.\n</string>
-
+    <string name="Contact_Details">Contact Details</string>
 
 </resources>

@@ -26,6 +26,7 @@ import com.stratagile.pnrouter.ui.activity.router.component.DaggerUserComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.UserContract
 import com.stratagile.pnrouter.ui.activity.router.module.UserModule
 import com.stratagile.pnrouter.ui.activity.router.presenter.UserPresenter
+import com.stratagile.pnrouter.ui.activity.user.CircleMemberDetailActivity
 import com.stratagile.pnrouter.ui.adapter.user.UsertListAdapter
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.baseDataToJson
@@ -90,13 +91,20 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
             recyclerViewTempUser.adapter = contactTempAdapter
 
             contactAdapter!!.setOnItemClickListener { adapter, view, position ->
-                var intent = Intent(activity!!, UserQRCodeActivity::class.java)
+              /*  var intent = Intent(activity!!, UserQRCodeActivity::class.java)
                 intent.putExtra("user", contactAdapter!!.getItem(position))
-                startActivity(intent)
+                startActivity(intent)*/
+                var intent = Intent(activity!!, CircleMemberDetailActivity::class.java)
+                intent.putExtra("user", contactAdapter!!.getItem(position))
+                startActivityForResult(intent,1)
             }
             contactTempAdapter!!.setOnItemClickListener { adapter, view, position ->
-                showDialog()
+                //showDialog()
                 routerUserTempEntity = contactTempAdapter!!.getItem(position) as RouterUserEntity
+
+                var intent = Intent(activity!!, CircleMemberDetailActivity::class.java)
+                intent.putExtra("user", routerUserTempEntity)
+                startActivityForResult(intent,1)
                 /* var intent = Intent(activity!!, UserQRCodeActivity::class.java)
                  intent.putExtra("user", contactTempAdapter!!.getItem(position))
                  startActivity(intent)*/
@@ -144,7 +152,21 @@ class UserFragment: BaseFragment(), UserContract.View , PNRouterServiceMessageRe
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        pullFriendList()
+        if(requestCode == 1)
+        {
+            if(data != null && data!!.hasExtra("result"))
+            {
+                var result = data!!.getStringExtra("result");
+                if(result != null && !result.equals(""))
+                {
+                    pullFriendList()
+                }
+            }
+
+        }else{
+            pullFriendList()
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
     }
     fun showDialog() {

@@ -174,7 +174,7 @@
         </com.stratagile.pnrouter.view.DetailView>
     </LinearLayout>
     <TextView
-        android:id="@+id/tvLogOut"
+        android:id="@+id/removeMember"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/x10"

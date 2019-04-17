@@ -535,6 +535,10 @@ val credentialsProvider: CredentialsProvider, private
                     pullTmpAccountBack?.pullTmpAccount(jPullTmpAccountRsp)
                     //userControlleCallBack?.firendList(jPullFriendRsp)
                 }
+                "GroupSysPush" -> {
+                    val JRemoveMemberRsp = gson.fromJson(text, JRemoveMemberRsp::class.java)
+                    removeMemberCallBack?.removeMember(JRemoveMemberRsp)
+                }
             }
         }
 
@@ -605,6 +609,8 @@ val credentialsProvider: CredentialsProvider, private
     var selcectCircleCallBack: SelcectCircleCallBack? = null
 
     var forwardFriendAndGroupBack : ForwardFriendAndGroupBack? = null
+
+    var removeMemberCallBack:RemoveMemberCallBack ? = null
 
     /**
      * Construct a PNRouterServiceMessageReceiver.
@@ -961,6 +967,9 @@ val credentialsProvider: CredentialsProvider, private
     interface SelcectCircleCallBack {
         fun logOutBack(jLogOutRsp: JLogOutRsp)
         fun loginBack(loginRsp: JLoginRsp)
+    }
+    interface RemoveMemberCallBack {
+        fun removeMember(jRemoveMemberRsp: JRemoveMemberRsp)
     }
 }
 
