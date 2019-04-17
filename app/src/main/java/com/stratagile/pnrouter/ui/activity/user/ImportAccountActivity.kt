@@ -44,7 +44,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
 
     override fun initView() {
         setContentView(R.layout.activity_import_account)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
     }
     override fun initData() {
         title.text = "Log in"
@@ -154,6 +154,7 @@ class ImportAccountActivity : BaseActivity(), ImportAccountContract.View {
                 FileUtil.saveKeyData(gson.toJson(localMiArrayList),"libsodiumdata_mi")
                 runOnUiThread {
                     toast("Import success")
+                    AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
                     startActivity(Intent(this, LoginActivityActivity::class.java))
                     finish()
                 }

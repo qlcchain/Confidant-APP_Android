@@ -135,7 +135,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
         title.text = getString(R.string.create_an_account)
         importOtherAccount.setOnClickListener {
             startActivity(Intent(this, ImportAccountActivity::class.java))
-            finish()
+            //finish()
         }
         setNext.setOnClickListener {
             if (imputUserName.text.toString().trim().equals("")) {

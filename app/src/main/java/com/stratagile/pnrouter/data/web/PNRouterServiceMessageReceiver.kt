@@ -531,6 +531,8 @@ val credentialsProvider: CredentialsProvider, private
                 "PullTmpAccount" -> {
                     val jPullTmpAccountRsp = gson.fromJson(text, JPullTmpAccountRsp::class.java)
                     createUserCallBack?.pullTmpAccount(jPullTmpAccountRsp)
+                    resetRouterNameCallBack?.pullTmpAccount(jPullTmpAccountRsp)
+                    pullTmpAccountBack?.pullTmpAccount(jPullTmpAccountRsp)
                     //userControlleCallBack?.firendList(jPullFriendRsp)
                 }
             }
@@ -562,6 +564,8 @@ val credentialsProvider: CredentialsProvider, private
     var pullUserCallBack: PullUserCallBack? = null
 
     var createUserCallBack: CreateUserCallBack? = null
+
+    var pullTmpAccountBack: PullTmpAccountBack? = null
 
     var adminLoginCallBack: AdminLoginCallBack? = null
 
@@ -809,13 +813,16 @@ val credentialsProvider: CredentialsProvider, private
         fun createUser(jCreateNormalUserRsp: JCreateNormalUserRsp)
         fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp)
     }
-
+    interface PullTmpAccountBack {
+        fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp)
+    }
     interface AdminLoginCallBack {
         fun login(jAdminLoginRsp: JAdminLoginRsp)
     }
 
     interface ResetRouterNameCallBack {
         fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp)
+        fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp)
     }
 
     interface AdminUpdataCodeCallBack {

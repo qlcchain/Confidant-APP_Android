@@ -18,6 +18,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BaseData
+import com.stratagile.pnrouter.entity.JPullTmpAccountRsp
 import com.stratagile.pnrouter.entity.JResetRouterNameRsp
 import com.stratagile.pnrouter.entity.ResetRouterNameReq
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
@@ -48,6 +49,10 @@ import javax.inject.Inject
  */
 
 class RouterAliasSetActivity : BaseActivity(), RouterAliasSetContract.View, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
+    override fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp) {
+
+    }
+
     override fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp) {
 
         runOnUiThread {

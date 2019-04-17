@@ -17,6 +17,7 @@ import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
@@ -34,6 +35,7 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.activity_adduser.*
 import kotlinx.android.synthetic.main.activity_router_management.*
 import kotlinx.android.synthetic.main.activity_routeraliasset.*
 import org.greenrobot.eventbus.EventBus
@@ -50,6 +52,33 @@ import kotlin.concurrent.thread
  */
 
 class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, PNRouterServiceMessageReceiver.GetDiskTotalInfoBack, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
+    override fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp) {
+        if(jPullTmpAccountRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                var intent = Intent(this, ShareTempQRCodeActivity::class.java)
+                var routerUserEntity = RouterUserEntity()
+                routerUserEntity.userSN = jPullTmpAccountRsp.params.userSN
+                routerUserEntity.userType = 1
+                routerUserEntity.active = 0
+                routerUserEntity.identifyCode = "0"
+                routerUserEntity.mnemonic = ""
+                routerUserEntity.nickName = ""
+                routerUserEntity.userId = ""
+                routerUserEntity.lastLoginTime = 0
+                routerUserEntity.qrcode = jPullTmpAccountRsp.params.qrcode
+                intent.putExtra("user", routerUserEntity)
+                startActivity(intent)
+                closeProgressDialog()
+            }
+        }else{
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.error)
+            }
+        }
+    }
+
     override fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp) {
 
         runOnUiThread {
@@ -149,6 +178,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
     var selectedRouter = RouterEntity()
     override fun initData() {
 //        title.text = getString(R.string.routerManagement)
+        AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         routerList.forEach {
             if (it.lastCheck) {
@@ -208,12 +238,31 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             startActivityForResult(intent, circleMember1)
         }
         addMembers.setOnClickListener {
-            /*var intent = Intent(this, RouterQRCodeActivity::class.java)
+           /* var intent = Intent(this, RouterQRCodeActivity::class.java)
             intent.putExtra("router", selectedRouter)
             startActivity(intent)*/
-            var intent = Intent(this, RouterCreateUserActivity::class.java)
+            /*var intent = Intent(this, RouterCreateUserActivity::class.java)
             intent.putExtra("routerUserEntity", selectedRouter)
-            startActivityForResult(intent, 0)
+            startActivityForResult(intent, 0)*/
+            showProgressDialog("waiting...")
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+//            var IdentifyCode = IdentifyCode.text.toString().trim()
+            var pullTmpAccountReq = PullTmpAccountReq(userId!!)
+            if(ConstantValue.isWebsocketConnected)
+            {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,pullTmpAccountReq))
+            }
+            else if(ConstantValue.isToxConnected)
+            {
+                var baseData = BaseData(4,pullTmpAccountReq)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                }else{
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                }
+            }
         }
         circleName.tvContent.text = selectedRouter.routerName
         circleName.setOnClickListener {
@@ -429,7 +478,6 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             tvRouterName.text = routerNameStr
             circleName.tvContent.text = routerNameStr
 
-            AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
             showProgressDialog("waiting...")
             var resetRouterNameReq = ResetRouterNameReq(selectedRouter.routerId, RxEncodeTool.base64Encode2String(routerNameStr.toByteArray()))
             if (ConstantValue.isWebsocketConnected) {

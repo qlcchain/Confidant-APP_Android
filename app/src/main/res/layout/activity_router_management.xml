@@ -109,7 +109,7 @@
             app:showImg="false"
             app:text1="Circle Members">
         </com.stratagile.pnrouter.view.DetailView>
-        <com.stratagile.pnrouter.view.DetailView
+       <!-- <com.stratagile.pnrouter.view.DetailView
             android:visibility="gone"
             android:id="@+id/addMembers"
             android:layout_width="match_parent"
@@ -118,8 +118,17 @@
             app:contentStr=""
             app:showImg="false"
             app:text1="@string/Add_a_New_Member">
+        </com.stratagile.pnrouter.view.DetailView>-->
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/addMembers"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x108"
+            android:layout_marginTop="@dimen/x20"
+            app:src="@mipmap/icon_qr"
+            app:showImg="true"
+            app:text1="@string/Router_QR_Code">
         </com.stratagile.pnrouter.view.DetailView>
-
         <com.stratagile.pnrouter.view.DetailView
             android:visibility="gone"
             android:id="@+id/circleName"

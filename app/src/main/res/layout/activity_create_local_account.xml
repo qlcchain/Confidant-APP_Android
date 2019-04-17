@@ -13,7 +13,7 @@
         android:layout_height="wrap_content" />
     <TextView
         android:layout_width="wrap_content"
-        android:text="@string/your_username_will_be_visible_to_all_your_confidant_contacts"
+        android:text="@string/your_username_will_be"
         android:textSize="11sp"
         android:layout_marginLeft="@dimen/x31"
         android:layout_marginTop="@dimen/x12"
@@ -23,8 +23,8 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:textSize="11sp"
-        android:text="Username "
+        android:textSize="19sp"
+        android:text="Username"
         android:textColor="@color/color_2c2c2c"
         android:layout_marginTop="@dimen/x70"
         android:layout_marginLeft="@dimen/x31"

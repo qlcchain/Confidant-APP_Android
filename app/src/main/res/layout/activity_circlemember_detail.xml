@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/x20"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/llAvatar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        android:background="@color/white"
+        android:textSize="@dimen/commemTextSize"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/color_2c2c2c"
+            android:text="Profile Photo"
+            android:layout_marginLeft="15dp"
+            />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+        <com.stratagile.pnrouter.view.ImageButtonWithText
+            android:id="@+id/ivAvatar"
+            android:layout_marginRight="@dimen/x24"
+            app:imageButtonTextSize="12"
+            android:layout_width="@dimen/x50"
+            android:layout_height="@dimen/x50" />
+        <ImageView
+            android:id="@+id/ivNext"
+            android:layout_width="@dimen/x30"
+            android:rotation="180"
+            android:layout_height="@dimen/x30"
+            android:src="@mipmap/icon_back"
+            android:layout_marginRight="@dimen/x30"
+            />
+    </LinearLayout>
+
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/nickName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="HZP"
+        app:showImg="false"
+        app:text1="Name">
+    </com.stratagile.pnrouter.view.DetailView>
+
+    <include layout="@layout/divide_line"/>
+    <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/joinTime"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        android:layout_marginTop="@dimen/x10"
+        app:contentStr="2018/9/16"
+        app:showImg="false"
+        app:text1="Joining time">
+    </com.stratagile.pnrouter.view.DetailView>
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/qrCode"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:src="@mipmap/icon_qr_code"
+        app:showImg="true"
+        app:text1="@string/invite_friends_to_conifdant">
+    </com.stratagile.pnrouter.view.DetailView>
+    <include layout="@layout/divide_line"
+        android:visibility="gone"/>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/fingerprintBtn"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x30"
+            android:textSize="@dimen/commemTextSize"
+            android:text="Screen lock"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Switch
+            android:id="@+id/fingerprintSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"/>
+    </LinearLayout>
+    <include layout="@layout/divide_line"/>
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/screenshotsBtn"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/x108">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_2c2c2c"
+            android:layout_marginLeft="@dimen/x30"
+            android:textSize="@dimen/commemTextSize"
+            android:text="Screen security"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Switch
+            android:id="@+id/screenshotsSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginLeft="@dimen/x30"/>
+    </LinearLayout>
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/company"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="Not set"
+        app:showImg="false"
+        app:text1="Company">
+    </com.stratagile.pnrouter.view.DetailView>
+    <include layout="@layout/divide_line"/>
+
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="gone"
+        android:id="@+id/profession"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:contentStr="Not set"
+        app:showImg="false"
+        app:text1="Occupation">
+    </com.stratagile.pnrouter.view.DetailView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <include layout="@layout/divide_line"/>
+
+        <com.stratagile.pnrouter.view.DetailView
+            android:visibility="gone"
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/x92"
+            app:contentStr="Not set"
+            app:showImg="false"
+            app:text1="Region">
+        </com.stratagile.pnrouter.view.DetailView>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tvLogOut"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/x10"
+        android:background="@color/white"
+        android:text="Remove"
+        android:textSize="@dimen/commemTextSize"
+        android:gravity="center"
+        android:paddingLeft="@dimen/x30"
+        android:layout_height="@dimen/x108" />
+</LinearLayout>

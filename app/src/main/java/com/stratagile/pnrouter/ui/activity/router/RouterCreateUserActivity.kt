@@ -62,7 +62,7 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
             }
         }else{
             runOnUiThread {
-
+                closeProgressDialog()
                 toast(R.string.error)
             }
         }

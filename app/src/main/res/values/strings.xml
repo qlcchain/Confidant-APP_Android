@@ -581,7 +581,7 @@
     <string name="other_circle">Other circle</string>
     <string name="internet_unavailable">internet unavailable</string>
     <string name="login_">Login...</string>
-    <string name="your_username_will_be_visible_to_all_your_confidant_contacts">Your username will be visible to all your Confidant contacts</string>
+    <string name="your_username_will_be">Your username will be visible to your Confidant contacts, when you start coversations and send friend requests.</string>
     <string name="set_a_username">Set a Username</string>
     <string name="password_management">Password Management</string>
     <string name="confirm_new_password">Confirm New Password</string>
@@ -640,5 +640,12 @@
     <string name="Upload_to_Files">Upload to Files</string>
     <string name="Login_on_a_New_Device">Login on a New Device</string>
     <string name="Same_account_no_need_to_import">Same account, Don\'t need to import.</string>
+    <string name="Share_the_Circle_QR_Code">Share the Circle QR Code</string>
+    <string name="Invite_you_friends_to_join_a_group_chat">Invite your friends to join the circle</string>
+    <string name="To_log_in_to">To log in to your registered account, please scan your configuration QR code or import it from your \'photos\'.</string>
+    <string name="Want_to_switch">Want to switch to another device with your account synchronised? Export the configuration QR code for quick login.\n
+        1. Go to \'My\', find \'Settings\'\n
+        2. Export the configuration QR code.\n</string>
+
 
 </resources>

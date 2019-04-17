@@ -54,8 +54,8 @@
         android:layout_marginTop="@dimen/x20"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:srcmy="@mipmap/add_member_a"
-        app:subtitle="Generate a user account to add a circle member"
-        app:textmy="Add a New Member">
+        app:subtitle="@string/Invite_you_friends_to_join_a_group_chat"
+        app:textmy="@string/Share_the_Circle_QR_Code">
 
     </com.stratagile.pnrouter.view.DrawableAddTextView>
 </LinearLayout>

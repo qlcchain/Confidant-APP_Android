@@ -145,6 +145,9 @@
             android:name=".ui.activity.user.MyDetailActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activity.user.CircleMemberDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activity.user.SendAddFriendActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -232,6 +235,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.router.RouterQRCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.router.ShareTempQRCodeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.router.UserQRCodeActivity"
