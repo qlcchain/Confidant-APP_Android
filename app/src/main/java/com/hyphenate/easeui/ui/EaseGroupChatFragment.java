@@ -1159,6 +1159,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (conversation != null) {
             if (currentPage == 0) {
                 conversation.clearAllMessages();
+                if(messageList.size() == 0)
+                {
+                    String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+                    SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                }
                 KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData2_" + conversation.getAllMessages().size());
             }
             if (isMessageListInited) {

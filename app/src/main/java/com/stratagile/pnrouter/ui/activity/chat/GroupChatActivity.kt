@@ -59,6 +59,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 import javax.inject.Inject;
+import kotlin.collections.ArrayList
 
 /**
  * @author zl
@@ -528,8 +529,11 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
     override fun pullGroupMsgRsp(pushMsgRsp: JGroupMsgPullRsp) {
 
-        var messageList: List<Message> = pushMsgRsp.params.payload
-        KLog.i("insertMessage:GroupChatActivity"+chatFragment)
+        var messageList: List<Message> = ArrayList<Message>()
+        if(pushMsgRsp.params.payload != null)
+        {
+            messageList = pushMsgRsp.params.payload
+        }
         chatFragment?.refreshData(messageList,pushMsgRsp.params.userId,pushMsgRsp.params.gId)
     }
 

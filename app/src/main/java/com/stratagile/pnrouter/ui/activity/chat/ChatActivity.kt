@@ -52,6 +52,7 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 /**
  * @author zl
@@ -395,7 +396,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     override fun pullMsgRsp(pushMsgRsp: JPullMsgRsp) {
 
 
-        var messageList: List<Message> = pushMsgRsp.params.payload
+        var messageList: List<Message> = ArrayList<Message>()
+        if(pushMsgRsp.params.payload != null)
+        {
+            messageList = pushMsgRsp.params.payload
+        }
         KLog.i("insertMessage:ChatActivity"+chatFragment)
         val size = messageList.size
         var msgIdStr:String = "";
