@@ -731,6 +731,10 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         //var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 1, 0, 10)
 
+        if(UserDataManger.currentGroupData == null)
+        {
+            return;
+        }
         val pullMsgList = GroupMsgPullReq(userId!!, ConstantValue.currentRouterId, UserDataManger.currentGroupData.gId.toString() + "", 0, 0, 10, "GroupMsgPull")
         var sendData = BaseData(pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))

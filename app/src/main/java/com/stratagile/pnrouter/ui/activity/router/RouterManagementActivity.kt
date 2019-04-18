@@ -178,7 +178,13 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
     var selectedRouter = RouterEntity()
     override fun initData() {
 //        title.text = getString(R.string.routerManagement)
-        AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
+        try {
+            AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
+        }catch (e:Exception)
+        {
+
+        }
+
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         routerList.forEach {
             if (it.lastCheck) {

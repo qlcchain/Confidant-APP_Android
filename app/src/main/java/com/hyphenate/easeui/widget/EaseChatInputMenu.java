@@ -395,7 +395,12 @@ public class EaseChatInputMenu extends LinearLayout {
                 chatExtendMenuContainer.setVisibility(View.VISIBLE);
                 KLog.i("extendMenu的高度为：" + chatExtendMenuContainer.getHeight());
                 chatExtendMenu.setVisibility(View.VISIBLE);
-                chatExtendMenuContainer.getLayoutParams().height = menuDefalutHeight / 2;
+                int height = menuDefalutHeight / 2;
+                if(height < 324)
+                {
+                    height = 324;
+                }
+                chatExtendMenuContainer.getLayoutParams().height =height;
                 emojiconMenu.setVisibility(View.GONE);
                 unlockContentHeightDelayed();//软件盘显示后，释放内容高度
             } else {

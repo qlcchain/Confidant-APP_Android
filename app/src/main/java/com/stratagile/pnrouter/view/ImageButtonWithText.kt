@@ -189,10 +189,11 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
     }
 
     fun setImageFile(url: String) {
-        if ("" == url) {
-            textView.visibility = View.VISIBLE
-            imageView.visibility = View.GONE
-        } else {
+        try {
+            if ("" == url) {
+                textView.visibility = View.VISIBLE
+                imageView.visibility = View.GONE
+            } else {
                 val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
@@ -217,31 +218,43 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
 
                 }
             }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
     fun setImageFileInChat(url: String) {
-        if ("" == url) {
-            textView.visibility = View.VISIBLE
-            imageView.visibility = View.GONE
-        } else {
-            val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
-            if (lastFile.exists()) {
-                textView.visibility = View.GONE
-                imageView.visibility = View.VISIBLE
-                Glide.with(this)
-                        .load(lastFile)
-                        .apply(optionsChat)
-                        .into(imageView)
+        try {
+            if ("" == url) {
+                textView.visibility = View.VISIBLE
+                imageView.visibility = View.GONE
             } else {
+                val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
+                if (lastFile.exists()) {
+                    textView.visibility = View.GONE
+                    imageView.visibility = View.VISIBLE
+                    Glide.with(this)
+                            .load(lastFile)
+                            .apply(optionsChat)
+                            .into(imageView)
+                } else {
 
+                }
             }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
         }
+
     }
     fun setImageFile(url: String, name : String) {
-        if ("" == url) {
-            textView.visibility = View.VISIBLE
-            imageView.visibility = View.GONE
-            setText(name)
-        } else {
+        try {
+            if ("" == url) {
+                textView.visibility = View.VISIBLE
+                imageView.visibility = View.GONE
+                setText(name)
+            } else {
                 val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
                 if (lastFile.exists()) {
                     textView.visibility = View.GONE
@@ -266,29 +279,46 @@ class ImageButtonWithText(context: Context, attrs: AttributeSet) : RelativeLayou
                     setText(name)
                 }
             }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
     fun setImageFileInChat(url: String, name : String) {
-        if ("" == url) {
-            setText(name)
-        } else {
-            val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
-            if (lastFile.exists()) {
-                textView.visibility = View.GONE
-                imageView.visibility = View.VISIBLE
-                KLog.i("聊天中设置头像")
-                Glide.with(this)
-                        .load(PathUtils.getInstance().filePath.toString() + "/" + url)
-                        .apply(optionsChat)
-                        .into(imageView)
-            } else {
+        try {
+            if ("" == url) {
                 setText(name)
+            } else {
+                val lastFile = File(PathUtils.getInstance().filePath.toString() + "/" + url, "")
+                if (lastFile.exists()) {
+                    textView.visibility = View.GONE
+                    imageView.visibility = View.VISIBLE
+                    KLog.i("聊天中设置头像")
+                    Glide.with(this)
+                            .load(PathUtils.getInstance().filePath.toString() + "/" + url)
+                            .apply(optionsChat)
+                            .into(imageView)
+                } else {
+                    setText(name)
+                }
             }
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
         }
+
     }
     fun setGroupHeadImage() {
-        textView.visibility = View.GONE
-        imageView.visibility = View.VISIBLE
-        Glide.with(context).load(R.mipmap.group_head).into(imageView)
+        try {
+            textView.visibility = View.GONE
+            imageView.visibility = View.VISIBLE
+            Glide.with(context).load(R.mipmap.group_head).into(imageView)
+        }catch (e:Exception)
+        {
+            e.printStackTrace()
+        }
+
     }
 
 }
