@@ -268,51 +268,51 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
-                    toast("need Verification")
+                    toast(R.string.need_Verification)
                     closeProgressDialog()
-                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("rid error")
+                    toast(R.string.rid_error)
                     closeProgressDialog()
-                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
-                    toast("uid error")
+                    toast(R.string.uid_error)
                     closeProgressDialog()
-                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
-                    toast("Validation failed")
+                    toast(R.string.Validation_failed)
                     closeProgressDialog()
-                    gotoLogin()
                 }
             }
             else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
-                    toast("Verification code error")
+                    toast(R.string.Verification_code_error)
                     closeProgressDialog()
-                    gotoLogin()
+                }
+            }
+            else if (loginRsp.params.retCode == 7) {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
+                    closeProgressDialog()
                 }
             }
             else{
                 runOnUiThread {
-                    toast("other error")
+                    toast(R.string.other_error)
                     closeProgressDialog()
-                    gotoLogin()
                 }
             }
             return
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
-                toast("userId is empty")
+                toast(R.string.userId_is_empty)
                 closeProgressDialog()
                 gotoLogin()
             }
@@ -529,7 +529,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
             2 -> {
                 runOnUiThread {
-                    toast("Rid error")
+                    toast(R.string.rid_error)
                     gotoLogin()
                 }
 
@@ -609,14 +609,22 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
             4 -> {
                 runOnUiThread {
-                    toast("Other mistakes")
-                    gotoLogin()
+                    toast(R.string.other_error)
+                }
+            }
+            5 -> {
+                runOnUiThread {
+                    toast(R.string.The_QR_code_has_been_occupied_by_others)
+                }
+            }
+            6 -> {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
                 }
             }
             else -> {
                 runOnUiThread {
-                    toast("QR code has been activated by other users.")
-                    gotoLogin()
+                    toast(R.string.other_error)
                 }
             }
         }

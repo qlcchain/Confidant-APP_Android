@@ -31,8 +31,9 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
         public final static Property NickName = new Property(6, String.class, "NickName", false, "NICK_NAME");
         public final static Property UserId = new Property(7, String.class, "UserId", false, "USER_ID");
         public final static Property LastLoginTime = new Property(8, int.class, "LastLoginTime", false, "LAST_LOGIN_TIME");
-        public final static Property Qrcode = new Property(9, String.class, "Qrcode", false, "QRCODE");
-        public final static Property NickSouceName = new Property(10, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
+        public final static Property CreateTime = new Property(9, int.class, "CreateTime", false, "CREATE_TIME");
+        public final static Property Qrcode = new Property(10, String.class, "Qrcode", false, "QRCODE");
+        public final static Property NickSouceName = new Property(11, String.class, "nickSouceName", false, "NICK_SOUCE_NAME");
     }
 
 
@@ -57,8 +58,9 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
                 "\"NICK_NAME\" TEXT," + // 6: NickName
                 "\"USER_ID\" TEXT," + // 7: UserId
                 "\"LAST_LOGIN_TIME\" INTEGER NOT NULL ," + // 8: LastLoginTime
-                "\"QRCODE\" TEXT," + // 9: Qrcode
-                "\"NICK_SOUCE_NAME\" TEXT);"); // 10: nickSouceName
+                "\"CREATE_TIME\" INTEGER NOT NULL ," + // 9: CreateTime
+                "\"QRCODE\" TEXT," + // 10: Qrcode
+                "\"NICK_SOUCE_NAME\" TEXT);"); // 11: nickSouceName
     }
 
     /** Drops the underlying database table. */
@@ -103,15 +105,16 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
             stmt.bindString(8, UserId);
         }
         stmt.bindLong(9, entity.getLastLoginTime());
+        stmt.bindLong(10, entity.getCreateTime());
  
         String Qrcode = entity.getQrcode();
         if (Qrcode != null) {
-            stmt.bindString(10, Qrcode);
+            stmt.bindString(11, Qrcode);
         }
  
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(11, nickSouceName);
+            stmt.bindString(12, nickSouceName);
         }
     }
 
@@ -151,15 +154,16 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
             stmt.bindString(8, UserId);
         }
         stmt.bindLong(9, entity.getLastLoginTime());
+        stmt.bindLong(10, entity.getCreateTime());
  
         String Qrcode = entity.getQrcode();
         if (Qrcode != null) {
-            stmt.bindString(10, Qrcode);
+            stmt.bindString(11, Qrcode);
         }
  
         String nickSouceName = entity.getNickSouceName();
         if (nickSouceName != null) {
-            stmt.bindString(11, nickSouceName);
+            stmt.bindString(12, nickSouceName);
         }
     }
 
@@ -180,8 +184,9 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // NickName
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // UserId
             cursor.getInt(offset + 8), // LastLoginTime
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // Qrcode
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // nickSouceName
+            cursor.getInt(offset + 9), // CreateTime
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // Qrcode
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // nickSouceName
         );
         return entity;
     }
@@ -197,8 +202,9 @@ public class RouterUserEntityDao extends AbstractDao<RouterUserEntity, Long> {
         entity.setNickName(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setUserId(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setLastLoginTime(cursor.getInt(offset + 8));
-        entity.setQrcode(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setNickSouceName(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setCreateTime(cursor.getInt(offset + 9));
+        entity.setQrcode(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setNickSouceName(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     @Override

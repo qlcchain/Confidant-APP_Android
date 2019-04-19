@@ -622,3 +622,9 @@ data class GroupSysPushRsp(var RetCode : Int, var ToId : String,var Action : Str
  * (2)	响应（APP->Router）
  */
 data class PullTmpAccountReq(var UserId :String,  var Action : String = "PullTmpAccount")
+
+/**
+ * 84.	节点owner删除节点上其他用户
+ * (2)	响应（APP->Router）
+ */
+data class DelUserReq(var From :String,var To :String,var Sn :String,  var Action : String = "DelUser")

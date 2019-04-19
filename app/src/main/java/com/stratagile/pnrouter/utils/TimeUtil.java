@@ -41,7 +41,10 @@ public class TimeUtil {
         SimpleDateFormat sdr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         return sdr.format(new Date(Calendar.getInstance().getTimeInMillis()));
     }
-
+    public static String getCreateTime(long timeStamp) {
+        SimpleDateFormat sdr = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+        return sdr.format(new Date(timeStamp * 1000));
+    }
     public static String getFileListTime(long timeStamp) {
         SimpleDateFormat sdr = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA);
         return sdr.format(new Date(timeStamp * 1000));

@@ -314,7 +314,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             2 -> {
                 runOnUiThread {
-                    toast("Rid error")
+                    toast(R.string.rid_error)
                 }
 
             }
@@ -392,12 +392,22 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             }
             4 -> {
                 runOnUiThread {
-                    toast("Other mistakes")
+                    toast(R.string.other_error)
+                }
+            }
+            5 -> {
+                runOnUiThread {
+                    toast(R.string.The_QR_code_has_been_occupied_by_others)
+                }
+            }
+            6 -> {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
                 }
             }
             else -> {
                 runOnUiThread {
-                    toast("QR code has been activated by other users.")
+                    toast(R.string.other_error)
                 }
             }
         }
@@ -424,37 +434,43 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         if (loginRsp.params.retCode != 0) {
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
-                    toast("need Verification")
+                    toast(R.string.need_Verification)
                     closeProgressDialog()
                 }
             }
             else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("rid error")
+                    toast(R.string.rid_error)
                     closeProgressDialog()
                 }
             }
             else if (loginRsp.params.retCode == 3) {
                 runOnUiThread {
-                    toast("uid error")
+                    toast(R.string.uid_error)
                     closeProgressDialog()
                 }
             }
             else if (loginRsp.params.retCode == 4) {
                 runOnUiThread {
-                    toast("Validation failed")
+                    toast(R.string.Validation_failed)
                     closeProgressDialog()
                 }
             }
             else if (loginRsp.params.retCode == 5) {
                 runOnUiThread {
-                    toast("Verification code error")
+                    toast(R.string.Verification_code_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 7) {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
                     closeProgressDialog()
                 }
             }
             else{
                 runOnUiThread {
-                    toast("other error")
+                    toast(R.string.other_error)
                     closeProgressDialog()
                 }
             }
@@ -462,7 +478,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
-                toast("userId is empty")
+                toast(R.string.userId_is_empty)
                 closeProgressDialog()
             }
         } else {

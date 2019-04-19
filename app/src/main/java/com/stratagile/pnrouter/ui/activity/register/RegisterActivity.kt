@@ -53,27 +53,45 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
     override fun loginBack(loginRsp: JLoginRsp) {
         KLog.i(loginRsp.toString())
         if (loginRsp.params.retCode != 0) {
-            if (loginRsp.params.retCode == 3) {
-                runOnUiThread {
-                    toast("The current service is not available.")
-                    closeProgressDialog()
-                }
-            }
-            if (loginRsp.params.retCode == 2) {
-                runOnUiThread {
-                    toast("Too many users")
-                    closeProgressDialog()
-                }
-            }
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
-                    toast("RouterId Error")
+                    toast(R.string.need_Verification)
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 4) {
+            else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("System Error")
+                    toast(R.string.rid_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast(R.string.uid_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast(R.string.Validation_failed)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 5) {
+                runOnUiThread {
+                    toast(R.string.Verification_code_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 7) {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
+                    closeProgressDialog()
+                }
+            }
+            else{
+                runOnUiThread {
+                    toast(R.string.other_error)
                     closeProgressDialog()
                 }
             }
@@ -81,7 +99,7 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
-                toast("Too many users")
+                toast(R.string.userId_is_empty)
                 closeProgressDialog()
             }
         } else {

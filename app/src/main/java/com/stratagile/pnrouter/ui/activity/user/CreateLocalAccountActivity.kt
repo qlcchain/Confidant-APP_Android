@@ -105,7 +105,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
             }
             2 -> {
                 runOnUiThread {
-                    toast("error")
+                    toast(R.string.rid_error)
                 }
             }
             3 -> {
@@ -115,9 +115,24 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                 finish()
             }
             4 -> {
-
+                runOnUiThread {
+                    toast(R.string.other_error)
+                }
+            }
+            5 -> {
+                runOnUiThread {
+                    toast(R.string.The_QR_code_has_been_occupied_by_others)
+                }
+            }
+            6 -> {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
+                }
             }
             else -> {
+                runOnUiThread {
+                    toast(R.string.other_error)
+                }
             }
         }
     }

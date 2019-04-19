@@ -647,5 +647,16 @@
         1. Go to \'My\', find \'Settings\'\n
         2. Export the configuration QR code.\n</string>
     <string name="Contact_Details">Contact Details</string>
+    <string name="Users_are_deleted">Users are deleted, Forced Exit</string>
+    <string name="The_account_has_expired">The account has expired.</string>
+    <string name="Verification_code_error">Verification code error</string>
+    <string name="Validation_failed">Validation failed</string>
+    <string name="other_error">other error</string>
+    <string name="uid_error">uid error</string>
+    <string name="rid_error">rid error</string>
+    <string name="need_Verification">need Verification</string>
+    <string name="userId_is_empty">userId is empty</string>
+    <string name="The_QR_code_has_been_occupied_by_others">QR code has been activated by other users.</string>
+    <string name="delete_user_ask">Are you sure you want to delete the user?</string>
 
 </resources>

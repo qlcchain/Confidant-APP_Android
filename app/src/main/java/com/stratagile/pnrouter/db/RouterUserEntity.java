@@ -19,16 +19,19 @@ public class RouterUserEntity implements Parcelable{
     private String NickName;
     private String UserId;
     private int LastLoginTime;
+    private int CreateTime;
     private String Qrcode;
     //昵称
     private String nickSouceName;
 
 
 
-    @Generated(hash = 1938675895)
+
+    @Generated(hash = 1588107425)
     public RouterUserEntity(Long id, String UserSN, int UserType, int Active,
             String IdentifyCode, String Mnemonic, String NickName, String UserId,
-            int LastLoginTime, String Qrcode, String nickSouceName) {
+            int LastLoginTime, int CreateTime, String Qrcode,
+            String nickSouceName) {
         this.id = id;
         this.UserSN = UserSN;
         this.UserType = UserType;
@@ -38,6 +41,7 @@ public class RouterUserEntity implements Parcelable{
         this.NickName = NickName;
         this.UserId = UserId;
         this.LastLoginTime = LastLoginTime;
+        this.CreateTime = CreateTime;
         this.Qrcode = Qrcode;
         this.nickSouceName = nickSouceName;
     }
@@ -61,6 +65,7 @@ public class RouterUserEntity implements Parcelable{
         NickName = in.readString();
         UserId = in.readString();
         LastLoginTime = in.readInt();
+        CreateTime = in.readInt();
         Qrcode = in.readString();
         nickSouceName = in.readString();
     }
@@ -81,6 +86,7 @@ public class RouterUserEntity implements Parcelable{
         dest.writeString(NickName);
         dest.writeString(UserId);
         dest.writeInt(LastLoginTime);
+        dest.writeInt(CreateTime);
         dest.writeString(Qrcode);
         dest.writeString(nickSouceName);
     }
@@ -164,6 +170,14 @@ public class RouterUserEntity implements Parcelable{
 
     public void setLastLoginTime(int LastLoginTime) {
         this.LastLoginTime = LastLoginTime;
+    }
+
+    public int getCreateTime() {
+        return CreateTime;
+    }
+
+    public void setCreateTime(int createTime) {
+        CreateTime = createTime;
     }
 
     public String getQrcode() {

@@ -53,27 +53,45 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
 //            toast(loginRsp.toString())
 //        }
         if (loginRsp.params.retCode != 0) {
-            if (loginRsp.params.retCode == 3) {
-                runOnUiThread {
-                    toast("The current service is not available.")
-                    closeProgressDialog()
-                }
-            }
-            if (loginRsp.params.retCode == 2) {
-                runOnUiThread {
-                    toast("Too many users")
-                    closeProgressDialog()
-                }
-            }
             if (loginRsp.params.retCode == 1) {
                 runOnUiThread {
-                    toast("RouterId Error")
+                    toast(R.string.need_Verification)
                     closeProgressDialog()
                 }
             }
-            if (loginRsp.params.retCode == 4) {
+            else if (loginRsp.params.retCode == 2) {
                 runOnUiThread {
-                    toast("System Error")
+                    toast(R.string.rid_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 3) {
+                runOnUiThread {
+                    toast(R.string.uid_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 4) {
+                runOnUiThread {
+                    toast(R.string.Validation_failed)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 5) {
+                runOnUiThread {
+                    toast(R.string.Verification_code_error)
+                    closeProgressDialog()
+                }
+            }
+            else if (loginRsp.params.retCode == 7) {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
+                    closeProgressDialog()
+                }
+            }
+            else{
+                runOnUiThread {
+                    toast(R.string.other_error)
                     closeProgressDialog()
                 }
             }
@@ -81,7 +99,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
-                toast("Too many users")
+                toast(R.string.userId_is_empty)
                 closeProgressDialog()
             }
         } else {
@@ -379,7 +397,7 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             }
             2 -> {
                 runOnUiThread {
-                    toast("Rid error")
+                    toast(R.string.rid_error)
                 }
             }
             3-> {
@@ -391,10 +409,23 @@ class AdminLoginSuccessActivity : BaseActivity(), AdminLoginSuccessContract.View
             }
             4 -> {
                 runOnUiThread {
-                    toast("Other mistakes")
+                    toast(R.string.other_error)
+                }
+            }
+            5 -> {
+                runOnUiThread {
+                    toast(R.string.The_QR_code_has_been_occupied_by_others)
+                }
+            }
+            6 -> {
+                runOnUiThread {
+                    toast(R.string.The_account_has_expired)
                 }
             }
             else -> {
+                runOnUiThread {
+                    toast(R.string.other_error)
+                }
             }
         }
     }
