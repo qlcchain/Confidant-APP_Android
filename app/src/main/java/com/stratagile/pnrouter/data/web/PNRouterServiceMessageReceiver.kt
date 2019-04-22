@@ -535,7 +535,7 @@ val credentialsProvider: CredentialsProvider, private
                     pullTmpAccountBack?.pullTmpAccount(jPullTmpAccountRsp)
                     //userControlleCallBack?.firendList(jPullFriendRsp)
                 }
-                "GroupSysPush" -> {
+                "DelUser" -> {
                     val JRemoveMemberRsp = gson.fromJson(text, JRemoveMemberRsp::class.java)
                     removeMemberCallBack?.removeMember(JRemoveMemberRsp)
                 }
