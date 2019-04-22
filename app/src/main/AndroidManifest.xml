@@ -305,6 +305,9 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activity.group.RemoveGroupMemberActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.user.PrivacyActivity"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".ui.activity.add.addFriendOrGroupActivity"
             android:screenOrientation="portrait" />

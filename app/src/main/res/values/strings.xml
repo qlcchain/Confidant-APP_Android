@@ -658,5 +658,10 @@
     <string name="userId_is_empty">userId is empty</string>
     <string name="The_QR_code_has_been_occupied_by_others">QR code has been activated by other users.</string>
     <string name="delete_user_ask">Are you sure you want to delete the user?</string>
+    <string name="privacy">By creating an account, I</string>
+    <string name="Terms">accept the Terms &amp; Privacy Policy.</string>
+    <string name="Terms_Privacy_Policy"> Terms &amp; Privacy Policy</string>
 
+    <string name="Terms_of_Service">Terms of Service</string>
+    <string name="Privacy_Policy">Privacy Policy</string>
 </resources>

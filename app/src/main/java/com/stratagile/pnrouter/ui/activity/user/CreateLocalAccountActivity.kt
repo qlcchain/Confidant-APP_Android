@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.view.KeyEvent
 import chat.tox.antox.tox.MessageHelper
@@ -28,6 +29,7 @@ import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
+import com.stratagile.pnrouter.ui.activity.main.WebViewActivity
 import com.stratagile.pnrouter.ui.activity.register.RegisterActivity
 import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerCreateLocalAccountComponent
@@ -148,16 +150,24 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
         var isStartWebsocket = false
         var this_ = this
         title.text = getString(R.string.create_an_account)
+        privacy.text  = Html.fromHtml(getString(R.string.privacy)+"<br>"+"<u>"+getString(R.string.Terms)+"</u>")
         importOtherAccount.setOnClickListener {
             startActivity(Intent(this, ImportAccountActivity::class.java))
             //finish()
+        }
+        privacy.setOnClickListener {
+
+            val intent = Intent(AppConfig.instance, PrivacyActivity::class.java)
+            /*intent.putExtra("url", "file:///android_asset/termsofservice.html")
+            intent.putExtra("title", "Other websites")*/
+            startActivity(intent)
         }
         setNext.setOnClickListener {
             if (imputUserName.text.toString().trim().equals("")) {
                 toast(getString(R.string.please_type_your_username))
                 return@setOnClickListener
             }
-           var result =  createLocalUserData(imputUserName.text.toString())
+            var result =  createLocalUserData(imputUserName.text.toString())
             if(result)
             {
                 startActivity(Intent(this, LoginActivityActivity::class.java))
@@ -327,7 +337,7 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumprivateSignKeySp, ConstantValue.libsodiumprivateSignKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.libsodiumpublicSignKeySp, ConstantValue.libsodiumpublicSignKey!!)
                         SpUtil.putString(AppConfig.instance, ConstantValue.localUserNameSp, ConstantValue.localUserName!!)}
-                        SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
+                    SpUtil.putString(AppConfig.instance, ConstantValue.username, ConstantValue.localUserName!!)
                 }
 
                 var miStr = miData
@@ -350,18 +360,18 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
         }
         return true;
     }
-   /* @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onWebSocketConnected(connectStatus: ConnectStatus) {
-        when (connectStatus.status) {
-            0 -> {
-                if(isFromScanAdmim)
-                {
-                    runOnUiThread {
-                        closeProgressDialog()
-                    }
-                    var intent = Intent(this, AdminLoginActivity::class.java)
-                    startActivity(intent)
-                    *//*closeProgressDialog()
+    /* @Subscribe(threadMode = ThreadMode.MAIN)
+     fun onWebSocketConnected(connectStatus: ConnectStatus) {
+         when (connectStatus.status) {
+             0 -> {
+                 if(isFromScanAdmim)
+                 {
+                     runOnUiThread {
+                         closeProgressDialog()
+                     }
+                     var intent = Intent(this, AdminLoginActivity::class.java)
+                     startActivity(intent)
+                     *//*closeProgressDialog()
                     showProgressDialog("wait...")
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(2,recovery))*//*
@@ -810,42 +820,42 @@ class CreateLocalAccountActivity : BaseActivity(), CreateLocalAccountContract.Vi
     }
     private fun startToxAndRecovery()
     {
-       /* ConstantValue.curreantNetworkType = "TOX"
-        if(!ConstantValue.isToxConnected)
-        {
-            runOnUiThread {
-                showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        false
-                    } else false
-                })
-            }
-            LogUtil.addLog("P2P启动连接:","CreateLocalAccountActivity")
-            var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
-            if(ConstantValue.isAntox)
-            {
-                intent = Intent(AppConfig.instance, ToxService::class.java)
-            }
-            startService(intent)
-        }else {
-            runOnUiThread {
-                showProgressDialog("wait...")
-            }
-            AppConfig.instance.messageReceiver!!.recoveryBackListener = this
-            if (ConstantValue.isAntox) {
-                InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
-            }else{
-                ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
-            }
-            var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
-            var baseData = BaseData(2, recovery)
-            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-            if (ConstantValue.isAntox) {
-                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-            }else{
-                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
-            }
-        }*/
+        /* ConstantValue.curreantNetworkType = "TOX"
+         if(!ConstantValue.isToxConnected)
+         {
+             runOnUiThread {
+                 showProgressDialog("p2p connecting...", DialogInterface.OnKeyListener { dialog, keyCode, event ->
+                     if (keyCode == KeyEvent.KEYCODE_BACK) {
+                         false
+                     } else false
+                 })
+             }
+             LogUtil.addLog("P2P启动连接:","CreateLocalAccountActivity")
+             var intent = Intent(AppConfig.instance, KotlinToxService::class.java)
+             if(ConstantValue.isAntox)
+             {
+                 intent = Intent(AppConfig.instance, ToxService::class.java)
+             }
+             startService(intent)
+         }else {
+             runOnUiThread {
+                 showProgressDialog("wait...")
+             }
+             AppConfig.instance.messageReceiver!!.recoveryBackListener = this
+             if (ConstantValue.isAntox) {
+                 InterfaceScaleUtil.addFriend( ConstantValue.scanRouterId,this)
+             }else{
+                 ToxCoreJni.getInstance().addFriend(ConstantValue.scanRouterId)
+             }
+             var recovery = RecoveryReq(ConstantValue.scanRouterId, ConstantValue.scanRouterSN)
+             var baseData = BaseData(2, recovery)
+             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+             if (ConstantValue.isAntox) {
+                 var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                 MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+             }else{
+                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+             }
+         }*/
     }
 }

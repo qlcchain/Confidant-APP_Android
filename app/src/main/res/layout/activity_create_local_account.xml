@@ -69,4 +69,23 @@
         android:layout_marginTop="@dimen/x80"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x40"
+        android:gravity="bottom"
+        >
+        <TextView
+            android:id="@+id/privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/privacy"
+            android:textSize="12sp"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
 </LinearLayout>
+
