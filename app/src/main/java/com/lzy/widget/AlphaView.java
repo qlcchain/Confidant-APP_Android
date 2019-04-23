@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.stratagile.pnrouter.R;
+
 /**
  * ================================================
  * 作    者：廖子尧
