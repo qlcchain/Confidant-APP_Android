@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.KeyEvent
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -38,11 +39,13 @@ import com.stratagile.pnrouter.db.*
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
+import com.stratagile.pnrouter.entity.events.FromChat
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerGroupChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.GroupChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.GroupChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.GroupChatPresenter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxChatReceiveFileFinishedEvent
 import events.ToxChatReceiveFileNoticeEvent
@@ -814,6 +817,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
 
     override fun onBackPressed() {
+        EventBus.getDefault().post(FromChat())
         chatFragment?.onBackPressed()
     }
 

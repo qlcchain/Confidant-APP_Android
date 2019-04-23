@@ -3477,6 +3477,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         })
         alphaIndicator.setViewPager(viewPager)
+
         // 为bnv设置选择监听事件
 //        bottomNavigation.setOnNavigationItemSelectedListener {
 //            when (it.getItemId()) {
@@ -3632,6 +3633,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
             ConstantValue.isRefeshed = true
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun fromChat(fromChat: FromChat) {
+        viewPager.setCurrentItem(0, true)
+        setToNews()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun startVerify(startVerify: StartVerify) {

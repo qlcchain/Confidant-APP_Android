@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.KeyEvent
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -30,15 +31,13 @@ import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.*
-import com.stratagile.pnrouter.entity.events.BeginDownloadForwad
-import com.stratagile.pnrouter.entity.events.ConnectStatus
-import com.stratagile.pnrouter.entity.events.DeleteMsgEvent
-import com.stratagile.pnrouter.entity.events.SaveMsgEvent
+import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CustomPopWindow
 import events.ToxChatReceiveFileFinishedEvent
 import events.ToxChatReceiveFileNoticeEvent
 import events.ToxSendFileFinishedEvent
@@ -693,6 +692,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             }
         }
     }
+
     override fun onDestroy() {
         try {
             AppConfig.instance.messageReceiver!!.chatCallBack = null
@@ -719,6 +719,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun onBackPressed() {
+        EventBus.getDefault().post(FromChat())
         chatFragment?.onBackPressed()
     }
 
