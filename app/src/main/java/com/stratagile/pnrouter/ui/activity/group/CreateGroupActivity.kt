@@ -66,6 +66,7 @@ class CreateGroupActivity : BaseActivity(), CreateGroupContract.View, PNRouterSe
                     newGroupEntity.routerId = ConstantValue.currentRouterId
                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.insert(newGroupEntity)
                     val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                    intent.putExtra("from","CreateGroupActivity")
                     intent.putExtra(EaseConstant.EXTRA_USER_ID, newGroupEntity.gId.toString())
                     intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, newGroupEntity)
                     UserDataManger.currentGroupData = newGroupEntity

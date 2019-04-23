@@ -114,6 +114,7 @@ import com.stratagile.pnrouter.entity.events.ChatKeyboard;
 import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
+import com.stratagile.pnrouter.entity.events.FromChat;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
@@ -241,6 +242,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     private EMMessage currentSendMsg;
 
     private UserEntity toChatUser;
+    private String fromActivity = "";
 
     private HashMap<String, Boolean> sendMsgLocalMap = new HashMap<>();
     private HashMap<String, String> sendFilePathMap = new HashMap<>();
@@ -2093,9 +2095,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 //        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
     }
 
+    public void setFrom(String from)
+    {
+        fromActivity = from;
+    }
     public void onBackPressed() {
         hideKeyboard();
         saveDraft();
+        if(fromActivity.equals("CreateGroupActivity"))
+        {
+            EventBus.getDefault().post(new FromChat());
+        }
         if (inputMenu.onBackPressed()) {
             getActivity().finish();
             if (chatType == EaseConstant.CHATTYPE_GROUP) {

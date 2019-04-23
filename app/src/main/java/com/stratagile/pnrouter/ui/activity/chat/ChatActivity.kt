@@ -719,7 +719,6 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
     }
 
     override fun onBackPressed() {
-        EventBus.getDefault().post(FromChat())
         chatFragment?.onBackPressed()
     }
 

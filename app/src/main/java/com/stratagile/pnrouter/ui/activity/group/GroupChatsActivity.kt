@@ -26,6 +26,7 @@ import com.stratagile.pnrouter.db.GroupEntityDao
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.AddGroupChange
+import com.stratagile.pnrouter.entity.events.FromChat
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupChatsComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupChatsContract
@@ -190,7 +191,10 @@ class GroupChatsActivity : BaseActivity(), GroupChatsContract.View, PNRouterServ
     fun FriendAvatarChange(AddGroupChange: AddGroupChange) {
         pullGourpList()
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun fromChat(fromChat: FromChat) {
+       finish()
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun groupInfoChange(groupEntity: GroupEntity) {
         pullGourpList()

@@ -3636,7 +3636,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun fromChat(fromChat: FromChat) {
-        viewPager.setCurrentItem(0, true)
+        alphaIndicator.setSelectItem(0)
+        //viewPager.setCurrentItem(0, true)
         setToNews()
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

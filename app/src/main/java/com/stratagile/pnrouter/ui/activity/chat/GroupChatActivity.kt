@@ -289,6 +289,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     var groupEntity : GroupEntity? = null
     var receiveFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
     var receiveToxFileDataMap = ConcurrentHashMap<String, JGroupMsgPushRsp>()
+    var from = ""
     internal var handlerDown: Handler = object : Handler() {
         override fun handleMessage(msg: android.os.Message) {
             when (msg.what) {
@@ -729,6 +730,13 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
 
     override fun initData() {
+        if(intent.hasExtra("from"))
+        {
+            from = intent.getStringExtra("from")
+        }else{
+            from = ""
+        }
+        chatFragment!!.setFrom(from)
         if(AppConfig.instance.messageReceiver != null)
             AppConfig.instance.messageReceiver!!.groupchatCallBack = this
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
@@ -817,7 +825,6 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
 
     override fun onBackPressed() {
-        EventBus.getDefault().post(FromChat())
         chatFragment?.onBackPressed()
     }
 
