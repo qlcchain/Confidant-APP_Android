@@ -121,7 +121,15 @@
             android:layout_marginLeft="@dimen/x30"/>
     </LinearLayout>
     <include layout="@layout/divide_line"/>
+    <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/PrivacyPolicy"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:showImg="false"
+        app:text1="@string/Terms_Privacy_Policy">
+    </com.stratagile.pnrouter.view.DetailView>
 
+    <include layout="@layout/divide_line"/>
     <com.stratagile.pnrouter.view.DetailView
         android:visibility="gone"
         android:id="@+id/company"

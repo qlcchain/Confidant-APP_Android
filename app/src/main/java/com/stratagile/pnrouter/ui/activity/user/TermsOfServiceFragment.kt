@@ -49,6 +49,7 @@ class TermsOfServiceFragment : BaseFragment(), TermsOfServiceContract.View {
         var url = "file:///android_asset/termsofservice.html"
         KLog.i(url)
         val webSettings = webView.getSettings()
+        webSettings.setTextSize(WebSettings.TextSize.LARGEST);
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
         }

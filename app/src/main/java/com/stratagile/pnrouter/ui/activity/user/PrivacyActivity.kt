@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.stratagile.pnrouter.R
@@ -102,7 +103,7 @@ class PrivacyActivity : BaseActivity(), PrivacyContract.View {
 
                 // don't cancel badge when tab selected
                 badgePagerTitleView.isAutoCancelBadge = false
-
+                badgePagerTitleView.badgeView.visibility = View.GONE
                 return badgePagerTitleView
 //                val colorTransitionPagerTitleView = ColorTransitionPagerTitleView(context)
 //                colorTransitionPagerTitleView.normalColor = Color.GRAY

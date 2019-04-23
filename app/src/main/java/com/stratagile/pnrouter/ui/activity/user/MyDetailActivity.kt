@@ -65,6 +65,7 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             qrCode.visibility= View.GONE
             fingerprintBtn.visibility = View.VISIBLE
             screenshotsBtn.visibility = View.VISIBLE
+            PrivacyPolicy.visibility = View.VISIBLE
             qrCode.setTitleText(getString(R.string.Exportaccount))
         }else{
             llAvatar.visibility = View.VISIBLE
@@ -73,12 +74,17 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
             qrCode.visibility= View.VISIBLE
             fingerprintBtn.visibility = View.GONE
             screenshotsBtn.visibility = View.GONE
+            PrivacyPolicy.visibility = View.GONE
             qrCode.setTitleText(getString(R.string.invite_friends_to_conifdant))
         }
 
         qrCode.setOnClickListener {
             var intent = Intent(this, QRCodeActivity::class.java)
             intent.putExtra("flag",flag)
+            startActivity(intent)
+        }
+        PrivacyPolicy.setOnClickListener {
+            var intent = Intent(this, PrivacyActivity::class.java)
             startActivity(intent)
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")
