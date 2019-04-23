@@ -644,29 +644,33 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 lastRouterEntity = routerListInit[index]
             }
         }
-        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.RouterId.notEq(ConstantValue.currentRouterId)).list()
+        var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().list()
         routerListAdapter = RouterListAdapter(routerList.MutableListToArrayList())
-        /*routerList.forEachIndexed { index, it ->
-            if (it.lastCheck) {
+        routerList.forEachIndexed { index, it ->
+            if (it.routerId.equals(ConstantValue.currentRouterId)) {
                 routerEntity = it
                 routerListAdapter?.selectedItem = index
                 lastRouterEntity = routerList[index]
             }
-        }*/
+        }
         EventBus.getDefault().register(this)
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
-            /*if (!ConstantValue.isWebsocketConnected &&  !ConstantValue.isToxConnected) {
 
-                toast("Circle connecting...")
-                return@setOnItemClickListener
-            }*/
             if (routerListAdapter!!.isCkeckMode) {
+                var selectRouterEntity = routerListAdapter!!.data[position]
+                if (selectRouterEntity.routerId.equals(ConstantValue.currentRouterId)) {
+                    return@setOnItemClickListener
+                }
                 routerListAdapter!!.data[position].isMultChecked = !routerListAdapter!!.data[position].isMultChecked
                 routerListAdapter!!.notifyItemChanged(position)
                 updataCount()
             } else {
-
+                var selectRouterEntity = routerListAdapter!!.data[position]
+                if (selectRouterEntity.routerId.equals(ConstantValue.currentRouterId)) {
+                    toast(R.string.The_same_circle_without_switching)
+                    return@setOnItemClickListener
+                }
                 routerListAdapter!!.selectedItem = position
                 routerListAdapter!!.notifyDataSetChanged()
                 currentRouterEntity = routerListAdapter!!.data[position]

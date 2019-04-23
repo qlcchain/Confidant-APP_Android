@@ -86,7 +86,7 @@
     <string name="attach_voice_call">Voice call</string>
     <string name="attach_video_call">Video call</string>
     <string name="user_card">Business card</string>
-    <string name="move_up_to_cancel">Release to send Slide up to cancel</string>
+    <string name="move_up_to_cancel">Release to send \n Slide up to cancel</string>
     <string name="release_to_cancel">Release to cancel</string>
     <string name="send_fail">Send failed</string>
     <string name="delete_message">Delete message</string>

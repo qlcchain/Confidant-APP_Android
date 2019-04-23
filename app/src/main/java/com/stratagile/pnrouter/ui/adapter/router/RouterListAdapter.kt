@@ -5,8 +5,10 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.view.ImageButtonWithText
 
 class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<RouterEntity, BaseViewHolder>(R.layout.layout_router_list_item, arrayList) {
@@ -24,6 +26,15 @@ class RouterListAdapter(arrayList: ArrayList<RouterEntity>) : BaseQuickAdapter<R
             helper.setVisible(R.id.checkBox, true)
             helper.setVisible(R.id.ivSelect, false)
             helper.setChecked(R.id.checkBox, item.isMultChecked)
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(item.adminId != null && item.adminId.equals(userId) || item.routerId.equals(ConstantValue.currentRouterId))
+            {
+                helper.setEnabled(R.id.checkBox,false)
+                helper.itemView.alpha= 0.5f
+            }else{
+                helper.setEnabled(R.id.checkBox,true)
+                helper.itemView.alpha= 1.0f
+            }
         } else {
             helper.itemView.isGone = false
             helper.setGone(R.id.checkBox, false)

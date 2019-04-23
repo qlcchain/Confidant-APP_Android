@@ -294,13 +294,14 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
     override fun initData() {
         var nickNameSouce = ""
-        if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
+     /*   if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
 
             nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.nickName))
             title.text = nickNameSouce
         } else {
             title.text = getString(R.string.details)
-        }
+        }*/
+        title.text = getString(R.string.Contact_Details)
         if(userInfo!!.remarks != null && !userInfo!!.remarks.equals("")) {
             var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
             setNoteName.setRightTitleText(getString(R.string.Modify_Nickname))

@@ -679,15 +679,129 @@ class ContactFragment : BaseFragment(), ContactContract.View, PNRouterServiceMes
         contactAdapter1!!.setNewData(list1)
     }
 
+    fun getAdapterSelectData(list: ArrayList<UserEntity>):ArrayList<MultiItemEntity> {
+        var contactMapList = HashMap<String, MyFriend>()
+        for (i in list) {
 
+            if (contactMapList.get(i.signPublicKey) == null) {
+                var myFriend = MyFriend()
+                myFriend.userKey = i.signPublicKey
+                myFriend.userName = i.nickName
+                myFriend.userEntity = i
+                var temp = ArrayList<UserEntity>()
+                temp.add(i)
+                myFriend.routerItemList = temp;
+                contactMapList.put(i.signPublicKey, myFriend)
+            } else {
+                var temp = contactMapList.get(i.signPublicKey)
+                var contactNewList = temp!!.routerItemList
+                contactNewList.add(i)
+            }
+
+        }
+
+        var contactNewList = arrayListOf<MyFriend>()
+        var contactNewListValues = contactMapList.values
+        for (i in contactNewListValues) {
+            contactNewList.add(i)
+        }
+        contactNewList.sortBy {
+            String(RxEncodeTool.base64Decode(it.userName)).toLowerCase()
+        }
+        val list1 = arrayListOf<MultiItemEntity>()
+        var isIn = false
+        contactNewList.forEach {
+            var userHead = UserHead()
+            userHead.userName = it.userName
+            userHead.userEntity = it.userEntity
+            if (it.routerItemList.size > 1) {
+                it.routerItemList?.forEach {
+                    userHead.addSubItem(UserItem(it))
+                }
+            }
+            list1.add(userHead)
+        }
+
+
+        if (contactAdapter1!!.selectedUser != null) {
+            //把从外面带过来的数据先设置为已经选中
+            KLog.i("添加已经选中的")
+            list1.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        contactAdapter1!!.selectedUser?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("添加选中")
+                                userItem.isChecked = true
+                            }
+                        }
+                    }
+                } else {
+                    contactAdapter1!!.selectedUser?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("添加选中")
+                            userHead.isChecked = true
+                        }
+                    }
+                }
+            }
+        }
+
+        var list2 = arrayListOf<MultiItemEntity>()
+        list2.addAll(list1)
+        if (toReduceList != null) {
+            list2.forEach {
+                var userHead = it as UserHead
+                if (userHead.subItems != null && userHead.subItems.size > 0) {
+                    userHead.subItems.forEach { userItem ->
+                        toReduceList?.forEach {
+                            if (it.userId.equals(userItem.userEntity.userId)) {
+                                KLog.i("删除。。")
+//                                userItem.isChecked = true
+                                list1.remove(userItem)
+                            }
+                        }
+                    }
+                } else {
+                    toReduceList?.forEach {
+                        if (it.userId.equals(userHead.userEntity.userId)) {
+                            KLog.i("删除。。")
+//                            userHead.isChecked = true
+                            list1.remove(userHead)
+                        }
+                    }
+                }
+            }
+        }
+        return list1
+    }
     fun fiter(key: String, contactList: ArrayList<UserEntity>) {
         if ("".equals(key)) {
             updateAdapterData(contactList)
         } else {
+            var list1 = getAdapterSelectData(contactList);
             var contactListTemp: ArrayList<UserEntity> = arrayListOf<UserEntity>()
             for (i in contactList) {
                 if (i.nickSouceName.toLowerCase().contains(key)) {
                     contactListTemp.add(i)
+                }else{
+                    list1.forEach {
+                        var userHead = it as UserHead
+                        if (userHead.subItems != null && userHead.subItems.size > 0) {
+                            userHead.subItems.forEach { userItem ->
+                                if (i.userId.equals(userItem.userEntity.userId) && userItem.isChecked ) {
+                                    KLog.i("添加选中")
+                                    contactListTemp.add(i)
+                                }
+                            }
+                        } else {
+                            if (i.userId.equals(userHead.userEntity.userId) && userHead.isChecked) {
+                                KLog.i("添加选中")
+                                contactListTemp.add(i)
+                            }
+                        }
+                    }
                 }
             }
             updateAdapterData(contactListTemp)
