@@ -1,5 +1,6 @@
 package com.luck.picture.lib.adapter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,18 +18,24 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.luck.picture.lib.PictureExternalPreviewActivity;
 import com.luck.picture.lib.PictureVideoPlayActivity;
 import com.luck.picture.lib.R;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.photoview.OnViewTapListener;
 import com.luck.picture.lib.photoview.PhotoView;
+import com.luck.picture.lib.tools.ToastManage;
 import com.luck.picture.lib.widget.longimage.ImageSource;
 import com.luck.picture.lib.widget.longimage.ImageViewState;
 import com.luck.picture.lib.widget.longimage.SubsamplingScaleImageView;
 
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author：luck
@@ -40,6 +47,8 @@ public class SimpleFragmentAdapter extends PagerAdapter {
     private List<LocalMedia> images;
     private Context mContext;
     private OnCallBackActivity onBackPressed;
+    private OnLongClick onLongClick;
+    private String from;
 
     public interface OnCallBackActivity {
         /**
@@ -47,13 +56,17 @@ public class SimpleFragmentAdapter extends PagerAdapter {
          */
         void onActivityBackPressed();
     }
-
+    public interface OnLongClick {
+        void onLongClick();
+    }
     public SimpleFragmentAdapter(List<LocalMedia> images, Context context,
-                                 OnCallBackActivity onBackPressed) {
+                                 OnCallBackActivity onBackPressed,OnLongClick onLongClick,String from) {
         super();
         this.images = images;
         this.mContext = context;
         this.onBackPressed = onBackPressed;
+        this.onLongClick = onLongClick;
+        this.from = from;
     }
 
     @Override
@@ -132,12 +145,38 @@ public class SimpleFragmentAdapter extends PagerAdapter {
                             }
                         });
             }
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    if(from!= null && from.equals("chat"))
+                    {
+                        if (onLongClick != null) {
+                            onLongClick.onLongClick();
+                        }
+                    }
+                    return true;
+                }
+            });
             imageView.setOnViewTapListener(new OnViewTapListener() {
                 @Override
                 public void onViewTap(View view, float x, float y) {
                     if (onBackPressed != null) {
                         onBackPressed.onActivityBackPressed();
                     }
+                }
+            });
+            longImg.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    if(from!= null && from.equals("chat"))
+                    {
+                        if (onLongClick != null) {
+                            onLongClick.onLongClick();
+                        }
+                    }
+                    return true;
                 }
             });
             longImg.setOnClickListener(new View.OnClickListener() {

@@ -4,6 +4,7 @@ package com.luck.picture.lib.observable;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.entity.LocalMediaFolder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,13 +19,15 @@ public class ImagesObservable implements SubjectListener {
     private List<ObserverListener> observers = new ArrayList<>();
 
     private List<LocalMediaFolder> folders;
-    private List<LocalMedia> medias;
+    private HashMap<String, List<LocalMedia>> mediasDataMap = new HashMap<>();
+    //private List<LocalMedia> medias;
     private List<LocalMedia> selectedImages;
     private static ImagesObservable sObserver;
 
     private ImagesObservable() {
         folders = new ArrayList<>();
-        medias = new ArrayList<>();
+        mediasDataMap = new HashMap<>();
+        //medias = new ArrayList<>();
         selectedImages = new ArrayList<>();
     }
 
@@ -58,19 +61,38 @@ public class ImagesObservable implements SubjectListener {
      *
      * @param list
      */
-    public void saveLocalMedia(List<LocalMedia> list) {
-        medias = list;
+    public void saveLocalMedia(List<LocalMedia> list,String key) {
+        //medias = list;
+        mediasDataMap.put(key,list);
     }
 
-
+    /**
+     * 移除图片
+     */
+    public void removeLocalMedia(int timeStamp,String key) {
+        //medias = list;
+        List<LocalMedia> mediasTemp = mediasDataMap.get(key);
+        if (mediasTemp != null) {
+            int size = mediasTemp.size();
+            for(int i=0 ; i < size ;i ++)
+            {
+                if(mediasTemp.get(i).getTimeStamp() == timeStamp)
+                {
+                    mediasTemp.remove(i);
+                    break;
+                }
+            }
+        }
+    }
     /**
      * 读取图片
      */
-    public List<LocalMedia> readLocalMedias() {
-        if (medias == null) {
-            medias = new ArrayList<>();
+    public List<LocalMedia> readLocalMedias(String key) {
+        List<LocalMedia> mediasTemp = mediasDataMap.get(key);
+        if (mediasTemp == null) {
+            mediasTemp = new ArrayList<>();
         }
-        return medias;
+        return mediasTemp;
     }
 
     /**
@@ -98,9 +120,10 @@ public class ImagesObservable implements SubjectListener {
         }
     }
 
-    public void clearLocalMedia() {
-        if (medias != null) {
-            medias.clear();
+    public void clearLocalMedia(String key) {
+        List<LocalMedia> mediasTemp = mediasDataMap.get(key);
+        if (mediasTemp != null) {
+            mediasTemp.clear();
         }
     }
 

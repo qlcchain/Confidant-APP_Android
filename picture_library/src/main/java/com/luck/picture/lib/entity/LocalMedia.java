@@ -27,7 +27,7 @@ public class LocalMedia implements Parcelable {
     private boolean compressed;
     private int width;
     private int height;
-
+    public int timeStamp;
     public LocalMedia() {
 
     }
@@ -64,6 +64,7 @@ public class LocalMedia implements Parcelable {
                 ", compressed=" + compressed +
                 ", width=" + width +
                 ", height=" + height +
+                ", timeStamp=" + timeStamp +
                 '}';
     }
 
@@ -185,6 +186,14 @@ public class LocalMedia implements Parcelable {
         this.height = height;
     }
 
+    public int getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(int timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -205,6 +214,7 @@ public class LocalMedia implements Parcelable {
         dest.writeByte(this.compressed ? (byte) 1 : (byte) 0);
         dest.writeInt(this.width);
         dest.writeInt(this.height);
+        dest.writeInt(this.timeStamp);
     }
 
     protected LocalMedia(Parcel in) {
@@ -221,6 +231,7 @@ public class LocalMedia implements Parcelable {
         this.compressed = in.readByte() != 0;
         this.width = in.readInt();
         this.height = in.readInt();
+        this.timeStamp = in.readInt();
     }
 
     public static final Parcelable.Creator<LocalMedia> CREATOR = new Parcelable.Creator<LocalMedia>() {

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.luck.picture.lib.adapter.SimpleFragmentAdapter;
@@ -42,7 +43,7 @@ import java.util.List;
  * data：16/12/31
  */
 public class PicturePreviewActivity extends PictureBaseActivity implements
-        View.OnClickListener, Animation.AnimationListener, SimpleFragmentAdapter.OnCallBackActivity {
+        View.OnClickListener, Animation.AnimationListener, SimpleFragmentAdapter.OnCallBackActivity,SimpleFragmentAdapter.OnLongClick {
     private ImageView picture_left_back;
     private TextView tv_img_num, tv_title, tv_ok;
     private PreviewViewPager viewPager;
@@ -58,6 +59,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     private int index;
     private int screenWidth;
     private Handler mHandler;
+    private String from;
 
     /**
      * EventBus 3.0 回调
@@ -87,6 +89,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         if (!RxBus.getDefault().isRegistered(this)) {
             RxBus.getDefault().register(this);
         }
+
         mHandler = new Handler();
         screenWidth = ScreenUtils.getScreenWidth(this);
         animation = OptAnimationLoader.loadAnimation(this, R.anim.modal_in);
@@ -112,12 +115,29 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 getSerializableExtra(PictureConfig.EXTRA_SELECT_LIST);
         boolean is_bottom_preview = getIntent().
                 getBooleanExtra(PictureConfig.EXTRA_BOTTOM_PREVIEW, false);
+        if(getIntent().hasExtra("from"))
+        {
+            this.from =getIntent().getStringExtra("from");
+        }
         if (is_bottom_preview) {
             // 底部预览按钮过来
             images = (List<LocalMedia>) getIntent().
                     getSerializableExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST);
         } else {
-            images = ImagesObservable.getInstance().readLocalMedias();
+            if(getIntent().hasExtra("from"))
+            {
+                images = ImagesObservable.getInstance().readLocalMedias("chat");
+            }else{
+                images = ImagesObservable.getInstance().readLocalMedias("select");
+            }
+
+        }
+        RelativeLayout select_bar_layout = findViewById(R.id.select_bar_layout);
+        if(getIntent().hasExtra("from"))
+        {
+            select_bar_layout.setVisibility(View.GONE);
+        }else{
+            select_bar_layout.setVisibility(View.VISIBLE);
         }
         initViewPageAdapterData();
         ll_check.setOnClickListener(new View.OnClickListener() {
@@ -255,7 +275,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      */
     private void initViewPageAdapterData() {
         tv_title.setText(position + 1 + "/" + images.size());
-        adapter = new SimpleFragmentAdapter(images, this, this);
+        adapter = new SimpleFragmentAdapter(images, this, this,this,this.from);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
         onSelectNumChange(false);
@@ -463,7 +483,9 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     public void onBackPressed() {
         closeActivity();
     }
+    public void onLongClickDo() {
 
+    }
     @Override
     protected void onDestroy() {
         if (RxBus.getDefault().isRegistered(this)) {
@@ -483,5 +505,10 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     @Override
     public void onActivityBackPressed() {
         onBackPressed();
+    }
+
+    @Override
+    public void onLongClick() {
+        onLongClickDo();
     }
 }

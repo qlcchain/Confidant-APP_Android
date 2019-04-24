@@ -797,7 +797,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             case PictureConfig.TYPE_IMAGE:
                 // image
                 List<LocalMedia> selectedImages = adapter.getSelectedImages();
-                ImagesObservable.getInstance().saveLocalMedia(previewImages);
+                ImagesObservable.getInstance().saveLocalMedia(previewImages,"select");
                 bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
                 bundle.putInt(PictureConfig.EXTRA_POSITION, position);
                 startActivity(PicturePreviewActivity.class, bundle, 69);
@@ -1084,7 +1084,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         if (RxBus.getDefault().isRegistered(this)) {
             RxBus.getDefault().unregister(this);
         }
-        ImagesObservable.getInstance().clearLocalMedia();
+        ImagesObservable.getInstance().clearLocalMedia("select");
         if (animation != null) {
             animation.cancel();
             animation = null;

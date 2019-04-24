@@ -193,7 +193,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 var fromId = jPushFileMsgRsp!!.params.fromId;
                 var toId = jPushFileMsgRsp!!.params.toId
                 var FileType = jPushFileMsgRsp!!.params.fileType
-                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType, "")
+                var timeStamp = (System.currentTimeMillis() / 1000).toInt()
+                chatFragment?.receiveFileMessage(fileName,jPushFileMsgRsp.params.msgId.toString(),fromId,toId,FileType, "",timeStamp)
                 receiveFileDataMap.remove(fileMiName)
             }
         }else{
@@ -762,10 +763,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                         var fromId = jPushFileMsgRsp.params.fromId;
                         var toId = jPushFileMsgRsp.params.toId
                         var FileType = jPushFileMsgRsp.params.fileType
+                        var timeStamp = (System.currentTimeMillis() / 1000).toInt()
                         if (jPushFileMsgRsp.params.fileInfo != null) {
-                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, jPushFileMsgRsp.params.fileInfo)
+                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, jPushFileMsgRsp.params.fileInfo,timeStamp)
                         } else {
-                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, "")
+                            chatFragment?.receiveFileMessage(fileName,msgId.toString(),fromId,toId,FileType, "",timeStamp)
                         }
                         receiveFileDataMap.remove(msgId.toString())
                     }catch (e:Exception)

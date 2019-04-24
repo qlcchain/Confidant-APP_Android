@@ -280,6 +280,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        initPictureSelector();
         sendMsgLocalMap = new HashMap<>();
         sendFilePathMap = new HashMap<>();
         sendFileResultMap = new HashMap<>();
@@ -301,7 +302,36 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         this.turnOnTyping = turnOnTyping();
         super.onActivityCreated(savedInstanceState);
     }
-
+    private void initPictureSelector()
+    {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false);
+    }
     public void setChatUserId(String id) {
         toChatUserId = id;
     }

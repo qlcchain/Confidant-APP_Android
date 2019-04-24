@@ -20,12 +20,17 @@ import com.hyphenate.easeui.ui.EaseShowBigImageActivity;
 import com.hyphenate.easeui.utils.PathUtils;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRow;
 import com.hyphenate.easeui.widget.chatrow.EaseChatRowImage;
+import com.luck.picture.lib.PicturePreviewActivity;
+import com.luck.picture.lib.config.PictureConfig;
+import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.observable.ImagesObservable;
 import com.message.Message;
 import com.noober.menu.FloatMenu;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.entity.BaseData;
 import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JPullFileListRsp;
@@ -45,6 +50,11 @@ import com.stratagile.tox.toxcore.ToxCoreJni;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import chat.tox.antox.tox.MessageHelper;
 import chat.tox.antox.wrapper.FriendKey;
@@ -184,7 +194,61 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
                 e.printStackTrace();
             }
         }
-        getContext().startActivity(intent);
+        //getContext().startActivity(intent);
+
+        List<LocalMedia> selectedImages = new ArrayList<LocalMedia>();
+        /*List<LocalMedia> previewImages = new ArrayList<LocalMedia>();
+        LocalMedia localMedia = new LocalMedia();
+        localMedia.setCompressed(false);
+        localMedia.setDuration(0);
+        localMedia.setHeight(500);
+        localMedia.setWidth(100);
+        localMedia.setChecked(false);
+        localMedia.setCut(false);
+        localMedia.setMimeType(0);
+        localMedia.setNum(0);
+        localMedia.setPath(imgBody.getLocalUrl());
+        localMedia.setPictureType("image/jpeg");
+        localMedia.setPosition(0);
+        previewImages.add(localMedia);
+        localMedia.setPosition(1);
+        previewImages.add(localMedia);
+        localMedia.setPosition(2);
+        previewImages.add(localMedia);
+        localMedia.setPosition(3);
+        previewImages.add(localMedia);*/
+        List<LocalMedia> previewImages =  ImagesObservable.getInstance().readLocalMedias("chat");
+        if(previewImages != null && previewImages.size() >0)
+        {
+            Collections.sort(previewImages, new Comparator<LocalMedia>() {
+                @Override
+                public int compare(LocalMedia lhs, LocalMedia rhs) {
+                    int lsize = lhs.getTimeStamp();
+                    int rsize = rhs.getTimeStamp();
+                    return lsize == rsize ? 0 : (lsize < rsize ? 1 : -1);
+                }
+            });
+            ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
+            int postion = 0;
+            int size = previewImages.size();
+            long msgTime = (int)(message.getMsgTime()  / 1000) ;
+            for(int i = 0 ; i < size ;i ++)
+            {
+                if(previewImages.get(i).getTimeStamp() == msgTime)
+                {
+                    postion = i;
+                }
+                previewImages.get(i).setPosition(i);
+            }
+            Intent intentPicturePreviewActivity = new Intent(getContext(), PicturePreviewActivity.class);
+            Bundle bundle = new Bundle();
+            //ImagesObservable.getInstance().saveLocalMedia(previewImages);
+            bundle.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
+            bundle.putInt(PictureConfig.EXTRA_POSITION, postion);
+            bundle.putString("from","chat");
+            intentPicturePreviewActivity.putExtras(bundle);
+            getContext().startActivity(intentPicturePreviewActivity);
+        }
     }
     protected Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
