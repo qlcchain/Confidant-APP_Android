@@ -8,6 +8,7 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
         <ImageView
+            android:id="@+id/diskpicTips"
             android:layout_width="@dimen/x271"
             android:src="@mipmap/disk_a"
             android:layout_gravity="center_horizontal"
@@ -70,18 +71,64 @@
                 android:layout_height="@dimen/x35" />
         </LinearLayout>
         <RelativeLayout
+            android:visibility="visible"
+            android:id="@+id/disk_m"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x31"
+            android:layout_marginBottom="@dimen/x1"
+            android:layout_marginRight="@dimen/x31"
+            android:background="@drawable/disk_normal_bg"
+            android:layout_marginTop="@dimen/x10"
+            android:layout_height="@dimen/x160">
+            <TextView
+                android:layout_width="@dimen/x69"
+                android:layout_centerVertical="true"
+                android:background="@color/color_A0CCF9"
+                android:layout_marginLeft="@dimen/x2"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:lineSpacingExtra="-1dp"
+                android:text="M
+                M
+                C"
+                android:layout_height="@dimen/x226" />
+
+            <TextView
+                android:layout_width="@dimen/x240"
+                android:layout_marginLeft="@dimen/x40"
+                android:gravity="right"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x60"
+                android:text="User Capacity："
+                android:layout_height="@dimen/x40" />
+            <TextView
+                android:id="@+id/temperature_2"
+                android:layout_width="@dimen/x420"
+                android:layout_marginLeft="@dimen/x290"
+                android:gravity="left"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="@dimen/x20"
+                android:lineSpacingExtra="10dp"
+                android:layout_marginTop="@dimen/x60"
+                android:text=""
+                android:layout_height="@dimen/x25" />
+
+        </RelativeLayout>
+        <RelativeLayout
             android:id="@+id/disk_a"
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x31"
             android:layout_marginRight="@dimen/x31"
-            android:background="@drawable/disk_normal_bg"
+            android:background="@drawable/disk_notconfigured_bg"
             android:layout_marginTop="@dimen/x31"
             android:layout_height="@dimen/x230">
             <TextView
                 android:id="@+id/disk_a_name"
                 android:layout_width="@dimen/x69"
                 android:layout_centerVertical="true"
-                android:background="@color/color_A0CCF9"
+                android:background="@color/color_BFBFBF"
                 android:layout_marginLeft="@dimen/x2"
                 android:gravity="center"
                 android:textColor="@color/white"
@@ -166,7 +213,7 @@
                 android:text=""
                 android:layout_height="@dimen/x25" />
             <ImageView
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/status_0"
                 android:layout_width="@dimen/x255"
                 android:src="@mipmap/disk_not_config"
@@ -180,6 +227,7 @@
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x31"
             android:layout_marginRight="@dimen/x31"
+            android:layout_marginBottom="@dimen/x20"
             android:background="@drawable/disk_notconfigured_bg"
             android:layout_marginTop="@dimen/x31"
             android:layout_height="@dimen/x230">
@@ -279,25 +327,27 @@
                 android:layout_alignParentRight="true"
                 android:layout_height="@dimen/x149" />
         </RelativeLayout>
-
         <RelativeLayout
             android:visibility="gone"
-            android:id="@+id/disk_c"
+            android:id="@+id/disk_mgray"
             android:layout_width="match_parent"
             android:layout_marginLeft="@dimen/x31"
-            android:layout_marginBottom="@dimen/x77"
+            android:layout_marginBottom="@dimen/x20"
             android:layout_marginRight="@dimen/x31"
             android:background="@drawable/disk_notconfigured_bg"
-            android:layout_marginTop="@dimen/x31"
-            android:layout_height="@dimen/x230">
+            android:layout_marginTop="@dimen/x10"
+            android:layout_height="@dimen/x160">
             <TextView
                 android:layout_width="@dimen/x69"
                 android:layout_centerVertical="true"
-                android:background="#BFBFBF"
+                android:background="@color/color_BFBFBF"
                 android:layout_marginLeft="@dimen/x2"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="C"
+                android:lineSpacingExtra="-1dp"
+                android:text="M
+                M
+                C"
                 android:layout_height="@dimen/x226" />
 
             <TextView
@@ -307,26 +357,11 @@
                 android:textColor="@color/color_2B2B2B"
                 android:textSize="@dimen/x20"
                 android:lineSpacingExtra="10dp"
-                android:layout_marginTop="@dimen/x15"
-                android:text="Disk temperature：
-                 usage time：
-                 Device Model：
-                  Serial Number：
-                   User Capacity："
-                android:layout_height="@dimen/x200" />
+                android:layout_marginTop="@dimen/x60"
+                android:text="User Capacity："
+                android:layout_height="@dimen/x40" />
             <TextView
-                android:id="@+id/temperature_2"
-                android:layout_width="@dimen/x420"
-                android:layout_marginLeft="@dimen/x290"
-                android:gravity="left"
-                android:textColor="@color/color_2B2B2B"
-                android:textSize="@dimen/x20"
-                android:lineSpacingExtra="10dp"
-                android:layout_marginTop="@dimen/x15"
-                android:text=""
-                android:layout_height="@dimen/x25" />
-            <TextView
-                android:id="@+id/usagetime_2"
+                android:id="@+id/temperature_3"
                 android:layout_width="@dimen/x420"
                 android:layout_marginLeft="@dimen/x290"
                 android:gravity="left"
@@ -336,39 +371,8 @@
                 android:layout_marginTop="@dimen/x60"
                 android:text=""
                 android:layout_height="@dimen/x25" />
-            <TextView
-                android:id="@+id/DeviceModel_2"
-                android:layout_width="@dimen/x420"
-                android:layout_marginLeft="@dimen/x290"
-                android:gravity="left"
-                android:textColor="@color/color_2B2B2B"
-                android:textSize="@dimen/x20"
-                android:lineSpacingExtra="10dp"
-                android:layout_marginTop="@dimen/x100"
-                android:text=""
-                android:layout_height="@dimen/x25" />
-            <TextView
-                android:id="@+id/SerialNumber_2"
-                android:layout_width="@dimen/x420"
-                android:layout_marginLeft="@dimen/x290"
-                android:gravity="left"
-                android:textColor="@color/color_2B2B2B"
-                android:textSize="@dimen/x20"
-                android:lineSpacingExtra="10dp"
-                android:layout_marginTop="@dimen/x144"
-                android:text=""
-                android:layout_height="@dimen/x25" />
-            <TextView
-                android:id="@+id/UserCapacity_2"
-                android:layout_width="@dimen/x420"
-                android:layout_marginLeft="@dimen/x290"
-                android:gravity="left"
-                android:textColor="@color/color_2B2B2B"
-                android:textSize="@dimen/x20"
-                android:lineSpacingExtra="10dp"
-                android:layout_marginTop="@dimen/x186"
-                android:text=""
-                android:layout_height="@dimen/x25" />
+
         </RelativeLayout>
+
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -110,14 +110,24 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                 UsedAndTotal.text = getString(R.string.Used_Sapce) + JGetDiskTotalInfoRsp.params.usedCapacity +" / "+JGetDiskTotalInfoRsp.params.totalCapacity +" ("+precent+"% )"
                 storage.text =  getString(R.string.Used_Sapce) + JGetDiskTotalInfoRsp.params.totalCapacity
                 if (JGetDiskTotalInfoRsp.params.info == null) {
+                    temperature_2.text = JGetDiskTotalInfoRsp.params.totalCapacity
+                    temperature_3.text = JGetDiskTotalInfoRsp.params.totalCapacity
+                    disk_m.visibility = View.VISIBLE
+                    disk_mgray.visibility = View.GONE
+                    diskpicTips.setImageResource(R.mipmap.disk_)
                     return@runOnUiThread
                 }
+                temperature_2.text = ""
+                temperature_3.text = ""
+                disk_m.visibility = View.GONE
+                disk_mgray.visibility = View.VISIBLE
                 var InfoBeanList = JGetDiskTotalInfoRsp.params.info
                 var index = 0;
                 for(infoBean in InfoBeanList)
                 {
-                    if(index == 0)
+                    if(infoBean.slot == 0)
                     {
+                        diskpicTips.setImageResource(R.mipmap.disk_a)
                         if(infoBean.status == 2)
                         {
                             /* temperature_0.text = infoBean.temperature.toString()
@@ -157,6 +167,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                         }
 
                     }else{
+                        diskpicTips.setImageResource(R.mipmap.disk_b)
                         if(infoBean.status == 2)
                         {
                             /*temperature_1.text = infoBean.temperature.toString()
@@ -171,7 +182,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             status_1.visibility = View.GONE
                             disk_b.setOnClickListener {
                                 val intent = Intent(this, DiskInformationActivity::class.java)
-                                intent.putExtra("Slot", 2)
+                                intent.putExtra("Slot", 1)
                                 startActivity(intent)
                             }
                         }else if(infoBean.status == 1)
@@ -183,7 +194,7 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
                             disk_b.setOnClickListener {
                                 isnoNeed = false
                                 val intent = Intent(this, DiskConfigureActivity::class.java)
-                                intent.putExtra("Slot", 2)
+                                intent.putExtra("Slot", 1)
                                 startActivityForResult(intent,1)
                             }
                         }else if(infoBean.status == 0)
@@ -196,6 +207,10 @@ class DiskManagementActivity : BaseActivity(), DiskManagementContract.View, PNRo
 
                     }
                     index ++;
+                }
+                if(InfoBeanList.size == 2)
+                {
+                    diskpicTips.setImageResource(R.mipmap.disk_ab)
                 }
             }
 
