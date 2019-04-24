@@ -294,13 +294,13 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
     }
     override fun initData() {
         var nickNameSouce = ""
-     /*   if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
+       if(userInfo!!.nickName != null && !userInfo!!.nickName.equals("")) {
 
             nickNameSouce = String(RxEncodeTool.base64Decode(userInfo!!.nickName))
-            title.text = nickNameSouce
+            //title.text = nickNameSouce
         } else {
-            title.text = getString(R.string.details)
-        }*/
+            //title.text = getString(R.string.details)
+        }
         title.text = getString(R.string.Contact_Details)
         if(userInfo!!.remarks != null && !userInfo!!.remarks.equals("")) {
             var remarks = String(RxEncodeTool.base64Decode(userInfo!!.remarks))
@@ -442,7 +442,13 @@ class UserInfoActivity : BaseActivity(), UserInfoContract.View, UserProvider.Fri
                 shareAppFreind.visibility = View.GONE
             }
         }
-        AppConfig.instance.messageReceiver!!.updateAvatarBackBack = this
+        try
+        {
+            AppConfig.instance.messageReceiver!!.updateAvatarBackBack = this
+        }catch (e:Exception)
+        {
+
+        }
         var fileBase58Name = Base58.encode( RxEncodeTool.base64Decode(userInfo!!.signPublicKey))
         var filePath  = PathUtils.getInstance().filePath.toString() + "/" + fileBase58Name + ".jpg"
         var fileMD5 = FileUtil.getFileMD5(File(filePath))
