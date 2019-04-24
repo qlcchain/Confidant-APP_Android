@@ -94,7 +94,7 @@
                 android:enabled="false"
                 android:gravity="center|left"
                 android:paddingRight="12dp"
-                android:text="请选择"
+                android:text="@string/picture_please_select"
                 android:textColor="?attr/picture.ac_preview.complete.textColor"
                 android:textSize="14sp" />
 
