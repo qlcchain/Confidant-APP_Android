@@ -165,7 +165,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                         check.setSelected(false);
                     }
                     if (selectImages.size() >= pictureSelectionConfig.maxSelectNum && isChecked) {
-                        ToastManage.s(mContext, getString(R.string.picture_message_max_num, pictureSelectionConfig.maxSelectNum));
+                        ToastManage.s(mContext, getString(R.string.picture_message_max_num, pictureSelectionConfig.maxSelectNum +""));
                         check.setSelected(false);
                         return;
                     }
@@ -419,8 +419,8 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             if (pictureSelectionConfig.minSelectNum > 0) {
                 if (size < pictureSelectionConfig.minSelectNum && pictureSelectionConfig.selectionMode == PictureConfig.MULTIPLE) {
                     boolean eqImg = pictureType.startsWith(PictureConfig.IMAGE);
-                    String str = eqImg ? getString(R.string.picture_min_img_num, pictureSelectionConfig.minSelectNum)
-                            : getString(R.string.picture_min_video_num, pictureSelectionConfig.minSelectNum);
+                    String str = eqImg ? getString(R.string.picture_min_img_num, pictureSelectionConfig.minSelectNum +"")
+                            : getString(R.string.picture_min_video_num, pictureSelectionConfig.minSelectNum +"");
                     ToastManage.s(mContext,str);
                     return;
                 }
