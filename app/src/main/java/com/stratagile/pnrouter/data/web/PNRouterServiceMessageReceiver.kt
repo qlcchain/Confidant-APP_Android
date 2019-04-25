@@ -39,7 +39,8 @@ val credentialsProvider: CredentialsProvider, private
                         loginBackListener?.recoveryBack(jRecoveryRsp)
                         adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
                         mainInfoBack?.recoveryBack(jRecoveryRsp)
-                        bigImageBack?.recoveryBack(jRecoveryRsp)
+                        chatCallBack?.recoveryBack(jRecoveryRsp)
+                        groupchatCallBack?.recoveryBack(jRecoveryRsp)
                     }
                     "Register" -> {
                         val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -48,7 +49,8 @@ val credentialsProvider: CredentialsProvider, private
                         loginBackListener?.registerBack(JRegisterRsp)
                         adminRecoveryCallBack?.registerBack(JRegisterRsp)
                         mainInfoBack?.registerBack(JRegisterRsp)
-                        bigImageBack?.registerBack(JRegisterRsp)
+                        chatCallBack?.registerBack(JRegisterRsp)
+                        groupchatCallBack?.registerBack(JRegisterRsp)
                     }
                     "Login" -> {
                         KLog.i("没有初始化。。登录之后" + loginBackListener)
@@ -60,7 +62,8 @@ val credentialsProvider: CredentialsProvider, private
                         adminRecoveryCallBack?.loginBack(loginRsp)
                         selcectCircleCallBack?.loginBack(loginRsp)
                         mainInfoBack?.loginBack(loginRsp)
-                        bigImageBack?.loginBack(loginRsp)
+                        chatCallBack?.loginBack(loginRsp)
+                        groupchatCallBack?.loginBack(loginRsp)
                     }
                     "LogOut" -> {
                         val JLogOutRsp = gson.fromJson(text, JLogOutRsp::class.java)
@@ -122,7 +125,8 @@ val credentialsProvider: CredentialsProvider, private
                     loginBackListener?.recoveryBack(jRecoveryRsp)
                     adminRecoveryCallBack?.recoveryBack(jRecoveryRsp)
                     mainInfoBack?.recoveryBack(jRecoveryRsp)
-                    bigImageBack?.recoveryBack(jRecoveryRsp)
+                    chatCallBack?.recoveryBack(jRecoveryRsp)
+                    groupchatCallBack?.recoveryBack(jRecoveryRsp)
                 }
                 "Register" -> {
                     val JRegisterRsp = gson.fromJson(text, JRegisterRsp::class.java)
@@ -131,7 +135,8 @@ val credentialsProvider: CredentialsProvider, private
                     loginBackListener?.registerBack(JRegisterRsp)
                     adminRecoveryCallBack?.registerBack(JRegisterRsp)
                     mainInfoBack?.registerBack(JRegisterRsp)
-                    bigImageBack?.registerBack(JRegisterRsp)
+                    chatCallBack?.registerBack(JRegisterRsp)
+                    groupchatCallBack?.registerBack(JRegisterRsp)
                 }
                 "Login" -> {
                     KLog.i("没有初始化。。登录之后" + loginBackListener + "##" + AppConfig.instance.name)
@@ -143,7 +148,8 @@ val credentialsProvider: CredentialsProvider, private
                     adminRecoveryCallBack?.loginBack(loginRsp)
                     selcectCircleCallBack?.loginBack(loginRsp)
                     mainInfoBack?.loginBack(loginRsp)
-                    bigImageBack?.loginBack(loginRsp)
+                    chatCallBack?.loginBack(loginRsp)
+                    groupchatCallBack?.loginBack(loginRsp)
                 }
                 "AddFriendReq" -> {
                     val addFreindRsp = gson.fromJson(text, JAddFreindRsp::class.java)
@@ -863,6 +869,9 @@ val credentialsProvider: CredentialsProvider, private
         fun QueryFriendRep(jQueryFriendRsp: JQueryFriendRsp)
         fun updateAvatarReq(jUpdateAvatarRsp: JUpdateAvatarRsp)
         fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
+        fun registerBack(registerRsp: JRegisterRsp)
+        fun loginBack(loginRsp: JLoginRsp)
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
     }
 
     interface GroupChatCallBack {
@@ -880,6 +889,9 @@ val credentialsProvider: CredentialsProvider, private
         fun pullGroupFileMsgRsp(jJToxPullFileRsp: JToxPullFileRsp)
         fun userInfoGroupPushRsp(jUserInfoPushRsp: JUserInfoPushRsp)
         fun fileForwardReq(jFileForwardRsp: JFileForwardRsp)
+        fun registerBack(registerRsp: JRegisterRsp)
+        fun loginBack(loginRsp: JLoginRsp)
+        fun recoveryBack(recoveryRsp: JRecoveryRsp)
     }
 
     interface CoversationCallBack {

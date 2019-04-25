@@ -43,7 +43,6 @@
                 android:id="@+id/tv_chatcontent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web"
                 android:lineSpacingExtra="2dp"
                 android:paddingLeft="@dimen/x10"
                 android:paddingRight="@dimen/x10"

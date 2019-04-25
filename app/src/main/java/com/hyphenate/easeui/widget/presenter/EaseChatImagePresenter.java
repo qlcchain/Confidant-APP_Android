@@ -197,26 +197,6 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
         //getContext().startActivity(intent);
 
         List<LocalMedia> selectedImages = new ArrayList<LocalMedia>();
-        /*List<LocalMedia> previewImages = new ArrayList<LocalMedia>();
-        LocalMedia localMedia = new LocalMedia();
-        localMedia.setCompressed(false);
-        localMedia.setDuration(0);
-        localMedia.setHeight(500);
-        localMedia.setWidth(100);
-        localMedia.setChecked(false);
-        localMedia.setCut(false);
-        localMedia.setMimeType(0);
-        localMedia.setNum(0);
-        localMedia.setPath(imgBody.getLocalUrl());
-        localMedia.setPictureType("image/jpeg");
-        localMedia.setPosition(0);
-        previewImages.add(localMedia);
-        localMedia.setPosition(1);
-        previewImages.add(localMedia);
-        localMedia.setPosition(2);
-        previewImages.add(localMedia);
-        localMedia.setPosition(3);
-        previewImages.add(localMedia);*/
         List<LocalMedia> previewImages =  ImagesObservable.getInstance().readLocalMedias("chat");
         if(previewImages != null && previewImages.size() >0)
         {

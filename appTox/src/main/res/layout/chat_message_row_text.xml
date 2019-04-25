@@ -46,7 +46,6 @@
                 android:id="@+id/message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="web|phone|email"
                 android:linksClickable="true"
                 android:padding="@dimen/padding_small"
                 android:text="Message Body: This is some long long long sample text"

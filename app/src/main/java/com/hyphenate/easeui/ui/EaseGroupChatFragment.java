@@ -76,6 +76,7 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.observable.ImagesObservable;
 import com.message.Message;
 import com.socks.library.KLog;
 import com.stratagile.pnrouter.R;
@@ -115,6 +116,7 @@ import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
 import com.stratagile.pnrouter.entity.events.FromChat;
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
@@ -258,6 +260,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     private HashMap<String, String> receiveToxFileIdMap = new HashMap<>();
     private HashMap<String, String> sendTLogIdFileIdMap = new HashMap<>();
     private HashMap<String, String> forwordFileIdMap = new HashMap<>();
+    List<LocalMedia> previewImages = new ArrayList<LocalMedia>();
     private long faBegin;
     private long faEnd;
     //是否正在录音，正在录音，其他点击不能生效
@@ -280,7 +283,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        initPictureSelector();
         sendMsgLocalMap = new HashMap<>();
         sendFilePathMap = new HashMap<>();
         sendFileResultMap = new HashMap<>();
@@ -301,36 +303,6 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         groupEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_CHAT_GROUP);
         this.turnOnTyping = turnOnTyping();
         super.onActivityCreated(savedInstanceState);
-    }
-    private void initPictureSelector()
-    {
-        PictureSelector.create(this)
-                .openGallery(PictureMimeType.ofAll())
-                .maxSelectNum(9)
-                .minSelectNum(1)
-                .imageSpanCount(3)
-                .selectionMode(PictureConfig.MULTIPLE)
-                .previewImage(true)
-                .previewVideo(true)
-                .enablePreviewAudio(false)
-                .isCamera(false)
-                .imageFormat(PictureMimeType.PNG)
-                .isZoomAnim(true)
-                .sizeMultiplier(0.5f)
-                .setOutputCameraPath("/CustomPath")
-                .enableCrop(false)
-                .compress(false)
-                .glideOverride(160, 160)
-                .hideBottomControls(false)
-                .isGif(false)
-                .openClickSound(false)
-                .minimumCompressSize(100)
-                .synOrAsy(true)
-                .rotateEnabled(true)
-                .scaleEnabled(true)
-                .videoMaxSecond(60 * 60 * 3)
-                .videoMinSecond(1)
-                .isDragFrame(false);
     }
     public void setChatUserId(String id) {
         toChatUserId = id;
@@ -842,6 +814,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (forward_msg == null) {
             return;
         }
+        int msgTime = (int)(forward_msg.getMsgTime() / 1000);
+        ImagesObservable.getInstance().removeLocalMedia(msgTime,"chat");
         if (conversation != null)
             conversation.removeMessage(msgId);
         //refresh ui
@@ -917,6 +891,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         //refresh ui
         if (isMessageListInited) {
             easeChatMessageList.refresh();
+        }
+        if(forward_msg != null)
+        {
+            int msgTime = (int)(forward_msg.getMsgTime() / 1000);
+            ImagesObservable.getInstance().removeLocalMedia(msgTime,"chat");
         }
         //deleteFileMap.put(msgId, true);
         if (conversation != null) {
@@ -1193,6 +1172,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 conversation.clearAllMessages();
                 if(messageList.size() == 0)
                 {
+                    previewImages  = new ArrayList<LocalMedia>();
                     String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                     SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
                 }
@@ -1302,6 +1282,20 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         if (Message.getFileInfo() != null) {
                             message.setAttribute("wh", Message.getFileInfo());
                         }
+                        LocalMedia localMedia = new LocalMedia();
+                        localMedia.setCompressed(false);
+                        localMedia.setDuration(0);
+                        localMedia.setHeight(100);
+                        localMedia.setWidth(100);
+                        localMedia.setChecked(false);
+                        localMedia.setCut(false);
+                        localMedia.setMimeType(0);
+                        localMedia.setNum(0);
+                        localMedia.setPath(files_dir);
+                        localMedia.setPictureType("image/jpeg");
+                        localMedia.setPosition((int)Message.getTimeStamp());
+                        localMedia.setTimeStamp((int)Message.getTimeStamp());
+                        previewImages.add(localMedia);
                     } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
                         if (Message.getFileInfo() != null) {
@@ -1570,6 +1564,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
             }
         }
+        ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
         KLog.i("开始插入没有发送成功的文本消息查询：userId：" + userId + " friendId:" + toChatUserId + " messageEntityList:" + messageEntityList);
@@ -1700,6 +1695,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             //refresh ui
             if (isMessageListInited) {
                 easeChatMessageList.refresh();
+            }
+            if(forward_msg != null)
+            {
+                int msgTime = (int)(forward_msg.getMsgTime() / 1000);
+                ImagesObservable.getInstance().removeLocalMedia(msgTime,"chat");
             }
             if (forward_msg.getType().equals(EMMessage.Type.IMAGE)) {
                 EMImageMessageBody imgBody = (EMImageMessageBody) forward_msg.getBody();
@@ -1909,10 +1909,40 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
 
     }
-
+    private void initPictureSelector() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+                .setPictureLongClick((ChatActivity)getActivity());
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        initPictureSelector();
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists()) {
@@ -3082,6 +3112,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String baseDataJson = gson.toJson(Message);
                         SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                         sendMessageTo(message);
+
+
+                        LocalMedia localMedia = new LocalMedia();
+                        localMedia.setCompressed(false);
+                        localMedia.setDuration(0);
+                        localMedia.setHeight(100);
+                        localMedia.setWidth(100);
+                        localMedia.setChecked(false);
+                        localMedia.setCut(false);
+                        localMedia.setMimeType(0);
+                        localMedia.setNum(0);
+                        localMedia.setPath(files_dir);
+                        localMedia.setPictureType("image/jpeg");
+                        localMedia.setPosition((int)Message.getTimeStamp());
+                        localMedia.setTimeStamp((int)Message.getTimeStamp());
+                        previewImages.add(localMedia);
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     } else {
                         Toast.makeText(getActivity(), R.string.nofile, Toast.LENGTH_SHORT).show();
                     }
@@ -3890,7 +3937,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param fromId
      * @param toId
      */
-    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType, String fileInfo) {
+    public void receiveFileMessage(String url, String msgId, String fromId, String toId, int FileType, String fileInfo,int timeStamp) {
         String files_dir = "";
         EMMessage message = null;
         switch (FileType) {
@@ -3898,6 +3945,22 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
                 message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                 message.setAttribute("wh", fileInfo);
+
+                LocalMedia localMedia = new LocalMedia();
+                localMedia.setCompressed(false);
+                localMedia.setDuration(0);
+                localMedia.setHeight(100);
+                localMedia.setWidth(100);
+                localMedia.setChecked(false);
+                localMedia.setCut(false);
+                localMedia.setMimeType(0);
+                localMedia.setNum(0);
+                localMedia.setPath(files_dir);
+                localMedia.setPictureType("image/jpeg");
+                localMedia.setPosition(timeStamp);
+                localMedia.setTimeStamp(timeStamp);
+                previewImages.add(localMedia);
+                ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                 break;
             case 2:
                 files_dir = PathUtils.getInstance().getFilePath() + "/" + url;
@@ -4564,6 +4627,21 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     } else {
                                         messageData.setAttribute("wh", "");
                                     }
+                                    LocalMedia localMedia = new LocalMedia();
+                                    localMedia.setCompressed(false);
+                                    localMedia.setDuration(0);
+                                    localMedia.setHeight(100);
+                                    localMedia.setWidth(100);
+                                    localMedia.setChecked(false);
+                                    localMedia.setCut(false);
+                                    localMedia.setMimeType(0);
+                                    localMedia.setNum(0);
+                                    localMedia.setPath(files_dir);
+                                    localMedia.setPictureType("image/jpeg");
+                                    localMedia.setPosition((int)message.getTimeStamp());
+                                    localMedia.setTimeStamp((int)message.getTimeStamp());
+                                    previewImages.add(localMedia);
+                                    ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                                     break;
                                 case 2:
                                     files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();

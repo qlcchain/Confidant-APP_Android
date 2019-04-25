@@ -821,7 +821,8 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                     }
                 }).start()
             }
-            PopWindowUtil.showSelecMenuPopWindow(this@EaseShowBigImageActivity, image!!, list, object : PopWindowUtil.OnSelectListener {
+            PopWindowUtil.showSelecMenuPopWindow(this@EaseShowBigImageActivity, image!!, list, object : PopWindowUtil.OnSelectListener
+            {
                 override fun onSelect(position: Int, obj: Any) {
 
                     val choose = obj.toString()
@@ -1414,12 +1415,17 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             val obmp = (image!!.getDrawable() as BitmapDrawable).bitmap
             val list = ArrayList<String>()
             list.add("Save Image")
-            hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
-            if (hasQRCode != null && hasQRCode != "") {
-                list.add("Scan QR Code in Image")
-                runOnUiThread {
-                    PopWindowUtil.showSelecMenuPopWindowNotice(list);
+            try {
+                hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
+                if (hasQRCode != null && hasQRCode != "") {
+                    list.add("Scan QR Code in Image")
+                    runOnUiThread {
+                        PopWindowUtil.showSelecMenuPopWindowNotice(list);
+                    }
+
                 }
+            }catch (e:Exception)
+            {
 
             }
         }).start()

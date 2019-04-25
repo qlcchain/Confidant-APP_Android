@@ -109,6 +109,7 @@ import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
 import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileTransformStatus;
 import com.stratagile.pnrouter.entity.events.FromChat;
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.Base58;
@@ -291,36 +292,6 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         this.turnOnTyping = turnOnTyping();
         super.onActivityCreated(savedInstanceState);
-    }
-    private void initPictureSelector()
-    {
-        PictureSelector.create(this)
-                .openGallery(PictureMimeType.ofAll())
-                .maxSelectNum(9)
-                .minSelectNum(1)
-                .imageSpanCount(3)
-                .selectionMode(PictureConfig.MULTIPLE)
-                .previewImage(true)
-                .previewVideo(true)
-                .enablePreviewAudio(false)
-                .isCamera(false)
-                .imageFormat(PictureMimeType.PNG)
-                .isZoomAnim(true)
-                .sizeMultiplier(0.5f)
-                .setOutputCameraPath("/CustomPath")
-                .enableCrop(false)
-                .compress(false)
-                .glideOverride(160, 160)
-                .hideBottomControls(false)
-                .isGif(false)
-                .openClickSound(false)
-                .minimumCompressSize(100)
-                .synOrAsy(true)
-                .rotateEnabled(true)
-                .scaleEnabled(true)
-                .videoMaxSecond(60 * 60 * 3)
-                .videoMinSecond(1)
-                .isDragFrame(false);
     }
     public void setChatUserId(String id) {
         toChatUserId = id;
@@ -1874,10 +1845,40 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
 
     }
-
+    private void initPictureSelector() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+                .setPictureLongClick((ChatActivity)getActivity());
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        initPictureSelector();
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) { // capture new image
                 if (cameraFile != null && cameraFile.exists()) {
@@ -4766,6 +4767,21 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                     } else {
                                         messageData.setAttribute("wh", "");
                                     }
+                                    LocalMedia localMedia = new LocalMedia();
+                                    localMedia.setCompressed(false);
+                                    localMedia.setDuration(0);
+                                    localMedia.setHeight(100);
+                                    localMedia.setWidth(100);
+                                    localMedia.setChecked(false);
+                                    localMedia.setCut(false);
+                                    localMedia.setMimeType(0);
+                                    localMedia.setNum(0);
+                                    localMedia.setPath(files_dir);
+                                    localMedia.setPictureType("image/jpeg");
+                                    localMedia.setPosition((int)message.getTimeStamp());
+                                    localMedia.setTimeStamp((int)message.getTimeStamp());
+                                    previewImages.add(localMedia);
+                                    ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                                     break;
                                 case 2:
                                     files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
@@ -4835,6 +4851,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
                                 messageData.setMsgTime(message.getTimeStamp() * 1000);
                                 messageData.setMsgId(message.getMsgId() + "");
+
                                 sendMessageTo(messageData);
                             }
                         }

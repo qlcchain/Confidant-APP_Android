@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/x10"
                 android:paddingRight="@dimen/x10"
-                android:autoLink="web"
                 android:layout_centerInParent="true"
                 android:gravity="center|left"
                 android:lineSpacingExtra="2dp"
@@ -54,7 +53,7 @@
                 android:textColor="@color/color_2c2c2c"
                 android:textSize="16sp" />
         </android.support.constraint.ConstraintLayout>
-
+        <!-- android:autoLink="web"-->
         <TextView
             android:id="@+id/tv_userid"
             style="@style/chat_text_name_style"
