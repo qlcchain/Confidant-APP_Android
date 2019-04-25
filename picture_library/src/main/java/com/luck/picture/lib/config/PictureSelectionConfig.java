@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * author：luck
  * project：PictureSelector
- * package：com.luck.picture.lib.config
+ * package：com.luck.picture.lib.pictureSelectionConfig
  * email：893855882@qq.com
  * data：2017/5/24
  */

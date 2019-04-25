@@ -31,7 +31,6 @@ import com.luck.picture.lib.widget.PreviewViewPager;
 //import com.yalantis.ucrop.UCropMulti;
 //import com.yalantis.ucrop.model.CutInfo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,10 +105,10 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         tv_title = (TextView) findViewById(R.id.picture_title);
         position = getIntent().getIntExtra(PictureConfig.EXTRA_POSITION, 0);
         tv_ok.setText(numComplete ? getString(R.string.picture_done_front_num,
-                0, config.selectionMode == PictureConfig.SINGLE ? 1 : config.maxSelectNum)
+                0, pictureSelectionConfig.selectionMode == PictureConfig.SINGLE ? 1 : pictureSelectionConfig.maxSelectNum)
                 : getString(R.string.picture_please_select));
 
-        tv_img_num.setSelected(config.checkNumMode ? true : false);
+        tv_img_num.setSelected(pictureSelectionConfig.checkNumMode ? true : false);
 
         selectImages = (List<LocalMedia>) getIntent().
                 getSerializableExtra(PictureConfig.EXTRA_SELECT_LIST);
@@ -165,20 +164,20 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                         isChecked = false;
                         check.setSelected(false);
                     }
-                    if (selectImages.size() >= config.maxSelectNum && isChecked) {
-                        ToastManage.s(mContext, getString(R.string.picture_message_max_num, config.maxSelectNum));
+                    if (selectImages.size() >= pictureSelectionConfig.maxSelectNum && isChecked) {
+                        ToastManage.s(mContext, getString(R.string.picture_message_max_num, pictureSelectionConfig.maxSelectNum));
                         check.setSelected(false);
                         return;
                     }
                     if (isChecked) {
-                        VoiceUtils.playVoice(mContext, config.openClickSound);
+                        VoiceUtils.playVoice(mContext, pictureSelectionConfig.openClickSound);
                         // 如果是单选，则清空已选中的并刷新列表(作单一选择)
-                        if (config.selectionMode == PictureConfig.SINGLE) {
+                        if (pictureSelectionConfig.selectionMode == PictureConfig.SINGLE) {
                             singleRadioMediaImage();
                         }
                         selectImages.add(image);
                         image.setNum(selectImages.size());
-                        if (config.checkNumMode) {
+                        if (pictureSelectionConfig.checkNumMode) {
                             check.setText(String.valueOf(image.getNum()));
                         }
                     } else {
@@ -198,7 +197,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                isPreviewEggs(config.previewEggs, position, positionOffsetPixels);
+                isPreviewEggs(pictureSelectionConfig.previewEggs, position, positionOffsetPixels);
             }
 
             @Override
@@ -207,8 +206,8 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 tv_title.setText(position + 1 + "/" + images.size());
                 LocalMedia media = images.get(position);
                 index = media.getPosition();
-                if (!config.previewEggs) {
-                    if (config.checkNumMode) {
+                if (!pictureSelectionConfig.previewEggs) {
+                    if (pictureSelectionConfig.checkNumMode) {
                         check.setText(media.getNum() + "");
                         notifyCheckChanged(media);
                     }
@@ -236,7 +235,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 if (positionOffsetPixels < screenWidth / 2) {
                     media = images.get(position);
                     check.setSelected(isSelected(media));
-                    if (config.checkNumMode) {
+                    if (pictureSelectionConfig.checkNumMode) {
                         num = media.getNum();
                         check.setText(num + "");
                         notifyCheckChanged(media);
@@ -245,7 +244,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                 } else {
                     media = images.get(position + 1);
                     check.setSelected(isSelected(media));
-                    if (config.checkNumMode) {
+                    if (pictureSelectionConfig.checkNumMode) {
                         num = media.getNum();
                         check.setText(num + "");
                         notifyCheckChanged(media);
@@ -283,7 +282,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         if (images.size() > 0) {
             LocalMedia media = images.get(position);
             index = media.getPosition();
-            if (config.checkNumMode) {
+            if (pictureSelectionConfig.checkNumMode) {
                 tv_img_num.setSelected(true);
                 check.setText(media.getNum() + "");
                 notifyCheckChanged(media);
@@ -295,7 +294,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * 选择按钮更新
      */
     private void notifyCheckChanged(LocalMedia imageBean) {
-        if (config.checkNumMode) {
+        if (pictureSelectionConfig.checkNumMode) {
             check.setText("");
             for (LocalMedia media : selectImages) {
                 if (media.getPath().equals(imageBean.getPath())) {
@@ -357,7 +356,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             id_ll_ok.setEnabled(true);
             if (numComplete) {
                 tv_ok.setText(getString(R.string.picture_done_front_num, selectImages.size(),
-                        config.selectionMode == PictureConfig.SINGLE ? 1 : config.maxSelectNum));
+                        pictureSelectionConfig.selectionMode == PictureConfig.SINGLE ? 1 : pictureSelectionConfig.maxSelectNum));
             } else {
                 if (refresh) {
                     tv_img_num.startAnimation(animation);
@@ -371,7 +370,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             tv_ok.setSelected(false);
             if (numComplete) {
                 tv_ok.setText(getString(R.string.picture_done_front_num, 0,
-                        config.selectionMode == PictureConfig.SINGLE ? 1 : config.maxSelectNum));
+                        pictureSelectionConfig.selectionMode == PictureConfig.SINGLE ? 1 : pictureSelectionConfig.maxSelectNum));
             } else {
                 tv_img_num.setVisibility(View.INVISIBLE);
                 tv_ok.setText(getString(R.string.picture_please_select));
@@ -417,17 +416,17 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             int size = selectImages.size();
             LocalMedia image = selectImages.size() > 0 ? selectImages.get(0) : null;
             String pictureType = image != null ? image.getPictureType() : "";
-            if (config.minSelectNum > 0) {
-                if (size < config.minSelectNum && config.selectionMode == PictureConfig.MULTIPLE) {
+            if (pictureSelectionConfig.minSelectNum > 0) {
+                if (size < pictureSelectionConfig.minSelectNum && pictureSelectionConfig.selectionMode == PictureConfig.MULTIPLE) {
                     boolean eqImg = pictureType.startsWith(PictureConfig.IMAGE);
-                    String str = eqImg ? getString(R.string.picture_min_img_num, config.minSelectNum)
-                            : getString(R.string.picture_min_video_num, config.minSelectNum);
+                    String str = eqImg ? getString(R.string.picture_min_img_num, pictureSelectionConfig.minSelectNum)
+                            : getString(R.string.picture_min_video_num, pictureSelectionConfig.minSelectNum);
                     ToastManage.s(mContext,str);
                     return;
                 }
             }
-            if (config.enableCrop && pictureType.startsWith(PictureConfig.IMAGE)) {
-                if (config.selectionMode == PictureConfig.SINGLE) {
+            if (pictureSelectionConfig.enableCrop && pictureType.startsWith(PictureConfig.IMAGE)) {
+                if (pictureSelectionConfig.selectionMode == PictureConfig.SINGLE) {
                     originalPath = image.getPath();
                     startCrop(originalPath);
                 } else {
@@ -448,7 +447,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
     public void onResult(List<LocalMedia> images) {
         RxBus.getDefault().post(new EventEntity(PictureConfig.PREVIEW_DATA_FLAG, images));
         // 如果开启了压缩，先不关闭此页面，PictureImageGridActivity压缩完在通知关闭
-        if (!config.isCompress) {
+        if (!pictureSelectionConfig.isCompress) {
             onBackPressed();
         } else {
             showPleaseDialog();
