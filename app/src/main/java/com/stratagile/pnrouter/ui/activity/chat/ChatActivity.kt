@@ -1,14 +1,18 @@
 package com.stratagile.pnrouter.ui.activity.chat
 
 import android.annotation.TargetApi
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.KeyEvent
+import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -20,6 +24,11 @@ import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseChatFragment
 import com.hyphenate.easeui.utils.PathUtils
+import com.luck.picture.lib.PicturePreviewActivity
+import com.luck.picture.lib.PictureSelector
+import com.luck.picture.lib.adapter.SimpleFragmentAdapter
+import com.luck.picture.lib.config.PictureConfig
+import com.luck.picture.lib.config.PictureMimeType
 import com.message.Message
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
@@ -30,14 +39,20 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.constant.ConstantValue.port
 import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
+import com.stratagile.pnrouter.db.FriendEntity
+import com.stratagile.pnrouter.db.FriendEntityDao
+import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
 import com.stratagile.pnrouter.ui.activity.chat.component.DaggerChatComponent
 import com.stratagile.pnrouter.ui.activity.chat.contract.ChatContract
 import com.stratagile.pnrouter.ui.activity.chat.module.ChatModule
 import com.stratagile.pnrouter.ui.activity.chat.presenter.ChatPresenter
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
+import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.CustomPopWindow
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import events.ToxChatReceiveFileFinishedEvent
 import events.ToxChatReceiveFileNoticeEvent
 import events.ToxSendFileFinishedEvent
@@ -47,6 +62,7 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.libsodium.jni.Sodium
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -60,7 +76,23 @@ import kotlin.collections.ArrayList
  * @date 2018/09/13 13:18:46
  */
 
-class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener {
+class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageReceiver.ChatCallBack, ViewTreeObserver.OnGlobalLayoutListener, SimpleFragmentAdapter.OnPictureLongClick {
+    override fun onLongClick(path: String?,mContext:Activity,viewShow: View) {
+
+        var localFilePath = path;
+        val list = java.util.ArrayList<String>()
+        list.add("Save Image")
+        PopWindowUtil.showSelecMenuPopWindow(mContext, viewShow!!, list, object : PopWindowUtil.OnSelectListener {
+            override fun onSelect(position: Int, obj: Any) {
+
+
+            }
+
+        })
+    }
+
+
+
     override fun fileForwardReq(jFileForwardRsp: JFileForwardRsp) {
         chatFragment?.upateForwardMessage(jFileForwardRsp)
     }
@@ -665,6 +697,38 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 chatFragment?.inputMenu?.chatPrimaryMenu?.showKeyBorad()
             }
         }, 300)
+        initPictureSelector()
+    }
+
+    private fun initPictureSelector() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofAll())
+                .maxSelectNum(9)
+                .minSelectNum(1)
+                .imageSpanCount(3)
+                .selectionMode(PictureConfig.MULTIPLE)
+                .previewImage(true)
+                .previewVideo(true)
+                .enablePreviewAudio(false)
+                .isCamera(false)
+                .imageFormat(PictureMimeType.PNG)
+                .isZoomAnim(true)
+                .sizeMultiplier(0.5f)
+                .setOutputCameraPath("/CustomPath")
+                .enableCrop(false)
+                .compress(false)
+                .glideOverride(160, 160)
+                .hideBottomControls(false)
+                .isGif(false)
+                .openClickSound(false)
+                .minimumCompressSize(100)
+                .synOrAsy(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .videoMaxSecond(60 * 60 * 3)
+                .videoMinSecond(1)
+                .isDragFrame(false)
+                .setPictureLongClick(this)
     }
     private var isCanShotNetCoonect = true
     @Subscribe(threadMode = ThreadMode.MAIN)

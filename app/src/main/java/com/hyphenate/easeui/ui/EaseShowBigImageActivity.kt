@@ -144,6 +144,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
     var adminUserSn:String?  = null
     var hasFinger = false
     var name:Long  = 0;
+    var activityFlag = ""
     override fun registerBack(registerRsp: JRegisterRsp) {
         if(!isScanSwitch)
         {
@@ -648,6 +649,10 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         default_res = intent.getIntExtra("default_image", R.drawable.ease_default_avatar)
         val uri = intent.getParcelableExtra<Uri>("uri")
         fileUrl = intent.extras!!.getString("fileUrl")
+        if(intent.hasExtra("activityFlag"))
+        {
+            activityFlag = intent.extras!!.getString("activityFlag")
+        }
         localFilePath = intent.extras!!.getString("localUrl")
         val msgId = intent.extras!!.getString("messageId")
         //EMLog.d(TAG, "show big deleteMsgId:" + msgId!!)
@@ -797,7 +802,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                 val list = ArrayList<String>()
                 list.add("Save Image")
                 hasQRCode = QRCodeDecoder.syncDecodeQRCode(obmp)
-                if (hasQRCode != null && hasQRCode != "") {
+                if (hasQRCode != null && hasQRCode != "" && activityFlag !="NoScan") {
                     EventBus.getDefault().post(AddMenu())
                 }
             }
@@ -806,11 +811,11 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         image!!.setOnLongClickListener {
             val list = ArrayList<String>()
             list.add("Save Image")
-            if (hasQRCode != null && hasQRCode != "") {
+            if (hasQRCode != null && hasQRCode != "" && activityFlag !="PdfViewActivity") {
                 list.add("Scan QR Code in Image")
             }else{
                 Thread(Runnable {
-                    if(hasQRCode == null || hasQRCode.equals(""))
+                    if(hasQRCode == null || hasQRCode.equals("") && activityFlag !="PdfViewActivity")
                     {
                         EventBus.getDefault().post(AddMenu())
                     }

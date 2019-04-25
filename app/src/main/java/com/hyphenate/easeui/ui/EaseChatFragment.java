@@ -72,6 +72,7 @@ import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.adapter.SimpleFragmentAdapter;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
@@ -151,7 +152,7 @@ import im.tox.tox4j.core.enums.ToxMessageType;
  * <br/>
  * you can see ChatActivity in demo for your reference
  */
-public class EaseChatFragment extends EaseBaseFragment implements EMMessageListener {
+public class EaseChatFragment extends EaseBaseFragment implements EMMessageListener  {
     protected static final String TAG = "EaseChatFragment";
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
@@ -266,7 +267,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        initPictureSelector();
+        //initPictureSelector();
         if (friendStatus == 0 && AppConfig.instance.getMessageReceiver() != null) {
             AppConfig.instance.getMessageReceiver().getChatCallBack().queryFriend(UserDataManger.curreantfriendUserData.getUserId());
         }

@@ -7,6 +7,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
 
+import com.luck.picture.lib.adapter.SimpleFragmentAdapter;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureSelectionConfig;
 import com.luck.picture.lib.entity.LocalMedia;
@@ -397,7 +398,9 @@ public class PictureSelectionModel {
         selectionConfig.selectionMedias = selectionMedia;
         return this;
     }
-
+    public void setPictureLongClick(SimpleFragmentAdapter.OnPictureLongClick onPictureLongClick) {
+        selectionConfig.onPictureLongClick = onPictureLongClick;
+    }
     /**
      * Start to select media and wait for result.
      *

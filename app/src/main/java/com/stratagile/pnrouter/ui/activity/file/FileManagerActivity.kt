@@ -431,6 +431,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                 val file = File(filePath)
                 val uri = Uri.fromFile(file)
                 intent.putExtra("uri", uri)
+                intent.putExtra("activityFlag", "NoScan")
                 startActivity(intent)
             } else if (fileName.indexOf("mp4") > -1) {
                 val intent = Intent(AppConfig.instance, EaseShowFileVideoActivity::class.java)

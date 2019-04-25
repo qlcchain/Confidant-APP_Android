@@ -231,6 +231,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                 val file = File(filePath)
                 val uri = Uri.fromFile(file)
                 intent.putExtra("uri", uri)
+                intent.putExtra("activityFlag", "NoScan")
                 startActivity(intent)
             }else if(fileName.indexOf("mp4") > -1 )
             {

@@ -42,7 +42,7 @@ import java.util.List;
  * data：16/12/31
  */
 public class PicturePreviewActivity extends PictureBaseActivity implements
-        View.OnClickListener, Animation.AnimationListener, SimpleFragmentAdapter.OnCallBackActivity,SimpleFragmentAdapter.OnLongClick {
+        View.OnClickListener, Animation.AnimationListener, SimpleFragmentAdapter.OnCallBackActivity {
     private ImageView picture_left_back;
     private TextView tv_img_num, tv_title, tv_ok;
     private PreviewViewPager viewPager;
@@ -274,7 +274,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      */
     private void initViewPageAdapterData() {
         tv_title.setText(position + 1 + "/" + images.size());
-        adapter = new SimpleFragmentAdapter(images, this, this,this,this.from);
+        adapter = new SimpleFragmentAdapter(images, this, picture_left_back,this,pictureSelectionConfig.onPictureLongClick,this.from);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
         onSelectNumChange(false);
@@ -506,8 +506,4 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         onBackPressed();
     }
 
-    @Override
-    public void onLongClick() {
-        onLongClickDo();
-    }
 }

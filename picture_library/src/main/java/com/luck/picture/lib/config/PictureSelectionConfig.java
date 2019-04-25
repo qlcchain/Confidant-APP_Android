@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.StyleRes;
 
 import com.luck.picture.lib.R;
+import com.luck.picture.lib.adapter.SimpleFragmentAdapter;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.PictureFileUtils;
 
@@ -67,6 +68,8 @@ public final class PictureSelectionConfig implements Parcelable {
 
     public List<LocalMedia> selectionMedias;
 
+    public SimpleFragmentAdapter.OnPictureLongClick onPictureLongClick;
+
     private void reset() {
         mimeType = PictureConfig.TYPE_IMAGE;
         camera = false;
@@ -112,6 +115,7 @@ public final class PictureSelectionConfig implements Parcelable {
         suffixType = PictureFileUtils.POSTFIX;
         sizeMultiplier = 0.5f;
         selectionMedias = new ArrayList<>();
+        onPictureLongClick = null;
     }
 
     public static PictureSelectionConfig getInstance() {
