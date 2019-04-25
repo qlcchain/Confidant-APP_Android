@@ -1294,7 +1294,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         localMedia.setPath(files_dir);
                         localMedia.setPictureType("image/jpeg");
                         localMedia.setPosition((int)Message.getTimeStamp());
-                        localMedia.setTimeStamp((int)Message.getTimeStamp());
+                        localMedia.setTimeStamp(Message.getMsgId());
                         previewImages.add(localMedia);
                     } else {
                         message = EMMessage.createImageSendMessage(ease_default_image, true, toChatUserId);
@@ -3126,7 +3126,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         localMedia.setPath(files_dir);
                         localMedia.setPictureType("image/jpeg");
                         localMedia.setPosition((int)Message.getTimeStamp());
-                        localMedia.setTimeStamp((int)Message.getTimeStamp());
+                        localMedia.setTimeStamp(Message.getMsgId());
                         previewImages.add(localMedia);
                         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     } else {
@@ -3958,7 +3958,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 localMedia.setPath(files_dir);
                 localMedia.setPictureType("image/jpeg");
                 localMedia.setPosition(timeStamp);
-                localMedia.setTimeStamp(timeStamp);
+                localMedia.setTimeStamp(Integer.valueOf(msgId));
                 previewImages.add(localMedia);
                 ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                 break;
@@ -4639,7 +4639,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     localMedia.setPath(files_dir);
                                     localMedia.setPictureType("image/jpeg");
                                     localMedia.setPosition((int)message.getTimeStamp());
-                                    localMedia.setTimeStamp((int)message.getTimeStamp());
+                                    localMedia.setTimeStamp(message.getMsgId());
                                     previewImages.add(localMedia);
                                     ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                                     break;

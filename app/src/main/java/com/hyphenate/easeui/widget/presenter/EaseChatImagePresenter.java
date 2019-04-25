@@ -205,16 +205,16 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
                 public int compare(LocalMedia lhs, LocalMedia rhs) {
                     int lsize = lhs.getTimeStamp();
                     int rsize = rhs.getTimeStamp();
-                    return lsize == rsize ? 0 : (lsize < rsize ? 1 : -1);
+                    return lsize == rsize ? 0 : (lsize > rsize ? 1 : -1);
                 }
             });
             ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
             int postion = 0;
             int size = previewImages.size();
-            long msgTime = (int)(message.getMsgTime()  / 1000) ;
+            int msgId = Integer.valueOf(message.getMsgId()) ;
             for(int i = 0 ; i < size ;i ++)
             {
-                if(previewImages.get(i).getTimeStamp() == msgTime)
+                if(previewImages.get(i).getTimeStamp() == msgId)
                 {
                     postion = i;
                 }

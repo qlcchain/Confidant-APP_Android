@@ -117,6 +117,9 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         if(getIntent().hasExtra("from"))
         {
             this.from =getIntent().getStringExtra("from");
+            tv_title.setVisibility(View.GONE);
+        }else{
+            tv_title.setVisibility(View.VISIBLE);
         }
         if (is_bottom_preview) {
             // 底部预览按钮过来
