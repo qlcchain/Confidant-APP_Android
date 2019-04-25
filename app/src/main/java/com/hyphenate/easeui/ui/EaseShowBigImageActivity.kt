@@ -986,6 +986,9 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                                     val useEntityList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
                                     for (i in useEntityList) {
                                         if (i.userId == toAddUserIdTemp) {
+                                            var nickName = toAddUserId!!.substring(toAddUserId!!.indexOf(",") + 1, toAddUserId.lastIndexOf(","))
+                                            i.nickName = nickName
+                                            AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.update(i)
                                             var freindStatusData = FriendEntity()
                                             freindStatusData.friendLocalStatus = 7
                                             val localFriendStatusList = AppConfig.instance.mDaoMaster!!.newSession().friendEntityDao.queryBuilder().where(FriendEntityDao.Properties.UserId.eq(selfUserId), FriendEntityDao.Properties.FriendId.eq(toAddUserIdTemp)).list()
