@@ -537,7 +537,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             }
             3-> {
                 ConstantValue.lastNetworkType = "";
-                val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
+                /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(recoveryRsp.params.userSn)).list()
                 if (routerEntityList != null && routerEntityList!!.size != 0) {
                     for( i in routerEntityList)
                     {
@@ -568,7 +568,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             getServer(routerId,userSn,true,true)
                         }
                     }
-                }else{
+                }else{*/
                     /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
                       var intent = Intent(this, RegisterActivity::class.java)
                       intent.putExtra("flag", 1)
@@ -605,7 +605,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
                             ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                         }
                     }
-                }
+                //}
 
             }
             4 -> {
