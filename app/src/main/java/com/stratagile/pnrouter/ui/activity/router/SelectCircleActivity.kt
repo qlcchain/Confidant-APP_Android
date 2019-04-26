@@ -117,12 +117,14 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                     closeProgressDialog()
                 }
             }
+            gotoLogin();
             return
         }
         if ("".equals(loginRsp.params.userId)) {
             runOnUiThread {
                 toast(R.string.userId_is_empty)
                 closeProgressDialog()
+                gotoLogin();
             }
         } else {
             ConstantValue.loginOut = false

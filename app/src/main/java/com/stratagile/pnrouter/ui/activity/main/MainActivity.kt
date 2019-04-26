@@ -282,6 +282,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 runOnUiThread {
                     toast(R.string.The_account_has_expired)
                     closeProgressDialog()
+                    gotoLogin()
                 }
             }
             else{

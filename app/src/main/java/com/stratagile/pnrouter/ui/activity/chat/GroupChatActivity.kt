@@ -917,6 +917,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     closeProgressDialog()
                 }
             }
+            gotoLogin()
             return
         }
         if ("".equals(loginRsp.params.userId)) {
@@ -1214,7 +1215,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                             var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
                             MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
                         }else{
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
+                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                         }
                     }
                 //}

@@ -917,6 +917,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                     closeProgressDialog()
                 }
             }
+            gotoLogin()
             return
         }
         if ("".equals(loginRsp.params.userId)) {

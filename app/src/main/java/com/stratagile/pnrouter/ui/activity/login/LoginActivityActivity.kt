@@ -137,6 +137,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
     override fun registerBack(registerRsp: JRegisterRsp) {
         if (registerRsp.params.retCode != 0) {
+            val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(registerRsp.params.userSn)).list()
+            if (routerEntityList != null && routerEntityList!!.size != 0) {
+                for (i in routerEntityList) {
+                    var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(i.userSn)
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(i)
+                }
+            }
             if (registerRsp.params.retCode == 1) {
                 runOnUiThread {
                     toast("RouterId Error")
@@ -172,6 +179,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             runOnUiThread {
                 closeProgressDialog()
                 KLog.i("1111")
+            }
+            val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(registerRsp.params.userSn)).list()
+            if (routerEntityList != null && routerEntityList!!.size != 0) {
+                for (i in routerEntityList) {
+                    var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(i.userSn)
+                    AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(i)
+                }
             }
             var newRouterEntity = RouterEntity()
             newRouterEntity.routerId = registerRsp.params.routeId
@@ -501,13 +515,6 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 runOnUiThread {
                     toast(R.string.The_account_has_expired)
                     closeProgressDialog()
-                    /*val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(loginRsp.params.userSn)).list()
-                    if (routerEntityList != null && routerEntityList!!.size != 0) {
-                        for (i in routerEntityList) {
-                            var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(i.userSn)
-                            AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(i)
-                        }
-                    }*/
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                     var recovery = RecoveryReq(loginRsp.params!!.routerid, loginRsp.params!!.userSn,pulicMiKey)
                     var baseData = BaseData(4, recovery)
