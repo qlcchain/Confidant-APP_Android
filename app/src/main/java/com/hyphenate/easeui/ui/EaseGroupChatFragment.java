@@ -1212,6 +1212,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         ArrayList<EMMessage> messages = new ArrayList<>();
+        String nameStr = "";
+        ArrayList<String> nameArray =  new ArrayList<>();
+        ArrayList<String> userIdArray =  new ArrayList<>();
         for (int i = 0; i < size; i++)
         {
             Message Message = messageList.get(i);
@@ -1567,6 +1570,22 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
                 }
             }
+            if(Message.getPoint() == 1 || Message.getPoint() == 2)
+            {
+                if(!nameStr.contains(Message.getUserName()))
+                {
+                    nameArray.add(Message.getUserName());
+                    userIdArray.add(Message.getFrom());
+                    nameStr += Message.getUserName() +",";
+                }
+
+            }
+        }
+
+        for(int k = 0 ; k< nameArray.size() ;k++)
+        {
+            String name = new String(RxEncodeTool.base64Decode(nameArray.get(k)));
+            insertTipMessage(userIdArray.get(k),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
         }
         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
@@ -2449,8 +2468,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param from 谁操作的
      * @param tip 系统提示内容
      */
-    public void insertTipMessage(String from,String tip) {
-        EMMessage message = EMMessage.createLocationSendMessage(0,0,tip, toChatUserId);
+    public void insertTipMessage(String from,String tip,String color) {
+        int flag0 = 0;
+        int flag1 = 0;
+        if(color != null && color.equals("1"))
+        {
+            flag0 = 1;
+            flag1 = 1;
+        }
+        EMMessage message = EMMessage.createLocationSendMessage(flag0,flag1,tip, toChatUserId);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         int uuid = (int) (System.currentTimeMillis() / 1000);
         message.setDirection(EMMessage.Direct.RECEIVE);
@@ -3939,7 +3965,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             sendMessageTo(message);
 
             String name = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getUserName()));
-            insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message));
+            if(jPushMsgRsp.getParams().getPoint() == 1 || jPushMsgRsp.getParams().getPoint() == 2 )
+            {
+                insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

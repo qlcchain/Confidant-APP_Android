@@ -1279,7 +1279,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     EventBus.getDefault().post(GroupLocal)
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                     var groupName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.name))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.modified_the_group_name)+" "+groupName)
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +" "+ getString(R.string.modified_the_group_name)+" "+groupName,"0")
                 }
             }
             2->{//群审核权限变更
@@ -1365,9 +1365,9 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
                 if (jGroupSysPushRsp.params.to != userId)
                 {
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+name +"  "+ getString(R.string.join))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+name +"  "+ getString(R.string.join),"0")
                 }else{
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+getString(R.string.you) +"  "+ getString(R.string.join))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+"  "+ getString(R.string.invited)+"  "+getString(R.string.you) +"  "+ getString(R.string.join),"0")
                 }
 
             }
@@ -1384,7 +1384,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     finish()
                 }else{
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.Leave_this_group_chat))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,name +"  "+ getString(R.string.Leave_this_group_chat),"0")
                 }
 
             }
@@ -1426,7 +1426,7 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 }else{//是别人
                     var adminName = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.fromUserName))
                     var name = String(RxEncodeTool.base64Decode(jGroupSysPushRsp.params.toUserName))
-                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner))
+                    chatFragment?.insertTipMessage(jGroupSysPushRsp.params.from,adminName+" "+ getString(R.string.removed)+" "+name +" "+ getString(R.string.Removed_by_group_owner),"0")
                 }
 
             }

@@ -2,6 +2,7 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
@@ -36,6 +37,10 @@ public class EaseChatRowLocation extends EaseChatRow{
     protected void onSetUpView() {
 		locBody = (EMLocationMessageBody) message.getBody();
 		locationView.setText(locBody.getAddress());
+		if(locBody.getLatitude() == 1)
+        {
+            locationView.setTextColor(Color.BLUE);
+        }
     }
 
     @Override
