@@ -39,7 +39,7 @@ public class EaseChatRowLocation extends EaseChatRow{
 		locationView.setText(locBody.getAddress());
 		if(locBody.getLatitude() == 1)
         {
-            locationView.setTextColor(Color.BLUE);
+            locationView.setTextColor(getResources().getColor(R.color.color_3091F2));
         }
     }
 
