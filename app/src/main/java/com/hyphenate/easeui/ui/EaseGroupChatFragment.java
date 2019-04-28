@@ -1212,7 +1212,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         KLog.i("insertGroupMessage:" + "EaseChatFragment" + "_refreshData3_" + conversation.getAllMessages().size());
         ArrayList<EMMessage> messages = new ArrayList<>();
-        String nameStr = "";
+        String msgIdStrLocal = SpUtil.INSTANCE.getString(AppConfig.instance,"insertTipMessage"+ "_" + toChatUserId,"");
+        String msgIdStr = "";
+        String userIdStr = "";
         ArrayList<String> nameArray =  new ArrayList<>();
         ArrayList<String> userIdArray =  new ArrayList<>();
         for (int i = 0; i < size; i++)
@@ -1572,14 +1574,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
             if(Message.getPoint() == 1 || Message.getPoint() == 2)
             {
-                if(!nameStr.contains(Message.getUserName()))
+                if(!userIdStr.contains(Message.getFrom()) && !msgIdStrLocal.contains(Message.getMsgId()+""))
                 {
                     nameArray.add(Message.getUserName());
                     userIdArray.add(Message.getFrom());
-                    nameStr += Message.getUserName() +",";
+                    userIdStr += Message.getFrom() +",";
+                    msgIdStr += Message.getMsgId() +",";
                 }
-
             }
+            SpUtil.INSTANCE.putString(AppConfig.instance,"insertTipMessage"+ "_" + toChatUserId,msgIdStrLocal+msgIdStr);
         }
 
         for(int k = 0 ; k< nameArray.size() ;k++)
@@ -1587,6 +1590,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String name = new String(RxEncodeTool.base64Decode(nameArray.get(k)));
             insertTipMessage(userIdArray.get(k),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
         }
+
         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
