@@ -65,6 +65,8 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
      * @param text
      */
     public abstract void onTextInsert(CharSequence text);
+
+    public abstract void onAddAtText(String text,String data);
     
     public abstract EditText getEditText();
     
@@ -84,7 +86,7 @@ public abstract class EaseChatPrimaryMenuBase extends RelativeLayout{
          * when send button clicked
          * @param content
          */
-        void onSendBtnClicked(String content);
+        void onSendBtnClicked(String content,String point);
 
         /**
          * when typing on the edit-text layout.

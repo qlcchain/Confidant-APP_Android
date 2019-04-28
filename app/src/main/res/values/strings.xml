@@ -665,4 +665,5 @@
     <string name="Terms_of_Service">Terms of Service</string>
     <string name="Privacy_Policy">Privacy Policy</string>
     <string name="The_account_has_expired_start_register">The account has expired,start register.</string>
+    <string name="remind_you_to_check_the_message">remind you to check the message</string>
 </resources>

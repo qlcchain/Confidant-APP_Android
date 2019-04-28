@@ -570,10 +570,13 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             }
 
             @Override
+            public void onSendMessage(String content,String point) {
+                sendTextMessage(content);
+            }
+            @Override
             public void onSendMessage(String content) {
                 sendTextMessage(content);
             }
-
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
 //                if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -2054,7 +2057,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
         if (drafts != null && drafts.size() > 0) {
             DraftEntity draftEntity = drafts.get(0);
-            inputMenu.setEdittext(draftEntity.getContent());
+            inputMenu.setEdittext(draftEntity.getContent(),true);
             KLog.i("设置草稿: " + draftEntity.getContent());
         }
         KLog.i("设置草稿: " + content);

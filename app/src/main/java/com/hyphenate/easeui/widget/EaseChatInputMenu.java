@@ -256,8 +256,8 @@ public class EaseChatInputMenu extends LinearLayout {
         return chatPrimaryMenu.getEdittext();
     }
 
-    public void setEdittext(String content) {
-        chatPrimaryMenu.setEdittext(content);
+    public void setEdittext(String content,boolean showSoft) {
+        chatPrimaryMenu.setEdittext(content,showSoft);
     }
 
 
@@ -273,9 +273,9 @@ public class EaseChatInputMenu extends LinearLayout {
             }
 
             @Override
-            public void onSendBtnClicked(String content) {
+            public void onSendBtnClicked(String content,String point) {
                 if (listener != null)
-                    listener.onSendMessage(content);
+                    listener.onSendMessage(content,point);
             }
 
             @Override
@@ -377,7 +377,13 @@ public class EaseChatInputMenu extends LinearLayout {
     public void insertText(String text){
         getPrimaryMenu().onTextInsert(text);
     }
-
+    /**
+     * insert @text
+     * @param text
+     */
+    public void insertATText(String text,String data){
+        getPrimaryMenu().onAddAtText(text,data);
+    }
     /**
      * show or hide extend menu
      * 
@@ -721,6 +727,8 @@ public class EaseChatInputMenu extends LinearLayout {
          * @param content
          *            message content
          */
+        void onSendMessage(String content,String point);
+
         void onSendMessage(String content);
         
         /**

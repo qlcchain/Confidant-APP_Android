@@ -4,12 +4,26 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/x108"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/color_f6f6f6"
     android:paddingBottom="@dimen/x15"
     android:paddingTop="@dimen/x15">
 
     <LinearLayout
+        android:visibility="gone"
+        android:id="@id/tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/save"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/rl_bottom"
+        android:background="@color/color_f6f6f6"
+        android:layout_below="@+id/tips"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -68,7 +82,7 @@
             android:background="@drawable/input_background"
             android:gravity="bottom" >
 
-            <android.support.v7.widget.AppCompatEditText
+            <com.hyphenate.easeui.widget.ATEditText
                 android:id="@+id/et_sendmessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -3,6 +3,7 @@ package com.hyphenate.easeui.widget;
 import android.Manifest;
 import android.content.Context;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -35,7 +36,7 @@ import java.util.List;
  *
  */
 public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnClickListener {
-    public EditText editText;
+    public ATEditText editText;
     private View buttonSetModeKeyboard;
     private RelativeLayout edittext_layout;
     private View buttonSetModeVoice;
@@ -69,10 +70,10 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         return editText.getText().toString();
     }
 
-    public void setEdittext(String edittext) {
+    public void setEdittext(String edittext,boolean showSoft) {
         editText.setText(EaseSmileUtils.getSmiledTextInput(editText.getContext(),edittext));
         editText.setSelection(editText.getText().length());
-        if (!"".equals(edittext)) {
+        if (!"".equals(edittext) && !showSoft) {
             editText.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -98,7 +99,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private void init(final Context context, AttributeSet attrs) {
         Context context1 = context;
         LayoutInflater.from(context).inflate(R.layout.ease_widget_chat_primary_menu, this);
-        editText = (EditText) findViewById(R.id.et_sendmessage);
+        editText = (ATEditText) findViewById(R.id.et_sendmessage);
         buttonSetModeKeyboard = findViewById(R.id.btn_set_mode_keyboard);
         edittext_layout = (RelativeLayout) findViewById(R.id.edittext_layout);
         buttonSetModeVoice = findViewById(R.id.btn_set_mode_voice);
@@ -181,6 +182,9 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                         ctrlPress = false;
                     }
                 }
+                if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    return ATEditText.KeyDownHelper(editText.getText());
+                }
                 return false;
             }
         });
@@ -195,7 +199,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                          ctrlPress == true)) {
                     String s = editText.getText().toString().trim();
                     editText.setText("");
-                    listener.onSendBtnClicked(s);
+                    listener.onSendBtnClicked(s,"");
                     return true;
                 }
                 else{
@@ -271,9 +275,25 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 return;
             }
             if(listener != null){
+                int selectionEnd = editText.length();
+                int selectionStart = 0;
+                ATEditText.DataSpan[] spans = editText.getText().getSpans(selectionStart, selectionEnd, ATEditText.DataSpan.class);
+                String point  = "";
+                int index = 0;
+                for (ATEditText.DataSpan span : spans) {
+                    if (span != null && span.getUserId() != null && !span.getUserId().equals("")) {
+                        if(index > 0)
+                        {
+                            point += ","+span.getUserId();
+                        }else{
+                            point += span.getUserId();
+                        }
+                        index ++;
+                    }
+                }
                 String s = editText.getText().toString().trim();
                 editText.setText("");
-                listener.onSendBtnClicked(s);
+                listener.onSendBtnClicked(s,point);
             }
         } else if (id == R.id.btn_set_mode_voice) {
             if (isRecording) {
@@ -404,7 +424,14 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
        editable.insert(start, text);
        setModeKeyboard();
     }
-
+    @Override
+    public void onAddAtText(String text,String data) {
+        /*int start = editText.getSelectionStart();
+        Editable editable = editText.getEditableText();
+        editable.insert(start, text);
+        setModeKeyboard();*/
+        editText.addSpan(text,data);
+    }
     @Override
     public EditText getEditText() {
         return editText;

@@ -134,11 +134,12 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
            override fun onTyping(s: CharSequence, start: Int, before: Int, count: Int) {
                 KLog.i("send action:TypingBegin cmd msg.")
             }
-
+            override fun onSendMessage(content: String,point :String ) {
+                sendTextMessage(content)
+            }
             override fun onSendMessage(content: String) {
                 sendTextMessage(content)
             }
-
             override fun onPressToSpeakBtnTouch(v: View, event: MotionEvent): Boolean {
                 KLog.i("onPressToSpeakBtnTouch")
                 return true

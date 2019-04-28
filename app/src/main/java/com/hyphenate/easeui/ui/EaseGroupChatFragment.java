@@ -117,6 +117,7 @@ import com.stratagile.pnrouter.entity.events.FileTransformEntity;
 import com.stratagile.pnrouter.entity.events.FileGroupTransformStatus;
 import com.stratagile.pnrouter.entity.events.FromChat;
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity;
+import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
@@ -600,10 +601,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onSendMessage(String content) {
-                sendTextMessage(content);
+            public void onSendMessage(String content,String point) {
+                sendTextMessage(content,point);
             }
-
+            @Override
+            public void onSendMessage(String content) {
+                sendTextMessage(content,"");
+            }
             @Override
             public boolean onPressToSpeakBtnTouch(View v, MotionEvent event) {
 //                if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -1836,10 +1840,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
 
             @Override
-            public void onUserAvatarLongClick(String username) {
-                if (chatFragmentHelper != null) {
+            public void onUserAvatarLongClick(String userId) {
+                /*if (chatFragmentHelper != null) {
                     chatFragmentHelper.onAvatarLongClick(username);
-                }
+                }*/
+                inputAtUsername(userId,true);
             }
 
             @Override
@@ -1937,7 +1942,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 .videoMaxSecond(60 * 60 * 3)
                 .videoMinSecond(1)
                 .isDragFrame(false)
-                .setPictureLongClick((ChatActivity)getActivity());
+                .setPictureLongClick((GroupChatActivity)getActivity());
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -2106,7 +2111,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
         if (drafts != null && drafts.size() > 0) {
             DraftEntity draftEntity = drafts.get(0);
-            inputMenu.setEdittext(draftEntity.getContent());
+            inputMenu.setEdittext(draftEntity.getContent(),true);
             KLog.i("设置草稿: " + draftEntity.getContent());
         }
         KLog.i("设置草稿: " + content);
@@ -2381,22 +2386,31 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     /**
      * input @
      *
-     * @param username
+     * @param userId
      */
-    protected void inputAtUsername(String username, boolean autoAddAtSymbol) {
-        if (EMClient.getInstance().getCurrentUser().equals(username) ||
-                chatType != EaseConstant.CHATTYPE_GROUP) {
+    protected void inputAtUsername(String userId, boolean autoAddAtSymbol) {
+        String userSelftId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        if(userSelftId.equals(userId))
+        {
             return;
         }
-        EaseAtMessageHelper.get().addAtUser(username);
-        EaseUser user = EaseUserUtils.getUserInfo(username);
-        if (user != null) {
-            username = user.getNick();
+        EaseAtMessageHelper.get().addAtUser(userId);
+        String userName = "";
+        UserEntity userEntity = null;
+        List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list();
+        if (userList.size() != 0)
+        {
+            userEntity = userList.get(0);
         }
-        if (autoAddAtSymbol)
-            inputMenu.insertText("@" + username + " ");
-        else
-            inputMenu.insertText(username + " ");
+        if(userEntity != null)
+        {
+            String usernameSouce = new  String(RxEncodeTool.base64Decode(userEntity.getNickName()));
+            if (autoAddAtSymbol)
+                inputMenu.insertATText("@" + usernameSouce + " ",userId);
+            else
+                inputMenu.insertText(usernameSouce + " ");
+        }
+
     }
 
 
@@ -2448,7 +2462,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     }
 
     //send message
-    public void sendTextMessage(String content) {
+    public void sendTextMessage(String content,String point) {
         if (friendStatus != 0) {
             Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
             return;
@@ -2462,7 +2476,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String msgId = UUID.randomUUID().toString().replace("-", "").toLowerCase();
 
             if (AppConfig.instance.getMessageReceiver() != null) {
-                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", "", content, UserDataManger.currentGroupData.getUserKey());
+                msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey());
 
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
@@ -3923,6 +3937,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
             SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
             sendMessageTo(message);
+
+            String name = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getUserName()));
+            insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -4403,7 +4420,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 } else {
                     // get the content and send it
                     String content = ((EMTextMessageBody) forward_msg.getBody()).getMessage();
-                    sendTextMessage(content);
+                    sendTextMessage(content,"");
                 }
                 break;
             case IMAGE:
