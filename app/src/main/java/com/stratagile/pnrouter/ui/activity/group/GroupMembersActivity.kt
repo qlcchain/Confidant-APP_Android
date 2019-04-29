@@ -6,10 +6,9 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.view.LayoutInflaterCompat
 import android.support.v4.view.LayoutInflaterFactory
-import android.view.InflateException
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.*
 import android.widget.TextView
 import com.alibaba.fastjson.JSONObject
 import com.hyphenate.easeui.EaseConstant
@@ -30,12 +29,14 @@ import com.stratagile.pnrouter.ui.activity.group.presenter.GroupMembersPresenter
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendGroupDetailActivity
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity
 import com.stratagile.pnrouter.ui.adapter.group.GroupMemberAdapter
+import com.stratagile.pnrouter.ui.adapter.user.UserHead
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_group_members.*
-import java.util.ArrayList
+import kotlinx.android.synthetic.main.ease_search_bar.*
 
 import javax.inject.Inject;
+import kotlin.collections.ArrayList
 
 /**
  * @author hzp
@@ -50,6 +51,7 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         KLog.i("拉群成员返回。。")
         runOnUiThread {
             if (jGroupUserPullRsp.params.retCode == 0) {
+                contactList = jGroupUserPullRsp.params.payload as ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean>;
                 groupMemberAdapter!!.setNewData(jGroupUserPullRsp.params.payload)
             }
         }
@@ -79,6 +81,7 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
 
     var from:String? = null
     var groupEntity : GroupEntity? = null
+    var contactList = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
 
     var groupMemberAdapter : GroupMemberAdapter? = null
 
@@ -120,7 +123,7 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         groupEntity = intent.getParcelableExtra(EaseConstant.EXTRA_CHAT_GROUP)
         if(intent.hasExtra("from"))
         {
-            from = intent.getStringExtra("intent")
+            from = intent.getStringExtra("from")
         }
         pullGourpUsersList()
         groupMemberAdapter = GroupMemberAdapter(arrayListOf())
@@ -168,9 +171,43 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         if (groupEntity!!.gAdmin.equals(SpUtil.getString(AppConfig.instance, ConstantValue.userId, ""))) {
 
         }
+
+        query.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                fiter(s.toString(), contactList)
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+//                getSelectedUser(contactAdapter1!!.data.MutableListToArrayList())
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+            }
+        })
+        search_clear.setOnClickListener(View.OnClickListener {
+
+        })
     }
 
-
+    fun fiter(key: String, contactList: ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean>) {
+        if ("".equals(key)) {
+            updateAdapterData(contactList)
+        } else {
+            var contactListTemp: ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean> = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
+            for (i in contactList) {
+                var nickSouceName =  String(RxEncodeTool.base64Decode(i.nickname))
+                if (nickSouceName.toLowerCase().contains(key)) {
+                    contactListTemp.add(i)
+                }
+            }
+            updateAdapterData(contactListTemp)
+        }
+    }
+    fun updateAdapterData(list: ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean>) {
+        groupMemberAdapter!!.setNewData(list)
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if(from != null && from.equals("GroupInfoActivity"))
         {
