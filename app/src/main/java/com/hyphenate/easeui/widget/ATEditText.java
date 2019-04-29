@@ -10,11 +10,15 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.AttributeSet;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 /**
  * 带@功能的文本
  */
 public class ATEditText extends AppCompatEditText {
+
+    private TInputConnection inputConnection;
 
     public ATEditText(Context context) {
         super(context);
@@ -33,9 +37,22 @@ public class ATEditText extends AppCompatEditText {
 
 
     private void init() {
+        inputConnection = new TInputConnection(null,true);
         setEditableFactory(new NoCopySpanEditableFactory(new DirtySpanWatcher()));
     }
+    /**
+     * 当输入法和EditText建立连接的时候会通过这个方法返回一个InputConnection。
+     * 我们需要代理这个方法的父类方法生成的InputConnection并返回我们自己的代理类。
+     * */
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        inputConnection.setTarget(super.onCreateInputConnection(outAttrs));
+        return inputConnection;
+    }
 
+    public void setBackSpaceLisetener(TInputConnection.BackspaceListener backSpaceLisetener){
+        inputConnection.setBackspaceListener(backSpaceLisetener);
+    }
     /**
      * 添加 @内容
      *

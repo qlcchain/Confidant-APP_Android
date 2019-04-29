@@ -48,6 +48,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     private boolean ctrlPress = false;
     private View contentView;
     private TextView holdTextView;
+    private boolean onKeyDel = false;
 
     //是否正在录音，正在录音，其他点击不能生效
     private boolean isRecording = false;
@@ -182,6 +183,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                         ctrlPress = false;
                     }
                 }
+                onKeyDel = true;
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
                     return ATEditText.KeyDownHelper(editText.getText());
                 }
@@ -207,8 +209,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
                 }
             }
         });
-
-        
+        editText.setBackSpaceLisetener(backspaceListener);
         buttonPressToSpeak.setOnTouchListener(new OnTouchListener() {
             
             @Override 
@@ -229,7 +230,22 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
             }
         });
     }
+    TInputConnection.BackspaceListener backspaceListener = new TInputConnection.BackspaceListener() {
+        @Override
+        public boolean onBackspace() {
+            Editable editable = editText.getText();
 
+            if(editable.length() == 0){
+                return false;
+            }
+            if(!onKeyDel)
+            {
+                ATEditText.KeyDownHelper(editText.getText());
+            }
+            onKeyDel = false;
+            return false;
+        }
+    };
     /**
      * set recorder view when speak icon is touched
      * @param voiceRecorderView
