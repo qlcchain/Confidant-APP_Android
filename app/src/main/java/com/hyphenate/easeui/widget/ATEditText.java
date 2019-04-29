@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
+import com.stratagile.pnrouter.constant.ConstantValue;
+
 /**
  * 带@功能的文本
  */
@@ -58,17 +60,37 @@ public class ATEditText extends AppCompatEditText {
      *
      * @param text 包含 @ 符号的字符
      */
-    public void addSpan(String text,String data) {
+    /**
+     * 添加 @内容
+     * @param text
+     * @param data
+     * @return 0 成功 ，1已经存在 ，2：人数过多并且返回具体数量
+     */
+    public int addSpan(String text,String data) {
         if(!isHasSpan(data))
         {
+            if(hasSpanCount() >= ConstantValue.INSTANCE.getAtMaxNum())
+            {
+
+                return 2;
+            }
             getText().insert(getSelectionEnd(), text);
             DataSpan myTextSpan = new DataSpan();
             myTextSpan.setUserId(data);
             getText().setSpan(myTextSpan, getSelectionEnd() - text.length(), getSelectionEnd(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             setSelection(getText().length());
+            return 0;
         }
+        return 1;
     }
+    public int hasSpanCount()
+    {
+        int selectionEnd = getText().length();
+        int selectionStart = 0;
+        DataSpan[] spans =  getText().getSpans(selectionStart, selectionEnd, DataSpan.class);
 
+        return spans.length;
+    }
     public boolean isHasSpan(String userId)
     {
         int selectionEnd = getText().length();

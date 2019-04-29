@@ -2429,9 +2429,24 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         {
             String usernameSouce = new  String(RxEncodeTool.base64Decode(userEntity.getNickName()));
             if (autoAddAtSymbol)
-                inputMenu.insertATText("@" + usernameSouce + " ",userId);
+            {
+                int inserResult = inputMenu.insertATText("@" + usernameSouce + " ",userId);
+                if(inserResult == 2)
+                {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
             else
+            {
                 inputMenu.insertText(usernameSouce + " ");
+            }
+
         }
 
     }

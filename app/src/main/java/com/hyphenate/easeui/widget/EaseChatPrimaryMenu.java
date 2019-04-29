@@ -441,12 +441,13 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
        setModeKeyboard();
     }
     @Override
-    public void onAddAtText(String text,String data) {
+    public int onAddAtText(String text,String data) {
         /*int start = editText.getSelectionStart();
         Editable editable = editText.getEditableText();
         editable.insert(start, text);
         setModeKeyboard();*/
-        editText.addSpan(text,data);
+        int result = editText.addSpan(text,data);
+        return result;
     }
     @Override
     public EditText getEditText() {

@@ -666,4 +666,6 @@
     <string name="Privacy_Policy">Privacy Policy</string>
     <string name="The_account_has_expired_start_register">The account has expired,start register.</string>
     <string name="remind_you_to_check_the_message">remind you of the news</string>
+
+    <string name="The_maximum_number_is">The maximum is </string>
 </resources>

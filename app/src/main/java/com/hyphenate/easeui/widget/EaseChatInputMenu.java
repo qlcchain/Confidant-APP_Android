@@ -381,8 +381,9 @@ public class EaseChatInputMenu extends LinearLayout {
      * insert @text
      * @param text
      */
-    public void insertATText(String text,String data){
-        getPrimaryMenu().onAddAtText(text,data);
+    public int insertATText(String text,String data){
+        int result = getPrimaryMenu().onAddAtText(text,data);
+        return result;
     }
     /**
      * show or hide extend menu
