@@ -141,7 +141,7 @@ public class ATEditText extends AppCompatEditText {
             int spanStart = text.getSpanStart(what);
             if (spanStart >= 0 && spanEnd >= 0 && what instanceof DataSpan) {
                 CharSequence charSequence = text.subSequence(spanStart, spanEnd);
-                if (charSequence.toString().contains("@")) {
+                if (!charSequence.toString().contains("@")) {
                     DataSpan[] spans = text.getSpans(spanStart, spanEnd, DataSpan.class);
                     for (DataSpan span : spans) {
                         if (span != null) {

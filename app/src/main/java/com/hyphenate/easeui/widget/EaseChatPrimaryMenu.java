@@ -172,7 +172,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         editText.setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                EMLog.d("key", "keyCode:" + keyCode + " action:" + event.getAction());
+                KLog.i("key"+"keyCode:" + keyCode + " action:" + event.getAction());
 
                 // test on Mac virtual machine: ctrl map to KEYCODE_UNKNOWN
                 if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
