@@ -69,6 +69,10 @@ public class ATEditText extends AppCompatEditText {
     public int addSpan(String text,String data) {
         if(!isHasSpan(data))
         {
+            if(isHasSpanAll())
+            {
+                return 3;
+            }
             if(hasSpanCount() >= ConstantValue.INSTANCE.getAtMaxNum())
             {
 
@@ -99,6 +103,18 @@ public class ATEditText extends AppCompatEditText {
         for (DataSpan span : spans) {
             if (span != null && span.getUserId() != null && span.getUserId().equals(userId)) {
                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isHasSpanAll()
+    {
+        int selectionEnd = getText().length();
+        int selectionStart = 0;
+        DataSpan[] spans =  getText().getSpans(selectionStart, selectionEnd, DataSpan.class);
+        for (DataSpan span : spans) {
+            if (span != null && span.getUserId() != null && span.getUserId().equals("All")) {
+                return true;
             }
         }
         return false;

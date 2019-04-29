@@ -225,6 +225,13 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         if(from != null && from.equals("GroupInfoActivity"))
         {
             menuInflater.inflate(R.menu.add_group_member, menu)
+        }else{
+            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(groupEntity!!.gAdmin.equals(userId))
+            {
+                menuInflater.inflate(R.menu.add_group_allmember, menu)
+            }
+
         }
         return true
     }
@@ -235,6 +242,12 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
                 //添加好友
                 var list = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
                 startActivityForResult(Intent(this, SelectFriendGroupDetailActivity::class.java).putParcelableArrayListExtra("person", groupMemberAdapter!!.data.MutableListToArrayList()), 1)
+            }
+            R.id.allGroupMember -> {
+                val intent = Intent()
+                intent.putExtra("choose", "all")
+                setResult(RESULT_OK, intent)
+                finish()
             }
             else -> {
             }

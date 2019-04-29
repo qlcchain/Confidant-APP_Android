@@ -612,7 +612,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
             @Override
             public void onSendMessage(String content,String point) {
-                sendTextMessage(content,point);
+                sendTextMessage(content,point.toLowerCase());
             }
             @Override
             public void onSendMessage(String content) {
@@ -2058,12 +2058,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             } else if (requestCode == REQUEST_CODE_ENTER_GROUP) {
 
             } else if (requestCode == SELECT_AT) {
-                UserEntity user = data.getParcelableExtra("user");
-                if(user !=null)
+                if(data.hasExtra("choose"))
                 {
-                    inputAtUsername(user.getUserId(),true);
+                    inputAtUsername("All",true);
+                }else{
+                    UserEntity user = data.getParcelableExtra("user");
+                    if(user !=null)
+                    {
+                        inputAtUsername(user.getUserId(),true);
+                    }
                 }
-
             }
         }
     }
@@ -2434,38 +2438,49 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         {
             return;
         }
-        EaseAtMessageHelper.get().addAtUser(userId);
-        String userName = "";
-        UserEntity userEntity = null;
-        List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list();
-        if (userList.size() != 0)
+        if(userId.equals("All"))
         {
-            userEntity = userList.get(0);
-        }
-        if(userEntity != null)
-        {
-            String usernameSouce = new  String(RxEncodeTool.base64Decode(userEntity.getNickName()));
-            if (autoAddAtSymbol)
+            int inserResult = inputMenu.insertATText("@All" + " ",userId);
+            if(inserResult == 3)
             {
-                int inserResult = inputMenu.insertATText("@" + usernameSouce + " ",userId);
-                if(inserResult == 2)
+               /* getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
+                    }
+                });*/
+            }
+        }else{
+            UserEntity userEntity = null;
+            List<UserEntity> userList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(userId)).list();
+            if (userList.size() != 0)
+            {
+                userEntity = userList.get(0);
+            }
+            if(userEntity != null)
+            {
+                String usernameSouce = new  String(RxEncodeTool.base64Decode(userEntity.getNickName()));
+                if (autoAddAtSymbol)
                 {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    int inserResult = inputMenu.insertATText("@" + usernameSouce + " ",userId);
+                    if(inserResult == 2)
+                    {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                }
+                else
+                {
+                    inputMenu.insertATText(usernameSouce + " ",userId);
                 }
 
             }
-            else
-            {
-                inputMenu.insertATText(usernameSouce + " ",userId);
-            }
-
         }
-
     }
 
 
