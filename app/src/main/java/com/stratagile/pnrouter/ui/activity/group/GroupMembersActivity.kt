@@ -52,7 +52,20 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         runOnUiThread {
             if (jGroupUserPullRsp.params.retCode == 0) {
                 contactList = jGroupUserPullRsp.params.payload as ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean>;
-                groupMemberAdapter!!.setNewData(jGroupUserPullRsp.params.payload)
+                if(from != null && from.equals("GroupInfoActivity"))
+                {
+                    groupMemberAdapter!!.setNewData(contactList)
+                }else{
+                    val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                    var contactListNew = arrayListOf<JGroupUserPullRsp.ParamsBean.PayloadBean>()
+                    contactList.forEach {
+                        if (!it.toxId.equals(userId)) {
+                            contactListNew.add(it)
+                        }
+                    }
+                    groupMemberAdapter!!.setNewData(contactListNew)
+                }
+
             }
         }
     }
