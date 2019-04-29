@@ -121,6 +121,7 @@ import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity;
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity;
 import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.group.GroupInfoActivity;
+import com.stratagile.pnrouter.ui.activity.group.GroupMembersActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.AESCipher;
 import com.stratagile.pnrouter.utils.Base58;
@@ -174,6 +175,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected static final int REQUEST_CODE_FILE = 5;
     protected static final int REQUEST_CODE_VIDEO = 6;
     protected static final int REQUEST_CODE_ENTER_GROUP = 7;
+    protected static final int SELECT_AT = 8;
 
     protected static final int MSG_TYPING_BEGIN = 0;
     protected static final int MSG_TYPING_END = 1;
@@ -597,7 +599,15 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             @Override
             public void onTyping(CharSequence s, int start, int before, int count) {
                 // send action:TypingBegin cmd msg.
+               String inputxt = s.toString();
                 typingHandler.sendEmptyMessage(MSG_TYPING_BEGIN);
+                if(inputxt.contains("@") && inputxt.lastIndexOf("@") == inputxt.length() -1)
+                {
+                    Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
+                    intent1.putExtra("from", "EaseGroupChatFragment");
+                    intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+                    startActivityForResult(intent1, SELECT_AT);
+                }
             }
 
             @Override
@@ -2047,6 +2057,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 sendImageMessage(filePath, !isCheck);
             } else if (requestCode == REQUEST_CODE_ENTER_GROUP) {
 
+            } else if (requestCode == SELECT_AT) {
+                UserEntity user = data.getParcelableExtra("user");
+                if(user !=null)
+                {
+                    inputAtUsername(user.getUserId(),true);
+                }
+
             }
         }
     }
@@ -2444,7 +2461,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
             else
             {
-                inputMenu.insertText(usernameSouce + " ");
+                inputMenu.insertATText(usernameSouce + " ",userId);
             }
 
         }

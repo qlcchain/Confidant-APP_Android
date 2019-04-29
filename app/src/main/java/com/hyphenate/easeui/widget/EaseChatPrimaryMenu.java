@@ -446,6 +446,11 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
         Editable editable = editText.getEditableText();
         editable.insert(start, text);
         setModeKeyboard();*/
+        String editContent = getEdittext();
+        if(editContent.contains("@") && editContent.lastIndexOf("@") == editContent.length() -1)
+        {
+            editText.getText().delete(editContent.length() -1,editContent.length());
+        }
         int result = editText.addSpan(text,data);
         return result;
     }

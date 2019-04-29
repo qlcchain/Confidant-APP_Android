@@ -77,6 +77,7 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
     @Inject
     internal lateinit var mPresenter: GroupMembersPresenter
 
+    var from:String? = null
     var groupEntity : GroupEntity? = null
 
     var groupMemberAdapter : GroupMemberAdapter? = null
@@ -117,6 +118,10 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         AppConfig.instance.messageReceiver?.groupMemberback = this
         title.text = "Group Members"
         groupEntity = intent.getParcelableExtra(EaseConstant.EXTRA_CHAT_GROUP)
+        if(intent.hasExtra("from"))
+        {
+            from = intent.getStringExtra("intent")
+        }
         pullGourpUsersList()
         groupMemberAdapter = GroupMemberAdapter(arrayListOf())
         recyclerView.adapter = groupMemberAdapter
@@ -148,9 +153,17 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
                     user = it
                 }
             }
-            val intent = Intent(this, UserInfoActivity::class.java)
-            intent.putExtra("user", user)
-            startActivity(intent)
+            if(from != null && from.equals("GroupInfoActivity"))
+            {
+                val intent = Intent(this, UserInfoActivity::class.java)
+                intent.putExtra("user", user)
+                startActivity(intent)
+            }else{
+                val intent = Intent()
+                intent.putExtra("user", user)
+                setResult(RESULT_OK, intent)
+                finish()
+            }
         }
         if (groupEntity!!.gAdmin.equals(SpUtil.getString(AppConfig.instance, ConstantValue.userId, ""))) {
 
@@ -159,7 +172,10 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.add_group_member, menu)
+        if(from != null && from.equals("GroupInfoActivity"))
+        {
+            menuInflater.inflate(R.menu.add_group_member, menu)
+        }
         return true
     }
 

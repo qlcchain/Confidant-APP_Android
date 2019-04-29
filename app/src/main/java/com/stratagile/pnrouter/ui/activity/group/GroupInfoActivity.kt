@@ -236,6 +236,7 @@ class GroupInfoActivity : BaseActivity(), GroupInfoContract.View, PNRouterServic
         })
         llGroupMembers.setOnClickListener {
             var intent1  = Intent(this, GroupMembersActivity::class.java)
+            intent1.putExtra("from", "GroupInfoActivity")
             intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity)
             startActivityForResult(intent1, enterGroupMembers)
         }
