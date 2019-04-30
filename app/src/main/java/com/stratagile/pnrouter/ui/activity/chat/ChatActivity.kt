@@ -1580,7 +1580,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var msgId:String = jPushFileMsgRsp?.params.msgId.toString()
         var readMsgReq  =  ReadMsgReq(userId!!,jPushFileMsgRsp.params.fromId,msgId)
         if (ConstantValue.isWebsocketConnected) {
-            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid))
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5,msgDataPushFileRsp,jPushFileMsgRsp.msgid))
             if(!msgId.equals(""))
             {
                 if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
@@ -1588,7 +1588,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 }
             }
         } else if (ConstantValue.isToxConnected) {
-            var baseData = BaseData(msgDataPushFileRsp,jPushFileMsgRsp.msgid)
+            var baseData = BaseData(5,msgDataPushFileRsp,jPushFileMsgRsp.msgid)
             var baseDataJson = baseData.baseDataToJson().replace("\\", "")
             if (ConstantValue.isAntox) {
                 var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -1887,7 +1887,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         var sendData = BaseData(pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))
         {
-            sendData = BaseData(3,pullMsgList)
+            sendData = BaseData(5,pullMsgList)
         }
         if (ConstantValue.isWebsocketConnected) {
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

@@ -258,7 +258,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
             var sendData = BaseData(pullMsgList)
             if(ConstantValue.encryptionType.equals("1"))
             {
-                sendData = BaseData(3,pullMsgList)
+                sendData = BaseData(5,pullMsgList)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

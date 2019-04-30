@@ -1538,9 +1538,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var msgDataPushFileRsp = PushFileRespone(0, jPushFileMsgRsp.params.fromId, jPushFileMsgRsp.params.toId, jPushFileMsgRsp.params.msgId)
             if (ConstantValue.isWebsocketConnected) {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(msgDataPushFileRsp, jPushFileMsgRsp.msgid))
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(5,msgDataPushFileRsp, jPushFileMsgRsp.msgid))
             } else if (ConstantValue.isToxConnected) {
-                var baseData = BaseData(msgDataPushFileRsp, jPushFileMsgRsp.msgid)
+                var baseData = BaseData(5,msgDataPushFileRsp, jPushFileMsgRsp.msgid)
                 var baseDataJson = baseData.baseDataToJson().replace("\\", "")
                 if (ConstantValue.isAntox) {
                     var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
@@ -1911,9 +1911,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             var msgData = GroupMsgPushRsp(0, userId!!, pushMsgRsp.params.gId, "")
 
-            var sendData = BaseData(msgData, pushMsgRsp?.msgid)
+            var sendData = BaseData(5,msgData, pushMsgRsp?.msgid)
             if (ConstantValue.encryptionType.equals("1")) {
-                sendData = BaseData(4, msgData, pushMsgRsp?.msgid)
+                sendData = BaseData(5, msgData, pushMsgRsp?.msgid)
             }
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

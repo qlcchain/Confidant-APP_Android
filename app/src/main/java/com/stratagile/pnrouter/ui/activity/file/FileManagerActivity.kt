@@ -405,7 +405,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     fun pullFileList() {
         var selfUserId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullFileListReq = PullFileListReq(selfUserId!!, 0, 30, fileType, 0)
-        var sendData = BaseData(2, pullFileListReq)
+        var sendData = BaseData(5, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)

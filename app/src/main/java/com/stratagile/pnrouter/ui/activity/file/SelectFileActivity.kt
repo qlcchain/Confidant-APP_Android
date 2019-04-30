@@ -122,7 +122,7 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
         currentPage = startId
         var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var pullFileListReq = PullFileListReq(selfUserId!!, startId, 10, 0, 0)
-        var sendData = BaseData(2, pullFileListReq)
+        var sendData = BaseData(5, pullFileListReq)
         if (ConstantValue.isWebsocketConnected) {
             Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
             AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
