@@ -1825,9 +1825,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         swipeRefreshLayout.setRefreshing(true);
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         PullMsgReq pullMsgList = new PullMsgReq(userId, toChatUserId, 0, MsgStartId, 10, "PullMsg");
-        BaseData sendData = new BaseData(pullMsgList);
+        BaseData sendData = new BaseData(5,pullMsgList);
         if (ConstantValue.INSTANCE.getEncryptionType().equals("1")) {
-            sendData = new BaseData(3, pullMsgList);
+            sendData = new BaseData(5, pullMsgList);
         }
 
         if (ConstantValue.INSTANCE.isWebsocketConnected()) {

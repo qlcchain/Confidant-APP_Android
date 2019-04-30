@@ -1884,7 +1884,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         val userId = SpUtil.getString(this, ConstantValue.userId, "")
         var pullMsgList = PullMsgReq(userId!!, toChatUserID!!, 0, 0, 10)
-        var sendData = BaseData(pullMsgList)
+        var sendData = BaseData(5,pullMsgList)
         if(ConstantValue.encryptionType.equals("1"))
         {
             sendData = BaseData(5,pullMsgList)

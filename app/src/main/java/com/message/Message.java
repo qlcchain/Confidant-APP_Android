@@ -32,7 +32,7 @@ public class Message {
     private int Sender;//发送还是接收
     private String FileName;//文件名
     private String FileMD5;//文件md5
-    private String  FilePath;//文件消息路径
+    private String FilePath;//文件消息路径
     private String FileInfo;//文件附加信息
     private Long FileSize;//文件大小
     private String UserKey;//发送消息者的签名公钥

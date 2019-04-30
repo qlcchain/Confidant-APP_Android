@@ -351,8 +351,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                     showProgressDialog("wait…")
                                     waitDeleteData = data
                                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-                                    var delFileReq = DelFileReq(selfUserId!!, data.fileName)
-                                    var sendData = BaseData(2, delFileReq)
+                                    var delFileReq = DelFileReq(selfUserId!!, data.fileName,data.filePath)
+                                    var sendData = BaseData(5, delFileReq)
                                     if (ConstantValue.isWebsocketConnected) {
                                         AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
                                     } else if (ConstantValue.isToxConnected) {

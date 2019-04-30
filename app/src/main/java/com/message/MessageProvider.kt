@@ -255,7 +255,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
 
             val selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
             var pullMsgList = PullMsgReq(selfUserId!!, userId, 0, 0, 10)
-            var sendData = BaseData(pullMsgList)
+            var sendData = BaseData(5,pullMsgList)
             if(ConstantValue.encryptionType.equals("1"))
             {
                 sendData = BaseData(5,pullMsgList)

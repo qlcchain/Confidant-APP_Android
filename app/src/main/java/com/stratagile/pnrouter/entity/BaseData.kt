@@ -380,7 +380,7 @@ data class UploadFileReq(var UserId :String, var FileName : String,var FileSize 
  * 45.	删除文件
  * (2)	响应（APP->Router）
  */
-data class DelFileReq(var UserId :String, var FileName : String,var Action : String = "DelFile")
+data class DelFileReq(var UserId :String, var FileName : String,var FilePath : String,var Action : String = "DelFile")
 
 /**
  * 24.	发送文件_Tox消息 上传文件

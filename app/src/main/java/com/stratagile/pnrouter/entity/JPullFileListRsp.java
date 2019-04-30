@@ -86,6 +86,7 @@ public class JPullFileListRsp extends BaseEntity {
             private int Timestamp;
             private int FileType;
             private String FileName;
+            private String FilePath;
             private String FileMD5;
             private String  FileInfo;
             private int FileSize;
@@ -100,6 +101,7 @@ public class JPullFileListRsp extends BaseEntity {
                 Timestamp = in.readInt();
                 FileType = in.readInt();
                 FileName = in.readString();
+                FilePath = in.readString();
                 FileMD5 = in.readString();
                 FileInfo = in.readString();
                 FileSize = in.readInt();
@@ -151,6 +153,14 @@ public class JPullFileListRsp extends BaseEntity {
 
             public void setFileName(String FileName) {
                 this.FileName = FileName;
+            }
+
+            public String getFilePath() {
+                return FilePath;
+            }
+
+            public void setFilePath(String filePath) {
+                FilePath = filePath;
             }
 
             public String getFileMD5() {
@@ -220,6 +230,7 @@ public class JPullFileListRsp extends BaseEntity {
                 parcel.writeInt(Timestamp);
                 parcel.writeInt(FileType);
                 parcel.writeString(FileName);
+                parcel.writeString(FilePath);
                 parcel.writeString(FileMD5);
                 parcel.writeString(FileInfo);
                 parcel.writeInt(FileSize);
