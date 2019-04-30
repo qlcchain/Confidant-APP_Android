@@ -686,9 +686,10 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                                 return;
                             }else{
                                 runOnUiThread {
-                                    SweetAlertDialog(_this, SweetAlertDialog.BUTTON_NEUTRAL)
+                                    SweetAlertDialog(imageActivity, SweetAlertDialog.BUTTON_NEUTRAL)
                                             .setContentText(getString(R.string.Do_you_leave_the_circle_to_import_new_accounts))
                                             .setConfirmClickListener {
+                                                imageActivity!!.finish()
                                                 var type = result.substring(0,6);
                                                 var left = result.substring(7,result.length)
                                                 var signprivatek = left.substring(0,left.indexOf(","))
@@ -2282,10 +2283,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
             }
             2 -> {
-                runOnUiThread {
-                    closeProgressDialog()
-                    toast(R.string.failed_to_connect)
-                }
+
             }
             3 -> {
                 runOnUiThread {
