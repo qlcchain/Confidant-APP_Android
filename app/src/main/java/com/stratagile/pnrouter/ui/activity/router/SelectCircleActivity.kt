@@ -933,7 +933,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             if(!WiFiUtil.isNetworkConnected())
             {
-                toast("Please check the network")
+                toast(R.string.Please_check_the_network)
                 return
             }
             if(islogining)

@@ -23,6 +23,7 @@ import com.nightonke.wowoviewpager.Enum.Ease
 import com.nightonke.wowoviewpager.WoWoViewPagerAdapter
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -673,7 +674,7 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                         {
                                             if(count >=3)
                                             {
-                                                if(ConstantValue.currentRouterMac.equals(""))
+                                               /* if(ConstantValue.currentRouterMac.equals(""))
                                                 {
                                                     runOnUiThread {
                                                         closeProgressDialog()
@@ -681,12 +682,85 @@ class GuestActivity : BaseActivity(), GuestContract.View , PNRouterServiceMessag
                                                     }
                                                 }
                                                 Thread.currentThread().interrupt(); //方法调用终止线程
-                                                break;
-                                            }else if(!ConstantValue.currentRouterMac.equals(""))
+                                                break;*/
+
+                                                if(!ConstantValue.currentRouterMac.equals(""))
+                                                {
+                                                    Thread.currentThread().interrupt(); //方法调用终止线程
+                                                    break;
+                                                }else{
+
+                                                    var RouterMacData = RouterMacStr.replace(":","")
+                                                    var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+                                                    if(!BuildConfig.DEBUG)
+                                                    {
+                                                        httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+                                                    }
+                                                    OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData,  object : OkHttpUtils.OkCallback {
+                                                        override fun onFailure( e :Exception) {
+                                                            runOnUiThread {
+                                                                closeProgressDialog()
+                                                                RouterMacStr = ""
+                                                                isFromScanAdmim = false
+                                                                toast(R.string.Unable_to_connect_to_router)
+                                                            }
+                                                            Thread.currentThread().interrupt(); //方法调用终止线程
+                                                        }
+                                                        override fun  onResponse(json:String ) {
+
+                                                            val gson = GsonUtil.getIntGson()
+                                                            var httpDataMac: HttpData? = null
+                                                            try {
+                                                                if (json != null) {
+                                                                    httpDataMac = gson.fromJson<HttpData>(json, HttpData::class.java)
+                                                                    if(httpDataMac != null  && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1)
+                                                                    {
+                                                                        ConstantValue.curreantNetworkType = "WIFI"
+                                                                        ConstantValue.currentRouterIp = httpDataMac.serverHost
+                                                                        ConstantValue.port = ":"+httpDataMac.serverPort.toString()
+                                                                        ConstantValue.filePort = ":"+(httpDataMac.serverPort +1).toString()
+                                                                        ConstantValue.currentRouterMac = RouterMacStr
+                                                                        /*ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                                                                        ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN*/
+                                                                        if(ConstantValue.isHasWebsocketInit)
+                                                                        {
+                                                                            AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                                                                        }else{
+                                                                            ConstantValue.isHasWebsocketInit = true
+                                                                            AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                                                                        }
+                                                                        //KLog.i("没有初始化。。设置loginBackListener"+this_)
+                                                                        //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                                                                        Thread.currentThread().interrupt() //方法调用终止线程
+                                                                    }else{
+                                                                        runOnUiThread {
+                                                                            closeProgressDialog()
+                                                                            RouterMacStr = ""
+                                                                            isFromScanAdmim = false
+                                                                            toast(R.string.Unable_to_connect_to_router)
+                                                                        }
+                                                                        Thread.currentThread().interrupt(); //方法调用终止线程
+                                                                    }
+
+                                                                }
+                                                            } catch (e: Exception) {
+                                                                runOnUiThread {
+                                                                    closeProgressDialog()
+                                                                    RouterMacStr = ""
+                                                                    isFromScanAdmim = false
+                                                                    toast(R.string.Unable_to_connect_to_router)
+                                                                }
+                                                                Thread.currentThread().interrupt(); //方法调用终止线程
+                                                            }
+                                                        }
+                                                    })
+                                                    break;
+                                                }
+                                            }/*else if(!ConstantValue.currentRouterMac.equals(""))
                                             {
                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                 break;
-                                            }
+                                            }*/
                                             count ++;
                                             MobileSocketClient.getInstance().init(handler,this)
                                             var toMacMi = AESCipher.aesEncryptString(RouterMacStr,"slph\$%*&^@-78231")

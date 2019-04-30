@@ -668,4 +668,6 @@
     <string name="remind_you_to_check_the_message">mentioned you</string>
 
     <string name="The_maximum_number_is">The maximum is </string>
+    <string name="Please_check_the_network">Please check the network</string>
+
 </resources>

@@ -15,6 +15,8 @@ object ConstantValue {
         var fileNonce = "OmcKJrqehqQwNvdHkRBddXYyAvbGW2A1"
         var localPath = "/ARouterNewData"
         var httpUrl ="https://pprouter.online:9001/v1/pprmap/Check?rid="
+        var httpMacTestUrl ="https://47.96.76.184:9001/v1/pprmap/"
+        var httpMacUrl ="https://pprouter.online:9001/v1/pprmap/"
         var isInit = false;
         var helpUrl = "https://myconfidant.io/support"
         var isRefeshed = false
