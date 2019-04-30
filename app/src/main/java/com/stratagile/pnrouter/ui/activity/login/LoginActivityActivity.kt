@@ -602,6 +602,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             newRouterEntity.adminName = loginRsp.params!!.adminName
             newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
+            ConstantValue.isCurrentRouterAdmin =  loginRsp.params!!.userSn.indexOf("01") == 0
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -867,7 +868,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             2 -> {
-
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.failed_to_connect)
+                }
             }
             3 -> {
                 runOnUiThread {

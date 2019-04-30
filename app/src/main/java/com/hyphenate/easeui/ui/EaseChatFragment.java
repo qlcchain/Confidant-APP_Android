@@ -1238,9 +1238,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getImagePath() + "/";
                             if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
                             } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
                             }
 
                         } else {
@@ -1280,9 +1280,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVoicePath() + "/";
                             if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
                             } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
                             }
 
                         } else {
@@ -1327,9 +1327,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getVideoPath() + "/";
                             if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
                             } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1374,9 +1374,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                                 String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                                 String save_dir = PathUtils.getInstance().getFilePath() + "/";
                                 if (Message.getSender() == 0) {
-                                    FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
+                                    FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
                                 } else {
-                                    FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
+                                    FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
                                 }
                             } else {
                                 receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1415,9 +1415,9 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + Message.getFilePath();
                             String save_dir = PathUtils.getInstance().getFilePath() + "/";
                             if (Message.getSender() == 0) {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getSign(),"0");
                             } else {
-                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Base58.encode(Message.getFileName().getBytes()), save_dir, getActivity(), Message.getMsgId(), handlerDown, Message.getPriKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);

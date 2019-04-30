@@ -81,7 +81,7 @@ class RouterInfoActivity : BaseActivity(), RouterInfoContract.View , PNRouterSer
         isUserExit = false
         setContentView(R.layout.activity_router_info)
         routerEntity = intent.getParcelableExtra("router")
-        if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
+        if(ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
         {
             llRouterManagement.visibility =  View.VISIBLE
             llDiskManagement.visibility = View.VISIBLE

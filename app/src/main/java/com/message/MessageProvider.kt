@@ -73,7 +73,7 @@ class MessageProvider : PNRouterServiceMessageReceiver.CoversationCallBack {
         }
         var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
         var msgData = PushMsgReq(Integer.valueOf(pushMsgRsp?.params.msgId),userId!!, 0, "")
-        var sendData = BaseData(msgData,pushMsgRsp?.msgid)
+        var sendData = BaseData(3,msgData,pushMsgRsp?.msgid)
         if(ConstantValue.encryptionType.equals("1"))
         {
             sendData = BaseData(3,msgData,pushMsgRsp?.msgid)

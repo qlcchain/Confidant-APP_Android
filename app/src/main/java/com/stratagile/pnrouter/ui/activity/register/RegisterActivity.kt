@@ -382,8 +382,10 @@ class RegisterActivity : BaseActivity(), RegisterContract.View , PNRouterService
 
             }
             2 -> {
-                closeProgressDialog()
-                toast(R.string.Network_error)
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.failed_to_connect)
+                }
             }
             3 -> {
                 closeProgressDialog()

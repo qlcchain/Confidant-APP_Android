@@ -379,6 +379,7 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
             newRouterEntity.adminName = loginRsp.params!!.adminName
             newRouterEntity.adminKey = loginRsp.params!!.adminKey
             ConstantValue.currentRouterSN = loginRsp.params!!.userSn
+            ConstantValue.isCurrentRouterAdmin =  loginRsp.params!!.userSn.indexOf("01") == 0
             if (contains) {
                 KLog.i("数据局中已经包含了这个userSn")
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(newRouterEntity)
@@ -1585,7 +1586,10 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
 
             }
             2 -> {
-
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.failed_to_connect)
+                }
             }
             3 -> {
                 runOnUiThread {
@@ -1850,218 +1854,6 @@ class EaseShowBigImageActivity : EaseBaseActivity() , PNRouterServiceMessageRece
         intent.putExtra("flag", "logout")
         startActivity(intent)
         finish()
-    }
-    private fun getServer(routerId:String ,userSn:String,startToxFlag:Boolean,autoLogin:Boolean)
-    {
-        ConstantValue.currentRouterIp = ""
-        islogining = false
-        runOnUiThread {
-            KLog.i("777")
-            closeProgressDialog()
-            showProgressNoCanelDialog("Connecting...")
-        }
-        if(WiFiUtil.isWifiConnect())
-        {
-            var count =0;
-            KLog.i("测试计时器" + count)
-            Thread(Runnable() {
-                run() {
-
-                    while (true)
-                    {
-                        KLog.i("currentRouterIp== " + ConstantValue.currentRouterIp)
-                        if(count >=3)
-                        {
-                            //如果本地收到广播了，这个 currentRouterIp 肯定有值了。
-                            if(!ConstantValue.currentRouterIp.equals(""))
-                            {
-                                ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoInner
-                                KLog.i("走本地：" + ConstantValue.currentRouterIp)
-                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                {
-                                    runOnUiThread {
-                                        startLogin()
-                                    }
-
-                                }
-                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                break;
-                            }else{
-                                // 通过http看是否有远程的路由器可以登录
-                                KLog.i("通过http看是否有远程的路由器可以登录")
-                                OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
-                                    override fun onFailure( e :Exception) {
-                                        startTox(startToxFlag)
-                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                        {
-                                            runOnUiThread {
-                                                startLogin()
-                                            }
-
-                                        }
-                                        Thread.currentThread().interrupt(); //方法调用终止线程
-                                    }
-
-                                    override fun  onResponse(json:String ) {
-
-                                        val gson = GsonUtil.getIntGson()
-                                        var httpData: HttpData? = null
-                                        try {
-                                            if (json != null) {
-                                                httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                KLog.i("http的返回为：" + httpData.toString())
-                                                if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                                {
-                                                    ConstantValue.curreantNetworkType = "WIFI"
-                                                    ConstantValue.currentRouterIp = httpData.serverHost
-                                                    ConstantValue.port = ":"+httpData.serverPort.toString()
-                                                    ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                                    ConstantValue.currentRouterId = routerId
-                                                    ConstantValue.currentRouterSN =  userSn
-                                                    ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
-                                                    KLog.i("走远程：这个远程websocket如果连不上，会一直重连下去" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                                    var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                                    {
-                                                        runOnUiThread {
-                                                            startLogin()
-                                                        }
-
-                                                    }
-                                                    Thread.currentThread().interrupt() //方法调用终止线程
-                                                }else{
-                                                    //没有远程，开启tox
-                                                    KLog.i("没有远程，开启tox")
-                                                    startTox(startToxFlag)
-                                                    var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                                    if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                                    {
-                                                        runOnUiThread {
-                                                            startLogin()
-                                                        }
-
-                                                    }
-                                                    Thread.currentThread().interrupt(); //方法调用终止线程
-                                                }
-
-                                            }
-                                        } catch (e: Exception) {
-                                            startTox(startToxFlag)
-                                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                            {
-                                                runOnUiThread {
-                                                    startLogin()
-                                                }
-
-                                            }
-                                            Thread.currentThread().interrupt(); //方法调用终止线程
-                                        }
-                                    }
-                                })
-                                break
-                            }
-
-                        }
-                        // 走广播，本地的路由器
-                        count ++;
-                        MobileSocketClient.getInstance().init(handler,this)
-                        var toxIdMi = AESCipher.aesEncryptString(routerId,"slph\$%*&^@-78231")
-                        MobileSocketClient.getInstance().destroy()
-                        MobileSocketClient.getInstance().send("QLC"+toxIdMi)
-                        MobileSocketClient.getInstance().receive()
-                        KLog.i("测试计时器" + count)
-                        Thread.sleep(1000)
-                    }
-
-                }
-            }).start()
-        }else{
-
-            Thread(Runnable() {
-                run() {
-
-                    OkHttpUtils.getInstance().doGet(ConstantValue.httpUrl + routerId,  object : OkHttpUtils.OkCallback {
-                        override fun onFailure( e :Exception) {
-                            startTox(startToxFlag)
-                            var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                            if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                            {
-                                runOnUiThread {
-                                    startLogin()
-                                }
-
-                            }
-                            Thread.currentThread().interrupt(); //方法调用终止线程
-                        }
-
-                        override fun  onResponse(json:String ) {
-
-                            val gson = GsonUtil.getIntGson()
-                            var httpData: HttpData? = null
-                            try {
-                                if (json != null) {
-                                    var  httpData = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                    if(httpData != null  && httpData.retCode == 0 && httpData.connStatus == 1)
-                                    {
-                                        ConstantValue.curreantNetworkType = "WIFI"
-                                        ConstantValue.currentRouterIp = httpData.serverHost
-                                        ConstantValue.port = ":"+httpData.serverPort.toString()
-                                        ConstantValue.filePort = ":"+(httpData.serverPort +1).toString()
-                                        ConstantValue.currentRouterId = routerId
-                                        ConstantValue.currentRouterSN =  userSn
-                                        ConstantValue.sendFileSizeMax = ConstantValue.sendFileSizeMaxoOuterNet
-                                        KLog.i("走远程：" + ConstantValue.currentRouterIp+ConstantValue.port)
-                                        /* AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                                         AppConfig.instance.messageReceiver!!.loginBackListener = this*/
-                                        runOnUiThread {
-                                            KLog.i("555")
-//                                            standaloneCoroutine.cancel()
-//                                            closeProgressDialog()
-                                        }
-                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                        {
-                                            runOnUiThread {
-                                                startLogin()
-                                            }
-
-                                        }
-                                        Thread.currentThread().interrupt() //方法调用终止线程
-                                    }else{
-                                        startTox(startToxFlag)
-                                        var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                        if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                        {
-                                            runOnUiThread {
-                                                startLogin()
-                                            }
-
-                                        }
-                                        Thread.currentThread().interrupt(); //方法调用终止线程
-                                    }
-
-                                }
-                            } catch (e: Exception) {
-                                startTox(startToxFlag)
-                                var autoLoginRouterSn = SpUtil.getString(AppConfig.instance, ConstantValue.autoLoginRouterSn, "")
-                                if(!autoLoginRouterSn.equals("") && !isStartLogin || autoLogin)
-                                {
-                                    runOnUiThread {
-                                        startLogin()
-                                    }
-
-                                }
-                                Thread.currentThread().interrupt(); //方法调用终止线程
-                            }
-                        }
-                    })
-                }
-            }).start()
-
-        }
     }
     private fun startTox(startToxFlag:Boolean)
     {

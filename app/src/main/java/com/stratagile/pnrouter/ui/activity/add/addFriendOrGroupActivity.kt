@@ -103,7 +103,7 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
         routerList.forEach {
             if (it.lastCheck) {
                 routerEntity = it
-                if(ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN .indexOf("01")== 0 && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
+                if(ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(routerEntity.userSn))
                 {
                     //管理员
                     addNewMember.visibility = View.VISIBLE

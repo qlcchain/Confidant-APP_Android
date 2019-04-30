@@ -194,7 +194,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         }
         routerList.remove(selectedRouter)
         AppConfig.instance.messageReceiver?.getDiskTotalInfoBack = this
-        if (ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN.indexOf("01") == 0 && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {//管理员才调用此接口
+        if (ConstantValue.currentRouterSN != null && ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {//管理员才调用此接口
             var msgData = GetDiskTotalInfoReq()
             var fileBase58Name = Base58.encode(RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey)) + ".jpg"
             userAvatar.setImageFile(fileBase58Name)
@@ -221,7 +221,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             } else if (ConnectStatus.currentStatus == 2) {
             }
         }
-        if (ConstantValue.currentRouterSN != null && ConstantValue.currentRouterSN.indexOf("01") == 0 && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {
+        if (ConstantValue.currentRouterSN != null && !ConstantValue.currentRouterSN.equals("")&& ConstantValue.currentRouterSN.indexOf("01") == 0 && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {
             setUI(true)
         } else {
             setUI(false)
