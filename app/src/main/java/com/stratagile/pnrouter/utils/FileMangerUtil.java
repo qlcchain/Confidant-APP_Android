@@ -605,7 +605,7 @@ public class FileMangerUtil {
         if(toxFileData != null)
         {
             String filePath = toxFileData.getFilePath();
-            String fileSouceName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
+            String fileSouceName = toxFileData.getFileName();
             int fieType = toxFileData.getFileType().value();
             if(fieType == 6)
             {
@@ -660,7 +660,7 @@ public class FileMangerUtil {
             if(fieType != 6)
             {
                 String filePath = toxFileData.getFilePath();
-                String fileMiName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.length());
+                String fileMiName = toxFileData.getFileName();
                 UpLoadFile uploadFile = new UpLoadFile(fileMiName,filePath,toxFileData.getFileSize(), false, false, "0",position,filesize,0,false,"",0,0,toxFileData.getFileId()+"",false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);

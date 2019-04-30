@@ -41,7 +41,7 @@ public class FileMangerDownloadUtils {
         }
     }
 
-    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
+    public static void doDownLoadWork(String path,String fileName,String to,Context context,int msgId,Handler handler,String key,int FileFrom){
         ///data/data/com.johnny.testzipanddownload/files
         if(path.indexOf("https://:") > -1)
         {
@@ -56,7 +56,7 @@ public class FileMangerDownloadUtils {
             if(!downFilePathMap.containsKey(msgId+""))
             {
                 KLog.i("FiledoDownLoadWork:"+path+"_TO::"+to);
-                String fileNiName = path.substring(path.lastIndexOf("/")+1,path.length());
+                String fileNiName = fileName;
                 UpLoadFile uploadFile = new UpLoadFile(fileNiName,path,0, true, false, "0",0,1,0,false,key,FileFrom,0,msgId+"",false);
                 MyFile myRouter = new MyFile();
                 myRouter.setType(0);
@@ -66,7 +66,7 @@ public class FileMangerDownloadUtils {
                 EventBus.getDefault().post(new FileStatus(fileNiName +"__"+msgId,0, true, false, false,0,1,0,false,0));
 
                 downFilePathMap.put(msgId+"",path);
-                FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path, to, context,msgId,handler,key,downFilePathMap,FileFrom);
+                FileMangerDownLoaderTask task = new FileMangerDownLoaderTask(path,fileName, to, context,msgId,handler,key,downFilePathMap,FileFrom);
                 task.execute();
                 taskListMap.put(msgId+"",task);
             }else{

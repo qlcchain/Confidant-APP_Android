@@ -41,7 +41,7 @@ public class FileDownloadUtils {
      * @param key
      * @param type 0 正常解密  1 群聊中收到文件转发的aes解密
      */
-    public static void doDownLoadWork(String path,String to,Context context,int msgId,Handler handler,String key,String type){
+    public static void doDownLoadWork(String path,String fileName,String to,Context context,int msgId,Handler handler,String key,String type){
         ///data/data/com.johnny.testzipanddownload/files
         if(path.indexOf("https://:") > -1)
         {
@@ -54,7 +54,7 @@ public class FileDownloadUtils {
                 destDir.mkdirs();
             }
             KLog.i("ChatdoDownLoadWork:"+path+"_TO::"+to+"_key:"+key+"_type:"+type);
-            FileDownLoaderTask task = new FileDownLoaderTask(path, to, context,msgId,handler,key,type);
+            FileDownLoaderTask task = new FileDownLoaderTask(path,fileName, to, context,msgId,handler,key,type);
             task.execute();
         }catch (Exception e)
         {

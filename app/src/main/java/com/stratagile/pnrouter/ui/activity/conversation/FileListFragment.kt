@@ -111,7 +111,6 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     var fileData = receiveFileDataMap.get(msgId.toString())
                     if(fileData != null)
                     {
-                        var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
                         LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }
@@ -161,7 +160,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
 
         when (jDelFileRsp.params.retCode) {
             0 -> {
-                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1, "")
+                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName)), 2, 1, "")
                 runOnUiThread {
                     fileListChooseAdapter!!.data.removeAt(flagIndex)
                     fileListChooseAdapter!!.notifyDataSetChanged()
@@ -199,7 +198,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             runOnUiThread {
                 when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
                     0 -> {
-                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
+                        fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { String(Base58.decode(it.fileName)) }?.toMutableList())
                     }
                     1 -> {
                         fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload?.sortedByDescending { it.timestamp }?.toMutableList())
@@ -225,7 +224,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     fileListChooseAdapter!!.addData(pullFileListRsp.params!!.payload)
                     when (SpUtil.getInt(AppConfig.instance, ConstantValue.currentArrangeType, 1)) {
                         0 -> {
-                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }?.toMutableList())
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName)) }?.toMutableList())
                         }
                         1 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }?.toMutableList())
@@ -303,7 +302,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             var data = obj as JPullFileListRsp.ParamsBean.PayloadBean
                             when (position) {
                                 0 -> {
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    var fileMiName = data.fileName
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
                                     var intent =  Intent(activity!!, selectFriendSendFileActivity::class.java)
@@ -316,8 +315,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                     startActivity(intent);
                                 }
                                 1 -> {
-                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!)), 1, 1, "")
+                                    var fileMiName = data.fileName
                                     var msgId = data.msgId
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
@@ -349,14 +348,14 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                             toast(R.string.no_download_is_required)
                                         }
                                     } else {
-                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
+                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.filePath
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
 
                                             Thread(Runnable() {
                                                 run() {
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri,data.fileName, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
                                                 }
                                             }).start()
 
@@ -389,7 +388,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                                 }
                                 3 -> {
                                     waitRenameData = data
-                                    reNameTempName = data.fileName.substring(0 , data.fileName.lastIndexOf("/") + 1)
+                                    reNameTempName = data.fileName
                                     showRenameDialog(data, position)
                                 }
                                 4 -> {
@@ -420,8 +419,8 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 R.id.ivDownload ->
                 {
                     var data = fileListChooseAdapter!!.data[position]
-                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
-                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!)), 1, 1, "")
+                    var fileMiName = data.fileName
                     var msgId= data.msgId
                     var fileOrginName = String(Base58.decode(fileMiName))
                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
@@ -447,14 +446,14 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                             toast(R.string.no_download_is_required)
                         }
                     } else {
-                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
+                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.filePath
                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                         if (ConstantValue.isWebsocketConnected) {
                             receiveFileDataMap.put(data.msgId.toString(), data)
 
                             Thread(Runnable() {
                                 run() {
-                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
+                                    FileMangerDownloadUtils.doDownLoadWork(filledUri,data.fileName, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
                                 }
                             }).start()
 
@@ -485,7 +484,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                 R.id.sendFriend ->
                 {
                     var data = fileListChooseAdapter!!.data[position]
-                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                    var fileMiName = data.fileName
                     KLog.i("转发的MiName= " + fileMiName)
                     var fileOrginName = String(Base58.decode(fileMiName))
                     KLog.i("转发的名字= "+ fileOrginName)
@@ -507,7 +506,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     SpUtil.putInt(AppConfig.instance, ConstantValue.currentArrangeType, position)
                     when (position) {
                         0 -> {
-                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1))) }.toMutableList())
+                            fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { String(Base58.decode(it.fileName)) }.toMutableList())
                         }
                         1 -> {
                             fileListChooseAdapter?.setNewData(fileListChooseAdapter!!.data.sortedByDescending { it.timestamp }.toMutableList())
@@ -568,7 +567,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
     fun searchListByName(name: String): MutableList<JPullFileListRsp.ParamsBean.PayloadBean> {
         var retList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
         beforeList.forEach {
-            var fileName = String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1)))
+            var fileName = String(Base58.decode(it.fileName))
             if (fileName.contains(name)) {
                 retList.add(it)
             }
@@ -594,7 +593,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
         var formatDialog = CommonDialog(activity)
         formatDialog?.setView(view)
         formatDialog?.show()
-        var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+        var fileMiName = data.fileName
         var nameAndType = String(Base58.decode(fileMiName))
         KLog.i(nameAndType)
         var name = "null"
@@ -622,7 +621,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             formatDialog.dismissWithAnimation()
             var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
-            var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+            var fileMiName = data.fileName
             var rename = Base58.getBase58Name(etContent.text.toString().trim(), type)
             KLog.i("重命名时，base58之后的长度为：" + rename.length)
 //            if(renameLen.length > ConstantValue.fileNameMaxLen)

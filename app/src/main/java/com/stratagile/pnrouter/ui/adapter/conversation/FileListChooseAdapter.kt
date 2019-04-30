@@ -31,7 +31,7 @@ class FileListChooseAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.P
 //        KLog.i("文件的名字为：" + item.fileName)
         var fileName = ""
         try {
-            var subName = item.fileName.substring(item.fileName.lastIndexOf("/") + 1)
+            var subName = item.fileName
             fileName = String(Base58.decode(subName))
         }catch (e :Exception)
         {

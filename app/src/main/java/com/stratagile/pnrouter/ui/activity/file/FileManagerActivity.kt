@@ -81,7 +81,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
         when (jDelFileRsp.params.retCode) {
             0 -> {
-                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!.substring(waitDeleteData?.fileName!!.lastIndexOf("/") + 1))), 2, 1, "")
+                FileUtil.recordRecentFile(String(Base58.decode(waitDeleteData?.fileName!!)), 2, 1, "")
                 runOnUiThread {
                     fileListChooseAdapter!!.data.remove(waitDeleteData!!)
                     fileListChooseAdapter!!.notifyDataSetChanged()
@@ -188,7 +188,7 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
     fun searchListByName(name: String): MutableList<JPullFileListRsp.ParamsBean.PayloadBean> {
         var retList = mutableListOf<JPullFileListRsp.ParamsBean.PayloadBean>()
         beforeList.forEach {
-            var fileName = String(Base58.decode(it.fileName.substring(it.fileName.lastIndexOf("/") + 1)))
+            var fileName = String(Base58.decode(it.fileName))
             if (fileName.contains(name)) {
                 retList.add(it)
             }
@@ -244,8 +244,8 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
 
                                 }
                                 1 -> {
-                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!.substring(data.fileName!!.lastIndexOf("/") + 1))), 1, 1, "")
-                                    var fileMiName = data.fileName.substring(data.fileName.lastIndexOf("/") + 1, data.fileName.length)
+                                    FileUtil.recordRecentFile(String(Base58.decode(data.fileName!!)), 1, 1, "")
+                                    var fileMiName = data.fileName
                                     var msgId = data.msgId
                                     var fileOrginName = String(Base58.decode(fileMiName))
                                     var filePath = PathUtils.getInstance().filePath.toString() + "/" + fileOrginName
@@ -265,14 +265,14 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                                             toast(R.string.no_download_is_required)
                                         }
                                     } else {
-                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.fileName
+                                        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + data.filePath
                                         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
                                         if (ConstantValue.isWebsocketConnected) {
                                             receiveFileDataMap.put(data.msgId.toString(), data)
 
                                             Thread(Runnable() {
                                                 run() {
-                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
+                                                    FileMangerDownloadUtils.doDownLoadWork(filledUri,data.fileName, files_dir, AppConfig.instance, data.msgId, handler, data.userKey,data.fileFrom)
                                                 }
                                             }).start()
 
@@ -616,7 +616,6 @@ class FileManagerActivity : BaseActivity(), FileManagerContract.View, PNRouterSe
                     var fileData = receiveFileDataMap.get(msgId.toString())
                     if(fileData != null)
                     {
-                        var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
                         LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }

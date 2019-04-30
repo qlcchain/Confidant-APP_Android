@@ -338,7 +338,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         conversation.removeMessage(beginDownloadForwad.getMsgId() + "");
         String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.xml";
         EMMessage message = EMMessage.createFileSendMessage(ease_default_image, toChatUserId);
-        String fileMiName = fileData.getFileName().substring(fileData.getFileName().lastIndexOf("/") + 1, fileData.getFileName().length());
+        String fileMiName = fileData.getFileName();
         String msgId = fileData.getMsgId()+"";
         String fileOrginName = new String(Base58.decode(fileMiName));
         String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
@@ -1327,9 +1327,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             {
                                 String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri, Message.getFileName(),save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                             }
 
                         } else {
@@ -1368,9 +1368,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             {
                                 String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1413,9 +1413,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             {
                                 String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, fileKey,"1");
                             }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1459,9 +1459,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 {
                                     String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                                     String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
-                                    FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
+                                    FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                                 }else{
-                                    FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                                    FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                                 }
                             } else {
                                 receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -1500,9 +1500,9 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                             {
                                 String aesKey = LibsodiumUtil.INSTANCE.DecryptShareKey(UserDataManger.currentGroupData.getUserKey());
                                 String fileKey = RxEncodeTool.getSouceKey(Message.getFileKey(),aesKey);
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown,fileKey,"1");
                             }else{
-                                FileDownloadUtils.doDownLoadWork(filledUri, save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
+                                FileDownloadUtils.doDownLoadWork(filledUri,Message.getFileName(), save_dir, getActivity(), Message.getMsgId(), handlerDown, UserDataManger.currentGroupData.getUserKey(),"0");
                             }
                         } else {
                             receiveToxFileDataMap.put(Base58.encode(Message.getFileName().getBytes()), Message);
@@ -3805,7 +3805,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         else -> action = 5*/
                     String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.xml";
                     EMMessage message = EMMessage.createFileSendMessage(ease_default_image, toChatUserId);
-                    String fileMiName = fileData.getFileName().substring(fileData.getFileName().lastIndexOf("/") + 1, fileData.getFileName().length());
+                    String fileMiName = fileData.getFileName();
                     String msgId = fileData.getMsgId()+"";
                     String fileOrginName = new String(Base58.decode(fileMiName));
                     String filePath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;

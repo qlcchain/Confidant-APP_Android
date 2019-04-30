@@ -111,7 +111,7 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             Gson gson = GsonUtil.getIntGson();
             JPullFileListRsp.ParamsBean.PayloadBean data = gson.fromJson(fileDataJson, JPullFileListRsp.ParamsBean.PayloadBean.class);
             Message messageData = gson.fromJson(messageDataJson, Message.class);
-            String fileMiName = data.getFileName().substring(data.getFileName().lastIndexOf("/") + 1, data.getFileName().length());
+            String fileMiName = data.getFileName();
             String fileOrginName = new String(Base58.decode(fileMiName));
             String fileLocalPath = PathUtils.getInstance().getFilePath().toString() + "/" + fileOrginName;
             String fileLocalMiPath = PathUtils.getInstance().getTempPath().toString() + "/" + fileOrginName;
@@ -127,14 +127,14 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
                 DeleteUtils.deleteFile(fileLocalMiPath);
             }
             EventBus.getDefault().post(new BeginDownloadForwad(data.getMsgId()+"",messageData,data));
-            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFileName();
+            String filledUri = "https://" + ConstantValue.INSTANCE.getCurrentRouterIp() + ConstantValue.INSTANCE.getPort() + data.getFilePath();
             String files_dir = PathUtils.getInstance().getFilePath().toString() + "/";
             if (ConstantValue.INSTANCE.isWebsocketConnected()) {
                 //receiveFileDataMap.put(data.getMsgId()+"", data);
 
                 new Thread(new Runnable(){
                     public void run(){
-                        FileDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, data.getMsgId(), handler, data.getUserKey(),data.getFileFrom()+"");
+                        FileDownloadUtils.doDownLoadWork(filledUri,data.getFileName(), files_dir, AppConfig.instance, data.getMsgId(), handler, data.getUserKey(),data.getFileFrom()+"");
                     }
                 }).start();
 

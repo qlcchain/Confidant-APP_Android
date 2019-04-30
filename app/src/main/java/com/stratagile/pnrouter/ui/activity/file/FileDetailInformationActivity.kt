@@ -42,7 +42,7 @@ class FileDetailInformationActivity : BaseActivity(), FileDetailInformationContr
     override fun initData() {
         title.text = "Details"
         file = intent.getParcelableExtra("file")
-        var fileName1 = String(Base58.decode(file.fileName.substring(file.fileName.lastIndexOf("/") + 1)))
+        var fileName1 = String(Base58.decode(file.fileName))
         fileName.text = fileName1
         if (fileName1.contains(".")) {
             fileType.text = fileName1.substring(fileName1.lastIndexOf(".") + 1)

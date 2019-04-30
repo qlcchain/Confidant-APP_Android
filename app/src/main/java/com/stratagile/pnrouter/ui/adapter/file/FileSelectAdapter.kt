@@ -23,7 +23,7 @@ class FileSelectAdapter(arrayList: MutableList<JPullFileListRsp.ParamsBean.Paylo
     override fun convert(helper: BaseViewHolder, item: JPullFileListRsp.ParamsBean.PayloadBean) {
         var fileName = ""
         try {
-            var subName = item.fileName.substring(item.fileName.lastIndexOf("/") + 1)
+            var subName = item.fileName
             fileName = String(Base58.decode(subName))
         }catch (e :Exception)
         {

@@ -203,7 +203,7 @@ object PopWindowUtil {
         val recyclerView = contentView.findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         val tvFileName = contentView.findViewById<TextView>(R.id.fileName)
-        tvFileName.text = String(Base58.decode((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.substring((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName.lastIndexOf("/") + 1)))
+        tvFileName.text = String(Base58.decode((fileName as JPullFileListRsp.ParamsBean.PayloadBean).fileName))
         recyclerView.layoutManager = linearLayoutManager
         val selecRouterAdapter = FileChooseOpreateAdapter(getFileOpreateType(activity))
         recyclerView.adapter = selecRouterAdapter

@@ -79,7 +79,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         var base58Name =  String(Base58.decode(fileMiName))
         filePath = PathUtils.getInstance().filePath.toString()+"/"+base58Name
         var file = File(filePath)
-        var fileName = String(Base58.decode(payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/")+1,payLoad!!.fileName.length)))
+        var fileName = String(Base58.decode(payLoad!!.fileName))
         tvFileName.text = file.name
         if (fileName.contains("jpg")) {
             ivFileType.setImageDrawable(resources.getDrawable(R.mipmap.picture_large))
@@ -151,7 +151,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
             toast(R.string.Files_0M)
         }else {
             runOnUiThread {
-                var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
+                var fileMiName = payLoad!!.fileName
                 if(fileStatus.fileKey.contains(payLoad!!.msgId.toString()))
                 {
                     var segSeqResult = fileStatus.segSeqResult
@@ -193,12 +193,12 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                 .subscribe {
 
                 }*/
-        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + payLoad!!.fileName
+        var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + payLoad!!.filePath
         var files_dir = PathUtils.getInstance().filePath.toString() + "/"
-        var fileMiName = payLoad!!.fileName.substring(payLoad!!.fileName.lastIndexOf("/") + 1, payLoad!!.fileName.length)
+        var fileMiName = payLoad!!.fileName
         if (ConstantValue.isWebsocketConnected) {
             receiveFileDataMap.put(payLoad!!.msgId.toString(), payLoad!!)
-            FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, payLoad!!.msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
+            FileMangerDownloadUtils.doDownLoadWork(filledUri,payLoad!!.fileName, files_dir, AppConfig.instance, payLoad!!.msgId, handler, payLoad!!.userKey,payLoad!!.fileFrom)
         } else {
             //receiveToxFileDataMap.put(fileOrginName,data)
             ConstantValue.receiveToxFileGlobalDataMap.put(fileMiName,payLoad!!.userKey)
@@ -295,7 +295,7 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
                     var fileData = receiveFileDataMap.get(msgId.toString())
                     if(fileData != null)
                     {
-                        var fileMiName = fileData!!.fileName.substring(fileData!!.fileName.lastIndexOf("/") + 1, fileData!!.fileName.length)
+                        var fileMiName = fileData!!.fileName
                         LocalFileUtils.deleteLocalAssets(fileData!!.msgId.toString())
                         EventBus.getDefault().post(AllFileStatus())
                     }

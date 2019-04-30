@@ -1335,7 +1335,7 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
             val filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port + filePath
             var fileSavePath  = PathUtils.getInstance().filePath.toString() + "/"
             var msgId = Calendar.getInstance().timeInMillis /1000
-            FileDownloadUtils.doDownLoadWork(filledUri, fileSavePath, this, msgId.toInt(), handlerDown, "","0")
+            FileDownloadUtils.doDownLoadWork(filledUri,"", fileSavePath, this, msgId.toInt(), handlerDown, "","0")
         }
     }
     internal var handlerDown: Handler = object : Handler() {
@@ -1613,10 +1613,11 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
         }
         if (jPushFileMsgRsp.params.fromId.equals(toChatUserID)) {//正好在聊天窗口聊天
             var filledUri = "https://" + ConstantValue.currentRouterIp + port+jPushFileMsgRsp.params.filePath
+            var fileName = jPushFileMsgRsp.params.fileName;
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-                FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey,"0")
+                FileDownloadUtils.doDownLoadWork(filledUri,fileName, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.dstKey,"0")
             }else{
 
                 var base58Name =  Base58.encode(jPushFileMsgRsp.params.fileName.toByteArray())

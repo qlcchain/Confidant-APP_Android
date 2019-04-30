@@ -1668,15 +1668,16 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
         if (jPushFileMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
             var filledUri = "https://" + ConstantValue.currentRouterIp + ConstantValue.port +jPushFileMsgRsp.params.filePath
             var files_dir = PathUtils.getInstance().filePath.toString()+"/"
+            var fileName = jPushFileMsgRsp.params.fileName;
             if (ConstantValue.isWebsocketConnected) {
                 receiveFileDataMap.put(jPushFileMsgRsp.params.msgId.toString(),jPushFileMsgRsp)
-                if(jPushFileMsgRsp.params.fileKey != null && !jPushFileMsgRsp.params.fileKey.equals(""))//判断是从文件管理转发还是聊天转发
+                if(jPushFileMsgRsp.params.fileKey != null && !jPushFileMsgRsp.params.fileKey.equals(""))//判断是从文件管理转发还是聊天转发GroupMsgPull
                 {
                     val aesKey = LibsodiumUtil.DecryptShareKey(UserDataManger.currentGroupData.userKey)
                     var fileKey = RxEncodeTool.getSouceKey(jPushFileMsgRsp.params.fileKey,aesKey)
-                    FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,fileKey,"1")//文件管理转发过来
+                    FileDownloadUtils.doDownLoadWork(filledUri,fileName, files_dir, this,jPushFileMsgRsp.params.msgId, handler,fileKey,"1")//文件管理转发过来
                 }else{
-                    FileDownloadUtils.doDownLoadWork(filledUri, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey,"0")//正常群里聊天
+                    FileDownloadUtils.doDownLoadWork(filledUri,fileName, files_dir, this,jPushFileMsgRsp.params.msgId, handler,jPushFileMsgRsp.params.selfKey,"0")//正常群里聊天
                 }
 
             }else{

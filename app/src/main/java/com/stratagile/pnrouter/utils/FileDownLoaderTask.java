@@ -65,7 +65,7 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 	 * @param context 上下文
 	 * @param message 消息  0x55:表示成功 ，0x404:下载路径错误或者网络问题
 	 */
-	public FileDownLoaderTask(String url, String out, Context context,int msgId, Handler message,String key,String type){
+	public FileDownLoaderTask(String url,String fileName, String out, Context context,int msgId, Handler message,String key,String type){
 		super();
 		bytesCopiedFlag = -1;
 		msgID = msgId;
@@ -78,7 +78,10 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 		}
 		try {
 			mUrl = new URL(url);
-			String fileName = new File(mUrl.getFile()).getName();
+			if(fileName.equals(""))
+			{
+				fileName = new File(mUrl.getFile()).getName();
+			}
 			FileNameOld = new String(Base58.decode(fileName));
 			String saveName  = FileNameOld;
 			if(keyStr.equals(""))

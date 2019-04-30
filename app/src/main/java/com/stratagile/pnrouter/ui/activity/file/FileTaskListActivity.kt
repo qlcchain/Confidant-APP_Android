@@ -730,7 +730,7 @@ class FileTaskListActivity : BaseActivity(), FileTaskListContract.View, PNRouter
                                     LocalFileUtils.updateLocalAssets(myRouter)
                                     fileGoingTaskLisytAdapter!!.getItem(position)!!.t.isStop = "2"
                                     fileGoingTaskLisytAdapter.notifyItemChanged(position)
-                                    FileMangerDownloadUtils.doDownLoadWork(filledUri, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
+                                    FileMangerDownloadUtils.doDownLoadWork(filledUri,localMedia!!.fileKey, files_dir, AppConfig.instance, localMedia!!.msgId.toInt(), handler, localMedia!!.userKey,localMedia!!.fileFrom)
                                 }
                             }).start()
 
