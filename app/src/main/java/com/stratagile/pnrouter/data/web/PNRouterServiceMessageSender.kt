@@ -5,7 +5,6 @@ import android.util.Log
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.Gson
 import com.hyphenate.chat.EMMessage
 import com.hyphenate.easeui.utils.EaseImageUtils
 import com.hyphenate.easeui.utils.PathUtils
@@ -13,7 +12,6 @@ import com.message.Message
 import com.socks.library.KLog
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.MessageEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -1064,8 +1062,8 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 porperty = byteArrayOf(1)//群聊
             }
             sendFileData.porperty = porperty
-            val pad = byteArrayOf(0)
-            sendFileData.pad = pad
+            val ver = byteArrayOf(0)
+            sendFileData.ver = ver
             sendFileData.content = content
             var sendData =  byteArrayOf(0)
             //int newCRC = CRC16Util.getCRC(sendData,sendData.length);

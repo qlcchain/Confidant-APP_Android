@@ -1,10 +1,8 @@
 package com.stratagile.pnrouter.entity;
 
-import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.FormatTransfer;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Created by hjk on 2018/10/9.
@@ -30,7 +28,7 @@ public class SendFileData implements Serializable {
     private byte[] SrcKey = new byte[256];
     private byte[] DstKey = new byte[256];
     private byte[] Porperty = new byte[1];
-    private byte[] Pad = new byte[1];
+    private byte[] Ver = new byte[1];
 
     private byte[] Content = new byte[0];
 
@@ -137,12 +135,12 @@ public class SendFileData implements Serializable {
         System.arraycopy(porperty, 0, Porperty, 0, porperty.length > Porperty.length ? Porperty.length : porperty.length);
     }
 
-    public byte[] getPad() {
-        return Pad;
+    public byte[] getVer() {
+        return Ver;
     }
 
-    public void setPad(byte[] pad) {
-        System.arraycopy(pad, 0, Pad, 0, pad.length > Pad.length ? Pad.length : pad.length);
+    public void setVer(byte[] ver) {
+        System.arraycopy(ver, 0, Ver, 0, ver.length > Ver.length ? Ver.length : ver.length);
     }
 
     public byte[] getContent() {
@@ -181,7 +179,7 @@ public class SendFileData implements Serializable {
         byte[] SegMoreByte = new byte[]{this.SegMore};
         byte[] CotinueByte = new byte[]{this.Cotinue};
         int length = magicByte.length + ActionByte.length + SegSizeByte.length + SegSeqByte.length + FileOffsetByte.length + FileIdByte.length + CRCByte.length + SegMoreByte.length + CotinueByte.length
-                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+this.Porperty.length+this.Pad.length+ this.Content.length;
+                + this.FileName.length + this.FromId.length + this.ToId.length +this.SrcKey.length+this.DstKey.length+this.Porperty.length+this.Ver.length+ this.Content.length;
         System.out.println("发送文件长度："+length);
         byte[] result = new byte[length];
         int copyLength = 0;
@@ -218,8 +216,8 @@ public class SendFileData implements Serializable {
         System.arraycopy(this.Porperty, 0, result, copyLength,this.Porperty.length);
         copyLength += this.Porperty.length;
 
-        System.arraycopy(this.Pad, 0, result, copyLength,this.Pad.length);
-        copyLength += this.Pad.length;
+        System.arraycopy(this.Ver, 0, result, copyLength,this.Ver.length);
+        copyLength += this.Ver.length;
 
         System.arraycopy(this.Content, 0, result, copyLength,this.Content.length);
         //copyLength += this.Content.length;
