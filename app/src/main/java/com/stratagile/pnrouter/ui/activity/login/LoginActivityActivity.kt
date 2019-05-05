@@ -868,10 +868,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             2 -> {
-                runOnUiThread {
-                    closeProgressDialog()
-                    toast(R.string.failed_to_connect)
-                }
+
             }
             3 -> {
                 runOnUiThread {

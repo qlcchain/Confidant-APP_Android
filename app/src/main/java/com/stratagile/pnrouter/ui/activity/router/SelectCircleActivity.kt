@@ -289,6 +289,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
 
     @Inject
     internal lateinit var mPresenter: SelectCirclePresenter
+    var isChangIng = false
     var lastRouterEntity:RouterEntity? = null
     var currentRouterEntity:RouterEntity? = null
     var isUnlock = false
@@ -324,6 +325,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     private var handler: Handler? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
+        isChangIng = false
         super.onCreate(savedInstanceState)
     }
 
@@ -660,6 +662,12 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
 
+            if(!isChangIng)
+            {
+                isChangIng = true
+            }else{
+                return@setOnItemClickListener
+            }
             if (routerListAdapter!!.isCkeckMode) {
                 var selectRouterEntity = routerListAdapter!!.data[position]
                 if (selectRouterEntity.routerId.equals(ConstantValue.currentRouterId)) {

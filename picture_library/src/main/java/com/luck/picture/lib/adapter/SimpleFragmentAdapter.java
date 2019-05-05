@@ -112,6 +112,8 @@ public class SimpleFragmentAdapter extends PagerAdapter {
             final boolean eqLongImg = PictureMimeType.isLongImg(media);
             imageView.setVisibility(eqLongImg && !isGif ? View.GONE : View.VISIBLE);
             longImg.setVisibility(eqLongImg && !isGif ? View.VISIBLE : View.GONE);
+            imageView.setLocalPath(localPath);
+            longImg.setLocalPath(localPath);
             // 压缩过的gif就不是gif了
             if (isGif && !media.isCompressed()) {
                 RequestOptions gifOptions = new RequestOptions()
@@ -148,7 +150,8 @@ public class SimpleFragmentAdapter extends PagerAdapter {
                     if(from!= null && from.equals("chat"))
                     {
                         if (onPictureLongClick != null) {
-                            onPictureLongClick.onLongClick(localPath,mContext,v);
+                            String localPathStr =  ((PhotoView)v).getLocalPath();
+                            onPictureLongClick.onLongClick(localPathStr,mContext,v);
                         }
                     }
                     return true;
@@ -169,7 +172,8 @@ public class SimpleFragmentAdapter extends PagerAdapter {
                     if(from!= null && from.equals("chat"))
                     {
                         if (onPictureLongClick != null) {
-                            onPictureLongClick.onLongClick(localPath,mContext,v);
+                            String localPathStr =  ((SubsamplingScaleImageView)v).getLocalPath();
+                            onPictureLongClick.onLongClick(localPathStr,mContext,v);
                         }
                     }
                     return true;

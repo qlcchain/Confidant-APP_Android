@@ -76,6 +76,7 @@ public class SubsamplingScaleImageView extends View {
 
     private static final String TAG = SubsamplingScaleImageView.class.getSimpleName();
 
+    private String localPath;
     /** Attempt to use EXIF information on the image to rotate it. Works for external files only. */
     public static final int ORIENTATION_USE_EXIF = -1;
     /** Display the image file in its native orientation. */
@@ -3001,4 +3002,11 @@ public class SubsamplingScaleImageView extends View {
 
     }
 
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
 }

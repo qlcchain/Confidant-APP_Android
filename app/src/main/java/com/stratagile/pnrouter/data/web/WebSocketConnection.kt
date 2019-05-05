@@ -364,6 +364,12 @@ class WebSocketConnection(httpUri: String, private val trustStore: TrustStore, p
 
             if (ConstantValue.isWebsocketReConnect && ConstantValue.loginReq != null && ConstantValue.hasLogin) {
                 var loginReq = ConstantValue.loginReq
+                var tempStr = BaseData(4,loginReq!!).baseDataToJson().replace("\\", "")
+                if(tempStr.indexOf(ConstantValue.currentRouterSN) < 0)
+                {
+
+                    var aa = "";
+                }
                 LogUtil.addLog("websocket重连发送登录信息：${loginReq!!.baseDataToJson().replace("\\", "")}")
                 var reslut = send(BaseData(4,loginReq!!).baseDataToJson().replace("\\", ""))
             }

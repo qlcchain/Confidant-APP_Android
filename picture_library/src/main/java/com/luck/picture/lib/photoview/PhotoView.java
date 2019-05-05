@@ -33,6 +33,7 @@ public class PhotoView extends ImageView {
 
     private PhotoViewAttacher attacher;
     private ScaleType pendingScaleType;
+    private String localPath;
 
     public PhotoView(Context context) {
         this(context, null);
@@ -262,5 +263,13 @@ public class PhotoView extends ImageView {
 
     public void setOnSingleFlingListener(OnSingleFlingListener onSingleFlingListener) {
         attacher.setOnSingleFlingListener(onSingleFlingListener);
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
     }
 }
