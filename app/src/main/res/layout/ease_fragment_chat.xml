@@ -38,13 +38,53 @@
         android:orientation="vertical"
         android:layout_below="@id/layout_alert_kicked_off">
 
-        <com.hyphenate.easeui.widget.EaseChatMessageList
-            android:id="@+id/message_list"
-            android:stackFromBottom="true"
-            android:transcriptMode="alwaysScroll"
-            android:layout_weight="1"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <com.hyphenate.easeui.widget.EaseChatMessageList
+                android:id="@+id/message_list"
+                android:stackFromBottom="true"
+                android:transcriptMode="alwaysScroll"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:id="@+id/tipsparentRoot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/x30"
+                android:gravity="right"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:id="@+id/tipsParent0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/x90"
+                    android:background="@mipmap/icon_new_news">
+                    <ImageView
+                        android:id="@+id/imageView0"
+                        android:layout_marginTop="@dimen/x10"
+                        android:layout_width="wrap_content"
+                        android:scaleType="centerCrop"
+                        android:background="@mipmap/new_news"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_toRightOf="@+id/imageView0"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:id="@+id/tvText0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x1"
+                        android:text="@string/new_messages"
+                        android:textColor="@color/black"
+                        android:visibility="visible" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
         <com.hyphenate.easeui.widget.EaseChatInputMenu
             android:id="@+id/input_menu"
             android:layout_width="match_parent"

@@ -2,6 +2,8 @@ package com.hyphenate.easeui.adapter;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -268,7 +270,17 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             if (chatType.equals("Chat")) {
                 holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), holder.message.getText().toString()));
             } else {
-                holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce + ": " + holder.message.getText().toString()));
+                String messageContent =  holder.message.getText().toString();
+                String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
+                if(messageContent.contains("@"+name))
+                {
+
+                    Spanned htmlStr =  Html.fromHtml("<font color='#FF0000'>"+getContext().getResources().getString(R.string.You_were_mentioned)+" </font>" + usernameSouce + ": " + holder.message.getText().toString());
+                    holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), htmlStr));
+                }else{
+                    holder.message.setText(EaseSmileUtils.getSmiledText(getContext(), usernameSouce + ": " + holder.message.getText().toString()));
+                }
+
             }
             holder.draft.setText("");
         }

@@ -28,7 +28,9 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
@@ -197,7 +199,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected int friendStatus = 0;
     protected EaseChatMessageList easeChatMessageList;
     public EaseChatInputMenu inputMenu;
-
+    private LinearLayout tipsparentRoot;
     protected EMConversation conversation;
 
     protected InputMethodManager inputManager;
@@ -585,6 +587,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             @Override
             public void onClick(View view) {
 
+            }
+        });
+
+        tipsparentRoot = (LinearLayout) getView().findViewById(R.id.tipsparentRoot);
+        //tipsparentRoot.setVisibility(View.VISIBLE);
+        RelativeLayout tipsParent0 = (RelativeLayout) getView().findViewById(R.id.tipsParent0);
+        tipsParent0.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                view.setVisibility(View.GONE);
             }
         });
 
@@ -1598,9 +1611,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         for(int k = 0 ; k< nameArray.size() ;k++)
         {
             String name = new String(RxEncodeTool.base64Decode(nameArray.get(k)));
-            insertTipMessage(userIdArray.get(k),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
+            //(userIdArray.get(k),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
         }
-
+        if(nameArray.size() >0)
+        {
+            tipsparentRoot.setVisibility(View.VISIBLE);
+        }
         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
@@ -2433,8 +2449,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
      * @param userId
      */
     protected void inputAtUsername(String userId, boolean autoAddAtSymbol) {
-        return;
-       /* String userSelftId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+        String userSelftId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
         if(userSelftId.equals(userId))
         {
             return;
@@ -2444,12 +2459,12 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             int inserResult = inputMenu.insertATText("@All" + " ",userId);
             if(inserResult == 3)
             {
-               *//* getActivity().runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
                     }
-                });*//*
+                });
             }
         }else{
             UserEntity userEntity = null;
@@ -2481,7 +2496,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
 
             }
-        }*/
+        }
     }
 
 
@@ -4019,7 +4034,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String name = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getUserName()));
             if(jPushMsgRsp.getParams().getPoint() == 1 || jPushMsgRsp.getParams().getPoint() == 2 )
             {
-                insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
+                //insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
+                tipsparentRoot.setVisibility(View.VISIBLE);
             }
         } catch (Exception e) {
             e.printStackTrace();
