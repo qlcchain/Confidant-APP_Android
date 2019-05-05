@@ -272,7 +272,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
             } else {
                 String messageContent =  holder.message.getText().toString();
                 String name = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUsername(), "");
-                if(messageContent.contains("@"+name))
+                if(messageContent.contains("@"+name) && lastMessage.getUnReadCount() != 0)
                 {
 
                     Spanned htmlStr =  Html.fromHtml("<font color='#FF0000'>"+getContext().getResources().getString(R.string.You_were_mentioned)+" </font>" + usernameSouce + ": " + holder.message.getText().toString());
