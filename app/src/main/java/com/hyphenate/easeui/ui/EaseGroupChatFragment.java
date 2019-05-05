@@ -1615,7 +1615,22 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         }
         if(nameArray.size() >0)
         {
-            tipsparentRoot.setVisibility(View.VISIBLE);
+            new Thread(new Runnable(){
+                public void run(){
+
+                    try {
+                        Thread.sleep(800);
+                        if(tipsparentRoot !=null)
+                        {
+                            tipsparentRoot.setVisibility(View.VISIBLE);
+                        }
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+            }).start();
+
         }
         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
@@ -4035,7 +4050,21 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if(jPushMsgRsp.getParams().getPoint() == 1 || jPushMsgRsp.getParams().getPoint() == 2 )
             {
                 //insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
-                tipsparentRoot.setVisibility(View.VISIBLE);
+                new Thread(new Runnable(){
+                    public void run(){
+
+                        try {
+                            Thread.sleep(800);
+                            if(tipsparentRoot !=null)
+                            {
+                                tipsparentRoot.setVisibility(View.VISIBLE);
+                            }
+                        }catch (Exception e)
+                        {
+
+                        }
+                    }
+                }).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
