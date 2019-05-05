@@ -1597,13 +1597,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
             if(Message.getPoint() == 1 || Message.getPoint() == 2)
             {
-                if(!userIdStr.contains(Message.getFrom()) && !msgIdStrLocal.contains(Message.getMsgId()+""))
+               /* if(!userIdStr.contains(Message.getFrom()) && !msgIdStrLocal.contains(Message.getMsgId()+""))
                 {
                     nameArray.add(Message.getUserName());
                     userIdArray.add(Message.getFrom());
                     userIdStr += Message.getFrom() +",";
                     msgIdStr += Message.getMsgId() +",";
-                }
+                }*/
+                nameArray.add(Message.getUserName());
+                userIdArray.add(Message.getFrom());
+                userIdStr += Message.getFrom() +",";
+                msgIdStr += Message.getMsgId() +",";
             }
             SpUtil.INSTANCE.putString(AppConfig.instance,"insertTipMessage"+ "_" + toChatUserId,msgIdStrLocal+msgIdStr);
         }
@@ -1619,7 +1623,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 public void run(){
 
                     try {
-                        Thread.sleep(800);
+                        Thread.sleep(300);
                         if(tipsparentRoot !=null)
                         {
                             tipsparentRoot.setVisibility(View.VISIBLE);
@@ -4054,7 +4058,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     public void run(){
 
                         try {
-                            Thread.sleep(800);
+                            Thread.sleep(300);
                             if(tipsparentRoot !=null)
                             {
                                 tipsparentRoot.setVisibility(View.VISIBLE);
