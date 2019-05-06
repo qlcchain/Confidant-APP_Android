@@ -675,6 +675,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
             @Override
             public void onSendMessage(String content,String point) {
+                if(point.toLowerCase().contains("all"))
+                {
+                    point = "all";
+                }
                 sendTextMessage(content,point.toLowerCase());
             }
             @Override
