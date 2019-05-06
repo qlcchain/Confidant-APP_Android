@@ -1630,6 +1630,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             KLog.i("已经在群聊天窗口了，不处理该条数据！")
         } else {
             var userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            if(pushMsgRsp.params.point == 1 || pushMsgRsp.params.point == 2 )
+            {
+                SpUtil.putString(AppConfig.instance, ConstantValue.messageAT + userId + "_" + pushMsgRsp.params.gId, "1")
+            }
             if (pushMsgRsp.params.from != userId) {
                 val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(pushMsgRsp.params.from)).list()
                 if (userList.size == 0)   //群聊非好友成员数据

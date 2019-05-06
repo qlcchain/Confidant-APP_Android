@@ -307,6 +307,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         toChatUserId = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
         groupEntity = fragmentArgs.getParcelable(EaseConstant.EXTRA_CHAT_GROUP);
         this.turnOnTyping = turnOnTyping();
+        String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
+        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessageAT() + userId + "_" + toChatUserId, "0");
         super.onActivityCreated(savedInstanceState);
     }
     public void setChatUserId(String id) {
@@ -1617,7 +1619,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String name = new String(RxEncodeTool.base64Decode(nameArray.get(k)));
             //(userIdArray.get(k),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
         }
-        if(nameArray.size() >0)
+       /* if(nameArray.size() >0)
         {
             new Thread(new Runnable(){
                 public void run(){
@@ -1635,7 +1637,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
             }).start();
 
-        }
+        }*/
         ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
         sendMessageTo(messages);
         List<MessageEntity> messageEntityList = AppConfig.instance.getMDaoMaster().newSession().getMessageEntityDao().queryBuilder().where(MessageEntityDao.Properties.UserId.eq(userId), MessageEntityDao.Properties.FriendId.eq(toChatUserId)).list();
@@ -4016,6 +4018,28 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         }).start();
     }
+    public void showTips(JGroupMsgPushRsp jPushMsgRsp)
+    {
+        if(jPushMsgRsp.getParams().getPoint() == 1 || jPushMsgRsp.getParams().getPoint() == 2 )
+        {
+            //insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
+            new Thread(new Runnable(){
+                public void run(){
+
+                    try {
+                        Thread.sleep(300);
+                        if(tipsparentRoot !=null)
+                        {
+                            tipsparentRoot.setVisibility(View.VISIBLE);
+                        }
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+            }).start();
+        }
+    }
     /**
      * 接受文字和表情消息V3
      *
@@ -4048,28 +4072,8 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             String baseDataJson = gson.toJson(Message);
             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
             SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, baseDataJson);
-            sendMessageTo(message);
-
+            sendMessageTo(message);           ;
             String name = new String(RxEncodeTool.base64Decode(jPushMsgRsp.getParams().getUserName()));
-            if(jPushMsgRsp.getParams().getPoint() == 1 || jPushMsgRsp.getParams().getPoint() == 2 )
-            {
-                //insertTipMessage(jPushMsgRsp.getParams().getFrom(),name +" "+ getString(R.string.remind_you_to_check_the_message),"1");
-                new Thread(new Runnable(){
-                    public void run(){
-
-                        try {
-                            Thread.sleep(300);
-                            if(tipsparentRoot !=null)
-                            {
-                                tipsparentRoot.setVisibility(View.VISIBLE);
-                            }
-                        }catch (Exception e)
-                        {
-
-                        }
-                    }
-                }).start();
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }

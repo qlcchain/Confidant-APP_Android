@@ -1829,9 +1829,16 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 }
 
             }
-
         }
 
+
+        if (pushMsgRsp.params.gId.equals(toChatUserID)) {//正好在聊天窗口聊天
+            if(pushMsgRsp.params.point == 1 || pushMsgRsp.params.point == 2 )
+            {
+                //chatFragment?.showTips(pushMsgRsp)
+            }
+
+        }
     }
 
     override fun sendGroupMsg(userId: String, gId: String, point :String, Msg: String,UserKey:String):String {

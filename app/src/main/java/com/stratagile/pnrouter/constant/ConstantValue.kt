@@ -28,6 +28,7 @@ object ConstantValue {
         var userIndex = "userIndex"
         var username = "username"
         var message = "message_"
+        var messageAT = "messageAT_"
         var userFriendname = "freindrname"
         var userFriendId = "userFriendId"
         var routerId = "routerId"
