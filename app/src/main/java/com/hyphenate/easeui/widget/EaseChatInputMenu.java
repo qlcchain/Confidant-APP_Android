@@ -95,7 +95,6 @@ public class EaseChatInputMenu extends LinearLayout {
     public void bindContentView(View contentView) {
         this.contentView = contentView;
     }
-
     private void init(Context context, AttributeSet attrs) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);

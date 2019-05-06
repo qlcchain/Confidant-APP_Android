@@ -28,6 +28,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -198,6 +199,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected GroupEntity groupEntity;
     protected int friendStatus = 0;
     protected EaseChatMessageList easeChatMessageList;
+    protected FrameLayout easeChatMessageListParent;
     public EaseChatInputMenu inputMenu;
     private LinearLayout tipsparentRoot;
     protected EMConversation conversation;
@@ -574,6 +576,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         voiceRecorderView = (EaseVoiceRecorderView) getView().findViewById(R.id.voice_recorder);
         // message list layout
         easeChatMessageList = (EaseChatMessageList) getView().findViewById(R.id.message_list);
+        easeChatMessageListParent = (FrameLayout) getView().findViewById(R.id.message_listParent);
         if (chatType != EaseConstant.CHATTYPE_SINGLE)
             easeChatMessageList.setShowUserNick(true);
 //        easeChatMessageList.setAvatarShape(1);
@@ -605,7 +608,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
-        inputMenu.bindContentView(easeChatMessageList);
+        inputMenu.bindContentView(easeChatMessageListParent);
         registerExtendMenuItem();
         // init input menu
         inputMenu.init(null);
