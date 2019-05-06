@@ -637,7 +637,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
             }
             reNamePos = postion
             reName = rename
-            var sendData = BaseData(4, fileRenameReq)
+            var sendData = BaseData(5, fileRenameReq)
             if (ConstantValue.isWebsocketConnected) {
                 Log.i("pullFriendList", "webosocket" + AppConfig.instance.getPNRouterServiceMessageSender())
                 AppConfig.instance.getPNRouterServiceMessageSender().send(sendData)
