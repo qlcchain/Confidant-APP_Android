@@ -72,7 +72,7 @@ class FileListFragment : BaseFragment(), FileListContract.View,PNRouterServiceMe
                     fileListChooseAdapter!!.data.forEachIndexed { index, it ->
                         if(index == flagIndex)
                         {
-                            fileListChooseAdapter!!.data[index].fileName = reNameTempName + reName
+                            fileListChooseAdapter!!.data[index].fileName = reName
                             fileListChooseAdapter!!.notifyItemChanged(flagIndex)
                         }
 
