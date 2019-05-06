@@ -201,6 +201,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     protected EaseChatMessageList easeChatMessageList;
     protected FrameLayout easeChatMessageListParent;
     public EaseChatInputMenu inputMenu;
+    private String imputOld;
     private LinearLayout tipsparentRoot;
     protected EMConversation conversation;
 
@@ -619,13 +620,57 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 // send action:TypingBegin cmd msg.
                String inputxt = s.toString();
                 typingHandler.sendEmptyMessage(MSG_TYPING_BEGIN);
-                if(inputxt.contains("@") && inputxt.lastIndexOf("@") == inputxt.length() -1)
+                String temp = imputOld;
+                if(inputxt.contains("@"))
                 {
-                    Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
-                    intent1.putExtra("from", "EaseGroupChatFragment");
-                    intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
-                    startActivityForResult(intent1, SELECT_AT);
+
+                    if(imputOld != null && !imputOld.equals(""))
+                    {
+                        if(imputOld.lastIndexOf("@") != imputOld.length() -2)
+                        {
+                            if(inputxt.lastIndexOf("@") == 0 && inputxt.lastIndexOf("@") == inputxt.length() -1)
+                            {
+                                Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
+                                intent1.putExtra("from", "EaseGroupChatFragment");
+                                intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+                                startActivityForResult(intent1, SELECT_AT);
+                            }else if(inputxt.lastIndexOf("@") == inputxt.length() -1)
+                            {
+                                String preStr = inputxt.substring(inputxt.length() -2,inputxt.length() -1);
+                                boolean result = StringUitl.isLetterDigit(preStr);
+                                if(!result)
+                                {
+                                    Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
+                                    intent1.putExtra("from", "EaseGroupChatFragment");
+                                    intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+                                    startActivityForResult(intent1, SELECT_AT);
+                                }
+                            }
+                        }
+                    }else{
+                        if(inputxt.lastIndexOf("@") == 0 && inputxt.lastIndexOf("@") == inputxt.length() -1)
+                        {
+                            Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
+                            intent1.putExtra("from", "EaseGroupChatFragment");
+                            intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+                            startActivityForResult(intent1, SELECT_AT);
+                        }else if(inputxt.lastIndexOf("@") == inputxt.length() -1)
+                        {
+                            String preStr = inputxt.substring(inputxt.length() -2,inputxt.length() -1);
+                            boolean result = StringUitl.isLetterDigit(preStr);
+                            if(!result)
+                            {
+                                Intent intent1  = new Intent(getActivity(), GroupMembersActivity.class);
+                                intent1.putExtra("from", "EaseGroupChatFragment");
+                                intent1.putExtra(EaseConstant.EXTRA_CHAT_GROUP, groupEntity);
+                                startActivityForResult(intent1, SELECT_AT);
+                            }
+                        }
+                    }
+
+
                 }
+                imputOld = inputxt;
             }
 
             @Override

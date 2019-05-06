@@ -780,6 +780,10 @@ public class StringUitl {
 
         return bytes;
     }
+    public static boolean isLetterDigit(String str) {
+        String regex = "^[a-z0-9A-Z]+$";//其他需要，直接修改正则表达式就好
+        return str.matches(regex);
+    }
     public static void test()
     {
 
