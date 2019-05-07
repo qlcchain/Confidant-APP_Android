@@ -271,6 +271,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     List<LocalMedia> previewImages = new ArrayList<LocalMedia>();
     private long faBegin;
     private long faEnd;
+    private boolean isContainAt = false;
     //是否正在录音，正在录音，其他点击不能生效
 //    private boolean isRecording = false;
 
@@ -621,6 +622,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                String inputxt = s.toString();
                 typingHandler.sendEmptyMessage(MSG_TYPING_BEGIN);
                 String temp = imputOld;
+                if(isContainAt)
+                {
+                    isContainAt = false;
+                    return;
+                }
                 if(inputxt.contains("@"))
                 {
 
@@ -2159,8 +2165,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 }
             }
         }
+        if (requestCode == SELECT_AT)
+        {
+            showKeyboard();
+        }
     }
-
     private void sendVideoMsg(String filePath) {
         KLog.i("要发送的文件的路径为：" +filePath);
         File file = new File(PathUtils.getInstance().getVideoPath(), System.currentTimeMillis() + ".mp4");
@@ -2244,6 +2253,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         List<DraftEntity> drafts = AppConfig.instance.getMDaoMaster().newSession().getDraftEntityDao().queryBuilder().where(DraftEntityDao.Properties.UserId.eq(userId)).where(DraftEntityDao.Properties.ToUserId.eq(toChatUserId)).list();
         if (drafts != null && drafts.size() > 0) {
             DraftEntity draftEntity = drafts.get(0);
+            if(draftEntity.getContent().contains("@"))
+            {
+                isContainAt = true;
+            }
             inputMenu.setEdittext(draftEntity.getContent(),true);
             KLog.i("设置草稿: " + draftEntity.getContent());
         }
@@ -2535,7 +2548,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum() +" "+getString(R.string.in_the_group_at_once), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -2549,6 +2562,11 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if(userEntity != null)
             {
                 String usernameSouce = new  String(RxEncodeTool.base64Decode(userEntity.getNickName()));
+                String remarks = userEntity.getRemarks();
+                if(remarks != null && !remarks.equals(""))
+                {
+                    usernameSouce = new  String(RxEncodeTool.base64Decode(remarks));
+                }
                 if (autoAddAtSymbol)
                 {
                     int inserResult = inputMenu.insertATText("@" + usernameSouce + " ",userId);
@@ -2557,7 +2575,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.The_maximum_number_is) +" "+ConstantValue.INSTANCE.getAtMaxNum()+" "+getString(R.string.in_the_group_at_once), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -4589,7 +4607,26 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+    public void showKeyboard() {
+        if (getActivity().getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getActivity().getCurrentFocus() != null)
+                if(inputMenu != null && inputMenu.chatPrimaryMenu != null)
+                {
+                    //inputManager.showSoftInput(inputMenu.chatPrimaryMenu.editText, 0);
 
+                    inputMenu.chatPrimaryMenu.editText.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+                        }
+                    }, 100);
+                }
+
+        }
+
+
+    }
     /**
      * forward message
      *

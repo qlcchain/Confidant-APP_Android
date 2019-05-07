@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class MyFriend {
     private String UserName; //名称用于排序
+    private String remarks; //用户备注
     private String UserKey; //key
     private UserEntity userEntity;//第一个数据
     private ArrayList<UserEntity> routerItemList;//数据列表
@@ -20,6 +21,14 @@ public class MyFriend {
 
     public void setUserName(String userName) {
         UserName = userName;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public String getUserKey() {

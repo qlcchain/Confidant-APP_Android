@@ -74,7 +74,7 @@ public class EaseChatPrimaryMenu extends EaseChatPrimaryMenuBase implements OnCl
     public void setEdittext(String edittext,boolean showSoft) {
         editText.setText(EaseSmileUtils.getSmiledTextInput(editText.getContext(),edittext));
         editText.setSelection(editText.getText().length());
-        if (!"".equals(edittext) && !showSoft) {
+        if (!"".equals(edittext) && showSoft) {
             editText.postDelayed(new Runnable() {
                 @Override
                 public void run() {

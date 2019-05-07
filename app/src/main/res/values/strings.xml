@@ -667,7 +667,8 @@
     <string name="The_account_has_expired_start_register">The account has expired,start register.</string>
     <string name="remind_you_to_check_the_message">mentioned you</string>
 
-    <string name="The_maximum_number_is">The maximum is </string>
+    <string name="The_maximum_number_is">You can mention up to </string>
+    <string name="in_the_group_at_once">contacts in the group at once.</string>
     <string name="Please_check_the_network">Please check the network</string>
     <string name="new_messages">new messages</string>
     <string name="You_were_mentioned">You were mentioned</string>

@@ -6,7 +6,7 @@ import com.stratagile.pnrouter.db.UserEntity;
 
 public class UserHead extends AbstractExpandableItem<UserItem> implements MultiItemEntity {
     private String userName;
-
+    private String remarks; //用户备注
     private boolean isChecked = false;
 
     public boolean isChecked() {
@@ -33,6 +33,14 @@ public class UserHead extends AbstractExpandableItem<UserItem> implements MultiI
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     @Override

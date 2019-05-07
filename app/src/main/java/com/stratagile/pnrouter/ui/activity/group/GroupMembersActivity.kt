@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.GroupEntity
 import com.stratagile.pnrouter.db.UserEntity
+import com.stratagile.pnrouter.db.UserEntityDao
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.ui.activity.group.component.DaggerGroupMembersComponent
 import com.stratagile.pnrouter.ui.activity.group.contract.GroupMembersContract
@@ -34,6 +35,8 @@ import com.stratagile.pnrouter.utils.*
 import com.stratagile.tox.toxcore.ToxCoreJni
 import kotlinx.android.synthetic.main.activity_group_members.*
 import kotlinx.android.synthetic.main.ease_search_bar.*
+import org.libsodium.jni.Sodium
+import java.util.*
 
 import javax.inject.Inject;
 import kotlin.collections.ArrayList
@@ -52,6 +55,29 @@ class GroupMembersActivity : BaseActivity(), GroupMembersContract.View, PNRouter
         runOnUiThread {
             if (jGroupUserPullRsp.params.retCode == 0) {
                 contactList = jGroupUserPullRsp.params.payload as ArrayList<JGroupUserPullRsp.ParamsBean.PayloadBean>;
+                for (i in jGroupUserPullRsp.params.payload) {
+                    val userList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.queryBuilder().where(UserEntityDao.Properties.UserId.eq(i.toxId)).list()
+                    if (userList.size == 0) {
+                        var userEntity = UserEntity()
+                        userEntity.nickName = i.nickname
+                        userEntity.userId = i.toxId
+                        userEntity.signPublicKey = i.userKey
+                        userEntity.remarks = i.remarks
+                        userEntity.routeId = ConstantValue.currentRouterId
+                        //userEntity.routeName = ConstantValue.cu
+                        var dst_public_MiKey_Friend = ByteArray(32)
+                        var crypto_sign_ed25519_pk_to_curve25519_result = Sodium.crypto_sign_ed25519_pk_to_curve25519(dst_public_MiKey_Friend, RxEncodeTool.base64Decode(i.userKey))
+                        if (crypto_sign_ed25519_pk_to_curve25519_result == 0) {
+                            userEntity.miPublicKey = RxEncodeTool.base64Encode2String(dst_public_MiKey_Friend)
+                        }
+                        userEntity.remarks = i.remarks
+                        //userEntity.friendStatus = 0
+                        userEntity.timestamp = Calendar.getInstance().timeInMillis
+                        var selfUserId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+                        userEntity.routerUserId = selfUserId
+                        AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.insert(userEntity)
+                    }
+                }
                 if(from != null && from.equals("GroupInfoActivity"))
                 {
                     groupMemberAdapter!!.setNewData(contactList)

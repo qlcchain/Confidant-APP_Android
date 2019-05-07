@@ -73,6 +73,11 @@ public class ContactAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, B
                     }
                 }
                 String nickNameSouce = new String(RxEncodeTool.base64Decode(lv0.getUserName()));
+                String remarks = lv0.getRemarks();
+                if(remarks != null && !remarks.equals(""))
+                {
+                    nickNameSouce = new String(RxEncodeTool.base64Decode(remarks));
+                }
                 if (lv0.getSubItems() != null && lv0.getSubItems().size() > 1) {
                     helper.setVisible(R.id.ivArrow, true);
                     if (lv0.isExpanded()) {

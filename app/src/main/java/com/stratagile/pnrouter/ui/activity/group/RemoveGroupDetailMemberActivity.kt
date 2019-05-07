@@ -91,6 +91,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
                 var myFriend = MyFriend()
                 myFriend.userKey = i.signPublicKey
                 myFriend.userName = i.nickName
+                myFriend.remarks = i.remarks
                 myFriend.userEntity = i
                 var temp = ArrayList<UserEntity>()
                 temp.add(i)
@@ -117,6 +118,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
         contactNewList.forEach {
             var userHead = UserHead()
             userHead.userName = it.userName
+            userHead.remarks = it.remarks
             userHead.userEntity = it.userEntity
             if (it.routerItemList.size > 1) {
                 it.routerItemList?.forEach {
@@ -176,6 +178,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
                 var myFriend = MyFriend()
                 myFriend.userKey = i.signPublicKey
                 myFriend.userName = i.nickName
+                myFriend.remarks = i.remarks
                 myFriend.userEntity = i
                 var temp = ArrayList<UserEntity>()
                 temp.add(i)
@@ -201,6 +204,7 @@ class RemoveGroupDetailMemberActivity : BaseActivity(), RemoveGroupDetailMemberC
         contactNewList.forEach {
             var userHead = UserHead()
             userHead.userName = it.userName
+            userHead.remarks = it.remarks
             userHead.userEntity = it.userEntity
             if (it.routerItemList.size > 1) {
                 it.routerItemList?.forEach {

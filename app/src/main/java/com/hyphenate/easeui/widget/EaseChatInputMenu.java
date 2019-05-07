@@ -619,7 +619,7 @@ public class EaseChatInputMenu extends LinearLayout {
     /**
      * 编辑框获取焦点，并显示软件盘
      */
-    private void showSoftInput() {
+    public void showSoftInput() {
         chatPrimaryMenu.editText.requestFocus();
         chatPrimaryMenu.editText.post(new Runnable() {
             @Override
