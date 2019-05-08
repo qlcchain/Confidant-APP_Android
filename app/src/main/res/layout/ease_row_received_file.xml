@@ -102,7 +102,6 @@
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleSmall"
             android:layout_width="25dp"
             android:layout_toRightOf="@+id/bubble"
             android:layout_marginLeft="@dimen/x10"
