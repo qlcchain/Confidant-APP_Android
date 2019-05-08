@@ -54,8 +54,15 @@ public class Message {
     public String getFileName() {
         //bas58解码
         //String FileNameOld = new String(RxEncodeTool.base64Decode(FileName.getBytes()));
-        String FileNameOld = new String(Base58.decode(FileName.replace("null", "")));
-        return FileNameOld;
+        try
+        {
+            String FileNameOld = new String(Base58.decode(FileName.replace("null", "")));
+            return FileNameOld;
+        }catch (Exception e)
+        {
+            return "";
+        }
+
     }
 
     public void setFileName(String fileName) {
