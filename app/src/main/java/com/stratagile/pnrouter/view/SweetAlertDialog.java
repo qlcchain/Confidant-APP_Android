@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
@@ -257,7 +259,8 @@ public class SweetAlertDialog extends Dialog implements View.OnClickListener {
         mContentText = text;
         if (mContentTextView != null && mContentText != null) {
             showContentText(true);
-            mContentTextView.setText(mContentText);
+            Spanned htmlStr = Html.fromHtml(text);
+            mContentTextView.setText(htmlStr);
         }
         return this;
     }

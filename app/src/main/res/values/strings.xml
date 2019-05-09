@@ -673,5 +673,7 @@
     <string name="new_messages">new messages</string>
     <string name="You_were_mentioned">You were mentioned</string>
     <string name="Users_have_reached_the_upper_limit">Users have reached the upper limit</string>
+    <string name="Caution">Caution</string>
+    <string name="Cautiontips">Anyone with your Circle QR Code can create accounts in your Confidant Station without your permission.</string>
 
 </resources>

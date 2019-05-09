@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.router
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.util.Base64
 import chat.tox.antox.tox.MessageHelper
@@ -24,6 +25,7 @@ import com.stratagile.pnrouter.ui.activity.router.presenter.RouterCreateUserPres
 import com.stratagile.pnrouter.utils.RxEncodeTool
 import com.stratagile.pnrouter.utils.SpUtil
 import com.stratagile.pnrouter.utils.baseDataToJson
+import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_adduser.*
@@ -161,25 +163,32 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
         }
         tempQrcode.setOnClickListener {
 
-            showProgressDialog("waiting...")
-            val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
+            val htmlStr = "<big>" + getString(R.string.Caution) + " </big>" +"<br>"+ getString(R.string.Cautiontips)
+            SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                    .setContentText(htmlStr)
+                    .setConfirmClickListener {
+                        showProgressDialog("waiting...")
+                        val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
 //            var IdentifyCode = IdentifyCode.text.toString().trim()
-            var pullTmpAccountReq = PullTmpAccountReq(userId!!)
-            if(ConstantValue.isWebsocketConnected)
-            {
-                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,pullTmpAccountReq))
-            }
-            else if(ConstantValue.isToxConnected)
-            {
-                var baseData = BaseData(4,pullTmpAccountReq)
-                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                if (ConstantValue.isAntox) {
-                    var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
-                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                }else{
-                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
-                }
-            }
+                        var pullTmpAccountReq = PullTmpAccountReq(userId!!)
+                        if(ConstantValue.isWebsocketConnected)
+                        {
+                            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,pullTmpAccountReq))
+                        }
+                        else if(ConstantValue.isToxConnected)
+                        {
+                            var baseData = BaseData(4,pullTmpAccountReq)
+                            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                            if (ConstantValue.isAntox) {
+                                var friendKey: FriendKey = FriendKey(ConstantValue.scanRouterId.substring(0, 64))
+                                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                            }else{
+                                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
+                            }
+                        }
+                    }
+                    .show()
+
         }
 
         mnemonic.addTextChangedListener(object : TextWatcher{
