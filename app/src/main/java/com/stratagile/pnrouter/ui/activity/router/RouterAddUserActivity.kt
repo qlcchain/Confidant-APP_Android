@@ -4,7 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.view.Menu
+import android.view.MenuItem
 import butterknife.ButterKnife
+import com.pawegio.kandroid.toast
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -67,7 +70,18 @@ class RouterAddUserActivity : BaseActivity(), RouterAddUserContract.View {
 
 
     }
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.adduser, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.addUser) {
+            var intent = Intent(this, RouterCreateUserActivity::class.java)
+            intent.putExtra("routerUserEntity", routerEntity)
+            startActivityForResult(intent, 0)
+        }
+        return super.onOptionsItemSelected(item)
+    }
     override fun setupActivityComponent() {
        DaggerRouterAddUserComponent
                .builder()

@@ -111,10 +111,10 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
                        /* var intent = Intent(this, RouterQRCodeActivity::class.java)
                         intent.putExtra("router", routerEntity)
                         startActivity(intent)*/
-                      /*  var intent = Intent(this, RouterCreateUserActivity::class.java)
+                        var intent = Intent(this, RouterCreateUserActivity::class.java)
                         intent.putExtra("routerUserEntity", routerEntity)
-                        startActivity(intent)*/
-                        showProgressDialog("waiting...")
+                        startActivity(intent)
+                       /* showProgressDialog("waiting...")
                         val userId = SpUtil.getString(AppConfig.instance, ConstantValue.userId, "")
 //            var IdentifyCode = IdentifyCode.text.toString().trim()
                         var pullTmpAccountReq = PullTmpAccountReq(userId!!)
@@ -132,7 +132,7 @@ class addFriendOrGroupActivity : BaseActivity(), addFriendOrGroupContract.View, 
                             }else{
                                 ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.scanRouterId.substring(0, 64))
                             }
-                        }
+                        }*/
                     }
                 }else{
                     addNewMember.visibility = View.GONE

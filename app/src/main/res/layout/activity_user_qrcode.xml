@@ -24,13 +24,21 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical">
-
+            <TextView
+                android:id="@+id/hiTips"
+                android:layout_width="wrap_content"
+                android:visibility="invisible"
+                android:text="Hi xxx"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="@dimen/x52"
+                android:layout_height="wrap_content" />
             <TextView
                 android:layout_width="wrap_content"
                 android:text="This is an invitation for joining the circle"
                 android:textColor="@color/white"
                 android:textSize="14sp"
-                android:layout_marginTop="@dimen/x52"
+                android:layout_marginTop="@dimen/x12"
                 android:layout_height="wrap_content" />
 
             <TextView
@@ -86,7 +94,7 @@
                     android:textSize="10sp"
                     android:layout_marginLeft="@dimen/x5"
                     android:gravity="center"
-                    android:text="Open the QR code with Confidant app to join the circle"
+                    android:text="You can find Confidant App in Google Play/ App Store"
                     android:layout_height="@dimen/x75" />
             </LinearLayout>
         </LinearLayout>

@@ -84,14 +84,29 @@ class RouterCreateUserActivity : BaseActivity(), RouterCreateUserContract.View, 
                 routerUserEntity.lastLoginTime = 0
                 routerUserEntity.qrcode = jCreateNormalUserRsp.params.qrcode
                 intent.putExtra("user", routerUserEntity)
+                intent.putExtra("mnemonic", RxEncodeTool.base64Encode2String(mnemonic.text.toString().trim().toByteArray()))
                 startActivity(intent)
                 closeProgressDialog()
                 finish()
             }
         }else{
-            runOnUiThread {
-
-                toast(R.string.error)
+            if(jCreateNormalUserRsp.params.retCode == 1)
+            {
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.rid_error)
+                }
+            }else if(jCreateNormalUserRsp.params.retCode == 2)
+            {
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.No_authority)
+                }
+            }else{
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.Users_have_reached_the_upper_limit)
+                }
             }
         }
 

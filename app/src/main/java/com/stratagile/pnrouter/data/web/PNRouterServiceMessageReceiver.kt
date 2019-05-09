@@ -537,7 +537,10 @@ val credentialsProvider: CredentialsProvider, private
                 "PullTmpAccount" -> {
                     val jPullTmpAccountRsp = gson.fromJson(text, JPullTmpAccountRsp::class.java)
                     createUserCallBack?.pullTmpAccount(jPullTmpAccountRsp)
-                    resetRouterNameCallBack?.pullTmpAccount(jPullTmpAccountRsp)
+                    if(createUserCallBack == null)
+                    {
+                        resetRouterNameCallBack?.pullTmpAccount(jPullTmpAccountRsp)
+                    }
                     pullTmpAccountBack?.pullTmpAccount(jPullTmpAccountRsp)
                     //userControlleCallBack?.firendList(jPullFriendRsp)
                 }

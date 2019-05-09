@@ -20,6 +20,7 @@ import android.content.Intent.ACTION_SEND
 import android.net.Uri
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.stratagile.pnrouter.db.RouterEntity
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.utils.*
@@ -51,6 +52,12 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
     override fun initData() {
         title.text = resources.getString(R.string.qr_code_business_card)
         routerUserEntity = intent.getParcelableExtra("user")
+        if(intent.hasExtra("mnemonic"))
+        {
+            var mnemonic = intent.getStringExtra("mnemonic");
+            hiTips.visibility = View.VISIBLE
+            hiTips.text = "Hi, "+String(RxEncodeTool.base64Decode(mnemonic));
+        }
         EventBus.getDefault().register(this)
 //        tvShareUser.setOnClickListener {
 //

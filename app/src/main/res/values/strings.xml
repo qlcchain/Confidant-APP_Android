@@ -448,7 +448,7 @@
     <string name="Router_QR_Code">Circle QR Code</string>
     <string name="Router_Alias">Circle Name</string>
     <string name="Adam_Grason">Adam Grason</string>
-    <string name="User_Management">User Management</string>
+    <string name="User_Management">Circle Members</string>
     <string name="Create_user_accounts">Create user accounts</string>
     <string name="Create_temporary_accounts">Create temporary accounts</string>
     <string name="create">Create</string>
@@ -672,4 +672,6 @@
     <string name="Please_check_the_network">Please check the network</string>
     <string name="new_messages">new messages</string>
     <string name="You_were_mentioned">You were mentioned</string>
+    <string name="Users_have_reached_the_upper_limit">Users have reached the upper limit</string>
+
 </resources>

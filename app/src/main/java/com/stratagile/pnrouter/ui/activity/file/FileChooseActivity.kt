@@ -179,12 +179,18 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         val size = mDirectories.size
         for (i in 0 until size) {
             val directory = mDirectories[i]
+            var directoryname = directory.name
+            if(directoryname == "0")
+            {
+                directoryname = "root"
+            }
             if (i == size - 1) {
+
                 tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
-                        .setText(directory.name).setTag(directory), false)
+                        .setText(directoryname).setTag(directory), false)
             } else {
                 tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view)
-                        .setText(directory.name).setTag(directory), false)
+                        .setText(directoryname).setTag(directory), false)
             }
         }
 
@@ -230,12 +236,17 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
         val size = mDirectories.size
         for (i in 0 until size) {
             val directory = mDirectories[i]
+            var directoryname = directory.name
+            if(directoryname == "0")
+            {
+                directoryname = "root"
+            }
             if (i == size - 1) {
                 tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
-                        .setText(directory.name).setTag(directory), false)
+                        .setText(directoryname).setTag(directory), false)
             } else {
                 tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view)
-                        .setText(directory.name).setTag(directory), false)
+                        .setText(directoryname).setTag(directory), false)
             }
         }
 
@@ -369,8 +380,13 @@ class FileChooseActivity : BaseActivity(), FileChooseContract.View {
                 lastTab.setCustomView(R.layout.directory_tab_view)
             }
             mDirectories.add(insertedPosition, fileInfo)
+            var fileInfoName = fileInfo.name
+            if(fileInfoName == "0")
+            {
+                fileInfoName = "root"
+            }
             tabLayout!!.addTab(tabLayout!!.newTab().setCustomView(R.layout.directory_tab_view_without_arrow)
-                    .setText(fileInfo.name).setTag(fileInfo), insertedPosition)
+                    .setText(fileInfoName).setTag(fileInfo), insertedPosition)
         } else {
             val position = mDirectories.indexOf(fileInfo)
             if (position != mDirectories.size - 1) {
