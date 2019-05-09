@@ -99,6 +99,12 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         }
         var fingerprintSwitchFlag = SpUtil.getString(this, ConstantValue.fingerprintSetting, "1")
         fingerprintSwitch.isChecked = fingerprintSwitchFlag.equals("1")
+        if(ConstantValue.notNeedVerify)
+        {
+            fingerprintSwitch.visibility = View.GONE
+        }else{
+            fingerprintSwitch.visibility = View.VISIBLE
+        }
         fingerprintSwitch.setOnClickListener {
             if (fingerprintSwitch.isChecked) {
                 SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")

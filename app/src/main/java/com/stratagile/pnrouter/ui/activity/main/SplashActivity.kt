@@ -1,19 +1,28 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.app.KeyguardManager
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.hardware.fingerprint.FingerprintManager
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.os.Message
+import android.os.*
 import android.provider.MediaStore
+import android.provider.Settings
+import android.support.v7.app.AlertDialog
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import com.jaeger.library.StatusBarUtil
+import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.fingerprint.CryptoObjectHelper
 import com.stratagile.pnrouter.fingerprint.MyAuthCallback
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerSplashComponent
@@ -21,6 +30,7 @@ import com.stratagile.pnrouter.ui.activity.main.contract.SplashContract
 import com.stratagile.pnrouter.ui.activity.main.module.SplashModule
 import com.stratagile.pnrouter.ui.activity.main.presenter.SplashPresenter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
 import kotlinx.android.synthetic.main.activity_register.*
 import javax.inject.Inject
 import org.libsodium.jni.NaCl
@@ -36,6 +46,8 @@ import java.util.*
 
 class SplashActivity : BaseActivity(), SplashContract.View {
     private var handler: Handler? = null
+    private var myAuthCallback: MyAuthCallback? = null
+    private var cancellationSignal: CancellationSignal? = null
     private var countDownTimerUtils: CountDownTimerUtils? = null
     override fun loginSuccees() {
         MobileSocketClient.getInstance().destroy()
@@ -100,6 +112,14 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         return "";
     }
     override fun onDestroy() {
+        if (myAuthCallback != null) {
+            myAuthCallback?.removeHandle()
+            myAuthCallback = null
+        }
+        if (cancellationSignal != null) {
+            cancellationSignal!!.cancel()
+            cancellationSignal = null
+        }
         super.onDestroy()
     }
 
@@ -108,12 +128,86 @@ class SplashActivity : BaseActivity(), SplashContract.View {
         StatusBarUtil.setColor(this, resources.getColor(R.color.mainColor), 0)
     }
     override fun initData() {
-        var aa = "昏沉沉的确实是个人崇拜自己找到了吗啡一旦失去了吗啡一旦你会议案发展史实施日常.png"
-        var fileName = Base58.encode(aa.toByteArray());
-        var ab = fileName.toByteArray();
-        var cc = ab.size
-        var accc = RxEncodeTool.base64Encode(aa.toByteArray())
-        var ddd = accc.size
+        /*if(BuildConfig.DEBUG)
+        {
+            SpUtil.putString(this, ConstantValue.fingerprintSetting, "0")
+        }*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                val fingerprintManager = AppConfig.instance.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
+                if (fingerprintManager != null && fingerprintManager.isHardwareDetected && fingerprintManager.hasEnrolledFingerprints()) {
+                    try {
+                        myAuthCallback = MyAuthCallback(handler)
+                        val cryptoObjectHelper = CryptoObjectHelper()
+                        if (cancellationSignal == null) {
+                            cancellationSignal = CancellationSignal()
+                        }
+                        fingerprintManager.authenticate(cryptoObjectHelper.buildCryptoObject(), cancellationSignal, 0,
+                                myAuthCallback, null)
+                        ConstantValue.notNeedVerify = false
+                        var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+                        if(fingerprintSwitchFlag == "-1")
+                        {
+                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+                        }
+                        if (cancellationSignal != null) {
+                            cancellationSignal?.cancel()
+                            cancellationSignal = null
+                        }
+                    } catch (e: Exception) {
+                        if (cancellationSignal != null) {
+                            cancellationSignal?.cancel()
+                            cancellationSignal = null
+                        }
+                        ConstantValue.notNeedVerify = true
+                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                    }
+
+                } else {
+                    try {
+                        var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                        if (!mKeyguardManager.isKeyguardSecure()) {
+                            KLog.i("没有设置密码。。。。")
+                            SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                        }else{
+                            var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+                            if(fingerprintSwitchFlag == "-1")
+                            {
+                                SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+                            }
+                        }
+                        ConstantValue.notNeedVerify = false
+                    } catch (e: Exception) {
+                        ConstantValue.notNeedVerify = true
+                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                    }
+
+                }
+
+            } catch (e: Exception) {
+                ConstantValue.notNeedVerify = true
+                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+            }
+
+        } else {
+            try {
+                var mKeyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                if (!mKeyguardManager.isKeyguardSecure()) {
+                    KLog.i("没有设置密码。。。。")
+                    SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+                }else{
+                    var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
+                    if(fingerprintSwitchFlag == "-1")
+                    {
+                        SpUtil.putString(this, ConstantValue.fingerprintSetting, "1")
+                    }
+                }
+                ConstantValue.notNeedVerify = false
+            } catch (e: Exception) {
+                ConstantValue.notNeedVerify = true
+                SpUtil.putString(this, ConstantValue.fingerprintSetting, "-1")
+            }
+        }
         LogUtil.addLog("app version :"+BuildConfig.VERSION_NAME)
         ConstantValue.msgIndex = (System.currentTimeMillis() / 1000).toInt() + (Math.random() * 100).toInt();
         var this_ = this

@@ -1240,7 +1240,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && SpUtil.getBoolean(this, ConstantValue.fingerprintUnLock, true)) {
         //!BuildConfig.DEBUG &&
         var fingerprintSwitchFlag = SpUtil.getString(AppConfig.instance, ConstantValue.fingerprintSetting, "1")
-        if(fingerprintSwitchFlag.equals("0"))
+        if(fingerprintSwitchFlag.equals("0") || fingerprintSwitchFlag.equals("-1"))
         {
             isUnlock = true
             hasFinger = true
