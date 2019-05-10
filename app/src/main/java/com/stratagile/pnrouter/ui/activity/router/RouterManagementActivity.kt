@@ -315,11 +315,11 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 
             circleName.visibility = View.VISIBLE
             circleMembers.visibility = View.VISIBLE
-            addMembers.visibility = View.VISIBLE
+            addMembers.visibility = View.GONE
             userdSpace.visibility = View.VISIBLE
             manageDisk.visibility = View.VISIBLE
         } else {
-            circleAlias.visibility = View.VISIBLE
+            circleAlias.visibility = View.GONE
 
             circleName.visibility = View.GONE
             circleMembers.visibility = View.GONE

@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/x92"
         android:layout_marginTop="@dimen/x10"
-        app:contentStr="2018/9/16"
+        app:contentStr=""
         app:showImg="false"
         app:text1="Joining time">
     </com.stratagile.pnrouter.view.DetailView>

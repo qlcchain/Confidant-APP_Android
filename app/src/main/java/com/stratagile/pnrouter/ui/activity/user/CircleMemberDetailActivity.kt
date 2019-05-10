@@ -105,9 +105,12 @@ class CircleMemberDetailActivity : BaseActivity(), CircleMemberDetailContract.Vi
         }else{
             removeMember.visibility = View.VISIBLE
         }
-        if(routerUserEntity.createTime != null && !routerUserEntity.createTime.equals(""))
+        if(routerUserEntity.createTime != null && routerUserEntity.createTime != 0)
         {
             joinTime.tvContent.text = TimeUtil.getCreateTime(routerUserEntity.createTime.toLong())
+            joinTime.visibility = View.VISIBLE
+        }else{
+            joinTime.visibility = View.GONE
         }
         if(!routerUserEntity.nickName.equals(""))
         {
