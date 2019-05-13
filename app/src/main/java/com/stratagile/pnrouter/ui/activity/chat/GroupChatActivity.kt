@@ -1849,7 +1849,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                 toast(R.string.Empty_with_parameters)
                 return msgId.toString()
             }
-            if(Msg.length >264)
+            var len = Msg.toCharArray()
+            if(len.size >ConstantValue.sendMaxSize)
             {
                 toast(R.string.nomorecharacters)
                 return msgId.toString()

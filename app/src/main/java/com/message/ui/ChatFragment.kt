@@ -246,7 +246,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
 
     fun sendMsg(FromId: String, ToId: String,FriendPublicKey :String, Msg: String) {
         try {
-            if(Msg.length >264)
+            var len = Msg.toCharArray()
+            if(len.size >ConstantValue.sendMaxSize)
             {
                 toast(R.string.nomorecharacters)
                 return
@@ -284,7 +285,8 @@ class ChatFragment : BaseFragment(), MessageProvider.ReceivedMessageListener {
     }
     fun sendMsgV3(FromIndex: String, ToIndex: String, FriendMiPublicKey :String, Msg: String) {
         try {
-            if(Msg.length >264)
+            var len = Msg.toCharArray()
+            if(len.size >ConstantValue.sendMaxSize)
             {
                 toast(R.string.nomorecharacters)
                 return

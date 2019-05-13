@@ -1700,7 +1700,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun sendMsg(FromId: String, ToId: String, FriendPublicKey:String, Msg: String) {
         try {
-            if(Msg.length >264)
+            var len = Msg.toCharArray()
+            if(len.size >ConstantValue.sendMaxSize)
             {
                 toast(R.string.nomorecharacters)
                 return
@@ -1745,7 +1746,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
                 toast(R.string.Empty_with_parameters)
                 return msgId.toString()
             }
-            if(Msg.length >264)
+            var len = Msg.toCharArray()
+            if(len.size >ConstantValue.sendMaxSize)
             {
                 toast(R.string.nomorecharacters)
                 return msgId.toString()
