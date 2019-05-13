@@ -3561,74 +3561,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                                 Thread.currentThread().interrupt(); //方法调用终止线程
                                                                 break;
                                                             }else{
-
-                                                                var RouterMacData = RouterMacStr.replace(":","")
-                                                                var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
-                                                                if(!BuildConfig.DEBUG)
-                                                                {
-                                                                    httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
-                                                                }
-                                                                OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData,  object : OkHttpUtils.OkCallback {
-                                                                    override fun onFailure( e :Exception) {
-                                                                        runOnUiThread {
-                                                                            closeProgressDialog()
-                                                                            RouterMacStr = ""
-                                                                            isFromScanAdmim = false
-                                                                            gotoLogin()
-                                                                            toast(R.string.Unable_to_connect_to_router)
-                                                                        }
-                                                                        Thread.currentThread().interrupt(); //方法调用终止线程
-                                                                    }
-                                                                    override fun  onResponse(json:String ) {
-
-                                                                        val gson = GsonUtil.getIntGson()
-                                                                        var httpDataMac: HttpData? = null
-                                                                        try {
-                                                                            if (json != null) {
-                                                                                httpDataMac = gson.fromJson<HttpData>(json, HttpData::class.java)
-                                                                                if(httpDataMac != null  && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1)
-                                                                                {
-                                                                                    ConstantValue.curreantNetworkType = "WIFI"
-                                                                                    ConstantValue.currentRouterIp = httpDataMac.serverHost
-                                                                                    ConstantValue.port = ":"+httpDataMac.serverPort.toString()
-                                                                                    ConstantValue.filePort = ":"+(httpDataMac.serverPort +1).toString()
-                                                                                    ConstantValue.currentRouterMac = RouterMacStr
-                                                                                    /*ConstantValue.currentRouterId = ConstantValue.scanRouterId
-                                                                                    ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN*/
-                                                                                    if(ConstantValue.isHasWebsocketInit)
-                                                                                    {
-                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
-                                                                                    }else{
-                                                                                        ConstantValue.isHasWebsocketInit = true
-                                                                                        AppConfig.instance.getPNRouterServiceMessageReceiver(true)
-                                                                                    }
-                                                                                    //KLog.i("没有初始化。。设置loginBackListener"+this_)
-                                                                                    //AppConfig.instance.messageReceiver!!.loginBackListener = this_
-                                                                                    Thread.currentThread().interrupt() //方法调用终止线程
-                                                                                }else{
-                                                                                    runOnUiThread {
-                                                                                        closeProgressDialog()
-                                                                                        RouterMacStr = ""
-                                                                                        isFromScanAdmim = false
-                                                                                        gotoLogin()
-                                                                                        toast(R.string.Unable_to_connect_to_router)
-                                                                                    }
-                                                                                    Thread.currentThread().interrupt(); //方法调用终止线程
-                                                                                }
-
-                                                                            }
-                                                                        } catch (e: Exception) {
-                                                                            runOnUiThread {
-                                                                                closeProgressDialog()
-                                                                                RouterMacStr = ""
-                                                                                isFromScanAdmim = false
-                                                                                gotoLogin()
-                                                                                toast(R.string.Unable_to_connect_to_router)
-                                                                            }
-                                                                            Thread.currentThread().interrupt(); //方法调用终止线程
-                                                                        }
-                                                                    }
-                                                                })
+                                                                getMacFromRemote()
                                                                 break;
                                                             }
                                                         }/*else if(!ConstantValue.currentRouterMac.equals(""))
@@ -3650,11 +3583,12 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                             }).start()
 
                                         }else{
-                                            runOnUiThread {
+                                            /*runOnUiThread {
                                                 closeProgressDialog()
                                                 gotoLogin()
                                                 toast(R.string.Please_connect_to_WiFi)
-                                            }
+                                            }*/
+                                            getMacFromRemote()
                                         }
                                     }else{
                                         runOnUiThread {
@@ -4302,5 +4236,75 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }//goMain();
             //goMain();
         }
+    }
+    fun getMacFromRemote()
+    {
+        var RouterMacData = RouterMacStr.replace(":","")
+        var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+        if(!BuildConfig.DEBUG)
+        {
+            httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
+        }
+        OkHttpUtils.getInstance().doGet(httpUrlData + RouterMacData,  object : OkHttpUtils.OkCallback {
+            override fun onFailure( e :Exception) {
+                runOnUiThread {
+                    closeProgressDialog()
+                    RouterMacStr = ""
+                    isFromScanAdmim = false
+                    gotoLogin()
+                    toast(R.string.Unable_to_connect_to_router)
+                }
+                Thread.currentThread().interrupt(); //方法调用终止线程
+            }
+            override fun  onResponse(json:String ) {
+
+                val gson = GsonUtil.getIntGson()
+                var httpDataMac: HttpData? = null
+                try {
+                    if (json != null) {
+                        httpDataMac = gson.fromJson<HttpData>(json, HttpData::class.java)
+                        if(httpDataMac != null  && httpDataMac.retCode == 0 && httpDataMac.connStatus == 1)
+                        {
+                            ConstantValue.curreantNetworkType = "WIFI"
+                            ConstantValue.currentRouterIp = httpDataMac.serverHost
+                            ConstantValue.port = ":"+httpDataMac.serverPort.toString()
+                            ConstantValue.filePort = ":"+(httpDataMac.serverPort +1).toString()
+                            ConstantValue.currentRouterMac = RouterMacStr
+                            /*ConstantValue.currentRouterId = ConstantValue.scanRouterId
+                            ConstantValue.currentRouterSN =  ConstantValue.scanRouterSN*/
+                            if(ConstantValue.isHasWebsocketInit)
+                            {
+                                AppConfig.instance.getPNRouterServiceMessageReceiver().reConnect()
+                            }else{
+                                ConstantValue.isHasWebsocketInit = true
+                                AppConfig.instance.getPNRouterServiceMessageReceiver(true)
+                            }
+                            //KLog.i("没有初始化。。设置loginBackListener"+this_)
+                            //AppConfig.instance.messageReceiver!!.loginBackListener = this_
+                            Thread.currentThread().interrupt() //方法调用终止线程
+                        }else{
+                            runOnUiThread {
+                                closeProgressDialog()
+                                RouterMacStr = ""
+                                isFromScanAdmim = false
+                                gotoLogin()
+                                toast(R.string.Unable_to_connect_to_router)
+                            }
+                            Thread.currentThread().interrupt(); //方法调用终止线程
+                        }
+
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        closeProgressDialog()
+                        RouterMacStr = ""
+                        isFromScanAdmim = false
+                        gotoLogin()
+                        toast(R.string.Unable_to_connect_to_router)
+                    }
+                    Thread.currentThread().interrupt(); //方法调用终止线程
+                }
+            }
+        })
     }
 }
