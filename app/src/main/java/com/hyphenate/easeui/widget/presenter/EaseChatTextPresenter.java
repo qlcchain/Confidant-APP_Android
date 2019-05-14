@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.net.Uri;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.model.EaseDingMessageHelper;
 import com.hyphenate.easeui.ui.EaseDingAckUserListActivity;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
@@ -31,6 +33,7 @@ import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.GroupDelMsgReq;
 import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.SpUtil;
+import com.stratagile.pnrouter.utils.StringUitl;
 import com.stratagile.tox.toxcore.ToxCoreJni;
 
 import chat.tox.antox.tox.MessageHelper;
@@ -55,7 +58,20 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
     @Override
     public void onBubbleClick(EMMessage message) {
         super.onBubbleClick(message);
-
+        String msg = ((EMTextMessageBody) message.getBody()).getMessage();
+        if(StringUitl.isHomepage(msg))
+        {
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri url = Uri.parse(msg);
+            intent.setData(url);
+            getContext().startActivity(intent);
+            return;
+        }else if(StringUitl.isEmail(msg))
+        {
+            sendEmail2(getContext(),"","",msg);
+            return;
+        }
         if (!EaseDingMessageHelper.get().isDingMessage(message)) {
             return;
         }
@@ -173,7 +189,46 @@ public class EaseChatTextPresenter extends EaseChatRowPresenter {
             }
         });
     }
-
+    /**
+     * 邮件分享
+     *
+     * @param context 上下文
+     * @param title   邮件主题
+     * @param content 邮件内容
+     * @param address 邮件地址
+     */
+    public void sendEmail(Context context, String title, String content, String address) {
+        Uri uri = Uri.parse("mailto:" + address);
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
+        // 设置对方邮件地址
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, address);
+        // 设置标题内容
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        // 设置邮件文本内容
+        emailIntent.putExtra(Intent.EXTRA_TEXT, content);
+        context.startActivity(Intent.createChooser(emailIntent, "选择邮箱"));
+    }
+    /**
+     * 邮件分享
+     *
+     * @param context 上下文
+     * @param title   邮件主题
+     * @param content 邮件内容
+     * @param address 邮件地址
+     */
+    public void sendEmail2(Context context, String title, String content, String address) {
+        // 调用系统发邮件
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        // 设置文本格式
+        emailIntent.setType("text/plain");
+        // 设置对方邮件地址
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, address);
+        // 设置标题内容
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        // 设置邮件文本内容
+        emailIntent.putExtra(Intent.EXTRA_TEXT, content);
+        context.startActivity(Intent.createChooser(emailIntent, "选择邮箱"));
+    }
     @Override
     protected void handleReceiveMessage(EMMessage message) {
         if (!message.isAcked() && message.getChatType() == EMMessage.ChatType.Chat) {
