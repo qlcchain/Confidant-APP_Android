@@ -252,7 +252,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
     }
     override fun logOutBack(jLogOutRsp: JLogOutRsp) {
 
-        if(jLogOutRsp.params.retCode == 0)
+       /* if(jLogOutRsp.params.retCode == 0)
         {
             ConstantValue.isHasWebsocketInit = true
             if(AppConfig.instance.messageReceiver != null)
@@ -284,7 +284,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             resetUnCompleteFileRecode()
             AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
             connectRouter(currentRouterEntity!!)
-        }
+        }*/
     }
 
     @Inject
@@ -662,6 +662,11 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
         recyclerView.adapter = routerListAdapter
         routerListAdapter?.setOnItemClickListener { adapter, view, position ->
 
+            if(!WiFiUtil.isNetworkConnected())
+            {
+                toast(R.string.Please_check_the_network)
+                return@setOnItemClickListener
+            }
             if(!isChangIng)
             {
                 isChangIng = true
@@ -887,41 +892,36 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 }
             }
         }
-        Thread(Runnable() {
-            run() {
-                Thread.sleep(300)
-                ConstantValue.isHasWebsocketInit = true
-                if(AppConfig.instance.messageReceiver != null)
-                    AppConfig.instance.messageReceiver!!.close()
+        ConstantValue.isHasWebsocketInit = true
+        if(AppConfig.instance.messageReceiver != null)
+            AppConfig.instance.messageReceiver!!.close()
 
-                ConstantValue.loginOut = true
-                ConstantValue.logining = false
-                ConstantValue.isHeart = false
-                ConstantValue.currentRouterIp = ""
-                resetUnCompleteFileRecode()
-                if (ConstantValue.isWebsocketConnected) {
-                    FileMangerDownloadUtils.init()
-                    ConstantValue.webSockeFileMangertList.forEach {
-                        it.disconnect(true)
-                        //ConstantValue.webSockeFileMangertList.remove(it)
-                    }
-                    ConstantValue.webSocketFileList.forEach {
-                        it.disconnect(true)
-                        //ConstantValue.webSocketFileList.remove(it)
-                    }
-                }else{
-                    val intentTox = Intent(this, KotlinToxService::class.java)
-                    this.stopService(intentTox)
-                }
-                ConstantValue.loginReq = null
-                ConstantValue.isWebsocketReConnect = false
-                ConstantValue.hasLogin = true
-                ConstantValue.isHeart = true
-                resetUnCompleteFileRecode()
-                AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
-                connectRouter(currentRouterEntity!!)
+        ConstantValue.loginOut = true
+        ConstantValue.logining = false
+        ConstantValue.isHeart = false
+        ConstantValue.currentRouterIp = ""
+        resetUnCompleteFileRecode()
+        if (ConstantValue.isWebsocketConnected) {
+            FileMangerDownloadUtils.init()
+            ConstantValue.webSockeFileMangertList.forEach {
+                it.disconnect(true)
+                //ConstantValue.webSockeFileMangertList.remove(it)
             }
-        }).start()
+            ConstantValue.webSocketFileList.forEach {
+                it.disconnect(true)
+                //ConstantValue.webSocketFileList.remove(it)
+            }
+        }else{
+            val intentTox = Intent(this, KotlinToxService::class.java)
+            this.stopService(intentTox)
+        }
+        ConstantValue.loginReq = null
+        ConstantValue.isWebsocketReConnect = false
+        ConstantValue.hasLogin = true
+        ConstantValue.isHeart = true
+        resetUnCompleteFileRecode()
+        AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+        connectRouter(currentRouterEntity!!)
 
     }
 
@@ -948,6 +948,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             if(!WiFiUtil.isNetworkConnected())
             {
+                isChangIng = false
                 toast(R.string.Please_check_the_network)
                 return
             }
