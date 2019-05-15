@@ -1449,12 +1449,12 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
                     var GroupLocal = groupList.get(0)
                     AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.delete(GroupLocal);
                 }
+                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                 runOnUiThread {
 
                     toast(R.string.Group_disbanded)
                 }
                 //需要细化处理 ，弹窗告知详情等
-                SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                 finish()
             }
 
