@@ -57,6 +57,8 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
             var mnemonic = intent.getStringExtra("mnemonic");
             hiTips.visibility = View.VISIBLE
             hiTips.text = "Hi, "+String(RxEncodeTool.base64Decode(mnemonic));
+        }else{
+            hiTips.visibility = View.INVISIBLE
         }
         EventBus.getDefault().register(this)
 //        tvShareUser.setOnClickListener {
