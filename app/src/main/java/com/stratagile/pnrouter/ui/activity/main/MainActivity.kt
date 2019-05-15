@@ -1019,7 +1019,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
                     }
                 }
-                244 -> {//有人被移除群
+                244 -> {//群主解散
                     var groupList = AppConfig.instance.mDaoMaster!!.newSession().groupEntityDao.queryBuilder().where(GroupEntityDao.Properties.GId.eq(jGroupSysPushRsp.params.gId)).list()
                     if (groupList.size > 0) {
                         var GroupLocal = groupList.get(0)

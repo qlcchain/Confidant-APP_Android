@@ -719,6 +719,11 @@ class ContactAndGroupFragment : BaseFragment(), ContactAndGroupContract.View, PN
                 groupListTemp.add(i)
             }
         }
+        if (groupListTemp.size >= 4) {
+            recyclerGroupView.layoutParams.height = resources.getDimension(R.dimen.x432).toInt()
+        }else{
+            recyclerGroupView.layoutParams.height = (resources.getDimension(R.dimen.x432).toInt() / 4) * groupListTemp.size
+        }
         contactAdapter0!!.setNewData(groupListTemp)
     }
 
