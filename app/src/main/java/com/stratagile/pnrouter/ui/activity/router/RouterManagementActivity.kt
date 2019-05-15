@@ -224,7 +224,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         if (ConstantValue.currentRouterSN != null && !ConstantValue.currentRouterSN.equals("")&& ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {
             setUI(true)
         } else {
-            setUI(false)
+            setUI(true)
         }
         if (selectedRouter.routerAlias == null || "".equals(selectedRouter.routerAlias)) {
             circleAlias.tvContent.text = selectedRouter.routerName

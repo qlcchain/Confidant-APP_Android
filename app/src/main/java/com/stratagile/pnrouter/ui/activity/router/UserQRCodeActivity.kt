@@ -17,11 +17,14 @@ import com.stratagile.pnrouter.ui.activity.router.presenter.UserQRCodePresenter
 import kotlinx.android.synthetic.main.activity_user_qrcode.*
 import javax.inject.Inject
 import android.content.Intent.ACTION_SEND
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.hyphenate.util.ImageUtils.getRoundedCornerBitmap
 import com.stratagile.pnrouter.db.RouterEntity
+import com.stratagile.pnrouter.db.RouterEntityDao
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.utils.*
 import org.greenrobot.eventbus.EventBus
@@ -59,6 +62,14 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
             hiTips.text = "Hi, "+String(RxEncodeTool.base64Decode(mnemonic));
         }else{
             hiTips.visibility = View.INVISIBLE
+        }
+        var routerEntity = RouterEntity()
+        val routerEntityList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.queryBuilder().where(RouterEntityDao.Properties.UserSn.eq(routerUserEntity.userSN)).list()
+        if (routerEntityList != null && routerEntityList!!.size != 0) {
+            routerEntity = routerEntityList.get(0)
+            adminName.text = getString(R.string.Circle_Owner)+ String(RxEncodeTool.base64Decode(routerEntity.adminName))
+        }else{
+            adminName.text =""
         }
         EventBus.getDefault().register(this)
 //        tvShareUser.setOnClickListener {
@@ -109,7 +120,8 @@ class UserQRCodeActivity : BaseActivity(), UserQRCodeContract.View {
         Thread(Runnable() {
             run() {
 
-                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(routerUserEntity.qrcode, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor))
+                var bitMapAvatar =  getRoundedCornerBitmap(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+                var  bitmap: Bitmap =   QRCodeEncoder.syncEncodeQRCode(routerUserEntity.qrcode, BGAQRCodeUtil.dp2px(AppConfig.instance, 150f), AppConfig.instance.getResources().getColor(R.color.mainColor),bitMapAvatar)
                 runOnUiThread {
                     ivQrCode2.setImageBitmap(bitmap)
                 }

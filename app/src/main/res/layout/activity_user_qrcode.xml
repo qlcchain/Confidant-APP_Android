@@ -56,16 +56,26 @@
                 android:layout_width="@dimen/x108"
                 android:layout_marginTop="@dimen/x18"
                 android:layout_height="@dimen/x108" />
-
+            <TextView
+                android:id="@+id/adminName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/x10"
+                android:layout_marginBottom="@dimen/x1"
+                android:text="adminName"
+                android:textColor="@color/color_b3b3b3"
+                android:textSize="12sp" />
 
             <ImageView
                 android:id="@+id/ivQrCode2"
                 android:layout_width="@dimen/x375"
                 android:layout_height="@dimen/x375"
-                android:layout_marginTop="@dimen/x60" />
+                android:layout_marginTop="@dimen/x40"
+                android:layout_marginBottom="@dimen/x40"/>
 
             <TextView
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/x30"
                 android:layout_marginBottom="@dimen/x20"
