@@ -292,8 +292,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
             }
             1 -> {
-              /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
-                startActivity(Intent(this, RegisterActivity::class.java))*/
+                /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
+                  startActivity(Intent(this, RegisterActivity::class.java))*/
 
                 runOnUiThread {
                     showProgressDialog("waiting...")
@@ -367,42 +367,42 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         }
                     }
                 }else{*/
-                  /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
-                    var intent = Intent(this, RegisterActivity::class.java)
-                    intent.putExtra("flag", 1)
-                    startActivity(intent)*/
-                    runOnUiThread {
-                        showProgressDialog("waiting...")
-                    }
+                /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
+                  var intent = Intent(this, RegisterActivity::class.java)
+                  intent.putExtra("flag", 1)
+                  startActivity(intent)*/
+                runOnUiThread {
+                    showProgressDialog("waiting...")
+                }
 
-                    val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
-                    var sign = ByteArray(32)
-                    var time = (System.currentTimeMillis() /1000).toString().toByteArray()
-                    System.arraycopy(time, 0, sign, 0, time.size)
-                    var dst_signed_msg = ByteArray(96)
-                    var signed_msg_len = IntArray(1)
-                    var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                    var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
-                    var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-                    //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                    var regeister = RegeisterReq_V4( recoveryRsp.params.routeId,  recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                    if(ConstantValue.isWebsocketConnected)
-                    {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                var regeister = RegeisterReq_V4( recoveryRsp.params.routeId,  recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
+                if(ConstantValue.isWebsocketConnected)
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                }
+                else if(ConstantValue.isToxConnected)
+                {
+                    var baseData = BaseData(4,regeister)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
-                    else if(ConstantValue.isToxConnected)
-                    {
-                        var baseData = BaseData(4,regeister)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }else{
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
-                        }
-                    }
+                }
                 //}
 
             }
@@ -1404,10 +1404,10 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
             ConstantValue.lastRouterSN=""
             ConstantValue.lastNetworkType =""
         }
-       /* if (loginKey.text.toString().equals("")) {
-            toast(getString(R.string.please_type_your_password))
-            return
-        }*/
+        /* if (loginKey.text.toString().equals("")) {
+             toast(getString(R.string.please_type_your_password))
+             return
+         }*/
         if( ConstantValue.curreantNetworkType.equals("TOX"))
         {
 
@@ -1949,6 +1949,14 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         super.onActivityResult(requestCode, resultCode, data)
         var this_ = this
         if (requestCode == REQUEST_SCAN_QRCODE && resultCode == Activity.RESULT_OK) {
+            if(!WiFiUtil.isNetworkConnected())
+            {
+                runOnUiThread {
+                    closeProgressDialog()
+                    toast(R.string.Please_connect_to_network)
+                }
+                return
+            }
             hasRouterParentLogin.visibility = View.GONE
             noRoutergroupLogin.visibility = View.GONE
             try {
@@ -1963,7 +1971,7 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                         {
                             if(AppConfig.instance.messageReceiver != null)
                                 AppConfig.instance.messageReceiver!!.close()
-                            if(WiFiUtil.isNetworkConnected())
+                            if(WiFiUtil.isWifiConnect())
                             {
                                 showProgressDialog("wait...")
                                 ConstantValue.currentRouterMac  = ""
@@ -1977,17 +1985,17 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                                         {
                                             if(count >=3)
                                             {
-                                               /* if(ConstantValue.currentRouterMac.equals(""))
-                                                {
-                                                    runOnUiThread {
-                                                        closeProgressDialog()
-                                                        RouterMacStr = ""
-                                                        isFromScanAdmim = false
-                                                        toast(R.string.Unable_to_connect_to_router)
-                                                    }
-                                                }
-                                                Thread.currentThread().interrupt(); //方法调用终止线程
-                                                break;*/
+                                                /* if(ConstantValue.currentRouterMac.equals(""))
+                                                 {
+                                                     runOnUiThread {
+                                                         closeProgressDialog()
+                                                         RouterMacStr = ""
+                                                         isFromScanAdmim = false
+                                                         toast(R.string.Unable_to_connect_to_router)
+                                                     }
+                                                 }
+                                                 Thread.currentThread().interrupt(); //方法调用终止线程
+                                                 break;*/
                                                 if(!ConstantValue.currentRouterMac.equals(""))
                                                 {
                                                     Thread.currentThread().interrupt(); //方法调用终止线程
@@ -2009,14 +2017,12 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
 
                                     }
                                 }).start()
-
                             }else{
-                                /*runOnUiThread {
-                                    closeProgressDialog()
-                                    toast(R.string.Please_connect_to_WiFi)
-                                }*/
+                                showProgressDialog("wait...")
                                 getMacFromRemote(this_)
                             }
+
+
                         }else{
                             runOnUiThread {
                                 closeProgressDialog()
@@ -2650,13 +2656,13 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                             }
                             isStartLogin = true
 //                            getServer(routerId,userSn,false,false)
-                             if(AppConfig.instance.messageReceiver != null)
-                                 AppConfig.instance.messageReceiver!!.close()
+                            if(AppConfig.instance.messageReceiver != null)
+                                AppConfig.instance.messageReceiver!!.close()
                             //routerList[position].lastCheck = true
                             //AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.update(routerList[position])
                         }catch (e:Exception)
                         {
-                             e.printStackTrace()
+                            e.printStackTrace()
                         }
 
                     }
@@ -2666,6 +2672,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
     }
     fun getMacFromRemote(this_:LoginActivityActivity)
     {
+        if(standaloneCoroutine != null)
+            standaloneCoroutine.cancel()
+        standaloneCoroutine = launch(CommonPool) {
+            delay(10000)
+            runOnUiThread {
+                closeProgressDialog()
+                toast(R.string.Unable_to_connect_to_router)
+            }
+        }
         var RouterMacData = RouterMacStr.replace(":","")
         var httpUrlData = ConstantValue.httpMacUrl +"CheckByMac?mac="
         if(!BuildConfig.DEBUG)

@@ -676,4 +676,6 @@
     <string name="Caution">Caution</string>
     <string name="Cautiontips">Anyone with your Circle QR Code can create accounts in your Confidant Station without your permission.</string>
 
+    <string name="Please_connect_to_network">Please connect to the network</string>
+
 </resources>
