@@ -158,7 +158,7 @@ public class EaseConversationListFragment extends EaseBaseFragment {
                     {
                         UserEntity friendInfo = null;
                         List<UserEntity> localFriendList = null;
-                        if (!lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
+                        if (UserDataManger.myUserData != null && !lastMessage.getEmMessage().getTo().equals(UserDataManger.myUserData.getUserId())) {
                             localFriendList = AppConfig.instance.getMDaoMaster().newSession().getUserEntityDao().queryBuilder().where(UserEntityDao.Properties.UserId.eq(lastMessage.getEmMessage().getTo())).list();
                             KLog.i("点击会话层1_localFriendList:" + localFriendList.size());
                             LogUtil.addLog("点击会话层1_localFriendList:" + localFriendList.size(), "EaseConversationListFragment");

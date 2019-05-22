@@ -83,145 +83,150 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.picture_preview);
-        if (!RxBus.getDefault().isRegistered(this)) {
-            RxBus.getDefault().register(this);
-        }
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.picture_preview);
+            if (!RxBus.getDefault().isRegistered(this)) {
+                RxBus.getDefault().register(this);
+            }
 
-        mHandler = new Handler();
-        screenWidth = ScreenUtils.getScreenWidth(this);
-        animation = OptAnimationLoader.loadAnimation(this, R.anim.modal_in);
-        animation.setAnimationListener(this);
-        picture_left_back = (ImageView) findViewById(R.id.picture_left_back);
-        viewPager = (PreviewViewPager) findViewById(R.id.preview_pager);
-        ll_check = (LinearLayout) findViewById(R.id.ll_check);
-        id_ll_ok = (LinearLayout) findViewById(R.id.id_ll_ok);
-        check = (TextView) findViewById(R.id.check);
-        picture_left_back.setOnClickListener(this);
-        tv_ok = (TextView) findViewById(R.id.tv_ok);
-        id_ll_ok.setOnClickListener(this);
-        tv_img_num = (TextView) findViewById(R.id.tv_img_num);
-        tv_title = (TextView) findViewById(R.id.picture_title);
-        position = getIntent().getIntExtra(PictureConfig.EXTRA_POSITION, 0);
-        tv_ok.setText(numComplete ? getString(R.string.picture_done_front_num,
-                0, pictureSelectionConfig.selectionMode == PictureConfig.SINGLE ? 1 : pictureSelectionConfig.maxSelectNum)
-                : getString(R.string.picture_please_select));
+            mHandler = new Handler();
+            screenWidth = ScreenUtils.getScreenWidth(this);
+            animation = OptAnimationLoader.loadAnimation(this, R.anim.modal_in);
+            animation.setAnimationListener(this);
+            picture_left_back = (ImageView) findViewById(R.id.picture_left_back);
+            viewPager = (PreviewViewPager) findViewById(R.id.preview_pager);
+            ll_check = (LinearLayout) findViewById(R.id.ll_check);
+            id_ll_ok = (LinearLayout) findViewById(R.id.id_ll_ok);
+            check = (TextView) findViewById(R.id.check);
+            picture_left_back.setOnClickListener(this);
+            tv_ok = (TextView) findViewById(R.id.tv_ok);
+            id_ll_ok.setOnClickListener(this);
+            tv_img_num = (TextView) findViewById(R.id.tv_img_num);
+            tv_title = (TextView) findViewById(R.id.picture_title);
+            position = getIntent().getIntExtra(PictureConfig.EXTRA_POSITION, 0);
+            tv_ok.setText(numComplete ? getString(R.string.picture_done_front_num,
+                    0, pictureSelectionConfig.selectionMode == PictureConfig.SINGLE ? 1 : pictureSelectionConfig.maxSelectNum)
+                    : getString(R.string.picture_please_select));
 
-        tv_img_num.setSelected(pictureSelectionConfig.checkNumMode ? true : false);
+            tv_img_num.setSelected(pictureSelectionConfig.checkNumMode ? true : false);
 
-        selectImages = (List<LocalMedia>) getIntent().
-                getSerializableExtra(PictureConfig.EXTRA_SELECT_LIST);
-        boolean is_bottom_preview = getIntent().
-                getBooleanExtra(PictureConfig.EXTRA_BOTTOM_PREVIEW, false);
-        if(getIntent().hasExtra("from"))
-        {
-            this.from =getIntent().getStringExtra("from");
-            tv_title.setVisibility(View.GONE);
-        }else{
-            tv_title.setVisibility(View.VISIBLE);
-        }
-        if (is_bottom_preview) {
-            // 底部预览按钮过来
-            images = (List<LocalMedia>) getIntent().
-                    getSerializableExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST);
-        } else {
+            selectImages = (List<LocalMedia>) getIntent().
+                    getSerializableExtra(PictureConfig.EXTRA_SELECT_LIST);
+            boolean is_bottom_preview = getIntent().
+                    getBooleanExtra(PictureConfig.EXTRA_BOTTOM_PREVIEW, false);
             if(getIntent().hasExtra("from"))
             {
-                images = ImagesObservable.getInstance().readLocalMedias("chat");
+                this.from =getIntent().getStringExtra("from");
+                tv_title.setVisibility(View.GONE);
             }else{
-                images = ImagesObservable.getInstance().readLocalMedias("select");
+                tv_title.setVisibility(View.VISIBLE);
             }
+            if (is_bottom_preview) {
+                // 底部预览按钮过来
+                images = (List<LocalMedia>) getIntent().
+                        getSerializableExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST);
+            } else {
+                if(getIntent().hasExtra("from"))
+                {
+                    images = ImagesObservable.getInstance().readLocalMedias("chat");
+                }else{
+                    images = ImagesObservable.getInstance().readLocalMedias("select");
+                }
 
-        }
-        RelativeLayout select_bar_layout = findViewById(R.id.select_bar_layout);
-        if(getIntent().hasExtra("from"))
-        {
-            select_bar_layout.setVisibility(View.GONE);
-        }else{
-            select_bar_layout.setVisibility(View.VISIBLE);
-        }
-        initViewPageAdapterData();
-        ll_check.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (images != null && images.size() > 0) {
-                    LocalMedia image = images.get(viewPager.getCurrentItem());
-                    String pictureType = selectImages.size() > 0 ?
-                            selectImages.get(0).getPictureType() : "";
-                    if (!TextUtils.isEmpty(pictureType)) {
-                        boolean toEqual = PictureMimeType.
-                                mimeToEqual(pictureType, image.getPictureType());
-                        if (!toEqual) {
-                            ToastManage.s(mContext,getString(R.string.picture_rule));
-                            return;
-                        }
-                    }
-                    // 刷新图片列表中图片状态
-                    boolean isChecked;
-                    if (!check.isSelected()) {
-                        isChecked = true;
-                        check.setSelected(true);
-                        check.startAnimation(animation);
-                    } else {
-                        isChecked = false;
-                        check.setSelected(false);
-                    }
-                    if (selectImages.size() >= pictureSelectionConfig.maxSelectNum && isChecked) {
-                        ToastManage.s(mContext, getString(R.string.picture_message_max_num, pictureSelectionConfig.maxSelectNum +""));
-                        check.setSelected(false);
-                        return;
-                    }
-                    if (isChecked) {
-                        VoiceUtils.playVoice(mContext, pictureSelectionConfig.openClickSound);
-                        // 如果是单选，则清空已选中的并刷新列表(作单一选择)
-                        if (pictureSelectionConfig.selectionMode == PictureConfig.SINGLE) {
-                            singleRadioMediaImage();
-                        }
-                        selectImages.add(image);
-                        image.setNum(selectImages.size());
-                        if (pictureSelectionConfig.checkNumMode) {
-                            check.setText(String.valueOf(image.getNum()));
-                        }
-                    } else {
-                        for (LocalMedia media : selectImages) {
-                            if (media.getPath().equals(image.getPath())) {
-                                selectImages.remove(media);
-                                subSelectPosition();
-                                notifyCheckChanged(media);
-                                break;
+            }
+            RelativeLayout select_bar_layout = findViewById(R.id.select_bar_layout);
+            if(getIntent().hasExtra("from"))
+            {
+                select_bar_layout.setVisibility(View.GONE);
+            }else{
+                select_bar_layout.setVisibility(View.VISIBLE);
+            }
+            initViewPageAdapterData();
+            ll_check.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (images != null && images.size() > 0) {
+                        LocalMedia image = images.get(viewPager.getCurrentItem());
+                        String pictureType = selectImages.size() > 0 ?
+                                selectImages.get(0).getPictureType() : "";
+                        if (!TextUtils.isEmpty(pictureType)) {
+                            boolean toEqual = PictureMimeType.
+                                    mimeToEqual(pictureType, image.getPictureType());
+                            if (!toEqual) {
+                                ToastManage.s(mContext,getString(R.string.picture_rule));
+                                return;
                             }
                         }
+                        // 刷新图片列表中图片状态
+                        boolean isChecked;
+                        if (!check.isSelected()) {
+                            isChecked = true;
+                            check.setSelected(true);
+                            check.startAnimation(animation);
+                        } else {
+                            isChecked = false;
+                            check.setSelected(false);
+                        }
+                        if (selectImages.size() >= pictureSelectionConfig.maxSelectNum && isChecked) {
+                            ToastManage.s(mContext, getString(R.string.picture_message_max_num, pictureSelectionConfig.maxSelectNum +""));
+                            check.setSelected(false);
+                            return;
+                        }
+                        if (isChecked) {
+                            VoiceUtils.playVoice(mContext, pictureSelectionConfig.openClickSound);
+                            // 如果是单选，则清空已选中的并刷新列表(作单一选择)
+                            if (pictureSelectionConfig.selectionMode == PictureConfig.SINGLE) {
+                                singleRadioMediaImage();
+                            }
+                            selectImages.add(image);
+                            image.setNum(selectImages.size());
+                            if (pictureSelectionConfig.checkNumMode) {
+                                check.setText(String.valueOf(image.getNum()));
+                            }
+                        } else {
+                            for (LocalMedia media : selectImages) {
+                                if (media.getPath().equals(image.getPath())) {
+                                    selectImages.remove(media);
+                                    subSelectPosition();
+                                    notifyCheckChanged(media);
+                                    break;
+                                }
+                            }
+                        }
+                        onSelectNumChange(true);
                     }
-                    onSelectNumChange(true);
                 }
-            }
-        });
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                isPreviewEggs(pictureSelectionConfig.previewEggs, position, positionOffsetPixels);
-            }
+            });
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    isPreviewEggs(pictureSelectionConfig.previewEggs, position, positionOffsetPixels);
+                }
 
-            @Override
-            public void onPageSelected(int i) {
-                position = i;
-                tv_title.setText(position + 1 + "/" + images.size());
-                LocalMedia media = images.get(position);
-                index = media.getPosition();
-                if (!pictureSelectionConfig.previewEggs) {
-                    if (pictureSelectionConfig.checkNumMode) {
-                        check.setText(media.getNum() + "");
-                        notifyCheckChanged(media);
+                @Override
+                public void onPageSelected(int i) {
+                    position = i;
+                    tv_title.setText(position + 1 + "/" + images.size());
+                    LocalMedia media = images.get(position);
+                    index = media.getPosition();
+                    if (!pictureSelectionConfig.previewEggs) {
+                        if (pictureSelectionConfig.checkNumMode) {
+                            check.setText(media.getNum() + "");
+                            notifyCheckChanged(media);
+                        }
+                        onImageChecked(position);
                     }
-                    onImageChecked(position);
                 }
-            }
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                }
+            });
+        }catch (Exception e)
+        {
+
+        }
     }
 
     /**

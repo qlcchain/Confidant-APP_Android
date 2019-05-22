@@ -137,7 +137,11 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 				{
 					DeleteUtils.deleteFile(mFile.getPath());
 					msg.what = 0x404;
-					handler.sendMessage(msg);
+					if(handler != null)
+					{
+						handler.sendMessage(msg);
+					}
+
 					return;
 				}
 				if(bytesCopiedFlag != -1)
@@ -147,7 +151,11 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 					DeleteUtils.deleteFile(mFile.getPath());
 					msg.what = 0x404;
 				}
-				handler.sendMessage(msg);
+				if(handler != null)
+				{
+					handler.sendMessage(msg);
+				}
+
 			}
 		}, 500);
 	}
@@ -161,7 +169,10 @@ public class FileDownLoaderTask extends AsyncTask<Void, Integer, Long> {
 			{
 				Message msg = new Message();
 				msg.what = 0x404;
-				handler.sendMessage(msg);
+				if(handler != null)
+				{
+					handler.sendMessage(msg);
+				}
 				return 0L;
 			}
 			//connection = mUrl.openConnection();
