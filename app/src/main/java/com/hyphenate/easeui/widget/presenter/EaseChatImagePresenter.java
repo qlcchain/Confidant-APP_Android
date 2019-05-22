@@ -2,7 +2,6 @@ package com.hyphenate.easeui.widget.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,24 +24,16 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.observable.ImagesObservable;
 import com.message.Message;
-import com.noober.menu.FloatMenu;
-import com.socks.library.KLog;
-import com.stratagile.pnrouter.R;
 import com.stratagile.pnrouter.application.AppConfig;
 import com.stratagile.pnrouter.constant.ConstantValue;
-import com.stratagile.pnrouter.db.MessageEntity;
 import com.stratagile.pnrouter.entity.BaseData;
-import com.stratagile.pnrouter.entity.DelMsgReq;
 import com.stratagile.pnrouter.entity.JPullFileListRsp;
 import com.stratagile.pnrouter.entity.PullFileReq;
 import com.stratagile.pnrouter.entity.events.BeginDownloadForwad;
 import com.stratagile.pnrouter.entity.events.DownloadForwadSuccess;
-import com.stratagile.pnrouter.entity.file.UpLoadFile;
-import com.stratagile.pnrouter.ui.activity.selectfriend.selectFriendActivity;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.DeleteUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
-import com.stratagile.pnrouter.utils.FileMangerDownloadUtils;
 import com.stratagile.pnrouter.utils.GsonUtil;
 import com.stratagile.pnrouter.utils.SpUtil;
 import com.stratagile.tox.toxcore.ToxCoreJni;
@@ -203,22 +194,27 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             Collections.sort(previewImages, new Comparator<LocalMedia>() {
                 @Override
                 public int compare(LocalMedia lhs, LocalMedia rhs) {
-                    int lsize = lhs.getTimeStamp();
-                    int rsize = rhs.getTimeStamp();
+                    int lsize = lhs.getSortIndex();
+                    int rsize = rhs.getSortIndex();
                     return lsize == rsize ? 0 : (lsize > rsize ? 1 : -1);
                 }
             });
             ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
             int postion = 0;
             int size = previewImages.size();
-            int msgId = Integer.valueOf(message.getMsgId()) ;
-            for(int i = 0 ; i < size ;i ++)
-            {
-                if(previewImages.get(i).getTimeStamp() == msgId)
+            try{
+                int msgId = Integer.valueOf(message.getMsgId()) ;
+                for(int i = 0 ; i < size ;i ++)
                 {
-                    postion = i;
+                    if(previewImages.get(i).getSortIndex() == msgId)
+                    {
+                        postion = i;
+                    }
+                    previewImages.get(i).setPosition(i);
                 }
-                previewImages.get(i).setPosition(i);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
             }
             Intent intentPicturePreviewActivity = new Intent(getContext(), PicturePreviewActivity.class);
             Bundle bundle = new Bundle();

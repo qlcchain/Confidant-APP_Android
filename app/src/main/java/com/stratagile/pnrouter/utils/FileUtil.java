@@ -86,6 +86,10 @@ public class FileUtil {
                 if (!Avatar.exists()) {
                     Avatar.mkdir();
                 }
+                File picAndVideoTemp = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/PicAndVideoTemp", "");
+                if (!picAndVideoTemp.exists()) {
+                    picAndVideoTemp.mkdir();
+                }
                 KLog.i("文件夹初始化成功。。。。。。。。。。。。。");
             }
         }).start();

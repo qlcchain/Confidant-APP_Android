@@ -150,9 +150,10 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         if (bitmap != null) {
             // thumbnail image is already loaded, reuse the drawable
             iv.setImageBitmap(bitmap);
+            progressBarShelf.setVisibility(View.INVISIBLE);
         } else {
             imageView.setImageResource(R.drawable.image_defalut_bg);
-
+            progressBarShelf.setVisibility(View.VISIBLE);
             try {
                 new AsyncTask<Void, Void, Bitmap>() {
 
@@ -172,7 +173,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
                             EaseImageCache.getInstance().put(localThumb, result);
                             Bitmap bitmap2 = getRoundCornerImage(result, result.getWidth(), result.getHeight());
                             iv.setImageBitmap(bitmap2);
-
+                            progressBarShelf.setVisibility(View.INVISIBLE);
                         } else {
                             if (message.status() == EMMessage.Status.FAIL) {
                                 if (EaseCommonUtils.isNetWorkConnected(activity)) {

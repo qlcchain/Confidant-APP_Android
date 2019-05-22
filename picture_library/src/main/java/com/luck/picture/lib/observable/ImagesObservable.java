@@ -69,14 +69,14 @@ public class ImagesObservable implements SubjectListener {
     /**
      * 移除图片
      */
-    public void removeLocalMedia(int timeStamp,String key) {
+    public void removeLocalMedia(int msgId,String key) {
         //medias = list;
         List<LocalMedia> mediasTemp = mediasDataMap.get(key);
         if (mediasTemp != null) {
             int size = mediasTemp.size();
             for(int i=0 ; i < size ;i ++)
             {
-                if(mediasTemp.get(i).getTimeStamp() == timeStamp)
+                if(mediasTemp.get(i).getSortIndex() == msgId)
                 {
                     mediasTemp.remove(i);
                     break;
@@ -85,7 +85,25 @@ public class ImagesObservable implements SubjectListener {
         }
     }
     /**
-     * 读取图片
+     * 获取单张图片
+     */
+    public LocalMedia getLocalMedia(int msgId,String key) {
+        //medias = list;
+        List<LocalMedia> mediasTemp = mediasDataMap.get(key);
+        if (mediasTemp != null) {
+            int size = mediasTemp.size();
+            for(int i=0 ; i < size ;i ++)
+            {
+                if(mediasTemp.get(i).getSortIndex() == msgId)
+                {
+                    return mediasTemp.get(i);
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     * 读取图片列表
      */
     public List<LocalMedia> readLocalMedias(String key) {
         List<LocalMedia> mediasTemp = mediasDataMap.get(key);

@@ -69,10 +69,10 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 width = Float.valueOf(whs[0]);
                 height = Float.valueOf(whs[1]);
                 setImageViewSize();
-//                KLog.i("位置为：" + position);
-//                KLog.i("原始宽高为：" + wh);
-//                KLog.i("图片的宽为1：" + width);
-//                KLog.i("图片的高为1：" + height);
+                KLog.i("位置为：" + position);
+                KLog.i("原始宽高为：" + wh);
+                KLog.i("图片的宽为1：" + width);
+                KLog.i("图片的高为1：" + height);
             }
         } catch (Exception e) {
             width =  getContext().getResources().getDimension(R.dimen.x300);
@@ -223,11 +223,14 @@ public class EaseChatRowImage extends EaseChatRowFile {
             }
             // thumbnail image is already loaded, reuse the drawable
             imageView.setImageBitmap(bitmap2);
+            progressBarShelf.setVisibility(View.INVISIBLE);
             width = bitmap.getWidth();
             height = bitmap.getHeight();
             setImageViewSize();
         } else {
             try {
+                imageView.setImageResource(R.drawable.image_defalut_bg);
+                progressBarShelf.setVisibility(View.VISIBLE);
                 new AsyncTask<Object, Void, Bitmap>() {
 
                     @Override
@@ -365,6 +368,7 @@ public class EaseChatRowImage extends EaseChatRowFile {
                             }
                             imageView.setImageBitmap(bitmap2);
                             EaseImageCache.getInstance().put(thumbernailPath, bitmap2);
+                            progressBarShelf.setVisibility(View.INVISIBLE);
                         } else {
                             imageView.setImageResource(R.drawable.image_defalut_bg);
                         }

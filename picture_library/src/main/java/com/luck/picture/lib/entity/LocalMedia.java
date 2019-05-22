@@ -27,7 +27,7 @@ public class LocalMedia implements Parcelable {
     private boolean compressed;
     private int width;
     private int height;
-    public int timeStamp;
+    private int sortIndex;//用于图片排序
     public LocalMedia() {
 
     }
@@ -64,7 +64,7 @@ public class LocalMedia implements Parcelable {
                 ", compressed=" + compressed +
                 ", width=" + width +
                 ", height=" + height +
-                ", timeStamp=" + timeStamp +
+                ", sortIndex=" + sortIndex +
                 '}';
     }
 
@@ -186,12 +186,12 @@ public class LocalMedia implements Parcelable {
         this.height = height;
     }
 
-    public int getTimeStamp() {
-        return timeStamp;
+    public int getSortIndex() {
+        return sortIndex;
     }
 
-    public void setTimeStamp(int timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
     }
 
     @Override
@@ -214,7 +214,7 @@ public class LocalMedia implements Parcelable {
         dest.writeByte(this.compressed ? (byte) 1 : (byte) 0);
         dest.writeInt(this.width);
         dest.writeInt(this.height);
-        dest.writeInt(this.timeStamp);
+        dest.writeInt(this.sortIndex);
     }
 
     protected LocalMedia(Parcel in) {
@@ -231,7 +231,7 @@ public class LocalMedia implements Parcelable {
         this.compressed = in.readByte() != 0;
         this.width = in.readInt();
         this.height = in.readInt();
-        this.timeStamp = in.readInt();
+        this.sortIndex = in.readInt();
     }
 
     public static final Parcelable.Creator<LocalMedia> CREATOR = new Parcelable.Creator<LocalMedia>() {
