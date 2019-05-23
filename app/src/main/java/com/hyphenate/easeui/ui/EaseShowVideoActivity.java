@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,8 @@ import com.hyphenate.chat.EMVideoMessageBody;
 import com.stratagile.pnrouter.R;
 import com.hyphenate.easeui.model.EaseCompat;
 import com.hyphenate.util.EMLog;
+import com.stratagile.pnrouter.constant.ConstantValue;
+import com.stratagile.pnrouter.utils.FileUtil;
 
 import java.io.File;
 
@@ -57,6 +60,15 @@ public class EaseShowVideoActivity extends EaseBaseActivity{
 		if (localFilePath != null && new File(localFilePath).exists()) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			Uri uri = EaseCompat.getUriForFile(this, new File(localFilePath));
+			if (Build.VERSION.SDK_INT <Build.VERSION_CODES.N) {
+				String voideoName = localFilePath.substring(localFilePath.lastIndexOf("/")+ 1,localFilePath.length());
+				File videoFile = new File(Environment.getExternalStorageDirectory() + ConstantValue.INSTANCE.getLocalPath()+"/PicAndVideoTemp", voideoName);
+				if(!videoFile.exists())
+				{
+					int result = FileUtil.copyAppFileToSdcard(localFilePath, videoFile.getPath());
+				}
+				uri = EaseCompat.getUriForFile(this, new File(videoFile.getPath()));
+			}
 			intent.setDataAndType(uri, "video/mp4");
 			// 注意添加该flag,用于Android7.0以上设备获取相册文件权限.
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

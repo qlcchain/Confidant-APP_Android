@@ -7,7 +7,7 @@ import java.io.File;
  */
 public class DeleteUtils {
     /**
-     * @param filePath
+     * @param filePath  删除文件下的文件，不保留根目录
      * @return
      */
     public static boolean deleteDirectory(String filePath) {
@@ -33,7 +33,33 @@ public class DeleteUtils {
         if (!flag) return false;
         return dirFile.delete();
     }
-
+    /**
+     * @param filePath 删除文件下的文件，保留根目录
+     * @return
+     */
+    public static boolean deleteDirectorySubs(String filePath) {
+        boolean flag = false;
+        if (!filePath.endsWith(File.separator)) {
+            filePath = filePath + File.separator;
+        }
+        File dirFile = new File(filePath);
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return false;
+        }
+        flag = true;
+        File[] files = dirFile.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile()) {
+                flag = deleteFile(files[i].getAbsolutePath());
+                if (!flag) break;
+            } else {
+                flag = deleteDirectory(files[i].getAbsolutePath());
+                if (!flag) break;
+            }
+        }
+        if (!flag) return false;
+        return true;
+    }
     /**
      * @param filePath
      * @return

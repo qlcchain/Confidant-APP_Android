@@ -1940,6 +1940,8 @@ class ChatActivity : BaseActivity(), ChatContract.View, PNRouterServiceMessageRe
 
     override fun onDestroy() {
         try {
+            var PicAndVideoTempPath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/PicAndVideoTemp"
+            DeleteUtils.deleteDirectorySubs(PicAndVideoTempPath)
             AppConfig.instance.messageReceiver!!.chatCallBack = null
             AppConfig.instance.isChatWithFirend = null
             activityInstance = null

@@ -2025,6 +2025,8 @@ class GroupChatActivity : BaseActivity(), GroupChatContract.View , PNRouterServi
     }
     override fun onDestroy() {
         try {
+            var PicAndVideoTempPath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/PicAndVideoTemp"
+            DeleteUtils.deleteDirectorySubs(PicAndVideoTempPath)
             AppConfig.instance.messageReceiver!!.groupchatCallBack = null
             AppConfig.instance.isChatWithFirend = null
             activityInstance = null

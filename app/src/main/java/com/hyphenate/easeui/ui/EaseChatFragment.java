@@ -463,11 +463,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 @Override
                 public void run() {
                     EMMessage eMMessage = EMClient.getInstance().chatManager().getMessage(msgId);
+                    KLog.i("onFileTransformStatus：" + eMMessage);
                     if (eMMessage != null && LogIdIdResult != null) {
                         conversation.removeMessage(msgId);
+                        KLog.i("onFileTransformStatus：" + 0);
                         if (eMMessage.getType().equals(EMMessage.Type.IMAGE))
                         {
                             LocalMedia localMedia = ImagesObservable.getInstance().getLocalMedia(Integer.valueOf(msgId),"chat");
+                            KLog.i("onFileTransformStatus：" + localMedia);
                             if(localMedia != null)
                             {
                                 previewImages.remove(localMedia);
@@ -2965,12 +2968,12 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                         String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                         int codeSave = FileUtil.copySdcardPicAndCompress(imagePath, files_dir, isCompress);
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                        /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                             if(codeSave == 1)
                             {
                                 DeleteUtils.deleteFile(imagePath);
                             }
-                        }
+                        }*/
                         EMMessage message = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
@@ -3294,10 +3297,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                             String fileName = Base58.getBase58TwoName(leftName, "_" + ((int) (System.currentTimeMillis() / 1000)), typeName);
                             String files_dir = PathUtils.getInstance().getImagePath().toString() + "/" + fileName;
                             int result = FileUtil.copyAppFileToSdcard(videoPath, files_dir);
-                            if(result == 1 )
+                            /*if(result == 1 )
                             {
                                 DeleteUtils.deleteFile(videoPath);
-                            }
+                            }*/
                             videoPath = files_dir;
                         }
 
