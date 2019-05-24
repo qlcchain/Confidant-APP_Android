@@ -483,7 +483,7 @@
 
     <string name="Encryptionerror">encryption error</string>
     <string name="Empty_with_parameters">Empty with parameters</string>
-    <string name="nomorecharacters">No more than 264 characters</string>
+    <string name="nomorecharacters">The content is too long.</string>
     <string name="needs8">Lnvitation code needs 8 characters.</string>
     <string name="needs35">at most 35 characters.</string>
     <string name="fixedtwo">fixed QR code sharing out, users scan the QR code can automatically generate a temporary account, login, temporary account does not support recovery, default to a circle to support up to 20 temporary accounts.</string>

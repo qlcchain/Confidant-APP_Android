@@ -119,6 +119,6 @@ object ConstantValue {
         var fileNameMaxLen = 80//文件名最大长度
         var atMaxNum = 5 //群聊中@最大数量
         var notNeedVerify = false  //是否支持指纹和密码
-        var sendMaxSize = 264 * 2  //发送文字消息的最大字节数 264 * 2
+        var sendMaxSize = 50000  //发送文字消息的最大字节数 原来是264 * 2，现在是5万
 
 }

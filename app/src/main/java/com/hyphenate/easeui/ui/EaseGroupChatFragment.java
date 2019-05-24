@@ -2686,6 +2686,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             if (AppConfig.instance.getMessageReceiver() != null) {
                 msgId = AppConfig.instance.getMessageReceiver().getGroupchatCallBack().sendGroupMsg(userId, UserDataManger.currentGroupData.getGId() + "", point, content, UserDataManger.currentGroupData.getUserKey());
 
+                if(msgId.equals("0"))
+                {
+                    return;
+                }
                 message.setFrom(userId);
                 message.setTo(UserDataManger.currentGroupData.getGId() + "");
                 message.setDelivered(true);

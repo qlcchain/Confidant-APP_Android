@@ -320,6 +320,8 @@ class PdfViewActivity : BaseActivity(), PdfViewContract.View {
         progressDialog.hide()
     }
     override fun onDestroy() {
+        var PicAndVideoTempPath = Environment.getExternalStorageDirectory().toString() + ConstantValue.localPath + "/PicAndVideoTemp"
+        DeleteUtils.deleteDirectorySubs(PicAndVideoTempPath)
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

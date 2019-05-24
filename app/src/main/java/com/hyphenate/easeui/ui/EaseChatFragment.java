@@ -2438,6 +2438,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 if (message == null) {
                     return;
                 }
+                if(msgId.equals("0"))
+                {
+                    return;
+                }
                 message.setFrom(userId);
                 message.setTo(UserDataManger.curreantfriendUserData.getUserId());
                 message.setDelivered(true);
