@@ -13,6 +13,7 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.db.RouterUserEntity
 import com.stratagile.pnrouter.entity.*
+import com.stratagile.pnrouter.ui.activity.router.UserQRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerCircleMemberDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.CircleMemberDetailContract
 import com.stratagile.pnrouter.ui.activity.user.module.CircleMemberDetailModule
@@ -24,6 +25,7 @@ import com.stratagile.pnrouter.utils.baseDataToJson
 import com.stratagile.pnrouter.view.SweetAlertDialog
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
+import kotlinx.android.synthetic.main.activity_adduser.*
 import kotlinx.android.synthetic.main.activity_circlemember_detail.*
 import javax.inject.Inject
 
@@ -99,16 +101,30 @@ class CircleMemberDetailActivity : BaseActivity(), CircleMemberDetailContract.Vi
             nickNameSouce = String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic))
             nickName.tvContent.text = nickNameSouce
         }
-        if(routerUserEntity.userId == null || routerUserEntity.userId.equals("") || nickNameSouce.equals("tempUser"))
+        if(routerUserEntity.userId == null || routerUserEntity.userId.equals(""))
         {
             removeMember.visibility = View.GONE
         }else{
-            removeMember.visibility = View.VISIBLE
+            if(routerUserEntity.active == 1)
+            {
+                removeMember.visibility = View.VISIBLE
+            }else{
+                removeMember.visibility = View.GONE
+            }
+
         }
         if(routerUserEntity.createTime != null && routerUserEntity.createTime != 0)
         {
-            joinTime.tvContent.text = TimeUtil.getCreateTime(routerUserEntity.createTime.toLong())
-            joinTime.visibility = View.VISIBLE
+
+            if(routerUserEntity.active == 1)
+            {
+                joinTime.tvContent.text = TimeUtil.getCreateTime(routerUserEntity.createTime.toLong())
+                joinTime.visibility = View.VISIBLE
+            }else{
+                joinTime.tvContent.text = getString(R.string.Not_Activated)
+                joinTime.visibility = View.VISIBLE
+            }
+
         }else{
             joinTime.visibility = View.GONE
         }
@@ -119,6 +135,20 @@ class CircleMemberDetailActivity : BaseActivity(), CircleMemberDetailContract.Vi
         }else{
             var nickNameSouce = String(RxEncodeTool.base64Decode(routerUserEntity.mnemonic))
             ivAvatar.setText(nickNameSouce)
+        }
+        qrCode.setOnClickListener {
+
+            if(routerUserEntity.userType == 2)
+            {
+                var intentUserQRCodeActivity = Intent(this, UserQRCodeActivity::class.java)
+                intentUserQRCodeActivity.putExtra("user", routerUserEntity)
+                intentUserQRCodeActivity.putExtra("mnemonic", routerUserEntity.mnemonic)
+                startActivity(intentUserQRCodeActivity)
+            }else if(routerUserEntity.userType == 3){
+                var intentUserQRCodeActivity = Intent(this, UserQRCodeActivity::class.java)
+                intentUserQRCodeActivity.putExtra("user", routerUserEntity)
+                startActivity(intentUserQRCodeActivity)
+            }
         }
         removeMember.setOnClickListener {
             SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)

@@ -54,7 +54,15 @@
         app:showImg="false"
         app:text1="Name">
     </com.stratagile.pnrouter.view.DetailView>
-
+    <com.stratagile.pnrouter.view.DetailView
+        android:visibility="visible"
+        android:id="@+id/qrCode"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:src="@mipmap/icon_qr_code"
+        app:showImg="true"
+        app:text1="@string/Circle_Login_QR_Code2">
+    </com.stratagile.pnrouter.view.DetailView>
     <include layout="@layout/divide_line"/>
     <com.stratagile.pnrouter.view.DetailView
         android:id="@+id/joinTime"
@@ -65,15 +73,7 @@
         app:showImg="false"
         app:text1="Joining time">
     </com.stratagile.pnrouter.view.DetailView>
-    <com.stratagile.pnrouter.view.DetailView
-        android:visibility="gone"
-        android:id="@+id/qrCode"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x92"
-        app:src="@mipmap/icon_qr_code"
-        app:showImg="true"
-        app:text1="@string/invite_friends_to_conifdant">
-    </com.stratagile.pnrouter.view.DetailView>
+
     <include layout="@layout/divide_line"
         android:visibility="gone"/>
     <LinearLayout
