@@ -98,7 +98,7 @@ public class EaseDefaultEmojiconDatas {
             EaseSmileUtils.ee_88,
             EaseSmileUtils.ee_89,
             EaseSmileUtils.ee_90,
-            EaseSmileUtils.ee_91,
+            /*EaseSmileUtils.ee_91,
             EaseSmileUtils.ee_92,
             EaseSmileUtils.ee_93,
             EaseSmileUtils.ee_94,
@@ -112,7 +112,7 @@ public class EaseDefaultEmojiconDatas {
             EaseSmileUtils.ee_102,
             EaseSmileUtils.ee_103,
             EaseSmileUtils.ee_104,
-            EaseSmileUtils.ee_105,
+            EaseSmileUtils.ee_105,*/
 
     };
 
@@ -207,7 +207,7 @@ public class EaseDefaultEmojiconDatas {
             R.drawable.ee_88,
             R.drawable.ee_89,
             R.drawable.ee_90,
-            R.drawable.ee_91,
+            /*R.drawable.ee_91,
             R.drawable.ee_92,
             R.drawable.ee_93,
             R.drawable.ee_94,
@@ -221,7 +221,7 @@ public class EaseDefaultEmojiconDatas {
             R.drawable.ee_102,
             R.drawable.ee_103,
             R.drawable.ee_104,
-            R.drawable.ee_105,
+            R.drawable.ee_105,*/
     };
 
 
