@@ -162,7 +162,20 @@ object LibsodiumUtil {
         }
 
     }
-
+    fun cryptoSign(souceStr:String):String
+    {
+        if(souceStr == null || souceStr.equals(""))
+        {
+            return ""
+        }
+        var souceStrByte = souceStr.toByteArray()
+        var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+        var dst_signed_msg = ByteArray(96)
+        var signed_msg_len = IntArray(1)
+        var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,souceStrByte,souceStrByte.size,mySignPrivate)
+        var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名souceStr->转base64
+        return signBase64;
+    }
     /**
      * 得到最后发送消息数据包
      */

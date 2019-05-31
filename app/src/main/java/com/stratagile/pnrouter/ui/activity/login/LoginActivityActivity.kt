@@ -1035,6 +1035,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                 showUnlock()
                 return@setOnClickListener
             }
+            //MobileInfoUtils.jumpStartInterface(this)
+            //return@setOnClickListener
             isFromScanAdmim = false
             isFromScan = false
             if (NetUtils.isNetworkAvalible(this)) {

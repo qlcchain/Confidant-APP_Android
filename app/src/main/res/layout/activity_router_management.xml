@@ -216,7 +216,33 @@
                     app:showImg="false"
                     app:text1="Manage Disks">
                 </com.stratagile.pnrouter.view.DetailView>
-
+                <LinearLayout
+                    android:id="@+id/enableQlcNode"
+                    android:layout_width="match_parent"
+                    android:background="@color/white"
+                    android:layout_marginTop="@dimen/x20"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_height="@dimen/x108">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/color_2c2c2c"
+                        android:layout_marginLeft="@dimen/x30"
+                        android:textSize="@dimen/commemTextSize"
+                        android:text="Run as QLC Chain Node"
+                        />
+                    <View
+                        android:layout_width="0px"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                    <Switch
+                        android:id="@+id/enableQlcNodeSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/x30"
+                        android:layout_marginLeft="@dimen/x30"/>
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/autoLogin"
                     android:layout_width="match_parent"

@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.entity
 
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.constant.ConstantValue
+import com.stratagile.pnrouter.utils.LibsodiumUtil
+import com.stratagile.pnrouter.utils.baseDataToJson
 import java.util.*
 
 /**
@@ -12,9 +14,10 @@ open class BaseData() {
     var appid : String? = null
     var apiversion :Int ? = null
     var msgid :Int ? = null
-    var params : Any? = null
     var offset :Int ? = null
     var more :Int ? = null
+    var params : Any? = null
+    var sign : String? = null
 
 
     constructor(apiverion:Int,params : Any) : this() {
@@ -25,6 +28,18 @@ open class BaseData() {
         this.offset = 0
         this.more = 0
         this.msgid =  ConstantValue.msgIndex++
+        if(apiverion >=6)//版本6以及以上需要签名
+        {
+            var paramsStr = params.baseDataToJson()
+            this.sign = LibsodiumUtil.cryptoSign(paramsStr +this.timestamp)
+            if(this.sign.equals(""))
+            {
+                if(BuildConfig.DEBUG)
+                {
+                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                }
+            }
+        }
     }
     constructor(apiverion:Int,params : Any,msgId:Int) : this() {
         this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
@@ -628,3 +643,14 @@ data class PullTmpAccountReq(var UserId :String,  var Action : String = "PullTmp
  * (2)	响应（APP->Router）
  */
 data class DelUserReq(var From :String,var To :String,var Sn :String,  var Action : String = "DelUser")
+/**
+ * 86.	节点owner开关qlc节点
+ * (2)	响应（APP->Router）
+ */
+data class EnableQlcNode(var Enable :Int,var Seed :String,  var Action : String = "EnableQlcNode")
+
+/**
+ * 87.	节点owner检查qlc节点运行状态
+ * (2)	响应（APP->Router）
+ */
+data class CheckQlcNode(var Action : String = "CheckQlcNode")

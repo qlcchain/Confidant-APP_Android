@@ -123,6 +123,8 @@ class AppConfig : MultiDexApplication() {
          var alarm= getSystemService(ALARM_SERVICE) as AlarmManager;
          alarm.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),5*1000,sender);*/
 //        MessageProvider.init()
+        var intent = Intent(this, ForegroundService::class.java)
+        startService(intent)
     }
 
     fun getMessageReceiverInstance(): PNRouterServiceMessageReceiver? {

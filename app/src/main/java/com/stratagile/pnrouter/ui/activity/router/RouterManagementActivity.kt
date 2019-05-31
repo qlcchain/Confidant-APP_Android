@@ -51,7 +51,15 @@ import kotlin.concurrent.thread
  * @date 2018/09/26 10:29:17
  */
 
-class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, PNRouterServiceMessageReceiver.GetDiskTotalInfoBack, PNRouterServiceMessageReceiver.ResetRouterNameCallBack {
+class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, PNRouterServiceMessageReceiver.GetDiskTotalInfoBack, PNRouterServiceMessageReceiver.ResetRouterNameCallBack, PNRouterServiceMessageReceiver.QlcNodeCallBack {
+    override fun enableQlcNodeRsp(jEnableQlcNodeRsp: JEnableQlcNodeRsp) {
+
+    }
+
+    override fun checkQlcNodeRsp(jCheckQlcNodeRsp: JCheckQlcNodeRsp) {
+
+    }
+
     override fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp) {
         if(jPullTmpAccountRsp.params.retCode == 0)
         {
@@ -184,7 +192,19 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         {
 
         }
-
+        var msgData = CheckQlcNode()
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, msgData))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(6, msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
         var routerList = AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.loadAll()
         routerList.forEach {
             if (it.lastCheck) {
@@ -298,7 +318,28 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
             }
         }
-
+        enableQlcNodeSwitch.isChecked = false
+        enableQlcNodeSwitch.setOnClickListener {
+            var open = 1;
+            if (enableQlcNodeSwitch.isChecked) {
+                open = 1
+            } else {
+                open = 0
+            }
+            var msgData = EnableQlcNode(open,"")
+            if (ConstantValue.isWebsocketConnected) {
+                AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, msgData))
+            } else if (ConstantValue.isToxConnected) {
+                var baseData = BaseData(6, msgData)
+                var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                if (ConstantValue.isAntox) {
+                    var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                    MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                } else {
+                    ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+                }
+            }
+        }
         manageDisk.setOnClickListener {
             startActivity(Intent(this, DiskManagementActivity::class.java))
         }

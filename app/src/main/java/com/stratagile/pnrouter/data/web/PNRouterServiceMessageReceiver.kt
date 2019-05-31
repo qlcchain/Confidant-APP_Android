@@ -548,6 +548,14 @@ val credentialsProvider: CredentialsProvider, private
                     val JRemoveMemberRsp = gson.fromJson(text, JRemoveMemberRsp::class.java)
                     removeMemberCallBack?.removeMember(JRemoveMemberRsp)
                 }
+                "EnableQlcNode" -> {
+                    val jEnableQlcNodeRsp = gson.fromJson(text, JEnableQlcNodeRsp::class.java)
+                    qlcNodeCallBack?.enableQlcNodeRsp(jEnableQlcNodeRsp)
+                }
+                "CheckQlcNode" -> {
+                    val jCheckQlcNodeRsp = gson.fromJson(text, JCheckQlcNodeRsp::class.java)
+                    qlcNodeCallBack?.checkQlcNodeRsp(jCheckQlcNodeRsp)
+                }
             }
         }
 
@@ -583,6 +591,8 @@ val credentialsProvider: CredentialsProvider, private
     var adminLoginCallBack: AdminLoginCallBack? = null
 
     var resetRouterNameCallBack: ResetRouterNameCallBack? = null
+
+    var qlcNodeCallBack: QlcNodeCallBack? = null
 
     var adminUpdataPassWordCallBack: AdminUpdataPassWordCallBack? = null
 
@@ -839,7 +849,10 @@ val credentialsProvider: CredentialsProvider, private
         fun ResetRouterName(jResetRouterNameRsp: JResetRouterNameRsp)
         fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp)
     }
-
+    interface QlcNodeCallBack {
+        fun enableQlcNodeRsp(jEnableQlcNodeRsp: JEnableQlcNodeRsp)
+        fun checkQlcNodeRsp(jCheckQlcNodeRsp: JCheckQlcNodeRsp)
+    }
     interface AdminUpdataCodeCallBack {
         fun updataCode(jAdminUpdataCodeRsp: JAdminUpdataCodeRsp)
     }
