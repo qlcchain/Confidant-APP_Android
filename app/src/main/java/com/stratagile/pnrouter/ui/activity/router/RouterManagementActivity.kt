@@ -7,10 +7,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import chat.tox.antox.tox.MessageHelper
 import chat.tox.antox.wrapper.FriendKey
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
+import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -23,6 +25,7 @@ import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.ConnectStatus
 import com.stratagile.pnrouter.entity.events.RouterChange
 import com.stratagile.pnrouter.ui.activity.admin.AdminLoginSuccessActivity
+import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerRouterManagementComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.RouterManagementContract
 import com.stratagile.pnrouter.ui.activity.router.module.RouterManagementModule
@@ -32,6 +35,9 @@ import com.stratagile.pnrouter.ui.activity.user.EditNickNameActivity
 import com.stratagile.pnrouter.ui.activity.user.UserAccoutCodeActivity
 import com.stratagile.pnrouter.ui.adapter.router.RouterListAdapter
 import com.stratagile.pnrouter.utils.*
+import com.stratagile.pnrouter.view.CommonDialog
+import com.stratagile.pnrouter.view.SweetAlertDialog
+import com.stratagile.tox.toxcore.KotlinToxService
 import com.stratagile.tox.toxcore.ToxCoreJni
 import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
@@ -163,6 +169,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
     val circleAlias1 = 2
     val circleMember1 = 3
     val circleName1 = 4
+    var rebootting:CommonDialog ? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         needFront = true
@@ -244,7 +251,12 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         if (ConstantValue.currentRouterSN != null && !ConstantValue.currentRouterSN.equals("")&& ConstantValue.isCurrentRouterAdmin && ConstantValue.currentRouterSN.equals(selectedRouter.userSn)) {
             setUI(true)
         } else {
-            setUI(false)
+            if(BuildConfig.DEBUG)
+            {
+                setUI(true)
+            }else{
+                setUI(false)
+            }
         }
         if (selectedRouter.routerAlias == null || "".equals(selectedRouter.routerAlias)) {
             circleAlias.tvContent.text = selectedRouter.routerName
@@ -343,13 +355,110 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
         manageDisk.setOnClickListener {
             startActivity(Intent(this, DiskManagementActivity::class.java))
         }
-
+        rebootCircle.setOnClickListener {
+            showDialog()
+        }
         selectCircle.setOnClickListener {
             startActivityForResult(Intent(this, SelectCircleActivity::class.java), 5)
         }
     }
+    fun showDialog() {
+        SweetAlertDialog(this, SweetAlertDialog.BUTTON_NEUTRAL)
+                .setContentText(getString(R.string.restart))
+                .setConfirmClickListener {
+                    showProgressDialog()
+                    closeProgressDialog()
+                    rebotRouter()
+                }
+                .show()
 
+    }
+    private fun  rebotRouter()
+    {
+        var msgData = RebootReq()
+        if (ConstantValue.isWebsocketConnected) {
+            AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(3, msgData))
+        } else if (ConstantValue.isToxConnected) {
+            var baseData = BaseData(3, msgData)
+            var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+            if (ConstantValue.isAntox) {
+                var friendKey: FriendKey = FriendKey(ConstantValue.currentRouterId.substring(0, 64))
+                MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+            } else {
+                ToxCoreJni.getInstance().senToxMessage(baseDataJson, ConstantValue.currentRouterId.substring(0, 64))
+            }
+        }
+        showRebootting()
+        Thread(Runnable() {
+            run() {
+                Thread.sleep(5000)
+                hideRebootting()
+                ConstantValue.isHasWebsocketInit = true
+                /* if(AppConfig.instance.messageReceiver != null)
+                     AppConfig.instance.messageReceiver!!.close()*/
 
+                ConstantValue.loginOut = true
+                ConstantValue.logining = false
+                ConstantValue.isHeart = false
+                //isUserExit = true
+                resetUnCompleteFileRecode()
+                if (ConstantValue.isWebsocketConnected) {
+                    FileMangerDownloadUtils.init()
+                    ConstantValue.webSockeFileMangertList.forEach {
+                        it.disconnect(true)
+                        //ConstantValue.webSockeFileMangertList.remove(it)
+                    }
+                    ConstantValue.webSocketFileList.forEach {
+                        it.disconnect(true)
+                        //ConstantValue.webSocketFileList.remove(it)
+                    }
+                }else{
+                    val intentTox = Intent(this, KotlinToxService::class.java)
+                    this.stopService(intentTox)
+                }
+                ConstantValue.isWebsocketConnected = false
+                ConstantValue.loginReq = null
+                ConstantValue.isWebsocketReConnect = false
+                AppConfig.instance.mAppActivityManager.finishAllActivityWithoutThis()
+                var intent = Intent(this, LoginActivityActivity::class.java)
+                intent.putExtra("flag", "logout")
+                startActivity(intent)
+                finish()
+            }
+        }).start()
+    }
+    private fun showRebootting() {
+        val view = View.inflate(this, R.layout.layout_format, null)
+        //取消或确定按钮监听事件处l
+        rebootting = CommonDialog(this)
+        var content = view.findViewById<TextView>(R.id.content)
+        content.text = getString(R.string.rebooting)
+        val window = rebootting?.window
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        rebootting?.setView(view)
+        rebootting?.show()
+    }
+    private fun hideRebootting() {
+        rebootting?.dismiss()
+    }
+    fun resetUnCompleteFileRecode()
+    {
+        var localFilesList = LocalFileUtils.localFilesList
+        for (myFie in localFilesList)
+        {
+            if(myFie.upLoadFile.isComplete == false)
+            {
+                myFie.upLoadFile.SendGgain = true
+                myFie.upLoadFile.isStop = "1"
+                myFie.upLoadFile.segSeqResult = 0
+                val myRouter = MyFile()
+                myRouter.type = 0
+                myRouter.userSn = ConstantValue.currentRouterSN
+                myRouter.upLoadFile = myFie.upLoadFile
+                LocalFileUtils.updateLocalAssets(myRouter)
+            }
+        }
+    }
     fun setUI(isManager: Boolean) {
         if (isManager) {
             circleAlias.visibility = View.GONE
@@ -359,6 +468,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             addMembers.visibility = View.GONE
             userdSpace.visibility = View.VISIBLE
             manageDisk.visibility = View.VISIBLE
+            enableQlcNode.visibility  = View.VISIBLE
+            rebootCircle.visibility  = View.VISIBLE
         } else {
             circleAlias.visibility = View.GONE
 
@@ -367,6 +478,8 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             addMembers.visibility = View.GONE
             userdSpace.visibility = View.GONE
             manageDisk.visibility = View.GONE
+            enableQlcNode.visibility  = View.GONE
+            rebootCircle.visibility  = View.GONE
         }
     }
 

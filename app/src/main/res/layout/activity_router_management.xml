@@ -217,6 +217,7 @@
                     app:text1="Manage Disks">
                 </com.stratagile.pnrouter.view.DetailView>
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/enableQlcNode"
                     android:layout_width="match_parent"
                     android:background="@color/white"
@@ -279,7 +280,16 @@
                     app:showImg="true"
                     app:text1="@string/Circle_Login_QR_Code">
                 </com.stratagile.pnrouter.view.DetailView>
-
+                <com.stratagile.pnrouter.view.DetailView
+                    android:visibility="gone"
+                    android:id="@+id/rebootCircle"
+                    android:layout_marginTop="@dimen/x1"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/x108"
+                    app:contentStr=""
+                    app:showImg="false"
+                    app:text1="Reboot Circle">
+                </com.stratagile.pnrouter.view.DetailView>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 

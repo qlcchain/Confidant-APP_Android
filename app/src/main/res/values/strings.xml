@@ -679,4 +679,6 @@
     <string name="Please_connect_to_network">Please connect to the network</string>
     <string name="Not_Activated">Not Activated</string>
     <string name="Circle_Login_QR_Code2">Circle Login QR Code</string>
+
+    <string name="restart">Are you sure to restart?</string>
 </resources>
