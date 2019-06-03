@@ -170,10 +170,16 @@ object LibsodiumUtil {
         }
         var souceStrByte = souceStr.toByteArray()
         var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-        var dst_signed_msg = ByteArray(96)
+        var dst_signed_msg = ByteArray(souceStrByte.size +64)
         var signed_msg_len = IntArray(1)
         var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,souceStrByte,souceStrByte.size,mySignPrivate)
         var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)//自己固定签名私钥->签名souceStr->转base64
+
+
+
+        /*val dst_Friend_TempPublicKey = ByteArray(souceStrByte.size)
+        val msg_len = IntArray(1)
+        val crypto_sign_open = Sodium.crypto_sign_open(dst_Friend_TempPublicKey, msg_len, dst_signed_msg, dst_signed_msg.size, RxEncodeTool.base64Decode(ConstantValue.libsodiumpublicSignKey))*/
         return signBase64;
     }
     /**

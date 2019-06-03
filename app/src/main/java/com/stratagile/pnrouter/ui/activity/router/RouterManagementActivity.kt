@@ -59,11 +59,53 @@ import kotlin.concurrent.thread
 
 class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, PNRouterServiceMessageReceiver.GetDiskTotalInfoBack, PNRouterServiceMessageReceiver.ResetRouterNameCallBack, PNRouterServiceMessageReceiver.QlcNodeCallBack {
     override fun enableQlcNodeRsp(jEnableQlcNodeRsp: JEnableQlcNodeRsp) {
-
+        runOnUiThread {
+            closeProgressDialog()
+        }
+        if(jEnableQlcNodeRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                toast(R.string.success)
+            }
+        }else if(jEnableQlcNodeRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                if(enableQlcNodeSwitch.isChecked)
+                {
+                    enableQlcNodeSwitch.isChecked = false
+                }
+                toast("Node disk space is insufficient")
+            }
+        }else{
+            runOnUiThread {
+                if(enableQlcNodeSwitch.isChecked)
+                {
+                    enableQlcNodeSwitch.isChecked = false
+                }
+                toast("No authority")
+            }
+        }
     }
 
     override fun checkQlcNodeRsp(jCheckQlcNodeRsp: JCheckQlcNodeRsp) {
 
+        if(jCheckQlcNodeRsp.params.retCode == 0)
+        {
+            runOnUiThread {
+                enableQlcNodeSwitch.isChecked = jCheckQlcNodeRsp.params.status == 1
+                enableQlcNode.visibility = View.VISIBLE
+            }
+
+        }else{
+            runOnUiThread {
+                enableQlcNode.visibility = View.GONE
+                if(BuildConfig.DEBUG)
+                {
+                    enableQlcNode.visibility = View.VISIBLE
+                }
+            }
+
+        }
     }
 
     override fun pullTmpAccount(jPullTmpAccountRsp: JPullTmpAccountRsp) {
@@ -195,6 +237,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
 //        title.text = getString(R.string.routerManagement)
         try {
             AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = this
+            AppConfig.instance.messageReceiver!!.qlcNodeCallBack = this
         }catch (e:Exception)
         {
 
@@ -276,9 +319,9 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             startActivityForResult(intent, circleMember1)
         }
         addMembers.setOnClickListener {
-           /* var intent = Intent(this, RouterQRCodeActivity::class.java)
-            intent.putExtra("router", selectedRouter)
-            startActivity(intent)*/
+            /* var intent = Intent(this, RouterQRCodeActivity::class.java)
+             intent.putExtra("router", selectedRouter)
+             startActivity(intent)*/
             /*var intent = Intent(this, RouterCreateUserActivity::class.java)
             intent.putExtra("routerUserEntity", selectedRouter)
             startActivityForResult(intent, 0)*/
@@ -330,7 +373,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
                 SpUtil.putString(this, ConstantValue.autoLoginRouterSn, "")
             }
         }
-        enableQlcNodeSwitch.isChecked = false
+
         enableQlcNodeSwitch.setOnClickListener {
             var open = 1;
             if (enableQlcNodeSwitch.isChecked) {
@@ -338,6 +381,7 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             } else {
                 open = 0
             }
+            showProgressDialog("wait…")
             var msgData = EnableQlcNode(open,"")
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(6, msgData))
@@ -523,9 +567,10 @@ class RouterManagementActivity : BaseActivity(), RouterManagementContract.View, 
             EventBus.getDefault().unregister(this)
             AppConfig.instance.messageReceiver!!.resetRouterNameCallBack = null
             AppConfig.instance.messageReceiver!!.getDiskDetailInfoBack = null
+            AppConfig.instance.messageReceiver!!.qlcNodeCallBack = null
         }catch (e:Exception)
         {
-             e.printStackTrace()
+            e.printStackTrace()
         }
         super.onDestroy()
     }

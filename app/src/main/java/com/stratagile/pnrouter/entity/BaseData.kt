@@ -31,7 +31,8 @@ open class BaseData() {
         if(apiverion >=6)//版本6以及以上需要签名
         {
             var paramsStr = params.baseDataToJson()
-            this.sign = LibsodiumUtil.cryptoSign(paramsStr +this.timestamp)
+            var action = paramsStr.substring(paramsStr.indexOf("\"Action\":\"") +1,paramsStr.lastIndexOf("\""))
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
             if(this.sign.equals(""))
             {
                 if(BuildConfig.DEBUG)
