@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.entity
 
+import com.alibaba.fastjson.JSONObject
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.utils.LibsodiumUtil
@@ -21,17 +22,22 @@ open class BaseData() {
 
 
     constructor(apiverion:Int,params : Any) : this() {
+        var apiverionNew = apiverion
+        if(apiverion < 6)
+        {
+            apiverionNew = 6;
+        }
         this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
-        this.apiversion = apiverion
+        this.apiversion = apiverionNew
         this.params = params
         this.offset = 0
         this.more = 0
         this.msgid =  ConstantValue.msgIndex++
-        if(apiverion >=6)//版本6以及以上需要签名
+        if(apiverionNew >=6)//版本6以及以上需要签名
         {
             var paramsStr = params.baseDataToJson()
-            var action = paramsStr.substring(paramsStr.indexOf("\"Action\":\"") +1,paramsStr.lastIndexOf("\""))
+            var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
             this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
             if(this.sign.equals(""))
             {
@@ -43,9 +49,14 @@ open class BaseData() {
         }
     }
     constructor(apiverion:Int,params : Any,msgId:Int) : this() {
+        var apiverionNew = apiverion
+        if(apiverion < 6)
+        {
+            apiverionNew = 6;
+        }
         this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
-        this.apiversion = apiverion
+        this.apiversion = apiverionNew
         this.offset = 0
         this.more = 0
         this.params = params
@@ -55,21 +66,57 @@ open class BaseData() {
         }
         else{
             this.msgid =  ConstantValue.msgIndex++
+        }
+        if(apiverionNew >=6)//版本6以及以上需要签名
+        {
+            var paramsStr = params.baseDataToJson()
+            var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            if(this.sign.equals(""))
+            {
+                if(BuildConfig.DEBUG)
+                {
+                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                }
+            }
         }
     }
     constructor(params : Any) : this() {
         this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
+        if(this.apiversion!! < 6)
+        {
+            this.apiversion = 6
+        }
         this.params = params
         this.offset = 0
         this.more = 0
         this.msgid =  ConstantValue.msgIndex++
+
+        if(this.apiversion!! >=6)//版本6以及以上需要签名
+        {
+            var paramsStr = params.baseDataToJson()
+            var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            if(this.sign.equals(""))
+            {
+                if(BuildConfig.DEBUG)
+                {
+                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                }
+            }
+        }
     }
     constructor(params : Any,msgId:Int) : this() {
         this.timestamp = ((Calendar.getInstance().timeInMillis) / 1000).toString()
         this.appid = "MiFi"
         this.apiversion = Integer.valueOf(BuildConfig.APIVERSION)
+        var apiverionNew = this.apiversion
+        if(apiverionNew!! < 6)
+        {
+            this.apiversion = 6
+        }
         this.offset = 0
         this.more = 0
         this.params = params
@@ -79,6 +126,19 @@ open class BaseData() {
         }
         else{
             this.msgid =  ConstantValue.msgIndex++
+        }
+        if(this.apiversion!! >=6)//版本6以及以上需要签名
+        {
+            var paramsStr = params.baseDataToJson()
+            var action = (JSONObject.parseObject(paramsStr)).get("Action").toString()
+            this.sign = LibsodiumUtil.cryptoSign(action +this.timestamp)
+            if(this.sign.equals(""))
+            {
+                if(BuildConfig.DEBUG)
+                {
+                    throw Exception()//抛出错误说明签名为空，版本6以及以上需要签名
+                }
+            }
         }
     }
 }
