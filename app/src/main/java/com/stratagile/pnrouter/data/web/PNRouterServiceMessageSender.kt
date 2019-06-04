@@ -1062,7 +1062,7 @@ class PNRouterServiceMessageSender @Inject constructor(pipe: Optional<SignalServ
                 porperty = byteArrayOf(1)//群聊
             }
             sendFileData.porperty = porperty
-            val ver = byteArrayOf(0)
+            val ver = byteArrayOf(1)
             sendFileData.ver = ver
             sendFileData.content = content
             var sendData =  byteArrayOf(0)
