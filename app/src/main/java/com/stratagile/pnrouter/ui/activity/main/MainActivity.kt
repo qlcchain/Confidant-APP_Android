@@ -406,6 +406,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         runOnUiThread {
             closeProgressDialog()
         }
+        if(standaloneCoroutine != null)
+            standaloneCoroutine.cancel()
         KLog.i("222")
         ConstantValue.unSendMessage.remove("recovery")
         ConstantValue.unSendMessageFriendId.remove("recovery")
@@ -2201,6 +2203,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             showProgressDialog("wait...")
                         }
                     }
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                gotoLogin()
+                                toast("time out")
+                            }
+                        }
+                    }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
                     AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,recovery))
@@ -3507,6 +3519,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                return*/
             try {
                 var result = data!!.getStringExtra("result");
+                if (result!!.indexOf("http://") > -1 || result!!.indexOf("https://") > -1) {
+                    /*val intent = Intent(AppConfig.instance, WebViewActivity::class.java)
+                    intent.putExtra("url", hasQRCode)
+                    intent.putExtra("title", "Other websites")
+                    startActivity(intent)*/
+                    val intent = Intent()
+                    intent.action = "android.intent.action.VIEW"
+                    val url = Uri.parse(result)
+                    intent.data = url
+                    startActivity(intent)
+                    return;
+                }
                 if(!result.contains("type_"))
                 {
                     if (NetUtils.isMacAddress(result)) {

@@ -136,6 +136,9 @@ class ScanQrCodeActivity : BaseActivity(), ScanQrCodeContract.View, QRCodeView.D
         if (isMacAddress(string)) {
             return true
         }
+        if (string!!.indexOf("http://") > -1 || string!!.indexOf("https://") > -1) {
+            return true
+        }
         return false
     }
 
