@@ -823,11 +823,12 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 deleteStr+=index.toString()+","
                 var deleteRouterEntity:RouterEntity =  LocalRouterUtils.deleteLocalAssets(it.userSn)
                 AppConfig.instance.mDaoMaster!!.newSession().routerEntityDao.delete(deleteRouterEntity)
+                if(it.routerId.equals(ConstantValue.currentRouterId))
+                {
+                    isHasCurrentLogin = true
+                }
             }
-            if(it.routerId.equals(ConstantValue.currentRouterId))
-            {
-                isHasCurrentLogin = true
-            }
+
         }
 
         if(deleteStr.equals(""))
