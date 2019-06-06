@@ -667,12 +667,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 toast(R.string.Please_check_the_network)
                 return@setOnItemClickListener
             }
-            if(!isChangIng)
-            {
-                isChangIng = true
-            }else{
-                return@setOnItemClickListener
-            }
+
             if (routerListAdapter!!.isCkeckMode) {
                 var selectRouterEntity = routerListAdapter!!.data[position]
                 if (selectRouterEntity.routerId.equals(ConstantValue.currentRouterId)) {
@@ -682,8 +677,15 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
                 routerListAdapter!!.notifyItemChanged(position)
                 updataCount()
             } else {
+                if(!isChangIng)
+                {
+                    isChangIng = true
+                }else{
+                    return@setOnItemClickListener
+                }
                 var selectRouterEntity = routerListAdapter!!.data[position]
                 if (selectRouterEntity.routerId.equals(ConstantValue.currentRouterId)) {
+                    isChangIng = false
                     toast(R.string.The_same_circle_without_switching)
                     return@setOnItemClickListener
                 }
@@ -853,7 +855,7 @@ class SelectCircleActivity : BaseActivity(), SelectCircleContract.View, PNRouter
             }
             routerListAdapter!!.notifyDataSetChanged()
         }
-
+        tvLeaveCircle.setText(getString(R.string.Leave_the_Circle))
 
     }
     fun updataCount()

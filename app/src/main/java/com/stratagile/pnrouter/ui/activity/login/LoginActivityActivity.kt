@@ -241,6 +241,8 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
         runOnUiThread {
             closeProgressDialog()
         }
+        if(standaloneCoroutine != null)
+            standaloneCoroutine.cancel()
         KLog.i("222")
         ConstantValue.unSendMessage.remove("recovery")
         ConstantValue.unSendMessageFriendId.remove("recovery")
@@ -818,6 +820,15 @@ class LoginActivityActivity : BaseActivity(), LoginActivityContract.View, PNRout
                     runOnUiThread {
                         closeProgressDialog()
                         showProgressDialog("wait...")
+                    }
+                    standaloneCoroutine = launch(CommonPool) {
+                        delay(10000)
+                        if (!loginBack) {
+                            runOnUiThread {
+                                closeProgressDialog()
+                                toast("time out")
+                            }
+                        }
                     }
                     var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
                     var recovery = RecoveryReq( ConstantValue.currentRouterId, ConstantValue.currentRouterSN,pulicMiKey)
