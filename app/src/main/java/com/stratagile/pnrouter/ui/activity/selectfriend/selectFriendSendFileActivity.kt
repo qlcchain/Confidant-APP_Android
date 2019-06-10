@@ -96,6 +96,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
     var fromId:String? = null
     var msgId:Int? = null
     var fileName:String? = null
+    var filePath:String? = null
     var fileKey:String? = null
     var fileType:Int? = null
     var fileInfo:String? = null
@@ -112,6 +113,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
         fromId = intent.getStringExtra("fromId")
         msgId = intent.getIntExtra("msgId",0)
         fileName = intent.getStringExtra("fileName")
+        filePath = intent.getStringExtra("filePath")
         fileInfo = intent.getStringExtra("fileInfo")
         fileKey = intent.getStringExtra("fileKey")
         fileType = intent.getIntExtra("fileType",0)
@@ -171,7 +173,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             {
                 fileInfo = ""
             }
-            var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!, strBase58,fileInfo!!, FileKey)
+            var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.userId!!,filePath!!, strBase58,fileInfo!!, FileKey)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,fileForwardReq))
             } else if (ConstantValue.isToxConnected) {
@@ -205,7 +207,7 @@ class selectFriendSendFileActivity : BaseActivity(), selectFriendSendFileContrac
             {
                 fileInfo = ""
             }
-            var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.gId!!, strBase58,fileInfo!!, FileKeyBase64)
+            var fileForwardReq = FileForwardReq(msgId!!,userId!!, i.gId!!,filePath!!, strBase58,fileInfo!!, FileKeyBase64)
             if (ConstantValue.isWebsocketConnected) {
                 AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,fileForwardReq))
             } else if (ConstantValue.isToxConnected) {

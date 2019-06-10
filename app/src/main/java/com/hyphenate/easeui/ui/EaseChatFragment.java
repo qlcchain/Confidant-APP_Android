@@ -114,7 +114,6 @@ import com.stratagile.pnrouter.ui.activity.file.SelectFileActivity;
 import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
-import com.stratagile.pnrouter.utils.DeleteUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LibsodiumUtil;
@@ -4052,7 +4051,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         fileInfo = "";
                     }
                     String strBase58 = Base58.encode(fileOrginName.getBytes());
-                    FileForwardReq fileForwardReq = new FileForwardReq(fileData.getMsgId(),userId, UserDataManger.curreantfriendUserData.getUserId(), strBase58,fileInfo, FileKey,"FileForward");
+                    FileForwardReq fileForwardReq = new FileForwardReq(fileData.getMsgId(),userId, UserDataManger.curreantfriendUserData.getUserId(),fileData.getFilePath(), strBase58,fileInfo, FileKey,"FileForward");
                     if (ConstantValue.INSTANCE.isWebsocketConnected()) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(4,fileForwardReq));
                     } else if (ConstantValue.INSTANCE.isToxConnected()) {

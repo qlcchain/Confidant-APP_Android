@@ -4104,7 +4104,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         fileInfo = "";
                     }
                     String strBase58 = Base58.encode(fileOrginName.getBytes());
-                    FileForwardReq fileForwardReq = new FileForwardReq(fileData.getMsgId(),userId, UserDataManger.currentGroupData.getGId(), strBase58,fileInfo, FileKeyBase64,"FileForward");
+                    FileForwardReq fileForwardReq = new FileForwardReq(fileData.getMsgId(),userId, UserDataManger.currentGroupData.getGId(),fileData.getFilePath(), strBase58,fileInfo, FileKeyBase64,"FileForward");
                     if (ConstantValue.INSTANCE.isWebsocketConnected()) {
                         AppConfig.instance.getPNRouterServiceMessageSender().send(new BaseData(4,fileForwardReq));
                     } else if (ConstantValue.INSTANCE.isToxConnected()) {

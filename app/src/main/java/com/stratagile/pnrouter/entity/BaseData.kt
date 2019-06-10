@@ -513,7 +513,7 @@ data class FileRenameReq(var UserId :String, var MsgId : Int, var Filename : Str
  * 78.	文件转发
  * (2)	响应（APP->Router）
  */
-data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FileName : String, var FileInfo : String, var FileKey : String,var Action : String = "FileForward")
+data class FileForwardReq(var MsgId :Int, var FromId : String, var ToId : String, var FilePath : String, var FileName : String, var FileInfo : String, var FileKey : String,var Action : String = "FileForward")
 
 /**
  * 79.	用户上传头像

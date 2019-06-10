@@ -230,7 +230,12 @@ public class EaseChatRowImage extends EaseChatRowFile {
         } else {
             try {
                 imageView.setImageResource(R.drawable.image_defalut_bg);
-                progressBarShelf.setVisibility(View.VISIBLE);
+                String localUrl = imgBody.getLocalUrl();
+                if (localUrl.contains("image_defalut_fileForward_bg")) {
+
+                }else{
+                    progressBarShelf.setVisibility(View.VISIBLE);
+                }
                 new AsyncTask<Object, Void, Bitmap>() {
 
                     @Override
