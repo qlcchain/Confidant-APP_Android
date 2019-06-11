@@ -337,8 +337,17 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             }
         });
 
-        EMMessage EMMessage = EMClient.getInstance().chatManager().getMessage(beginDownloadForwad.getMsgId());
-        conversation.removeMessage(beginDownloadForwad.getMsgId() + "");
+
+        EMMessage eMMessage = EMClient.getInstance().chatManager().getMessage(beginDownloadForwad.getMsgId());
+
+        eMMessage.setAttribute("kong","1");
+        eMMessage.setAttribute("fileSize",fileData.getFileSize());
+        conversation.updateMessage(eMMessage);
+        if (isMessageListInited) {
+            easeChatMessageList.refresh();
+        }
+
+        /*conversation.removeMessage(beginDownloadForwad.getMsgId() + "");
         String ease_default_image = PathUtils.getInstance().getImagePath() + "/" + "image_defalut_fileForward_bg.xml";
         EMMessage message = EMMessage.createFileSendMessage(ease_default_image, toChatUserId);
         String fileMiName = fileData.getFileName();
@@ -383,10 +392,10 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
         message.setFrom(userId);
         message.setTo(UserDataManger.curreantfriendUserData.getUserId());
-        message.setDelivered(EMMessage.isDelivered());
-        message.setAcked(EMMessage.isAcked());
-        message.setUnread(EMMessage.isUnread());
-        sendMessageTo(message);
+        message.setDelivered(eMMessage.isDelivered());
+        message.setAcked(eMMessage.isAcked());
+        message.setUnread(eMMessage.isUnread());
+        sendMessageTo(message);*/
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDownloadForwadSuccess(DownloadForwadSuccess downloadForwadSuccess ) {
@@ -394,6 +403,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
         if (conversation != null && ConstantValue.INSTANCE.getUserId() != null) {
             String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
             Message message = receiveFileDataMap.get(msgId);
+            message.setMsgId(Integer.valueOf(msgId));
             conversation.removeMessage(msgId);
             String files_dir = "";
             EMMessage messageData = null;
@@ -403,6 +413,22 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         files_dir = PathUtils.getInstance().getImagePath() + "/" + message.getFileName();
                         messageData = EMMessage.createImageSendMessage(files_dir, true, toChatUserId);
                         messageData.setAttribute("wh", message.getFileInfo());
+
+                        LocalMedia localMedia = new LocalMedia();
+                        localMedia.setCompressed(false);
+                        localMedia.setDuration(0);
+                        localMedia.setHeight(100);
+                        localMedia.setWidth(100);
+                        localMedia.setChecked(false);
+                        localMedia.setCut(false);
+                        localMedia.setMimeType(0);
+                        localMedia.setNum(0);
+                        localMedia.setPath(files_dir);
+                        localMedia.setPictureType("image/jpeg");
+                        localMedia.setPosition((int)message.getTimeStamp());
+                        localMedia.setSortIndex((int)message.getMsgId());
+                        previewImages.add(localMedia);
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                         break;
                     case 2:
                         files_dir = PathUtils.getInstance().getVoicePath() + "/" + message.getFileName();
@@ -471,7 +497,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     }
 
                     messageData.setMsgTime(message.getTimeStamp() * 1000);
-                    messageData.setMsgId(message.getMsgId() + "");
+                    messageData.setMsgId(msgId + "");
                     sendMessageTo(messageData);
                 }
             }
@@ -4091,8 +4117,24 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                     {
                         message.setMsgId(fileData.getMsgId()+"");
                     }else{
-                        message.setMsgId(fileData.getMsgId() +"_"+((int) (System.currentTimeMillis() / 1000))+"");
-                        forwordFileIdMap.put(fileData.getMsgId() +"_"+((int) (System.currentTimeMillis() / 1000))+"",fileData.getMsgId() +"_"+((int) (System.currentTimeMillis() / 1000))+"");
+                        int currentTime = ((int) (System.currentTimeMillis() / 1000));
+                        message.setMsgId(fileData.getMsgId() +"_"+currentTime+"");
+                        forwordFileIdMap.put(fileData.getMsgId() +"_"+currentTime+"",fileData.getMsgId() +"_"+currentTime+"");
+                        LocalMedia localMedia = new LocalMedia();
+                        localMedia.setCompressed(false);
+                        localMedia.setDuration(0);
+                        localMedia.setHeight(100);
+                        localMedia.setWidth(100);
+                        localMedia.setChecked(false);
+                        localMedia.setCut(false);
+                        localMedia.setMimeType(0);
+                        localMedia.setNum(0);
+                        localMedia.setPath(filePath);
+                        localMedia.setPictureType("image/jpeg");
+                        localMedia.setPosition((int)fileData.getTimestamp());
+                        localMedia.setSortIndex(fileData.getMsgId()+currentTime);
+                        previewImages.add(localMedia);
+                        ImagesObservable.getInstance().saveLocalMedia(previewImages,"chat");
                     }
 
                     String fileSouceKey = LibsodiumUtil.INSTANCE.DecryptShareKey(fileData.getUserKey());

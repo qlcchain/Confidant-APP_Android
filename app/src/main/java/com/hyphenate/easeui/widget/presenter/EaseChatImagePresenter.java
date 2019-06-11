@@ -203,7 +203,16 @@ public class EaseChatImagePresenter extends EaseChatFilePresenter {
             int postion = 0;
             int size = previewImages.size();
             try{
-                int msgId = Integer.valueOf(message.getMsgId()) ;
+                int msgId = 0;
+                String msgIdStr = message.getMsgId();
+                if(msgIdStr.contains("_"))
+                {
+                    String pre = msgIdStr.substring(0,msgIdStr.indexOf("_"));
+                    String end = msgIdStr.substring(msgIdStr.indexOf("_")+1,msgIdStr.length());
+                    msgId = Integer.valueOf(pre) +Integer.valueOf(end);
+                }else{
+                    msgId = Integer.valueOf(message.getMsgId()) ;
+                }
                 for(int i = 0 ; i < size ;i ++)
                 {
                     if(previewImages.get(i).getSortIndex() == msgId)
