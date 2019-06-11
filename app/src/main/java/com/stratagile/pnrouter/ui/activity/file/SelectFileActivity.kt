@@ -43,6 +43,9 @@ import javax.inject.Inject;
 class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServiceMessageReceiver.FileChooseBack {
     override fun pullFileListRsp(pullFileListRsp: JPullFileListRsp) {
         if (currentPage == 0) {
+            if (pullFileListRsp.params.payload != null && pullFileListRsp.params.payload.size != 0) {
+                lastPayload = pullFileListRsp.params!!.payload.last()
+            }
             runOnUiThread {
                 fileListChooseAdapter?.setNewData(pullFileListRsp.params.payload)
             }
@@ -50,10 +53,12 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
             runOnUiThread {
                 fileListChooseAdapter?.loadMoreComplete()
                 if (pullFileListRsp.params.fileNum == 0) {
+                    lastPayload = null
                     KLog.i("全部数据加载完成。。")
                     fileListChooseAdapter?.loadMoreEnd(true)
                 } else {
                     KLog.i("还有数据需要加载。。")
+                    lastPayload = pullFileListRsp.params!!.payload.last()
                     fileListChooseAdapter!!.addData(pullFileListRsp.params!!.payload)
                 }
             }
@@ -62,6 +67,7 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
 
     @Inject
     internal lateinit var mPresenter: SelectFilePresenter
+    var lastPayload : JPullFileListRsp.ParamsBean.PayloadBean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,8 +89,13 @@ class SelectFileActivity : BaseActivity(), SelectFileContract.View, PNRouterServ
         fileListChooseAdapter?.setOnLoadMoreListener(object : BaseQuickAdapter.RequestLoadMoreListener {
             override fun onLoadMoreRequested() {
                 recyclerView.postDelayed({
-                    currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
-                    pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
+                    if (lastPayload == null || fileListChooseAdapter!!.data.size < 10) {
+                        fileListChooseAdapter?.loadMoreEnd(true)
+                        fileListChooseAdapter!!.loadMoreComplete()
+                    } else {
+                        currentPage = fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId
+                        pullFileList(fileListChooseAdapter!!.data[fileListChooseAdapter!!.data.size - 1].msgId)
+                    }
                 }, 500)
             }
 
