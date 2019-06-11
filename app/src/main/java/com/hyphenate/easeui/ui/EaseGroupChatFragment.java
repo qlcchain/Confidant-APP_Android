@@ -329,13 +329,16 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
     public void onBeginDownloadForwad(BeginDownloadForwad beginDownloadForwad ) {
         receiveFileDataMap.put(beginDownloadForwad.getMsgId() + "", beginDownloadForwad.getMessage());
         JPullFileListRsp.ParamsBean.PayloadBean fileData = beginDownloadForwad.getFileData();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), R.string.Start_downloading, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if(fileData.getFileType() != 1)
+        {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), R.string.Start_downloading, Toast.LENGTH_SHORT).show();
+                }
+            });
 
+        }
 
         EMMessage eMMessage = EMClient.getInstance().chatManager().getMessage(beginDownloadForwad.getMsgId());
 

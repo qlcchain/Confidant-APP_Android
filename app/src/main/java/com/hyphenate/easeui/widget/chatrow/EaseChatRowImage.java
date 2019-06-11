@@ -88,12 +88,12 @@ public class EaseChatRowImage extends EaseChatRowFile {
                 progressBarShelf.setVisibility(View.VISIBLE);
             }else {
                 progressBarShelf.setVisibility(View.INVISIBLE);
+                if(bubbleLayout != null && message.isAcked())
+                {
+                    bubbleLayout.performClick();
+                }
+            }
 
-            }
-            if(bubbleLayout != null)
-            {
-                //bubbleLayout.performClick();
-            }
         } else  if (localUrl.contains("image_defalut_bg")) {
             progressBarShelf.setVisibility(View.INVISIBLE);
         }else
