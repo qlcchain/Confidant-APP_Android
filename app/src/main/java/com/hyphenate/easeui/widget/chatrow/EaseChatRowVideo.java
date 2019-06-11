@@ -38,6 +38,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
     private ImageView imageView;
     private TextView sizeView;
+    private EMVideoMessageBody videoBody;
     private TextView timeLengthView;
     private ProgressBar progressBarShelf;
 
@@ -64,7 +65,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
 
 	@Override
 	protected void onSetUpView() {
-	    EMVideoMessageBody videoBody = (EMVideoMessageBody) message.getBody();
+	    videoBody = (EMVideoMessageBody) message.getBody();
         String localThumb = videoBody.getLocalThumb();
         String localUrl = videoBody.getLocalUrl();
         if(localUrl.contains("ease_default_fileForward_vedio"))
@@ -78,7 +79,7 @@ public class EaseChatRowVideo extends EaseChatRowFile{
         }
         else if(localUrl.contains("ease_default_vedio"))
         {
-            progressBarShelf.setVisibility(View.VISIBLE);
+            progressBarShelf.setVisibility(View.INVISIBLE);
         }else{
             progressBarShelf.setVisibility(View.INVISIBLE);
         }
@@ -153,7 +154,12 @@ public class EaseChatRowVideo extends EaseChatRowFile{
             progressBarShelf.setVisibility(View.INVISIBLE);
         } else {
             imageView.setImageResource(R.drawable.image_defalut_bg);
-            progressBarShelf.setVisibility(View.VISIBLE);
+            String localUrl = videoBody.getLocalUrl();
+            if (localUrl.contains("ease_default_fileForward_vedio")) {
+
+            }else{
+                progressBarShelf.setVisibility(View.VISIBLE);
+            }
             try {
                 new AsyncTask<Void, Void, Bitmap>() {
 

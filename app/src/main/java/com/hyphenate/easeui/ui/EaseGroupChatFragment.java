@@ -123,7 +123,6 @@ import com.stratagile.pnrouter.ui.activity.user.UserInfoActivity;
 import com.stratagile.pnrouter.utils.AESCipher;
 import com.stratagile.pnrouter.utils.Base58;
 import com.stratagile.pnrouter.utils.CountDownTimerUtils;
-import com.stratagile.pnrouter.utils.DeleteUtils;
 import com.stratagile.pnrouter.utils.FileDownloadUtils;
 import com.stratagile.pnrouter.utils.FileUtil;
 import com.stratagile.pnrouter.utils.LibsodiumUtil;
@@ -445,7 +444,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String videoName = files_dir.substring(beginIndex, endIndex);
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        FileUtil.saveBitmpToFileNoThread(bitmap, thumbPath);
                         messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                         break;
                     case 5:
@@ -1171,7 +1170,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 String videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf(".") + 1);
                                 String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                 Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                                 messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                                 break;
                             case 5:
@@ -1507,7 +1506,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String videoName = files_dir_video.substring(files_dir_video.lastIndexOf("/") + 1, files_dir_video.lastIndexOf(".") + 1);
                         thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir_video);
-                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                         message = EMMessage.createVideoSendMessage(files_dir_video, thumbPath, 1000, toChatUserId);
                     } else {
                         String videoPath = PathUtils.getInstance().getVideoPath() + "/" + "ease_default_vedio.mp4";
@@ -3607,7 +3606,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         String thumbPath = PathUtils.getInstance().getImagePath() + "/" + leftName + ".png";
                         Bitmap bitmap = EaseImageUtils.getVideoPhoto(videoPath);
                         int videoLength = EaseImageUtils.getVideoDuration(videoPath);
-                        FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                        FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                         EMMessage message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, toChatUserId);
                         String userId = SpUtil.INSTANCE.getString(getActivity(), ConstantValue.INSTANCE.getUserId(), "");
                         message.setFrom(userId);
@@ -4046,20 +4045,20 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
                                 String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                 Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
-                                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                                 message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
                               /*  if(fileMD5.equals(fileData.getFileMD5()))
                                 {
                                     String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
                                     String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
-                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                                     message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
                                 }else{
                                     String videoName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.lastIndexOf(".") + 1);
                                     String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(filePath);
-                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                                     message = EMMessage.createVideoSendMessage(filePath, thumbPath, fileData.getFileSize(), toChatUserId);
                                 }*/
 
@@ -4294,7 +4293,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 String videoName = files_dir.substring(files_dir.lastIndexOf("/") + 1, files_dir.lastIndexOf(".") + 1);
                 String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                 Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                 message = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                 break;
             case 5:
@@ -5005,7 +5004,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                     String videoName = files_dir.substring(beginIndex, endIndex);
                                     String thumbPath = PathUtils.getInstance().getImagePath() + "/" + videoName + ".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                                    FileUtil.saveBitmpToFile(bitmap, thumbPath);
+                                    FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath);
                                     messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath, 1000, toChatUserId);
                                     break;
                                 case 5:

@@ -1734,7 +1734,7 @@ public class FileMangerUtil {
                                     String videoName = files_dir.substring(beginIndex,endIndex);
                                     String thumbPath = PathUtils.getInstance().getImagePath()+"/"  + videoName +".png";
                                     Bitmap bitmap = EaseImageUtils.getVideoPhoto(files_dir);
-                                    FileUtil.saveBitmpToFile(bitmap,thumbPath);
+                                    FileUtil.saveBitmpToFileOnThread(bitmap,thumbPath);
                                     messageData = EMMessage.createVideoSendMessage(files_dir, thumbPath,1000, toChatUserId);
                                     break;
                                 case 5:

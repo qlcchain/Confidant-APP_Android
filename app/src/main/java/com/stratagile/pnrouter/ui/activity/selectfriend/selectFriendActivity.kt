@@ -17,7 +17,6 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.constant.ConstantValue
-import com.stratagile.pnrouter.constant.UserDataManger
 import com.stratagile.pnrouter.db.UserEntity
 import com.stratagile.pnrouter.entity.*
 import com.stratagile.pnrouter.entity.events.*
@@ -31,7 +30,6 @@ import com.stratagile.pnrouter.view.CustomPopWindow
 import com.stratagile.tox.toxcore.ToxCoreJni
 import im.tox.tox4j.core.enums.ToxMessageType
 import kotlinx.android.synthetic.main.activity_select_friend.*
-import kotlinx.android.synthetic.main.item_filetask_content.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -381,7 +379,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
                                         val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
                                         val videoLength = EaseImageUtils.getVideoDuration(videoPath)
-                                        FileUtil.saveBitmpToFile(bitmap, thumbPath)
+                                        FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath)
 
                                         val message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, i.userId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")
@@ -822,7 +820,7 @@ class selectFriendActivity : BaseActivity(), selectFriendContract.View {
                                         val thumbPath = PathUtils.getInstance().imagePath.toString() + "/" + leftName + ".png"
                                         val bitmap = EaseImageUtils.getVideoPhoto(videoPath)
                                         val videoLength = EaseImageUtils.getVideoDuration(videoPath)
-                                        FileUtil.saveBitmpToFile(bitmap, thumbPath)
+                                        FileUtil.saveBitmpToFileOnThread(bitmap, thumbPath)
                                         val message = EMMessage.createVideoSendMessage(videoPath, thumbPath, videoLength, i.gId)
                                         val userId = SpUtil.getString(this, ConstantValue.userId, "")
                                         message.from = userId

@@ -1336,7 +1336,7 @@ public class FileUtil {
      * @param bitmap
      * @param path
      */
-    public static void saveBitmpToFile(Bitmap bitmap,String path) {
+    public static void saveBitmpToFileOnThread(Bitmap bitmap, String path) {
         if(new File(path).exists())
         {
             return;
@@ -1359,6 +1359,29 @@ public class FileUtil {
                 }
             }
         }).start();
+    }
+    /**
+     * 保存bitmap到本地
+     * @param bitmap
+     * @param path
+     */
+    public static void saveBitmpToFileNoThread(Bitmap bitmap, String path) {
+        if(new File(path).exists())
+        {
+            return;
+        }
+        if (bitmap != null) {
+            try {
+                // 图片文件路径
+                File file = new File(path);
+                FileOutputStream os = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
     final static int BUFFER_SIZE = 4096;
 
