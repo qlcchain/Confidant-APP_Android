@@ -642,7 +642,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
             @Override
             public void onTyping(CharSequence s, int start, int before, int count) {
                 // send action:TypingBegin cmd msg.
-               String inputxt = s.toString();
+                String inputxt = s.toString();
                 typingHandler.sendEmptyMessage(MSG_TYPING_BEGIN);
                 String temp = imputOld;
                 if(isContainAt)
@@ -2848,13 +2848,13 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         easeChatMessageList.refresh();
                     }
                 }
-                friendStatus = 1;
-                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jSendMsgRsp.getParams().getGId(), "");
+                //friendStatus = 1;
+                /*String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + jSendMsgRsp.getParams().getGId(), "");*/
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -2896,7 +2896,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.uid_error, Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -2907,16 +2907,23 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         easeChatMessageList.refresh();
                     }
                 }
-                friendStatus = 1;
-                String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                //friendStatus = 1;
+               /* String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");*/
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
                     }
                 });
-
+                break;
+            default:
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
         }
         for (String value : forwordFileIdMap.values()) {
@@ -2951,7 +2958,7 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.uid_error, Toast.LENGTH_SHORT).show();
                             }
                         });
                         break;
@@ -2962,16 +2969,24 @@ public class EaseGroupChatFragment extends EaseBaseFragment implements EMMessage
                                 easeChatMessageList.refresh();
                             }
                         }
-                        friendStatus = 1;
-                        String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
-                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");
+                        //friendStatus = 1;
+                       /* String userId = SpUtil.INSTANCE.getString(AppConfig.instance, ConstantValue.INSTANCE.getUserId(), "");
+                        SpUtil.INSTANCE.putString(AppConfig.instance, ConstantValue.INSTANCE.getMessage() + userId + "_" + toChatUserId, "");*/
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), R.string.notFreinds, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), R.string.DestinationUnreachable, Toast.LENGTH_SHORT).show();
                             }
                         });
 
+                        break;
+                    default:
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), R.string.senderror, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                 }
             }
