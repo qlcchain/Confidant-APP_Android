@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/address_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="zhanglang108@sina.com"
+        android:hint="收件人邮箱地址"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/title_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="测试"
+        android:hint="邮件标题"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/text_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="内容"
+        android:hint="邮件内容"
+        tools:ignore="HardcodedText" />
+    <EditText
+        android:id="@+id/attchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="附件"
+        android:hint="附件"
+        tools:ignore="HardcodedText" />
+    <Button
+        android:id="@+id/addattch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="添加附件"
+        tools:ignore="HardcodedText" />
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="发送"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/receive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="POP收信(附件默认下载到sd卡根目录)"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/receive2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="imap收信(附件默认下载到sd卡根目录)"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

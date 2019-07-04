@@ -21,6 +21,7 @@ import com.stratagile.pnrouter.entity.LogOutReq
 import com.stratagile.pnrouter.entity.MyFile
 import com.stratagile.pnrouter.entity.Sceen
 import com.stratagile.pnrouter.entity.events.ResetAvatar
+import com.stratagile.pnrouter.ui.activity.email.EmailLoginActivity
 import com.stratagile.pnrouter.ui.activity.login.LoginActivityActivity
 import com.stratagile.pnrouter.ui.activity.user.component.DaggerMyDetailComponent
 import com.stratagile.pnrouter.ui.activity.user.contract.MyDetailContract
@@ -85,6 +86,10 @@ class MyDetailActivity : BaseActivity(), MyDetailContract.View {
         }
         PrivacyPolicy.setOnClickListener {
             var intent = Intent(this, PrivacyActivity::class.java)
+            startActivity(intent)
+        }
+        emailBtn.setOnClickListener {
+            var intent = Intent(this, EmailLoginActivity::class.java)
             startActivity(intent)
         }
         nickName.tvContent.text = SpUtil.getString(this, ConstantValue.username, "")

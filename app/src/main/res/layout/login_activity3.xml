@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/account_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="283619512@qq.com"
+        android:hint="邮箱地址"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/password_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="kpagrlcmliolbjii"
+        android:hint="邮箱密码"
+        android:inputType="textPassword"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/send_host_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="smtp.qq.com"
+        android:singleLine="true"
+        android:hint="发件服务器地址"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/send_port_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="465"
+        android:singleLine="true"
+        android:hint="发件服务器端口"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:visibility="visible"
+        android:id="@+id/receive_host_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="pop.qq.com"
+        android:singleLine="true"
+        android:hint="POP服务器地址"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:visibility="visible"
+        android:id="@+id/receive_port_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="995"
+        android:hint="POP服务器端口"
+        android:singleLine="true"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/imap_host_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:singleLine="true"
+        android:text="imap.qq.com"
+        android:hint="imap服务器地址"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <EditText
+        android:id="@+id/imap_port_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="993"
+        android:hint="收件服务器端口"
+        tools:ignore="HardcodedText,TextFields" />
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="登录"
+        tools:ignore="HardcodedText" />
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

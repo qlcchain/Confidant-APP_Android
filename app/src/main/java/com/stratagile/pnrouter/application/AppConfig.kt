@@ -21,6 +21,7 @@ import com.huawei.android.hms.agent.HMSAgent
 import com.hyphenate.easeui.EaseUI
 import com.message.MessageProvider
 import com.message.UserProvider
+import com.smailnet.eamil.EmailConfig
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
 import com.stratagile.pnrouter.R
@@ -61,6 +62,7 @@ import java.util.*
 
 class AppConfig : MultiDexApplication() {
 
+    var emailConfig: EmailConfig? = null     //设置全局emailConfig
     var name: Long = 0
     val MI_PUSH_APP_ID = "2882303761517914075"
     val MI_PUSH_APP_KEY = "5221791411075"
@@ -94,6 +96,7 @@ class AppConfig : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 //        CrashHandler.instance.init(this)
+        emailConfig = EmailConfig()
         name = System.currentTimeMillis()
         CrashReport.initCrashReport(applicationContext, "22ae8f7fc8", BuildConfig.DEBUG)
         EaseUI.getInstance().init(this, null)
@@ -366,5 +369,14 @@ class AppConfig : MultiDexApplication() {
         } catch (exception: java.lang.Exception) {
             exception.printStackTrace()
         }
+    }
+
+    /**
+     * 获取emailConfig
+     *
+     * @return
+     */
+    fun emailConfig(): EmailConfig {
+        return emailConfig!!
     }
 }

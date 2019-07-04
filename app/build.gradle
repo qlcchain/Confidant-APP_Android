@@ -209,6 +209,7 @@ dependencies {
     implementation project(':picture_library')
     implementation project(':zbar')
     implementation project(':qmui')
+    implementation project(':eamil')
     implementation 'org.greenrobot:greendao:3.2.2'
 
     //图片加载框架
@@ -244,6 +245,7 @@ dependencies {
     implementation 'com.huawei.android.hms:push:2.6.3.301'
     compile 'com.github.hackware1993:MagicIndicator:1.5.0'
     implementation 'top.zibin:Luban:1.1.8'
+    implementation 'com.github.mailhu:islands:2.0'
 }
 
 def getSelfDefinedVersion(type) {

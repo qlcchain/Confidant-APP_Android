@@ -7,12 +7,8 @@ import android.os.Handler
 import android.os.Message
 import android.support.annotation.IntDef
 import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
-import android.view.Menu
-import android.view.MenuItem
-
+import butterknife.ButterKnife
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -22,26 +18,17 @@ import com.stratagile.pnrouter.ui.activity.file.component.DaggerFileChooseCompon
 import com.stratagile.pnrouter.ui.activity.file.contract.FileChooseContract
 import com.stratagile.pnrouter.ui.activity.file.module.FileChooseModule
 import com.stratagile.pnrouter.ui.activity.file.presenter.FileChoosePresenter
-
+import io.julian.common.Preconditions
+import kotlinx.android.synthetic.main.activity_file_infos.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
+import java.io.File
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.ref.WeakReference
-import java.lang.reflect.Method
-import java.util.ArrayList
-
+import java.util.*
 import javax.inject.Inject
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import com.pawegio.kandroid.toast
-import com.stratagile.pnrouter.ui.activity.router.DiskReconfigureActivity
-import io.julian.common.Preconditions
-import kotlinx.android.synthetic.main.activity_file_infos.*
-import java.io.File
 
 /**
  * @author zl

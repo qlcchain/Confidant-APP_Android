@@ -131,6 +131,14 @@
 
     <include layout="@layout/divide_line"/>
     <com.stratagile.pnrouter.view.DetailView
+        android:id="@+id/emailBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x92"
+        app:showImg="false"
+        app:text1="Email">
+    </com.stratagile.pnrouter.view.DetailView>
+    <include layout="@layout/divide_line"/>
+    <com.stratagile.pnrouter.view.DetailView
         android:visibility="gone"
         android:id="@+id/company"
         android:layout_width="match_parent"

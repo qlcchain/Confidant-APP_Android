@@ -309,6 +309,15 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.email.EmailLoginActivity"
+            android:screenOrientation="portrait" />
+
+
+        <activity
+            android:name=".ui.activity.email.EmailMainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".ui.activity.add.addFriendOrGroupActivity"
             android:screenOrientation="portrait" />
         <provider
