@@ -19,7 +19,9 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.app.NotificationCompat
+import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.DrawerLayout
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -100,8 +102,8 @@ import events.ToxStatusEvent
 import im.tox.tox4j.core.enums.ToxMessageType
 import interfaceScala.InterfaceScaleUtil
 import kotlinx.android.synthetic.main.activity_file_manager.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main_menu.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
@@ -3341,6 +3343,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
            startActivity(startIntent)
            ConstantValue.shareFromLocalPath = ""
        }
+        initEvent()
     }
     fun initSwitchData() {
         var this_ = this
@@ -3497,7 +3500,62 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         super.onRestoreInstanceState(savedInstanceState)
     }
 
+    private fun initEvent() {
+       /* mCivHead.setOnClickListener(View.OnClickListener {
+            if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.openDrawer(GravityCompat.START)
+            }
+        })*/
+
+        /* mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                Log.i(TAG, "onTabChanged: tabId -- " + tabId);
+                mTvTitle.setText(tabId);
+                mIvAdd.setVisibility(mTabTexts[0].equals(tabId) ? View.VISIBLE : View.GONE);
+                mTvAdd.setVisibility(mTabTexts[1].equals(tabId) ? View.VISIBLE : View.GONE);
+                mTvMore.setVisibility(mTabTexts[2].equals(tabId) ? View.VISIBLE : View.GONE);
+            }
+        });*/
+
+        var mColorShades = ColorShades()
+
+        mDrawer.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                //设置主布局随菜单滑动而滑动
+                val drawerViewWidth = drawerView.width
+                mLlContentMain.setTranslationX(drawerViewWidth * slideOffset)
+
+                //设置控件最先出现的位置
+                val padingLeft = drawerViewWidth.toDouble() * (1 - 0.618) * (1 - slideOffset).toDouble()
+                mRlMenu.setPadding(padingLeft.toInt(), 0, 0, 0)
+
+                //设置Title颜色渐变
+                mColorShades.setFromColor("#001AA7F2")
+                        .setToColor(Color.WHITE)
+                        .setShade(slideOffset)
+                //mRlTitle.setBackgroundColor(mColorShades.generate())
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+
+            }
+        })
+    }
     override fun onBackPressed() {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
         moveTaskToBack(true)
     }
 
