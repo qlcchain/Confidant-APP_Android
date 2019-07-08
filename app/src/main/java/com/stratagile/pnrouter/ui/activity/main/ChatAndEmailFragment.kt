@@ -1,22 +1,36 @@
-package com.stratagile.pnrouter.ui.activity.user
+package com.stratagile.pnrouter.ui.activity.main
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import com.stratagile.pnrouter.R
+import com.hyphenate.easeui.EaseConstant
+import com.hyphenate.easeui.ui.EaseConversationListFragment
+import com.socks.library.KLog
 
 import com.stratagile.pnrouter.application.AppConfig
-import com.stratagile.pnrouter.base.BaseActivity
-import com.stratagile.pnrouter.ui.activity.user.component.DaggerPrivacyComponent
-import com.stratagile.pnrouter.ui.activity.user.contract.PrivacyContract
-import com.stratagile.pnrouter.ui.activity.user.module.PrivacyModule
-import com.stratagile.pnrouter.ui.activity.user.presenter.PrivacyPresenter
+import com.stratagile.pnrouter.base.BaseFragment
+import com.stratagile.pnrouter.ui.activity.main.component.DaggerChatAndEmailComponent
+import com.stratagile.pnrouter.ui.activity.main.contract.ChatAndEmailContract
+import com.stratagile.pnrouter.ui.activity.main.module.ChatAndEmailModule
+import com.stratagile.pnrouter.ui.activity.main.presenter.ChatAndEmailPresenter
+
+import javax.inject.Inject;
+
+import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.constant.UserDataManger
+import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
+import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
+import com.stratagile.pnrouter.ui.activity.user.PrivacyPolicyFragment
+import com.stratagile.pnrouter.ui.activity.user.TermsOfServiceFragment
 import kotlinx.android.synthetic.main.activity_privacy.*
 import net.lucode.hackware.magicindicator.ViewPagerHelper
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
@@ -30,38 +44,36 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeRule
 import java.util.ArrayList
 
-import javax.inject.Inject;
-
 /**
  * @author zl
- * @Package com.stratagile.pnrouter.ui.activity.user
+ * @Package com.stratagile.pnrouter.ui.activity.main
  * @Description: $description
- * @date 2019/04/22 18:22:12
+ * @date 2019/07/08 14:57:30
  */
 
-class PrivacyActivity : BaseActivity(), PrivacyContract.View {
+class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
 
     @Inject
-    internal lateinit var mPresenter: PrivacyPresenter
+    lateinit internal var mPresenter: ChatAndEmailPresenter
     lateinit var commonNavigator : CommonNavigator
+    private var conversationListFragment: EaseConversationListFragment? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        commonNavigator = CommonNavigator(this)
-        super.onCreate(savedInstanceState)
-    }
 
-    override fun initView() {
-        setContentView(R.layout.activity_privacy)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        commonNavigator = CommonNavigator(this.activity)
+        var view = inflater.inflate(R.layout.activity_chat_email, null);
+        return view
     }
-    override fun initData() {
-        title.text = getString(R.string.Terms_Privacy_Policy)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        conversationListFragment = EaseConversationListFragment()
+        conversationListFragment?.hideTitleBar()
         var titles = ArrayList<String>()
-        titles.add(getString(R.string.Terms_of_Service))
-        titles.add(getString(R.string.Privacy_Policy))
-        viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        titles.add(getString(R.string.Message))
+        titles.add(getString(R.string.Email))
+        viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 if (position == 0) {
-                    return TermsOfServiceFragment()
+                    return conversationListFragment!!
                 } else {
                     return PrivacyPolicyFragment()
                 }
@@ -133,18 +145,39 @@ class PrivacyActivity : BaseActivity(), PrivacyContract.View {
             }
         }
         ViewPagerHelper.bind(indicator, viewPager);
-    }
+        conversationListFragment?.setConversationListItemClickListener(
+                EaseConversationListFragment.EaseConversationListItemClickListener
+                { userid, chatType ->
+                    if (chatType.equals("Chat")) {
+                        startActivity(Intent(this.activity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                    } else {
 
-    override fun setupActivityComponent() {
-        DaggerPrivacyComponent
+                        val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                        intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
+                        intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, UserDataManger.currentGroupData)
+                        startActivity(intent)
+                    }
+                    KLog.i("进入聊天页面，好友id为：" + userid)
+                })
+    }
+    override fun setupFragmentComponent() {
+        DaggerChatAndEmailComponent
                 .builder()
-                .appComponent((application as AppConfig).applicationComponent)
-                .privacyModule(PrivacyModule(this))
+                .appComponent((activity!!.application as AppConfig).applicationComponent)
+                .chatAndEmailModule(ChatAndEmailModule(this))
                 .build()
                 .inject(this)
     }
-    override fun setPresenter(presenter: PrivacyContract.PrivacyContractPresenter) {
-        mPresenter = presenter as PrivacyPresenter
+
+    override fun setPresenter(presenter: ChatAndEmailContract.ChatAndEmailContractPresenter) {
+        mPresenter = presenter as ChatAndEmailPresenter
+    }
+    fun getConversationListFragment():EaseConversationListFragment
+    {
+        return conversationListFragment!!
+    }
+    override fun initDataFromLocal() {
+
     }
 
     override fun showProgressDialog() {
@@ -154,5 +187,4 @@ class PrivacyActivity : BaseActivity(), PrivacyContract.View {
     override fun closeProgressDialog() {
         progressDialog.hide()
     }
-
 }

@@ -953,7 +953,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                 }
                                                 controlleMessageUnReadCount(UnReadMessageCount)
                                             }
-                                            conversationListFragment?.refresh()
+                                            if(isAddEmail)
+                                            {
+                                                chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                                            }else{
+                                                conversationListFragment?.refresh()
+                                            }
+
                                             ConstantValue.isRefeshed = true
                                         }
                                         break
@@ -1015,7 +1021,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         SpUtil.putString(AppConfig.instance, ConstantValue.message + userId + "_" + jGroupSysPushRsp.params.gId, "");//移除临时会话UI
                         if (ConstantValue.isInit) {
                             runOnUiThread {
-                                conversationListFragment?.refresh()
+                                if(isAddEmail)
+                                {
+                                    chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                                }else{
+                                    conversationListFragment?.refresh()
+                                }
+
                             }
                             ConstantValue.isRefeshed = true
                         }
@@ -1034,7 +1046,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     runOnUiThread {
 
                         toast(R.string.Group_disbanded)
-                        conversationListFragment?.refresh()
+                        if(isAddEmail)
+                        {
+                            chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                        }else{
+                            conversationListFragment?.refresh()
+                        }
+
                     }
                 }
             }
@@ -1375,7 +1393,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
-                conversationListFragment?.refresh()
+                if(isAddEmail)
+                {
+                    chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                }else{
+                    conversationListFragment?.refresh()
+                }
+
                 ConstantValue.isRefeshed = true
             }
 //        }else{
@@ -1455,7 +1479,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                         }
                                         controlleMessageUnReadCount(UnReadMessageCount)
                                     }
-                                    conversationListFragment?.refresh()
+                                    if(isAddEmail)
+                                    {
+                                        chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                                    }else{
+                                        conversationListFragment?.refresh()
+                                    }
+
                                     ConstantValue.isRefeshed = true
                                 }
                                 break
@@ -1513,7 +1543,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         if (!ConstantValue.isRefeshed) {
-            conversationListFragment?.refresh()
+            if(isAddEmail)
+            {
+                chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+            }else{
+                conversationListFragment?.refresh()
+            }
+
             ConstantValue.isRefeshed = true
         }
     }
@@ -1778,7 +1814,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                 var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                                 controlleMessageUnReadCount(UnReadMessageCount)
                             }
-                            conversationListFragment?.refresh()
+                            if(isAddEmail)
+                            {
+                                chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                            }else{
+                                conversationListFragment?.refresh()
+                            }
+
                             ConstantValue.isRefeshed = true
                         }
                     } catch (e: Exception) {
@@ -1814,7 +1856,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                             var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                             controlleMessageUnReadCount(UnReadMessageCount)
                         }
-                        conversationListFragment?.refresh()
+                        if(isAddEmail)
+                        {
+                            chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                        }else{
+                            conversationListFragment?.refresh()
+                        }
+
                         ConstantValue.isRefeshed = true
                     }
                 }
@@ -1905,7 +1953,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                     var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(1)
                     controlleMessageUnReadCount(UnReadMessageCount)
                 }
-                conversationListFragment?.refresh()
+                if(isAddEmail)
+                {
+                    chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                }else{
+                    conversationListFragment?.refresh()
+                }
+
                 ConstantValue.isRefeshed = true
             }
         }
@@ -2111,7 +2165,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     private var exitTime: Long = 0
     lateinit var viewModel: MainViewModel
     private var conversationListFragment: EaseConversationListFragment? = null
+    private var chatAndEmailFragment:ChatAndEmailFragment? = null
     private var contactFragment: ContactFragment? = null
+    private var isAddEmail = true
 
     override fun showToast() {
         showProgressDialog()
@@ -2129,10 +2185,20 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    var count = conversationListFragment?.removeFriend()
-                    var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
-                    controlleMessageUnReadCount(UnReadMessageCount)
-                    ConstantValue.isRefeshed = true
+                    if(isAddEmail)
+                    {
+                        var count = chatAndEmailFragment!!.getConversationListFragment()?.removeFriend()
+                        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
+                        controlleMessageUnReadCount(UnReadMessageCount)
+                        ConstantValue.isRefeshed = true
+
+                    }else{
+                        var count = conversationListFragment?.removeFriend()
+                        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
+                        controlleMessageUnReadCount(UnReadMessageCount)
+                        ConstantValue.isRefeshed = true
+                    }
+
                 }
             }
         }
@@ -2141,10 +2207,19 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             if (conversation != null) {
                 conversation.clearAllMessages()
                 if (ConstantValue.isInit) {
-                    var count = conversationListFragment?.removeFriend()
-                    var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
-                    controlleMessageUnReadCount(UnReadMessageCount)
-                    ConstantValue.isRefeshed = true
+                    if(isAddEmail)
+                    {
+                        var count = chatAndEmailFragment!!.getConversationListFragment()?.removeFriend()
+                        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
+                        controlleMessageUnReadCount(UnReadMessageCount)
+                        ConstantValue.isRefeshed = true
+                    }else{
+                        var count = conversationListFragment?.removeFriend()
+                        var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(count!!)
+                        controlleMessageUnReadCount(UnReadMessageCount)
+                        ConstantValue.isRefeshed = true
+                    }
+
                 }
             }
         }
@@ -2733,7 +2808,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     fun setToNews() {
         tvTitle.text = getString(R.string.app_name)
         mainIv1.visibility = View.GONE
-        llSort.visibility = View.GONE
+        fileLook.visibility = View.GONE
+        emailLook.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         ivNewGroup.visibility = View.VISIBLE
     }
@@ -2742,7 +2818,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.file_)
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
-        llSort.visibility = View.VISIBLE
+        emailLook.visibility = View.GONE
+        fileLook.visibility = View.VISIBLE
         ivNewGroup.visibility = View.GONE
     }
 
@@ -2750,7 +2827,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.contacts)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
-        llSort.visibility = View.GONE
+        emailLook.visibility = View.GONE
+        fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
         //contactFragment?.updata()
     }
@@ -2759,7 +2837,8 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         tvTitle.text = getString(R.string.my)
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.GONE
-        llSort.visibility = View.GONE
+        fileLook.visibility = View.GONE
+        emailLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
     }
 
@@ -2773,6 +2852,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         reConnect.setLayoutParams(llp1)
         conversationListFragment = EaseConversationListFragment()
         conversationListFragment?.hideTitleBar()
+        chatAndEmailFragment = ChatAndEmailFragment()
         contactFragment = ContactFragment()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE//设置状态栏黑色字体
@@ -3061,7 +3141,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /* var list = arrayListOf<GroupEntity>()
              startActivityForResult(Intent(this, SelectFriendCreateGroupActivity::class.java).putParcelableArrayListExtra("person", list), create_group)*/
         }
-        llSort.setOnClickListener {
+        fileLook.setOnClickListener {
+            startActivity(Intent(this, FileTaskListActivity::class.java))
+        }
+        emailLook.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
         mainIv1.setOnClickListener {
@@ -3160,20 +3243,24 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
             ConstantValue.isInit = true
         }
-        conversationListFragment?.setConversationListItemClickListener(
-                EaseConversationListFragment.EaseConversationListItemClickListener
-                { userid, chatType ->
-                    if (chatType.equals("Chat")) {
-                        startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
-                    } else {
+        if(!isAddEmail)
+        {
+            conversationListFragment?.setConversationListItemClickListener(
+                    EaseConversationListFragment.EaseConversationListItemClickListener
+                    { userid, chatType ->
+                        if (chatType.equals("Chat")) {
+                            startActivity(Intent(this@MainActivity, ChatActivity::class.java).putExtra(EaseConstant.EXTRA_USER_ID, userid))
+                        } else {
 
-                        val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
-                        intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
-                        intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, UserDataManger.currentGroupData)
-                        startActivity(intent)
-                    }
-                    KLog.i("进入聊天页面，好友id为：" + userid)
-                })
+                            val intent = Intent(AppConfig.instance, GroupChatActivity::class.java)
+                            intent.putExtra(EaseConstant.EXTRA_USER_ID, userid)
+                            intent.putExtra(EaseConstant.EXTRA_CHAT_GROUP, UserDataManger.currentGroupData)
+                            startActivity(intent)
+                        }
+                        KLog.i("进入聊天页面，好友id为：" + userid)
+                    })
+        }
+
         if (AppConfig.instance.tempPushMsgList.size != 0) {
             Thread(Runnable() {
                 run() {
@@ -3243,7 +3330,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
 
                         if (ConstantValue.isInit) {
-                            conversationListFragment?.refresh()
+                            if(isAddEmail)
+                            {
+                                chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                            }else{
+                                conversationListFragment?.refresh()
+                            }
+
                             ConstantValue.isRefeshed = true
                         }
                     }
@@ -3256,7 +3349,14 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         viewPager.adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 when (position) {
-                    0 -> return conversationListFragment!!
+                    0 -> {
+                        if(isAddEmail)
+                        {
+                            return chatAndEmailFragment!!
+                        }else{
+                            return conversationListFragment!!
+                        }
+                    }
                     1 -> return FileListFragment()
                     2 -> return contactFragment!!
                     else -> return MyFragment()
@@ -3443,7 +3543,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             runOnUiThread {
                 var UnReadMessageCount: UnReadMessageCount = UnReadMessageCount(0)
                 controlleMessageUnReadCount(UnReadMessageCount)
-                conversationListFragment?.refresh()
+                if(isAddEmail)
+                {
+                    chatAndEmailFragment!!.getConversationListFragment()?.refresh()
+                }else{
+                    conversationListFragment?.refresh()
+                }
+
             }
             ConstantValue.isRefeshed = true
         }
@@ -3501,12 +3607,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     }
 
     private fun initEvent() {
-       /* mCivHead.setOnClickListener(View.OnClickListener {
+        emailLook.setOnClickListener(View.OnClickListener {
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.openDrawer(GravityCompat.START)
             }
-        })*/
-
+        })
         /* mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {

@@ -55,6 +55,15 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/emailLook"
+                    android:layout_width="@dimen/x60"
+                    android:layout_height="@dimen/x60"
+                    android:padding="@dimen/x10"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/sanheng" />
+
+                <ImageView
+                    android:id="@+id/fileLook"
                     android:layout_width="@dimen/x60"
                     android:layout_height="@dimen/x60"
                     android:padding="@dimen/x10"

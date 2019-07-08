@@ -681,4 +681,7 @@
     <string name="Circle_Login_QR_Code2">Circle Login QR Code</string>
 
     <string name="restart">Are you sure to restart?</string>
+
+    <string name="Message">Message</string>
+    <string name="Email">Email</string>
 </resources>
