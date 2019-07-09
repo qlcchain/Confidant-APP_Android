@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,55 +11,50 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_main">
 
-
     <LinearLayout
-        android:id="@+id/ll_head"
+        android:id="@+id/llSort"
         android:layout_width="match_parent"
-        android:layout_height="250dip"
-        android:background="@drawable/side_nav_bar"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:padding="@dimen/activity_vertical_margin">
+        android:layout_height="@dimen/x150"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/x10"
+        android:layout_marginTop="@dimen/x40"
+        android:background="@color/headmainColor"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="@dimen/x60"
+            android:layout_height="@dimen/x60"
+            android:padding="@dimen/x10"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/statusbar_leftbar_h" />
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <!--<com.stratagile.pnrouter.entity.CircleImageView
-                android:layout_width="48dip"
-                android:layout_height="48dip"
-                android:layout_centerVertical="true"
-                android:layout_margin="10dip"
-                android:src="@drawable/hugh"/>-->
-
+            android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dip"
-                android:text="@string/user_name"
-                android:textSize="28sp"/>
+                android:layout_centerInParent="true"
+                android:text="Circle"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@+id/title"
+                android:text="节点名称"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="10sp" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/x10"
-            android:text="Android Devoloper"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="测试"/>
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ll_head"
+        android:layout_below="@id/llSort"
         android:orientation="vertical">
 
         <com.stratagile.pnrouter.entity.MenuItemView
@@ -67,76 +62,18 @@
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
             android:clickable="true"
-            app:itemSrc="@drawable/menu_item_crown"
-            app:itemText="会员特权"/>
+            app:itemSrc="@mipmap/email_icon_selected"
+            app:itemText="283619512@qq.com"/>
 
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
             android:clickable="true"
-            app:itemSrc="@drawable/menu_item_wallet"
-            app:itemText="我的钱包"/>
+            app:itemSrc="@mipmap/email_icon_selected"
+            app:itemText="zhanglang108@sina.com"/>
 
-        <com.stratagile.pnrouter.entity.MenuItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
-            android:clickable="true"
-            app:itemSrc="@drawable/menu_item_favourite"
-            app:itemText="喜爱"/>
-
-        <com.stratagile.pnrouter.entity.MenuItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
-            android:clickable="true"
-            app:itemSrc="@drawable/menu_item_photo"
-            app:itemText="相册"/>
-
-        <com.stratagile.pnrouter.entity.MenuItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
-            android:clickable="true"
-            app:itemSrc="@drawable/menu_item_folder"
-            app:itemText="文件"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:drawableLeft="@drawable/menu_item_setting"
-            android:drawablePadding="5dip"
-            android:gravity="center_vertical"
-            android:paddingBottom="10dip"
-            android:paddingLeft="20dip"
-            android:paddingRight="15dip"
-            android:paddingTop="10dip"
-            android:text="@string/setting"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:drawableLeft="@drawable/menu_item_moon"
-            android:drawablePadding="5dip"
-            android:gravity="center_vertical"
-            android:paddingBottom="10dip"
-            android:paddingLeft="15dip"
-            android:paddingRight="20dip"
-            android:paddingTop="10dip"
-            android:text="夜间"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"/>
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

@@ -2810,6 +2810,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.VISIBLE
+        emailLook2.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         ivNewGroup.visibility = View.VISIBLE
     }
@@ -2819,6 +2820,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.VISIBLE
         ivQrCode.visibility = View.GONE
         emailLook.visibility = View.GONE
+        emailLook2.visibility = View.GONE
         fileLook.visibility = View.VISIBLE
         ivNewGroup.visibility = View.GONE
     }
@@ -2828,6 +2830,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         mainIv1.visibility = View.GONE
         ivQrCode.visibility = View.VISIBLE
         emailLook.visibility = View.GONE
+        emailLook2.visibility = View.GONE
         fileLook.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
         //contactFragment?.updata()
@@ -2839,6 +2842,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         ivQrCode.visibility = View.GONE
         fileLook.visibility = View.GONE
         emailLook.visibility = View.GONE
+        emailLook2.visibility = View.GONE
         ivNewGroup.visibility = View.GONE
     }
 
@@ -3608,6 +3612,11 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     private fun initEvent() {
         emailLook.setOnClickListener(View.OnClickListener {
+            if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.openDrawer(GravityCompat.START)
+            }
+        })
+        emailLook2.setOnClickListener(View.OnClickListener {
             if (!mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.openDrawer(GravityCompat.START)
             }

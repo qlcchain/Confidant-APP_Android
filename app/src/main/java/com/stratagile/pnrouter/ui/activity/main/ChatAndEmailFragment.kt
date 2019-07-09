@@ -3,6 +3,7 @@ package com.stratagile.pnrouter.ui.activity.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
@@ -14,6 +15,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.hyphenate.easeui.EaseConstant
 import com.hyphenate.easeui.ui.EaseConversationListFragment
+import com.pawegio.kandroid.setHeight
+import com.pawegio.kandroid.setWidth
 import com.socks.library.KLog
 
 import com.stratagile.pnrouter.application.AppConfig
@@ -39,6 +42,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerInd
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeAnchor
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgePagerTitleView
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.badge.BadgeRule
@@ -61,6 +65,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         commonNavigator = CommonNavigator(this.activity)
+        //commonNavigator.setAdjustMode(true)
         var view = inflater.inflate(R.layout.activity_chat_email, null);
         return view
     }
@@ -70,6 +75,9 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
         var titles = ArrayList<String>()
         titles.add(getString(R.string.Message))
         titles.add(getString(R.string.Email))
+        var icon = ArrayList<Drawable>()
+        icon.add(getResources().getDrawable(R.mipmap.tabbar_circle_selected))
+        icon.add(getResources().getDrawable(R.mipmap.tabbar_email_selected))
         viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 if (position == 0) {
@@ -96,7 +104,11 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
             override fun getTitleView(context: Context, index: Int): IPagerTitleView {
                 val badgePagerTitleView = BadgePagerTitleView(context)
 
-                val simplePagerTitleView = ColorTransitionPagerTitleView(context)
+                val simplePagerTitleView = SimplePagerTitleView(context)
+                //simplePagerTitleView.setLayoutParams(LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+                var icon: Drawable = icon.get(index)
+                icon.setBounds(-30,0,60,90);
+                simplePagerTitleView.setCompoundDrawables(icon,null,null,null)
                 simplePagerTitleView.setText(titles.get(index))
                 simplePagerTitleView.normalColor = resources.getColor(R.color.color_999999)
                 simplePagerTitleView.selectedColor = resources.getColor(R.color.color_2B2B2B)
@@ -131,7 +143,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
 
             override fun getIndicator(context: Context): IPagerIndicator {
                 val indicator = LinePagerIndicator(context)
-                indicator.mode = LinePagerIndicator.MODE_WRAP_CONTENT
+                indicator.mode = LinePagerIndicator.MODE_MATCH_EDGE
                 indicator.lineHeight = resources.getDimension(R.dimen.x4)
                 return indicator
             }
