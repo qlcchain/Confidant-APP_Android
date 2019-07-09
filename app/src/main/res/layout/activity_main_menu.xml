@@ -7,9 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@android:color/white"
+    android:background="@color/headmainColor"
     android:orientation="vertical"
-    tools:showIn="@layout/activity_main">
+    >
 
     <LinearLayout
         android:id="@+id/llSort"
@@ -52,8 +52,10 @@
 
     </LinearLayout>
     <LinearLayout
+        android:layout_marginTop="@dimen/x40"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:layout_below="@id/llSort"
         android:orientation="vertical">
 
@@ -73,6 +75,23 @@
             android:clickable="true"
             app:itemSrc="@mipmap/email_icon_selected"
             app:itemText="zhanglang108@sina.com"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_below="@id/llSort"
+        android:orientation="vertical">
+
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/email_icon_addemail"
+            app:itemText="New Account"/>
 
     </LinearLayout>
 
