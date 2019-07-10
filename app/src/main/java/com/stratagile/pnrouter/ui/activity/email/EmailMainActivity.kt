@@ -2,7 +2,6 @@ package com.stratagile.pnrouter.ui.activity.email
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -22,7 +21,6 @@ import com.smailnet.eamil.EmailMessage
 import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.eamil.EmailSendClient
 import com.smailnet.eamil.Utils.ConstUtli
-import com.smailnet.islands.Interface.OnRunningListener
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 
@@ -32,7 +30,7 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailMainCompon
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailMainContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailMainModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailMainPresenter
-import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.email_main_activity.*
 
 import javax.inject.Inject;
 
@@ -54,7 +52,7 @@ class EmailMainActivity : BaseActivity(), EmailMainContract.View {
     }
 
     override fun initView() {
-        setContentView(R.layout.main_activity)
+        setContentView(R.layout.email_main_activity)
     }
     override fun initData() {
         addattch.setOnClickListener {

@@ -80,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_below="@+id/title"
-                        android:text="节点名称"
+                        android:text="@string/Nodename"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="10sp" />
                 </LinearLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/qq"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:background="@color/white"
+        android:contentDescription="Video Call Friend"
+        android:gravity="center"
+        android:onClick="onClickVideoCall"
+        android:src="@mipmap/qq" />
+        />
+
+    <ImageButton
+        android:id="@+id/sina"
+        android:layout_marginTop="@dimen/x5"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:background="@color/white"
+        android:contentDescription="Video Call Friend"
+        android:gravity="center"
+        android:onClick="onClickVideoCall"
+        android:src="@mipmap/sina" />
+    />
+
+</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

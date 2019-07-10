@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.smailnet.eamil.Callback.GetConnectCallback
 import com.smailnet.eamil.EmailExamine
-import com.smailnet.islands.Interface.OnRunningListener
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -14,7 +13,7 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginCompo
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
-import kotlinx.android.synthetic.main.login_activity.*
+import kotlinx.android.synthetic.main.email_login_activity.*
 import javax.inject.Inject
 
 /**
@@ -34,7 +33,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
     }
 
     override fun initView() {
-       setContentView(R.layout.login_activity)
+       setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
         login.setOnClickListener {

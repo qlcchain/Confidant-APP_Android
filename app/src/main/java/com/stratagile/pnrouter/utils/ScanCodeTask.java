@@ -61,7 +61,7 @@ public class ScanCodeTask extends AsyncTask<Void, Integer, Bitmap> {
 		if (bitmap != null) {
 			viewRoot.setImageBitmap(bitmap);
 		} else {
-			Toast.makeText(AppConfig.instance, "Generation failure", Toast.LENGTH_SHORT).show();
+			Toast.makeText(AppConfig.instance, R.string.waitamoment, Toast.LENGTH_SHORT).show();
 		}
 	}
 

@@ -4789,7 +4789,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                         } else { // BE_KICKED_FOR_OFFLINE
                             // Current logged in user be kicked out by server for current user offline,
                             // show disconnect title bar, click to rejoin.
-                            Toast.makeText(getActivity(), "User be kicked for offline", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.User_be_kicked_for_offline, Toast.LENGTH_SHORT).show();
                             kickedForOfflineLayout.setVisibility(View.VISIBLE);
                         }
                     }
@@ -4803,7 +4803,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (roomId.equals(toChatUserId)) {
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(getActivity(), "member join:" + participant, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.member_join + participant, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -4814,7 +4814,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             if (roomId.equals(toChatUserId)) {
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(getActivity(), "member exit:" + participant, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.member_exit + participant, Toast.LENGTH_LONG).show();
                     }
                 });
             }

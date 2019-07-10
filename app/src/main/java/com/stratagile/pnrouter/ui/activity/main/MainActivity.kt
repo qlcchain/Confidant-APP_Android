@@ -3151,6 +3151,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         emailLook.setOnClickListener {
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
+        newAccount.setOnClickListener {
+            startActivity(Intent(this, FileTaskListActivity::class.java))
+        }
+
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {

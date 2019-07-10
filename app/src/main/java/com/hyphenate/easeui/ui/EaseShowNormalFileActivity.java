@@ -8,8 +8,8 @@ import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMFileMessageBody;
 import com.hyphenate.chat.EMMessage;
-import com.stratagile.pnrouter.R;
 import com.hyphenate.util.FileUtils;
+import com.stratagile.pnrouter.R;
 
 import java.io.File;
 
@@ -24,7 +24,7 @@ public class EaseShowNormalFileActivity extends EaseBaseActivity {
 
 		final EMMessage message = getIntent().getParcelableExtra("msg");
         if (!(message.getBody() instanceof EMFileMessageBody)) {
-            Toast.makeText(EaseShowNormalFileActivity.this, "Unsupported message body", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EaseShowNormalFileActivity.this, R.string.unsupportedmessagebody, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }

@@ -684,4 +684,13 @@
 
     <string name="Message">Message</string>
     <string name="Email">Email</string>
+    <string name="MyDocuments">My Documents</string>
+    <string name="Nodename">Node name</string>
+    <string name="unsupportedmessagebody">Unsupported message body</string>
+    <string name="User_be_kicked_for_offline">User be kicked for offline</string>
+    <string name="member_join">member join:</string>
+    <string name="member_exit">member exit:</string>
+
+    <string name="Account">&#160;&#160;Account</string>
+    <string name="password2">&#160;&#160;Password</string>
 </resources>

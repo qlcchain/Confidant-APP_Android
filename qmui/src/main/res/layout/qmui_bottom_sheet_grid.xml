@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/qmui_bottom_sheet_button_height"
             android:gravity="center"
-            android:text="关 闭"
+            android:text="close"
             android:textColor="?attr/qmui_bottom_sheet_button_text_color"
             android:textSize="?attr/qmui_bottom_sheet_button_text_size"/>
 

@@ -27,7 +27,6 @@
     <string name="create_register">Register</string>
     <string name="create_register_with_toxme">Register With ToxMe</string>
     <string name="create_sign_up_for_toxme">Sign Up For ToxMe</string>
-    <string name="create_registering">Registering account…</string>
     <string name="create_register_incog">Register Incognito</string>
     <string name="create_import_profile">Import Profile</string>
     <string name="create_skip">Allow anyone to add you using your profile name</string>
@@ -341,6 +340,5 @@
     <string name="request_permissions_text">Grant Permissions</string>
     <string name="select_file">Select File</string>
 
-    <string name="waitamoment">wait a moment</string>
-
+    <string name="waitamoment">Generation failure</string>
 </resources>

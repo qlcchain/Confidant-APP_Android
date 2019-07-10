@@ -30,6 +30,8 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.createTable(db, ifNotExists);
         RouterUserEntityDao.createTable(db, ifNotExists);
         UserEntityDao.createTable(db, ifNotExists);
+        EmailConfigEntityDao.createTable(db, ifNotExists);
+        EmailMessageEntityDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -43,6 +45,8 @@ public class DaoMaster extends AbstractDaoMaster {
         RouterEntityDao.dropTable(db, ifExists);
         RouterUserEntityDao.dropTable(db, ifExists);
         UserEntityDao.dropTable(db, ifExists);
+        EmailConfigEntityDao.dropTable(db, ifExists);
+        EmailMessageEntityDao.dropTable(db, ifExists);
     }
 
     /**
@@ -70,6 +74,8 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(RouterEntityDao.class);
         registerDaoClass(RouterUserEntityDao.class);
         registerDaoClass(UserEntityDao.class);
+        registerDaoClass(EmailConfigEntityDao.class);
+        registerDaoClass(EmailMessageEntityDao.class);
     }
 
     public DaoSession newSession() {

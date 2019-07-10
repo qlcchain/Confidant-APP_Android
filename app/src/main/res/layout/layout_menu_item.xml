@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:text="我的文件"
+        android:text="@string/MyDocuments"
         android:textColor="@color/emailtextColor"
         android:ellipsize="end"
         android:maxEms="7"

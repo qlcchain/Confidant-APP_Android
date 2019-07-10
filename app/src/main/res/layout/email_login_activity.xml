@@ -6,7 +6,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/headmainColor">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/Email"
+    android:layout_marginTop="@dimen/x40"
+    android:layout_marginLeft="@dimen/x40"
+    android:textSize="16sp"
+    />
+    <include layout="@layout/emailname_bar" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/password"
+        android:layout_marginTop="@dimen/x40"
+        android:layout_marginLeft="@dimen/x40"
+        android:textSize="16sp"
+        />
+    <include layout="@layout/emailpassword_bar" />
 
     <EditText
         android:id="@+id/account_editText"
