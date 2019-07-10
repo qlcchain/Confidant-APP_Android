@@ -17,5 +17,8 @@
         android:gravity="center_vertical"
         android:text="我的文件"
         android:textColor="@color/emailtextColor"
+        android:ellipsize="end"
+        android:maxEms="7"
+        android:singleLine="true"
         android:textSize="20sp"/>
 </LinearLayout>
