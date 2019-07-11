@@ -10,10 +10,11 @@
     >
 
     <EditText
+        android:id="@+id/account_editText"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:paddingLeft="5dp"
-        android:id="@+id/query"
+        android:minHeight="@dimen/x100"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -22,7 +23,8 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:hint="@string/Account"
-        android:textSize="30sp"
+        android:textSize="20sp"
+        android:text="zhanglang108@sina.com"
         android:layout_marginLeft="4dp"
         android:singleLine="true"
         />

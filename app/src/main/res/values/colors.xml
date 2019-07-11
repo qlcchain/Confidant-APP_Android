@@ -6,6 +6,7 @@
     <color name="colorPrimary">#2c2c2c</color>
     <color name="textColor">#292B33</color>
     <color name="emailtextColor">#1E1E24</color>
+    <color name="loginbtnColor"> #6646F7</color>
 
     <color name="colorPrimaryDark">#999999</color>
     <color name="colorAccent">#2c2c2c</color>

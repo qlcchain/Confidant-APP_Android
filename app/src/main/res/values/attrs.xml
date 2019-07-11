@@ -73,6 +73,7 @@
     </declare-styleable>
     <declare-styleable name="MenuItemView">
         <attr name="itemText" format="string|reference"/>
+        <attr name="itemCount" format="string|reference"/>
         <attr name="itemSrc" format="reference"/>
     </declare-styleable>
 </resources>

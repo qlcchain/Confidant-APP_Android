@@ -341,4 +341,7 @@
     <string name="select_file">Select File</string>
 
     <string name="waitamoment">Generation failure</string>
+    <string name="Account">Account</string>
+    <string name="Password">Password</string>
+
 </resources>

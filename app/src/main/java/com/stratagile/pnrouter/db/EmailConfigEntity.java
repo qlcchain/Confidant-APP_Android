@@ -24,25 +24,12 @@ public class EmailConfigEntity implements Parcelable{
     private String imapHost;        //IMAP的Host
     private String account;         //邮箱帐号
     private String password;        //邮箱密码
+    private int lastCount;           //上一次请求的邮件数量
+    private int currentCount;        //当前请求的邮件数量
+    private Boolean isChoose;        //是否默认邮箱
 
-
-    @Generated(hash = 219903674)
-    public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort,
-            String smtpHost, String popHost, String imapHost, String account,
-            String password) {
-        this.id = id;
-        this.smtpPort = smtpPort;
-        this.popPort = popPort;
-        this.imapPort = imapPort;
-        this.smtpHost = smtpHost;
-        this.popHost = popHost;
-        this.imapHost = imapHost;
-        this.account = account;
-        this.password = password;
-    }
-
-    @Generated(hash = 819609725)
     public EmailConfigEntity() {
+
     }
 
 
@@ -60,6 +47,29 @@ public class EmailConfigEntity implements Parcelable{
         imapHost = in.readString();
         account = in.readString();
         password = in.readString();
+        lastCount = in.readInt();
+        currentCount = in.readInt();
+        byte tmpIsChoose = in.readByte();
+        isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
+    }
+
+
+    @Generated(hash = 1952057591)
+    public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
+            String popHost, String imapHost, String account, String password, int lastCount,
+            int currentCount, Boolean isChoose) {
+        this.id = id;
+        this.smtpPort = smtpPort;
+        this.popPort = popPort;
+        this.imapPort = imapPort;
+        this.smtpHost = smtpHost;
+        this.popHost = popHost;
+        this.imapHost = imapHost;
+        this.account = account;
+        this.password = password;
+        this.lastCount = lastCount;
+        this.currentCount = currentCount;
+        this.isChoose = isChoose;
     }
 
     public static final Creator<EmailConfigEntity> CREATOR = new Creator<EmailConfigEntity>() {
@@ -146,6 +156,39 @@ public class EmailConfigEntity implements Parcelable{
         this.password = password;
     }
 
+    public Boolean getChoose() {
+        return isChoose;
+    }
+
+    public void setChoose(Boolean choose) {
+        isChoose = choose;
+    }
+
+
+    public Boolean getIsChoose() {
+        return this.isChoose;
+    }
+
+    public void setIsChoose(Boolean isChoose) {
+        this.isChoose = isChoose;
+    }
+
+    public int getLastCount() {
+        return lastCount;
+    }
+
+    public void setLastCount(int lastCount) {
+        this.lastCount = lastCount;
+    }
+
+    public int getCurrentCount() {
+        return currentCount;
+    }
+
+    public void setCurrentCount(int currentCount) {
+        this.currentCount = currentCount;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -167,5 +210,8 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(imapHost);
         dest.writeString(account);
         dest.writeString(password);
+        dest.writeInt(lastCount);
+        dest.writeInt(currentCount);
+        dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
     }
 }

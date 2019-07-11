@@ -693,4 +693,16 @@
 
     <string name="Account">&#160;&#160;Account</string>
     <string name="password2">&#160;&#160;Password</string>
+
+    <string name="NewAccount">New Account</string>
+
+    <string name="Inbox">Inbox</string>
+    <string name="Node_backed_up">Node backed up</string>
+    <string name="Starred">Starred</string>
+    <string name="Drafts">Drafts</string>
+    <string name="Sent">Sent</string>
+    <string name="Spam">Spam</string>
+    <string name="Trash">Trash</string>
+
+
 </resources>

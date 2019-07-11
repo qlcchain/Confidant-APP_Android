@@ -3,17 +3,24 @@ package com.stratagile.pnrouter.ui.activity.email
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
 import com.smailnet.eamil.EmailExamine
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
+import com.stratagile.pnrouter.db.*
+import com.stratagile.pnrouter.entity.events.AddEmailConfig
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
+import com.xiaomi.push.it
 import kotlinx.android.synthetic.main.email_login_activity.*
+import kotlinx.android.synthetic.main.emailname_bar.*
+import kotlinx.android.synthetic.main.emailpassword_bar.*
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 /**
@@ -36,6 +43,7 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
        setContentView(R.layout.email_login_activity)
     }
     override fun initData() {
+        title.text = getString(R.string.NewAccount)
         login.setOnClickListener {
             Islands
                     .circularProgress(this)
@@ -73,6 +81,16 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
      */
     private fun login(progressDialog: ProgressDialog) {
         //配置发件服务器
+        if(account_editText.getText().toString().equals(""))
+        {
+            toast(R.string.Account)
+            return;
+        }
+        if(password_editText.getText().toString().equals("")  )
+        {
+            toast(R.string.Password)
+            return;
+        }
         AppConfig.instance.emailConfig()
                 .setSmtpHost(send_host_editText.getText().toString())
                 .setSmtpPort(Integer.parseInt(send_port_editText.getText().toString()))
@@ -87,6 +105,41 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
         emailExamine.connectServer(this, object : GetConnectCallback {
             override fun loginSuccess() {
                 progressDialog.dismiss()
+                var account =  account_editText.getText().toString()
+                var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                var hasVerify = false
+                if(emailConfigEntityList.size > 0)
+                {
+                    var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+                    for (j in localemailConfigEntityList) {
+                       j.choose = false
+                        AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                    }
+                    var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                    emailConfigEntity.account = account
+                    emailConfigEntity.password = password_editText.getText().toString()
+                    emailConfigEntity.smtpHost = send_host_editText.getText().toString()
+                    emailConfigEntity.smtpPort = Integer.parseInt(send_port_editText.getText().toString())
+                    emailConfigEntity.popHost = receive_host_editText.getText().toString()
+                    emailConfigEntity.popPort = Integer.parseInt(receive_port_editText.getText().toString())
+                    emailConfigEntity.imapHost = imap_host_editText.getText().toString()
+                    emailConfigEntity.imapPort = Integer.parseInt(imap_port_editText.getText().toString())
+                    emailConfigEntity.choose = true
+                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                }else{
+                    var emailConfigEntity: EmailConfigEntity = EmailConfigEntity()
+                    emailConfigEntity.account = account
+                    emailConfigEntity.password = password_editText.getText().toString()
+                    emailConfigEntity.smtpHost = send_host_editText.getText().toString()
+                    emailConfigEntity.smtpPort = Integer.parseInt(send_port_editText.getText().toString())
+                    emailConfigEntity.popHost = receive_host_editText.getText().toString()
+                    emailConfigEntity.popPort = Integer.parseInt(receive_port_editText.getText().toString())
+                    emailConfigEntity.imapHost = imap_host_editText.getText().toString()
+                    emailConfigEntity.imapPort = Integer.parseInt(imap_port_editText.getText().toString())
+                    emailConfigEntity.choose = true
+                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
+                }
+                EventBus.getDefault().post(AddEmailConfig())
                 startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
                 finish()
             }

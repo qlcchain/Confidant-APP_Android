@@ -2,4 +2,6 @@
 <resources>
     <color name="gray">#DEDEDE</color>
     <color name="white">#fff</color>
+    <color name="selected">#6646F7</color>
+
 </resources>

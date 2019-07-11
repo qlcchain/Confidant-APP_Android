@@ -31,6 +31,9 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         public final static Property ImapHost = new Property(6, String.class, "imapHost", false, "IMAP_HOST");
         public final static Property Account = new Property(7, String.class, "account", false, "ACCOUNT");
         public final static Property Password = new Property(8, String.class, "password", false, "PASSWORD");
+        public final static Property LastCount = new Property(9, int.class, "lastCount", false, "LAST_COUNT");
+        public final static Property CurrentCount = new Property(10, int.class, "currentCount", false, "CURRENT_COUNT");
+        public final static Property IsChoose = new Property(11, Boolean.class, "isChoose", false, "IS_CHOOSE");
     }
 
 
@@ -54,7 +57,10 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
                 "\"POP_HOST\" TEXT," + // 5: popHost
                 "\"IMAP_HOST\" TEXT," + // 6: imapHost
                 "\"ACCOUNT\" TEXT," + // 7: account
-                "\"PASSWORD\" TEXT);"); // 8: password
+                "\"PASSWORD\" TEXT," + // 8: password
+                "\"LAST_COUNT\" INTEGER NOT NULL ," + // 9: lastCount
+                "\"CURRENT_COUNT\" INTEGER NOT NULL ," + // 10: currentCount
+                "\"IS_CHOOSE\" INTEGER);"); // 11: isChoose
     }
 
     /** Drops the underlying database table. */
@@ -99,6 +105,13 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (password != null) {
             stmt.bindString(9, password);
         }
+        stmt.bindLong(10, entity.getLastCount());
+        stmt.bindLong(11, entity.getCurrentCount());
+ 
+        Boolean isChoose = entity.getIsChoose();
+        if (isChoose != null) {
+            stmt.bindLong(12, isChoose ? 1L: 0L);
+        }
     }
 
     @Override
@@ -137,6 +150,13 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         if (password != null) {
             stmt.bindString(9, password);
         }
+        stmt.bindLong(10, entity.getLastCount());
+        stmt.bindLong(11, entity.getCurrentCount());
+ 
+        Boolean isChoose = entity.getIsChoose();
+        if (isChoose != null) {
+            stmt.bindLong(12, isChoose ? 1L: 0L);
+        }
     }
 
     @Override
@@ -155,7 +175,10 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // popHost
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // imapHost
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // account
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // password
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // password
+            cursor.getInt(offset + 9), // lastCount
+            cursor.getInt(offset + 10), // currentCount
+            cursor.isNull(offset + 11) ? null : cursor.getShort(offset + 11) != 0 // isChoose
         );
         return entity;
     }
@@ -171,6 +194,9 @@ public class EmailConfigEntityDao extends AbstractDao<EmailConfigEntity, Long> {
         entity.setImapHost(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setAccount(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
         entity.setPassword(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setLastCount(cursor.getInt(offset + 9));
+        entity.setCurrentCount(cursor.getInt(offset + 10));
+        entity.setIsChoose(cursor.isNull(offset + 11) ? null : cursor.getShort(offset + 11) != 0);
      }
     
     @Override

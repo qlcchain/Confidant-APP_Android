@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mRlMenu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/headmainColor"
+    android:orientation="vertical"
+    >
+    <com.stratagile.pnrouter.entity.MenuItemView
+        android:id="@+id/itemContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_menu_item"
+        android:clickable="true"
+        app:itemSrc="@mipmap/email_icon_selected"
+        app:itemText="********@**.com"/>
+
+</LinearLayout>

@@ -51,11 +51,10 @@
 
 
     </LinearLayout>
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refreshLayoutleft"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/recyclerViewleftParent"
         android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_height="@dimen/x320">
+        android:layout_height="@dimen/x300">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewleft"
             android:background="@color/white"
@@ -63,43 +62,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </android.support.v7.widget.RecyclerView>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.v4.widget.NestedScrollView>
+
     <LinearLayout
-        android:layout_marginTop="@dimen/x40"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:layout_below="@id/llSort"
         android:orientation="vertical">
-
         <com.stratagile.pnrouter.entity.MenuItemView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
-            android:clickable="true"
-            app:itemSrc="@mipmap/email_icon_selected"
-            app:itemText="283619512@qq.com"/>
-
-        <com.stratagile.pnrouter.entity.MenuItemView
-            android:layout_marginTop="@dimen/x30"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
-            android:clickable="true"
-            app:itemSrc="@mipmap/email_icon_selected"
-            app:itemText="zhanglang108@sina.com"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/newAccount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_below="@id/llSort"
-        android:orientation="vertical">
-
-        <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/newAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
@@ -109,4 +82,103 @@
 
     </LinearLayout>
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_marginTop="@dimen/x10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_below="@id/llSort"
+        android:orientation="vertical">
+
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_inbox"
+            app:itemText="@string/Inbox"
+            app:itemCount="9"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/statusbar_download_node"
+            app:itemText="@string/Node_backed_up"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_attach_selected"
+            app:itemText="@string/Starred"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_drafts"
+            app:itemText="@string/Drafts"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_sent"
+            app:itemText="@string/Sent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_trash"
+            app:itemText="@string/Spam"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="@dimen/x100"
+            android:background="@color/color_ebebeb"
+            android:layout_height="@dimen/x1" />
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:layout_marginTop="@dimen/x30"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            android:clickable="true"
+            app:itemSrc="@mipmap/tabbar_deleted"
+            app:itemText="@string/Trash"/>
+    </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

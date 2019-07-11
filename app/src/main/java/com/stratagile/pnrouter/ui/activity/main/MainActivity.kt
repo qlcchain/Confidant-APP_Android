@@ -51,6 +51,7 @@ import com.message.Message
 import com.message.MessageProvider
 import com.pawegio.kandroid.notificationManager
 import com.pawegio.kandroid.runDelayed
+import com.pawegio.kandroid.setHeight
 import com.pawegio.kandroid.toast
 import com.socks.library.KLog
 import com.stratagile.pnrouter.BuildConfig
@@ -73,6 +74,7 @@ import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
+import com.stratagile.pnrouter.ui.activity.email.EmailLoginActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -87,6 +89,7 @@ import com.stratagile.pnrouter.ui.activity.scan.ScanQrCodeActivity
 import com.stratagile.pnrouter.ui.activity.selectfriend.SelectFriendCreateGroupActivity
 import com.stratagile.pnrouter.ui.activity.user.QRCodeActivity
 import com.stratagile.pnrouter.ui.activity.user.SendAddFriendActivity
+import com.stratagile.pnrouter.ui.adapter.conversation.EmaiConfigChooseAdapter
 import com.stratagile.pnrouter.utils.*
 import com.stratagile.pnrouter.view.ActiveTogglePopWindow
 import com.stratagile.pnrouter.view.CustomPopWindow
@@ -123,6 +126,44 @@ import kotlin.collections.ArrayList
  * https://blog.csdn.net/Jeff_YaoJie/article/details/79164507
  */
 class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageReceiver.MainInfoBack, MessageProvider.MessageListener, ActiveTogglePopWindow.OnItemClickListener {
+    private lateinit var standaloneCoroutine : Job
+    var routerId = ""
+    var userSn = ""
+    var userId = ""
+    var username = ""
+    var dataFileVersion = 0
+    var isScanSwitch = false
+
+    var SELECT_PHOTO = 2
+    var SELECT_VIDEO = 3
+    var SELECT_DEOCUMENT = 4
+    var create_group = 5
+    var add_activity = 6
+    var isSendRegId = true
+    private var handler: Handler? = null
+    var newRouterEntity = RouterEntity()
+    private var loginGoMain:Boolean = false
+    var loginBack = false
+    var isFromScan = false
+    var isFromScanAdmim = false
+    //是否点击了登陆按钮
+    //是否点击了登陆按钮
+    var isClickLogin = false
+    //是否正在登陆
+    var isStartLogin = false
+    var stopTox = false;
+    var loginOk = false
+    var isToxLoginOverTime = false;
+    var maxLogin = 0
+    var threadInit = false
+    var RouterMacStr = ""
+    var islogining = false
+    var isloginOutTime = false
+    var scanType = 0 // 0 admin   1 其他
+    var adminUserSn:String?  = null
+    var hasFinger = false
+    var name:Long  = 0;
+    var emaiConfigChooseAdapter : EmaiConfigChooseAdapter? = null
     override fun registerBack(registerRsp: JRegisterRsp) {
         if(!isScanSwitch)
         {
@@ -1210,43 +1251,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     override fun OnlineStatusPush(jOnlineStatusPushRsp: JOnlineStatusPushRsp) {
 
     }
-    private lateinit var standaloneCoroutine : Job
-    var routerId = ""
-    var userSn = ""
-    var userId = ""
-    var username = ""
-    var dataFileVersion = 0
-    var isScanSwitch = false
 
-    var SELECT_PHOTO = 2
-    var SELECT_VIDEO = 3
-    var SELECT_DEOCUMENT = 4
-    var create_group = 5
-    var add_activity = 6
-    var isSendRegId = true
-    private var handler: Handler? = null
-    var newRouterEntity = RouterEntity()
-    private var loginGoMain:Boolean = false
-    var loginBack = false
-    var isFromScan = false
-    var isFromScanAdmim = false
-    //是否点击了登陆按钮
-    //是否点击了登陆按钮
-    var isClickLogin = false
-    //是否正在登陆
-    var isStartLogin = false
-    var stopTox = false;
-    var loginOk = false
-    var isToxLoginOverTime = false;
-    var maxLogin = 0
-    var threadInit = false
-    var RouterMacStr = ""
-    var islogining = false
-    var isloginOutTime = false
-    var scanType = 0 // 0 admin   1 其他
-    var adminUserSn:String?  = null
-    var hasFinger = false
-    var name:Long  = 0;
     override fun userInfoPushRsp(jUserInfoPushRsp: JUserInfoPushRsp) {
         var localFriendList = AppConfig.instance.mDaoMaster!!.newSession().userEntityDao.loadAll()
 
@@ -2360,6 +2365,32 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAddEmailConfig(addEmailConfig: AddEmailConfig) {
+        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        if(emailConfigEntityList.size == 0)
+        {
+            recyclerViewleftParent.setHeight(0)
+        }else if(emailConfigEntityList.size == 1)
+        {
+            recyclerViewleftParent.setHeight(200)
+        }else{
+            recyclerViewleftParent.setHeight(400)
+        }
+        emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
+        emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+            /* val floatMenu = FloatMenu(activity)
+             floatMenu.items("菜单1", "菜单2", "菜单3")
+             floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+            true
+        }
+        recyclerViewleft.adapter = emaiConfigChooseAdapter
+        emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+            /* var intent = Intent(activity!!, ConversationActivity::class.java)
+             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+             startActivity(intent)*/
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
 
         KLog.i("tox好友状态MainActivity:" + toxFriendStatusEvent.status)
@@ -2867,6 +2898,31 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         standaloneCoroutine = launch(CommonPool) {
             delay(10000)
         }
+
+
+        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+        if(emailConfigEntityList.size == 0)
+        {
+            recyclerViewleftParent.setHeight(0)
+        }else if(emailConfigEntityList.size == 1)
+        {
+            recyclerViewleftParent.setHeight(200)
+        }else{
+            recyclerViewleftParent.setHeight(400)
+        }
+        emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
+        emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
+            /* val floatMenu = FloatMenu(activity)
+             floatMenu.items("菜单1", "菜单2", "菜单3")
+             floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+            true
+        }
+        recyclerViewleft.adapter = emaiConfigChooseAdapter
+        emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
+            /* var intent = Intent(activity!!, ConversationActivity::class.java)
+             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
+             startActivity(intent)*/
+        }
         if (VersionUtil.getDeviceBrand() == 3) {
             HMSAgent.connect(this, ConnectHandler {
                 KLog.i("华为推送 HMS connect end: " + it)
@@ -3152,7 +3208,10 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
         newAccount.setOnClickListener {
-            startActivity(Intent(this, FileTaskListActivity::class.java))
+            startActivity(Intent(this, EmailLoginActivity::class.java))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
         }
 
         mainIv1.setOnClickListener {
