@@ -18,6 +18,7 @@ package com.smailnet.eamil;
 
 import android.app.Activity;
 
+import com.smailnet.eamil.Callback.GetCountCallback;
 import com.smailnet.eamil.Callback.GetReceiveCallback;
 
 import java.io.IOException;
@@ -30,8 +31,8 @@ import javax.mail.MessagingException;
  * 发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务
  * 器，即可使用，所见即所得哦！
  *
- * @author 张观湖
- * @author E-mail: zguanhu@foxmail.com
+ * @author
+ * @author
  * @version 2.3
  */
 public class EmailReceiveClient {
@@ -105,12 +106,12 @@ public class EmailReceiveClient {
      * 使用imap协议接收邮件，接收完毕并切回主线程
      * @param getReceiveCallback
      */
-    public void imapReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback){
+    public void imapReceiveAsyn(final Activity activity, final GetReceiveCallback getReceiveCallback,final String menu){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail();
+                    final List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail(menu);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -137,7 +138,42 @@ public class EmailReceiveClient {
             }
         }).start();
     }
-
+    /**
+     * 使用imap协议接收邮件，接收完毕并切回主线程
+     * @param getReceiveCallback
+     */
+    public void imapReceiveAsynCount(final Activity activity, final GetCountCallback getReceiveCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<EmailCount> messageList = Operator.Core(emailConfig).imapReceiveMailCountAndMenu();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainSuccess(messageList, messageList.size());
+                        }
+                    });
+                } catch (final MessagingException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getReceiveCallback.gainFailure(e.toString());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
     /**
      * 使用imap协议接收邮件，接收完毕但不切回主线程
      * @param getReceiveCallback
@@ -147,7 +183,7 @@ public class EmailReceiveClient {
             @Override
             public void run() {
                 try {
-                    List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail();
+                    List<EmailMessage> messageList = Operator.Core(emailConfig).imapReceiveMail("INBOX");
                     getReceiveCallback.gainSuccess(messageList, messageList.size());
                 } catch (final MessagingException e) {
                     e.printStackTrace();

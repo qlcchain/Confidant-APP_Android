@@ -16,7 +16,7 @@ class ShareSelfAdapter(arrayList: ArrayList<ShareBean>) : BaseQuickAdapter<Share
 
     override fun convert(helper: BaseViewHolder?, item: ShareBean?) {
         var nickNameSouce = String(RxEncodeTool.base64Decode(item!!.name))
-        helper!!.setText(R.id.name, nickNameSouce)
+        helper!!.setText(R.id.subject, nickNameSouce)
         var imageView = helper!!.getView<ImageView>(R.id.avatar)
         Glide.with(mContext)
                 .load(mContext.resources.getIdentifier(item.avatar, "mipmap", mContext.packageName))

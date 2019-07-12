@@ -28,10 +28,17 @@ import com.smailnet.eamil.Utils.TimeUtil;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,10 +50,12 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -87,8 +96,7 @@ import static com.smailnet.eamil.Utils.ConstUtli.SMTP;
  * 发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务
  * 器，即可使用，所见即所得哦！
  *
- * @author 张观湖
- * @author E-mail: zguanhu@foxmail.com
+ * @author
  * @version 2.3
  */
 class EmailCore {
@@ -281,7 +289,9 @@ class EmailCore {
         store.connect(popHost, account, password);
         Folder folder = store.getFolder("INBOX");//获取邮件服务器的收件箱
         folder.open(Folder.READ_ONLY);//以只读权限打开收件箱
-        //folder.getUnreadMessageCount();
+        Folder defaultFolder = store.getDefaultFolder();
+        Folder[] allFolder = defaultFolder.list();
+        int size = folder.getUnreadMessageCount();
         Message[] messagesAll = folder.getMessages();
         //Message[] messages = folder.getMessages(1,1);
         FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false); // false代表未读，true代表已读
@@ -301,7 +311,7 @@ class EmailCore {
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
             date = TimeUtil.getDate(message.getSentDate());
             content = ContentUtil.getContent(message);
-            EmailMessage emailMessage = new EmailMessage(subject, from, to, date, content);
+            EmailMessage emailMessage = new EmailMessage("",subject, from, to, date,true,"",true,0,true,2, content);
             emailMessageList.add(emailMessage);
             Log.i("POP3", "邮件subject："+subject +"  时间："+date);
             File file = Environment.getExternalStorageDirectory();
@@ -336,61 +346,106 @@ class EmailCore {
         }
     };
     /**
+     * 使用IMAP协议接收服务器上的邮件属性
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public List<EmailCount> imapReceiveMailCountAndMenu() throws MessagingException, IOException {
+
+        List<EmailCount> emailMessageList = new ArrayList<>();
+        EmailCount emailData = new EmailCount();
+        IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        imapStore.connect(imapHost, account, password);
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder("INBOX");
+        folder.open(Folder.READ_ONLY);
+        int size = folder.getUnreadMessageCount();
+        emailData.setUnReadCount(size);
+
+        IMAPFolder folderRB = (IMAPFolder) imapStore.getFolder("垃圾邮件");
+        folderRB.open(Folder.READ_ONLY);
+        int sizeRB = folderRB.getUnreadMessageCount();
+        emailData.setGarbageCount(sizeRB);
+        folder.close(false);
+        imapStore.close();
+        emailMessageList.add(emailData);
+        return emailMessageList;
+    }
+    /**
      * 使用IMAP协议接收服务器上的邮件
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    public List<EmailMessage> imapReceiveMail() throws MessagingException, IOException {
+    public List<EmailMessage> imapReceiveMail(String menu) throws MessagingException, IOException {
         IMAPStore imapStore = (IMAPStore) session.getStore(IMAP);
+        System.out.println("time_"+"imapStoreBegin:"+System.currentTimeMillis());
         imapStore.connect(imapHost, account, password);
-        IMAPFolder folder = (IMAPFolder) imapStore.getFolder("INBOX");
+        System.out.println("time_"+"imapStoreEnd:"+System.currentTimeMillis());
+        IMAPFolder folder = (IMAPFolder) imapStore.getFolder(menu);
         folder.open(Folder.READ_ONLY);
-        //folder.getUnreadMessageCount();
-        Message[] messagesAlla = folder.getMessages();
-        Message[] messagesAll = folder.getMessages(messagesAlla.length -5,messagesAlla.length);
-        FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false); // false代表未读，true代表已读
-        Message messagesUnRead[] = folder.search(ft);
-        List<Message> list = Arrays.asList(messagesAll);
-        Collections.sort(list, comparator);
-        Message[] messagesAllNew = ( Message[])list.toArray();
-        Message[] messagesNew = new Message[5];
-        System.arraycopy(messagesAllNew,0,messagesNew,0,messagesNew.length);
+        int size = folder.getUnreadMessageCount();
+        Message[] messagesAll = folder.getMessages();
+        if(messagesAll.length >10)
+        {
+            messagesAll = folder.getMessages(messagesAll.length -9,messagesAll.length);
+        }else{
+            messagesAll = folder.getMessages();
+        }
+        List<Message> list  = Arrays.asList(messagesAll);
+        Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String subject, from, to, date, content;
+        String id, subject, from, to, date, content,priority;
+        Boolean  isSeen,isReplySign,isContainerAttachment;
+        int attachmentCount;
         int index = 0;
+        long uuid;
         PraseMimeMessage pmm = null;
-        for (Message message : messagesNew){
+        System.out.println("time_"+"begin:"+System.currentTimeMillis());
+        for (Message message : list){
             pmm = new PraseMimeMessage((MimeMessage)message);
-
-            System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
-            subject = message.getSubject();
-            System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
-            from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
-            System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
-            to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
-            System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
-            date = TimeUtil.getDate(message.getSentDate());
-            System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
-            content = ContentUtil.getContent(message);
-            System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
-            EmailMessage emailMessage = new EmailMessage(subject, from, to, date, content);
-            System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
-            emailMessageList.add(emailMessage);
-            System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
-            Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
-            File file = Environment.getExternalStorageDirectory();
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            pmm.setAttachPath(file.toString()+"/");
+            id = folder.getUID(message) +"";
             try {
-                pmm.saveAttachMent((Part)message);
-            } catch (Exception e) {
+                System.out.println(index+"_"+"getSubject0:"+System.currentTimeMillis());
+                subject = getSubject((MimeMessage)message);
+                System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
+                from = getFrom((MimeMessage)message);
+                System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
+                to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
+                System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
+                date = TimeUtil.getDate(message.getSentDate());
+                System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
+                isSeen = isSeen((MimeMessage)message);
+                isReplySign = isReplySign((MimeMessage)message);
+                attachmentCount = 0;
+                isContainerAttachment = isContainAttachment(message,attachmentCount);
+                StringBuffer contentTemp = new StringBuffer(30);
+                getMailTextContent(message, contentTemp);
+                content = contentTemp.toString();
+                System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
+                EmailMessage emailMessage = new EmailMessage(id,subject, from, to, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content);
+                System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
+                emailMessageList.add(emailMessage);
+                System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
+                Log.i("IMAP", "邮件subject："+subject +"  时间："+date);
+                File file = Environment.getExternalStorageDirectory();
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                pmm.setAttachPath(file.toString()+"/");
+                try {
+                    pmm.saveAttachMent((Part)message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }catch (Exception e)
+            {
                 e.printStackTrace();
             }
+
             index ++;
         }
+        System.out.println("time_"+"end:"+System.currentTimeMillis());
         folder.close(false);
         imapStore.close();
         return emailMessageList;
@@ -410,5 +465,286 @@ class EmailCore {
             query.insert(0, unsignedByte + ".");
         }
         InetAddress.getByName(query.toString());
+    }
+    /**
+     * 获得邮件主题
+     * @param msg 邮件内容
+     * @return 解码后的邮件主题
+     */
+    public static String getSubject(MimeMessage msg) throws UnsupportedEncodingException, MessagingException {
+        return MimeUtility.decodeText(msg.getSubject());
+    }
+    /**
+     * 获得邮件发件人
+     * @param msg 邮件内容
+     * @return 姓名 <Email地址>
+     * @throws MessagingException
+     * @throws UnsupportedEncodingException
+     */
+    public static String getFrom(MimeMessage msg) throws MessagingException, UnsupportedEncodingException {
+        String from = "";
+        Address[] froms = msg.getFrom();
+        if (froms.length < 1)
+            throw new MessagingException("没有发件人!");
+
+        InternetAddress address = (InternetAddress) froms[0];
+        String person = address.getPersonal();
+        if (person != null) {
+            person = MimeUtility.decodeText(person) + " ";
+        } else {
+            person = "";
+        }
+        from = person + "<" + address.getAddress() + ">";
+
+        return from;
+    }
+
+    /**
+     * 根据收件人类型，获取邮件收件人、抄送和密送地址。如果收件人类型为空，则获得所有的收件人
+     * <p>Message.RecipientType.TO  收件人</p>
+     * <p>Message.RecipientType.CC  抄送</p>
+     * <p>Message.RecipientType.BCC 密送</p>
+     * @param msg 邮件内容
+     * @param type 收件人类型
+     * @return 收件人1 <邮件地址1>, 收件人2 <邮件地址2>, ...
+     * @throws MessagingException
+     */
+    public static String getReceiveAddress(MimeMessage msg, Message.RecipientType type) throws MessagingException {
+        StringBuffer receiveAddress = new StringBuffer();
+        Address[] addresss = null;
+        if (type == null) {
+            addresss = msg.getAllRecipients();
+        } else {
+            addresss = msg.getRecipients(type);
+        }
+
+        if (addresss == null || addresss.length < 1)
+            throw new MessagingException("没有收件人!");
+        for (Address address : addresss) {
+            InternetAddress internetAddress = (InternetAddress)address;
+            receiveAddress.append(internetAddress.toUnicodeString()).append(",");
+        }
+
+        receiveAddress.deleteCharAt(receiveAddress.length()-1); //删除最后一个逗号
+
+        return receiveAddress.toString();
+    }
+
+    /**
+     * 获得邮件发送时间
+     * @param msg 邮件内容
+     * @return yyyy年mm月dd日 星期X HH:mm
+     * @throws MessagingException
+     */
+    public static String getSentDate(MimeMessage msg, String pattern) throws MessagingException {
+        Date receivedDate = msg.getSentDate();
+        if (receivedDate == null)
+            return "";
+
+        if (pattern == null || "".equals(pattern))
+            pattern = "yyyy年MM月dd日 E HH:mm ";
+
+        return new SimpleDateFormat(pattern).format(receivedDate);
+    }
+
+    /**
+     * 判断邮件中是否包含附件
+     * @param part 邮件内容
+     * @return 邮件中存在附件返回true，不存在返回false
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public static boolean isContainAttachment(Part part,int count) throws MessagingException, IOException {
+        boolean flag = false;
+        if (part.isMimeType("multipart/*")) {
+            MimeMultipart multipart = (MimeMultipart) part.getContent();
+            int partCount = multipart.getCount();
+            for (int i = 0; i < partCount; i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                String disp = bodyPart.getDisposition();
+                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE))) {
+                    flag = true;
+                    count ++;
+                } else if (bodyPart.isMimeType("multipart/*")) {
+                    flag = isContainAttachment(bodyPart,count);
+                    if(flag)
+                    {
+                        count ++;
+                    }
+                } else {
+                    String contentType = bodyPart.getContentType();
+                    if (contentType.indexOf("application") != -1) {
+                        flag = true;
+                        count ++;
+                    }
+
+                    if (contentType.indexOf("name") != -1) {
+                        flag = true;
+                        count ++;
+                    }
+                }
+
+                //if (flag) break;
+            }
+        } else if (part.isMimeType("message/rfc822")) {
+            flag = isContainAttachment((Part)part.getContent(),count);
+        }
+        return flag;
+    }
+
+    /**
+     * 判断邮件是否已读
+     * @param msg 邮件内容
+     * @return 如果邮件已读返回true,否则返回false
+     * @throws MessagingException
+     */
+    public static boolean isSeen(MimeMessage msg) throws MessagingException {
+        return msg.getFlags().contains(Flags.Flag.SEEN);
+    }
+
+    /**
+     * 判断邮件是否需要阅读回执
+     * @param msg 邮件内容
+     * @return 需要回执返回true,否则返回false
+     * @throws MessagingException
+     */
+    public static boolean isReplySign(MimeMessage msg) throws MessagingException {
+        boolean replySign = false;
+        String[] headers = msg.getHeader("Disposition-Notification-To");
+        if (headers != null)
+            replySign = true;
+        return replySign;
+    }
+
+    /**
+     * 获得邮件的优先级
+     * @param msg 邮件内容
+     * @return 1(High):紧急  3:普通(Normal)  5:低(Low)
+     * @throws MessagingException
+     */
+    public static String getPriority(MimeMessage msg) throws MessagingException {
+        String priority = "普通";
+        String[] headers = msg.getHeader("X-Priority");
+        if (headers != null) {
+            String headerPriority = headers[0];
+            if (headerPriority.indexOf("1") != -1 || headerPriority.indexOf("High") != -1)
+                priority = "紧急";
+            else if (headerPriority.indexOf("5") != -1 || headerPriority.indexOf("Low") != -1)
+                priority = "低";
+            else
+                priority = "普通";
+        }
+        return priority;
+    }
+
+    /**
+     * 获得邮件文本内容
+     * @param part 邮件体
+     * @param content 存储邮件文本内容的字符串
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public static void getMailTextContent(Part part, StringBuffer content) throws MessagingException, IOException {
+        //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
+        boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;
+        if (part.isMimeType("text/*") && !isContainTextAttach) {
+            content.append(part.getContent().toString());
+        } else if (part.isMimeType("message/rfc822")) {
+            getMailTextContent((Part)part.getContent(),content);
+        } else if (part.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) part.getContent();
+            int partCount = multipart.getCount();
+            for (int i = 0; i < partCount; i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                getMailTextContent(bodyPart,content);
+            }
+        }
+    }
+    /**
+     * 获得邮件文本内容
+     * @param part 邮件体
+     * @param content 存储邮件文本内容的字符串
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public static void getOnlyMailTextContent(Part part, StringBuffer content) throws MessagingException, IOException {
+        //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断
+        if (part.isMimeType("text/*")) {
+            content.append(part.getContent().toString());
+        } else {
+            content.append("");
+        }
+    }
+    /**
+     * 保存附件
+     * @param part 邮件中多个组合体中的其中一个组合体
+     * @param destDir  附件保存目录
+     * @throws UnsupportedEncodingException
+     * @throws MessagingException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void saveAttachment(Part part, String destDir) throws UnsupportedEncodingException, MessagingException,
+            FileNotFoundException, IOException {
+        if (part.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) part.getContent();    //复杂体邮件
+            //复杂体邮件包含多个邮件体
+            int partCount = multipart.getCount();
+            for (int i = 0; i < partCount; i++) {
+                //获得复杂体邮件中其中一个邮件体
+                BodyPart bodyPart = multipart.getBodyPart(i);
+                //某一个邮件体也有可能是由多个邮件体组成的复杂体
+                String disp = bodyPart.getDisposition();
+                if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT) || disp.equalsIgnoreCase(Part.INLINE))) {
+                    InputStream is = bodyPart.getInputStream();
+                    saveFile(is, destDir, decodeText(bodyPart.getFileName()));
+                } else if (bodyPart.isMimeType("multipart/*")) {
+                    saveAttachment(bodyPart,destDir);
+                } else {
+                    String contentType = bodyPart.getContentType();
+                    if (contentType.indexOf("name") != -1 || contentType.indexOf("application") != -1) {
+                        saveFile(bodyPart.getInputStream(), destDir, decodeText(bodyPart.getFileName()));
+                    }
+                }
+            }
+        } else if (part.isMimeType("message/rfc822")) {
+            saveAttachment((Part) part.getContent(),destDir);
+        }
+    }
+
+    /**
+     * 读取输入流中的数据保存至指定目录
+     * @param is 输入流
+     * @param fileName 文件名
+     * @param destDir 文件存储目录
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private static void saveFile(InputStream is, String destDir, String fileName)
+            throws FileNotFoundException, IOException {
+        BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedOutputStream bos = new BufferedOutputStream(
+                new FileOutputStream(new File(destDir + fileName)));
+        int len = -1;
+        while ((len = bis.read()) != -1) {
+            bos.write(len);
+            bos.flush();
+        }
+        bos.close();
+        bis.close();
+    }
+
+    /**
+     * 文本解码
+     * @param encodeText 解码MimeUtility.encodeText(String text)方法编码后的文本
+     * @return 解码后的文本
+     * @throws UnsupportedEncodingException
+     */
+    public static String decodeText(String encodeText) throws UnsupportedEncodingException {
+        if (encodeText == null || "".equals(encodeText)) {
+            return "";
+        } else {
+            return MimeUtility.decodeText(encodeText);
+        }
     }
 }

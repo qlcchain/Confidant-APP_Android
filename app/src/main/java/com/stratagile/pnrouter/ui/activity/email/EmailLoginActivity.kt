@@ -1,11 +1,16 @@
 package com.stratagile.pnrouter.ui.activity.email
 
 import android.app.ProgressDialog
-import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import com.pawegio.kandroid.toast
 import com.smailnet.eamil.Callback.GetConnectCallback
+import com.smailnet.eamil.Callback.GetCountCallback
+import com.smailnet.eamil.Callback.GetReceiveCallback
+import com.smailnet.eamil.EmailCount
 import com.smailnet.eamil.EmailExamine
+import com.smailnet.eamil.EmailMessage
+import com.smailnet.eamil.EmailReceiveClient
 import com.smailnet.islands.Islands
 import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
@@ -16,7 +21,6 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailLoginCompo
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailLoginContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailLoginModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailLoginPresenter
-import com.xiaomi.push.it
 import kotlinx.android.synthetic.main.email_login_activity.*
 import kotlinx.android.synthetic.main.emailname_bar.*
 import kotlinx.android.synthetic.main.emailpassword_bar.*
@@ -140,8 +144,9 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                     AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.insert(emailConfigEntity)
                 }
                 EventBus.getDefault().post(AddEmailConfig())
-                startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
-                finish()
+                sycDataCountIMAP()
+               /* startActivity(Intent(this@EmailLoginActivity, EmailMainActivity::class.java))
+                finish()*/
             }
 
             override fun loginFailure(errorMsg: String) {
@@ -153,5 +158,52 @@ class EmailLoginActivity : BaseActivity(), EmailLoginContract.View {
                         .show()
             }
         })
+
     }
+    private fun sycDataCountIMAP()
+    {
+        Islands.circularProgress(this)
+                .setCancelable(false)
+                .setMessage("同步中...")
+                .show()
+                .run { progressDialog ->
+                    val emailReceiveClient = EmailReceiveClient(AppConfig.instance.emailConfig())
+                    emailReceiveClient
+                            .imapReceiveAsynCount(this, object : GetCountCallback {
+                                override fun gainSuccess(messageList: List<EmailCount>, count: Int) {
+                                    progressDialog.dismiss()
+                                    Toast.makeText(AppConfig.instance, "邮件总数：" + count , Toast.LENGTH_SHORT).show()
+                                    if(messageList.size >0)
+                                    {
+                                        var emailMessage = messageList.get(0)
+                                        var account =  account_editText.getText().toString()
+                                        var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(account)).list()
+                                        var EmailMessage = false
+                                        if(emailConfigEntityList.size > 0)
+                                        {
+                                            var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                                            emailConfigEntity.unReadCount = emailMessage.unReadCount
+                                            emailConfigEntity.garbageCount = emailMessage.garbageCount
+                                            emailConfigEntity.unReadMenu = "未读邮件"
+                                            emailConfigEntity.starMenu = "星标邮件"
+                                            emailConfigEntity.drafMenu = "草稿夹"
+                                            emailConfigEntity.sendMenu = "已发送"
+                                            emailConfigEntity.garbageMenu = "垃圾邮件"
+                                            emailConfigEntity.deleteMenu = "已删除"
+                                            AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                                        }
+                                    }
+
+                                    finish()
+                                }
+
+                                override fun gainFailure(errorMsg: String) {
+                                    progressDialog.dismiss()
+                                    //Toast.makeText(AppConfig.instance, "IMAP邮件收取失败", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                            })
+                }
+    }
+
 }

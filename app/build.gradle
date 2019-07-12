@@ -18,9 +18,13 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     dexOptions {
-        javaMaxHeapSize "4g"
+        //使用增量模式构建
+        incremental true
+        javaMaxHeapSize "8g"
         jumboMode true
-        preDexLibraries = false
+        preDexLibraries = true
+        //线程数
+        threadCount = 8
         maxProcessCount 8
     }
     defaultConfig {
@@ -128,7 +132,7 @@ android {
     }
 }
 greendao {
-    schemaVersion 42//数据库版本号
+    schemaVersion 50//数据库版本号
     daoPackage 'com.stratagile.pnrouter.db'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
     //targetGenDirTest：设置生成单元测试目录

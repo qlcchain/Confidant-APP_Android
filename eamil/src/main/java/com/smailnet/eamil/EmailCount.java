@@ -17,30 +17,29 @@
 package com.smailnet.eamil;
 
 /**
- * Email for Android是基于JavaMail封装的电子邮件库，简化在Android客户端中编写
- * 发送电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务器，即
- * 可使用，所见即所得哦！
+ * 邮件相关数量
  *
- * @author
- * @author
+ * @author zl
  * @version 2.3
  */
-class Operator {
+public class EmailCount {
 
-    /**
-     * 获取EmailCore的对象实例
-     * @param config
-     * @return
-     */
-    protected static EmailCore Core(EmailConfig config){
-        return new EmailCore(config);
+    private int unReadCount;        //未读数量
+    private int garbageCount;       //垃圾未读邮件总数
+
+    public int getUnReadCount() {
+        return unReadCount;
     }
 
-    /**
-     * 获取EmailCore的对象实例
-     * @return
-     */
-    protected static EmailCore Core(){
-        return new EmailCore();
+    public void setUnReadCount(int unReadCount) {
+        this.unReadCount = unReadCount;
+    }
+
+    public int getGarbageCount() {
+        return garbageCount;
+    }
+
+    public void setGarbageCount(int garbageCount) {
+        this.garbageCount = garbageCount;
     }
 }

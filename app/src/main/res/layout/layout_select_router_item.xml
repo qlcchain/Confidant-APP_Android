@@ -6,7 +6,7 @@
     android:layout_height="@dimen/x100">
     <TextView
         android:layout_width="wrap_content"
-        android:id="@+id/name"
+        android:id="@+id/subject"
         android:textSize="@dimen/commemTextSize"
         android:textColor="@color/main_color"
         android:layout_height="wrap_content" />

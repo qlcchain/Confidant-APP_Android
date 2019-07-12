@@ -24,8 +24,14 @@ public class EmailConfigEntity implements Parcelable{
     private String imapHost;        //IMAP的Host
     private String account;         //邮箱帐号
     private String password;        //邮箱密码
-    private int lastCount;           //上一次请求的邮件数量
-    private int currentCount;        //当前请求的邮件数量
+    private int unReadCount;        //未读数量
+    private int garbageCount;       //垃圾未读邮件总数
+    private String unReadMenu;        //未读菜单名称
+    private String starMenu;        //未读菜单名称
+    private String drafMenu;        //未读菜单名称
+    private String sendMenu;        //未读菜单名称
+    private String garbageMenu;        //未读菜单名称
+    private String deleteMenu;        //未读菜单名称
     private Boolean isChoose;        //是否默认邮箱
 
     public EmailConfigEntity() {
@@ -47,17 +53,24 @@ public class EmailConfigEntity implements Parcelable{
         imapHost = in.readString();
         account = in.readString();
         password = in.readString();
-        lastCount = in.readInt();
-        currentCount = in.readInt();
+        unReadCount = in.readInt();
+        garbageCount = in.readInt();
+        unReadMenu = in.readString();
+        starMenu = in.readString();
+        drafMenu = in.readString();
+        sendMenu = in.readString();
+        garbageMenu = in.readString();
+        deleteMenu = in.readString();
         byte tmpIsChoose = in.readByte();
         isChoose = tmpIsChoose == 0 ? null : tmpIsChoose == 1;
     }
 
 
-    @Generated(hash = 1952057591)
+    @Generated(hash = 128457702)
     public EmailConfigEntity(Long id, int smtpPort, int popPort, int imapPort, String smtpHost,
-            String popHost, String imapHost, String account, String password, int lastCount,
-            int currentCount, Boolean isChoose) {
+            String popHost, String imapHost, String account, String password, int unReadCount,
+            int garbageCount, String unReadMenu, String starMenu, String drafMenu, String sendMenu,
+            String garbageMenu, String deleteMenu, Boolean isChoose) {
         this.id = id;
         this.smtpPort = smtpPort;
         this.popPort = popPort;
@@ -67,8 +80,14 @@ public class EmailConfigEntity implements Parcelable{
         this.imapHost = imapHost;
         this.account = account;
         this.password = password;
-        this.lastCount = lastCount;
-        this.currentCount = currentCount;
+        this.unReadCount = unReadCount;
+        this.garbageCount = garbageCount;
+        this.unReadMenu = unReadMenu;
+        this.starMenu = starMenu;
+        this.drafMenu = drafMenu;
+        this.sendMenu = sendMenu;
+        this.garbageMenu = garbageMenu;
+        this.deleteMenu = deleteMenu;
         this.isChoose = isChoose;
     }
 
@@ -173,20 +192,70 @@ public class EmailConfigEntity implements Parcelable{
         this.isChoose = isChoose;
     }
 
-    public int getLastCount() {
-        return lastCount;
+    public int getUnReadCount() {
+        return unReadCount;
     }
 
-    public void setLastCount(int lastCount) {
-        this.lastCount = lastCount;
+    public void setUnReadCount(int unReadCount) {
+        this.unReadCount = unReadCount;
     }
 
-    public int getCurrentCount() {
-        return currentCount;
+
+
+    public String getUnReadMenu() {
+        return unReadMenu;
     }
 
-    public void setCurrentCount(int currentCount) {
-        this.currentCount = currentCount;
+    public void setUnReadMenu(String unReadMenu) {
+        this.unReadMenu = unReadMenu;
+    }
+
+    public String getStarMenu() {
+        return starMenu;
+    }
+
+    public void setStarMenu(String starMenu) {
+        this.starMenu = starMenu;
+    }
+
+    public String getDrafMenu() {
+        return drafMenu;
+    }
+
+    public void setDrafMenu(String drafMenu) {
+        this.drafMenu = drafMenu;
+    }
+
+    public String getSendMenu() {
+        return sendMenu;
+    }
+
+    public void setSendMenu(String sendMenu) {
+        this.sendMenu = sendMenu;
+    }
+
+    public String getGarbageMenu() {
+        return garbageMenu;
+    }
+
+    public void setGarbageMenu(String garbageMenu) {
+        this.garbageMenu = garbageMenu;
+    }
+
+    public String getDeleteMenu() {
+        return deleteMenu;
+    }
+
+    public void setDeleteMenu(String deleteMenu) {
+        this.deleteMenu = deleteMenu;
+    }
+
+    public int getGarbageCount() {
+        return garbageCount;
+    }
+
+    public void setGarbageCount(int garbageCount) {
+        this.garbageCount = garbageCount;
     }
 
     @Override
@@ -210,8 +279,14 @@ public class EmailConfigEntity implements Parcelable{
         dest.writeString(imapHost);
         dest.writeString(account);
         dest.writeString(password);
-        dest.writeInt(lastCount);
-        dest.writeInt(currentCount);
+        dest.writeInt(unReadCount);
+        dest.writeInt(garbageCount);
+        dest.writeString(unReadMenu);
+        dest.writeString(starMenu);
+        dest.writeString(drafMenu);
+        dest.writeString(sendMenu);
+        dest.writeString(garbageMenu);
+        dest.writeString(deleteMenu);
         dest.writeByte((byte) (isChoose == null ? 0 : isChoose ? 1 : 2));
     }
 }

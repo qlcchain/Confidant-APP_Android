@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mRlMenu"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="start"
     android:background="@color/headmainColor"
     android:orientation="vertical"
@@ -18,5 +18,9 @@
         android:clickable="true"
         app:itemSrc="@mipmap/email_icon_selected"
         app:itemText="********@**.com"/>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/x100"
+        android:background="@color/color_ebebeb"
+        android:layout_height="@dimen/x1" />
 </LinearLayout>

@@ -62,7 +62,7 @@ public class EaseContactAdapter extends ArrayAdapter<EaseUser> implements Sectio
             else
                 convertView = layoutInflater.inflate(res, null);
             holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
-            holder.nameView = (TextView) convertView.findViewById(R.id.name);
+            holder.nameView = (TextView) convertView.findViewById(R.id.subject);
             holder.headerView = (TextView) convertView.findViewById(R.id.header);
             convertView.setTag(holder);
         }else{

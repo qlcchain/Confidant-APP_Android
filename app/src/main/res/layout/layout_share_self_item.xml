@@ -12,7 +12,7 @@
         android:layout_height="@dimen/x88" />
     <TextView
         android:layout_width="wrap_content"
-        android:id="@+id/name"
+        android:id="@+id/subject"
         android:layout_marginTop="@dimen/x20"
         android:textSize="12sp"
         android:layout_height="wrap_content" />

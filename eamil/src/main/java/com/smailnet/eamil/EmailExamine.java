@@ -29,8 +29,8 @@ import javax.mail.MessagingException;
  * 发送和接收电子邮件的的代码。把它集成到你的Android项目中，只需简单配置邮件服务
  * 器，即可使用，所见即所得哦！
  *
- * @author 张观湖
- * @author E-mail: zguanhu@foxmail.com
+ * @author
+ * @author
  * @version 2.3
  */
 public class EmailExamine {

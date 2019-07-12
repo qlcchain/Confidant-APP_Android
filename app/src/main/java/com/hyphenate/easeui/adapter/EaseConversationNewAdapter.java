@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.model.EaseAtMessageHelper;
@@ -94,7 +92,7 @@ public class EaseConversationNewAdapter extends ArrayAdapter<UnReadEMMessage> {
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
             holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(R.id.name);
+            holder.name = (TextView) convertView.findViewById(R.id.subject);
             holder.userRouter = (TextView) convertView.findViewById(R.id.userRouter);
             holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.message = (TextView) convertView.findViewById(R.id.message);

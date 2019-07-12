@@ -164,6 +164,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
     var hasFinger = false
     var name:Long  = 0;
     var emaiConfigChooseAdapter : EmaiConfigChooseAdapter? = null
+
+    private var exitTime: Long = 0
+    lateinit var viewModel: MainViewModel
+    private var conversationListFragment: EaseConversationListFragment? = null
+    private var chatAndEmailFragment:ChatAndEmailFragment? = null
+    private var contactFragment: ContactFragment? = null
+    private var isAddEmail = true
     override fun registerBack(registerRsp: JRegisterRsp) {
         if(!isScanSwitch)
         {
@@ -2167,12 +2174,6 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
 
     }
 
-    private var exitTime: Long = 0
-    lateinit var viewModel: MainViewModel
-    private var conversationListFragment: EaseConversationListFragment? = null
-    private var chatAndEmailFragment:ChatAndEmailFragment? = null
-    private var contactFragment: ContactFragment? = null
-    private var isAddEmail = true
 
     override fun showToast() {
         showProgressDialog()
@@ -2910,6 +2911,21 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else{
             recyclerViewleftParent.setHeight(400)
         }
+
+        var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()
+        if(emailConfigEntityChoose.size > 0)
+        {
+            var emailConfigEntity: EmailConfigEntity = emailConfigEntityChoose.get(0);
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost(emailConfigEntity.smtpHost)
+                    .setSmtpPort(emailConfigEntity.smtpPort)
+                    .setPopHost(emailConfigEntity.popHost)
+                    .setPopPort(emailConfigEntity.popPort)
+                    .setImapHost(emailConfigEntity.imapHost)
+                    .setImapPort(emailConfigEntity.imapPort)
+                    .setAccount(emailConfigEntity.account)
+                    .setPassword(emailConfigEntity.password)
+        }
         emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
         emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
             /* val floatMenu = FloatMenu(activity)
@@ -3209,9 +3225,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         newAccount.setOnClickListener {
             startActivity(Intent(this, EmailLoginActivity::class.java))
-            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            /*if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
-            }
+            }*/
         }
 
         mainIv1.setOnClickListener {

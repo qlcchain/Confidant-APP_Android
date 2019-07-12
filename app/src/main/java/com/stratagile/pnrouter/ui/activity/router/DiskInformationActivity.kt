@@ -13,7 +13,6 @@ import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.data.web.PNRouterServiceMessageReceiver
 import com.stratagile.pnrouter.entity.BaseData
 import com.stratagile.pnrouter.entity.GetDiskDetailInfoReq
-import com.stratagile.pnrouter.entity.GetDiskTotalInfoReq
 import com.stratagile.pnrouter.entity.JGetDiskDetailInfoRsp
 import com.stratagile.pnrouter.ui.activity.router.component.DaggerDiskInformationComponent
 import com.stratagile.pnrouter.ui.activity.router.contract.DiskInformationContract
@@ -38,7 +37,7 @@ class DiskInformationActivity : BaseActivity(), DiskInformationContract.View , P
         if(JGetDiskDetailInfoRsp.params.retCode == 0)
         {
             runOnUiThread {
-                name.text = JGetDiskDetailInfoRsp.params.name
+                subject.text = JGetDiskDetailInfoRsp.params.name
                 when(JGetDiskDetailInfoRsp.params.status)
                 {
                     0 ->{

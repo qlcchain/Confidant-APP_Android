@@ -83,7 +83,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
                 if (position == 0) {
                     return conversationListFragment!!
                 } else {
-                    return PrivacyPolicyFragment()
+                    return EmailMessageFragment()
                 }
             }
 

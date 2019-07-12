@@ -2,6 +2,8 @@ package com.stratagile.pnrouter.ui.adapter.conversation
 
 import android.view.View
 import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -27,6 +29,7 @@ class EmaiConfigChooseAdapter(arrayList: MutableList<EmailConfigEntity>) : BaseQ
     override fun convert(helper: BaseViewHolder, item: EmailConfigEntity) {
         var menuItemView = helper.getView<MenuItemView>(R.id.itemContent)
         menuItemView.setText(item.account)
+
 
     }
 
