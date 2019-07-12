@@ -49,6 +49,24 @@ public class EmailMessageEntity implements Parcelable{
         content = in.readString();
     }
 
+    @Generated(hash = 1633236032)
+    public EmailMessageEntity(Long id, String subject, String from, String to, String date,
+            boolean isSeen, String priority, boolean isReplySign, long size,
+            boolean isContainerAttachment, int attachmentCount, String content) {
+        this.id = id;
+        this.subject = subject;
+        this.from = from;
+        this.to = to;
+        this.date = date;
+        this.isSeen = isSeen;
+        this.priority = priority;
+        this.isReplySign = isReplySign;
+        this.size = size;
+        this.isContainerAttachment = isContainerAttachment;
+        this.attachmentCount = attachmentCount;
+        this.content = content;
+    }
+
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
         @Override
         public EmailMessageEntity createFromParcel(Parcel in) {
@@ -181,5 +199,29 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeByte((byte) (isContainerAttachment ? 1 : 0));
         dest.writeInt(attachmentCount);
         dest.writeString(content);
+    }
+
+    public boolean getIsSeen() {
+        return this.isSeen;
+    }
+
+    public void setIsSeen(boolean isSeen) {
+        this.isSeen = isSeen;
+    }
+
+    public boolean getIsReplySign() {
+        return this.isReplySign;
+    }
+
+    public void setIsReplySign(boolean isReplySign) {
+        this.isReplySign = isReplySign;
+    }
+
+    public boolean getIsContainerAttachment() {
+        return this.isContainerAttachment;
+    }
+
+    public void setIsContainerAttachment(boolean isContainerAttachment) {
+        this.isContainerAttachment = isContainerAttachment;
     }
 }
