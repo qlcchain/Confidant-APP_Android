@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class EmailMessageEntity implements Parcelable{
@@ -25,10 +25,12 @@ public class EmailMessageEntity implements Parcelable{
     private boolean isContainerAttachment;
     private int attachmentCount;
     private String content;
+    private String contentText;
 
     public EmailMessageEntity() {
 
     }
+
 
     protected EmailMessageEntity(Parcel in) {
         if (in.readByte() == 0) {
@@ -47,12 +49,14 @@ public class EmailMessageEntity implements Parcelable{
         isContainerAttachment = in.readByte() != 0;
         attachmentCount = in.readInt();
         content = in.readString();
+        contentText = in.readString();
     }
 
-    @Generated(hash = 1633236032)
+
+    @Generated(hash = 1401177952)
     public EmailMessageEntity(Long id, String subject, String from, String to, String date,
             boolean isSeen, String priority, boolean isReplySign, long size,
-            boolean isContainerAttachment, int attachmentCount, String content) {
+            boolean isContainerAttachment, int attachmentCount, String content, String contentText) {
         this.id = id;
         this.subject = subject;
         this.from = from;
@@ -65,6 +69,7 @@ public class EmailMessageEntity implements Parcelable{
         this.isContainerAttachment = isContainerAttachment;
         this.attachmentCount = attachmentCount;
         this.content = content;
+        this.contentText = contentText;
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -127,6 +132,22 @@ public class EmailMessageEntity implements Parcelable{
         this.content = content;
     }
 
+    public boolean isContainerAttachment() {
+        return isContainerAttachment;
+    }
+
+    public void setContainerAttachment(boolean containerAttachment) {
+        isContainerAttachment = containerAttachment;
+    }
+
+    public String getContentText() {
+        return contentText;
+    }
+
+    public void setContentText(String contentText) {
+        this.contentText = contentText;
+    }
+
     public boolean isSeen() {
         return isSeen;
     }
@@ -159,20 +180,38 @@ public class EmailMessageEntity implements Parcelable{
         this.size = size;
     }
 
-    public boolean isContainerAttachment() {
-        return isContainerAttachment;
-    }
-
-    public void setContainerAttachment(boolean containerAttachment) {
-        isContainerAttachment = containerAttachment;
-    }
-
     public int getAttachmentCount() {
         return attachmentCount;
     }
 
     public void setAttachmentCount(int attachmentCount) {
         this.attachmentCount = attachmentCount;
+    }
+
+
+
+    public boolean getIsSeen() {
+        return this.isSeen;
+    }
+
+    public void setIsSeen(boolean isSeen) {
+        this.isSeen = isSeen;
+    }
+
+    public boolean getIsReplySign() {
+        return this.isReplySign;
+    }
+
+    public void setIsReplySign(boolean isReplySign) {
+        this.isReplySign = isReplySign;
+    }
+
+    public boolean getIsContainerAttachment() {
+        return this.isContainerAttachment;
+    }
+
+    public void setIsContainerAttachment(boolean isContainerAttachment) {
+        this.isContainerAttachment = isContainerAttachment;
     }
 
     @Override
@@ -199,29 +238,6 @@ public class EmailMessageEntity implements Parcelable{
         dest.writeByte((byte) (isContainerAttachment ? 1 : 0));
         dest.writeInt(attachmentCount);
         dest.writeString(content);
-    }
-
-    public boolean getIsSeen() {
-        return this.isSeen;
-    }
-
-    public void setIsSeen(boolean isSeen) {
-        this.isSeen = isSeen;
-    }
-
-    public boolean getIsReplySign() {
-        return this.isReplySign;
-    }
-
-    public void setIsReplySign(boolean isReplySign) {
-        this.isReplySign = isReplySign;
-    }
-
-    public boolean getIsContainerAttachment() {
-        return this.isContainerAttachment;
-    }
-
-    public void setIsContainerAttachment(boolean isContainerAttachment) {
-        this.isContainerAttachment = isContainerAttachment;
+        dest.writeString(contentText);
     }
 }

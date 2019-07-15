@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.ui.activity.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.stratagile.pnrouter.R
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseFragment
 import com.stratagile.pnrouter.db.EmailMessageEntity
+import com.stratagile.pnrouter.ui.activity.email.EmailInfoActivity
 import com.stratagile.pnrouter.ui.activity.main.component.DaggerEmailMessageComponent
 import com.stratagile.pnrouter.ui.activity.main.contract.EmailMessageContract
 import com.stratagile.pnrouter.ui.activity.main.module.EmailMessageModule
@@ -52,9 +54,9 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         }
         recyclerView.adapter = emaiMessageChooseAdapter
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-            /* var intent = Intent(activity!!, ConversationActivity::class.java)
-             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-             startActivity(intent)*/
+             var intent = Intent(activity!!, EmailInfoActivity::class.java)
+             intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
+             startActivity(intent)
         }
         refreshLayout.setOnRefreshListener {
             pullMessageList()
@@ -75,7 +77,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         super.setUserVisibleHint(isVisibleToUser)
         if(isVisibleToUser)
         {
-            pullMessageList()
+            //pullMessageList()
         }
     }
     override fun setupFragmentComponent() {
@@ -109,6 +111,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         eamilMessage.to = item.to
                                         eamilMessage.subject = item.subject
                                         eamilMessage.content= item.content
+                                        eamilMessage.contentText= item.contentText
                                         eamilMessage.date = item.date
                                         AppConfig.instance.mDaoMaster!!.newSession().emailMessageEntityDao.insert(eamilMessage)
                                     }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/typeTitle"
+android:layout_width="match_parent"
+android:background="@color/white"
+android:layout_height="@dimen/x73"
+android:gravity="center_vertical">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_marginLeft="@dimen/x31"
+    android:layout_centerVertical="true"
+    android:layout_height="@dimen/x92"
+    android:layout_alignParentLeft="true">
+
+    <TextView
+        android:id="@+id/detail_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x20"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:text="@string/To"
+        android:textColor="@color/contentColor"
+        android:textSize="14sp" />
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x110"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:text="454622685"
+        android:textColor="@color/c_2A292B"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/adress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/name"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:text="user@example.com"
+        android:textColor="@color/c_2A292B"
+        android:layout_toRightOf="@id/detail_type"
+        android:layout_below="@+id/name"
+        android:textSize="12sp" />
+
+</RelativeLayout>
+</RelativeLayout>

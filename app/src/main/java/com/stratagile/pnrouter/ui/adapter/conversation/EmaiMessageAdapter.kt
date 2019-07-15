@@ -37,7 +37,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var subject = helper.getView<TextView>(R.id.subject)
         subject.setText(item.subject)
         var message = helper.getView<TextView>(R.id.message)
-        message.setText(item.content)
+        message.setText(item.contentText)
         var time = helper.getView<TextView>(R.id.time)
         time.setText(item.date)
         var ivAvatar = helper.getView<ImageButtonWithText>(R.id.avatar)

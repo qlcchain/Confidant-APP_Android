@@ -703,6 +703,11 @@
     <string name="Sent">Sent</string>
     <string name="Spam">Spam</string>
     <string name="Trash">Trash</string>
-
+    <string name="To_me">To me</string>
+    <string name="From">From</string>
+    <string name="To">To</string>
+    <string name="Cc">Cc</string>
+    <string name="Bcc">Bcc</string>
+    <string name="Time">Time</string>
 
 </resources>

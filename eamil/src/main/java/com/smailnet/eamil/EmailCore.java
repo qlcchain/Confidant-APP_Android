@@ -302,7 +302,7 @@ class EmailCore {
         Message[] messagesNew = new Message[1];
         System.arraycopy(messagesAllNew,0,messagesNew,0,messagesNew.length);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String subject, from, to, date, content;
+        String subject, from, to, date, content,contentText;
         PraseMimeMessage pmm = null;
         for (Message message : messagesNew){
             pmm = new PraseMimeMessage((MimeMessage)message);
@@ -310,8 +310,11 @@ class EmailCore {
             from = AddressUtil.codeConver(String.valueOf(message.getFrom()[0]));
             to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
             date = TimeUtil.getDate(message.getSentDate());
-            content = ContentUtil.getContent(message);
-            EmailMessage emailMessage = new EmailMessage("",subject, from, to, date,true,"",true,0,true,2, content);
+            StringBuffer contentTemp = new StringBuffer(30);
+            getMailTextContent(message, contentTemp);
+            content = contentTemp.toString();
+            contentText = getHtmlText(contentTemp.toString());
+            EmailMessage emailMessage = new EmailMessage("",subject, from, to, date,true,"",true,0,true,2, content,contentText);
             emailMessageList.add(emailMessage);
             Log.i("POP3", "邮件subject："+subject +"  时间："+date);
             File file = Environment.getExternalStorageDirectory();
@@ -395,7 +398,7 @@ class EmailCore {
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String id, subject, from, to, date, content,priority;
+        String id, subject, from, to, date, content, contentText,priority;
         Boolean  isSeen,isReplySign,isContainerAttachment;
         int attachmentCount;
         int index = 0;
@@ -422,8 +425,9 @@ class EmailCore {
                 StringBuffer contentTemp = new StringBuffer(30);
                 getMailTextContent(message, contentTemp);
                 content = contentTemp.toString();
+                contentText = getHtmlText(contentTemp.toString());
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(id,subject, from, to, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content);
+                EmailMessage emailMessage = new EmailMessage(id,subject, from, to, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
@@ -659,6 +663,13 @@ class EmailCore {
                 getMailTextContent(bodyPart,content);
             }
         }
+    }
+    public static String getHtmlText(String htmlStr)
+    {
+        String regFormat = "\\s*|\t|\r|\n";
+        String regTag = "<[^>]*>";
+        String text = htmlStr.replaceAll(regFormat,"").replaceAll(regTag,"").replaceAll("&nbsp;","");
+        return text;
     }
     /**
      * 获得邮件文本内容

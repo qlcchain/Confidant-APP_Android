@@ -33,6 +33,7 @@ public class EmailMessage {
     private boolean isContainerAttachment;
     private int attachmentCount;
     private String content;
+    private String contentText;
 
 
     public EmailMessage()
@@ -40,7 +41,7 @@ public class EmailMessage {
 
     }
 
-    public   EmailMessage(String id, String subject, String from, String to, String date, boolean isSeen, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content) {
+    public   EmailMessage(String id, String subject, String from, String to, String date, boolean isSeen, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
         this.id = id;
         this.subject = subject;
         this.from = from;
@@ -53,6 +54,7 @@ public class EmailMessage {
         this.isContainerAttachment = isContainerAttachment;
         this.attachmentCount = attachmentCount;
         this.content = content;
+        this.contentText = contentText;
     }
 
     public String getSubject() {
@@ -93,6 +95,14 @@ public class EmailMessage {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getContentText() {
+        return contentText;
+    }
+
+    public void setContentText(String contentText) {
+        this.contentText = contentText;
     }
 
     public String getId() {
