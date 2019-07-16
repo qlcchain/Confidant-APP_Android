@@ -441,6 +441,26 @@
                 android:progressDrawable="@drawable/webview_progress_bg"
                 android:visibility="gone" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/attachList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/attchtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x40"
+                android:layout_marginTop="@dimen/x20"
+                android:drawableLeft="@mipmap/tabbar_attach_unselected"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxEms="8"
+                android:text="@string/Attach"
+                android:textColor="@color/textColor"
+                android:textSize="19sp" />
+        </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 

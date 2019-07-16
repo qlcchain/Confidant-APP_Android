@@ -1,5 +1,7 @@
 package com.stratagile.pnrouter.ui.activity.email
 
+import android.content.Intent
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -161,8 +163,13 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         }
         webView.webViewClient = object  : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                view.loadUrl(url)
-                return false
+                //view.loadUrl(url)
+                val intent = Intent()
+                intent.action = "android.intent.action.VIEW"
+                val url = Uri.parse(url)
+                intent.data = url
+                startActivity(intent)
+                return true
             }
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler, error: SslError) {

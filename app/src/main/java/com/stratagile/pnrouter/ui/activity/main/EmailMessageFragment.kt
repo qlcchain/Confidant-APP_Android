@@ -93,6 +93,9 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         mPresenter = presenter as EmailMessagePresenter
     }
     fun pullMessageList() {
+        var accountTest = AppConfig.instance.emailConfig().account
+        var smtpHost = AppConfig.instance.emailConfig().smtpHost
+        Log.i("pullMessageList",accountTest +":"+smtpHost)
         Islands.circularProgress(this.activity)
                 .setCancelable(false)
                 .setMessage("同步中...")

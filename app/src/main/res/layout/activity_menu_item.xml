@@ -10,14 +10,29 @@
     android:background="@color/headmainColor"
     android:orientation="vertical"
     >
-    <com.stratagile.pnrouter.entity.MenuItemView
-        android:id="@+id/itemContent"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shape_menu_item"
-        android:clickable="true"
-        app:itemSrc="@mipmap/email_icon_selected"
-        app:itemText="********@**.com"/>
+        android:layout_height="wrap_content">
+        <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/itemContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_menu_item"
+            app:itemSrc="@mipmap/email_icon_selected"
+            app:itemText="********@**.com"/>
+        <TextView
+            android:id="@+id/choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x31"
+            android:layout_alignTop="@+id/itemContent"
+            android:layout_alignBottom="@+id/itemContent"
+            android:layout_alignParentRight="true"
+            android:drawableRight="@mipmap/ic_verified"
+            android:drawablePadding="@dimen/x5"
+            android:textColor="@color/timetextColor"
+            android:textSize="14sp" />
+    </RelativeLayout>
     <View
         android:layout_width="match_parent"
         android:layout_marginLeft="@dimen/x100"

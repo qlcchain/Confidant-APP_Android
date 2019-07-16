@@ -74,7 +74,7 @@ import com.stratagile.pnrouter.ui.activity.admin.AdminLoginActivity
 import com.stratagile.pnrouter.ui.activity.chat.ChatActivity
 import com.stratagile.pnrouter.ui.activity.chat.GroupChatActivity
 import com.stratagile.pnrouter.ui.activity.conversation.FileListFragment
-import com.stratagile.pnrouter.ui.activity.email.EmailLoginActivity
+import com.stratagile.pnrouter.ui.activity.email.EmailChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileChooseActivity
 import com.stratagile.pnrouter.ui.activity.file.FileSendShareActivity
 import com.stratagile.pnrouter.ui.activity.file.FileTaskListActivity
@@ -604,42 +604,42 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                         }
                     }
                 }else{*/
-                    /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
-                      var intent = Intent(this, RegisterActivity::class.java)
-                      intent.putExtra("flag", 1)
-                      startActivity(intent)*/
-                    runOnUiThread {
-                        showProgressDialog("waiting...")
-                    }
+                /*  AppConfig.instance.messageReceiver!!.loginBackListener = null
+                  var intent = Intent(this, RegisterActivity::class.java)
+                  intent.putExtra("flag", 1)
+                  startActivity(intent)*/
+                runOnUiThread {
+                    showProgressDialog("waiting...")
+                }
 
-                    val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
-                    var sign = ByteArray(32)
-                    var time = (System.currentTimeMillis() /1000).toString().toByteArray()
-                    System.arraycopy(time, 0, sign, 0, time.size)
-                    var dst_signed_msg = ByteArray(96)
-                    var signed_msg_len = IntArray(1)
-                    var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
-                    var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
-                    var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
-                    var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
-                    //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
-                    //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
-                    var regeister = RegeisterReq_V4(  recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
-                    if(ConstantValue.isWebsocketConnected)
-                    {
-                        AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                val NickName = RxEncodeTool.base64Encode2String( ConstantValue.localUserName!!.toByteArray())
+                var sign = ByteArray(32)
+                var time = (System.currentTimeMillis() /1000).toString().toByteArray()
+                System.arraycopy(time, 0, sign, 0, time.size)
+                var dst_signed_msg = ByteArray(96)
+                var signed_msg_len = IntArray(1)
+                var mySignPrivate  = RxEncodeTool.base64Decode(ConstantValue.libsodiumprivateSignKey)
+                var crypto_sign = Sodium.crypto_sign(dst_signed_msg,signed_msg_len,sign,sign.size,mySignPrivate)
+                var signBase64 = RxEncodeTool.base64Encode2String(dst_signed_msg)
+                var pulicMiKey = ConstantValue.libsodiumpublicSignKey!!
+                //var LoginKey = RxEncryptTool.encryptSHA256ToString(userName3.text.toString())
+                //var regeister = RegeisterReq( ConstantValue.scanRouterId, ConstantValue.scanRouterSN, IdentifyCode.text.toString(),LoginKey,NickName)
+                var regeister = RegeisterReq_V4(  recoveryRsp.params.routeId, recoveryRsp.params.userSn, signBase64,pulicMiKey,NickName)
+                if(ConstantValue.isWebsocketConnected)
+                {
+                    AppConfig.instance.getPNRouterServiceMessageSender().send(BaseData(4,regeister))
+                }
+                else if(ConstantValue.isToxConnected)
+                {
+                    var baseData = BaseData(4,regeister)
+                    var baseDataJson = baseData.baseDataToJson().replace("\\", "")
+                    if (ConstantValue.isAntox) {
+                        var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
+                        MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
+                    }else{
+                        ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
                     }
-                    else if(ConstantValue.isToxConnected)
-                    {
-                        var baseData = BaseData(4,regeister)
-                        var baseDataJson = baseData.baseDataToJson().replace("\\", "")
-                        if (ConstantValue.isAntox) {
-                            var friendKey: FriendKey = FriendKey(recoveryRsp.params.routeId.substring(0, 64))
-                            MessageHelper.sendMessageFromKotlin(AppConfig.instance, friendKey, baseDataJson, ToxMessageType.NORMAL)
-                        }else{
-                            ToxCoreJni.getInstance().senToxMessage(baseDataJson, recoveryRsp.params.routeId.substring(0, 64))
-                        }
-                    }
+                }
                 //}
 
             }
@@ -2366,7 +2366,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         LogUtil.addLog("Tox发送消息："+toxSendInfoEvent.info)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onAddEmailConfig(addEmailConfig: AddEmailConfig) {
+    fun onAddEmailConfig(changeEmailConfig: ChangeEmailConfig) {
         var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
         if(emailConfigEntityList.size == 0)
         {
@@ -2377,19 +2377,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }else{
             recyclerViewleftParent.setHeight(340)
         }
-        emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
-        emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-            /* val floatMenu = FloatMenu(activity)
-             floatMenu.items("菜单1", "菜单2", "菜单3")
-             floatMenu.show((activity!! as BaseActivity).point,0,0)*/
-            true
-        }
-        recyclerViewleft.adapter = emaiConfigChooseAdapter
-        emaiConfigChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-            /* var intent = Intent(activity!!, ConversationActivity::class.java)
-             intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-             startActivity(intent)*/
-        }
+        emaiConfigChooseAdapter!!.setNewData(emailConfigEntityList)
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onToxFriendStatusEvent(toxFriendStatusEvent: ToxFriendStatusEvent) {
@@ -2928,9 +2916,9 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         }
         emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
         emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-            /* val floatMenu = FloatMenu(activity)
-             floatMenu.items("菜单1", "菜单2", "菜单3")
-             floatMenu.show((activity!! as BaseActivity).point,0,0)*/
+            /*val floatMenu = FloatMenu(this)
+            floatMenu.items("菜单1", "菜单2", "菜单3")
+            floatMenu.show((activity!! as BaseActivity).point,0,0)*/
             true
         }
         recyclerViewleft.adapter = emaiConfigChooseAdapter
@@ -2938,6 +2926,33 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             /* var intent = Intent(activity!!, ConversationActivity::class.java)
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
              startActivity(intent)*/
+            var accountData = emaiConfigChooseAdapter!!.getItem(position)
+            var emailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.Account.eq(accountData!!.account)).list()
+            var hasVerify = false
+            if(emailConfigEntityList.size > 0)
+            {
+                var localemailConfigEntityList = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.loadAll()
+                for (j in localemailConfigEntityList) {
+                    j.choose = false
+                    AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(j)
+                }
+                var emailConfigEntity: EmailConfigEntity = emailConfigEntityList.get(0);
+                emailConfigEntity.choose = true
+                AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.update(emailConfigEntity)
+                AppConfig.instance.emailConfig()
+                        .setSmtpHost(emailConfigEntity.smtpHost)
+                        .setSmtpPort(emailConfigEntity.smtpPort)
+                        .setPopHost(emailConfigEntity.popHost)
+                        .setPopPort(emailConfigEntity.popPort)
+                        .setImapHost(emailConfigEntity.imapHost)
+                        .setImapPort(emailConfigEntity.imapPort)
+                        .setAccount(emailConfigEntity.account)
+                        .setPassword(emailConfigEntity.password)
+            }
+            EventBus.getDefault().post(ChangeEmailConfig())
+            /* if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }*/
         }
         if (VersionUtil.getDeviceBrand() == 3) {
             HMSAgent.connect(this, ConnectHandler {
@@ -3224,12 +3239,95 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             startActivity(Intent(this, FileTaskListActivity::class.java))
         }
         newAccount.setOnClickListener {
-            startActivity(Intent(this, EmailLoginActivity::class.java))
+            startActivity(Intent(this, EmailChooseActivity::class.java))
             /*if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
             }*/
         }
-
+        Inbox.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        nodebackedup.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        starred.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        drafts.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        sent.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        spam.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
+        trash.setOnClickListener {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+                mDrawer.closeDrawer(GravityCompat.START)
+            }
+        }
         mainIv1.setOnClickListener {
             PopWindowUtil.showFileUploadPopWindow(this@MainActivity, recyclerView, object : PopWindowUtil.OnSelectListener {
                 override fun onSelect(position: Int, obj: Any) {
@@ -3519,13 +3617,13 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             e.printStackTrace()
         }
-       if(!ConstantValue.shareFromLocalPath.equals(""))
-       {
-           var startIntent = Intent(this, FileSendShareActivity::class.java)
-           startIntent.putExtra("fileLocalPath",ConstantValue.shareFromLocalPath)
-           startActivity(startIntent)
-           ConstantValue.shareFromLocalPath = ""
-       }
+        if(!ConstantValue.shareFromLocalPath.equals(""))
+        {
+            var startIntent = Intent(this, FileSendShareActivity::class.java)
+            startIntent.putExtra("fileLocalPath",ConstantValue.shareFromLocalPath)
+            startActivity(startIntent)
+            ConstantValue.shareFromLocalPath = ""
+        }
         initEvent()
     }
     fun initSwitchData() {
@@ -3820,18 +3918,18 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                                                     {
                                                         if(count >=3)
                                                         {
-                                                           /* if(ConstantValue.currentRouterMac.equals(""))
-                                                            {
-                                                                runOnUiThread {
-                                                                    closeProgressDialog()
-                                                                    RouterMacStr = ""
-                                                                    isFromScanAdmim = false
-                                                                    gotoLogin()
-                                                                    toast(R.string.Unable_to_connect_to_router)
-                                                                }
-                                                            }
-                                                            Thread.currentThread().interrupt(); //方法调用终止线程
-                                                            break;*/
+                                                            /* if(ConstantValue.currentRouterMac.equals(""))
+                                                             {
+                                                                 runOnUiThread {
+                                                                     closeProgressDialog()
+                                                                     RouterMacStr = ""
+                                                                     isFromScanAdmim = false
+                                                                     gotoLogin()
+                                                                     toast(R.string.Unable_to_connect_to_router)
+                                                                 }
+                                                             }
+                                                             Thread.currentThread().interrupt(); //方法调用终止线程
+                                                             break;*/
                                                             if(!ConstantValue.currentRouterMac.equals(""))
                                                             {
                                                                 Thread.currentThread().interrupt(); //方法调用终止线程

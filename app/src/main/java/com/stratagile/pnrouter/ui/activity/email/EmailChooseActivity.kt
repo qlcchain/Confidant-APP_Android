@@ -1,6 +1,8 @@
 package com.stratagile.pnrouter.ui.activity.email
 
+import android.content.Intent
 import android.os.Bundle
+import com.stratagile.pnrouter.R
 
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
@@ -8,6 +10,10 @@ import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailChooseComp
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailChooseContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailChooseModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailChoosePresenter
+import kotlinx.android.synthetic.main.email_choose_activity.*
+import kotlinx.android.synthetic.main.email_login_activity.*
+import kotlinx.android.synthetic.main.emailname_bar.*
+import kotlinx.android.synthetic.main.emailpassword_bar.*
 
 import javax.inject.Inject;
 
@@ -28,10 +34,31 @@ class EmailChooseActivity : BaseActivity(), EmailChooseContract.View {
     }
 
     override fun initView() {
-//        setContentView(R.layout.activity_emailChoose)
+        setContentView(R.layout.email_choose_activity)
     }
     override fun initData() {
-
+        qq.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.qq.com")
+                    .setSmtpPort(465)
+                    .setPopHost("pop.qq.com")
+                    .setPopPort(995)
+                    .setImapHost("imap.qq.com")
+                    .setImapPort(993)
+            startActivity(Intent(this, EmailLoginActivity::class.java))
+            finish()
+        }
+        sina.setOnClickListener {
+            AppConfig.instance.emailConfig()
+                    .setSmtpHost("smtp.sina.com")
+                    .setSmtpPort(465)
+                    .setPopHost("pop.sina.com")
+                    .setPopPort(995)
+                    .setImapHost("imap.sina.com")
+                    .setImapPort(993)
+            startActivity(Intent(this, EmailLoginActivity::class.java))
+            finish()
+        }
     }
 
     override fun setupActivityComponent() {

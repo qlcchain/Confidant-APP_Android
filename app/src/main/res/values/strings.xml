@@ -710,4 +710,6 @@
     <string name="Bcc">Bcc</string>
     <string name="Time">Time</string>
     <string name="Hide">Hide</string>
+    <string name="Attach">Attach</string>
+
 </resources>

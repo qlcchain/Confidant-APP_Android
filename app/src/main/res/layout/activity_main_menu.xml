@@ -54,7 +54,7 @@
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/recyclerViewleftParent"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x300">
+        android:layout_height="@dimen/x170">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewleft"
             android:background="@color/white"
@@ -74,7 +74,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/email_icon_addemail"
             app:itemText="New Account"/>
 
@@ -95,8 +94,7 @@
             android:id="@+id/Inbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item_select"
-            android:clickable="true"
+            android:background="@drawable/shape_menu_item"
             app:itemSrc="@mipmap/tabbar_inbox"
             app:itemText="@string/Inbox"
             app:itemCount="9"/>
@@ -111,7 +109,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/statusbar_download_node"
             app:itemText="@string/Node_backed_up"/>
         <View
@@ -125,7 +122,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/tabbar_attach_selected"
             app:itemText="@string/Starred"/>
         <View
@@ -139,7 +135,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/tabbar_drafts"
             app:itemText="@string/Drafts"/>
         <View
@@ -153,7 +148,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/tabbar_sent"
             app:itemText="@string/Sent"/>
         <View
@@ -167,7 +161,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/tabbar_trash"
             app:itemText="@string/Spam"/>
         <View
@@ -181,7 +174,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_menu_item"
-            android:clickable="true"
             app:itemSrc="@mipmap/tabbar_deleted"
             app:itemText="@string/Trash"/>
     </LinearLayout>
