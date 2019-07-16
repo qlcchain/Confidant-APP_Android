@@ -120,5 +120,6 @@ object ConstantValue {
         var atMaxNum = 5 //群聊中@最大数量
         var notNeedVerify = false  //是否支持指纹和密码
         var sendMaxSize = 50000  //发送文字消息的最大字节数 原来是264 * 2，现在是5万
+        var chooseEmailMenu = 0;//默认选择收件箱
 
 }

@@ -3245,6 +3245,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }*/
         }
         Inbox.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 0;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3257,6 +3258,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         nodebackedup.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 1;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3269,6 +3271,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         starred.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 2;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
@@ -3281,6 +3284,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         drafts.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 3;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3293,6 +3297,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         sent.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 4;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3305,6 +3310,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         spam.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 5;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
@@ -3317,6 +3323,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
             }
         }
         trash.setOnClickListener {
+            ConstantValue.chooseEmailMenu = 6;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
             starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
