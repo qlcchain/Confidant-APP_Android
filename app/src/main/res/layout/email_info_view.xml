@@ -77,7 +77,7 @@
             android:textColor="@color/emailtextColor"
             android:textSize="16sp" />
         <TextView
-            android:id="@+id/startPic_info"
+            android:id="@+id/time_info"
             android:layout_width="wrap_content"
             android:layout_toRightOf="@+id/title_info"
             android:ellipsize="end"

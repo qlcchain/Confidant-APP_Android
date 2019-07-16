@@ -109,6 +109,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                         var eamilMessage = EmailMessageEntity()
                                         eamilMessage.from = item.from
                                         eamilMessage.to = item.to
+                                        eamilMessage.cc = item.cc
+                                        eamilMessage.bcc = item.bcc
                                         eamilMessage.subject = item.subject
                                         eamilMessage.content= item.content
                                         eamilMessage.contentText= item.contentText

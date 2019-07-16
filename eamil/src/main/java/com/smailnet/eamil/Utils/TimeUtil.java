@@ -33,9 +33,30 @@ public class TimeUtil {
     @SuppressLint("SimpleDateFormat")
     public static String getDate(Date date){
         if (date != null){
-            return new SimpleDateFormat("yyyy-MM-dd").format(date);
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
         }else {
             return null;
         }
+    }
+    /**
+     * 时间格式转换方法，格式为 yyyy-MM-dd
+     * @param dateStr
+     * @return
+     */
+    @SuppressLint("SimpleDateFormat")
+    public static Date getDate(String dateStr){
+        try
+        {
+            SimpleDateFormat SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (dateStr != null){
+                return SimpleDateFormat.parse(dateStr);
+            }else {
+                return null;
+            }
+        }catch (Exception e)
+        {
+
+        }
+       return null;
     }
 }

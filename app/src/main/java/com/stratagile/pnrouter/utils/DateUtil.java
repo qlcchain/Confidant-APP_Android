@@ -1,5 +1,6 @@
 package com.stratagile.pnrouter.utils;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 
@@ -113,5 +114,25 @@ public class DateUtil {
             return true;
         }
         return false;
+    }
+    /**
+     * 时间格式转换方法，格式为 yyyy-MM-dd
+     * @param dateStr
+     * @return
+     */
+    public static Date getDate(String dateStr){
+        try
+        {
+            SimpleDateFormat SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (dateStr != null){
+                return SimpleDateFormat.parse(dateStr);
+            }else {
+                return null;
+            }
+        }catch (Exception e)
+        {
+
+        }
+        return new Date();
     }
 }

@@ -16,6 +16,7 @@ import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
+import com.stratagile.pnrouter.utils.DateUtil
 import kotlinx.android.synthetic.main.email_info_view.*
 import java.util.*
 import javax.inject.Inject
@@ -43,12 +44,21 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
 
     override fun initData() {
         emailMeaasgeData = intent.getParcelableExtra("emailMeaasgeData")
-        var aa = "";
+        var to = emailMeaasgeData!!.to
+        var cc = emailMeaasgeData!!.cc
+        var bcc = emailMeaasgeData!!.bcc
 
         var titleStr = intent.getStringExtra("title")
         title.text = getString(R.string.Inbox)
         attach_info.text = getString(R.string.details)
         details.visibility = View.GONE
+        inboxTitle.text = emailMeaasgeData!!.subject
+        var fromName = emailMeaasgeData!!.from.substring(0,emailMeaasgeData!!.from.indexOf("<"))
+        var fromAdress = emailMeaasgeData!!.from.substring(emailMeaasgeData!!.from.indexOf("<"),emailMeaasgeData!!.from.length)
+        title_info.text = fromName
+        avatar_info.setText(fromName)
+        time_info.text = DateUtil.getTimestampString(DateUtil.getDate(emailMeaasgeData!!.date), AppConfig.instance)
+        fromName_Time.text = emailMeaasgeData!!.date
         attach_info.setOnClickListener {
             if(attach_info.text == getString(R.string.details))
             {
@@ -59,8 +69,30 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
                 details.visibility = View.GONE
             }
         }
+        fromName_From.text = fromName
+        fromEmailAdress_From.text = fromAdress
         var emailConfigEntityList = ArrayList<EmailInfoData>()
-        emailConfigEntityList.add(EmailInfoData("From","test@qq.com","test"))
+        //emailConfigEntityList.add(EmailInfoData("From",fromName,fromAdress))
+        if(cc!= null && cc != "" )
+        {
+            var ccList  =cc.split(",")
+            for(ccItem in ccList)
+            {
+                var ccName = ccItem.substring(0,ccItem.indexOf("<"))
+                var ccAdress = ccItem.substring(ccItem.indexOf("<"),ccItem.length)
+                emailConfigEntityList.add(EmailInfoData("Cc",ccName,ccAdress))
+            }
+        }
+        if(bcc!= null && bcc != "" )
+        {
+            var bccList  =bcc.split(",")
+            for(bccItem in bccList)
+            {
+                var ccName = bccItem.substring(0,bccItem.indexOf("<"))
+                var ccAdress = bccItem.substring(bccItem.indexOf("<"),bccItem.length)
+                emailConfigEntityList.add(EmailInfoData("Bcc",ccName,ccAdress))
+            }
+        }
         emaiInfoAdapter = EmaiInfoAdapter(emailConfigEntityList)
         emaiInfoAdapter!!.setOnItemLongClickListener { adapter, view, position ->
 

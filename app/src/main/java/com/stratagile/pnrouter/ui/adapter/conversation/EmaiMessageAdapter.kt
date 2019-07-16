@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.pawegio.kandroid.loadAnimation
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
+import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.constant.ConstantValue
 import com.stratagile.pnrouter.db.EmailMessageEntity
 import com.stratagile.pnrouter.entity.JPullFileListRsp
@@ -39,7 +40,7 @@ class EmaiMessageAdapter(arrayList: MutableList<EmailMessageEntity>) : BaseQuick
         var message = helper.getView<TextView>(R.id.message)
         message.setText(item.contentText)
         var time = helper.getView<TextView>(R.id.time)
-        time.setText(item.date)
+        time.setText( DateUtil.getTimestampString(DateUtil.getDate(item.date), AppConfig.instance))
         var ivAvatar = helper.getView<ImageButtonWithText>(R.id.avatar)
         ivAvatar.setText(from)
     }
