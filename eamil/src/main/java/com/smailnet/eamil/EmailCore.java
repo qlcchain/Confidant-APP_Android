@@ -113,6 +113,8 @@ class EmailCore {
 
     private Message message;
 
+    private int maxCount = 2;
+
     /**
      * 默认构造器
      */
@@ -314,7 +316,7 @@ class EmailCore {
             getMailTextContent(message, contentTemp);
             content = contentTemp.toString();
             contentText = getHtmlText(contentTemp.toString());
-            EmailMessage emailMessage = new EmailMessage("",subject, from, to, date,true,"",true,0,true,2, content,contentText);
+            EmailMessage emailMessage = new EmailMessage("",subject, from, to,"","", date,true,"",true,0,true,2, content,contentText);
             emailMessageList.add(emailMessage);
             Log.i("POP3", "邮件subject："+subject +"  时间："+date);
             File file = Environment.getExternalStorageDirectory();
@@ -389,16 +391,16 @@ class EmailCore {
         folder.open(Folder.READ_ONLY);
         int size = folder.getUnreadMessageCount();
         Message[] messagesAll = folder.getMessages();
-        if(messagesAll.length >10)
+        if(messagesAll.length >maxCount)
         {
-            messagesAll = folder.getMessages(messagesAll.length -9,messagesAll.length);
+            messagesAll = folder.getMessages(messagesAll.length -(maxCount -1),messagesAll.length);
         }else{
             messagesAll = folder.getMessages();
         }
         List<Message> list  = Arrays.asList(messagesAll);
         Collections.reverse(list);
         List<EmailMessage> emailMessageList = new ArrayList<>();
-        String id, subject, from, to, date, content, contentText,priority;
+        String id, subject, from, to,cc,bcc, date, content, contentText,priority;
         Boolean  isSeen,isReplySign,isContainerAttachment;
         int attachmentCount;
         int index = 0;
@@ -414,7 +416,9 @@ class EmailCore {
                 System.out.println(index+"_"+"getSubject1:"+System.currentTimeMillis());
                 from = getFrom((MimeMessage)message);
                 System.out.println(index+"_"+"getSubject2:"+System.currentTimeMillis());
-                to = Arrays.toString(message.getRecipients(Message.RecipientType.TO));
+                to =getReceiveAddress((MimeMessage)message,Message.RecipientType.TO);
+                cc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.CC);
+                bcc =  getReceiveAddress((MimeMessage)message,Message.RecipientType.BCC);
                 System.out.println(index+"_"+"getSubject3:"+System.currentTimeMillis());
                 date = TimeUtil.getDate(message.getSentDate());
                 System.out.println(index+"_"+"getSubject4:"+System.currentTimeMillis());
@@ -427,7 +431,7 @@ class EmailCore {
                 content = contentTemp.toString();
                 contentText = getHtmlText(contentTemp.toString());
                 System.out.println(index+"_"+"getSubject5:"+System.currentTimeMillis());
-                EmailMessage emailMessage = new EmailMessage(id,subject, from, to, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
+                EmailMessage emailMessage = new EmailMessage(id,subject, from, to,cc,bcc, date,isSeen,"",isReplySign,message.getSize(),isContainerAttachment,attachmentCount ,content,contentText);
                 System.out.println(index+"_"+"getSubject6:"+System.currentTimeMillis());
                 emailMessageList.add(emailMessage);
                 System.out.println(index+"_"+"getSubject7:"+System.currentTimeMillis());
@@ -523,7 +527,7 @@ class EmailCore {
         }
 
         if (addresss == null || addresss.length < 1)
-            throw new MessagingException("没有收件人!");
+            return "";
         for (Address address : addresss) {
             InternetAddress internetAddress = (InternetAddress)address;
             receiveAddress.append(internetAddress.toUnicodeString()).append(",");

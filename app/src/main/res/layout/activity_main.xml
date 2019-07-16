@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/title"
+                        android:id="@+id/typeName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
@@ -75,7 +75,7 @@
                         android:textColor="@color/textColor"
                         android:textSize="16sp" />
                     <TextView
-                        android:id="@+id/title2"
+                        android:id="@+id/nameTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"

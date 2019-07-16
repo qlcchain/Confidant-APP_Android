@@ -63,9 +63,7 @@
             android:layout_height="wrap_content">
         </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.NestedScrollView>
-
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -94,9 +92,10 @@
         android:orientation="vertical">
 
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/Inbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_menu_item"
+            android:background="@drawable/shape_menu_item_select"
             android:clickable="true"
             app:itemSrc="@mipmap/tabbar_inbox"
             app:itemText="@string/Inbox"
@@ -107,6 +106,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/nodebackedup"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -120,6 +120,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/starred"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,6 +134,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/drafts"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,6 +148,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/sent"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -159,6 +162,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/spam"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -172,6 +176,7 @@
             android:background="@color/color_ebebeb"
             android:layout_height="@dimen/x1" />
         <com.stratagile.pnrouter.entity.MenuItemView
+            android:id="@+id/trash"
             android:layout_marginTop="@dimen/x30"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

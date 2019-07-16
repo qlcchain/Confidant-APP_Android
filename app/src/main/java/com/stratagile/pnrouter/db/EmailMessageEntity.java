@@ -14,9 +14,12 @@ public class EmailMessageEntity implements Parcelable{
     @Id(autoincrement = true)
     private Long id;
 
+    private String account;
     private String subject;
     private String from;
     private String to;
+    private String cc;//抄送
+    private String bcc;//密送
     private String date;
     private boolean isSeen;
     private String priority;
@@ -32,35 +35,20 @@ public class EmailMessageEntity implements Parcelable{
     }
 
 
-    protected EmailMessageEntity(Parcel in) {
-        if (in.readByte() == 0) {
-            id = null;
-        } else {
-            id = in.readLong();
-        }
-        subject = in.readString();
-        from = in.readString();
-        to = in.readString();
-        date = in.readString();
-        isSeen = in.readByte() != 0;
-        priority = in.readString();
-        isReplySign = in.readByte() != 0;
-        size = in.readLong();
-        isContainerAttachment = in.readByte() != 0;
-        attachmentCount = in.readInt();
-        content = in.readString();
-        contentText = in.readString();
-    }
 
-
-    @Generated(hash = 1401177952)
-    public EmailMessageEntity(Long id, String subject, String from, String to, String date,
-            boolean isSeen, String priority, boolean isReplySign, long size,
-            boolean isContainerAttachment, int attachmentCount, String content, String contentText) {
+    @Generated(hash = 1976245364)
+    public EmailMessageEntity(Long id, String account, String subject, String from,
+            String to, String cc, String bcc, String date, boolean isSeen,
+            String priority, boolean isReplySign, long size,
+            boolean isContainerAttachment, int attachmentCount, String content,
+            String contentText) {
         this.id = id;
+        this.account = account;
         this.subject = subject;
         this.from = from;
         this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
         this.date = date;
         this.isSeen = isSeen;
         this.priority = priority;
@@ -70,6 +58,30 @@ public class EmailMessageEntity implements Parcelable{
         this.attachmentCount = attachmentCount;
         this.content = content;
         this.contentText = contentText;
+    }
+
+
+    protected EmailMessageEntity(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        account = in.readString();
+        subject = in.readString();
+        from = in.readString();
+        to = in.readString();
+        cc = in.readString();
+        bcc = in.readString();
+        date = in.readString();
+        isSeen = in.readByte() != 0;
+        priority = in.readString();
+        isReplySign = in.readByte() != 0;
+        size = in.readLong();
+        isContainerAttachment = in.readByte() != 0;
+        attachmentCount = in.readInt();
+        content = in.readString();
+        contentText = in.readString();
     }
 
     public static final Creator<EmailMessageEntity> CREATOR = new Creator<EmailMessageEntity>() {
@@ -90,6 +102,30 @@ public class EmailMessageEntity implements Parcelable{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getBcc() {
+        return bcc;
+    }
+
+    public void setBcc(String bcc) {
+        this.bcc = bcc;
     }
 
     public String getSubject() {
@@ -214,6 +250,7 @@ public class EmailMessageEntity implements Parcelable{
         this.isContainerAttachment = isContainerAttachment;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -227,9 +264,12 @@ public class EmailMessageEntity implements Parcelable{
             dest.writeByte((byte) 1);
             dest.writeLong(id);
         }
+        dest.writeString(account);
         dest.writeString(subject);
         dest.writeString(from);
         dest.writeString(to);
+        dest.writeString(cc);
+        dest.writeString(bcc);
         dest.writeString(date);
         dest.writeByte((byte) (isSeen ? 1 : 0));
         dest.writeString(priority);

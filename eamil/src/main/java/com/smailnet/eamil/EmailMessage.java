@@ -24,7 +24,9 @@ public class EmailMessage {
     private String id;
     private String subject;
     private String from;
-    private String to;
+    private String to;//收件人
+    private String cc;//抄送
+    private String bcc;//密送
     private String date;
     private boolean isSeen;
     private String priority;
@@ -41,11 +43,13 @@ public class EmailMessage {
 
     }
 
-    public   EmailMessage(String id, String subject, String from, String to, String date, boolean isSeen, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
+    public   EmailMessage(String id, String subject, String from, String to, String cc, String bcc, String date, boolean isSeen, String priority, boolean isReplySign, long size, boolean isContainerAttachment, int attachmentCount, String content,String contentText) {
         this.id = id;
         this.subject = subject;
         this.from = from;
         this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
         this.date = date;
         this.isSeen = isSeen;
         this.priority = priority;
@@ -87,6 +91,22 @@ public class EmailMessage {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getBcc() {
+        return bcc;
+    }
+
+    public void setBcc(String bcc) {
+        this.bcc = bcc;
     }
 
     public void setDate(String date) {

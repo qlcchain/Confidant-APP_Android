@@ -78,6 +78,7 @@ class ChatAndEmailFragment : BaseFragment(), ChatAndEmailContract.View {
         var icon = ArrayList<Drawable>()
         icon.add(getResources().getDrawable(R.mipmap.tabbar_circle_selected))
         icon.add(getResources().getDrawable(R.mipmap.tabbar_email_selected))
+
         viewPager.adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 if (position == 0) {

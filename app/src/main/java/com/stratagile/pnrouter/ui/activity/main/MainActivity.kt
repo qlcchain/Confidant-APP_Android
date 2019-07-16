@@ -2375,7 +2375,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             recyclerViewleftParent.setHeight(200)
         }else{
-            recyclerViewleftParent.setHeight(400)
+            recyclerViewleftParent.setHeight(380)
         }
         emaiConfigChooseAdapter = EmaiConfigChooseAdapter(emailConfigEntityList)
         emaiConfigChooseAdapter!!.setOnItemLongClickListener { adapter, view, position ->
@@ -2909,7 +2909,7 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
         {
             recyclerViewleftParent.setHeight(200)
         }else{
-            recyclerViewleftParent.setHeight(400)
+            recyclerViewleftParent.setHeight(380)
         }
 
         var emailConfigEntityChoose = AppConfig.instance.mDaoMaster!!.newSession().emailConfigEntityDao.queryBuilder().where(EmailConfigEntityDao.Properties.IsChoose.eq(true)).list()

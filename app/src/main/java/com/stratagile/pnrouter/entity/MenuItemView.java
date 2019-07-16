@@ -2,6 +2,7 @@ package com.stratagile.pnrouter.entity;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -88,7 +89,9 @@ public class MenuItemView extends LinearLayout {
     public void setImageResource(int resId) {
         mIvIcon.setImageResource(resId);
     }
-
+    public void setBackGroundResource(Drawable background) {
+        this.setBackground(background);//context.getResources().getDrawable(R.drawable.input_background_press)
+    }
     public void setText(@StringRes int resId) {
         mTvText.setText(resId);
     }

@@ -9,6 +9,12 @@ public class EmailInfoData {
     private String From;
     private String Adress;
 
+    public EmailInfoData(String type, String from, String adress) {
+        this.type = type;
+        From = from;
+        Adress = adress;
+    }
+
     public void setType(String type) {
         this.type = type;
     }

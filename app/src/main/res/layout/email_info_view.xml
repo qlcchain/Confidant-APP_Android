@@ -6,7 +6,40 @@
     android:background="@color/white"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x70"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/inboxTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x40"
+            android:layout_marginTop="@dimen/x20"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxEms="8"
+            android:text="信用管家消费提醒"
+            android:textColor="@color/textColor"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/inboxStar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/x30"
+            android:layout_marginTop="@dimen/x20"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxEms="8"
+            android:layout_alignParentRight="true"
+            android:drawableLeft="@mipmap/tabbar_stars_selected"
+            android:text=""
+            android:textColor="@color/textColor"
+            android:textSize="22sp" />
+    </RelativeLayout>
     <RelativeLayout
         android:id="@+id/list_itease_layout_info"
         android:layout_width="match_parent"
@@ -113,7 +146,7 @@
             android:layout_alignBottom="@+id/avatar_container_info"
             android:layout_toLeftOf="@id/time"
             android:layout_toRightOf="@+id/draft_info"
-            android:text="@string/To_me"
+            android:text=""
             android:ellipsize="end"
             android:layout_marginTop="@dimen/x4"
             android:singleLine="true"
@@ -188,7 +221,7 @@
                    android:layout_height="wrap_content">
                </android.support.v7.widget.RecyclerView>
            </android.support.v4.widget.NestedScrollView>
-        <RelativeLayout
+      <!--  <RelativeLayout
             android:id="@+id/to"
             android:layout_width="match_parent"
             android:background="@color/white"
@@ -337,7 +370,7 @@
                     android:textSize="12sp" />
 
             </RelativeLayout>
-        </RelativeLayout>
+        </RelativeLayout>-->
         <RelativeLayout
             android:id="@+id/Time"
             android:layout_width="match_parent"

@@ -7,18 +7,18 @@ import android.view.View
 import android.webkit.*
 import com.socks.library.KLog
 import com.stratagile.pnrouter.R
-
 import com.stratagile.pnrouter.application.AppConfig
 import com.stratagile.pnrouter.base.BaseActivity
 import com.stratagile.pnrouter.db.EmailMessageEntity
+import com.stratagile.pnrouter.entity.EmailInfoData
 import com.stratagile.pnrouter.ui.activity.email.component.DaggerEmailInfoComponent
 import com.stratagile.pnrouter.ui.activity.email.contract.EmailInfoContract
 import com.stratagile.pnrouter.ui.activity.email.module.EmailInfoModule
 import com.stratagile.pnrouter.ui.activity.email.presenter.EmailInfoPresenter
 import com.stratagile.pnrouter.ui.adapter.conversation.EmaiInfoAdapter
 import kotlinx.android.synthetic.main.email_info_view.*
-
-import javax.inject.Inject;
+import java.util.*
+import javax.inject.Inject
 
 /**
  * @author zl
@@ -46,22 +46,32 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
         var aa = "";
 
         var titleStr = intent.getStringExtra("title")
-        title.text = titleStr
-
-      /*  var emailConfigEntityList = emailMeaasgeData
+        title.text = getString(R.string.Inbox)
+        attach_info.text = getString(R.string.details)
+        details.visibility = View.GONE
+        attach_info.setOnClickListener {
+            if(attach_info.text == getString(R.string.details))
+            {
+                attach_info.text = getString(R.string.Hide)
+                details.visibility = View.VISIBLE
+            }else{
+                attach_info.text = getString(R.string.details)
+                details.visibility = View.GONE
+            }
+        }
+        var emailConfigEntityList = ArrayList<EmailInfoData>()
+        emailConfigEntityList.add(EmailInfoData("From","test@qq.com","test"))
         emaiInfoAdapter = EmaiInfoAdapter(emailConfigEntityList)
         emaiInfoAdapter!!.setOnItemLongClickListener { adapter, view, position ->
-            *//* val floatMenu = FloatMenu(activity)
-             floatMenu.items("菜单1", "菜单2", "菜单3")
-             floatMenu.show((activity!! as BaseActivity).point,0,0)*//*
+
             true
         }
         recyclerViewleft.adapter = emaiInfoAdapter
         emaiInfoAdapter!!.setOnItemClickListener { adapter, view, position ->
-            *//* var intent = Intent(activity!!, ConversationActivity::class.java)
+            /* var intent = Intent(activity!!, ConversationActivity::class.java)
              intent.putExtra("user", coversationListAdapter!!.getItem(position)!!.userEntity)
-             startActivity(intent)*//*
-        }*/
+             startActivity(intent)*/
+        }
         val webSettings = webView.getSettings()
         if (Build.VERSION.SDK_INT >= 19) {
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK)//加载缓存否则网络
@@ -100,7 +110,7 @@ class EmailInfoActivity : BaseActivity(), EmailInfoContract.View {
             override fun onReceivedTitle(view: WebView, title1: String?) {
                 super.onReceivedTitle(view, title1)
                 if (title1 != null) {
-                    title.text = title1
+                    //title.text = title1
                 }
             }
 
