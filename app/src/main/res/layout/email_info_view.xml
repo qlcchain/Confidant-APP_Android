@@ -1,447 +1,447 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_itease_layoutRoot"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x70"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/inboxTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x40"
-            android:layout_marginTop="@dimen/x20"
-            android:singleLine="true"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            android:maxEms="8"
-            android:text="信用管家消费提醒"
-            android:textColor="@color/textColor"
-            android:textSize="19sp" />
-
-        <TextView
-            android:id="@+id/inboxStar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x30"
-            android:layout_marginTop="@dimen/x20"
-            android:singleLine="true"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            android:maxEms="8"
-            android:layout_alignParentRight="true"
-            android:drawableLeft="@mipmap/tabbar_stars_selected"
-            android:text=""
-            android:textColor="@color/textColor"
-            android:textSize="22sp" />
-    </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/list_itease_layout_info"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/list_itease_layoutRoot"
         android:layout_width="match_parent"
         android:background="@color/white"
-        android:layout_height="@dimen/x153"
-        android:gravity="center_vertical">
-
-        <RelativeLayout
-            android:id="@+id/avatar_container_info"
-            android:layout_width="@dimen/x92"
-            android:layout_marginLeft="@dimen/x31"
-            android:layout_centerVertical="true"
-            android:layout_height="@dimen/x92"
-            android:layout_alignParentLeft="true">
-
-            <com.stratagile.pnrouter.view.ImageButtonWithText
-                android:id="@+id/avatar_info"
-                android:layout_width="@dimen/x92"
-                android:layout_height="@dimen/x92"
-                android:layout_centerVertical="true"
-                app:imageButtonTextSize="20" />
-
-        </RelativeLayout>
-        <TextView
-            android:id="@+id/title_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x20"
-            android:singleLine="true"
-            android:ellipsize="end"
-            android:layout_above="@+id/message_info"
-            android:maxEms="8"
-            android:text="Avaaaaaaaa"
-            android:layout_toRightOf="@id/avatar_container_info"
-            android:textColor="@color/emailtextColor"
-            android:textSize="16sp" />
-        <TextView
-            android:id="@+id/time_info"
-            android:layout_width="wrap_content"
-            android:layout_toRightOf="@+id/title_info"
-            android:ellipsize="end"
-            android:maxEms="8"
-            android:singleLine="true"
-            android:gravity="center_vertical"
-            android:textColor="@color/color_2B2B2B"
-            android:textSize="12sp"
-            android:text="2019 0616"
-            android:layout_alignBottom="@+id/title_info"
-            android:layout_alignTop="@+id/title_info"
-            android:layout_marginTop="@dimen/x3"
-            android:layout_marginLeft="@dimen/x10"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/attach_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/x31"
-            android:layout_alignTop="@+id/title_info"
-            android:layout_alignBottom="@+id/title_info"
-            android:layout_alignParentRight="true"
-            android:text="@string/details"
-            android:drawablePadding="@dimen/x5"
-            android:textColor="@color/loginbtnColor"
-            android:textSize="14sp" />
-        <ImageView
-            android:id="@+id/msg_state_info"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="7dp"
-            android:layout_toRightOf="@id/avatar_container_info"
-            android:src="@drawable/ease_msg_state_fail_resend"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/mentioned_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/msg_state_info"
-            android:paddingBottom="7dp"
-            android:paddingLeft="7dp"
-            android:paddingTop="7dp"
-            android:text="@string/were_mentioned"
-            android:textColor="#e84e40"
-            android:textSize="14sp"
-            android:visibility="gone" />
-        <TextView
-            android:id="@+id/draft_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/mentioned_info"
-            android:text="@string/To_me"
-            android:layout_alignBottom="@+id/avatar_container_info"
-            android:layout_marginLeft="@dimen/x20"
-            android:singleLine="true"
-            android:textColor="@color/contentColor"
-            android:textSize="14sp" />
-        <TextView
-            android:id="@+id/message_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/avatar_container_info"
-            android:layout_toLeftOf="@id/time"
-            android:layout_toRightOf="@+id/draft_info"
-            android:text=""
-            android:ellipsize="end"
-            android:layout_marginTop="@dimen/x4"
-            android:singleLine="true"
-            android:textColor="@color/contentColor"
-            android:textSize="14sp" />
-    </RelativeLayout>
-       <LinearLayout
-        android:id="@+id/details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/from"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="@dimen/x73"
-            android:gravity="center_vertical">
-
-            <RelativeLayout
-                android:id="@+id/From"
-                android:layout_width="match_parent"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_centerVertical="true"
-                android:layout_height="@dimen/x92"
-                android:layout_alignParentLeft="true">
-
-                <TextView
-                    android:id="@+id/detail_from_From"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x20"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="@string/From"
-                    android:textColor="@color/contentColor"
-                    android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/fromName_From"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x110"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="Abby Moran"
-                    android:textColor="@color/c_2A292B"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/fromEmailAdress_From"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/fromName_From"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="team@reddlenews.com"
-                    android:textColor="@color/c_2A292B"
-                    android:layout_toRightOf="@id/detail_from_From"
-                    android:layout_below="@+id/fromName_From"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-        </RelativeLayout>
-           <android.support.v4.widget.NestedScrollView
-               android:id="@+id/recyclerViewleftParent"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content">
-               <android.support.v7.widget.RecyclerView
-                   android:id="@+id/recyclerViewleft"
-                   android:background="@color/white"
-                   app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-               </android.support.v7.widget.RecyclerView>
-           </android.support.v4.widget.NestedScrollView>
-      <!--  <RelativeLayout
-            android:id="@+id/to"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="@dimen/x73"
-            android:gravity="center_vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_centerVertical="true"
-                android:layout_height="@dimen/x92"
-                android:layout_alignParentLeft="true">
-
-                <TextView
-                    android:id="@+id/detail_from_to"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x20"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="@string/To"
-                    android:textColor="@color/contentColor"
-                    android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/fromName_to"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x110"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="454622685"
-                    android:textColor="@color/c_2A292B"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/fromEmailAdress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/fromName_to"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="user@example.com"
-                    android:textColor="@color/c_2A292B"
-                    android:layout_toRightOf="@id/detail_from_to"
-                    android:layout_below="@+id/fromName_to"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/Cc"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="@dimen/x73"
-            android:gravity="center_vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_centerVertical="true"
-                android:layout_height="@dimen/x92"
-                android:layout_alignParentLeft="true">
-
-                <TextView
-                    android:id="@+id/detail_from_Cc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x20"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="@string/Cc"
-                    android:textColor="@color/contentColor"
-                    android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/fromName_Cc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x110"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="454622685"
-                    android:textColor="@color/c_2A292B"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/CcfromEmailAdress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/fromName_Cc"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="user@example.com"
-                    android:textColor="@color/c_2A292B"
-                    android:layout_toRightOf="@id/detail_from_Cc"
-                    android:layout_below="@+id/fromName_Cc"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/Bcc"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="@dimen/x73"
-            android:gravity="center_vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_centerVertical="true"
-                android:layout_height="@dimen/x92"
-                android:layout_alignParentLeft="true">
-
-                <TextView
-                    android:id="@+id/detail_from_Bcc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x20"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text="@string/Bcc"
-                    android:textColor="@color/contentColor"
-                    android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/fromName_Bcc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x110"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="454622685"
-                    android:textColor="@color/c_2A292B"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/fromEmailAdress_Bcc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/fromName_Bcc"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="user@example.com"
-                    android:textColor="@color/c_2A292B"
-                    android:layout_toRightOf="@id/detail_from_Bcc"
-                    android:layout_below="@+id/fromName_Bcc"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-        </RelativeLayout>-->
-        <RelativeLayout
-            android:id="@+id/Time"
-            android:layout_width="match_parent"
-            android:background="@color/white"
-            android:layout_height="@dimen/x73"
-            android:gravity="center_vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginLeft="@dimen/x31"
-                android:layout_centerVertical="true"
-                android:layout_height="@dimen/x42"
-                android:layout_alignParentLeft="true">
-
-                <TextView
-                    android:id="@+id/detail_from_Time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x20"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text="@string/Time"
-                    android:textColor="@color/contentColor"
-                    android:textSize="14sp" />
-                <TextView
-                    android:id="@+id/fromName_Time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/x110"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="03/04/2019 13:49"
-                    android:textColor="@color/c_2A292B"
-                    android:textSize="14sp" />
-
-
-            </RelativeLayout>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_marginRight="7dp"
-        android:layout_height="@dimen/x1"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="7dp"
-        android:background="@color/color_f2f2f2"/>
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <WebView
-            android:id="@+id/webView"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="@dimen/x70"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/inboxTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x40"
+                android:layout_marginTop="@dimen/x20"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxEms="8"
+                android:text="信用管家消费提醒"
+                android:textColor="@color/textColor"
+                android:textSize="19sp" />
 
-        </WebView>
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
+            <TextView
+                android:id="@+id/inboxStar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/x30"
+                android:layout_marginTop="@dimen/x20"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxEms="8"
+                android:layout_alignParentRight="true"
+                android:drawableLeft="@mipmap/tabbar_stars_selected"
+                android:text=""
+                android:textColor="@color/textColor"
+                android:textSize="22sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/list_itease_layout_info"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/x4"
-            android:layout_gravity="top"
-            android:progressDrawable="@drawable/webview_progress_bg"
-            android:visibility="gone" />
+            android:background="@color/white"
+            android:layout_height="@dimen/x153"
+            android:gravity="center_vertical">
+
+            <RelativeLayout
+                android:id="@+id/avatar_container_info"
+                android:layout_width="@dimen/x92"
+                android:layout_marginLeft="@dimen/x31"
+                android:layout_centerVertical="true"
+                android:layout_height="@dimen/x92"
+                android:layout_alignParentLeft="true">
+
+                <com.stratagile.pnrouter.view.ImageButtonWithText
+                    android:id="@+id/avatar_info"
+                    android:layout_width="@dimen/x92"
+                    android:layout_height="@dimen/x92"
+                    android:layout_centerVertical="true"
+                    app:imageButtonTextSize="20" />
+
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/title_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/x20"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_above="@+id/message_info"
+                android:maxEms="8"
+                android:text="Avaaaaaaaa"
+                android:layout_toRightOf="@id/avatar_container_info"
+                android:textColor="@color/emailtextColor"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/time_info"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/title_info"
+                android:ellipsize="end"
+                android:maxEms="8"
+                android:singleLine="true"
+                android:gravity="center_vertical"
+                android:textColor="@color/color_2B2B2B"
+                android:textSize="12sp"
+                android:text="2019 0616"
+                android:layout_alignBottom="@+id/title_info"
+                android:layout_alignTop="@+id/title_info"
+                android:layout_marginTop="@dimen/x3"
+                android:layout_marginLeft="@dimen/x10"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/attach_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/x31"
+                android:layout_alignTop="@+id/title_info"
+                android:layout_alignBottom="@+id/title_info"
+                android:layout_alignParentRight="true"
+                android:text="@string/details"
+                android:drawablePadding="@dimen/x5"
+                android:textColor="@color/loginbtnColor"
+                android:textSize="14sp" />
+            <ImageView
+                android:id="@+id/msg_state_info"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@id/avatar_container_info"
+                android:src="@drawable/ease_msg_state_fail_resend"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/mentioned_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@id/msg_state_info"
+                android:paddingBottom="7dp"
+                android:paddingLeft="7dp"
+                android:paddingTop="7dp"
+                android:text="@string/were_mentioned"
+                android:textColor="#e84e40"
+                android:textSize="14sp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/draft_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/mentioned_info"
+                android:text="@string/To_me"
+                android:layout_alignBottom="@+id/avatar_container_info"
+                android:layout_marginLeft="@dimen/x20"
+                android:singleLine="true"
+                android:textColor="@color/contentColor"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/message_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/avatar_container_info"
+                android:layout_toLeftOf="@id/time"
+                android:layout_toRightOf="@+id/draft_info"
+                android:text=""
+                android:ellipsize="end"
+                android:layout_marginTop="@dimen/x4"
+                android:singleLine="true"
+                android:textColor="@color/contentColor"
+                android:textSize="14sp" />
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/from"
+                android:layout_width="match_parent"
+                android:background="@color/white"
+                android:layout_height="@dimen/x73"
+                android:gravity="center_vertical">
+
+                <RelativeLayout
+                    android:id="@+id/From"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="@dimen/x31"
+                    android:layout_centerVertical="true"
+                    android:layout_height="@dimen/x92"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:id="@+id/detail_from_From"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:text="@string/From"
+                        android:textColor="@color/contentColor"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/fromName_From"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x110"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:text="Abby Moran"
+                        android:textColor="@color/c_2A292B"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/fromEmailAdress_From"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/fromName_From"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:text="team@reddlenews.com"
+                        android:textColor="@color/c_2A292B"
+                        android:layout_toRightOf="@id/detail_from_From"
+                        android:layout_below="@+id/fromName_From"
+                        android:textSize="12sp" />
+
+                </RelativeLayout>
+            </RelativeLayout>
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/recyclerViewleftParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerViewleft"
+                    android:background="@color/white"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+            </android.support.v4.widget.NestedScrollView>
+            <!--  <RelativeLayout
+                  android:id="@+id/to"
+                  android:layout_width="match_parent"
+                  android:background="@color/white"
+                  android:layout_height="@dimen/x73"
+                  android:gravity="center_vertical">
+
+                  <RelativeLayout
+                      android:layout_width="match_parent"
+                      android:layout_marginLeft="@dimen/x31"
+                      android:layout_centerVertical="true"
+                      android:layout_height="@dimen/x92"
+                      android:layout_alignParentLeft="true">
+
+                      <TextView
+                          android:id="@+id/detail_from_to"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x20"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="@string/To"
+                          android:textColor="@color/contentColor"
+                          android:textSize="14sp" />
+                      <TextView
+                          android:id="@+id/fromName_to"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x110"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="454622685"
+                          android:textColor="@color/c_2A292B"
+                          android:textSize="14sp" />
+
+                      <TextView
+                          android:id="@+id/fromEmailAdress"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_alignLeft="@id/fromName_to"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="user@example.com"
+                          android:textColor="@color/c_2A292B"
+                          android:layout_toRightOf="@id/detail_from_to"
+                          android:layout_below="@+id/fromName_to"
+                          android:textSize="12sp" />
+
+                  </RelativeLayout>
+              </RelativeLayout>
+              <RelativeLayout
+                  android:id="@+id/Cc"
+                  android:layout_width="match_parent"
+                  android:background="@color/white"
+                  android:layout_height="@dimen/x73"
+                  android:gravity="center_vertical">
+
+                  <RelativeLayout
+                      android:layout_width="match_parent"
+                      android:layout_marginLeft="@dimen/x31"
+                      android:layout_centerVertical="true"
+                      android:layout_height="@dimen/x92"
+                      android:layout_alignParentLeft="true">
+
+                      <TextView
+                          android:id="@+id/detail_from_Cc"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x20"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="@string/Cc"
+                          android:textColor="@color/contentColor"
+                          android:textSize="14sp" />
+                      <TextView
+                          android:id="@+id/fromName_Cc"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x110"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="454622685"
+                          android:textColor="@color/c_2A292B"
+                          android:textSize="14sp" />
+
+                      <TextView
+                          android:id="@+id/CcfromEmailAdress"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_alignLeft="@id/fromName_Cc"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="user@example.com"
+                          android:textColor="@color/c_2A292B"
+                          android:layout_toRightOf="@id/detail_from_Cc"
+                          android:layout_below="@+id/fromName_Cc"
+                          android:textSize="12sp" />
+
+                  </RelativeLayout>
+              </RelativeLayout>
+              <RelativeLayout
+                  android:id="@+id/Bcc"
+                  android:layout_width="match_parent"
+                  android:background="@color/white"
+                  android:layout_height="@dimen/x73"
+                  android:gravity="center_vertical">
+
+                  <RelativeLayout
+                      android:layout_width="match_parent"
+                      android:layout_marginLeft="@dimen/x31"
+                      android:layout_centerVertical="true"
+                      android:layout_height="@dimen/x92"
+                      android:layout_alignParentLeft="true">
+
+                      <TextView
+                          android:id="@+id/detail_from_Bcc"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x20"
+                          android:ellipsize="end"
+                          android:singleLine="true"
+                          android:text="@string/Bcc"
+                          android:textColor="@color/contentColor"
+                          android:textSize="14sp" />
+                      <TextView
+                          android:id="@+id/fromName_Bcc"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginLeft="@dimen/x110"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="454622685"
+                          android:textColor="@color/c_2A292B"
+                          android:textSize="14sp" />
+
+                      <TextView
+                          android:id="@+id/fromEmailAdress_Bcc"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_alignLeft="@id/fromName_Bcc"
+                          android:singleLine="true"
+                          android:ellipsize="end"
+                          android:text="user@example.com"
+                          android:textColor="@color/c_2A292B"
+                          android:layout_toRightOf="@id/detail_from_Bcc"
+                          android:layout_below="@+id/fromName_Bcc"
+                          android:textSize="12sp" />
+
+                  </RelativeLayout>
+              </RelativeLayout>-->
+            <RelativeLayout
+                android:id="@+id/Time"
+                android:layout_width="match_parent"
+                android:background="@color/white"
+                android:layout_height="@dimen/x73"
+                android:gravity="center_vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="@dimen/x31"
+                    android:layout_centerVertical="true"
+                    android:layout_height="@dimen/x42"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:id="@+id/detail_from_Time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x20"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@string/Time"
+                        android:textColor="@color/contentColor"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/fromName_Time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x110"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:text="03/04/2019 13:49"
+                        android:textColor="@color/c_2A292B"
+                        android:textSize="14sp" />
+
+
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginRight="7dp"
+            android:layout_height="@dimen/x1"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="7dp"
+            android:background="@color/color_f2f2f2"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </WebView>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x4"
+                android:layout_gravity="top"
+                android:progressDrawable="@drawable/webview_progress_bg"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
-
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v4.widget.NestedScrollView>
-</LinearLayout>
+</android.support.v4.widget.NestedScrollView>
 
 

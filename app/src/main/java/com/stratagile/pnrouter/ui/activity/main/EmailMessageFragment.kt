@@ -107,6 +107,7 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                     for (item in messageList)
                                     {
                                         var eamilMessage = EmailMessageEntity()
+                                        eamilMessage.account = AppConfig.instance.emailConfig().account
                                         eamilMessage.from = item.from
                                         eamilMessage.to = item.to
                                         eamilMessage.cc = item.cc
