@@ -3244,6 +3244,16 @@ class MainActivity : BaseActivity(), MainContract.View, PNRouterServiceMessageRe
                 mDrawer.closeDrawer(GravityCompat.START)
             }*/
         }
+        if(ConstantValue.chooseEmailMenu == 0)
+        {
+            Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
+            nodebackedup.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            starred.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            drafts.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            sent.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            spam.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+            trash.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item))
+        }
         Inbox.setOnClickListener {
             ConstantValue.chooseEmailMenu = 0;
             Inbox.setBackGroundResource(getResources().getDrawable(R.drawable.shape_menu_item_select))
