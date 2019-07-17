@@ -294,7 +294,7 @@ public class PraseMimeMessage{
 
     private void saveFile(String fileName,InputStream in)throws Exception{
         int len = in.available();
-        byte[] byt = MailUtil.inputStreamToByte(in);
+        int byt = MailUtil.getInputStreamSize(in);
         String osName = System.getProperty("os.name");
         String storedir = getAttachPath();
         String separator = "";

@@ -449,22 +449,30 @@ public class MailUtil {
             pop3Store.close();
         }
     }
-    public static byte[] inputStreamToByte(InputStream inStream)
+    public static int getInputStreamSize(InputStream inStream)
     {
-        byte[] in_b = new byte[0];
-        ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
-        byte[] buff = new byte[100]; //buff用于存放循环读取的临时数据
-        int rc = 0;
-        try {
-            while ((rc = inStream.read(buff, 0, 100)) > 0) {
-                swapStream.write(buff, 0, rc);
+        int count = 0;
+        BufferedInputStream  bis = null;
+        try{
+            bis = new BufferedInputStream(inStream);
+
+
+            int c;
+            while((c=bis.read()) != -1){
+                count +=c;
             }
-            in_b = swapStream.toByteArray(); //in_b为转换之后的结果
-        }catch (Exception e)
-        {
+        }catch(Exception exception){
+            exception.printStackTrace();
+        }finally{
+            try {
+                bis.close();
+            }catch (Exception e)
+            {
+
+            }
 
         }
-        return  in_b;
+        return  count;
     }
 
 }

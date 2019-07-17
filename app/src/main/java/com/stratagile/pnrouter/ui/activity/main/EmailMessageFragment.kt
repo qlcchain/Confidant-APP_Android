@@ -6,8 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.pawegio.kandroid.d
 import com.pawegio.kandroid.runOnUiThread
 import com.smailnet.eamil.Callback.GetReceiveCallback
 import com.smailnet.eamil.EmailMessage
@@ -58,9 +56,9 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
         }
         recyclerView.adapter = emaiMessageChooseAdapter
         emaiMessageChooseAdapter!!.setOnItemClickListener { adapter, view, position ->
-             var intent = Intent(activity!!, EmailInfoActivity::class.java)
-             intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
-             startActivity(intent)
+            var intent = Intent(activity!!, EmailInfoActivity::class.java)
+            intent.putExtra("emailMeaasgeData", emaiMessageChooseAdapter!!.getItem(position))
+            startActivity(intent)
         }
         refreshLayout.setOnRefreshListener {
             pullMessageList()
@@ -137,7 +135,8 @@ class EmailMessageFragment : BaseFragment(), EmailMessageContract.View {
                                             eamilAttach.account = AppConfig.instance.emailConfig().account
                                             eamilAttach.msgId = item.id
                                             eamilAttach.name = attachItem.name
-                                            val byt = MailUtil.inputStreamToByte(attachItem.inputStream)
+                                            var bytSize = MailUtil.getInputStreamSize(attachItem.inputStream)
+                                            val byt = ByteArray(bytSize)
                                             attachItem.inputStream.read(byt)
                                             eamilAttach.data = byt
                                             AppConfig.instance.mDaoMaster!!.newSession().emailAttachEntityDao.insert(eamilAttach)
